@@ -38,7 +38,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
 import Utils from 'AppData/Utils';
 import cloneDeep from 'lodash.clonedeep';
 import dayjs from 'dayjs';
@@ -50,7 +49,6 @@ import MCPPlayground from '@wso2-org/mcp-playground';
 import Alert from 'AppComponents/Shared/Alert';
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import SecurityDetailsPanel from './SecurityDetailsPanel';
@@ -63,7 +61,7 @@ const classes = {
     tokenType: `${PREFIX}-tokenType`,
     mcpPlaygroundWrapper: `${PREFIX}-mcpPlaygroundWrapper`,
     drawerContent: `${PREFIX}-drawerContent`,
-    drawerActions: `${PREFIX}-drawerActions`
+    drawerActions: `${PREFIX}-drawerActions`,
 };
 
 
@@ -156,6 +154,7 @@ const TryOutConsole = () => {
     const [advAuthHeader, setAdvAuthHeader] = useState('Authorization');
     const [advAuthHeaderValue, setAdvAuthHeaderValue] = useState('');
     const [selectedEndpoint, setSelectedEndpoint] = useState('PRODUCTION');
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const { data: publisherSettings } = usePublisherSettings();
     const isMCPServer = api.type === MCPServer.CONSTS.MCP;
     const intl = useIntl();
@@ -168,12 +167,15 @@ const TryOutConsole = () => {
 
     const generateInternalKey = useCallback(() => {
         tasksStatusDispatcher({ type: 'GENERATE_KEY_START' });
-        Api.generateInternalKey(api.id).then((keyResponse) => {
-            const { apikey } = keyResponse.body;
-            setAPIKey(apikey);
-            tasksStatusDispatcher({ type: 'GENERATE_KEY_SUCCESS' });
-        }).catch((error) => tasksStatusDispatcher({ type: 'GENERATE_KEY_ERROR', error }));
+        Api.generateInternalKey(api.id)
+            .then((keyResponse) => {
+                const { apikey } = keyResponse.body;
+                setAPIKey(apikey);
+                tasksStatusDispatcher({ type: 'GENERATE_KEY_SUCCESS' });
+            })
+            .catch((error) => tasksStatusDispatcher({ type: 'GENERATE_KEY_ERROR', error }))
     }, [api.id]);
+
     useEffect(generateInternalKey, []); // Auto generate API Key on page load
     useEffect(() => {
         tasksStatusDispatcher({ type: 'GET_DEPLOYMENTS_START' });
@@ -385,9 +387,6 @@ const TryOutConsole = () => {
         return api.isRevision ? 'Revision' : 'API';
     };
 
-    // Add drawer state
-    const [drawerOpen, setDrawerOpen] = useState(false);
-
     const handleDrawerOpen = () => {
         setDrawerOpen(true);
     };
@@ -396,14 +395,15 @@ const TryOutConsole = () => {
         setDrawerOpen(false);
     };
 
-    const handleSave = () => {
-        // Close the drawer
+    const handleKeyGeneration = () => {
+        generateInternalKey();
         setDrawerOpen(false);
+
         // Show success alert if token was generated
         if (apiKey && apiKey.trim() !== '') {
             Alert.info(intl.formatMessage({
-                id: 'Apis.Details.TryOut.TokenGenerated.Success',
-                defaultMessage: 'Token generated successfully!',
+                id: 'Apis.Details.TryOut.key.generation.success',
+                defaultMessage: 'Key generated successfully!',
             }));
         }
     };
@@ -563,43 +563,15 @@ const TryOutConsole = () => {
                         setAPIKey={setAPIKey}
                         decodedJWT={decodedJWT}
                         isAPIRetired={isAPIRetired}
-                        generateInternalKey={generateInternalKey}
+                        generateInternalKey={handleKeyGeneration}
                         tasksStatus={tasksStatus}
                         deployments={deployments}
                         selectedDeployment={selectedDeployment}
                         deploymentSelectionHandler={deploymentSelectionHandler}
                         getArtifactType={getArtifactType}
+                        securityPanelWidth='100%'
+                        isSecurityPanelDrawer
                     />
-                </Box>
-
-                <Box className={classes.drawerActions}>
-                    <Grid container justifyContent='flex-end' spacing={2} pr={2} pt={9}>
-                        <Grid item>
-                            <Button
-                                variant='outlined'
-                                color='primary'
-                                onClick={handleDrawerClose}
-                                data-testid='security-details-close'
-                                sx={{ marginRight: 2 }}
-                            >
-                                <FormattedMessage
-                                    id='Apis.Details.TryOut.Close'
-                                    defaultMessage='Close'
-                                />
-                            </Button>
-                            <Button
-                                variant='contained'
-                                color='primary'
-                                onClick={handleSave}
-                                data-testid='security-details-save'
-                            >
-                                <FormattedMessage
-                                    id='Apis.Details.TryOut.Save'
-                                    defaultMessage='Save'
-                                />
-                            </Button>
-                        </Grid>
-                    </Grid>
                 </Box>
             </Drawer>
         </Root>)

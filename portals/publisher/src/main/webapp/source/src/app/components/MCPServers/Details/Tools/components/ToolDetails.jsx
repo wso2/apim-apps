@@ -28,55 +28,45 @@ import Button from '@mui/material/Button';
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Utils from 'AppData/Utils';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 import LockIcon from '@mui/icons-material//Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import * as monaco from 'monaco-editor'
 import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
+import MethodView from 'AppComponents/Apis/Details/ProductResources/MethodView';
 
 import { FormattedMessage } from 'react-intl';
 import OperationGovernance 
     from 'AppComponents/Apis/Details/Resources/components/operationComponents/OperationGovernance';
 import { getOperationScopes } from 'AppComponents/Apis/Details/Resources/operationUtils';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
-const PREFIX = 'Operation';
+const PREFIX = 'ToolDetails';
 
 // load Monaco from node_modules instead of CDN
 loader.config({ monaco });
 
 const classes = {
-    customButton: `${PREFIX}-customButton`,
     paperStyles: `${PREFIX}-paperStyles`,
-    customDivider: `${PREFIX}-customDivider`,
-    linearProgress: `${PREFIX}-linearProgress`,
     highlightSelected: `${PREFIX}-highlightSelected`,
     contentNoMargin: `${PREFIX}-contentNoMargin`,
     overlayUnmarkDelete: `${PREFIX}-overlayUnmarkDelete`,
-    targetText: `${PREFIX}-targetText`,
-    title: `${PREFIX}-title`,
     descriptionSection: `${PREFIX}-descriptionSection`,
-    schemaEditor: `${PREFIX}-schemaEditor`,
-    resourceMapping: `${PREFIX}-resourceMapping`
+    toolName: `${PREFIX}-toolName`,
+    accordionContainer: `${PREFIX}-accordionContainer`,
+    resourceMappingChip: `${PREFIX}-resourceMappingChip`,
+    truncatedText: `${PREFIX}-truncatedText`
 };
 
 
 const Root = styled('div')(({ theme }) => {
     return {
-        [`& .${classes.customButton}`]: {
-            width: theme.spacing(12),
-        },
         [`& .${classes.paperStyles}`]: {
             borderBottom: '',
-        },
-        [`& .${classes.customDivider}`]: {
-            // backgroundColor,
-        },
-        [`& .${classes.linearProgress}`]: {
-            height: '2px',
         },
         [`& .${classes.highlightSelected}`]: {
             // backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1),
@@ -89,158 +79,255 @@ const Root = styled('div')(({ theme }) => {
             zIndex: theme.zIndex.operationDeleteUndo,
             right: '10%',
         },
-        [`& .${classes.targetText}`]: {
-            maxWidth: 180,
-            margin: '0px 20px',
-            overflow: 'hidden',
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-            display: 'inline-block',
-        },
-        [`& .${classes.title}`]: {
-            display: 'inline',
-            margin: `0 ${theme.spacing(5)}`,
-        },
         [`& .${classes.descriptionSection}`]: {
-            marginBottom: theme.spacing(3),
+            marginY: theme.spacing(1),
         },
-        [`& .${classes.schemaEditor}`]: {
-            border: `1px solid ${theme.palette.divider}`,
-            borderRadius: theme.shape.borderRadius,
-            height: '300px',
+        [`& .${classes.toolName}`]: {
+            fontWeight: 400,
+            fontSize: '1rem',
+            color: theme.palette.text.primary,
         },
-        [`& .${classes.resourceMapping}`]: {
-            backgroundColor: theme.palette.grey[50],
-            padding: theme.spacing(2),
-            borderRadius: theme.shape.borderRadius,
-            border: `1px solid ${theme.palette.divider}`,
+        [`& .${classes.accordionContainer}`]: {
+            border: '1px solid #f2d4a7',
+            borderRadius: '8px',
+            margin: theme.spacing(1),
+            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+            '&:hover': {
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.15)',
+            },
+            transition: 'box-shadow 0.2s ease-in-out',
+            overflow: 'hidden'
+        },
+        [`& .${classes.resourceMappingChip}`]: {
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: '0.875rem',
+            marginLeft: theme.spacing(1),
+            width: '200px',
+            height: '32px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            padding: theme.spacing(0.5, 1),
+            borderRadius: '4px',
+            flexShrink: 0
+        },
+        [`& .${classes.truncatedText}`]: {
+            maxWidth: '140px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
         },
     };
 });
 
 /**
- * Description and Summary Component
+ * Tool Details Component (Name, Description, Schema, Resource Mapping)
  */
-function DescriptionAndSummary({ operation, operationsDispatcher, disableUpdate, target, verb }) {
-    // Get resource mapping from backend operation
-    const getResourceMapping = () => {
-        if (operation.backendOperationMapping && operation.backendOperationMapping.backendOperation) {
-            const backendOp = operation.backendOperationMapping.backendOperation;
-            return `${backendOp.verb} ${backendOp.target}`;
+function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, target, verb, availableOperations }) {
+
+    // Get current selected operation value for the select component
+    const getCurrentOperationValue = () => {
+        if (operation.backendAPIOperationMapping && operation.backendAPIOperationMapping.backendOperation) {
+            const backendOp = operation.backendAPIOperationMapping.backendOperation;
+            return `${backendOp.target}_${backendOp.verb}`;
         }
-        return 'Not available';
+        return '';
+    };
+
+    const editorOptions = {
+        selectOnLineNumbers: true,
+        readOnly: true,
+        smoothScrolling: true,
+        wordWrap: 'on',
     };
 
     return (
-        <Grid item xs={12} className={classes.descriptionSection}>
-            <Typography variant='h6' gutterBottom>
+        <Grid
+            item
+            xs={12}
+            className={classes.descriptionSection}
+        >
+            <Typography variant='subtitle1' gutterBottom>
                 <FormattedMessage
                     id='Apis.Details.Resources.components.Operation.Tool.Details'
                     defaultMessage='Tool Details'
                 />
             </Typography>
-            
-            <Grid container spacing={3}>
-                {/* Name (formerly target) */}
-                <Grid item xs={12} md={6}>
-                    <TextField
-                        fullWidth
-                        label={
-                            <FormattedMessage
-                                id='Apis.Details.Resources.components.Operation.Name'
-                                defaultMessage='Name'
+            <Divider variant='middle' />
+            <Grid container spacing={3} px={3} mt={1}>
+                {/* Left Panel */}
+                <Grid item xs={6}>
+                    <Grid container spacing={2}>
+                        {/* Name */}
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                label={
+                                    <FormattedMessage
+                                        id='Apis.Details.Resources.components.Operation.Name'
+                                        defaultMessage='Name'
+                                    />
+                                }
+                                value={operation.target || target || ''}
+                                disabled={disableUpdate}
+                                variant='outlined'
+                                // size='small'
+                                onChange={({ target: { value } }) => operationsDispatcher({
+                                    action: 'name',
+                                    data: { target, verb, value },
+                                })}
                             />
-                        }
-                        value={operation.target || ''}
-                        disabled={disableUpdate}
-                        variant='outlined'
-                        size='small'
-                        onChange={({ target: { value } }) => operationsDispatcher({
-                            action: 'target',
-                            data: { target, verb, value },
-                        })}
-                    />
-                </Grid>
+                        </Grid>
 
-                {/* Description */}
-                <Grid item xs={12} md={6}>
-                    <TextField
-                        fullWidth
-                        label={
-                            <FormattedMessage
-                                id='Apis.Details.Resources.Operation.Components.Description'
-                                defaultMessage='Description'
-                            />
-                        }
-                        multiline
-                        rows={4}
-                        value={operation.description || ''}
-                        disabled={disableUpdate}
-                        variant='outlined'
-                        size='small'
-                        onChange={({ target: { value } }) => operationsDispatcher({
-                            action: 'description',
-                            data: { target, verb, value },
-                        })}
-                    />
-                </Grid>
+                        {/* Resource Mapping - Just the dropdown */}
+                        <Grid item xs={12}>
+                            <FormControl 
+                                fullWidth
+                                margin='dense' 
+                                variant='outlined' 
+                                disabled={disableUpdate}
+                            >
+                                <InputLabel>
+                                    <FormattedMessage
+                                        id='MCPServers.Details.Tools.AddTool.operation.label'
+                                        defaultMessage='Operation'
+                                    />
+                                </InputLabel>
+                                <Select
+                                    value={getCurrentOperationValue()}
+                                    onChange={(event) => {
+                                        const selectedValue = event.target.value;
+                                        const selectedOp = availableOperations.find(op =>
+                                            `${op.target}_${op.verb}` === selectedValue
+                                        );
+                                        if (selectedOp) {
+                                            operationsDispatcher({
+                                                action: 'updateBackendOperation',
+                                                data: { 
+                                                    target, 
+                                                    verb, 
+                                                    backendOperation: {
+                                                        target: selectedOp.target,
+                                                        verb: selectedOp.verb
+                                                    }
+                                                },
+                                            });
+                                        }
+                                    }}
+                                    label='Operations'
+                                    displayEmpty
+                                >
+                                    <MenuItem value=''>
+                                        <em>Select an operation</em>
+                                    </MenuItem>
+                                    {availableOperations.map((op) => {
+                                        const menuValue = `${op.target}_${op.verb}`;
+                                        return (
+                                            <MenuItem
+                                                key={menuValue}
+                                                value={menuValue}
+                                                sx={{
+                                                    margin: '3px 0',
+                                                }}
+                                            >
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <MethodView
+                                                        method={op.verb}
+                                                        style={{ marginRight: '5px' }}
+                                                    />
+                                                    <span style={{ marginLeft: '8px' }}>{op.target}</span>
+                                                </div>
+                                            </MenuItem>
+                                        );
+                                    })}
+                                </Select>
+                            </FormControl>
+                        </Grid>
 
-                {/* Schema: view only */}
-                <Grid item xs={12}>
-                    <Typography variant='subtitle2' color='textSecondary' gutterBottom>
-                        <FormattedMessage
-                            id='Apis.Details.Resources.components.Operation.Schema'
-                            defaultMessage='Schema'
-                        />
-                    </Typography>
-                    {operation.schemaDefinition ? (
-                        <Box className={classes.schemaEditor}>
-                            <MonacoEditor
-                                language='json'
-                                width='100%'
-                                height='300px'
-                                theme='vs-light'
-                                value={operation.schemaDefinition}
-                                options={{
-                                    readOnly: true,
-                                    minimap: { enabled: false },
-                                    scrollBeyondLastLine: false,
-                                    fontSize: 12,
+                        {/* Schema */}
+                        <Grid item xs={12}>
+                            <Typography 
+                                variant='subtitle2' 
+                                gutterBottom
+                                sx={{ 
+                                    fontWeight: 400,
+                                    color: 'black'
                                 }}
-                            />
-                        </Box>
-                    ) : (
-                        <Typography variant='body2' color='textSecondary'>
-                            No schema definition available
-                        </Typography>
-                    )}
+                            >
+                                <FormattedMessage
+                                    id='Apis.Details.Resources.components.Operation.Schema'
+                                    defaultMessage='Schema'
+                                />
+                            </Typography>
+                            <Box
+                                sx={{
+                                    border: '1px solid #e0e0e0',
+                                    borderRadius: '4px',
+                                    padding: 2,
+                                    backgroundColor: '#fafafa'
+                                }}
+                            >
+                                {operation.schemaDefinition ? (
+                                    <MonacoEditor
+                                        language='json'
+                                        width='100%'
+                                        height='200px'
+                                        theme='vs-light'
+                                        value={operation.schemaDefinition}
+                                        options={editorOptions}
+                                    />
+                                ) : (
+                                    <Typography variant='body2' color='textSecondary'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Resources.components.Operation.Schema.Not.Available'
+                                            defaultMessage='No schema definition available'
+                                        />
+                                    </Typography>
+                                )}
+                            </Box>
+                        </Grid>
+                    </Grid>
                 </Grid>
 
-                {/* Resource Mapping */}
-                <Grid item xs={12}>
-                    <Typography variant='subtitle2' color='textSecondary' gutterBottom>
-                        <FormattedMessage
-                            id='Apis.Details.Resources.components.Operation.Resource.Mapping'
-                            defaultMessage='Resource Mapping'
-                        />
-                    </Typography>
-                    <Box className={classes.resourceMapping}>
-                        <Typography variant='body1' fontFamily='monospace'>
-                            {getResourceMapping()}
-                        </Typography>
-                    </Box>
+                {/* Right Panel */}
+                <Grid item xs={6}>
+                    <Grid container spacing={2}>
+                        {/* Description */}
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                label={
+                                    <FormattedMessage
+                                        id='Apis.Details.Resources.Operation.Components.Description'
+                                        defaultMessage='Description'
+                                    />
+                                }
+                                value={operation.description || ''}
+                                disabled={disableUpdate}
+                                variant='outlined'
+                                multiline
+                                rows={5}
+                                onChange={({ target: { value } }) => operationsDispatcher({
+                                    action: 'description',
+                                    data: { target, verb, value },
+                                })}
+                            />
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>
     );
 }
 
-DescriptionAndSummary.propTypes = {
+ToolDetailsSection.propTypes = {
     operation: PropTypes.shape({
+        name: PropTypes.string,
         target: PropTypes.string,
         description: PropTypes.string,
         schemaDefinition: PropTypes.string,
-        backendOperationMapping: PropTypes.shape({
+        backendAPIOperationMapping: PropTypes.shape({
             backendOperation: PropTypes.shape({
                 verb: PropTypes.string,
                 target: PropTypes.string,
@@ -251,11 +338,17 @@ DescriptionAndSummary.propTypes = {
     disableUpdate: PropTypes.bool.isRequired,
     target: PropTypes.string.isRequired,
     verb: PropTypes.string.isRequired,
+    availableOperations: PropTypes.arrayOf(PropTypes.shape({
+        target: PropTypes.string,
+        verb: PropTypes.string,
+        summary: PropTypes.string,
+        description: PropTypes.string,
+    })).isRequired,
 };
 
 /**
  *
- * Handle the operation UI
+ * Handle the tool details UI
  * @export
  * @param {*} props
  * @returns {React.Component} @inheritdoc
@@ -279,6 +372,7 @@ function ToolDetails(props) {
         expandedResource,
         setExpandedResource,
         componentValidator,
+        availableOperations,
     } = props;
     const apiOperation = api.operations[target] && api.operations[target][verb.toUpperCase()];
     const isUsedInAPIProduct = apiOperation && Array.isArray(
@@ -301,8 +395,31 @@ function ToolDetails(props) {
         setExpandedResource(isExpanded ? panel : false);
     };
 
+    // Use stable ID for accordion expansion to prevent collapse during name changes
+    const stableId = operation.id || `${verb}_${target}`;
+
     const theme = useTheme();
-    const backgroundColor = theme.custom.resourceChipColors[verb];
+
+    // Get resource mapping for display in accordion summary
+    const getResourceMappingDisplay = () => {
+        if (operation.backendAPIOperationMapping && operation.backendAPIOperationMapping.backendOperation) {
+            const backendOp = operation.backendAPIOperationMapping.backendOperation;
+            return `${backendOp.verb} ${backendOp.target}`;
+        }
+        return '';
+    };
+
+    const getTruncatedTarget = (inputTarget, maxLength = 20) => {
+        if (!inputTarget) return '';
+        return inputTarget.length > maxLength ? inputTarget.substring(0, maxLength) + '...' : inputTarget;
+    };
+
+    // Get tool name for display
+    const getToolName = () => {
+        return operation.target || target;
+    };
+
+    const backendOperationVerb = operation.backendAPIOperationMapping?.backendOperation?.verb;
 
     return (
         <Root>
@@ -319,167 +436,193 @@ function ToolDetails(props) {
                 </Box>
             )}
             <Accordion
-                expanded={expandedResource === verb + target}
-                onChange={handleExpansion(verb + target)}
+                expanded={expandedResource === stableId}
+                onChange={handleExpansion(stableId)}
                 disabled={markAsDelete}
-                className={classes.paperStyles}
-                sx={{ border: `1px solid ${backgroundColor}`}}
+                className={`${classes.paperStyles} ${classes.accordionContainer}`}
             >
                 <AccordionSummary
                     className={highlight ? classes.highlightSelected : ''}
                     disableRipple
                     disableTouchRipple
                     expandIcon={<ExpandMoreIcon />}
-                    id={verb + target}
+                    id={stableId}
                     classes={{ content: classes.contentNoMargin }}
-                    sx={{ backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1)}}
+                    sx={{ 
+                        backgroundColor: theme.custom.mcpToolBar?.backgroundColor || '#fef6ea',
+                    }}
                 >
-                    <Grid container direction='row' justifyContent='space-between' alignItems='center'>
+                    <Grid 
+                        container 
+                        direction='row' 
+                        justifyContent='space-between' 
+                        alignItems='center'
+                    >
                         <Grid item md={4} style={{ display: 'flex', alignItems: 'center' }}>
-                            <Badge
-                                invisible={!operation['x-wso2-new']}
-                                color='error'
-                                variant='dot'
-                                style={{ display: 'inline-block' }}
-                            >
-                                <Button
-                                    disableFocusRipple
-                                    variant='contained'
-                                    aria-label={'Tool verb ' + verb}
-                                    size='small'
-                                    className={classes.customButton}
-                                    sx={{ backgroundColor, color: theme.palette.getContrastText(backgroundColor) }}
-                                >
-                                    {verb}
-                                </Button>
-                            </Badge>
                             <Typography
                                 display='inline-block'
                                 variant='h6'
                                 component='div'
                                 gutterBottom
-                                className={classes.targetText}
-                                title={target}
+                                className={classes.toolName}
+                                title={getToolName()}
+                                sx={{ marginLeft: theme.spacing(1) }}
                             >
-                                {target}
-                                {(operation.description && operation.description !== '') && (
-                                    <Typography
-                                        display='inline-block'
-                                        style={{ margin: '0px 30px' }}
-                                        variant='caption'
-                                        gutterBottom
-                                    >
-                                        {operation.description}
-                                    </Typography>
-                                )}
+                                {getToolName()}
                             </Typography>
+                            {(operation.description && operation.description !== '') && (
+                                <Typography
+                                    display='inline-block'
+                                    style={{ 
+                                        margin: '0px 20px',
+                                        maxWidth: '300px',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap'
+                                    }}
+                                    variant='caption'
+                                    gutterBottom
+                                    title={operation.description}
+                                >
+                                    {operation.description}
+                                </Typography>
+                            )}
                         </Grid>
-                        {(isUsedInAPIProduct) ? (
-                            <Grid item md={3}>
-                                <Box display='flex' justifyContent='center'>
-                                    <ReportProblemOutlinedIcon fontSize='small' />
-                                    <Box display='flex' ml={1} mt={1 / 4} fontSize='caption.fontSize'>
-                                        <FormattedMessage
-                                            id={'Apis.Details.Resources.components.Operation.this.operation.'
-                                            + 'used.in.products'}
-                                            defaultMessage={'This operation is used in {isUsedInAPIProduct} API '
-                                            + 'product(s)'}
-                                            values={{ isUsedInAPIProduct }}
-                                        />
-                                    </Box>
-                                </Box>
-                            </Grid>
-                        ) : (
-                            <Grid item md={3} />
-                        )}
                         <Grid item md={4}>
-                            <Typography
-                                display='inline'
-                                style={{ margin: '0px 30px' }}
-                                variant='caption'
-                                gutterBottom
-                            >
-                                <b>{ getOperationScopes(operation, spec).length !== 0 && 'Scope : ' }</b>
-                                { getOperationScopes(operation, spec).join(', ') }
-                            </Typography>
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                                <Typography
+                                    display='inline'
+                                    style={{ margin: '0px 20px' }}
+                                    variant='caption'
+                                    gutterBottom
+                                    sx={{ 
+                                        maxWidth: '200px',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap'
+                                    }}
+                                >
+                                    <b>{ getOperationScopes(operation, spec).length !== 0 && 'Scope : ' }</b>
+                                    { getOperationScopes(operation, spec).join(', ') }
+                                </Typography>
+                            </Box>
                         </Grid>
-                        <Grid item md={1} justifyContent='flex-end' alignItems='center' container>
-                            {!(disableDelete || markAsDelete) && (
+                        <Grid item md={2}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'flex-start',
+                                    marginLeft: 10
+                                }}
+                            >
+                                {/* Resource Mapping Display */}
+                                {getResourceMappingDisplay() && (
+                                    <Box 
+                                        className={classes.resourceMappingChip}
+                                        title={getResourceMappingDisplay()}
+                                    >
+                                        <MethodView
+                                            method={operation.backendAPIOperationMapping?.backendOperation?.verb}
+                                            style={{ marginRight: theme.spacing(0.2), flexShrink: 0 }}
+                                        />
+                                        <Typography
+                                            display='inline'
+                                            style={{ margin: '0px 20px' }}
+                                            variant='caption'
+                                            gutterBottom
+                                            className={classes.truncatedText}
+                                        >
+                                            {getTruncatedTarget(
+                                                operation.backendAPIOperationMapping?.backendOperation?.target, 15
+                                            )}
+                                        </Typography>
+                                    </Box>
+                                )}
+                            </Box>
+                        </Grid>
+                        <Grid item md={2} justifyContent='flex-end' alignItems='center' container>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+                                {!(disableDelete || markAsDelete) && (
+                                    <Tooltip
+                                        title={
+                                            <FormattedMessage
+                                                id='Apis.Details.Resources.components.Operation.Delete'
+                                                defaultMessage='Delete'
+                                            />
+                                        }
+                                    >
+                                        <div>
+                                            <IconButton
+                                                disabled={Boolean(isUsedInAPIProduct) || disableUpdate}
+                                                onClick={toggleDelete}
+                                                aria-label='delete operation'
+                                                size='large'>
+                                                <DeleteIcon fontSize='small' />
+                                            </IconButton>
+                                        </div>
+                                    </Tooltip>
+                                )}
                                 <Tooltip
                                     title={
-                                        isUsedInAPIProduct
+                                        (operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
                                             ? (
                                                 <FormattedMessage
-                                                    id={'Apis.Details.Resources.components.Operation.cannot.delete'
-                                                    + '.when.used.in.api.products'}
-                                                    defaultMessage='Cannot delete operation when used in an API product'
+                                                    id={'Apis.Details.Resources.components.Operation.disable.security'
+                                                        + '.when.used.in.api.products'}
+                                                    defaultMessage='Security enabled'
                                                 />
                                             )
                                             : (
                                                 <FormattedMessage
-                                                    id='Apis.Details.Resources.components.Operation.Delete'
-                                                    defaultMessage='Delete'
+                                                    id='Apis.Details.Resources.components.enabled.security'
+                                                    defaultMessage='No security'
                                                 />
                                             )
                                     }
+                                    aria-label={(
+                                        <FormattedMessage
+                                            id='Apis.Details.Resources.components.Operation.security.operation'
+                                            defaultMessage='Security '
+                                        />
+                                    )}
                                 >
-                                    <div>
-                                        <IconButton
-                                            disabled={Boolean(isUsedInAPIProduct) || disableUpdate}
-                                            onClick={toggleDelete}
-                                            aria-label='delete operation'
-                                            size='large'>
-                                            <DeleteIcon fontSize='small' />
-                                        </IconButton>
-                                    </div>
+                                    <IconButton aria-label='Security' size='large'>
+                                        {(operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
+                                            ? <LockIcon fontSize='small' />
+                                            : <LockOpenIcon fontSize='small' />}
+                                    </IconButton>
                                 </Tooltip>
-                            )}
-                            <Tooltip
-                                title={
-                                    (operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
-                                        ? (
-                                            <FormattedMessage
-                                                id={'Apis.Details.Resources.components.Operation.disable.security'
-                                                    + '.when.used.in.api.products'}
-                                                defaultMessage='Security enabled'
-                                            />
-                                        )
-                                        : (
-                                            <FormattedMessage
-                                                id='Apis.Details.Resources.components.enabled.security'
-                                                defaultMessage='No security'
-                                            />
-                                        )
-                                }
-                                aria-label={(
-                                    <FormattedMessage
-                                        id='Apis.Details.Resources.components.Operation.security.operation'
-                                        defaultMessage='Security '
-                                    />
-                                )}
-                            >
-                                <IconButton aria-label='Security' size='large'>
-                                    {(operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
-                                        ? <LockIcon fontSize='small' />
-                                        : <LockOpenIcon fontSize='small' />}
-                                </IconButton>
-                            </Tooltip>
-
+                            </Box>
                         </Grid>
                     </Grid>
                 </AccordionSummary>
-                <Divider sx={{ backgroundColor }} />
+                <Divider sx={{
+                    backgroundColor: theme.custom.resourceChipColors[backendOperationVerb]
+                        || theme.palette.primary.main
+                }} />
                 <AccordionDetails>
-                    <Grid spacing={2} container direction='row' justifyContent='flex-start' alignItems='flex-start'>
-                        <DescriptionAndSummary
+                    <Grid 
+                        spacing={2} 
+                        container 
+                        direction='row' 
+                        justifyContent='flex-start' 
+                        alignItems='flex-start'
+                    >
+                        <ToolDetailsSection
                             operation={operation}
                             operationsDispatcher={operationsDispatcher}
                             disableUpdate={disableUpdate}
                             target={target}
                             verb={verb}
+                            availableOperations={availableOperations}
                         />
                         <OperationGovernance
-                            operation={operation}
+                            operation={{
+                                ...operation,
+                                'x-throttling-tier': operation.throttlingPolicy || operation['x-throttling-tier'],
+                                scopes: operation.scopes || []
+                            }}
                             operationsDispatcher={operationsDispatcher}
                             operationRateLimits={operationRateLimits}
                             api={api}
@@ -490,6 +633,7 @@ function ToolDetails(props) {
                             sharedScopes={sharedScopes}
                             setFocusOperationLevel={setFocusOperationLevel}
                             componentValidator={componentValidator}
+                            isMCPServer
                         />
                     </Grid>
                 </AccordionDetails>
@@ -504,6 +648,7 @@ ToolDetails.defaultProps = {
     onMarkAsDelete: () => {},
     markAsDelete: false,
     operationRateLimits: [], // Response body.list from apis policies for `api` throttling policies type
+    resourcePolicy: {},
 };
 ToolDetails.propTypes = {
     api: PropTypes.shape({ scopes: PropTypes.arrayOf(PropTypes.shape({})), resourcePolicies: PropTypes.shape({}) })
@@ -513,14 +658,15 @@ ToolDetails.propTypes = {
     markAsDelete: PropTypes.bool,
     disableDelete: PropTypes.bool,
     disableUpdate: PropTypes.bool,
-    resourcePolicy: PropTypes.shape({}).isRequired,
+    resourcePolicy: PropTypes.shape({}),
     operation: PropTypes.shape({
         'x-wso2-new': PropTypes.bool,
         summary: PropTypes.string,
+        name: PropTypes.string,
         target: PropTypes.string,
         description: PropTypes.string,
         schemaDefinition: PropTypes.string,
-        backendOperationMapping: PropTypes.shape({
+        backendAPIOperationMapping: PropTypes.shape({
             backendOperation: PropTypes.shape({
                 verb: PropTypes.string,
                 target: PropTypes.string,
@@ -536,6 +682,12 @@ ToolDetails.propTypes = {
     sharedScopes: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
     expandedResource: PropTypes.string.isRequired,
     setExpandedResource: PropTypes.func.isRequired,
+    availableOperations: PropTypes.arrayOf(PropTypes.shape({
+        target: PropTypes.string,
+        verb: PropTypes.string,
+        summary: PropTypes.string,
+        description: PropTypes.string,
+    })).isRequired,
 };
 
 export default React.memo(ToolDetails);

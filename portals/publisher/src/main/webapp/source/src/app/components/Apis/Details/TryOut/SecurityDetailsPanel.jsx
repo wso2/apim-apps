@@ -37,16 +37,27 @@ const SecurityDetailsPanel = ({
     deployments,
     selectedDeployment,
     deploymentSelectionHandler,
-    getArtifactType
+    getArtifactType,
+    securityPanelWidth,
+    isSecurityPanelDrawer,
 }) => {
     const [api] = useAPI();
 
-    return (
-        <>
+    const renderSecuritySection = () => {
+        return (
             <Box display='flex' justifyContent='center' sx={{ mb: 3 }}>
-                <Grid container>
-                    <Grid item xs={3} />
-                    <Grid xs={6} md={6} item>
+                <Grid container sx={{
+                    padding: '0px 40px 0px 40px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignContent: 'center',
+                    justifyContent: 'center'
+                }}>
+                    <Grid
+                        xs={12}
+                        item
+                        sx={{ width: isSecurityPanelDrawer ? securityPanelWidth : '50%' }}
+                    >
                         <Typography variant='h5' component='h3' color='textPrimary'>
                             <FormattedMessage
                                 id='api.console.security.heading'
@@ -110,10 +121,24 @@ const SecurityDetailsPanel = ({
                     </Grid>
                 </Grid>
             </Box>
+        );
+    };
+
+    const renderAPIGatewaysSection = () => {
+        return (
             <Box display='flex' justifyContent='center'>
-                <Grid container>
-                    <Grid item xs={3} />
-                    <Grid xs={6} md={6} item>
+                <Grid container sx={{
+                    padding: '0px 40px 0px 40px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignContent: 'center',
+                    justifyContent: 'center'
+                }}>
+                    <Grid
+                        xs={12}
+                        item
+                        sx={{ width: isSecurityPanelDrawer ? securityPanelWidth : '50%' }}
+                    >
                         {(tasksStatus.getDeployments.completed && !deployments.length && !isAPIRetired) && (
                             <Alert variant='outlined' severity='error'>
                                 <FormattedMessage
@@ -187,9 +212,30 @@ const SecurityDetailsPanel = ({
                     </Grid>
                 </Grid>
             </Box>
+        );
+    };
+
+    return (
+        <>
+            {isSecurityPanelDrawer ? (
+                <>
+                    {renderAPIGatewaysSection()}
+                    {renderSecuritySection()}
+                </>
+            ) : (
+                <>
+                    {renderSecuritySection()}
+                    {renderAPIGatewaysSection()}
+                </>
+            )}
         </>
     )
 }
+
+SecurityDetailsPanel.defaultProps = {
+    securityPanelWidth: '50%',
+    isSecurityPanelDrawer: false,
+};
 
 SecurityDetailsPanel.propTypes = {
     apiKey: PropTypes.string.isRequired,
@@ -222,6 +268,8 @@ SecurityDetailsPanel.propTypes = {
     }).isRequired,
     deploymentSelectionHandler: PropTypes.func.isRequired,
     getArtifactType: PropTypes.func.isRequired,
+    securityPanelWidth: PropTypes.string, // Optional prop for custom width
+    isSecurityPanelDrawer: PropTypes.bool,
 };
 
 export default SecurityDetailsPanel;

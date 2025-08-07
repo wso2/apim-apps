@@ -131,28 +131,16 @@ function AddTool(props) {
         const newErrors = { name: false, description: false, operation: false };
 
         // Validate all required fields
-        if (!newTool.name) {
+        if (!newTool.name || !newTool.name.trim()) {
             newErrors.name = true;
             hasErrors = true;
         }
-        if (!newTool.description) {
+        if (!newTool.description || !newTool.description.trim()) {
             newErrors.description = true;
             hasErrors = true;
         }
         if (!newTool.selectedOperation) {
             newErrors.operation = true;
-            hasErrors = true;
-        }
-
-        // Validate tool name format
-        if (newTool.name && (newTool.name.includes(' ') || !/^[a-zA-Z0-9_-]+$/.test(newTool.name))) {
-            newErrors.name = true;
-            hasErrors = true;
-        }
-
-        // Validate description is not just whitespace
-        if (newTool.description && !newTool.description.trim()) {
-            newErrors.description = true;
             hasErrors = true;
         }
 
@@ -194,7 +182,7 @@ function AddTool(props) {
                         <InputLabel>
                             <FormattedMessage
                                 id='MCPServers.Details.Tools.AddTool.operation.label'
-                                defaultMessage='Operations'
+                                defaultMessage='Operation'
                             />
                         </InputLabel>
                         <Select
@@ -208,7 +196,7 @@ function AddTool(props) {
                                 );
                                 newToolDispatcher({ type: 'selectedOperation', value: selectedOp });
                             }}
-                            label='Operations'
+                            label='Operation'
                             helperText={newTool.errors.operation ? 
                                 intl.formatMessage({
                                     id: 'MCPServers.Details.Tools.AddTool.operation.error',
@@ -224,6 +212,9 @@ function AddTool(props) {
                                 <MenuItem
                                     key={`${operation.target}_${operation.verb}`}
                                     value={`${operation.target}_${operation.verb}`}
+                                    sx={{
+                                        margin: '3px 0',
+                                    }}
                                 >
                                     <div style={{ display: 'flex', alignItems: 'center' }}>
                                         <MethodView
@@ -263,8 +254,7 @@ function AddTool(props) {
                         helperText={newTool.errors.name ? 
                             intl.formatMessage({
                                 id: 'MCPServers.Details.Tools.AddTool.name.error',
-                                defaultMessage: 'Tool name is required and can only contain letters, '
-                                    + 'numbers, hyphens and underscores',
+                                defaultMessage: 'Tool name is required',
                             }) : ''
                         }
                         InputLabelProps={{

@@ -1,4 +1,7 @@
 {
+  "ApiTryOut.SecurityDetailsPanel.btn.cancel": "Cancel",
+  "ApiTryOut.SecurityDetailsPanel.btn.done": "Done",
+  "ApiTryOut.SecurityDetailsPanel.title": "Security Configuration",
   "Apis.Chat.Chat.Messages.subject.line": "API Marketplace Assistant is an early feature and can make mistakes. Verify its outputs.",
   "Apis.Chat.ChatIcon.disable.chat.label": "Disable chat",
   "Apis.Chat.ChatIcon.tooltip.label": "Open Chat",
@@ -27,9 +30,6 @@
   "Apis.Details.ApiChat.components.ApiChatResponse.executionResults": "Certainly! Here are the results of the API calls I executed on your behalf:",
   "Apis.Details.ApiChat.components.ApiChatResponse.loadingMessage": "Loading next execution step...",
   "Apis.Details.ApiChat.components.ApiChatResponse.terminatingMessage": "Execution is terminating...",
-  "Apis.Details.ApiChat.components.ConfigureKeyDrawer.cancel": "Cancel",
-  "Apis.Details.ApiChat.components.ConfigureKeyDrawer.done": "Done",
-  "Apis.Details.ApiChat.components.ConfigureKeyDrawer.title": "Configure Key",
   "Apis.Details.ApiChat.components.CopyToClipboard.copiedText": "Copied",
   "Apis.Details.ApiChat.components.CopyToClipboard.copyText": "Copy to Clipboard",
   "Apis.Details.ApiChat.components.SampleQueryCard.executeButton": "Execute",

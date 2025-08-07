@@ -950,65 +950,6 @@ class MCPServer extends Resource {
             );
         });
     }
-
-    // TODO: Duplicate of function available under api.js
-    /**
-     * Get the available policies information by tier level.
-     * @param {String} policyLevel List API or Application or Resource type policies.parameter should be one
-     * of api, application, subscription and resource
-     * @param {Number} limit The maximum number of policies to return.
-     * @param {Boolean} isAiApi Whether the policies are for AI APIs.
-     * @param {string} organizationId The ID of the organization to which the policies belong
-     * @returns {Promise} A promise that resolves to the list of policies.
-     *
-     */
-    static policies(policyLevel, limit, isAiApi, organizationId ) {
-        const apiClient = new APIClientFactory()
-            .getAPIClient(
-                Utils.getCurrentEnvironment(),
-                Utils.CONST.API_CLIENT
-            ).client;
-        return apiClient.then(client => {
-            return client.apis['Throttling Policies'].getAllThrottlingPolicies(
-                {
-                    policyLevel,
-                    limit,
-                    isAiApi,
-                    organizationId,
-                },
-                this._requestMetaData(),
-            );
-        });
-    }
-
-    // /**
-    //  * Return the deployed revisions of this API
-    //  * @returns
-    //  */
-    // static getDeployedRevisions() { // TODO: Change to MCP
-    //     const apiClient = new APIClientFactory()
-    //         .getAPIClient(
-    //             Utils.getCurrentEnvironment(),
-    //             Utils.CONST.API_CLIENT
-    //         ).client;
-    //     if (this.isRevision) {
-    //         return apiClient.then(client => {
-    //             return client.apis['API Revisions'].getAPIRevisionDeployments({
-    //                 apiId: this.revisionedApiId,
-    //             },
-    //             ).then(res => {
-    //                 return { body: res.body.filter(a => a.revisionUuid === this.id) }
-    //             });
-    //         });
-    //     }
-    //     return this.client.then(client => {
-    //         return client.apis['API Revisions'].getAPIRevisionDeployments({
-    //             apiId: this.id,
-    //         },
-    //         );
-    //     });
-    // }
-
 }
 
 export default MCPServer;

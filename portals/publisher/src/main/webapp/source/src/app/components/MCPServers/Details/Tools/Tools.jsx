@@ -16,10 +16,10 @@
  * under the License.
  */
 
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useReducer, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { useIntl } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
 import APIRateLimiting from 'AppComponents/Apis/Details/Resources/components/APIRateLimiting';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
@@ -27,25 +27,28 @@ import Configurations from 'Config';
 import Banner from 'AppComponents/Shared/Banner';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import SaveOperations from 'AppComponents/Apis/Details/Resources/components/SaveOperations';
+import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
 import cloneDeep from 'lodash.clonedeep';
-import Box from '@mui/material/Box';
 import Alert from 'AppComponents/Shared/Alert';
 import { isRestricted } from 'AppData/AuthManager';
 import CircularProgress from '@mui/material/CircularProgress';
 import isEmpty from 'lodash/isEmpty';
 import { Progress } from 'AppComponents/Shared';
+import {
+    mapAPIOperations,
+} from 'AppComponents/Apis/Details/Resources/operationUtils';
 import AddTool from './components/AddTool';
-// import ToolDetails from './components/ToolDetails';
+import ToolDetails from './components/ToolDetails';
 
 const PREFIX = 'Tools';
 
 const classes = {
     root: `${PREFIX}-root`,
     heading: `${PREFIX}-heading`,
-    contentWrapper: `${PREFIX}-contentWrapper`,
     subHeading: `${PREFIX}-subHeading`,
     toolBox: `${PREFIX}-toolBox`,
 }
@@ -64,11 +67,6 @@ const Root = styled('div')(({
         marginRight: 20,
     },
 
-    [`& .${classes.contentWrapper}`]: {
-        // maxHeight: '125px',
-        // overflowY: 'auto',
-    },
-
     [`& .${classes.subHeading}`]: {
         color: theme.palette.primary.dark,
     },
@@ -82,36 +80,49 @@ const Root = styled('div')(({
 }));
 
 const Tools = ({
-    // operationProps,
     disableRateLimiting,
-    // disableMultiSelect,
     disableUpdate,
     disableAddOperation,
 }) => {
-    const { isLoading } = usePublisherSettings();
+    const { data: publisherSettings, isLoading } = usePublisherSettings();
     const [api, updateAPI] = useAPI();
     const [pageError, setPageError] = useState(false);
     const [operationRateLimits, setOperationRateLimits] = useState([]);
     const [markedOperations, setSelectedOperation] = useState({});
     const [mcpEndpoints, setMcpEndpoints] = useState([]);
     const [availableOperations, setAvailableOperations] = useState([]);
-    // const [sharedScopes, setSharedScopes] = useState();
+    const [sharedScopes, setSharedScopes] = useState();
     // const [sharedScopesByName, setSharedScopesByName] = useState();
     // const [securityDefScopes, setSecurityDefScopes] = useState({});
     const [apiThrottlingPolicy, setApiThrottlingPolicy] = useState(api.apiThrottlingPolicy);
     // const [resolvedSpec, setResolvedSpec] = useState({ spec: {}, errors: [] });
     const [focusOperationLevel, setFocusOperationLevel] = useState(false);
-    // const [expandedResource, setExpandedResource] = useState(false);
-    // const [componentValidator, setComponentValidator] = useState([]);
+    const [expandedResource, setExpandedResource] = useState('');
+    const [componentValidator, setComponentValidator] = useState([]);
 
     const intl = useIntl();
 
     useEffect(() => {
-        // Fetch API level throttling policies only when the page get mounted for the first time `componentDidMount`
-        const limit = Configurations.app.throttlingPolicyLimit;
-        MCPServer.policies('api', limit).then((response) => {
-            setOperationRateLimits(response.body.list);
-        });
+        if (api.apitype !== 'APIProduct') {
+            const maxScopeLimit = Configurations.apis.maxScopeCount;
+            API.getAllScopes(0, maxScopeLimit)
+                .then((response) => {
+                    if (response.body && response.body.list) {
+                        const sharedScopesList = [];
+                        const sharedScopesByNameList = {};
+                        const shared = true;
+                        for (const scope of response.body.list) {
+                            const modifiedScope = {};
+                            modifiedScope.scope = scope;
+                            modifiedScope.shared = shared;
+                            sharedScopesList.push(modifiedScope);
+                            sharedScopesByNameList[scope.name] = modifiedScope;
+                        }
+                        setSharedScopes(sharedScopesList);
+                        // setSharedScopesByName(sharedScopesByNameList);
+                    }
+                });
+        }
     }, []);
 
     /**
@@ -125,7 +136,7 @@ const Tools = ({
         const { target, value } = data || {};
         let updatedOperation;
         let updatedOperations;
-        
+
         switch (action) {
             case 'init':
                 setSelectedOperation({});
@@ -137,10 +148,17 @@ const Tools = ({
             //         return { ...acc, [key]: newOperation };
             //     }, {});
             case 'description':
-            case 'summary':
                 if (target) {
                     updatedOperation = cloneDeep(currentOperations[target]);
-                    updatedOperation[action] = value;
+                    updatedOperation.description = value; // Update description field for API structure
+                    return { ...currentOperations, [target]: updatedOperation };
+                }
+                break;
+            case 'name':
+                if (target) {
+                    updatedOperation = cloneDeep(currentOperations[target]);
+                    updatedOperation.target = value; // Update target field for API structure
+                    // Keep the same key to prevent accordion from closing/rearranging
                     return { ...currentOperations, [target]: updatedOperation };
                 }
                 break;
@@ -154,6 +172,7 @@ const Tools = ({
             case 'throttlingPolicy':
                 if (target) {
                     updatedOperation = cloneDeep(currentOperations[target]);
+                    updatedOperation.throttlingPolicy = value;
                     updatedOperation['x-throttling-tier'] = value;
                     return { ...currentOperations, [target]: updatedOperation };
                 }
@@ -166,8 +185,20 @@ const Tools = ({
                     } else if (!updatedOperation.security.find((item) => item.default)) {
                         updatedOperation.security.push({ default: [] });
                     }
-                    const defValue = value[0];
-                    updatedOperation.security.find((item) => item.default).default = defValue;
+                    const defValue = value[0] || value;
+                    updatedOperation.scopes = Array.isArray(defValue)
+                        ? defValue : [defValue];
+                    updatedOperation.security.find((item) => item.default).default = updatedOperation.scopes;
+                    return { ...currentOperations, [target]: updatedOperation };
+                }
+                break;
+            case 'updateBackendOperation':
+                if (target) {
+                    updatedOperation = cloneDeep(currentOperations[target]);
+                    if (!updatedOperation.backendAPIOperationMapping) {
+                        updatedOperation.backendAPIOperationMapping = {};
+                    }
+                    updatedOperation.backendAPIOperationMapping.backendOperation = data.backendOperation;
                     return { ...currentOperations, [target]: updatedOperation };
                 }
                 break;
@@ -180,7 +211,7 @@ const Tools = ({
                     }));
                     return currentOperations;
                 }
-                
+
                 // Check if tool with this name already exists
                 if (currentOperations[name]) {
                     Alert.warning(intl.formatMessage({
@@ -189,17 +220,23 @@ const Tools = ({
                     }, { name }));
                     return currentOperations;
                 }
-                
+
                 updatedOperations = cloneDeep(currentOperations);
+                // Generate a ID for the operation
+                const operationId = `tool_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
                 updatedOperations[name] = {
+                    id: operationId,
                     'x-wso2-new': true,
                     'x-auth-type': 'Application & Application User',
-                    target: selectedOperation.target,
+                    target: name,
                     verb: 'tool',
                     description: description || '',
                     summary: name,
-                    backendOperationMapping: {
-                        backendId: '',
+                    throttlingPolicy: 'Unlimited',
+                    scopes: [],
+                    backendAPIOperationMapping: {
+                        backendAPIId: '',
                         backendOperation: {
                             target: selectedOperation.target,
                             verb: selectedOperation.verb
@@ -231,7 +268,7 @@ const Tools = ({
                             const apiDefinition = typeof endpoint.apiDefinition === 'string'
                                 ? JSON.parse(endpoint.apiDefinition)
                                 : endpoint.apiDefinition;
-                            
+
                             if (apiDefinition && apiDefinition.paths) {
                                 Object.entries(apiDefinition.paths).forEach(([path, pathObj]) => {
                                     Object.entries(pathObj).forEach(([verb, operation]) => {
@@ -263,6 +300,18 @@ const Tools = ({
             });
     }
 
+    const localAPI = useMemo(
+        () => ({
+            id: api.id,
+            apiThrottlingPolicy,
+            scopes: api.scopes,
+            operations: api.isAPIProduct() ? {} : mapAPIOperations(api.operations),
+            endpointConfig: mcpEndpoints.endpointConfig,
+        }),
+        [api, apiThrottlingPolicy, mcpEndpoints],
+    );
+
+
     /**
      * Initialize operations from API object
      */
@@ -273,13 +322,18 @@ const Tools = ({
                 const operationName = operation.target || operation.id;
                 if (operationName) {
                     operationsMap[operationName] = {
+                        id: operation.id || `existing_${operationName}_${Date.now()}`,
                         target: operation.target,
                         verb: 'tool',
-                        // summary: operationName,
+                        name: operation.target,
                         description: operation.description || '',
                         'x-auth-type': operation.authType || 'Application & Application User',
+                        throttlingPolicy: operation.throttlingPolicy || 'Unlimited',
                         'x-throttling-tier': operation.throttlingPolicy || 'Unlimited',
-                        backendOperationMapping: operation.backendOperationMapping
+                        schemaDefinition: operation.schemaDefinition,
+                        backendAPIOperationMapping: operation.backendAPIOperationMapping,
+                        scopes: operation.scopes || [],
+                        'x-wso2-new': false
                     };
                 }
             });
@@ -294,18 +348,33 @@ const Tools = ({
      */
     function updateMCPServerTools(toolsOperations) {
         const operationsArray = Object.entries(toolsOperations).map(([name, operation]) => ({
-            target: name,
+            id: operation.id || '',
+            target: operation.target || name,
             verb: 'tool',
             authType: operation['x-auth-type'] || 'Application & Application User',
-            throttlingPolicy: operation['x-throttling-tier'] || 'Unlimited',
+            throttlingPolicy: operation.throttlingPolicy || 'Unlimited',
             description: operation.description || '',
-            backendOperationMapping: operation.backendOperationMapping || {
-                backendId: mcpEndpoints[0]?.id || '',
+            schemaDefinition: operation.schemaDefinition,
+            scopes: operation.scopes || [],
+            usedProductIds: operation.usedProductIds || [],
+            amznResourceName: operation.amznResourceName || null,
+            amznResourceTimeout: operation.amznResourceTimeout || null,
+            amznResourceContentEncode: operation.amznResourceContentEncode || null,
+            payloadSchema: operation.payloadSchema || null,
+            uriMapping: operation.uriMapping || null,
+            operationPolicies: operation.operationPolicies || {
+                request: [],
+                response: [],
+                fault: []
+            },
+            backendAPIOperationMapping: operation.backendAPIOperationMapping || {
+                backendAPIId: operation.backendAPIOperationMapping?.backendAPIId || mcpEndpoints[0]?.id || '',
                 backendOperation: {
-                    target: operation.target || name,
-                    verb: operation.backendOperationMapping?.backendOperation?.verb || 'GET'
+                    target: operation.backendAPIOperationMapping?.backendOperation?.target || operation.target || name,
+                    verb: operation.backendAPIOperationMapping?.backendOperation?.verb || 'GET'
                 }
-            }
+            },
+            // apiOperationMapping: operation.apiOperationMapping || null
         }));
 
         return updateAPI({ operations: operationsArray })
@@ -338,12 +407,12 @@ const Tools = ({
                     });
                     return Promise.reject(new Error(message));
                 }
-                
+
                 // Remove marked operations
                 for (const target of Object.keys(markedOperations)) {
                     delete copyOfOperations[target];
                 }
-                
+
                 // Remove x-wso2-new flag from newly added operations
                 for (const [, operationInfo] of Object.entries(copyOfOperations)) {
                     if (operationInfo['x-wso2-new']) {
@@ -355,9 +424,13 @@ const Tools = ({
             default:
                 return Promise.reject(new Error('Unsupported tool operation!'));
         }
-        
+
         if (apiThrottlingPolicy !== api.apiThrottlingPolicy) {
             return updateAPI({ apiThrottlingPolicy })
+                .then((updatedApi) => {
+                    setApiThrottlingPolicy(updatedApi.apiThrottlingPolicy);
+                    return updatedApi;
+                })
                 .catch((error) => {
                     console.error(error);
                     Alert.error(intl.formatMessage({
@@ -375,14 +448,14 @@ const Tools = ({
     useEffect(() => {
         // Initialize operations from MCP Server API object
         initializeOperations();
-        
+
         // Fetch available operations from MCP Server endpoints
         fetchAvailableOperations();
-        
+
         // Fetch throttling policies for MCP Server
         const limit = Configurations.app.throttlingPolicyLimit;
-        if (typeof MCPServer.policies === 'function') {
-            MCPServer.policies('api', limit)
+        if (typeof API.policies === 'function') {
+            API.policies('api', limit)
                 .then((response) => {
                     setOperationRateLimits(response.body.list);
                 })
@@ -396,8 +469,24 @@ const Tools = ({
         }
     }, [api.id]);
 
-    // Note: Make sure not to use any hooks after/within this condition , because it returns conditionally
-    // If you do so, You will probably get `Rendered more hooks than during the previous render.` exception
+    useEffect(() => {
+        if (!isLoading) {
+            setComponentValidator(publisherSettings.gatewayFeatureCatalog
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].resources);
+        }
+    }, [isLoading]);
+
+    useEffect(() => {
+        setApiThrottlingPolicy(api.apiThrottlingPolicy);
+    }, [api.apiThrottlingPolicy]);
+
+    useEffect(() => {
+        // Sync local apiThrottlingPolicy state with API context when API loads or changes
+        if (api.id && api.apiThrottlingPolicy !== apiThrottlingPolicy) {
+            setApiThrottlingPolicy(api.apiThrottlingPolicy);
+        }
+    }, [api.id, api.apiThrottlingPolicy]);
+
     if (!pageError && (isEmpty(operations) && availableOperations.length === 0)) {
         return (
             <Grid container direction='row' justifyContent='center' alignItems='center'>
@@ -426,7 +515,7 @@ const Tools = ({
                             operationRateLimits={operationRateLimits}
                             value={apiThrottlingPolicy}
                             onChange={setApiThrottlingPolicy}
-                            isAPIProduct={api.isAPIProduct()}
+                            isAPIProduct={false}
                             focusOperationLevel={focusOperationLevel}
                             setFocusOperationLevel={setFocusOperationLevel}
                         />
@@ -434,47 +523,55 @@ const Tools = ({
                 )}
                 {!isRestricted(['apim:api_create'], api) && !disableAddOperation && (
                     <Grid item md={12} xs={12}>
-                        <AddTool 
-                            operationsDispatcher={operationsDispatcher} 
+                        <AddTool
+                            operationsDispatcher={operationsDispatcher}
                             availableOperations={availableOperations}
                             api={api}
                         />
                     </Grid>
                 )}
                 <Grid item md={12}>
-                    <Paper>
-                        {/* <ToolDetails
-                            operations={operations}
-                            operationsDispatcher={operationsDispatcher}
-                            api={api}
-                            disableUpdate={disableUpdate}
-                            markedOperations={markedOperations}
-                            setSelectedOperation={setSelectedOperation}
-                            apiUpdateCall={apiUpdateCall}
-                        />   */}
-                        <div className={classes.contentWrapper}>
-                            <Box
-                                flex={1}
-                                display='flex'
-                                flexDirection='column'
-                                gridGap={12}
-                                mt={1}
-                            >
-                                {api.operations.map((operation) => (
-                                    <Box
-                                        key={operation.target}
-                                        p={1}
-                                        borderRadius={1}
-                                        className={classes.toolBox}
-                                        mt={1}
-                                    >
-                                        <Typography variant='body1'>
-                                            {operation.target}
-                                        </Typography>
-                                    </Box>
-                                ))}
-                            </Box>
-                        </div>
+                    <Paper sx={{ paddingY: 1 }}>
+                        {Object.keys(operations).length === 0 ? (
+                            <Grid item md={12}>
+                                <Box p={3} textAlign='center'>
+                                    <Typography variant='body1' color='textSecondary'>
+                                        <FormattedMessage
+                                            id='MCPServers.Details.Tools.no.tools.message'
+                                            defaultMessage='No tools available. Add a tool to get started.'
+                                        />
+                                    </Typography>
+                                </Box>
+                            </Grid>
+                        ) : (
+                            Object.entries(operations).map(([target, operation]) => (
+                                <Grid key={operation.id || target} item md={12}>
+                                    <ToolDetails
+                                        target={target}
+                                        verb={operation.verb || 'tool'}
+                                        operation={operation}
+                                        operationsDispatcher={operationsDispatcher}
+                                        api={localAPI}
+                                        disableUpdate={disableUpdate}
+                                        markedOperations={markedOperations}
+                                        onMarkAsDelete={setSelectedOperation}
+                                        markAsDelete={Boolean(markedOperations[target])}
+                                        spec={{}}
+                                        operationRateLimits={operationRateLimits}
+                                        sharedScopes={sharedScopes}
+                                        setFocusOperationLevel={setFocusOperationLevel}
+                                        expandedResource={expandedResource}
+                                        setExpandedResource={setExpandedResource}
+                                        componentValidator={componentValidator}
+                                        resourcePolicy={{}}
+                                        resolvedSpec={{}}
+                                        highlight={false}
+                                        disableDelete={false}
+                                        availableOperations={availableOperations}
+                                    />
+                                </Grid>
+                            ))
+                        )}
                     </Paper>
                     <Grid
                         style={{ marginTop: '25px' }}

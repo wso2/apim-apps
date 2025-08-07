@@ -333,7 +333,7 @@ class TableView extends React.Component {
                     defaultMessage: 'Name',
                 }),
                 options: {
-                    customBodyRender: (tableMeta, tableViewObj = this) => {
+                    customBodyRender: (value, tableMeta, updateValue, tableViewObj = this) => {
                         if (tableMeta.rowData) {
                             const { isAPIProduct, isMCPServer } = tableViewObj.props; // eslint-disable-line no-shadow
                             const artifact = tableViewObj.state.apisAndApiProducts[tableMeta.rowIndex];
@@ -349,7 +349,6 @@ class TableView extends React.Component {
                             } else if (isMCPServer) {
                                 return (
                                     <Link to={'/mcp-servers/' + apiId + '/overview'} className={classes.apiNameLink}>
-                                        <CustomIcon width={16} height={16} icon='api-product' strokeColor='#444444' />
                                         <span>{apiName}</span>
                                     </Link>
                                 );
