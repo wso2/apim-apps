@@ -39,7 +39,6 @@ import { MuiChipsInput } from 'mui-chips-input';
 import Error from '@mui/icons-material/Error';
 import InputAdornment from '@mui/material/InputAdornment';
 import { red } from '@mui/material/colors/';
-import Joi from '@hapi/joi';
 import AddEditVhost from 'AppComponents/GatewayEnvironments/AddEditVhost';
 import GatewayConfiguration from 'AppComponents/GatewayEnvironments/GatewayConfiguration';
 import cloneDeep from 'lodash.clonedeep';
@@ -116,6 +115,7 @@ function AddEditGWEnvironment(props) {
     const [invalidRoles, setInvalidRoles] = useState([]);
     const [roleValidity, setRoleValidity] = useState(true);
     const [gatewayConfigurations, setGatewayConfiguration] = useState([]);
+    const [supportedModes, setSupportedModes] = useState([]);
     const [validating, setValidating] = useState(false);
     const [saving, setSaving] = useState(false);
     const { gatewayTypes } = settings;
@@ -214,6 +214,16 @@ function AddEditGWEnvironment(props) {
         } else {
             setGatewayConfiguration(
                 config.configurations,
+            );
+        }
+        if (gatewayType === 'Regular' || gatewayType === 'APK') {
+            setSupportedModes(
+                ['WRITE_ONLY'],
+            );
+        } else {
+            setSupportedModes(
+                // config.supportedModes,
+                ['WRITE_ONLY', 'READ_ONLY', 'READ_WRITE'],
             );
         }
     }, [gatewayType]);
@@ -385,6 +395,23 @@ function AddEditGWEnvironment(props) {
                 }
                 break;
             }
+            case 'scheduledInterval':
+                if (value === '') {
+                    error = intl.formatMessage({
+                        id: 'AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment'
+                        + '.scheduledInterval.empty',
+                        defaultMessage: 'Scheduled Interval is empty',
+                    });
+                } else if (parseInt(value, 10) < 0) {
+                    error = intl.formatMessage({
+                        id: 'AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment'
+                        + '.scheduledInterval.parse',
+                        defaultMessage: 'Invalid scheduled interval',
+                    });
+                } else {
+                    error = '';
+                }
+                break;
             default:
                 break;
         }
@@ -398,6 +425,7 @@ function AddEditGWEnvironment(props) {
         const nameErrors = hasErrors('name', name);
         const displayNameErrors = hasErrors('displayName', displayName);
         const vhostErrors = hasErrors('vhosts', vhosts);
+        const scheduledIntervalErrors = hasErrors('scheduledInterval', scheduledInterval);
         if (nameErrors) {
             errorText += nameErrors + '\n';
         }
@@ -407,7 +435,9 @@ function AddEditGWEnvironment(props) {
         if (vhostErrors) {
             errorText += vhostErrors + '\n';
         }
-        // const unitTimeErrors = validate('unitTime', unitTime);
+        if (scheduledIntervalErrors) {
+            errorText += scheduledIntervalErrors + '\n';
+        }
         return errorText;
     };
     const formSaveCallback = () => {
@@ -469,11 +499,13 @@ function AddEditGWEnvironment(props) {
         if (id) {
             // assign the update promise to the promiseAPICall
             promiseAPICall = restApi.updateGatewayEnvironment(id, name.trim(), displayName, type, description,
-                gatewayType, vhostDto, permissions, additionalPropertiesArrayDTO, provider);
+                gatewayType, gatewayMode, scheduledInterval, vhostDto, permissions, additionalPropertiesArrayDTO,
+                provider);
         } else {
             // assign the create promise to the promiseAPICall
             promiseAPICall = restApi.addGatewayEnvironment(name.trim(), displayName, type, description,
-                gatewayType, vhostDto, permissions, additionalPropertiesArrayDTO, provider);
+                gatewayType, gatewayMode, scheduledInterval, vhostDto, permissions, additionalPropertiesArrayDTO,
+                provider);
             promiseAPICall
                 .then(() => {
                     return (intl.formatMessage({
@@ -525,79 +557,28 @@ function AddEditGWEnvironment(props) {
         }
     };
 
-    const [validationError, setValidationError] = useState([]);
-    
-    const validate = (fieldName, value) => {
-        let error = '';
-        const schema = Joi.string().regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+]*$/);
-        switch (fieldName) {
-            case 'policyName':
-                if (value === '') {
-                    error = intl.formatMessage({
-                        id: 'Throttling.Subscription.Policy.policy.name.empty.error.msg',
-                        defaultMessage: 'Name is Empty',
-                    });
-                } else if (value.indexOf(' ') !== -1) {
-                    error = intl.formatMessage({
-                        id: 'Throttling.Subscription.Policy.policy.name.space.error.msg',
-                        defaultMessage: 'Name contains spaces',
-                    });
-                } else if (value.length > 60) {
-                    error = intl.formatMessage({
-                        id: 'Throttling.Subscription.Policy.policy.name.too.long.error.msg',
-                        defaultMessage: 'Subscription policy name is too long',
-                    });
-                } else if (schema.validate(value).error) {
-                    error = intl.formatMessage({
-                        id: 'Throttling.Subscription.Policy.policy.name.invalid.character.error.msg',
-                        defaultMessage: 'Name contains one or more illegal characters',
-                    });
-                } else {
-                    error = '';
-                }
-                setValidationError({ policyName: error });
-                break;
-            case 'requestCount':
-                error = value === '' ? intl.formatMessage({
-                    id: 'Throttling.Subscription.Policy.policy.request.count.empty.error.msg',
-                    defaultMessage: 'Request Count is Empty',
-                }) : '';
-                setValidationError({ requestCount: error });
-                break;
-            case 'eventCount':
-                error = value === '' ? intl.formatMessage({
-                    id: 'Throttling.Subscription.Policy.policy.event.count.empty.error.msg',
-                    defaultMessage: 'Event Count is Empty',
-                }) : '';
-                setValidationError({ eventCount: error });
-                break;
-            case 'dataAmount':
-                error = value === '' ? intl.formatMessage({
-                    id: 'Throttling.Subscription.Policy.policy.data.amount.empty.error.msg',
-                    defaultMessage: 'Data Bandwidth amount is Empty',
-                }) : '';
-                setValidationError({ dataAmount: error });
-                break;
-            case 'unitTime':
-                if (value === '') {
-                    error = intl.formatMessage({
-                        id: 'Throttling.Subscription.Policy.policy.unit.time.empty.error.msg',
-                        defaultMessage: 'Unit Time is Empty',
-                    });
-                } else if (parseInt(value, 10) <= 0) {
-                    error = intl.formatMessage({
-                        id: 'Throttling.Subscription.Policy.policy.unit.time.negative.error.msg',
-                        defaultMessage: 'Invalid Time Value',
-                    });
-                } else {
-                    error = '';
-                }
-                setValidationError({ unitTime: error });
-                break;
-            default:
-                break;
+    const getGWModeDisplayName = (value) => {
+        if (value === 'WRITE_ONLY') {
+            return 'Write-Only';
+        } else if (value === 'READ_ONLY') {
+            return 'Read-Only';
+        } else if (value === 'READ_WRITE') {
+            return 'Read-Write';
+        } else {
+            return value;
         }
-        return error;
+    };
+
+    const getGWModeHelperText = (value) => {
+        if (value === 'WRITE_ONLY') {
+            return 'APIs can only be deployed to the Gateway';
+        } else if (value === 'READ_ONLY') {
+            return 'APIs can only be discovered from the Gateway';
+        } else if (value === 'READ_WRITE') {
+            return 'APIs can be both deployed to and discovered from the Gateway';
+        } else {
+            return value;
+        }
     };
 
     return (
@@ -819,7 +800,7 @@ function AddEditGWEnvironment(props) {
                                 >
                                     <FormattedMessage
                                         id='GatewayEnvironments.AddEditGWEnvironment.connector.configurations'
-                                        defaultMessage='Gateway Agent Configurations'
+                                        defaultMessage='Gateway Connector Configurations'
                                     />
                                 </Typography>
                                 <Typography
@@ -866,7 +847,7 @@ function AddEditGWEnvironment(props) {
                                 <Typography color='inherit' variant='caption' component='p'>
                                     <FormattedMessage
                                         id='GatewayEnvironments.AddEditGWEnvironment.mode.description'
-                                        defaultMessage='Mode of the Gateway Environment'
+                                        defaultMessage='Specify the deployability or discoverabilty of APIs'
                                     />
                                 </Typography>
                             </Box>
@@ -897,29 +878,35 @@ function AddEditGWEnvironment(props) {
                                 onChange={onChange}
                                 disabled={editMode}
                             >
-                                <MenuItem value='WRITE_ONLY'>
-                                    <FormattedMessage
-                                        id='GatewayEnvironments.AddEditGWEnvironment.form.mode.write.only.option'
-                                        defaultMessage='Write-only'
-                                    />
-                                </MenuItem>
-                                <MenuItem value='READ_ONLY'>
-                                    <FormattedMessage
-                                        id='GatewayEnvironments.AddEditGWEnvironment.form.mode.read.only.option'
-                                        defaultMessage='Read-only'
-                                    />
-                                </MenuItem>
-                                <MenuItem value='READ_WRITE'>
-                                    <FormattedMessage
-                                        id='GatewayEnvironments.AddEditGWEnvironment.form.mode.read.write.option'
-                                        defaultMessage='Read-Write'
-                                    />
-                                </MenuItem>
+                                {supportedModes?.length > 0
+                                    && supportedModes.map((item) => (
+                                        <MenuItem key={item} value={item}>
+                                            <Box display='flex' flexDirection='column'>
+                                                <Typography
+                                                    color='inherit'
+                                                    variant='subtitle3'
+                                                    component='div'
+                                                    id='GatewayEnvironments.AddEditGWEnvironment.mode.select.heading'
+                                                >
+                                                    {getGWModeDisplayName(item)}
+                                                </Typography>
+                                                <Typography
+                                                    color='inherit'
+                                                    variant='caption'
+                                                    component='p'
+                                                    id='GatewayEnvironments.AddEditGWEnvironment.mode.select
+                                                    .helper'
+                                                >
+                                                    {getGWModeHelperText(item)}
+                                                </Typography>
+                                            </Box>
+                                        </MenuItem>
+                                    ))}
                             </Select>
                             <FormHelperText>
                                 <FormattedMessage
                                     id='GatewayEnvironments.AddEditGWEnvironment.form.mode.helper.text'
-                                    defaultMessage='Select Gateway Mode'
+                                    defaultMessage='Select how the APIs in the Gateway should be managed'
                                 />
                             </FormHelperText>
                         </FormControl>
@@ -938,23 +925,19 @@ function AddEditGWEnvironment(props) {
                                                 <FormattedMessage
                                                     id='GatewayEnvironments.AddEditGWEnvironment.form.mode
                                                     .scheduled.interval'
-                                                    defaultMessage='Scheduled Interval'
+                                                    defaultMessage='API Discovery Scheduling Interval'
                                                 />
                                             )}
                                             required
-                                            InputProps={{
-                                                id: 'scheduledInterval',
-                                                onBlur: ({ target: { value } }) => {
-                                                    validate('scheduledInterval', value);
-                                                },
-                                            }}
-                                            error={validationError.scheduledInterval}
-                                            helperText={validationError.scheduledInterval || intl.formatMessage({
-                                                id: 'GatewayEnvironments.AddEditGWEnvironment.form.mode'
-                                                + '.scheduled.interval.helper.text',
-                                                defaultMessage: 'Specify a scheduling interval in minutes to sync APIs',
-                                            })}
-                                            sx={{ width: 350 }}
+                                            error={hasErrors('scheduledInterval', state.scheduledInterval, true)}
+                                            helperText={hasErrors('scheduledInterval', state.scheduledInterval, true)
+                                                || intl.formatMessage({
+                                                    id: 'GatewayEnvironments.AddEditGWEnvironment.form.name.'
+                                                        + 'form.scheduledInterval.help',
+                                                    defaultMessage: 'Provide interval in minutes for scheduling API'
+                                                    + ' discovery',
+                                                })}
+                                            sx={{ width: 350, mt: 3 }}
                                             variant='outlined'
                                         />
                                     </Box>
