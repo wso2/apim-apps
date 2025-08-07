@@ -159,7 +159,7 @@
         "less-loader": "^12.2.0",
         "msw": "^0.35.0",
         "mui-datatables": "^4.3.0",
-        "openapi-backend": "^5.0.0",
+        "openapi-backend": "^5.13.0",
         "prettier": "^2.5.1",
         "rimraf": "^5.0.7",
         "stream-browserify": "^3.0.0",
