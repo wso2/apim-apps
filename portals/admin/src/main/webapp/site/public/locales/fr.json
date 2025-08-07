@@ -1331,6 +1331,7 @@
   "Workflow.ApplicationUpdate.List.empty.content.applicationupdates": "There are no pending workflow requests for application update.",
   "Workflow.ApplicationUpdate.List.empty.title.applicationupdates": "Application Update",
   "Workflow.ApplicationUpdate.apicall.has.errors": "Unable to get workflow pending requests for Application Update",
+  "Workflow.ApplicationUpdate.help.link.one": "Create an Application Update approval workflow Request",
   "Workflow.ApplicationUpdate.permission.denied.content": "You dont have enough permission to view Application Update - Approval Tasks. Please contact the site administrator.",
   "Workflow.ApplicationUpdate.permission.denied.title": "Permission Denied",
   "Workflow.ApplicationUpdate.table.button.approve": "Approve",
