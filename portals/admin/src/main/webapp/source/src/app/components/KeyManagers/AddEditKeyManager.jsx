@@ -1776,6 +1776,7 @@ function AddEditKeyManager(props) {
                                              <KeyManagerConfiguration
                                                  keymanagerConnectorConfigurations={keymanagerConnectorConfigurations}
                                                  additionalProperties={cloneDeep(additionalProperties)}
+                                                 keyManagerId={cloneDeep(id)}
                                                  setAdditionalProperties={setAdditionalProperties}
                                                  hasErrors={hasErrors}
                                                  validating={validating}
