@@ -914,7 +914,7 @@ class MCPServer extends Resource {
             ).client;
         return apiClient.then(client => {
             return client.apis['Import Export'].exportMCPServer({
-                apiId: mcpServerId, // TODO: Change to mcpServerId
+                mcpServerId,
             }, this._requestMetaData({
                 'accept': 'application/zip'
             }));
@@ -938,7 +938,7 @@ class MCPServer extends Resource {
         return apiClient.then(client => {
             return client.apis['MCP Servers'].createNewMCPServerVersion(
                 {
-                    apiId: mcpServerId, // TODO: Change apiId to mcpServerId
+                    mcpServerId,
                     newVersion: version,
                     serviceVersion,
                     defaultVersion: isDefaultVersion,

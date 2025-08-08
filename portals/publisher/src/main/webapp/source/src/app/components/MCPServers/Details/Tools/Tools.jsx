@@ -195,10 +195,10 @@ const Tools = ({
             case 'updateBackendOperation':
                 if (target) {
                     updatedOperation = cloneDeep(currentOperations[target]);
-                    if (!updatedOperation.backendAPIOperationMapping) {
-                        updatedOperation.backendAPIOperationMapping = {};
+                    if (!updatedOperation.backendOperationMapping) {
+                        updatedOperation.backendOperationMapping = {};
                     }
-                    updatedOperation.backendAPIOperationMapping.backendOperation = data.backendOperation;
+                    updatedOperation.backendOperationMapping.backendOperation = data.backendOperation;
                     return { ...currentOperations, [target]: updatedOperation };
                 }
                 break;
@@ -230,13 +230,13 @@ const Tools = ({
                     'x-wso2-new': true,
                     'x-auth-type': 'Application & Application User',
                     target: name,
-                    verb: 'tool',
+                    feature: 'TOOL',
                     description: description || '',
                     summary: name,
                     throttlingPolicy: 'Unlimited',
                     scopes: [],
-                    backendAPIOperationMapping: {
-                        backendAPIId: '',
+                    backendOperationMapping: {
+                        backendId: '',
                         backendOperation: {
                             target: selectedOperation.target,
                             verb: selectedOperation.verb
@@ -265,9 +265,9 @@ const Tools = ({
                     const operationsTemp = [];
                     endpoints.forEach(endpoint => {
                         try {
-                            const apiDefinition = typeof endpoint.apiDefinition === 'string'
-                                ? JSON.parse(endpoint.apiDefinition)
-                                : endpoint.apiDefinition;
+                            const apiDefinition = typeof endpoint.definition === 'string'
+                                ? JSON.parse(endpoint.definition)
+                                : endpoint.definition;
 
                             if (apiDefinition && apiDefinition.paths) {
                                 Object.entries(apiDefinition.paths).forEach(([path, pathObj]) => {
@@ -324,14 +324,14 @@ const Tools = ({
                     operationsMap[operationName] = {
                         id: operation.id || `existing_${operationName}_${Date.now()}`,
                         target: operation.target,
-                        verb: 'tool',
+                        feature: 'TOOL',
                         name: operation.target,
                         description: operation.description || '',
                         'x-auth-type': operation.authType || 'Application & Application User',
                         throttlingPolicy: operation.throttlingPolicy || 'Unlimited',
                         'x-throttling-tier': operation.throttlingPolicy || 'Unlimited',
                         schemaDefinition: operation.schemaDefinition,
-                        backendAPIOperationMapping: operation.backendAPIOperationMapping,
+                        backendOperationMapping: operation.backendOperationMapping,
                         scopes: operation.scopes || [],
                         'x-wso2-new': false
                     };
@@ -350,16 +350,12 @@ const Tools = ({
         const operationsArray = Object.entries(toolsOperations).map(([name, operation]) => ({
             id: operation.id || '',
             target: operation.target || name,
-            verb: 'tool',
+            feature: 'TOOL',
             authType: operation['x-auth-type'] || 'Application & Application User',
             throttlingPolicy: operation.throttlingPolicy || 'Unlimited',
             description: operation.description || '',
             schemaDefinition: operation.schemaDefinition,
             scopes: operation.scopes || [],
-            usedProductIds: operation.usedProductIds || [],
-            amznResourceName: operation.amznResourceName || null,
-            amznResourceTimeout: operation.amznResourceTimeout || null,
-            amznResourceContentEncode: operation.amznResourceContentEncode || null,
             payloadSchema: operation.payloadSchema || null,
             uriMapping: operation.uriMapping || null,
             operationPolicies: operation.operationPolicies || {
@@ -367,14 +363,14 @@ const Tools = ({
                 response: [],
                 fault: []
             },
-            backendAPIOperationMapping: operation.backendAPIOperationMapping || {
-                backendAPIId: operation.backendAPIOperationMapping?.backendAPIId || mcpEndpoints[0]?.id || '',
+            backendOperationMapping: operation.backendOperationMapping || {
+                backendId: operation.backendOperationMapping?.backendId || mcpEndpoints[0]?.id || '',
                 backendOperation: {
-                    target: operation.backendAPIOperationMapping?.backendOperation?.target || operation.target || name,
-                    verb: operation.backendAPIOperationMapping?.backendOperation?.verb || 'GET'
+                    target: operation.backendOperationMapping?.backendOperation?.target || operation.target || name,
+                    verb: operation.backendOperationMapping?.backendOperation?.verb || 'GET'
                 }
             },
-            // apiOperationMapping: operation.apiOperationMapping || null
+            apiOperationMapping: operation.apiOperationMapping || null
         }));
 
         return updateAPI({ operations: operationsArray })
@@ -548,7 +544,7 @@ const Tools = ({
                                 <Grid key={operation.id || target} item md={12}>
                                     <ToolDetails
                                         target={target}
-                                        verb={operation.verb || 'tool'}
+                                        feature={operation.feature || 'TOOL'}
                                         operation={operation}
                                         operationsDispatcher={operationsDispatcher}
                                         api={localAPI}

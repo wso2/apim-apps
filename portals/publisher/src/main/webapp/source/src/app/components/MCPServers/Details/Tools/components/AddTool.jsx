@@ -26,6 +26,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import ClearIcon from '@mui/icons-material/Clear';
 import Fab from '@mui/material/Fab';
 import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
@@ -36,6 +37,9 @@ import PropTypes from 'prop-types';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import MethodView from 'AppComponents/Apis/Details/ProductResources/MethodView';
 
 const PREFIX = 'AddTool';
@@ -52,9 +56,6 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     },
 
     [`&.${classes.paper}`]: {
-        paddingLeft: theme.spacing(4),
-        paddingTop: theme.spacing(1.5),
-        paddingBottom: theme.spacing(0.5),
         marginTop: '12px',
     },
 
@@ -82,12 +83,22 @@ function AddTool(props) {
         const { type, value } = action;
         switch (type) {
             case 'name':
+                return { 
+                    ...state, 
+                    [type]: value,
+                    errors: { ...state.errors, name: false }
+                };
             case 'description':
+                return { 
+                    ...state, 
+                    [type]: value,
+                    errors: { ...state.errors, description: false }
+                };
             case 'selectedOperation':
                 return { 
                     ...state, 
                     [type]: value,
-                    errors: { ...state.errors, [type]: false }
+                    errors: { ...state.errors, operation: false }
                 };
             case 'clear':
                 return { 
@@ -97,7 +108,7 @@ function AddTool(props) {
                     errors: { name: false, description: false, operation: false }
                 };
             case 'setError':
-                return { ...state, errors: { ...state.errors, [type]: value } };
+                return { ...state, errors: { ...state.errors, [action.field]: value } };
             case 'error':
                 return { ...state, error: value };
             default:
@@ -145,14 +156,14 @@ function AddTool(props) {
         }
 
         // Set error states
-        newToolDispatcher({ type: 'setError', name: newErrors.name });
-        newToolDispatcher({ type: 'setError', description: newErrors.description });
-        newToolDispatcher({ type: 'setError', operation: newErrors.operation });
+        newToolDispatcher({ type: 'setError', field: 'name', value: newErrors.name });
+        newToolDispatcher({ type: 'setError', field: 'description', value: newErrors.description });
+        newToolDispatcher({ type: 'setError', field: 'operation', value: newErrors.operation });
 
         if (hasErrors) {
-            Alert.warning(intl.formatMessage({
+            Alert.error(intl.formatMessage({
                 id: 'MCPServers.Details.Tools.AddTool.validation.error',
-                defaultMessage: 'Please fix the validation errors before adding the tool',
+                defaultMessage: 'Please fix the validation errors before adding the Tool',
             }));
             return;
         }
@@ -170,7 +181,35 @@ function AddTool(props) {
 
     return (
         <StyledPaper className={classes.paper}>
-            <Grid container direction='row' spacing={2} justifyContent='center' alignItems='center' pt={1} pb={2}>
+            <Grid container direction='row' justifyContent='flex-start' alignItems='flex-start'>
+                <Grid item md={12} xs={12} sx={{ p: 1 }}>
+                    <Box>
+                        <Typography variant='subtitle1' component='h3' gutterBottom>
+                            <FormattedMessage
+                                id='MCPServers.Details.Tools.AddTool.configuration'
+                                defaultMessage='Add Tool'
+                            />
+                            <Tooltip
+                                fontSize='small'
+                                title={intl.formatMessage({
+                                    id: 'MCPServers.Details.Tools.AddTool.configuration.tooltip',
+                                    defaultMessage: 'Configure and add a new tool to the MCP Server',
+                                })}
+                                placement='right-end'
+                                interactive
+                            >
+                                <IconButton aria-label='Add Tool' size='large'>
+                                    <HelpOutline />
+                                </IconButton>
+                            </Tooltip>
+                        </Typography>
+                    </Box>
+                    <Divider variant='middle' />
+                </Grid>
+            </Grid>
+            <Grid container direction='row'
+                spacing={2} justifyContent='center' alignItems='center' pt={1} pb={2} px={3}
+            >
                 <Grid item md={3} xs={12}>
                     <FormControl 
                         margin='dense' 
@@ -197,16 +236,6 @@ function AddTool(props) {
                                 newToolDispatcher({ type: 'selectedOperation', value: selectedOp });
                             }}
                             label='Operation'
-                            helperText={newTool.errors.operation ? 
-                                intl.formatMessage({
-                                    id: 'MCPServers.Details.Tools.AddTool.operation.error',
-                                    defaultMessage: 'Operation selection is required',
-                                }) :
-                                intl.formatMessage({
-                                    id: 'MCPServers.Details.Tools.AddTool.operation.helper',
-                                    defaultMessage: 'Select an operation to associate with this tool',
-                                })
-                            }
                         >
                             {availableOperations.map((operation) => (
                                 <MenuItem
@@ -226,6 +255,14 @@ function AddTool(props) {
                                 </MenuItem>
                             ))}
                         </Select>
+                        <FormHelperText>
+                            {newTool.errors.operation &&
+                                intl.formatMessage({
+                                    id: 'MCPServers.Details.Tools.AddTool.operation.error',
+                                    defaultMessage: 'Operation selection is required',
+                                })
+                            }
+                        </FormHelperText>
                     </FormControl>
                 </Grid>
 
@@ -335,7 +372,7 @@ function AddTool(props) {
                                     aria-label='Add new tool'
                                     onClick={addTool}
                                     id='add-tool-button'
-                                    disabled={!newTool.name || !newTool.description || !newTool.selectedOperation}
+                                    // disabled={!newTool.name || !newTool.description || !newTool.selectedOperation}
                                 >
                                     <AddIcon />
                                 </Fab>
@@ -376,11 +413,11 @@ function AddTool(props) {
 
 AddTool.propTypes = {
     operationsDispatcher: PropTypes.func.isRequired,
-    availableOperations: PropTypes.shape({
+    availableOperations: PropTypes.arrayOf(PropTypes.shape({
         target: PropTypes.string,
         verb: PropTypes.string,
         description: PropTypes.string,
-    }).isRequired,
+    })).isRequired,
 };
 
 export default React.memo(AddTool);

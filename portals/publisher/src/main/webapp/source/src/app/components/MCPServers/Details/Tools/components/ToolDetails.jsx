@@ -37,7 +37,7 @@ import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
 import MethodView from 'AppComponents/Apis/Details/ProductResources/MethodView';
 
 import { FormattedMessage } from 'react-intl';
-import OperationGovernance 
+import OperationGovernance
     from 'AppComponents/Apis/Details/Resources/components/operationComponents/OperationGovernance';
 import { getOperationScopes } from 'AppComponents/Apis/Details/Resources/operationUtils';
 import FormControl from '@mui/material/FormControl';
@@ -124,12 +124,12 @@ const Root = styled('div')(({ theme }) => {
 /**
  * Tool Details Component (Name, Description, Schema, Resource Mapping)
  */
-function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, target, verb, availableOperations }) {
+function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, target, feature, availableOperations }) {
 
     // Get current selected operation value for the select component
     const getCurrentOperationValue = () => {
-        if (operation.backendAPIOperationMapping && operation.backendAPIOperationMapping.backendOperation) {
-            const backendOp = operation.backendAPIOperationMapping.backendOperation;
+        if (operation.backendOperationMapping && operation.backendOperationMapping.backendOperation) {
+            const backendOp = operation.backendOperationMapping.backendOperation;
             return `${backendOp.target}_${backendOp.verb}`;
         }
         return '';
@@ -175,17 +175,17 @@ function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, ta
                                 // size='small'
                                 onChange={({ target: { value } }) => operationsDispatcher({
                                     action: 'name',
-                                    data: { target, verb, value },
+                                    data: { target, feature, value },
                                 })}
                             />
                         </Grid>
 
                         {/* Resource Mapping - Just the dropdown */}
                         <Grid item xs={12}>
-                            <FormControl 
+                            <FormControl
                                 fullWidth
-                                margin='dense' 
-                                variant='outlined' 
+                                margin='dense'
+                                variant='outlined'
                                 disabled={disableUpdate}
                             >
                                 <InputLabel>
@@ -204,9 +204,9 @@ function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, ta
                                         if (selectedOp) {
                                             operationsDispatcher({
                                                 action: 'updateBackendOperation',
-                                                data: { 
-                                                    target, 
-                                                    verb, 
+                                                data: {
+                                                    target,
+                                                    feature,
                                                     backendOperation: {
                                                         target: selectedOp.target,
                                                         verb: selectedOp.verb
@@ -247,10 +247,10 @@ function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, ta
 
                         {/* Schema */}
                         <Grid item xs={12}>
-                            <Typography 
-                                variant='subtitle2' 
+                            <Typography
+                                variant='subtitle2'
                                 gutterBottom
-                                sx={{ 
+                                sx={{
                                     fontWeight: 400,
                                     color: 'black'
                                 }}
@@ -310,7 +310,7 @@ function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, ta
                                 rows={5}
                                 onChange={({ target: { value } }) => operationsDispatcher({
                                     action: 'description',
-                                    data: { target, verb, value },
+                                    data: { target, feature, value },
                                 })}
                             />
                         </Grid>
@@ -327,7 +327,7 @@ ToolDetailsSection.propTypes = {
         target: PropTypes.string,
         description: PropTypes.string,
         schemaDefinition: PropTypes.string,
-        backendAPIOperationMapping: PropTypes.shape({
+        backendOperationMapping: PropTypes.shape({
             backendOperation: PropTypes.shape({
                 verb: PropTypes.string,
                 target: PropTypes.string,
@@ -337,7 +337,7 @@ ToolDetailsSection.propTypes = {
     operationsDispatcher: PropTypes.func.isRequired,
     disableUpdate: PropTypes.bool.isRequired,
     target: PropTypes.string.isRequired,
-    verb: PropTypes.string.isRequired,
+    feature: PropTypes.string.isRequired,
     availableOperations: PropTypes.arrayOf(PropTypes.shape({
         target: PropTypes.string,
         verb: PropTypes.string,
@@ -366,7 +366,7 @@ function ToolDetails(props) {
         markAsDelete,
         spec,
         target,
-        verb,
+        feature,
         sharedScopes,
         setFocusOperationLevel,
         expandedResource,
@@ -374,10 +374,8 @@ function ToolDetails(props) {
         componentValidator,
         availableOperations,
     } = props;
-    const apiOperation = api.operations[target] && api.operations[target][verb.toUpperCase()];
-    const isUsedInAPIProduct = apiOperation && Array.isArray(
-        apiOperation.usedProductIds,
-    ) && apiOperation.usedProductIds.length;
+    // MCP Server operations don't support API products, so no usedProductIds check needed
+    const isUsedInAPIProduct = false;
 
     /**
      *
@@ -388,7 +386,7 @@ function ToolDetails(props) {
         event.stopPropagation();
         event.preventDefault();
         setExpandedResource(false);
-        onMarkAsDelete({ verb, target }, !markAsDelete);
+        onMarkAsDelete({ feature, target }, !markAsDelete);
     }
 
     const handleExpansion = (panel) => (event, isExpanded) => {
@@ -396,14 +394,14 @@ function ToolDetails(props) {
     };
 
     // Use stable ID for accordion expansion to prevent collapse during name changes
-    const stableId = operation.id || `${verb}_${target}`;
+    const stableId = operation.id || `${feature}_${target}`;
 
     const theme = useTheme();
 
     // Get resource mapping for display in accordion summary
     const getResourceMappingDisplay = () => {
-        if (operation.backendAPIOperationMapping && operation.backendAPIOperationMapping.backendOperation) {
-            const backendOp = operation.backendAPIOperationMapping.backendOperation;
+        if (operation.backendOperationMapping && operation.backendOperationMapping.backendOperation) {
+            const backendOp = operation.backendOperationMapping.backendOperation;
             return `${backendOp.verb} ${backendOp.target}`;
         }
         return '';
@@ -419,7 +417,7 @@ function ToolDetails(props) {
         return operation.target || target;
     };
 
-    const backendOperationVerb = operation.backendAPIOperationMapping?.backendOperation?.verb;
+    const backendOperationVerb = operation.backendOperationMapping?.backendOperation?.verb;
 
     return (
         <Root>
@@ -448,14 +446,14 @@ function ToolDetails(props) {
                     expandIcon={<ExpandMoreIcon />}
                     id={stableId}
                     classes={{ content: classes.contentNoMargin }}
-                    sx={{ 
+                    sx={{
                         backgroundColor: theme.custom.mcpToolBar?.backgroundColor || '#fef6ea',
                     }}
                 >
-                    <Grid 
-                        container 
-                        direction='row' 
-                        justifyContent='space-between' 
+                    <Grid
+                        container
+                        direction='row'
+                        justifyContent='space-between'
                         alignItems='center'
                     >
                         <Grid item md={4} style={{ display: 'flex', alignItems: 'center' }}>
@@ -473,7 +471,7 @@ function ToolDetails(props) {
                             {(operation.description && operation.description !== '') && (
                                 <Typography
                                     display='inline-block'
-                                    style={{ 
+                                    style={{
                                         margin: '0px 20px',
                                         maxWidth: '300px',
                                         overflow: 'hidden',
@@ -495,15 +493,15 @@ function ToolDetails(props) {
                                     style={{ margin: '0px 20px' }}
                                     variant='caption'
                                     gutterBottom
-                                    sx={{ 
+                                    sx={{
                                         maxWidth: '200px',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap'
                                     }}
                                 >
-                                    <b>{ getOperationScopes(operation, spec).length !== 0 && 'Scope : ' }</b>
-                                    { getOperationScopes(operation, spec).join(', ') }
+                                    <b>{getOperationScopes(operation, spec).length !== 0 && 'Scope : '}</b>
+                                    {getOperationScopes(operation, spec).join(', ')}
                                 </Typography>
                             </Box>
                         </Grid>
@@ -518,12 +516,12 @@ function ToolDetails(props) {
                             >
                                 {/* Resource Mapping Display */}
                                 {getResourceMappingDisplay() && (
-                                    <Box 
+                                    <Box
                                         className={classes.resourceMappingChip}
                                         title={getResourceMappingDisplay()}
                                     >
                                         <MethodView
-                                            method={operation.backendAPIOperationMapping?.backendOperation?.verb}
+                                            method={operation.backendOperationMapping?.backendOperation?.verb}
                                             style={{ marginRight: theme.spacing(0.2), flexShrink: 0 }}
                                         />
                                         <Typography
@@ -534,7 +532,7 @@ function ToolDetails(props) {
                                             className={classes.truncatedText}
                                         >
                                             {getTruncatedTarget(
-                                                operation.backendAPIOperationMapping?.backendOperation?.target, 15
+                                                operation.backendOperationMapping?.backendOperation?.target, 15
                                             )}
                                         </Typography>
                                     </Box>
@@ -602,11 +600,11 @@ function ToolDetails(props) {
                         || theme.palette.primary.main
                 }} />
                 <AccordionDetails>
-                    <Grid 
-                        spacing={2} 
-                        container 
-                        direction='row' 
-                        justifyContent='flex-start' 
+                    <Grid
+                        spacing={2}
+                        container
+                        direction='row'
+                        justifyContent='flex-start'
                         alignItems='flex-start'
                     >
                         <ToolDetailsSection
@@ -614,7 +612,7 @@ function ToolDetails(props) {
                             operationsDispatcher={operationsDispatcher}
                             disableUpdate={disableUpdate}
                             target={target}
-                            verb={verb}
+                            feature={feature}
                             availableOperations={availableOperations}
                         />
                         <OperationGovernance
@@ -629,7 +627,7 @@ function ToolDetails(props) {
                             disableUpdate={disableUpdate}
                             spec={spec}
                             target={target}
-                            verb={verb}
+                            feature={feature}
                             sharedScopes={sharedScopes}
                             setFocusOperationLevel={setFocusOperationLevel}
                             componentValidator={componentValidator}
@@ -645,7 +643,7 @@ ToolDetails.defaultProps = {
     highlight: false,
     disableUpdate: false,
     disableDelete: false,
-    onMarkAsDelete: () => {},
+    onMarkAsDelete: () => { },
     markAsDelete: false,
     operationRateLimits: [], // Response body.list from apis policies for `api` throttling policies type
     resourcePolicy: {},
@@ -666,7 +664,7 @@ ToolDetails.propTypes = {
         target: PropTypes.string,
         description: PropTypes.string,
         schemaDefinition: PropTypes.string,
-        backendAPIOperationMapping: PropTypes.shape({
+        backendOperationMapping: PropTypes.shape({
             backendOperation: PropTypes.shape({
                 verb: PropTypes.string,
                 target: PropTypes.string,
@@ -674,7 +672,7 @@ ToolDetails.propTypes = {
         }),
     }).isRequired,
     target: PropTypes.string.isRequired,
-    verb: PropTypes.string.isRequired,
+    feature: PropTypes.string.isRequired,
     spec: PropTypes.shape({}).isRequired,
     highlight: PropTypes.bool,
     operationRateLimits: PropTypes.arrayOf(PropTypes.shape({})),

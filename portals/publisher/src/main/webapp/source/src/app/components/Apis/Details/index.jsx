@@ -727,15 +727,16 @@ class Details extends Component {
             } else {
                 promisedUpdate = api.update(updatedProperties);
             }
-        } else if (!isAPIProduct) {
+        } else if (isMCPServer) {
+            // Just sync-up the MCP Server state with backend
+            promisedUpdate = MCPServer.getMCPServerById(api.id);
+        } else if (isAPIProduct) {
+            promisedUpdate = APIProduct.get(api.id);
+        } else {
             // Just like calling noArg `setState()` will just trigger a re-render without modifying the state,
             // Calling `updateAPI()` without args wil return the API without any update.
             // Just sync-up the api state with backend
             promisedUpdate = API.get(api.id);
-        } else if (isAPIProduct) {
-            promisedUpdate = APIProduct.get(api.id);
-        } else if (isMCPServer) {
-            promisedUpdate = MCPServer.getMCPServerById(api.id);
         }
 
         return promisedUpdate

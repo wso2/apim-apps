@@ -18,7 +18,7 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 /* eslint-disable react/jsx-no-bind */
 
-import React, { useState, useContext, useEffect  } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import { Link, useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -204,14 +204,27 @@ function Properties(props) {
 
     const history = useHistory();
     const { api, updateAPI } = useContext(APIContext);
-    const customPropertiesTemp = cloneDeep(api.additionalProperties);
+    // For MCP servers, use additionalPropertiesMap; for APIs, use additionalProperties
+    let customPropertiesTemp;
+    if (api.isMCPServer()) {
+        customPropertiesTemp = api.additionalPropertiesMap ? Object.values(api.additionalPropertiesMap) : [];
+    } else {
+        customPropertiesTemp = cloneDeep(api.additionalProperties);
+    }
     const { settings } = useAppContext();
     const [customProperties, setCustomProperties] = useState([]);
     const [additionalProperties, setAdditionalProperties] = useState([]);
     const [showAddProperty, setShowAddProperty] = useState(false);
     const [propertyKey, setPropertyKey] = useState(null);
     const [propertyValue, setPropertyValue] = useState(null);
-    const [customPropertyValue, setCustomPropertyValue] = useState(cloneDeep(api.additionalProperties));
+    // For MCP servers, use additionalPropertiesMap; for APIs, use additionalProperties  
+    let initialCustomPropertyValue;
+    if (api.isMCPServer()) {
+        initialCustomPropertyValue = api.additionalPropertiesMap ? Object.values(api.additionalPropertiesMap) : [];
+    } else {
+        initialCustomPropertyValue = cloneDeep(api.additionalProperties);
+    }
+    const [customPropertyValue, setCustomPropertyValue] = useState(initialCustomPropertyValue);
     const [isUpdating, setUpdating] = useState(false);
     const [editing, setEditing] = useState(false);
     const [isAdditionalPropertiesStale, setIsAdditionalPropertiesStale] = useState(false);
@@ -258,10 +271,23 @@ function Properties(props) {
             if (setting.customProperties != null) {
                 setCustomProperties(setting.customProperties);
             }
-            const additionalPropertiesTemp = customPropertiesTemp.filter(
-                (additionalProp) =>
-                    !setting.customProperties.some((customProp) => customProp.Name === additionalProp.name)
-            );
+            
+            // For MCP servers, work with additionalPropertiesMap data; for APIs, use additionalProperties
+            let additionalPropertiesTemp;
+            if (api.isMCPServer()) {
+                // Convert additionalPropertiesMap values to array format for UI consistency
+                additionalPropertiesTemp = customPropertiesTemp.filter(
+                    (additionalProp) =>
+                        !setting.customProperties.some((customProp) => customProp.Name === additionalProp.name)
+                );
+            } else {
+                additionalPropertiesTemp = customPropertiesTemp.filter(
+                    (additionalProp) =>
+                        !setting.customProperties.some((customProp) => customProp.Name === additionalProp.name)
+                );
+            }
+            
+            // Remove special properties for both API and MCP Server
             if (Object.prototype.hasOwnProperty.call(additionalPropertiesTemp, 'github_repo')) {
                 delete additionalPropertiesTemp.github_repo;
             }
@@ -320,11 +346,20 @@ function Properties(props) {
      */
     const handleSave = () => {
         setUpdating(true);
+        // Handle github_repo and slack_url for both API and MCP Server
         if (Object.prototype.hasOwnProperty.call(additionalProperties, 'github_repo')) {
-            additionalProperties.github_repo = api.additionalProperties.github_repo;
+            if (api.isMCPServer() && api.additionalPropertiesMap && api.additionalPropertiesMap.github_repo) {
+                additionalProperties.github_repo = api.additionalPropertiesMap.github_repo.value;
+            } else if (!api.isMCPServer() && api.additionalProperties) {
+                additionalProperties.github_repo = api.additionalProperties.github_repo;
+            }
         }
         if (Object.prototype.hasOwnProperty.call(additionalProperties, 'slack_url')) {
-            additionalProperties.slack_url = api.additionalProperties.slack_url;
+            if (api.isMCPServer() && api.additionalPropertiesMap && api.additionalPropertiesMap.slack_url) {
+                additionalProperties.slack_url = api.additionalPropertiesMap.slack_url.value;
+            } else if (!api.isMCPServer() && api.additionalProperties) {
+                additionalProperties.slack_url = api.additionalProperties.slack_url;
+            }
         }
         const additionalPropertiesCopyForMap = cloneDeep(additionalProperties);
         const additionalPropertiesMap = {};
@@ -348,7 +383,12 @@ function Properties(props) {
             updatedAdditionalProperties.push(property);
             return additionalPropertiesMap;
         });
-        const updatePromise = updateAPI({ additionalProperties: updatedAdditionalProperties, additionalPropertiesMap });
+
+        // For MCP Server, use additionalPropertiesMap only; for others, use both
+        const updatePayload = api.isMCPServer()
+            ? { additionalPropertiesMap }
+            : { additionalProperties: updatedAdditionalProperties, additionalPropertiesMap };
+        const updatePromise = updateAPI(updatePayload);
         updatePromise
             .then(() => {
                 setUpdating(false);
@@ -366,11 +406,20 @@ function Properties(props) {
 
     const handleSaveAndDeploy = () => {
         setUpdating(true);
+        // Handle github_repo and slack_url for both API and MCP Server
         if (Object.prototype.hasOwnProperty.call(additionalProperties, 'github_repo')) {
-            additionalProperties.github_repo = api.additionalProperties.github_repo;
+            if (api.isMCPServer() && api.additionalPropertiesMap && api.additionalPropertiesMap.github_repo) {
+                additionalProperties.github_repo = api.additionalPropertiesMap.github_repo.value;
+            } else if (!api.isMCPServer() && api.additionalProperties) {
+                additionalProperties.github_repo = api.additionalProperties.github_repo;
+            }
         }
         if (Object.prototype.hasOwnProperty.call(additionalProperties, 'slack_url')) {
-            additionalProperties.slack_url = api.additionalProperties.slack_url;
+            if (api.isMCPServer() && api.additionalPropertiesMap && api.additionalPropertiesMap.slack_url) {
+                additionalProperties.slack_url = api.additionalPropertiesMap.slack_url.value;
+            } else if (!api.isMCPServer() && api.additionalProperties) {
+                additionalProperties.slack_url = api.additionalProperties.slack_url;
+            }
         }
         const additionalPropertiesCopyForMap = cloneDeep(additionalProperties);
         const additionalPropertiesMap = {};
@@ -394,7 +443,12 @@ function Properties(props) {
             updatedAdditionalProperties.push(property);
             return additionalPropertiesMap;
         });
-        const updatePromise = updateAPI({ additionalProperties: updatedAdditionalProperties, additionalPropertiesMap });
+
+        // For MCP Server, use additionalPropertiesMap only; for others, use both
+        const updatePayload = api.isMCPServer()
+            ? { additionalPropertiesMap }
+            : { additionalProperties: updatedAdditionalProperties, additionalPropertiesMap };
+        const updatePromise = updateAPI(updatePayload);
         updatePromise
             .then(() => {
                 setUpdating(false);
@@ -469,9 +523,9 @@ function Properties(props) {
             return false;
         } else if (isKeyword(fieldKey)) {
             Alert.warning(intl.formatMessage({
-                id:'Apis.Details.Properties.Properties.property.name.keyword.error',
+                id: 'Apis.Details.Properties.Properties.property.name.keyword.error',
                 defaultMessage:
-                'Property name can not be a system reserved keyword',
+                    'Property name can not be a system reserved keyword',
             }));
             return false;
         } else if (hasWhiteSpace(fieldKey)) {
@@ -632,7 +686,7 @@ function Properties(props) {
         (customProperties && customProperties.length > 0 && !isCustomPropsFilled)
         || editing
         || api.isRevision
-        || (settings && settings.portalConfigurationOnlyModeEnabled) 
+        || (settings && settings.portalConfigurationOnlyModeEnabled)
         || (isEmpty(additionalProperties) && !isAdditionalPropertiesStale)
         || isRestricted(['apim:api_create', 'apim:api_publish'], api)
     ) {
@@ -695,7 +749,7 @@ function Properties(props) {
                             </Typography>
                         );
                     }
-                    
+
                     if (api.type === MCPServer.CONSTS.MCP) {
                         return (
                             <Typography
@@ -712,7 +766,7 @@ function Properties(props) {
                             </Typography>
                         );
                     }
-                    
+
                     return (
                         <Typography
                             id='itest-api-details-api-properties-head'
@@ -739,8 +793,8 @@ function Properties(props) {
                             size='small'
                             onClick={toggleAddProperty}
                             disabled={showAddProperty
-                            || isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision
-                            || (settings && settings.portalConfigurationOnlyModeEnabled) }
+                                    || isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision
+                                    || (settings && settings.portalConfigurationOnlyModeEnabled)}
                         >
                             <AddCircle className={classes.buttonIcon} />
                             <FormattedMessage
@@ -758,7 +812,7 @@ function Properties(props) {
                             <FormattedMessage
                                 id='Apis.Details.Properties.Properties.help.main.mcp'
                                 defaultMessage={
-                                    'Usually, MCP Servers have a pre-defined set of properties such as the name, ' + 
+                                    'Usually, MCP Servers have a pre-defined set of properties such as the name, ' +
                                     'version, context, etc. MCP Server Properties allows you to add specific ' +
                                     'custom properties to the MCP Server.'
                                 }
@@ -794,7 +848,7 @@ function Properties(props) {
                                             <FormattedMessage
                                                 id={
                                                     'Apis.Details.Properties.Properties.'
-                                                    + 'APIProduct.add.new.property.message.content'
+                                                        + 'APIProduct.add.new.property.message.content'
                                                 }
                                                 defaultMessage=
                                                     'Add specific custom properties to your API Product here.'
@@ -802,21 +856,21 @@ function Properties(props) {
                                         </Typography>
                                     );
                                 }
-                                
+
                                 if (api.type === MCPServer.CONSTS.MCP) {
                                     return (
                                         <Typography component='p' className={classes.content}>
                                             <FormattedMessage
                                                 id={
                                                     'Apis.Details.Properties.Properties.'
-                                                    + 'MCPServer.add.new.property.message.content'
+                                                        + 'MCPServer.add.new.property.message.content'
                                                 }
                                                 defaultMessage='Add specific custom properties to your MCP Server here.'
                                             />
                                         </Typography>
                                     );
                                 }
-                                
+
                                 return (
                                     <Typography component='p' className={classes.content}>
                                         <FormattedMessage
@@ -833,8 +887,8 @@ function Properties(props) {
                                     color='primary'
                                     onClick={toggleAddProperty}
                                     disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                        || api.isRevision
-                                        || (settings && settings.portalConfigurationOnlyModeEnabled)}
+                                            || api.isRevision
+                                            || (settings && settings.portalConfigurationOnlyModeEnabled)}
                                 >
                                     <FormattedMessage
                                         id='Apis.Details.Properties.Properties.add.new.property'
@@ -874,16 +928,16 @@ function Properties(props) {
                                             onChange={(event) =>
                                                 handleCustomPropertyValueChange(property.Name, event.target.value)}
                                             helperText={property.Required &&
-                                                validateEmpty(customPropertyValue.find((data) =>
-                                                    data.name === property.Name)?.value)
+                                                    validateEmpty(customPropertyValue.find((data) =>
+                                                        data.name === property.Name)?.value)
                                                 ? intl.formatMessage({
                                                     id: 'Apis.Details.Properties.Properties.is.mandatory',
-                                                    defaultMessage:'Mandatory fields cannot be empty',
+                                                    defaultMessage: 'Mandatory fields cannot be empty',
                                                 }) : property.Description
                                             }
                                             error={property.Required &&
-                                                validateEmpty(customPropertyValue.find((data) =>
-                                                    data.name === property.Name)?.value)}
+                                                    validateEmpty(customPropertyValue.find((data) =>
+                                                        data.name === property.Name)?.value)}
                                             disabled={isRestricted(
                                                 ['apim:api_create', 'apim:api_publish'],
                                                 api,
@@ -914,8 +968,10 @@ function Properties(props) {
                                     </Grid>
                                 </Grid>
                             ))}
-                            {((customProperties && customProperties.length > 0) ||
-                                (!isEmpty(additionalProperties) || showAddProperty)) && (
+                            {(
+                                (customProperties && customProperties.length > 0) ||
+                                (!isEmpty(additionalProperties) || showAddProperty)
+                            ) && (
                                 <Table className={classes.table}>
                                     <TableHead>
                                         <TableRow>
@@ -958,7 +1014,7 @@ function Properties(props) {
                                                             id='property-name'
                                                             label={intl.formatMessage({
                                                                 id: 'Apis.Details.Properties.Properties.show.add.'
-                                                                    + 'property.property.name',
+                                                                        + 'property.property.name',
                                                                 defaultMessage: 'Name',
                                                             })}
                                                             margin='dense'
@@ -971,11 +1027,11 @@ function Properties(props) {
                                                                 : iff((isKeyword(propertyKey)
                                                                     || hasWhiteSpace(propertyKey)), intl.formatMessage({
                                                                     id: 'Apis.Details.Properties.Properties.'
-                                                                        + 'show.add.property.invalid.error',
+                                                                                + 'show.add.property.invalid.error',
                                                                     defaultMessage: 'Invalid property name',
                                                                 }), '')}
                                                             error={validateEmpty(propertyKey) || isKeyword(propertyKey)
-                                                                || hasWhiteSpace(propertyKey)}
+                                                                    || hasWhiteSpace(propertyKey)}
                                                             disabled={isRestricted(
                                                                 ['apim:api_create', 'apim:api_publish'],
                                                                 api,
@@ -1016,7 +1072,7 @@ function Properties(props) {
                                                             )}
                                                             label={intl.formatMessage({
                                                                 id: 'Apis.Details.Properties.'
-                                                                    + 'Properties.editable.show.in.devporal',
+                                                                        + 'Properties.editable.show.in.devporal',
                                                                 defaultMessage: 'Show in devportal',
                                                             })}
                                                             className={classes.checkBoxStyles}
@@ -1030,10 +1086,11 @@ function Properties(props) {
                                                                 color='primary'
                                                                 disabled={
                                                                     !propertyValue
-                                                                    || !propertyKey
-                                                                    || isRestricted(
-                                                                        ['apim:api_create', 'apim:api_publish'], api,
-                                                                    )
+                                                                        || !propertyKey
+                                                                        || isRestricted(
+                                                                            ['apim:api_create', 'apim:api_publish'],
+                                                                            api,
+                                                                        )
                                                                 }
                                                                 onClick={handleAddToList}
                                                                 className={classes.marginRight}
@@ -1064,11 +1121,11 @@ function Properties(props) {
                                                                 id='Apis.Details.Properties.Properties.help'
                                                                 defaultMessage={
                                                                     'Property name should be unique, should not contain'
-                                                                    + ' spaces, cannot be more than 80 chars '
-                                                                    + 'and cannot be any of the following '
-                                                                    + 'reserved keywords : '
-                                                                    + 'provider, version, context, status, description,'
-                                                                    + ' subcontext, doc, lcState, name, tags.'
+                                                                        + ' spaces, cannot be more than 80 chars '
+                                                                        + 'and cannot be any of the following '
+                                                                        + 'reserved keywords : provider, version, '
+                                                                        + 'context, status, description, subcontext, '
+                                                                        + 'doc, lcState, name, tags.'
                                                                 }
                                                             />
                                                         </Typography>
