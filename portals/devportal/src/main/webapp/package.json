@@ -133,7 +133,7 @@
         "jest": "^29.6.4",
         "less": "^4.2.0",
         "less-loader": "^12.2.0",
-        "mocha": "^10.6.0",
+        "mocha": "^10.8.2",
         "mock-local-storage": "^1.0.5",
         "prettier": "^2.5.1",
         "process": "^0.11.10",
