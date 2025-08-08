@@ -107,7 +107,7 @@
         "style-loader": "^4.0.0",
         "underscore-template-loader": "^1.2.0",
         "util": "^0.12.5",
-        "webpack": "^5.92.0",
+        "webpack": "^5.101.0",
         "webpack-bundle-analyzer": "^4.10.2",
         "webpack-cli": "^5.1.4",
         "webpack-deadcode-plugin": "^0.1.17",
