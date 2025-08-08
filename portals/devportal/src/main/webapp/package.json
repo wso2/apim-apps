@@ -51,7 +51,7 @@
         "caniuse-api": "^3.0.0",
         "cleanup-dependencies": "0.0.6",
         "dataloader": "^2.1.0",
-        "dayjs": "^1.11.7",
+        "dayjs": "^1.11.13",
         "downshift": "^6.1.12",
         "fetch-to-curl": "^0.6.0",
         "fs-react": "0.0.4",
