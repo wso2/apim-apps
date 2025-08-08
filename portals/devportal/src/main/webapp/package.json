@@ -28,7 +28,7 @@
     "author": "WSO2 Org",
     "license": "Apache-2.0",
     "dependencies": {
-        "@asyncapi/react-component": "^2.0.4",
+        "@asyncapi/react-component": "^2.6.3",
         "@emotion/react": "^11.11.3",
         "@emotion/styled": "^11.11.0",
         "@hapi/joi": "^17.1.1",
