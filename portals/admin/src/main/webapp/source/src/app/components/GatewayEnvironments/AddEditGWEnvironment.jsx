@@ -216,16 +216,9 @@ function AddEditGWEnvironment(props) {
                 config.configurations,
             );
         }
-        if (gatewayType === 'Regular' || gatewayType === 'APK') {
-            setSupportedModes(
-                ['WRITE_ONLY'],
-            );
-        } else {
-            setSupportedModes(
-                // config.supportedModes,
-                ['WRITE_ONLY', 'READ_ONLY', 'READ_WRITE'],
-            );
-        }
+        setSupportedModes(
+            config.supportedModes,
+        );
     }, [gatewayType]);
 
     let permissionType = '';
