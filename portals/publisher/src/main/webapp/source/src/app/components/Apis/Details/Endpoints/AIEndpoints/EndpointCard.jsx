@@ -145,15 +145,11 @@ const EndpointCard = ({
     }
 
     const getEndpointName = () => {
-        if (isMCPServer) {
-            return endpoint.backendApiName || 'No Name Configured';
-        } else {
-            return endpoint.name || 'No Name Configured';
-        }
+        return endpoint.name || 'No Name Configured';
     }
 
     const getApiDefinition = () => {
-        const apiDef = endpoint.apiDefinition || '{}';
+        const apiDef = endpoint.definition || '{}';
         if (typeof apiDef === 'string') {
             const parsedDef = JSON.parse(apiDef);
             return JSON.stringify(parsedDef, null, 2);
@@ -168,7 +164,7 @@ const EndpointCard = ({
             enabled: false,
         },
     };
-    
+
     const renderEndpointSecurityWarning = () => {
         if (endpointConfiguration.authenticationConfiguration.enabled) {
             const endpointSecurity =
@@ -260,7 +256,7 @@ const EndpointCard = ({
                 <CardActions className={classes.cardActions}>
                     {isMCPServer ? (
                         <>
-                            <Tooltip title='View Backend API Definition'  >
+                            <Tooltip title='View Backend Definition'  >
                                 <IconButton
                                     size='small'
                                     onClick={toggleDefinitionViewDrawer(true)}
@@ -284,7 +280,7 @@ const EndpointCard = ({
                                 }}
                                 ModalProps={{
                                     container: document.body,
-                                    style: {zIndex: 1300}
+                                    style: { zIndex: 1300 }
                                 }}
                             >
                                 <Box

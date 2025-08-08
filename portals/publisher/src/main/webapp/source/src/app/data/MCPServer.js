@@ -43,7 +43,7 @@ class MCPServer extends Resource {
             this.isDefaultVersion = false;
             this.transport = ['http', 'https'];
             this.visibility = 'PUBLIC';
-            this.backendAPIEndpointConfig = {
+            this.endpointConfig = {
                 endpoint_type: 'http',
                 sandbox_endpoints: {
                     url: '',
@@ -370,10 +370,10 @@ class MCPServer extends Resource {
             }
         });
         
-        // Ensure backendAPIEndpointConfig is always included if it exists on the instance
-        if (this.backendAPIEndpointConfig !== undefined && !('backendAPIEndpointConfig' in data)) {
-            data.backendAPIEndpointConfig = this.backendAPIEndpointConfig;
-        }
+        // // Ensure backendAPIEndpointConfig is always included if it exists on the instance
+        // if (this.backendAPIEndpointConfig !== undefined && !('backendAPIEndpointConfig' in data)) {
+        //     data.backendAPIEndpointConfig = this.backendAPIEndpointConfig;
+        // }
         
         return data;
     }
@@ -503,7 +503,7 @@ class MCPServer extends Resource {
                 Utils.CONST.API_CLIENT
             ).client;
         return restApiClient.then(client => {
-            return client.apis['MCP Server Backend APIs'].getMCPServerBackendAPIs(
+            return client.apis['MCP Server Backends'].getMCPServerBackends(
                 {
                     mcpServerId: id,
                 },
@@ -525,10 +525,10 @@ class MCPServer extends Resource {
                 Utils.CONST.API_CLIENT
             ).client;
         return restApiClient.then(client => {
-            return client.apis['MCP Server Backend APIs'].getMCPServerBackendAPI(
+            return client.apis['MCP Server Backends'].getMCPServerBackend(
                 {
                     mcpServerId: id,
-                    endpointId,
+                    backendId: endpointId,
                 },
                 this._requestMetaData(),
             );
@@ -549,10 +549,10 @@ class MCPServer extends Resource {
                 Utils.CONST.API_CLIENT
             ).client;
         return restApiClient.then(client => {
-            return client.apis['MCP Server Backend APIs'].updateMCPServerBackendAPI(
+            return client.apis['MCP Server Backends'].updateMCPServerBackend(
                 {
                     mcpServerId: id,
-                    endpointId,
+                    backendId: endpointId,
                 },
                 {
                     requestBody: endpointBody,
@@ -900,6 +900,26 @@ class MCPServer extends Resource {
             return promiseSubscription;
         }
     }
+
+    /**
+     * Export the MCP Server.
+     * @param {string} mcpServerId - The ID of the MCP Server to export.
+     * @returns {Promise} A promise that resolves to the exported MCP Server data.
+     */
+    static exportMCPServer(mcpServerId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['Import Export'].exportMCPServer({
+                apiId: mcpServerId, // TODO: Change to mcpServerId
+            }, this._requestMetaData({
+                'accept': 'application/zip'
+            }));
+        });
+    };
 
     /**
      * Create a new version of an MCP Server.

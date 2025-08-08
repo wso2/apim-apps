@@ -39,6 +39,7 @@ import Grid from '@mui/material/Grid';
 import GoTo from 'AppComponents/Apis/Details/GoTo/GoTo';
 import Tooltip from '@mui/material/Tooltip';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import MUIAlert from 'AppComponents/Shared/MuiAlert';
 import DeleteApiButton from './DeleteApiButton';
 import CreateNewVersionButton from './CreateNewVersionButton';
@@ -208,7 +209,13 @@ const APIDetailsTopMenu = (props) => {
          * @returns {zip} Zpi file containing the API directory.
      */
     function exportAPI() {
-        return api.export().then((zipFile) => {
+        let exportPromise;
+        if (api.isMCPServer()) {
+            exportPromise = MCPServer.exportMCPServer(api.id);
+        } else {
+            exportPromise = api.export();
+        }
+        return exportPromise.then((zipFile) => {
             return Utils.forceDownload(zipFile);
         }).catch((error) => {
             console.error(error);
@@ -234,17 +241,17 @@ const APIDetailsTopMenu = (props) => {
         setRevisionId(api.id);
     }, [api.id]);
 
-    const isDownloadable = [API.CONSTS.API, API.CONSTS.APIProduct].includes(api.apiType);
+    const isDownloadable = [API.CONSTS.API, API.CONSTS.APIProduct, MCPServer.CONSTS.MCP].includes(api.apiType);
     const { user } = useAppContext();
     const { data: settings } = usePublisherSettings();
     const { allRevisions, allEnvRevision } = useRevisionContext();
     const { tenantList } = useContext(ApiContext);
     const userNameSplit = user.name.split('@');
     const tenantDomain = userNameSplit[userNameSplit.length - 1];
-    let devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview` : '';
-    if (tenantList && tenantList.length > 0) {
-        devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview?tenant=${tenantDomain}` : '';
-    }
+    // let devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview` : '';
+    // if (tenantList && tenantList.length > 0) {
+    //     devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview?tenant=${tenantDomain}` : '';
+    // }
 
     function getDeployments(revisionKey) {
         const array = [];
@@ -252,6 +259,17 @@ const APIDetailsTopMenu = (props) => {
             (env) => env.id === revisionKey,
         )[0].deploymentInfo.map((environment) => array.push(environment.name));
         return array.join(', ');
+    }
+
+    const getDevportalUrl = () => {
+        let devportalUrl = '';
+        if (settings && settings.devportalUrl) {
+            devportalUrl = `${settings.devportalUrl}/${api.isMCPServer() ? 'mcp-servers' : 'apis'}/${api.id}/overview`;
+        }
+        if (tenantList && tenantList.length > 0) {
+            devportalUrl += `?tenant=${tenantDomain}`;
+        }
+        return devportalUrl;
     }
 
     /**
@@ -478,7 +496,7 @@ const APIDetailsTopMenu = (props) => {
                     <a
                         target='_blank'
                         rel='noopener noreferrer'
-                        href={devportalUrl}
+                        href={getDevportalUrl()}
                         className={classes.viewInStoreLauncher}
                         style={{ minWidth: 90 }}
                     >
@@ -520,10 +538,17 @@ const APIDetailsTopMenu = (props) => {
                                 <CloudDownloadRounded />
                             </div>
                             <Typography variant='caption' align='left'>
-                                <FormattedMessage
-                                    id='Apis.Details.APIDetailsTopMenu.download.api'
-                                    defaultMessage='Download API'
-                                />
+                                {api.isMCPServer() ? (
+                                    <FormattedMessage
+                                        id='Apis.Details.APIDetailsTopMenu.download.mcp.server'
+                                        defaultMessage='Download MCP Server'
+                                    />
+                                ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.APIDetailsTopMenu.download.api'
+                                        defaultMessage='Download API'
+                                    />
+                                )}
                             </Typography>
                         </a>
                     )}

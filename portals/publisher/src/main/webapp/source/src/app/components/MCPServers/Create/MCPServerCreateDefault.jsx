@@ -151,9 +151,9 @@ const MCPServerCreateDefault = (props) => {
 
         // Transform operations from step 0 format to the required format for MCP Server creation
         const transformedOperations = operations.map(operation => ({
-            verb: 'tool',
-            backendAPIOperationMapping: {
-                backendAPIId: '',
+            feature: 'TOOL',
+            backendOperationMapping: {
+                backendId: '',
                 backendOperation: {
                     target: operation.target,
                     verb: operation.verb
@@ -170,7 +170,7 @@ const MCPServerCreateDefault = (props) => {
             operations: transformedOperations,
         };
         if (endpoint) {
-            additionalProperties.backendAPIEndpointConfig = {
+            additionalProperties.endpointConfig = {
                 endpoint_type: 'http',
                 sandbox_endpoints: {
                     url: endpoint,
