@@ -211,6 +211,8 @@ const Policies: React.FC = () => {
             } else if (api.gatewayType === "AWS") {
                 // Get AWS gateway supported policies
                 gatewayType = 'AWS';
+            } else if (api.gatewayType === "Azure") {
+                gatewayType = 'Azure';
             } else {
                 // Get synpase gateway supported policies
                 gatewayType = 'Synapse';
