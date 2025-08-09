@@ -24,6 +24,7 @@ import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Grid from '@mui/material/Grid';
+import MCPServer from 'AppData/MCPServer';
 import Alert from '../../../Shared/Alert';
 import API from '../../../../data/api';
 
@@ -32,7 +33,7 @@ const PREFIX = 'CommentEditLegacy';
 const classes = {
     textField: `${PREFIX}-textField`,
     contentWrapper: `${PREFIX}-contentWrapper`,
-    category: `${PREFIX}-category`
+    category: `${PREFIX}-category`,
 };
 
 const Root = styled('div')((
@@ -55,7 +56,7 @@ const Root = styled('div')((
     [`& .${classes.category}`]: {
         width: '12%',
         marginRight: '0.5%',
-    }
+    },
 }));
 
 /**
@@ -151,7 +152,8 @@ class CommentEditLegacy extends React.Component {
             apiId, comment, allComments, toggleShowEdit, commentsUpdate, intl,
         } = this.props;
         const { category, commentText } = this.state;
-        const Api = new API();
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        const Api = isMCPServersRoute ? new MCPServer() : new API();
         const commentToEdit = comment;
         commentToEdit.commentText = commentText.trim();
         commentToEdit.category = category;

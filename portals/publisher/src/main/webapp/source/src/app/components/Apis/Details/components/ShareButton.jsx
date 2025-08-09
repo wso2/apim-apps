@@ -88,6 +88,15 @@ const Root = styled('div')(({ theme }) => ({
  */
 function ShareButton(props) {
     const { api } = props;
+
+    const getBasePath = () => {
+        const isMCPServer = api.isMCPServer();
+        if (isMCPServer) {
+            return '/mcp-servers/';
+        }
+        return '/apis/';
+    };
+
     return (
         <Root>
             {/* allowing share API based on scopes */}
@@ -97,7 +106,7 @@ function ShareButton(props) {
                     <VerticalDivider height={70} />
                     <Link
                         className={classes.shareAPI}
-                        to={('/apis/') + api.id + '/share'}
+                        to={getBasePath() + api.id + '/share'}
                         style={{ minWidth: 50 }}
                     >
                         <div>

@@ -112,7 +112,10 @@ function TagCloudListingTags(props) {
         },
     } = theme;
 
-    const tagWiseURL = '/apis?offset=0&query=tag';
+    // Detect if we're on MCP servers route to generate appropriate URLs
+    const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+    const baseURL = isMCPServersRoute ? '/mcp-servers' : '/apis';
+    const tagWiseURL = `${baseURL}?offset=0&query=tag`;
     const { allTags, mainPage } = props;
     let apisTagCloudGroup = null;
 
@@ -156,7 +159,7 @@ function TagCloudListingTags(props) {
                 <div className={classNames({ [classes.mainPageAllApis]: mainPage }, 'tag-cloud-listing-wrapper')}>
                     <Divider />
 
-                    <Link to='apis/' className={classes.textWrapper}>
+                    <Link to={`${baseURL}/`} className={classes.textWrapper}>
                         <ListItem button>
                             <ListItemIcon>
                                 <Icon>label</Icon>
@@ -189,7 +192,7 @@ function TagCloudListingTags(props) {
                         id='Apis.Listing.TagCloudListingTags.tagsNotFound'
                     />
                 </Typography>
-                <Link to='apis/' className={classNames(classes.linkTextWrapper, 'apis-listing-tags-group-all-apis-link')}>
+                <Link to={`${baseURL}/`} className={classNames(classes.linkTextWrapper, 'apis-listing-tags-group-all-apis-link')}>
                     <Typography variant='subtitle1' gutterBottom align='center'>
                         <FormattedMessage
                             defaultMessage='All Apis'

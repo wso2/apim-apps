@@ -23,8 +23,10 @@ module.exports = {
             jsx: true,
             modules: true,
         },
+        requireConfigFile: true,
         babelOptions: {
             presets: ['@babel/preset-react', '@babel/preset-typescript'],
+            configFile: require.resolve('./babel.config.js'),
         },
     },
     env: {
@@ -36,7 +38,7 @@ module.exports = {
     },
     extends: ['airbnb', 'plugin:jsx-a11y/recommended'], // http://airbnb.io/javascript/react/
     rules: {
-        "linebreak-style": 0,
+        'linebreak-style': 0,
         'max-len': ['error', { code: 140, tabWidth: 4 }],
         'require-jsdoc': [
             'warn',
@@ -99,10 +101,37 @@ module.exports = {
         }],
         'react/sort-comp': [1],
         'react/jsx-props-no-spreading': [1, {
-            exceptions:
-          ['Route', 'Operation', 'Listing', 'DeferredDetails', 'Details', 'svg', 'Paper', 'EditableRow', 'CreateScope', 'EditScope', 'WrappedComponent', 'ErrorIcon', 'WarningIcon', 'CheckCircleIcon', 'InfoIcon'],
+            exceptions: [
+                'Route',
+                'Operation',
+                'Listing',
+                'DeferredDetails',
+                'Details',
+                'svg',
+                'Paper',
+                'EditableRow',
+                'CreateScope',
+                'EditScope',
+                'WrappedComponent',
+                'ErrorIcon',
+                'WarningIcon',
+                'CheckCircleIcon',
+                'InfoIcon',
+            ],
         }],
-        'react/prop-types': [1, { ignore: ['classes', 'api', 'theme', 'history', 'intl'] }], // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/prop-types.md
+        // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/prop-types.md
+        'react/prop-types': [
+            1,
+            {
+                ignore: [
+                    'classes',
+                    'api',
+                    'theme',
+                    'history',
+                    'intl',
+                ],
+            },
+        ],
         'react/destructuring-assignment': [1, 'always'],
     },
     plugins: ['react', 'jest', 'prettier'],

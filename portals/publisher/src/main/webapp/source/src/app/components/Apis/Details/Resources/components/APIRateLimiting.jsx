@@ -211,7 +211,7 @@ function APIRateLimiting(props) {
                         <Divider variant='middle' />
                     </Grid>
                     <Grid item md={6} xs={12} sx={{ p: 1 }}>
-                        <FormControl component='fieldset'>
+                        <FormControl component='fieldset' sx={{ px: 3 }}>
                             <FormLabel component='legend'>
                                 <FormattedMessage
                                     id='Apis.Details.Resources.components.APIRateLimiting.rate.limiting.level'

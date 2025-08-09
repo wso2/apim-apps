@@ -71,6 +71,7 @@ export default function APISecurity(props) {
     } = props;
     const apiContext = useContext(ApiContext);
     const isAPIProduct = apiContext.api.apiType === API.CONSTS.APIProduct;
+    const isMCPServer = apiContext.api.isMCPServer();
     let isEndpointAvailable;
     let isPrototyped;
     if (isAPIProduct) {
@@ -78,7 +79,7 @@ export default function APISecurity(props) {
         isPrototyped = false;
     } else {
         isEndpointAvailable = apiContext.api.endpointConfig !== null;
-        isPrototyped = apiContext.api.endpointConfig !== null
+        isPrototyped = !isMCPServer && apiContext.api.endpointConfig !== null
              && apiContext.api.endpointConfig.implementation_status === 'prototyped'
              && apiContext.api.lifeCycleStatus === 'PROTOTYPED';
     }

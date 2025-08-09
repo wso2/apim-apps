@@ -21,6 +21,11 @@ import { Route, Switch } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { Progress } from 'AppComponents/Shared';
+import APILanding from 'AppComponents/Apis/Listing/Landing';
+import MCPServerLanding from 'AppComponents/MCPServers/Landing';
+import MCPServerCreateDefault from 'AppComponents/MCPServers/Create/MCPServerCreateDefault';
+import MCPServerCreateUsingExistingAPI from 'AppComponents/MCPServers/Create/MCPServerCreateUsingExistingAPI';
+import MCPServerCreateProxy from 'AppComponents/MCPServers/Create/MCPServerCreateProxy';
 import APICreateDefault from './Default/APICreateDefault';
 import APIProductCreateWrapper from './APIProduct/APIProductCreateWrapper';
 import ApiCreateSwagger from './OpenAPI/ApiCreateOpenAPI';
@@ -115,6 +120,11 @@ function APICreateRoutes() {
     return (
         <Root className={classes.content}>
             <Switch>
+                <Route
+                    exact
+                    path='/apis/create'
+                    component={APILanding}
+                />
                 <Route path='/apis/create/rest' component={WithSomeValue(APICreateDefault, 
                     { multiGateway: apiTypes?.rest
                         .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
@@ -147,6 +157,28 @@ function APICreateRoutes() {
                 />
                 <Route path='/apis/create/ai-api' component={WithSomeValue(ApiCreateAIAPI,
                     { multiGateway: apiTypes?.ai
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                />
+
+                {/* Routes for MCP Server creation */}
+                <Route
+                    exact
+                    path='/mcp-servers/create'
+                    component={MCPServerLanding}
+                />
+                <Route
+                    path='/mcp-servers/create/direct-endpoint'
+                    component={WithSomeValue(MCPServerCreateDefault, { multiGateway: apiTypes?.ws
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                />
+                <Route
+                    path='/mcp-servers/create/existing-api'
+                    component={WithSomeValue(MCPServerCreateUsingExistingAPI, { multiGateway: apiTypes?.ws
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                />
+                <Route
+                    path='/mcp-servers/create/proxy-mcp-server'
+                    component={WithSomeValue(MCPServerCreateProxy, { multiGateway: apiTypes?.ws
                         .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
                 />
                 <Route component={ResourceNotFound} />

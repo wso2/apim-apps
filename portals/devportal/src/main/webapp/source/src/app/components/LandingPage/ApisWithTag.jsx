@@ -22,6 +22,7 @@ import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import Settings from 'AppComponents/Shared/SettingsContext';
+import MCPServer from 'AppData/MCPServer';
 import ResourceNotFound from '../Base/Errors/ResourceNotFound';
 import API from '../../data/api';
 import ApiThumb from '../Apis/Listing/ApiThumb';
@@ -55,8 +56,13 @@ function ApisWithTag(props) {
     } = props;
     const settingsContext = useContext(Settings);
     useEffect(() => {
-        const restApi = new API();
-        const promisedApis = restApi.getAllAPIs({ query: 'tag:' + tag, limit: maxCount });
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        let promisedApis;
+        if (isMCPServersRoute) {
+            promisedApis = new MCPServer().getAllMCPServers({ query: 'tag:' + tag, limit: maxCount });
+        } else {
+            promisedApis = new API().getAllAPIs({ query: 'tag:' + tag, limit: maxCount });
+        }
         promisedApis
             .then((response) => {
                 setApis(response.obj);

@@ -29,6 +29,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Icon from '@mui/material/Icon';
 import { FormattedMessage, useIntl } from 'react-intl';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import Alert from 'AppComponents/Shared/Alert';
 
 const PREFIX = 'OverviewDocuments';
@@ -145,8 +146,13 @@ function OverviewDocuments(props) {
     const { apiId } = props;
     const history = useHistory();
     useEffect(() => {
-        const restApi = new API();
-        const promisedApi = restApi.getDocumentsByAPIId(apiId);
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        let promisedApi;
+        if (isMCPServersRoute) {
+            promisedApi = new MCPServer().getDocuments(apiId);
+        } else {
+            promisedApi = new API().getDocumentsByAPIId(apiId);
+        }
         promisedApi
             .then((response) => {
                 if (response.obj.list.length > 0) {

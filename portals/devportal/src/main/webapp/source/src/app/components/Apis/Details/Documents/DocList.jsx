@@ -321,16 +321,20 @@ function DocList(props) {
                         />
                     )}
                     onChange={(event, doc) => {
-                        props.history.push('/apis/' + apiId + '/documents/' + doc.documentId);
+                        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+                        const routePath = isMCPServersRoute
+                            ? `/mcp-servers/${apiId}/documents/${doc.documentId}`
+                            : `/apis/${apiId}/documents/${doc.documentId}`;
+                        props.history.push(routePath);
                         setViewDocument(doc);
                         setbreadcrumbDocument(doc.name);
                     }}
                 />
             </div>
             <div className={classes.docView}>
-                { viewDocument.name === 'Default' && <GenerateDocument /> }
-                { viewDocument.name !== 'Default'
-                && <Details documentList={documentList} selectedDoc={viewDocument} apiId={apiId} /> }
+                {viewDocument.name === 'Default' && <GenerateDocument />}
+                {viewDocument.name !== 'Default'
+                    && <Details documentList={documentList} selectedDoc={viewDocument} apiId={apiId} />}
             </div>
         </Root>
     );

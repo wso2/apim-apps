@@ -31,6 +31,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import { useAppContext, usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { isRestricted } from 'AppData/AuthManager';
@@ -434,7 +435,45 @@ export default function RuntimeConfiguration() {
     const [apiConfig, configDispatcher] = useReducer(configReducer, copyAPIConfig(api));
     const [componentValidator, setComponentValidator] = useState([]);
     const [endpointSecurity, setEndpointSecurity] = useState([]);
+    const [endpointConfig, setEndpointConfig] = useState(null);
+    const [loadingEndpointConfig, setLoadingEndpointConfig] = useState(true);
 
+    useEffect(() => {
+        if (api.type === MCPServer.CONSTS.MCP) {
+            MCPServer.getMCPServerEndpoints(api.id)
+                .then((response) => {
+                    const fetchedEndpoints = response.body;
+                    if (fetchedEndpoints && fetchedEndpoints.length > 0) {
+                        const endpointConfigString = fetchedEndpoints[0].endpointConfig;
+                        // Parse the string to JSON if it's a string
+                        let parsedEndpointConfig;
+                        if (typeof endpointConfigString === 'string') {
+                            try {
+                                parsedEndpointConfig = JSON.parse(endpointConfigString);
+                            } catch (error) {
+                                // Failed to parse JSON, set to null
+                                parsedEndpointConfig = null;
+                            }
+                        } else {
+                            parsedEndpointConfig = endpointConfigString;
+                        }
+                        setEndpointConfig(parsedEndpointConfig);
+                    } else {
+                        setEndpointConfig(null);
+                    }
+                })
+                .catch(() => {
+                    setEndpointConfig(null);
+                })
+                .finally(() => {
+                    setLoadingEndpointConfig(false);
+                });
+        } else {
+            setEndpointConfig(api.endpointConfig);
+            setLoadingEndpointConfig(false);
+        }
+    }, [api]);
+    
     const intl = useIntl();
     useEffect(() => {
         if (!isRestricted(['apim:api_create'], api)) {
@@ -565,7 +604,7 @@ export default function RuntimeConfiguration() {
             }));
     }
 
-    if (isLoading) {
+    if (isLoading || loadingEndpointConfig) {
         return <Progress per={80} message='Loading app settings ...' />;
     }
 
@@ -711,7 +750,11 @@ export default function RuntimeConfiguration() {
                                         {!(api.isAPIProduct() || api.subtypeConfiguration?.subtype === 'AIAPI') && (
                                             <>
                                                 { !isWebSub && (
-                                                    <Endpoints api={api} endpointSecurity={endpointSecurity} />
+                                                    <Endpoints
+                                                        api={api}
+                                                        endpointSecurity={endpointSecurity}
+                                                        endpointConfig={endpointConfig}
+                                                    />
                                                 )}
                                             </>
                                         )}

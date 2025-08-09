@@ -423,7 +423,15 @@ class CreateScope extends React.Component {
         const {
             intl, api, history, updateAPI,
         } = this.props;
-        const urlPrefix = api.apiType === Api.CONSTS.APIProduct ? 'api-products' : 'apis';
+        let urlPrefix;
+        if (api.isMCPServer()) {
+            urlPrefix = 'mcp-servers';
+        } else if (api.apiType === Api.CONSTS.APIProduct) {
+            urlPrefix = 'api-products';
+        } else {
+            urlPrefix = 'apis';
+        }
+
         if (this.validateScopeName('name', this.state.apiScope.name)) {
             // return status of the validation
             return;
@@ -473,7 +481,15 @@ class CreateScope extends React.Component {
      */
     render() {
         const {  api, intl } = this.props;
-        const urlPrefix = api.apiType === Api.CONSTS.APIProduct ? 'api-products' : 'apis';
+        let urlPrefix;
+        if (api.isMCPServer()) {
+            urlPrefix = 'mcp-servers';
+        } else if (api.apiType === Api.CONSTS.APIProduct) {
+            urlPrefix = 'api-products';
+        } else {
+            urlPrefix = 'apis';
+        }
+
         const url = `/${urlPrefix}/${api.id}/scopes`;
         const {
             roleValidity, validRoles, invalidRoles, scopeAddDisabled,

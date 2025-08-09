@@ -22,12 +22,21 @@ import PropTypes from 'prop-types';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import { isRestricted } from 'AppData/AuthManager';
+// import AddEditEndpoint from 'AppComponents/Shared/Endpoints/AddEditEndpoint';
 import Endpoints from './Endpoints';
 import AddEditAIEndpoint from './AIEndpoints/AddEditAIEndpoint';
 
 const Endpoint = () => {
     const [api] = useAPI();
-    const urlPrefix = api.isAPIProduct() ? 'api-products' : 'apis';
+    let urlPrefix;
+    if (api.isAPIProduct()) {
+        urlPrefix = 'api-products';
+    } else if (api.isMCPServer()) {
+        urlPrefix = 'mcp-servers';
+    } else {
+        urlPrefix = 'apis';
+    }
+    
     return (
         <Switch>
             <Route
@@ -42,6 +51,13 @@ const Endpoint = () => {
                     component={(props) => <AddEditAIEndpoint apiObject={api} {...props} />}
                 />
             )}
+            {/* {(!isRestricted(['apim:api_view', 'apim:api_create']) && urlPrefix === 'mcp-servers') && (
+                <Route
+                    exact
+                    path={'/' + urlPrefix + '/:api_uuid/endpoints/:id'}
+                    component={(props) => <AddEditEndpoint apiObject={api} {...props} />}
+                />
+            )} */}
             {!isRestricted(['apim:api_view', 'apim:api_create']) && (
                 <Route
                     exact

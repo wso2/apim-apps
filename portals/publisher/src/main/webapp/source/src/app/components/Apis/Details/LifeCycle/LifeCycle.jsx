@@ -22,6 +22,7 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import { Progress } from 'AppComponents/Shared';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
@@ -95,32 +96,37 @@ class LifeCycle extends Component {
      * @memberof LifeCycle
      */
     componentDidMount() {
-        const { api: { id } } = this.props;
-        // certList is only used to check whether there are any certs, at LifeCycleUpdate.jsx.
-        // Hence combining both prod and sand lists here.
-        const promisedProductionClientCerts =
-            Api.getAllClientCertificatesOfGivenKeyType(API_SECURITY_KEY_TYPE_PRODUCTION, id);
-        const promisedSandboxClientCerts =
-            Api.getAllClientCertificatesOfGivenKeyType(API_SECURITY_KEY_TYPE_SANDBOX, id);
-        const { intl } = this.props;
+        const { api: { id, type } } = this.props;
 
-        Promise.all([promisedProductionClientCerts, promisedSandboxClientCerts])
-            .then(([resultProduction, resultSandbox]) => {
-                const productionClientCerts = resultProduction.body;
-                const sandboxClientCerts = resultSandbox.body;
-                this.setState({
-                    certList: [...productionClientCerts.certificates, ...sandboxClientCerts.certificates],
+        if (type !== MCPServer.CONSTS.MCP) {
+            // certList is only used to check whether there are any certs, at LifeCycleUpdate.jsx.
+            // Hence combining both prod and sand lists here.
+            const promisedProductionClientCerts =
+                Api.getAllClientCertificatesOfGivenKeyType(API_SECURITY_KEY_TYPE_PRODUCTION, id);
+            const promisedSandboxClientCerts =
+                Api.getAllClientCertificatesOfGivenKeyType(API_SECURITY_KEY_TYPE_SANDBOX, id);
+            const { intl } = this.props;
+
+            Promise.all([promisedProductionClientCerts, promisedSandboxClientCerts])
+                .then(([resultProduction, resultSandbox]) => {
+                    const productionClientCerts = resultProduction.body;
+                    const sandboxClientCerts = resultSandbox.body;
+                    this.setState({
+                        certList: [...productionClientCerts.certificates, ...sandboxClientCerts.certificates],
+                    });
+                    this.updateData();
+                }).catch((error) => {
+                    if (process.env.NODE_ENV !== 'production') {
+                        Alert.error(intl.formatMessage({
+                            id: 'Apis.Details.LifeCycle.LifeCycleUpdate.error.certs',
+                            defaultMessage: 'Error while retrieving certificates',
+                        }));
+                        console.error(error);
+                    }
                 });
-                this.updateData();
-            }).catch((error) => {
-                if (process.env.NODE_ENV !== 'production') {
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.LifeCycle.LifeCycleUpdate.error.certs',
-                        defaultMessage: 'Error while retrieving certificates',
-                    }));
-                    console.error(error);
-                }
-            });
+        } else {
+            this.updateData();
+        }
     }
 
     handleChangeCheckList = (index) => (event, checked) => {
@@ -135,7 +141,7 @@ class LifeCycle extends Component {
      * @memberof LifeCycle
      */
     updateData() {
-        const { api: { id }, isAPIProduct } = this.props;
+        const { api: { id }, isAPIProduct, isMCPServer } = this.props;
         const apiProduct = new APIProduct();
         let promisedAPI;
         let promisedLcState;
@@ -144,7 +150,11 @@ class LifeCycle extends Component {
             promisedAPI = apiProduct.getAPIProductByID(id);
             promisedLcState = apiProduct.getLCStateOfAPIProduct(id);
             promisedLcHistory = apiProduct.getLCHistoryOfAPIProduct(id);
-        } else {
+        } else if (isMCPServer) {
+            promisedAPI = MCPServer.getMCPServerById(id);
+            promisedLcState = MCPServer.getMCPServerLcState(id);
+            promisedLcHistory = MCPServer.getMCPServerLcHistory(id);
+        } else{
             promisedAPI = Api.get(id);
             promisedLcState = this.api.getLcState(id);
             promisedLcHistory = this.api.getLcHistory(id);
@@ -200,13 +210,12 @@ class LifeCycle extends Component {
     }
 
     /**
-     *
-     *
-     * @returns
+     * Render the LifeCycle component
+     * @returns {JSX.Element} The rendered LifeCycle component.
      * @memberof LifeCycle
      */
     render() {
-        const {  isAPIProduct } = this.props;
+        const { isAPIProduct, isMCPServer } = this.props;
         const {
             api, lcState, checkList, lcHistory, certList,
         } = this.state;
@@ -234,7 +243,10 @@ class LifeCycle extends Component {
         return (
             (<Root>
                 <Typography id='itest-api-details-lifecycle-head' variant='h4' component='h2' gutterBottom>
-                    <FormattedMessage id='Apis.Details.LifeCycle.LifeCycle.lifecycle' defaultMessage='Lifecycle' />
+                    <FormattedMessage
+                        id='Apis.Details.LifeCycle.LifeCycle.lifecycle'
+                        defaultMessage='Lifecycle'
+                    />
                 </Typography>
                 <div className={classes.contentWrapper}>
                     <Grid container>
@@ -247,6 +259,7 @@ class LifeCycle extends Component {
                                 api={api}
                                 certList={certList}
                                 isAPIProduct={isAPIProduct}
+                                isMCPServer={isMCPServer}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -274,9 +287,16 @@ class LifeCycle extends Component {
     }
 }
 
+LifeCycle.defaultProps = {
+    isAPIProduct: false,
+    isMCPServer: false,
+};
+
 LifeCycle.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     api: PropTypes.shape({}).isRequired,
+    isAPIProduct: PropTypes.bool,
+    isMCPServer: PropTypes.bool,
 };
 
 LifeCycle.contextType = ApiContext;

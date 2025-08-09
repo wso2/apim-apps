@@ -83,6 +83,8 @@ export default function GoToTryOut() {
             || api.type === CONSTANTS.API_TYPES.SSE
             || api.type === CONSTANTS.API_TYPES.ASYNC));
     const isPrototypedAPI = api.lifeCycleStatus && api.lifeCycleStatus.toLowerCase() === 'prototyped';
+    const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+
     const getKeyRequest = async () => {
         const promisedKeyManagers = restApi.getKeyManagers();
         return promisedKeyManagers
@@ -180,6 +182,8 @@ export default function GoToTryOut() {
         await updateSubscriptionData();
         if (isAsyncAPI) {
             history.push('/apis/' + api.id + '/definition');
+        } else if (isMCPServersRoute) {
+            history.push('/mcp-servers/' + api.id + '/mcp-playground');
         } else {
             history.push('/apis/' + api.id + '/api-console');
         }

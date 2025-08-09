@@ -31,6 +31,7 @@ import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
 import queryString from 'query-string';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import Typography from '@mui/material/Typography';
 import Configurations from 'Config';
 import StarRatingBar from 'AppComponents/Apis/Listing/StarRatingBar';
@@ -274,7 +275,8 @@ class ApiTableViewLegacy extends React.Component {
     xhrRequest = () => {
         const { query, selectedTag } = this.props;
         const { page, rowsPerPage } = this;
-        const api = new API();
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        const api = isMCPServersRoute ? new MCPServer() : new API();
         const searchParam = new URLSearchParams(query);
         const searchQuery = searchParam.get('query');
         if (query && searchQuery !== null) {
@@ -285,8 +287,16 @@ class ApiTableViewLegacy extends React.Component {
         }
 
         if (selectedTag) {
+            if (isMCPServersRoute) {
+                return api.getAllMCPServers({ query: 'tag:' + selectedTag, limit: this.rowsPerPage, offset: page * rowsPerPage });
+            }
+            // Default case for APIs
             return api.getAllAPIs({ query: 'tag:' + selectedTag, limit: this.rowsPerPage, offset: page * rowsPerPage });
         } else {
+            if (isMCPServersRoute) {
+                return api.getAllMCPServers({ limit: this.rowsPerPage, offset: page * rowsPerPage });
+            }
+            // Default case for APIs
             return api.getAllAPIs({ limit: this.rowsPerPage, offset: page * rowsPerPage });
         }
     };

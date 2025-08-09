@@ -28,6 +28,7 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import Settings from 'Settings';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -118,7 +119,10 @@ function View(props) {
     const { api } = useContext(ApiContext);
     const [code, setCode] = useState('');
     const [isFileAvailable, setIsFileAvailable] = useState(false);
-    const restAPI = new API();
+
+    const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+    const restAPI = isMCPServersRoute ? new MCPServer() : new API();
+
     const { skipHtml } = Settings.app.markdown;
     const markdownSyntaxHighlighterProps = Settings.app.markdown.syntaxHighlighterProps || {};
     const { syntaxHighlighterDarkTheme } = Settings.app.markdown;

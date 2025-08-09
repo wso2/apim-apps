@@ -88,6 +88,16 @@ const Root = styled('div')(({ theme }) => ({
  */
 function CreateNewVersionButton(props) {
     const { api, isAPIProduct } = props;
+
+    const getBasePath = () => {
+        if (isAPIProduct) {
+            return '/api-products/';
+        } else if (api.isMCPServer()) {
+            return '/mcp-servers/';
+        }
+        return '/apis/';
+    };
+
     return (
         <Root>
             {/* allowing create new version based on scopes */}
@@ -97,7 +107,7 @@ function CreateNewVersionButton(props) {
                     <VerticalDivider height={70} />
                     <Link
                         className={classes.createNewVersion}
-                        to={(isAPIProduct ? '/api-products/' : '/apis/') + api.id + '/new_version'}
+                        to={getBasePath() + api.id + '/new_version'}
                         style={{ minWidth: 95 }}
                     >
 

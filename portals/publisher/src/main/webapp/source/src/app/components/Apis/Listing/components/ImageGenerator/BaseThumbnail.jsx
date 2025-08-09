@@ -180,8 +180,13 @@ const BaseThumbnail = (props) => {
     }
     let overviewPath = '';
     if (apiType) {
-        overviewPath = apiType === Api.CONSTS.APIProduct
-            ? `/api-products/${api.id}/overview` : `/apis/${api.id}/overview`;
+        if (apiType === Api.CONSTS.APIProduct) {
+            overviewPath = `/api-products/${api.id}/overview`;
+        } else if (type === 'MCP') { // change to constant from MCPServer.js
+            overviewPath = `/mcp-servers/${api.id}/overview`;
+        } else {
+            overviewPath = `/apis/${api.id}/overview`;
+        }
     } else {
         overviewPath = `/apis/${api.apiUUID}/documents/${api.id}/details`;
     }

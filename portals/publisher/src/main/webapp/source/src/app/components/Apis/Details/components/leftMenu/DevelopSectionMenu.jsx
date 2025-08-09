@@ -352,7 +352,7 @@ export default function DevelopSectionMenu(props) {
                         {(componentValidator.monetization.includes("monetization") && 
                             (!api.isWebSocket() && !isRestricted(['apim:api_publish'], api))) && (
                             <>
-                                {!isAPIProduct && (
+                                {!isAPIProduct && !api.isMCPServer() && (
                                     <LeftMenuItem
                                         text={intl.formatMessage({
                                             id: 'Apis.Details.index.monetization',

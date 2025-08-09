@@ -23,9 +23,10 @@ module.exports = {
             jsx: true,
             modules: true,
         },
-        requireConfigFile: false,
+        requireConfigFile: true,
         babelOptions: {
             presets: ['@babel/preset-react', '@babel/preset-typescript'],
+            configFile: require.resolve('./babel.config.js'),
         },
     },
     env: {

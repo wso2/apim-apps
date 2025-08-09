@@ -1,0 +1,7 @@
+/* MCP Playground font family override to match portal theme */
+.mcp-playground,
+.mcp-playground *,
+[data-testid="mcp-playground"],
+[data-testid="mcp-playground"] * {
+    font-family: "Open Sans", "Helvetica", "Arial", sans-serif !important;
+}

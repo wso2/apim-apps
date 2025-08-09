@@ -24,6 +24,7 @@ import Progress from 'AppComponents/Shared/Progress';
 import { useTheme } from '@mui/material';
 
 const Apis = lazy(() => import('AppComponents/Apis/Apis' /* webpackChunkName: "Apis" */));
+const MCPServers = lazy(() => import('AppComponents/MCPServers/MCPServers' /* webpackChunkName: "MCPServers" */));
 const Landing = lazy(() => import('AppComponents/LandingPage/Landing' /* webpackChunkName: "Landing" */));
 const TagCloudListing = lazy(() => import('AppComponents/Apis/Listing/TagCloudListing' /* webpackChunkName: "TagCloudListing" */));
 const ChangePassword = lazy(() => import('AppComponents/Settings/ChangePassword/ChangePassword'));
@@ -64,6 +65,7 @@ function AppRouts(props) {
                 <Route path='/home' component={Landing} />
                 <Route path='/api-groups' component={TagCloudListing} />
                 <Route path='/(apis|api-products)' component={Apis} />
+                <Route path='/mcp-servers' component={MCPServers} />
                 <Route
                     path='/settings/change-password/'
                     render={(localProps) => {

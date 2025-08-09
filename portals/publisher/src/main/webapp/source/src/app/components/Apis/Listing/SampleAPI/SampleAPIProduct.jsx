@@ -41,7 +41,7 @@ function SampleAPI() {
             title={(
                 <FormattedMessage
                     id='Apis.Listing.SampleAPI.SampleAPIProduct.title'
-                    defaultMessage='Let’s get started !'
+                    defaultMessage='Let’s get started!'
                 />
             )}
             subTitle={(

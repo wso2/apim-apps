@@ -123,6 +123,7 @@
     <servlet-mapping>
         <servlet-name>index</servlet-name>
         <url-pattern>/apis/*</url-pattern>
+        <url-pattern>/mcp-servers/*</url-pattern>
         <url-pattern>/subscription/*</url-pattern>
         <url-pattern>/scopes/*</url-pattern>
         <url-pattern>/settings/*</url-pattern>

@@ -24,8 +24,11 @@ import { FormattedMessage } from 'react-intl';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { green } from '@mui/material/colors';
+import Tools from 'AppComponents/MCPServers/Details/Overview/Tools';
+import CustomizedMCPStepper from 'AppComponents/MCPServers/Details/Overview/CustomizedMCPStepper';
 import Resources from './Resources';
 import Operations from './Operations';
 import ProductResources from './ProductResources';
@@ -214,15 +217,23 @@ function Overview(props) {
             document.removeEventListener('keydown', handleKeyDown);
         };
     }, [setOpenPageSearch]);
-    if (api.apiType === API.CONSTS.API) {
+    if (api.apiType === API.CONSTS.API || api.type === MCPServer.CONSTS.MCP) {
         loadEndpoints = <Endpoints parentClasses={classes} api={api} />;
     }
+
+    /**
+     * Get the resources class based on the API type
+     * @param {string} apiType - The type of the API
+     * @returns {JSX.Element} - The resources class component
+     */
     function getResourcesClassForAPIs(apiType) {
         switch (apiType) {
             case 'GRAPHQL':
                 return <Operations parentClasses={classes} api={api} />;
             case 'APIPRODUCT':
                 return <ProductResources parentClasses={classes} api={api} />;
+            case 'MCP':
+                return <Tools parentClasses={classes} mcpServer={api} />;
             case 'WS':
             case 'WEBSUB':
             case 'ASYNC':
@@ -244,15 +255,25 @@ function Overview(props) {
                     defaultMessage='Overview'
                 />
             </Typography>
-            {(api.apiType !== API.CONSTS.API || !api.advertiseInfo.advertised) && (
-                <Grid container>
-                    <Grid item xs={12}>
-                        <Paper className={classes.stepperWrapper}>
-                            <CustomizedStepper />
-                        </Paper>
+            {(api.apiType !== API.CONSTS.API || !api.advertiseInfo.advertised) && 
+                (api.apiType === MCPServer.CONSTS.MCP) ? (
+                    <Grid container>
+                        <Grid item xs={12}>
+                            <Paper className={classes.stepperWrapper}>
+                                <CustomizedMCPStepper />
+                            </Paper>
+                        </Grid>
                     </Grid>
-                </Grid>
-            )}
+                ) : (
+                    <Grid container>
+                        <Grid item xs={12}>
+                            <Paper className={classes.stepperWrapper}>
+                                <CustomizedStepper />
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                )
+            }
             <div className={classes.contentWrapper}>
                 <Paper className={classes.root}>
                     <Grid container spacing={4}>
