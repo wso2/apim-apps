@@ -13,6 +13,7 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Api from 'AppData/api';
 import Popover from '@mui/material/Popover';
+import Tooltip from '@mui/material/Tooltip';
 import DeleteApiButton from 'AppComponents/Apis/Details/components/DeleteApiButton';
 import Configurations from 'Config';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
@@ -31,6 +32,7 @@ const classes = {
     contextBox: `${PREFIX}-contextBox`,
     caption: `${PREFIX}-caption`,
     imageDisplay: `${PREFIX}-imageDisplay`,
+    truncateProvider: `${PREFIX}-truncateProvider`,
     thumbRightBy: `${PREFIX}-thumbRightBy`,
     thumbRightByLabel: `${PREFIX}-thumbRightByLabel`
 };
@@ -59,6 +61,15 @@ const StyledCard = styled(Card)((
 
     [`& .${classes.pos}`]: {
         marginBottom: 12,
+    },
+
+    [`& .${classes.truncateProvider}`]: {
+        display: 'inline-block',
+        maxWidth: '40%',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        verticalAlign: 'bottom',
     },
 
     [`& .${classes.thumbHeader}`]: {
@@ -149,7 +160,7 @@ function APIThumbPlain(props) {
     } = props;
     const { custom: { thumbnail } } = theme;
     const {
-        name, version, context, provider, gatewayType
+        name, version, context, provider
     } = api;
 
     const [imageConf, setImageConf] = useState({
@@ -301,27 +312,34 @@ function APIThumbPlain(props) {
                                     className={classes.caption}
                                     component='span'
                                 >
-                                    <FormattedMessage defaultMessage='By' id='Apis.Listing.ApiThumb.by' />
-                                    <FormattedMessage defaultMessage=' : ' id='Apis.Listing.ApiThumb.by.colon' />
+                                    <FormattedMessage defaultMessage='By ' id='Apis.Listing.ApiThumb.by' />
                                 </Typography>
-                                <Typography variant='body2' component='span'>{provider}</Typography>
-                            </>
-                        )}
-                    </Box>
-                    <Box>
-                        {gatewayType && (
-                            <>
-                                <Typography
-                                    variant='caption'
-                                    gutterBottom
-                                    align='right'
-                                    className={classes.caption}
-                                    component='span'
-                                >
-                                    <FormattedMessage defaultMessage='Vendor' id='Apis.Listing.ApiThumb.vendor' />
-                                    <FormattedMessage defaultMessage=' : ' id='Apis.Listing.ApiThumb.vendor.colon' />
-                                </Typography>
-                                <Typography variant='body2' component='span'>{gatewayType}</Typography>
+                                &nbsp;
+                                <Tooltip title={provider} arrow>
+                                    <Typography variant='body2' component='span' className={classes.truncateProvider}>
+                                        {provider}
+                                    </Typography>
+                                </Tooltip>
+                                {!isAPIProduct && (
+                                    <>
+                                        &nbsp;
+                                        <Typography
+                                            variant='caption'
+                                            gutterBottom
+                                            align='left'
+                                            className={classes.caption}
+                                            component='span'
+                                        >
+                                            <FormattedMessage id='Apis.Listing.ApiThumb.on' defaultMessage=' on ' />
+                                        </Typography>
+                                        &nbsp;
+                                        <Typography variant='body2' component='span'>
+                                            {api.gatewayVendor === 'wso2' || api.gatewayVendor === 'solace'
+                                                ? api.gatewayVendor.toUpperCase()
+                                                : api.gatewayType}
+                                        </Typography>
+                                    </>
+                                )}
                             </>
                         )}
                     </Box>

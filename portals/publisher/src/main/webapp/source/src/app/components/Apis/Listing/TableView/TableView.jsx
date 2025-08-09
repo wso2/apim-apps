@@ -430,6 +430,7 @@ class TableView extends React.Component {
                         return '-';
                     },
                     sort: false,
+                    display: isAPIProduct ? 'excluded' : 'true',
                     filter: false,
                 },
             },
