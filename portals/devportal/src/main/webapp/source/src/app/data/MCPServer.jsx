@@ -78,7 +78,10 @@ export default class MCPServer extends Resource {
      */
     getSwaggerByMCPServerIdAndEnvironment(mcpServerId, environmentName, callback = null) {
         const promise = this.client.then((client) => {
-            return client.apis['MCP Servers'].getMCPServerSwagger({ mcpServerId, environmentName }, this._requestMetaData());
+            return client.apis['MCP Servers'].getMCPServerSwagger(
+                { mcpServerId, environmentName },
+                this._requestMetaData(),
+            );
         });
         if (callback) {
             return promise.then(callback);
@@ -222,7 +225,7 @@ export default class MCPServer extends Resource {
      */
     getMCPServerRatings(mcpServerId, limit, offset) {
         const promise = this.client.then((client) => {
-            return client.apis.Ratings.get_mcp_servers__mcpServerId__ratings(
+            return client.apis.Ratings.getMCPServerRatings(
                 { mcpServerId, limit, offset },
                 this._requestMetaData(),
             );
@@ -237,7 +240,7 @@ export default class MCPServer extends Resource {
      */
     getRatingFromUser(mcpServerId) {
         const promise = this.client.then((client) => {
-            return client.apis.Ratings.getMCPServerRating(
+            return client.apis.Ratings.getMCPServerRatings(
                 { mcpServerId },
                 this._requestMetaData(),
             );

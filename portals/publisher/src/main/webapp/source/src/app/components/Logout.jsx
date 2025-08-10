@@ -38,7 +38,7 @@ class Logout extends Component {
         super(props);
         this.state = {
             logoutSuccess: false,
-            referrer: '/apis',
+            referrer: '/',
         };
     }
 

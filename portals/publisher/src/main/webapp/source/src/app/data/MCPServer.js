@@ -242,6 +242,28 @@ class MCPServer extends Resource {
     }
 
     /**
+     * Validate the MCP Server parameters for existence. (MCP Server name, context)
+     * @param {string} query The parameters that should be validated.
+     * @return {boolean} True if the MCP Server parameters are valid, false otherwise.
+     */
+    static validateMCPServerParameter(query) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis.Validation.validateMCPServer({ query })
+                .then(resp => {
+                    return resp.ok;
+                })
+                .catch(() => {
+                    return false;
+                });
+        });
+    }
+
+    /**
      * Get all MCP Servers.
      * @param {*} params - The parameters for the request.
      * @returns {Promise<Array<MCPServer>>} A promise that resolves to an array of MCPServer instances.

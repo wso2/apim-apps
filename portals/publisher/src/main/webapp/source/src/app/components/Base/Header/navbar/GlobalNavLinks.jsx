@@ -87,6 +87,20 @@ function GlobalNavLinks(props) {
         <StyledBox mt={10}>
             <List className={classes.listRoot} component='nav' name='primaryNavigation' aria-label='primary navigation'>
                 <GlobalNavLink
+                    to='/'
+                    type='home'
+                    title={intl.formatMessage({
+                        id: 'Base.Header.navbar.GlobalNavBar.title.home',
+                        defaultMessage: 'Home',
+                    })}
+                    active={selected === ''}
+                >
+                    <FormattedMessage
+                        id='Base.Header.navbar.GlobalNavBar.home'
+                        defaultMessage='Home'
+                    />
+                </GlobalNavLink>
+                <GlobalNavLink
                     to='/apis'
                     type='apis'
                     title={intl.formatMessage({
