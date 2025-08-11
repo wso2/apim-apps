@@ -17,14 +17,16 @@
  */
 
 import React, { useContext, useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Chip from '@mui/material/Chip';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -35,6 +37,33 @@ import { isRestricted } from 'AppData/AuthManager';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 
 const PREFIX = 'KeyManager';
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 300,
+        },
+    },
+};
+
+/**
+ * Get styles for menu items based on selection state
+ * @param {string} name - Key manager name
+ * @param {Array} selectedKeyManagers - Array of selected key managers
+ * @param {Object} theme - MUI theme object
+ * @returns {Object} Style object
+ */
+function getStyles(name, selectedKeyManagers, theme) {
+    return {
+        fontWeight:
+            selectedKeyManagers.indexOf(name) === -1
+                ? theme.typography.fontWeightRegular
+                : theme.typography.fontWeightMedium,
+    };
+}
 
 const classes = {
     expansionPanel: `${PREFIX}-expansionPanel`,
@@ -81,12 +110,14 @@ const Root = styled('div')((
 }));
 
 /**
- *
- * KeyManager configuration
- * @param {*} props
- * @returns
+ * KeyManager configuration component
+ * @param {Object} props - Component props
+ * @param {Object} props.api - API object
+ * @param {Function} props.configDispatcher - Configuration dispatcher function
+ * @returns {JSX.Element} KeyManager component
  */
 export default function KeyManager(props) {
+    const theme = useTheme();
     const [keyManagersConfigured, setKeyManagersConfigured] = useState([]);
     const {
         configDispatcher,
@@ -94,13 +125,10 @@ export default function KeyManager(props) {
     } = props;
 
     const handleChange = (event) => {
-        const newKeyManagers = [...keyManagers];
-        const { target: { checked, name } } = event;
-        if (newKeyManagers.indexOf(name) === -1 && checked) {
-            newKeyManagers.push(name);
-        } else if (newKeyManagers.indexOf(name) !== -1 && !checked) {
-            newKeyManagers.splice(newKeyManagers.indexOf(name), 1);
-        }
+        const {
+            target: { value },
+        } = event;
+        const newKeyManagers = typeof value === 'string' ? value.split(',') : value;
         configDispatcher({
             action: 'keymanagers',
             value: newKeyManagers,
@@ -171,45 +199,64 @@ export default function KeyManager(props) {
                     />
                 </RadioGroup>
                 {!keyManagers.includes('all') && (
-                    <Box display='flex' flexDirection='column' m={2}>
-                        <FormControl
+                    <Box display='flex' flexDirection='column' m={2} pr={5}>
+                        <FormControl 
                             required
                             error={!keyManagers || (keyManagers && keyManagers.length === 0)}
-                            component='fieldset'
-                            className={classes.formControl}
+                            sx={{ minWidth: 300 }}
                         >
-                            <FormLabel component='legend'>
+                            <InputLabel id='key-managers-select-label'>
                                 <FormattedMessage
                                     id='Apis.Details.Configuration.components.KeyManager.more.than.one.info'
                                     defaultMessage='Select one or more Key Managers'
                                 />
-                            </FormLabel>
-                            <FormGroup
-                                style={{ flexDirection: 'row' }}
-
-                            >
-                                {keyManagersConfigured.map((key) => (
-                                    <FormControlLabel
-                                        control={(
-                                            <Checkbox
-                                                color='primary'
-                                                checked={keyManagers.includes(key.name)}
-                                                disabled={!key.enabled}
-                                                onChange={handleChange}
-                                                name={key.name}
-                                            />
-                                        )}
-                                        label={key.displayName || key.name}
+                            </InputLabel>
+                            <Select
+                                labelId='key-managers-select-label'
+                                id='key-managers-select'
+                                multiple
+                                value={keyManagers.filter(km => km !== 'all')}
+                                onChange={handleChange}
+                                input={
+                                    <OutlinedInput 
+                                        id='select-multiple-key-managers' 
+                                        label='Select one or more Key Managers' 
                                     />
+                                }
+                                renderValue={(selected) => (
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                        {selected.map((value) => {
+                                            const keyManager = keyManagersConfigured.find(km => km.name === value);
+                                            return (
+                                                <Chip 
+                                                    key={value} 
+                                                    label={keyManager?.displayName || value}
+                                                    size='small'
+                                                />
+                                            );
+                                        })}
+                                    </Box>
+                                )}
+                                MenuProps={MenuProps}
+                                disabled={isRestricted(['apim:api_create'], api)}
+                            >
+                                {keyManagersConfigured.map((keyManager) => (
+                                    <MenuItem
+                                        key={keyManager.name}
+                                        value={keyManager.name}
+                                        disabled={!keyManager.enabled}
+                                        style={getStyles(keyManager.name, keyManagers, theme)}
+                                    >
+                                        {keyManager.displayName || keyManager.name}
+                                    </MenuItem>
                                 ))}
-                            </FormGroup>
+                            </Select>
                             <FormHelperText>
                                 <FormattedMessage
                                     id='Apis.Details.Configuration.components.KeyManager.more.than.one.error'
                                     defaultMessage='Select at least one Key Manager'
                                 />
                             </FormHelperText>
-
                         </FormControl>
                     </Box>
                 )}

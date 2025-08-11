@@ -42,6 +42,7 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import KeyManager from 'AppComponents/Apis/Details/Configuration/components/KeyManager';
 import Audience from 'AppComponents/Apis/Details/Configuration/components/Audience';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 
 import {
     DEFAULT_API_SECURITY_OAUTH2,
@@ -221,7 +222,10 @@ export default function ApplicationLevel(props) {
                                 <FormControlLabel
                                     control={(
                                         <Checkbox
-                                            disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                            disabled={
+                                                isRestricted(['apim:api_create'], apiFromContext)
+                                                || apiFromContext.apiType === MCPServer.CONSTS.MCP
+                                            }
                                             checked={securityScheme.includes(API_SECURITY_BASIC_AUTH)}
                                             onChange={({ target: { checked, value } }) => configDispatcher({
                                                 action: 'securityScheme',
@@ -245,8 +249,9 @@ export default function ApplicationLevel(props) {
                                         <Checkbox
                                             checked={securityScheme.includes(API_SECURITY_API_KEY)}
                                             disabled={
-                                                isRestricted(['apim:api_create'], apiFromContext) 
+                                                isRestricted(['apim:api_create'], apiFromContext)
                                                 || isSubValidationDisabled
+                                                || apiFromContext.apiType === MCPServer.CONSTS.MCP
                                             }
                                             onChange={({ target: { checked, value } }) => {
                                                 setApiKeyEnabled(checked);
@@ -328,8 +333,9 @@ export default function ApplicationLevel(props) {
                                 configDispatcher={configDispatcher}
                             />
                         )}
-                        {(apiFromContext.apiType === API.CONSTS.API) && oauth2Enabled &&
-                            componentValidator.includes("keyManagerConfig") && (
+                        {(apiFromContext.apiType === API.CONSTS.API || apiFromContext.apiType === MCPServer.CONSTS.MCP)
+                            && oauth2Enabled
+                            && componentValidator.includes("keyManagerConfig") && (
                             <KeyManager
                                 api={api}
                                 configDispatcher={configDispatcher}

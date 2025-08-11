@@ -25,42 +25,28 @@ import AddIcon from '@mui/icons-material/Add';
 import Alert from 'AppComponents/Shared/Alert';
 import ClearIcon from '@mui/icons-material/Clear';
 import Fab from '@mui/material/Fab';
-import FormControl from '@mui/material/FormControl';
-import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
-import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import HelpOutline from '@mui/icons-material/HelpOutline';
-import MethodView from 'AppComponents/Apis/Details/ProductResources/MethodView';
+import OperationSelector from './OperationSelector';
 
 const PREFIX = 'AddTool';
 
+
 const classes = {
-    formControl: `${PREFIX}-formControl`,
     paper: `${PREFIX}-paper`,
-    methodView: `${PREFIX}-methodView`,
 };
 
-const StyledPaper = styled(Paper)(({ theme }) => ({
-    [`& .${classes.formControl}`]: {
-        minWidth: 120,
-    },
-
+const StyledPaper = styled(Paper)(() => ({
     [`&.${classes.paper}`]: {
         marginTop: '12px',
-    },
-
-    [`& .${classes.methodView}`]: {
-        marginRight: theme.spacing(1),
     },
 }));
 
@@ -211,59 +197,28 @@ function AddTool(props) {
                 spacing={2} justifyContent='center' alignItems='center' pt={1} pb={2} px={3}
             >
                 <Grid item md={3} xs={12}>
-                    <FormControl 
-                        margin='dense' 
-                        variant='outlined' 
-                        className={classes.formControl} 
+                    <OperationSelector
+                        availableOperations={availableOperations}
+                        value={newTool.selectedOperation}
+                        onChange={(value) => {
+                            newToolDispatcher({ type: 'selectedOperation', value: value || null });
+                        }}
                         fullWidth
+                        margin='dense'
+                        variant='outlined'
                         error={newTool.errors.operation}
-                    >
-                        <InputLabel>
-                            <FormattedMessage
-                                id='MCPServers.Details.Tools.AddTool.operation.label'
-                                defaultMessage='Operation'
-                            />
-                        </InputLabel>
-                        <Select
-                            value={newTool.selectedOperation
-                                ? `${newTool.selectedOperation.target}_${newTool.selectedOperation.verb}` : ''
-                            }
-                            onChange={(event) => {
-                                const selectedValue = event.target.value;
-                                const selectedOp = availableOperations.find(op =>
-                                    `${op.target}_${op.verb}` === selectedValue
-                                );
-                                newToolDispatcher({ type: 'selectedOperation', value: selectedOp });
-                            }}
-                            label='Operation'
-                        >
-                            {availableOperations.map((operation) => (
-                                <MenuItem
-                                    key={`${operation.target}_${operation.verb}`}
-                                    value={`${operation.target}_${operation.verb}`}
-                                    sx={{
-                                        margin: '3px 0',
-                                    }}
-                                >
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <MethodView
-                                            method={operation.verb}
-                                            className={classes.methodView}
-                                        />
-                                        <span style={{ marginLeft: '8px' }}>{operation.target}</span>
-                                    </div>
-                                </MenuItem>
-                            ))}
-                        </Select>
-                        <FormHelperText>
-                            {newTool.errors.operation &&
-                                intl.formatMessage({
-                                    id: 'MCPServers.Details.Tools.AddTool.operation.error',
-                                    defaultMessage: 'Operation selection is required',
-                                })
-                            }
-                        </FormHelperText>
-                    </FormControl>
+                        helperText={
+                            newTool.errors.operation &&
+                            intl.formatMessage({
+                                id: 'MCPServers.Details.Tools.AddTool.operation.error',
+                                defaultMessage: 'Operation selection is required',
+                            })
+                        }
+                        label={intl.formatMessage({
+                            id: 'MCPServers.Details.Tools.AddTool.operation.label',
+                            defaultMessage: 'Operation',
+                        })}
+                    />
                 </Grid>
 
                 <Grid item md={3} xs={12}>
@@ -296,12 +251,6 @@ function AddTool(props) {
                         }
                         InputLabelProps={{
                             shrink: true,
-                        }}
-                        onKeyPress={(event) => {
-                            if (event.key === 'Enter') {
-                                event.preventDefault();
-                                addTool();
-                            }
                         }}
                     />
                 </Grid>
@@ -337,12 +286,6 @@ function AddTool(props) {
                         InputLabelProps={{
                             shrink: true,
                         }}
-                        onKeyPress={(event) => {
-                            if (event.key === 'Enter') {
-                                event.preventDefault();
-                                addTool();
-                            }
-                        }}
                     />
                 </Grid>
 
@@ -372,7 +315,6 @@ function AddTool(props) {
                                     aria-label='Add new tool'
                                     onClick={addTool}
                                     id='add-tool-button'
-                                    // disabled={!newTool.name || !newTool.description || !newTool.selectedOperation}
                                 >
                                     <AddIcon />
                                 </Fab>
@@ -393,8 +335,7 @@ function AddTool(props) {
                                     onClick={clearInputs} 
                                     size='small' 
                                     aria-label='clear-inputs'
-                                    sx={{ 
-                                        backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                    sx={{
                                         '&:hover': {
                                             backgroundColor: 'rgba(0, 0, 0, 0.08)'
                                         }

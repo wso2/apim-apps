@@ -94,7 +94,7 @@ const Tools = ({
     const [sharedScopes, setSharedScopes] = useState();
     // const [sharedScopesByName, setSharedScopesByName] = useState();
     // const [securityDefScopes, setSecurityDefScopes] = useState({});
-    const [apiThrottlingPolicy, setApiThrottlingPolicy] = useState(api.apiThrottlingPolicy);
+    const [throttlingPolicy, setThrottlingPolicy] = useState(api.throttlingPolicy);
     // const [resolvedSpec, setResolvedSpec] = useState({ spec: {}, errors: [] });
     const [focusOperationLevel, setFocusOperationLevel] = useState(false);
     const [expandedResource, setExpandedResource] = useState('');
@@ -138,9 +138,36 @@ const Tools = ({
         let updatedOperations;
 
         switch (action) {
-            case 'init':
+            case 'init': {
                 setSelectedOperation({});
-                return data || {};
+                if (data) {
+                    return data;
+                }
+                // Fall back to initial state from API object
+                const operationsMap = {};
+                if (api.operations && api.operations.length > 0) {
+                    api.operations.forEach(operation => {
+                        const operationName = operation.target || operation.id;
+                        if (operationName) {
+                            operationsMap[operationName] = {
+                                id: operation.id || `existing_${operationName}_${Date.now()}`,
+                                target: operation.target,
+                                feature: 'TOOL',
+                                name: operation.target,
+                                description: operation.description || '',
+                                'x-auth-type': operation.authType || 'Application & Application User',
+                                throttlingPolicy: operation.throttlingPolicy || 'Unlimited',
+                                'x-throttling-tier': operation.throttlingPolicy || 'Unlimited',
+                                schemaDefinition: operation.schemaDefinition,
+                                backendOperationMapping: operation.backendOperationMapping,
+                                scopes: operation.scopes || [],
+                                'x-wso2-new': false
+                            };
+                        }
+                    });
+                }
+                return operationsMap;
+            }
             // case 'removeAllSecurity':
             //     setSelectedOperation({});
             //     return Object.entries(currentOperations).reduce((acc, [key, operation]) => {
@@ -303,12 +330,12 @@ const Tools = ({
     const localAPI = useMemo(
         () => ({
             id: api.id,
-            apiThrottlingPolicy,
+            throttlingPolicy,
             scopes: api.scopes,
             operations: api.isAPIProduct() ? {} : mapAPIOperations(api.operations),
             endpointConfig: mcpEndpoints.endpointConfig,
         }),
-        [api, apiThrottlingPolicy, mcpEndpoints],
+        [api, throttlingPolicy, mcpEndpoints],
     );
 
 
@@ -421,10 +448,10 @@ const Tools = ({
                 return Promise.reject(new Error('Unsupported tool operation!'));
         }
 
-        if (apiThrottlingPolicy !== api.apiThrottlingPolicy) {
-            return updateAPI({ apiThrottlingPolicy })
+        if (throttlingPolicy !== api.throttlingPolicy) {
+            return updateAPI({ throttlingPolicy })
                 .then((updatedApi) => {
-                    setApiThrottlingPolicy(updatedApi.apiThrottlingPolicy);
+                    setThrottlingPolicy(updatedApi.throttlingPolicy);
                     return updatedApi;
                 })
                 .catch((error) => {
@@ -473,15 +500,15 @@ const Tools = ({
     }, [isLoading]);
 
     useEffect(() => {
-        setApiThrottlingPolicy(api.apiThrottlingPolicy);
-    }, [api.apiThrottlingPolicy]);
+        setThrottlingPolicy(api.throttlingPolicy);
+    }, [api.throttlingPolicy]);
 
     useEffect(() => {
-        // Sync local apiThrottlingPolicy state with API context when API loads or changes
-        if (api.id && api.apiThrottlingPolicy !== apiThrottlingPolicy) {
-            setApiThrottlingPolicy(api.apiThrottlingPolicy);
+        // Sync local throttlingPolicy state with API context when API loads or changes
+        if (api.id && api.throttlingPolicy !== throttlingPolicy) {
+            setThrottlingPolicy(api.throttlingPolicy);
         }
-    }, [api.id, api.apiThrottlingPolicy]);
+    }, [api.id, api.throttlingPolicy]);
 
     if (!pageError && (isEmpty(operations) && availableOperations.length === 0)) {
         return (
@@ -509,8 +536,8 @@ const Tools = ({
                         <APIRateLimiting
                             api={api}
                             operationRateLimits={operationRateLimits}
-                            value={apiThrottlingPolicy}
-                            onChange={setApiThrottlingPolicy}
+                            value={throttlingPolicy}
+                            onChange={setThrottlingPolicy}
                             isAPIProduct={false}
                             focusOperationLevel={focusOperationLevel}
                             setFocusOperationLevel={setFocusOperationLevel}

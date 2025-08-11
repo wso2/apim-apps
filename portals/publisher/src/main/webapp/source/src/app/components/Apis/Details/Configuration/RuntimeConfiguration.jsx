@@ -654,7 +654,8 @@ export default function RuntimeConfiguration() {
                                         )}
 
                                         {((api.type !== 'GRAPHQL' || !isAsyncAPI) && 
-                                            componentValidator.includes("schemaValidation"))
+                                            componentValidator.includes("schemaValidation") &&
+                                            api.type !== MCPServer.CONSTS.MCP)
                                             && <SchemaValidation api={apiConfig} 
                                                 configDispatcher={configDispatcher} />}
                                         {api.type === 'GRAPHQL' && componentValidator.includes("queryAnalysis") && (
@@ -671,7 +672,8 @@ export default function RuntimeConfiguration() {
                                         <ArrowForwardIcon className={classes.arrowForwardIcon} />
                                     )}
                                 </Grid>
-                                { componentValidator.includes("responseCaching") && !isNonWebSubAsyncAPI && (
+                                { componentValidator.includes("responseCaching") && !isNonWebSubAsyncAPI &&
+                                api.type !== MCPServer.CONSTS.MCP && (
                                     <>
                                         <Typography className={classes.heading} variant='h6' component='h3'>
                                             {!isWebSub ? (

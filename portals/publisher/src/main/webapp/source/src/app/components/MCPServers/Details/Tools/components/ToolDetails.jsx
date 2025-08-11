@@ -19,7 +19,6 @@
 import React from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
@@ -32,30 +31,21 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import LockIcon from '@mui/icons-material//Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import * as monaco from 'monaco-editor'
-import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
 import MethodView from 'AppComponents/Apis/Details/ProductResources/MethodView';
 
 import { FormattedMessage } from 'react-intl';
 import OperationGovernance
     from 'AppComponents/Apis/Details/Resources/components/operationComponents/OperationGovernance';
 import { getOperationScopes } from 'AppComponents/Apis/Details/Resources/operationUtils';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
+import ToolDetailsSection from './ToolDetailsSection';
 
 const PREFIX = 'ToolDetails';
-
-// load Monaco from node_modules instead of CDN
-loader.config({ monaco });
 
 const classes = {
     paperStyles: `${PREFIX}-paperStyles`,
     highlightSelected: `${PREFIX}-highlightSelected`,
     contentNoMargin: `${PREFIX}-contentNoMargin`,
     overlayUnmarkDelete: `${PREFIX}-overlayUnmarkDelete`,
-    descriptionSection: `${PREFIX}-descriptionSection`,
     toolName: `${PREFIX}-toolName`,
     accordionContainer: `${PREFIX}-accordionContainer`,
     resourceMappingChip: `${PREFIX}-resourceMappingChip`,
@@ -78,9 +68,6 @@ const Root = styled('div')(({ theme }) => {
             position: 'absolute',
             zIndex: theme.zIndex.operationDeleteUndo,
             right: '10%',
-        },
-        [`& .${classes.descriptionSection}`]: {
-            marginY: theme.spacing(1),
         },
         [`& .${classes.toolName}`]: {
             fontWeight: 400,
@@ -122,236 +109,28 @@ const Root = styled('div')(({ theme }) => {
 });
 
 /**
- * Tool Details Component (Name, Description, Schema, Resource Mapping)
- */
-function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, target, feature, availableOperations }) {
-
-    // Get current selected operation value for the select component
-    const getCurrentOperationValue = () => {
-        if (operation.backendOperationMapping && operation.backendOperationMapping.backendOperation) {
-            const backendOp = operation.backendOperationMapping.backendOperation;
-            return `${backendOp.target}_${backendOp.verb}`;
-        }
-        return '';
-    };
-
-    const editorOptions = {
-        selectOnLineNumbers: true,
-        readOnly: true,
-        smoothScrolling: true,
-        wordWrap: 'on',
-    };
-
-    return (
-        <Grid
-            item
-            xs={12}
-            className={classes.descriptionSection}
-        >
-            <Typography variant='subtitle1' gutterBottom>
-                <FormattedMessage
-                    id='Apis.Details.Resources.components.Operation.Tool.Details'
-                    defaultMessage='Tool Details'
-                />
-            </Typography>
-            <Divider variant='middle' />
-            <Grid container spacing={3} px={3} mt={1}>
-                {/* Left Panel */}
-                <Grid item xs={6}>
-                    <Grid container spacing={2}>
-                        {/* Name */}
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label={
-                                    <FormattedMessage
-                                        id='Apis.Details.Resources.components.Operation.Name'
-                                        defaultMessage='Name'
-                                    />
-                                }
-                                value={operation.target || target || ''}
-                                disabled={disableUpdate}
-                                variant='outlined'
-                                // size='small'
-                                onChange={({ target: { value } }) => operationsDispatcher({
-                                    action: 'name',
-                                    data: { target, feature, value },
-                                })}
-                            />
-                        </Grid>
-
-                        {/* Resource Mapping - Just the dropdown */}
-                        <Grid item xs={12}>
-                            <FormControl
-                                fullWidth
-                                margin='dense'
-                                variant='outlined'
-                                disabled={disableUpdate}
-                            >
-                                <InputLabel>
-                                    <FormattedMessage
-                                        id='MCPServers.Details.Tools.AddTool.operation.label'
-                                        defaultMessage='Operation'
-                                    />
-                                </InputLabel>
-                                <Select
-                                    value={getCurrentOperationValue()}
-                                    onChange={(event) => {
-                                        const selectedValue = event.target.value;
-                                        const selectedOp = availableOperations.find(op =>
-                                            `${op.target}_${op.verb}` === selectedValue
-                                        );
-                                        if (selectedOp) {
-                                            operationsDispatcher({
-                                                action: 'updateBackendOperation',
-                                                data: {
-                                                    target,
-                                                    feature,
-                                                    backendOperation: {
-                                                        target: selectedOp.target,
-                                                        verb: selectedOp.verb
-                                                    }
-                                                },
-                                            });
-                                        }
-                                    }}
-                                    label='Operations'
-                                    displayEmpty
-                                >
-                                    <MenuItem value=''>
-                                        <em>Select an operation</em>
-                                    </MenuItem>
-                                    {availableOperations.map((op) => {
-                                        const menuValue = `${op.target}_${op.verb}`;
-                                        return (
-                                            <MenuItem
-                                                key={menuValue}
-                                                value={menuValue}
-                                                sx={{
-                                                    margin: '3px 0',
-                                                }}
-                                            >
-                                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                    <MethodView
-                                                        method={op.verb}
-                                                        style={{ marginRight: '5px' }}
-                                                    />
-                                                    <span style={{ marginLeft: '8px' }}>{op.target}</span>
-                                                </div>
-                                            </MenuItem>
-                                        );
-                                    })}
-                                </Select>
-                            </FormControl>
-                        </Grid>
-
-                        {/* Schema */}
-                        <Grid item xs={12}>
-                            <Typography
-                                variant='subtitle2'
-                                gutterBottom
-                                sx={{
-                                    fontWeight: 400,
-                                    color: 'black'
-                                }}
-                            >
-                                <FormattedMessage
-                                    id='Apis.Details.Resources.components.Operation.Schema'
-                                    defaultMessage='Schema'
-                                />
-                            </Typography>
-                            <Box
-                                sx={{
-                                    border: '1px solid #e0e0e0',
-                                    borderRadius: '4px',
-                                    padding: 2,
-                                    backgroundColor: '#fafafa'
-                                }}
-                            >
-                                {operation.schemaDefinition ? (
-                                    <MonacoEditor
-                                        language='json'
-                                        width='100%'
-                                        height='200px'
-                                        theme='vs-light'
-                                        value={operation.schemaDefinition}
-                                        options={editorOptions}
-                                    />
-                                ) : (
-                                    <Typography variant='body2' color='textSecondary'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Resources.components.Operation.Schema.Not.Available'
-                                            defaultMessage='No schema definition available'
-                                        />
-                                    </Typography>
-                                )}
-                            </Box>
-                        </Grid>
-                    </Grid>
-                </Grid>
-
-                {/* Right Panel */}
-                <Grid item xs={6}>
-                    <Grid container spacing={2}>
-                        {/* Description */}
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label={
-                                    <FormattedMessage
-                                        id='Apis.Details.Resources.Operation.Components.Description'
-                                        defaultMessage='Description'
-                                    />
-                                }
-                                value={operation.description || ''}
-                                disabled={disableUpdate}
-                                variant='outlined'
-                                multiline
-                                rows={5}
-                                onChange={({ target: { value } }) => operationsDispatcher({
-                                    action: 'description',
-                                    data: { target, feature, value },
-                                })}
-                            />
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Grid>
-        </Grid>
-    );
-}
-
-ToolDetailsSection.propTypes = {
-    operation: PropTypes.shape({
-        name: PropTypes.string,
-        target: PropTypes.string,
-        description: PropTypes.string,
-        schemaDefinition: PropTypes.string,
-        backendOperationMapping: PropTypes.shape({
-            backendOperation: PropTypes.shape({
-                verb: PropTypes.string,
-                target: PropTypes.string,
-            }),
-        }),
-    }).isRequired,
-    operationsDispatcher: PropTypes.func.isRequired,
-    disableUpdate: PropTypes.bool.isRequired,
-    target: PropTypes.string.isRequired,
-    feature: PropTypes.string.isRequired,
-    availableOperations: PropTypes.arrayOf(PropTypes.shape({
-        target: PropTypes.string,
-        verb: PropTypes.string,
-        summary: PropTypes.string,
-        description: PropTypes.string,
-    })).isRequired,
-};
-
-/**
- *
  * Handle the tool details UI
  * @export
- * @param {*} props
- * @returns {React.Component} @inheritdoc
+ * @param {object} props - Component props
+ * @param {object} props.operation - The operation object
+ * @param {Function} props.operationsDispatcher - Function to dispatch operation updates
+ * @param {boolean} props.highlight - Whether to highlight the component
+ * @param {Array} props.operationRateLimits - Array of operation rate limits
+ * @param {object} props.api - The API object
+ * @param {boolean} props.disableDelete - Whether delete is disabled
+ * @param {boolean} props.disableUpdate - Whether updates are disabled
+ * @param {Function} props.onMarkAsDelete - Function to handle mark as delete
+ * @param {boolean} props.markAsDelete - Whether marked for deletion
+ * @param {object} props.spec - The specification object
+ * @param {string} props.target - The target string
+ * @param {string} props.feature - The feature string
+ * @param {Array} props.sharedScopes - Array of shared scopes
+ * @param {Function} props.setFocusOperationLevel - Function to set focus operation level
+ * @param {string} props.expandedResource - The expanded resource identifier
+ * @param {Function} props.setExpandedResource - Function to set expanded resource
+ * @param {object} props.componentValidator - Component validator object
+ * @param {Array} props.availableOperations - Array of available operations
+ * @returns {React.Component} Tool details component
  */
 function ToolDetails(props) {
     const {
@@ -374,13 +153,11 @@ function ToolDetails(props) {
         componentValidator,
         availableOperations,
     } = props;
-    // MCP Server operations don't support API products, so no usedProductIds check needed
     const isUsedInAPIProduct = false;
 
     /**
-     *
-     *
-     * @param {*} event
+     * Toggle delete state for the operation
+     * @param {Event} event - The event object
      */
     function toggleDelete(event) {
         event.stopPropagation();
@@ -506,14 +283,7 @@ function ToolDetails(props) {
                             </Box>
                         </Grid>
                         <Grid item md={2}>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'flex-start',
-                                    marginLeft: 10
-                                }}
-                            >
+                            <Box display='flex' alignItems='center' justifyContent='flex-start' marginLeft={10}>
                                 {/* Resource Mapping Display */}
                                 {getResourceMappingDisplay() && (
                                     <Box
@@ -645,7 +415,7 @@ ToolDetails.defaultProps = {
     disableDelete: false,
     onMarkAsDelete: () => { },
     markAsDelete: false,
-    operationRateLimits: [], // Response body.list from apis policies for `api` throttling policies type
+    operationRateLimits: [],
     resourcePolicy: {},
 };
 ToolDetails.propTypes = {
@@ -664,6 +434,11 @@ ToolDetails.propTypes = {
         target: PropTypes.string,
         description: PropTypes.string,
         schemaDefinition: PropTypes.string,
+        id: PropTypes.string,
+        'x-auth-type': PropTypes.string,
+        throttlingPolicy: PropTypes.string,
+        'x-throttling-tier': PropTypes.string,
+        scopes: PropTypes.arrayOf(PropTypes.shape({})),
         backendOperationMapping: PropTypes.shape({
             backendOperation: PropTypes.shape({
                 verb: PropTypes.string,
@@ -680,6 +455,8 @@ ToolDetails.propTypes = {
     sharedScopes: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
     expandedResource: PropTypes.string.isRequired,
     setExpandedResource: PropTypes.func.isRequired,
+    setFocusOperationLevel: PropTypes.func.isRequired,
+    componentValidator: PropTypes.shape({}).isRequired,
     availableOperations: PropTypes.arrayOf(PropTypes.shape({
         target: PropTypes.string,
         verb: PropTypes.string,

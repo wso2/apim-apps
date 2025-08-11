@@ -17,37 +17,24 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { styled, alpha } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import APILanding from 'AppComponents/Apis/Listing/Landing';
 import MCPServerLanding from 'AppComponents/MCPServers/Landing';
-import { Link, useHistory } from 'react-router-dom';
-import Avatar from '@mui/material/Avatar';
 import {
     useTheme,
     Box,
     Grid,
     Typography,
-    Button,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Pagination
 } from '@mui/material';
-import Utils from 'AppData/Utils';
 import { FormattedMessage } from 'react-intl';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
-import AddIcon from '@mui/icons-material/Add';
-import Configurations from 'Config';
 import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
-import moment from 'moment';
 import { Progress } from 'AppComponents/Shared';
-import { isRestricted } from 'AppData/AuthManager';
-import PropTypes from 'prop-types';
+import ApisSection from './ApisSection';
+import McpServersSection from './McpServersSection';
+import TabButton from './TabButton';
+import { PAGINATION_CONFIG } from './utils';
 
 const PREFIX = 'PublisherLanding';
 
@@ -72,402 +59,6 @@ const Root = styled('div')(({ theme }) => ({
         maxWidth: '100%',
     },
 }));
-
-// Custom styled Button for tab navigation
-const TabButton = styled(Button)(({ theme, isActive }) => ({
-    justifyContent: 'flex-start',
-    textAlign: 'left',
-    padding: theme.spacing(2),
-    height: '100%',
-    border: isActive === true ? `1px solid ${theme.palette.primary.main}` : '1px solid rgba(0, 0, 0, 0.30)',
-    borderRadius: '8px',
-    backgroundColor: isActive === true ? alpha(theme.palette.primary.main, 0.08) : 'transparent',
-    color: isActive === true ?
-        theme.palette.getContrastText(theme.custom.globalNavBar.active) :
-        theme.palette.text.primary,
-    boxShadow: isActive === true ?
-        `0px 2px 4px ${alpha(theme.palette.primary.main, 0.2)}` :
-        'none',
-    '&:hover': {
-        backgroundColor: isActive === true ?
-            alpha(theme.palette.primary.main, 0.12) :
-            theme.palette.grey[200],
-        borderColor: isActive === true ?
-            theme.palette.primary.main :
-            'rgba(0, 0, 0, 0.30)',
-    },
-}));
-
-// Constants for pagination configuration
-
-const ENTITY_TYPES = {
-    APIS: 'apis',
-    MCP_SERVERS: 'mcp-servers'
-};
-
-const PAGINATION_CONFIG = {
-    DEFAULT_PAGE_SIZE: 5,
-    DEFAULT_PAGE: 1
-};
-
-// Helper functions
-const formatUpdatedTime = (updatedTime) => {
-    if (!updatedTime) return 'N/A';
-    return moment(parseInt(updatedTime, 10)).fromNow();
-};
-
-// Helper function to get detail path for navigation
-const getDetailPath = (type, id) => {
-    return type === ENTITY_TYPES.APIS ? `/apis/${id}/overview` : `/mcp-servers/${id}/overview`;
-};
-
-/**
- * Reusable DataTable Component for APIs and MCP Servers
- * @param {Object} props - Component props
- * @param {Array} props.data - Array of items to display in the table
- * @param {string} props.type - Entity type (apis or mcp-servers)
- * @param {Function} props.onRowClick - Optional callback for row clicks
- * @param {number} props.totalCount - Total number of items
- * @param {number} props.currentPage - Current page number
- * @param {number} props.pageSize - Number of items per page
- * @param {Function} props.onPageChange - Callback for page changes
- * @returns {JSX.Element} DataTable component
- */
-const DataTable = ({ data, type, onRowClick, totalCount, currentPage, pageSize, onPageChange }) => {
-    const history = useHistory();
-
-    const handleRowClick = useCallback((item) => {
-        const path = getDetailPath(type, item.id);
-        history.push(path);
-        if (onRowClick) onRowClick(item);
-    }, [type, history, onRowClick]);
-
-    const totalPages = Math.ceil(totalCount / pageSize);
-
-    return (
-        <Box>
-            <TableContainer component={Paper} className={classes.TableContainer}>
-                <Table stickyHeader>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell width='20%'>
-                                <FormattedMessage
-                                    id='Publisher.Landing.table.name'
-                                    defaultMessage='Name'
-                                />
-                            </TableCell>
-                            <TableCell width='15%'>
-                                <FormattedMessage
-                                    id='Publisher.Landing.table.context'
-                                    defaultMessage='Context'
-                                />
-                            </TableCell>
-                            <TableCell width='12%'>
-                                <FormattedMessage
-                                    id='Publisher.Landing.table.version'
-                                    defaultMessage='Version'
-                                />
-                            </TableCell>
-                            <TableCell width='35%'>
-                                <FormattedMessage
-                                    id='Publisher.Landing.table.description'
-                                    defaultMessage='Description'
-                                />
-                            </TableCell>
-                            <TableCell width='18%'>
-                                <FormattedMessage
-                                    id='Publisher.Landing.table.lastUpdated'
-                                    defaultMessage='Last Updated'
-                                />
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {data.map((item) => (
-                            <TableRow
-                                key={item.id}
-                                onClick={() => handleRowClick(item)}
-                                style={{ cursor: 'pointer' }}
-                                hover
-                            >
-                                <TableCell>
-                                    <Box display='flex' alignItems='center'>
-                                        <Avatar
-                                            style={{
-                                                backgroundColor: Utils.stringToColor(item.name),
-                                            }}
-                                        >
-                                            {Utils.stringAvatar(item.name.toUpperCase())}
-                                        </Avatar>
-                                        <Typography variant='body2' fontWeight='medium' ml={1}>
-                                            {item.name}
-                                        </Typography>
-                                    </Box>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography 
-                                        variant='body2'
-                                        sx={{
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap'
-                                        }}
-                                        title={item.context || '/'}
-                                    >
-                                        {item.context || '/'}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant='body2'>
-                                        {item.version}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography 
-                                        variant='body2'
-                                        sx={{
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap',
-                                            maxWidth: '300px'
-                                        }}
-                                        title={item.description || 'No description available'}
-                                    >
-                                        {item.description || 'No description available'}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant='body2' color='textSecondary'>
-                                        {formatUpdatedTime(item.updatedTime)}
-                                    </Typography>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            {totalPages > 1 && (
-                <Box display='flex' justifyContent='center' mt={2}>
-                    <Pagination
-                        count={totalPages}
-                        page={currentPage}
-                        onChange={(event, page) => onPageChange(page)}
-                        color='primary'
-                        showFirstButton
-                        showLastButton
-                    />
-                </Box>
-            )}
-        </Box>
-    );
-};
-
-DataTable.propTypes = {
-    data: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        version: PropTypes.string,
-        description: PropTypes.string,
-        context: PropTypes.string,
-        updatedTime: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    })).isRequired,
-    type: PropTypes.string.isRequired,
-    onRowClick: PropTypes.func,
-    totalCount: PropTypes.number.isRequired,
-    currentPage: PropTypes.number.isRequired,
-    pageSize: PropTypes.number.isRequired,
-    onPageChange: PropTypes.func.isRequired,
-};
-
-DataTable.defaultProps = {
-    onRowClick: null,
-};
-
-/**
- * APIs Section Component
- * @param {Object} props - Component props
- * @param {Array} props.data - Array of APIs to display
- * @param {string} props.noDataIcon - Path to no data icon
- * @param {number} props.totalCount - Total number of APIs
- * @param {number} props.currentPage - Current page number
- * @param {number} props.pageSize - Number of items per page
- * @param {Function} props.onPageChange - Callback for page changes
- * @returns {JSX.Element} APIs section component
- */
-const ApisSection = ({ data, noDataIcon, totalCount, currentPage, pageSize, onPageChange }) => {
-    return (
-        <Box mb={4} mx={4}>
-            <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
-                <Typography variant='h4'>
-                    <FormattedMessage
-                        id='Publisher.Landing.apis.section.title'
-                        defaultMessage='APIs'
-                    />
-                </Typography>
-                {data.length > 0 && (
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        component={Link}
-                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                        to='/apis/create'
-                        startIcon={<AddIcon />}
-                    >
-                        <FormattedMessage
-                            id='Publisher.Landing.create.api.button'
-                            defaultMessage='Create API'
-                        />
-                    </Button>
-                )}
-            </Box>
-            {data.length === 0 ? (
-                <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
-                    <img
-                        src={Configurations.app.context + noDataIcon}
-                        alt='No APIs available'
-                    />
-                    <Typography variant='body1' color='textSecondary' mt={2} mb={3}>
-                        <FormattedMessage
-                            id='Publisher.Landing.no.apis.message'
-                            defaultMessage='No APIs found. Create your first API to get started.'
-                        />
-                    </Typography>
-                    <Button
-                        variant='outlined'
-                        color='primary'
-                        component={Link}
-                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                        to='/apis'
-                        startIcon={<AddIcon />}
-                    >
-                        <FormattedMessage
-                            id='Publisher.Landing.create.api.button'
-                            defaultMessage='Create API'
-                        />
-                    </Button>
-                </Box>
-            ) : (
-                <DataTable 
-                    data={data} 
-                    type={ENTITY_TYPES.APIS} 
-                    totalCount={totalCount}
-                    currentPage={currentPage}
-                    pageSize={pageSize}
-                    onPageChange={onPageChange}
-                />
-            )}
-        </Box>
-    );
-};
-
-/**
- * MCP Servers Section Component
- * @param {Object} props - Component props
- * @param {Array} props.data - Array of MCP Servers to display
- * @param {string} props.noDataIcon - Path to no data icon
- * @param {number} props.totalCount - Total number of MCP Servers
- * @param {number} props.currentPage - Current page number
- * @param {number} props.pageSize - Number of items per page
- * @param {Function} props.onPageChange - Callback for page changes
- * @returns {JSX.Element} MCP Servers section component
- */
-const McpServersSection = ({ data, noDataIcon, totalCount, currentPage, pageSize, onPageChange }) => {
-    return (
-        <Box mb={4} mx={4}>
-            <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
-                <Typography variant='h4'>
-                    <FormattedMessage
-                        id='Publisher.Landing.mcpServers.section.title'
-                        defaultMessage='MCP Servers'
-                    />
-                </Typography>
-                {data.length > 0 && (
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        component={Link}
-                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                        to='/mcp-servers/create'
-                        startIcon={<AddIcon />}
-                    >
-                        <FormattedMessage
-                            id='Publisher.Landing.create.mcp.button'
-                            defaultMessage='Create MCP Server'
-                        />
-                    </Button>
-                )}
-            </Box>
-            {data.length === 0 ? (
-                <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
-                    <img
-                        src={Configurations.app.context + noDataIcon}
-                        alt='No MCP Servers available'
-                    />
-                    <Typography variant='body1' color='textSecondary' mt={2} mb={3}>
-                        <FormattedMessage
-                            id='Publisher.Landing.no.mcpServers.message'
-                            defaultMessage='No MCP Servers found. Create your first MCP Server to get started.'
-                        />
-                    </Typography>
-                    <Button
-                        variant='outlined'
-                        color='primary'
-                        component={Link}
-                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                        to='/mcp-servers'
-                        startIcon={<AddIcon />}
-                    >
-                        <FormattedMessage
-                            id='Publisher.Landing.create.mcp.button'
-                            defaultMessage='Create MCP Server'
-                        />
-                    </Button>
-                </Box>
-            ) : (
-                <DataTable 
-                    data={data} 
-                    type={ENTITY_TYPES.MCP_SERVERS} 
-                    totalCount={totalCount}
-                    currentPage={currentPage}
-                    pageSize={pageSize}
-                    onPageChange={onPageChange}
-                />
-            )}
-        </Box>
-    );
-};
-
-ApisSection.propTypes = {
-    data: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        version: PropTypes.string,
-        description: PropTypes.string,
-        context: PropTypes.string,
-        updatedTime: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    })).isRequired,
-    noDataIcon: PropTypes.string.isRequired,
-    totalCount: PropTypes.number.isRequired,
-    currentPage: PropTypes.number.isRequired,
-    pageSize: PropTypes.number.isRequired,
-    onPageChange: PropTypes.func.isRequired,
-};
-
-McpServersSection.propTypes = {
-    data: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        version: PropTypes.string,
-        description: PropTypes.string,
-        context: PropTypes.string,
-        updatedTime: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    })).isRequired,
-    noDataIcon: PropTypes.string.isRequired,
-    totalCount: PropTypes.number.isRequired,
-    currentPage: PropTypes.number.isRequired,
-    pageSize: PropTypes.number.isRequired,
-    onPageChange: PropTypes.func.isRequired,
-};
 
 /**
  * Publisher Portal Landing Page Component.
@@ -557,6 +148,43 @@ const PublisherLanding = () => {
         fetchMcpServers(page);
     }, [fetchMcpServers]);
 
+    // Delete handlers
+    const handleApiDelete = useCallback((deletedId) => {
+        // Remove the deleted API from the current list
+        setApis(prevApis => prevApis.filter(api => api.id !== deletedId));
+        // Update total count
+        setApisTotalCount(prevCount => Math.max(0, prevCount - 1));
+        
+        // If current page becomes empty and it's not the first page, go to previous page
+        const currentApisCount = apis.length;
+        if (currentApisCount === 1 && apisPage > 1) {
+            const newPage = apisPage - 1;
+            setApisPage(newPage);
+            fetchApis(newPage);
+        } else if (currentApisCount === 1) {
+            // If it's the first page and becomes empty, refetch to get updated data
+            fetchApis(apisPage);
+        }
+    }, [apis.length, apisPage, fetchApis]);
+
+    const handleMcpServerDelete = useCallback((deletedId) => {
+        // Remove the deleted MCP Server from the current list
+        setMcpServers(prevServers => prevServers.filter(server => server.id !== deletedId));
+        // Update total count
+        setMcpServersTotalCount(prevCount => Math.max(0, prevCount - 1));
+        
+        // If current page becomes empty and it's not the first page, go to previous page
+        const currentServersCount = mcpServers.length;
+        if (currentServersCount === 1 && mcpServersPage > 1) {
+            const newPage = mcpServersPage - 1;
+            setMcpServersPage(newPage);
+            fetchMcpServers(newPage);
+        } else if (currentServersCount === 1) {
+            // If it's the first page and becomes empty, refetch to get updated data
+            fetchMcpServers(mcpServersPage);
+        }
+    }, [mcpServers.length, mcpServersPage, fetchMcpServers]);
+
     // Check if we have any data to display
     const hasData = apisTotalCount > 0 || mcpServersTotalCount > 0;
 
@@ -603,7 +231,7 @@ const PublisherLanding = () => {
             description: 'Expose MCP Servers',
             icon: 'mcp-servers',
         },
-    ]
+    ];
 
     return (
         <Root>
@@ -636,6 +264,7 @@ const PublisherLanding = () => {
                                 currentPage={apisPage}
                                 pageSize={pageSize}
                                 onPageChange={handleApisPageChange}
+                                onDelete={handleApiDelete}
                             />
                             <McpServersSection 
                                 data={mcpServers} 
@@ -644,6 +273,7 @@ const PublisherLanding = () => {
                                 currentPage={mcpServersPage}
                                 pageSize={pageSize}
                                 onPageChange={handleMcpServersPageChange}
+                                onDelete={handleMcpServerDelete}
                             />
                         </Grid>
                     </Grid>

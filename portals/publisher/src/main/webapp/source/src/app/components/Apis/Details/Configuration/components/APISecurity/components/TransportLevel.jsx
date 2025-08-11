@@ -34,6 +34,7 @@ import Certificates from 'AppComponents/Apis/Details/Endpoints/GeneralConfigurat
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import Alert from 'AppComponents/Shared/Alert';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
 import Transports from 'AppComponents/Apis/Details/Configuration/components/Transports.jsx';
@@ -279,7 +280,10 @@ function TransportLevel(props) {
                             <FormControlLabel
                                 control={(
                                     <Checkbox
-                                        disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                        disabled={
+                                            isRestricted(['apim:api_create'], apiFromContext) ||
+                                            apiFromContext.apiType === MCPServer.CONSTS.MCP
+                                        }
                                         checked={isMutualSSLEnabled}
                                         onChange={handleMutualSSLChange}
                                         color='primary'
