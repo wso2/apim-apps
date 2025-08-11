@@ -155,6 +155,9 @@
     "overrides": {
         "react-syntax-highlighter": {
             "prismjs": "^1.30.0"
+        },
+        "@stoplight/elements": {
+            "@stoplight/react-error-boundary": "^3.0.0"
         }
     }
 }
