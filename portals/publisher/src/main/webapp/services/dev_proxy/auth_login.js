@@ -90,7 +90,7 @@ async function doDCR() {
 const clientRoutingBypass = (req, res, proxyOptions) => {
     if (req.path.startsWith('/publisher/site/public/images/')) {
         return req.path.split('/publisher')[1];
-    } else if (req.headers.accept.indexOf('html') !== -1) {
+    } else if (req.headers.accept && req.headers.accept.indexOf('html') !== -1) {
         console.log('Skipping proxy for browser request.');
         return '/publisher/index.html';
     }
