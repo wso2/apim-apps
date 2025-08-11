@@ -42,8 +42,8 @@ function Documents(props) {
     const { intl, setbreadcrumbDocument } = props;
     const { location: { pathname } } = props;
 
-    const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
-    const pathPattern = isMCPServersRoute ? '/mcp-servers/:serverUuid/documents/:documentId' : '/apis/:apiUuid/documents/:documentId';
+    const isMCPServer = api.type === 'MCP';
+    const pathPattern = isMCPServer ? '/mcp-servers/:serverUuid/documents/:documentId' : '/apis/:apiUuid/documents/:documentId';
 
     let match = matchPath(pathname, {
         path: pathPattern,
@@ -51,7 +51,7 @@ function Documents(props) {
         strict: false,
     });
 
-    const apiId = isMCPServersRoute ? props.match.params.serverUuid : props.match.params.apiUuid;
+    const apiId = isMCPServer ? props.match.params.serverUuid : props.match.params.apiUuid;
     let documentId = match ? match.params.documentId : null;
     const [documentList, changeDocumentList] = useState(null);
     const [selectedDoc, setSelectedDoc] = useState(null);
@@ -63,7 +63,7 @@ function Documents(props) {
     }, [selectedDoc]);
     useEffect(() => {
         let promise;
-        if (isMCPServersRoute) {
+        if (isMCPServer) {
             promise = new MCPServer().getDocuments(apiId);
         } else {
             promise = new API().getDocumentsByAPIId(apiId);
@@ -131,7 +131,7 @@ function Documents(props) {
                 >
                     <FormattedMessage
                         id='Apis.Details.Documents.Documentation.title'
-                        defaultMessage='API Documentation'
+                        defaultMessage='Documents'
                     />
                 </Typography>
                 <Progress />
@@ -153,7 +153,7 @@ function Documents(props) {
                 >
                     <FormattedMessage
                         id='Apis.Details.Documents.Documentation.title'
-                        defaultMessage='API Documentation'
+                        defaultMessage='Documents'
                     />
                 </Typography>
                 {documentId === null ? (
@@ -165,13 +165,13 @@ function Documents(props) {
                             <Typography variant='h5' component='h3'>
                                 <FormattedMessage
                                     id='Apis.Details.Documents.Documentation.no.docs'
-                                    defaultMessage='No Documents Available'
+                                    defaultMessage='No Documents'
                                 />
                             </Typography>
                             <Typography component='p'>
                                 <FormattedMessage
                                     id='Apis.Details.Documents.Documentation.no.docs.content'
-                                    defaultMessage='No documents are available for this API'
+                                    defaultMessage='Currently, there are no documents available.'
                                 />
                             </Typography>
                         </InlineMessage>
@@ -191,10 +191,10 @@ function Documents(props) {
             { selectedDoc && (
                 <Redirect
                     exact
-                    from={isMCPServersRoute
+                    from={isMCPServer
                         ? `/mcp-servers/${apiId}/documents`
                         : `/apis/${apiId}/documents`}
-                    to={isMCPServersRoute
+                    to={isMCPServer
                         ? `/mcp-servers/${apiId}/documents/${selectedDoc.documentId}`
                         : `/apis/${apiId}/documents/${selectedDoc.documentId}`}
                 />
