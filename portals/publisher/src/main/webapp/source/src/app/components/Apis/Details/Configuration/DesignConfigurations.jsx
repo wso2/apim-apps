@@ -55,6 +55,7 @@ import UpdateWithoutDetails from 'AppComponents/Apis/Details/Configuration/compo
 import ThumbnailView from 'AppComponents/Apis/Listing/components/ImageGenerator/ThumbnailView';
 import { isRestricted } from 'AppData/AuthManager';
 import API from 'AppData/api.js';
+import MCPServer from 'AppData/MCPServer';
 import APIProduct from 'AppData/APIProduct';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import DefaultVersion from './components/DefaultVersion';
@@ -189,7 +190,7 @@ const Root = styled('div')((
  * Deep coping the properties in API object (what ever the object in the state),
  * making sure that no direct mutations happen when updating the state.
  * You should know the shape of the object that you are keeping in the state,
- * @param {Object} api
+ * @param {Object} api The API object to copy
  * @returns {Object} Deep copy of an object
  */
 function copyAPIConfig(api) {
@@ -198,6 +199,9 @@ function copyAPIConfig(api) {
     if (api.apiType === API.CONSTS.APIProduct && api.isDefaultVersion == null) {
         isDefaultVersion = true;
     }
+    
+    const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
+    
     const copiedConfig = {
         id: api.id,
         name: api.name,
@@ -205,8 +209,6 @@ function copyAPIConfig(api) {
         lifeCycleStatus: api.lifeCycleStatus,
         accessControl: api.accessControl,
         authorizationHeader: api.authorizationHeader,
-        responseCachingEnabled: api.responseCachingEnabled,
-        cacheTimeout: api.cacheTimeout,
         visibility: api.visibility,
         isDefaultVersion: api.isDefaultVersion || isDefaultVersion,
         enableSchemaValidation: api.enableSchemaValidation,
@@ -216,7 +218,6 @@ function copyAPIConfig(api) {
         tags: [...api.tags],
         maxTps: api.maxTps,
         transport: [...api.transport],
-        wsdlUrl: api.wsdlUrl,
         securityScheme: [...api.securityScheme],
         categories: [...api.categories],
         corsConfiguration: {
@@ -226,11 +227,50 @@ function copyAPIConfig(api) {
             accessControlAllowHeaders: [...api.corsConfiguration.accessControlAllowHeaders],
             accessControlAllowMethods: [...api.corsConfiguration.accessControlAllowMethods],
         },
-        additionalProperties: [...api.additionalProperties],
         type: api.type,
         policies: [...api.policies],
         endpointConfig: api.endpointConfig,
     };
+
+    // Add MCP server specific exclusions
+    if (!isMCPServer) {
+        copiedConfig.responseCachingEnabled = api.responseCachingEnabled;
+        copiedConfig.cacheTimeout = api.cacheTimeout;
+        copiedConfig.wsdlUrl = api.wsdlUrl;
+        // copiedConfig.additionalProperties = [...api.additionalProperties];
+    }
+
+    // Handle additionalPropertiesMap for MCP servers
+    if (isMCPServer) {
+        // For MCP servers, always initialize additionalPropertiesMap
+        copiedConfig.additionalPropertiesMap = {};
+        
+        // Start with existing additionalPropertiesMap if available
+        if (api.additionalPropertiesMap) {
+            Object.keys(api.additionalPropertiesMap).forEach(key => {
+                copiedConfig.additionalPropertiesMap[key] = { ...api.additionalPropertiesMap[key] };
+            });
+        }
+        
+        // If we have additionalProperties, merge them (prioritizing the ones with display: true)
+        if (api.additionalProperties && api.additionalProperties.length > 0) {
+            api.additionalProperties.forEach(property => {
+                // Only add if not already in map, or if this one has display: true
+                if (!copiedConfig.additionalPropertiesMap[property.name] || property.display === true) {
+                    copiedConfig.additionalPropertiesMap[property.name] = { ...property };
+                }
+            });
+        }
+        
+        // Create a virtual additionalProperties array for backward compatibility in UI
+        copiedConfig.additionalProperties = Object.values(copiedConfig.additionalPropertiesMap);
+    } else {
+        // For regular APIs, maintain both structures
+        copiedConfig.additionalProperties = [...api.additionalProperties];
+        if (api.additionalPropertiesMap) {
+            copiedConfig.additionalPropertiesMap = { ...api.additionalPropertiesMap };
+        }
+    }
     if (api.advertiseInfo) {
         copiedConfig.advertiseInfo = {
             advertised: api.advertiseInfo.advertised,
@@ -245,12 +285,12 @@ function copyAPIConfig(api) {
 }
 
 /**
-     *
-     * Reduce the configuration UI related actions in to updated state
-     * @param {*} state current state
-     * @param {*} configAction dispatched configuration action
-     * @returns {Object} updated state
-     */
+ *
+ * Reduce the configuration UI related actions in to updated state
+ * @param {Object} state current state
+ * @param {Object} configAction dispatched configuration action
+ * @returns {Object} updated state
+ */
 function configReducer(state, configAction) {
     const { action, value } = configAction;
     const nextState = copyAPIConfig(state);
@@ -280,17 +320,50 @@ function configReducer(state, configAction) {
             return { ...copyAPIConfig(state), [action]: value };
         case 'github_repo':
         case 'slack_url': {
-            const targetProperty = nextState.additionalProperties.find((property) => property.name === action);
+            const isMCPServer = nextState.type === MCPServer.CONSTS.MCP;
             const updatedProperty = {
                 name: action,
                 value,
                 display: true,
             };
-            if (targetProperty) {
-                nextState.additionalProperties = [
-                    ...nextState.additionalProperties.filter((property) => property.name !== action), updatedProperty];
+            
+            // Debug logging
+            console.log(`[DEBUG] Updating ${action} with value: "${value}" for MCP server: ${isMCPServer}`);
+            console.log(`[DEBUG] nextState.type:`, nextState.type);
+            console.log(`[DEBUG] MCPServer.CONSTS.MCP:`, MCPServer.CONSTS.MCP);
+            
+            if (isMCPServer) {
+                // Handle additionalPropertiesMap for MCP servers
+                if (!nextState.additionalPropertiesMap) {
+                    nextState.additionalPropertiesMap = {};
+                }
+                
+                // Clean up any existing entries first to avoid duplicates
+                delete nextState.additionalPropertiesMap[action];
+                
+                // Add the new property
+                nextState.additionalPropertiesMap[action] = updatedProperty;
+                
+                // Update the virtual additionalProperties array for UI compatibility (clean rebuild)
+                nextState.additionalProperties = Object.values(nextState.additionalPropertiesMap);
+                
+                console.log(`[DEBUG] Updated additionalPropertiesMap:`, nextState.additionalPropertiesMap);
+                console.log(`[DEBUG] Updated additionalProperties:`, nextState.additionalProperties);
             } else {
-                nextState.additionalProperties.push(updatedProperty);
+                // Handle additionalProperties for regular APIs
+                const targetProperty = nextState.additionalProperties.find((property) => property.name === action);
+                if (targetProperty) {
+                    nextState.additionalProperties = [
+                        ...nextState.additionalProperties.filter((property) => property.name !== action), 
+                        updatedProperty
+                    ];
+                } else {
+                    nextState.additionalProperties.push(updatedProperty);
+                }
+                // Also update additionalPropertiesMap for regular APIs if it exists
+                if (nextState.additionalPropertiesMap) {
+                    nextState.additionalPropertiesMap[action] = updatedProperty;
+                }
             }
             return nextState;
         }
@@ -343,11 +416,37 @@ export default function DesignConfigurations() {
     const [overview, setOverview] = useState('');
     const [overviewDocument, setOverviewDocument] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
-    const [slackURLProperty, githubURLProperty] = useMemo(() => [
-        apiConfig.additionalProperties.find((prop) => prop.name === 'slack_url'),
-        apiConfig.additionalProperties.find((prop) => prop.name === 'github_repo'),
-    ],
-    [apiConfig.additionalProperties]);
+    const [slackURLProperty, githubURLProperty] = useMemo(() => {
+        // For MCP servers, get the latest values from additionalPropertiesMap if available
+        const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
+        
+        let slackProp;
+        let githubProp;
+        
+        if (isMCPServer && apiConfig.additionalPropertiesMap) {
+            slackProp = apiConfig.additionalPropertiesMap.slack_url;
+            githubProp = apiConfig.additionalPropertiesMap.github_repo;
+        }
+        
+        // Fallback to additionalProperties array (find the last occurrence with display: true)
+        if (!slackProp) {
+            const slackProps = apiConfig.additionalProperties.filter((prop) => prop.name === 'slack_url');
+            slackProp = slackProps.find(prop => prop.display === true) || slackProps[slackProps.length - 1];
+        }
+        
+        if (!githubProp) {
+            const githubProps = apiConfig.additionalProperties.filter((prop) => prop.name === 'github_repo');
+            githubProp = githubProps.find(prop => prop.display === true) || githubProps[githubProps.length - 1];
+        }
+        
+        console.log(`[DEBUG] useMemo - isMCPServer:`, isMCPServer);
+        console.log(`[DEBUG] useMemo - additionalProperties:`, apiConfig.additionalProperties);
+        console.log(`[DEBUG] useMemo - additionalPropertiesMap:`, apiConfig.additionalPropertiesMap);
+        console.log(`[DEBUG] useMemo - slackURLProperty:`, slackProp);
+        console.log(`[DEBUG] useMemo - githubURLProperty:`, githubProp);
+        
+        return [slackProp, githubProp];
+    }, [apiConfig.additionalProperties, apiConfig.additionalPropertiesMap, api.apiType]);
     const invalidTagsExist = apiConfig.tags.find((tag) => {
         return (/([~!@#;%^&*+=|\\<>"'/,])/.test(tag)) || (tag.length > 30);
     });
@@ -486,7 +585,35 @@ export default function DesignConfigurations() {
      */
     async function handleSave() {
         setIsUpdating(true);
-        updateAPI(apiConfig)
+        
+        // Prepare the update payload based on the API type
+        const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
+        let updatePayload = { ...apiConfig };
+        
+        if (isMCPServer) {
+            // For MCP servers, ensure we're using additionalPropertiesMap and exclude forbidden fields
+            const { responseCachingEnabled, cacheTimeout, wsdlUrl, additionalProperties, ...mcpConfig } = updatePayload;
+            
+            console.log(`[DEBUG] Save - Original additionalProperties:`, additionalProperties);
+            console.log(`[DEBUG] Save - Original additionalPropertiesMap:`, mcpConfig.additionalPropertiesMap);
+            
+            // Ensure additionalPropertiesMap is present and up-to-date
+            if (!mcpConfig.additionalPropertiesMap) {
+                mcpConfig.additionalPropertiesMap = {};
+            }
+            
+            // Convert additionalProperties array back to additionalPropertiesMap if needed
+            if (additionalProperties && additionalProperties.length > 0) {
+                additionalProperties.forEach(property => {
+                    mcpConfig.additionalPropertiesMap[property.name] = property;
+                });
+            }
+            
+            console.log(`[DEBUG] Save - Final additionalPropertiesMap:`, mcpConfig.additionalPropertiesMap);
+            updatePayload = mcpConfig;
+        }
+        
+        updateAPI(updatePayload)
             .catch((error) => {
                 if (error.response) {
                     Alert.error(error.response.body.description);
@@ -813,7 +940,8 @@ export default function DesignConfigurations() {
                                         />
                                     </Box>
                                     <Box py={1}>
-                                        {api.apiType !== API.CONSTS.APIProduct &&
+                                        {api.apiType !== API.CONSTS.APIProduct
+                                        && api.apiType !== MCPServer.CONSTS.MCP &&
                                             settings && settings.gatewayFeatureCatalog
                                             .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
                                             .basic.includes("advertised") && (

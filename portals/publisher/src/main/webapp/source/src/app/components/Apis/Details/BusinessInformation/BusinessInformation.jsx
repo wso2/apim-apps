@@ -29,6 +29,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api.js';
+import MCPServer from 'AppData/MCPServer';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { isRestricted } from 'AppData/AuthManager';
 import APIValidation from 'AppData/APIValidation';
@@ -154,6 +155,23 @@ class BusinessInformation extends React.Component {
     }
 
     /**
+     * Determines if the current user has restricted access based on context
+     * @param {Object} api - The API or MCP server object
+     * @returns {boolean} - True if access is restricted, false otherwise
+     */
+    isAccessRestricted = (api) => {
+        const isMCPServer = api.isMCPServer();
+        
+        if (isMCPServer) {
+            // For MCP servers, check MCP-specific permissions
+            return isRestricted(['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'], api);
+        } else {
+            // For APIs, check API-specific permissions
+            return isRestricted(['apim:api_create', 'apim:api_publish'], api);
+        }
+    };
+
+    /**
      *
      * @inheritdoc
      * @returns
@@ -165,6 +183,8 @@ class BusinessInformation extends React.Component {
             businessOwner, businessOwnerEmail, technicalOwner, technicalOwnerEmail,
         } = this.state;
 
+        const isAccessRestricted = this.isAccessRestricted(api);
+
         return (
             (<Root>
                 <Container maxWidth='md'>
@@ -175,29 +195,44 @@ class BusinessInformation extends React.Component {
                                 defaultMessage='Business Information'
                             />
                         </Typography>
-                        {api.apiType === API.CONSTS.APIProduct
-                            ? (
-                                <Typography variant='caption'>
-                                    <FormattedMessage
-                                        id='Apis.Details.BusinessInformation.BusinessInformation.APIProduct.sub.heading'
-                                        defaultMessage='Business Information of the API Product'
-                                    />
-                                </Typography>
-                            )
-                            : (
-                                <Typography variant='caption'>
-                                    <FormattedMessage
-                                        id='Apis.Details.BusinessInformation.BusinessInformation.sub.heading'
-                                        defaultMessage='Business Information of the API'
-                                    />
-                                </Typography>
-                            )}
+                        {(() => {
+                            if (api.apiType === MCPServer.CONSTS.MCP) {
+                                return (
+                                    <Typography variant='caption'>
+                                        <FormattedMessage
+                                            id={'Apis.Details.BusinessInformation.BusinessInformation.MCPServer.'
+                                                + 'sub.heading'}
+                                            defaultMessage='Business Information of the MCP Server'
+                                        />
+                                    </Typography>
+                                );
+                            } else if (api.apiType === API.CONSTS.APIProduct) {
+                                return (
+                                    <Typography variant='caption'>
+                                        <FormattedMessage
+                                            id={'Apis.Details.BusinessInformation.BusinessInformation.APIProduct.'
+                                                + 'sub.heading'}
+                                            defaultMessage='Business Information of the API Product'
+                                        />
+                                    </Typography>
+                                );
+                            } else {
+                                return (
+                                    <Typography variant='caption'>
+                                        <FormattedMessage
+                                            id='Apis.Details.BusinessInformation.BusinessInformation.sub.heading'
+                                            defaultMessage='Business Information of the API'
+                                        />
+                                    </Typography>
+                                );
+                            }
+                        })()}
                     </Box>
                     <Paper elevation={0}>
                         <Box px={8} py={5}>
                             <form noValidate autoComplete='off'>
                                 <TextField
-                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                                    disabled={isAccessRestricted}
                                     fullWidth
                                     id='name'
                                     label={(
@@ -230,7 +265,7 @@ class BusinessInformation extends React.Component {
                                 />
                                 <TextField
                                     error={!this.isValidBusinessOwnerEmail}
-                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                                    disabled={isAccessRestricted}
                                     fullWidth
                                     id='Email'
                                     label={(
@@ -244,26 +279,30 @@ class BusinessInformation extends React.Component {
                                             />
                                         </>
                                     )}
-                                    helperText={this.isValidBusinessOwnerEmail
-                                        ? (
-                                            <FormattedMessage
-                                                id={
-                                                    'Apis.Details.BusinessInformation.BusinessInformation'
-                                                + '.business.owner.email.helper.text'
-                                                }
-                                                defaultMessage='Provide the email of the business owner'
-                                            />
-                                        )
-                                        : (
-                                            <FormattedMessage
-                                                id={
-                                                    'Apis.Details.BusinessInformation.BusinessInformation'
-                                                + '.business.owner.email.helper.text'
-                                                + '.error'
-                                                }
-                                                defaultMessage='Please enter a valid email address'
-                                            />
-                                        )}
+                                    helperText={(() => {
+                                        if (this.isValidBusinessOwnerEmail) {
+                                            return (
+                                                <FormattedMessage
+                                                    id={
+                                                        'Apis.Details.BusinessInformation.BusinessInformation'
+                                                    + '.business.owner.email.helper.text'
+                                                    }
+                                                    defaultMessage='Provide the email of the business owner'
+                                                />
+                                            );
+                                        } else {
+                                            return (
+                                                <FormattedMessage
+                                                    id={
+                                                        'Apis.Details.BusinessInformation.BusinessInformation'
+                                                    + '.business.owner.email.helper.text'
+                                                    + '.error'
+                                                    }
+                                                    defaultMessage='Please enter a valid email address'
+                                                />
+                                            );
+                                        }
+                                    })()}
                                     type='email'
                                     name='name'
                                     margin='normal'
@@ -272,7 +311,7 @@ class BusinessInformation extends React.Component {
                                     variant='outlined'
                                 />
                                 <TextField
-                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                                    disabled={isAccessRestricted}
                                     fullWidth
                                     id='TOname'
                                     label={(
@@ -304,7 +343,7 @@ class BusinessInformation extends React.Component {
                                 />
                                 <TextField
                                     error={!this.isValidTechnicalOwnerEmail}
-                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                                    disabled={isAccessRestricted}
                                     fullWidth
                                     id='TOemail'
                                     label={(
@@ -316,26 +355,30 @@ class BusinessInformation extends React.Component {
                                             defaultMessage='Technical Owner Email'
                                         />
                                     )}
-                                    helperText={this.isValidTechnicalOwnerEmail
-                                        ? (
-                                            <FormattedMessage
-                                                id={
-                                                    'Apis.Details.BusinessInformation.BusinessInformation'
-                                                + '.technical.owner.email.helper.text'
-                                                }
-                                                defaultMessage='Provide the email of the technical owner'
-                                            />
-                                        )
-                                        : (
-                                            <FormattedMessage
-                                                id={
-                                                    'Apis.Details.BusinessInformation.BusinessInformation'
-                                                + '.technical.owner.email.helper.text'
-                                                + '.error'
-                                                }
-                                                defaultMessage='Please enter a valid email address'
-                                            />
-                                        )}
+                                    helperText={(() => {
+                                        if (this.isValidTechnicalOwnerEmail) {
+                                            return (
+                                                <FormattedMessage
+                                                    id={
+                                                        'Apis.Details.BusinessInformation.BusinessInformation'
+                                                    + '.technical.owner.email.helper.text'
+                                                    }
+                                                    defaultMessage='Provide the email of the technical owner'
+                                                />
+                                            );
+                                        } else {
+                                            return (
+                                                <FormattedMessage
+                                                    id={
+                                                        'Apis.Details.BusinessInformation.BusinessInformation'
+                                                    + '.technical.owner.email.helper.text'
+                                                    + '.error'
+                                                    }
+                                                    defaultMessage='Please enter a valid email address'
+                                                />
+                                            );
+                                        }
+                                    })()}
                                     type='email'
                                     name='name'
                                     margin='normal'
@@ -358,10 +401,7 @@ class BusinessInformation extends React.Component {
                                                 variant='contained'
                                                 color='primary'
                                                 onClick={() => this.handleSubmit(updateAPI)}
-                                                disabled={
-                                                    isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                                    || !this.isValid() || api.isRevision
-                                                }
+                                                disabled={ isAccessRestricted || !this.isValid() || api.isRevision }
                                                 id='business-info-save'
                                             >
                                                 <FormattedMessage id='save' defaultMessage='Save' />
@@ -371,11 +411,15 @@ class BusinessInformation extends React.Component {
                                     <Grid item>
                                         <Button
                                             component={Link}
-                                            to={
-                                                (api.apiType === API.CONSTS.APIProduct ? '/api-products/' : '/apis/')
-                                                + api.id
-                                                + '/overview'
-                                            }
+                                            to={(() => {
+                                                if (api.apiType === MCPServer.CONSTS.MCP) {
+                                                    return `/mcp-servers/${api.id}/overview`;
+                                                } else if (api.apiType === API.CONSTS.APIProduct) {
+                                                    return `/api-products/${api.id}/overview`;
+                                                } else {
+                                                    return `/apis/${api.id}/overview`;
+                                                }
+                                            })()}
                                         >
                                             <FormattedMessage id='cancel' defaultMessage='Cancel' />
                                         </Button>
@@ -400,7 +444,7 @@ BusinessInformation.propTypes = {
             businessOwnerEmail: PropTypes.string,
             technicalOwner: PropTypes.string,
             technicalOwnerEmail: PropTypes.string,
-            apiType: PropTypes.oneOf([API.CONSTS.API, API.CONSTS.APIProduct]),
+            apiType: PropTypes.oneOf([API.CONSTS.API, API.CONSTS.APIProduct, MCPServer.CONSTS.MCP]),
         }).isRequired,
     }).isRequired,
     updateAPI: PropTypes.func.isRequired,

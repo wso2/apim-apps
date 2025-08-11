@@ -71,9 +71,8 @@ export default function ImportDefinition(props) {
     const intl = useIntl();
     const isGraphQL = api.isGraphql();
     const isSOAP = api.isSOAP();
-    // const isWebSocket = api.isWebSocket();
-    // const isWebSub = api.isWebSub();
     const isAsyncAPI = api && (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE');
+    const isMCPServer = api.isMCPServer();
     const [asyncAPIDefinitionImport, setAsyncAPIDefinitionImport] = useState(false);
 
     function apiInputsReducer(currentState, inputAction) {
@@ -424,13 +423,16 @@ export default function ImportDefinition(props) {
 
     return (
         (<Root>
-            {!isAsyncAPI && (
+            {!(isAsyncAPI || isMCPServer) && (
                 <Button
                     size='small'
                     className={classes.button}
                     onClick={handleAPIDefinitionImportOpen}
-                    disabled={isRestricted(['apim:api_create'], api) || api.isRevision
-                    || (settings && settings.portalConfigurationOnlyModeEnabled)}
+                    disabled={
+                        isRestricted(['apim:api_create'], api)
+                        || api.isRevision
+                        || (settings && settings.portalConfigurationOnlyModeEnabled)
+                    }
                     id='import-definition-btn'
                 >
                     <CloudUploadRounded className={classes.buttonIcon} />

@@ -94,7 +94,10 @@ function ApiTagCloud(props) {
      * @memberof ApiTagCloud
      */
     const handleOnClick = (tag) => {
-        const tagSearchURL = `/apis?offset=0&query=tag:${tag.value}`;
+        // Detect if we're on MCP servers route to generate appropriate URL
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        const baseURL = isMCPServersRoute ? '/mcp-servers' : '/apis';
+        const tagSearchURL = `${baseURL}?offset=0&query=tag:${tag.value}`;
         history.push(tagSearchURL);
     };
 

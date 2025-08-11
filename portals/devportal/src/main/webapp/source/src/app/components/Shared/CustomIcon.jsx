@@ -39,6 +39,27 @@ export default class CustomIcon extends React.Component{
                     </g>
                 </g>
             </svg>
+        } else if ( icon === 'mcp-server') {
+            return (
+                <svg
+                    width={width}
+                    height={height}
+                    viewBox="0 0 180 180"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <g clip-path="url(#clip0_1001_3912)">
+                        <path d="M18 84.8526L85.8822 16.9704C95.2548 7.59776 110.451 7.59776 119.823 16.9704C129.196 26.3429 129.196 41.5389 119.823 50.9115L68.5581 102.177" stroke={strokeColor} stroke-width="12" stroke-linecap="round" />
+                        <path d="M69.2652 101.47L119.823 50.9115C129.196 41.5389 144.392 41.5389 153.765 50.9115L154.118 51.265C163.491 60.6376 163.491 75.8336 154.118 85.2061L92.7248 146.6C89.6006 149.724 89.6006 154.789 92.7248 157.913L105.331 170.52" stroke={strokeColor} stroke-width="12" stroke-linecap="round" />
+                        <path d="M102.853 33.9409L52.6482 84.1455C43.2756 93.5181 43.2756 108.714 52.6482 118.087C62.0208 127.459 77.2167 127.459 86.5893 118.087L136.794 67.882" stroke={strokeColor} stroke-width="12" stroke-linecap="round" />
+                    </g>
+                    <defs>
+                        <clipPath id="clip0_1001_3912">
+                            <rect width="180" height="180" fill={strokeColor} />
+                        </clipPath>
+                    </defs>
+                </svg>
+            );
         } else if( icon === 'credentials') {
             return <svg xmlns="http://www.w3.org/2000/svg" aria-hidden='true' width={width} height={height}
                 viewBox="0 0 8.4568129 8.4735926" className={className}>

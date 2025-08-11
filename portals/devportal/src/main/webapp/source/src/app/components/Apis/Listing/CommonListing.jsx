@@ -258,16 +258,16 @@ class CommonListingLegacy extends React.Component {
             .then((response) => {
                 this.setState({ allTags: response.body.list });
             })
-            .catch((error) => {
-                console.log(error);
+            .catch(() => {
+                // Handle error silently
             });
         const promisedCategories = restApiClient.apiCategories();
         promisedCategories
             .then((response) => {
                 this.setState({ allCategories: response.body.list });
             })
-            .catch((error) => {
-                console.log(error);
+            .catch(() => {
+                // Handle error silently
             });
         this.isMonetizationEnabled();
         this.isRecommendationEnabled();
@@ -279,10 +279,10 @@ class CommonListingLegacy extends React.Component {
      * @param {String} value view type
      * @memberof CommonListingLegacy
      */
-     setListType = (value) => {
-         localStorage.setItem('portal.listType', value);
-         this.setState({ listType: value });
-     };
+    setListType = (value) => {
+        localStorage.setItem('portal.listType', value);
+        this.setState({ listType: value });
+    };
 
     toggleLeftMenu = () => {
         this.setState((prevState) => ({ showLeftMenu: !prevState.showLeftMenu }));
@@ -331,6 +331,13 @@ class CommonListingLegacy extends React.Component {
         const searchParam = new URLSearchParams(search);
         const searchQuery = searchParam.get('query');
         let selectedTag = null;
+
+        // Detect if we're on MCP servers route or APIs route
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        const title = isMCPServersRoute ? 'MCP Servers' : 'APIs';
+        const titleId = isMCPServersRoute ? 'MCPServers.Listing.Listing.mcpservers.main' : 'Apis.Listing.Listing.apis.main';
+        const iconType = isMCPServersRoute ? 'mcp-server' : 'api';
+
         if (search && searchQuery !== null) {
             // For the tagWise search
             if (active && key) {
@@ -397,11 +404,11 @@ class CommonListingLegacy extends React.Component {
                 >
                     <div className={classes.appBar} id='commonListingAppBar'>
                         <div className={classNames(classes.mainIconWrapper, 'main-icon-wrapper')}>
-                            <CustomIcon strokeColor={strokeColorMain} width={42} height={42} icon='api' />
+                            <CustomIcon strokeColor={strokeColorMain} width={42} height={42} icon={iconType} />
                         </div>
                         <div className={classes.mainTitleWrapper} id='mainTitleWrapper'>
                             <Typography variant='h4' component='h1' className={classes.mainTitle}>
-                                <FormattedMessage defaultMessage='APIs' id='Apis.Listing.Listing.apis.main' />
+                                <FormattedMessage defaultMessage={title} id={titleId} />
                             </Typography>
                         </div>
                         {this.showToggle && (
@@ -493,6 +500,11 @@ CommonListingLegacy.defaultProps = {
     }),
 };
 
+/**
+ * CommonListing component wrapper that provides theme context to CommonListingLegacy
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} - Rendered CommonListingLegacy component with theme
+ */
 function CommonListing(props) {
     const theme = useTheme();
     return (

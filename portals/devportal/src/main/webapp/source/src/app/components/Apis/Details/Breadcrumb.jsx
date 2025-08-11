@@ -110,6 +110,13 @@ export default function Breadcrumb(props) {
                 id: 'Apis.Details.Breadcrumb.sdks',
             }),
         },
+        {
+            route: 'mcp-playground',
+            text: intl.formatMessage({
+                defaultMessage: 'MCP Playground',
+                id: 'Apis.Details.Breadcrumb.mcp.playground',
+            }),
+        },
     ];
 
     const [selected, setSelected] = useState(pages[0]);

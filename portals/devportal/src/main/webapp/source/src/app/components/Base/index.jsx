@@ -324,6 +324,8 @@ class LayoutLegacy extends React.Component {
         const { pathname } = location;
         if (/\/apis$/g.test(pathname) || /\/apis\//g.test(pathname)) {
             this.setState({ selected: 'apis' });
+        } else if (/\/mcp-servers$/g.test(pathname) || /\/mcp-servers\//g.test(pathname)) {
+            this.setState({ selected: 'mcp-servers' });
         } else if (/\/home$/g.test(pathname) || /\/home\//g.test(pathname)) {
             this.setState({ selected: 'home' });
         } else if (/\/applications$/g.test(pathname) || /\/applications\//g.test(pathname)) {

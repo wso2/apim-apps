@@ -211,7 +211,8 @@ function devServerBefore(app, server, compiler) {
                 + 'rtificates_update apim:ep_certificates_view apim:mediation_policy_create apim:mediation_policy_mana'
                 + 'ge apim:mediation_policy_view apim:pub_alert_manage apim:publisher_settings apim:shared_scope_manag'
                 + 'e apim:subscription_block apim:subscription_view apim:threat_protection_policy_create apim:threat_p'
-                + 'rotection_policy_manage openid service_catalog:service_view service_catalog:service_write',
+                + 'rotection_policy_manage openid service_catalog:service_view service_catalog:service_write'
+                + ' apim:mcp_server_create apim:mcp_server_manage',
                 active: true,
                 token_type: 'Bearer',
                 exp: 1619546441,

@@ -232,6 +232,17 @@ function APIThumbPlain(props) {
         setTechnicalOpenPopover(false);
     };
 
+    const isAccessRestricted = () => {
+        if (api.isMCPServer()) {
+            return isRestricted(
+                ['apim:mcp_server_delete', 'apim:mcp_server_manage', 'apim:mcp_server_import_export'],
+                api
+            );
+        } else {
+            return isRestricted(['apim:api_create'], api);
+        }
+    };
+
     if (!showInfo) {
         return (
             <Link to={'/apis/' + api.id} aria-hidden='true'>
@@ -529,7 +540,7 @@ function APIThumbPlain(props) {
                             />
                         )}
                     </Box>
-                    {!isRestricted(['apim:api_create'], api) && (
+                    {!isAccessRestricted() && (
                         <>
                             <DeleteApiButton
                                 setLoading={setLoading}

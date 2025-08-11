@@ -151,7 +151,6 @@ class EditScope extends React.Component {
      */
     constructor(props) {
         super(props);
-        // this.api = new Api();
         this.api_uuid = props.match.params.api_uuid;
         const { api, location } = this.props;
         const thisScope = api.scopes.find((apiScope) => {

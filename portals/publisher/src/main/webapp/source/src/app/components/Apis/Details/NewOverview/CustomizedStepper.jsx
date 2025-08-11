@@ -27,6 +27,7 @@ import { grey } from '@mui/material/colors';
 import styled from '@emotion/styled';
 import IconButton from '@mui/material/IconButton';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import MCPServer from 'AppData/MCPServer';
 
 const PREFIX = 'CustomizedStepper';
 
@@ -153,6 +154,21 @@ function ColorlibStepIcon(props) {
 }
 
 /**
+ * Gets the appropriate base path for API links based on API type
+ * @param {Object} api - The API object
+ * @returns {string} - The base path for links
+ */
+function getBasePath(api) {
+    if (api.isAPIProduct()) {
+        return '/api-products/';
+    } else if (api.type === MCPServer.CONSTS.MCP) {
+        return '/mcp-servers/';
+    } else {
+        return '/apis/';
+    }
+}
+
+/**
  *
  * @returns
  */
@@ -162,11 +178,44 @@ export default function CustomizedStepper() {
     const [isMandatoryPropertiesAvailable, setIsMandatoryPropertiesAvailable] = useState(false);
     const [deploymentsAvailable, setDeploymentsAvailable] = useState(false);
     const [isEndpointSecurityConfigured, setIsEndpointSecurityConfigured] = useState(false);
-    const isPrototypedAvailable = api.apiType !== API.CONSTS.APIProduct && api.endpointConfig !== null
+    const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
+    const [isMCPEndpointAvailable, setMCPEndpointAvailable] = useState(false);
+    const [MCPEndpointLoading, setMCPEndpointLoading] = useState(true);
+    const isPrototypedAvailable = api.apiType !== API.CONSTS.APIProduct
+        && api.endpointConfig !== null
         && api.endpointConfig.implementation_status === 'prototyped';
-    const isEndpointAvailable = api.subtypeConfiguration?.subtype === 'AIAPI'
-        ? (api.primaryProductionEndpointId !== null || api.primarySandboxEndpointId !== null)
-        : api.endpointConfig !== null;
+
+    let isEndpointAvailable = false;
+    if (isMCPServer) {
+        isEndpointAvailable = isMCPEndpointAvailable;
+    } else if (api.subtypeConfiguration?.subtype === 'AIAPI') {
+        isEndpointAvailable = (api.primaryProductionEndpointId !== null || api.primarySandboxEndpointId !== null);
+    } else {
+        isEndpointAvailable = api.endpointConfig !== null;
+    }
+
+    useEffect(() => {
+        if (isMCPServer) {
+            setMCPEndpointLoading(true);
+            MCPServer.getMCPServerEndpoints(api.id)
+                .then((response) => {
+                    const fetchedEndpoints = response.body;
+                    if (fetchedEndpoints && fetchedEndpoints.length > 0) {
+                        setMCPEndpointAvailable(true);
+                    } else {
+                        setMCPEndpointAvailable(false);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching MCP server endpoints:', error);
+                    setMCPEndpointAvailable(false);
+                })
+                .finally(() => {
+                    setMCPEndpointLoading(false);
+                });
+        }
+    }, [isMCPServer, api.id]);
+
     const isTierAvailable = api.policies.length !== 0;
     const lifecycleState = api.isAPIProduct() ? api.state : api.lifeCycleStatus;
     const isPublished = lifecycleState === 'PUBLISHED';
@@ -553,10 +602,10 @@ export default function CustomizedStepper() {
                 );
         }
     }
-    const isTestLinkDisabled = lifecycleState === 'RETIERD' || !deploymentsAvailable
+    const isTestLinkDisabled = lifecycleState === 'RETIRED' || !deploymentsAvailable
     || (!api.isAPIProduct() && !isEndpointAvailable)
     || (!isMutualSslOnly && !isTierAvailable)
-    || (api.type !== 'HTTP' && api.type !== 'SOAP' && api.type !== 'APIPRODUCT');
+    || (api.type !== 'HTTP' && api.type !== 'SOAP' && api.type !== 'APIPRODUCT' && api.type !== 'MCP');
     const isDeployLinkDisabled =
         (api.type !== 'WEBSUB' &&
             !(
@@ -578,6 +627,14 @@ export default function CustomizedStepper() {
             id: 'Apis.Details.Overview.CustomizedStepper.ToolTip.DeploymentUnavailable',
             defaultMessage: 'Deploy a revision of this API to the Gateway',
         });
+    }
+
+    if (isMCPServer && MCPEndpointLoading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                <CircularProgress />
+            </Box>
+        );
     }
 
     return (
@@ -631,7 +688,7 @@ export default function CustomizedStepper() {
                                                             api.subtypeConfiguration?.subtype === 'AIAPI'
                                                                 ? isEndpointSecurityConfigured
                                                                 : true
-                                                        ) 
+                                                        )
                                                             ? (
                                                                 <CheckIcon className={classes.iconTrue} />
                                                             ) 
@@ -646,7 +703,7 @@ export default function CustomizedStepper() {
                                                                 underline='none'
                                                                 className={classes.pageLinks}
                                                                 component={RouterLink}
-                                                                to={'/apis/' + api.id + '/endpoints'}
+                                                                to={getBasePath(api) + api.id + '/endpoints'}
                                                             >
                                                                 <Typography variant='h6'>
                                                                     <FormattedMessage
@@ -697,9 +754,7 @@ export default function CustomizedStepper() {
                                                             [classes.disabledLink]: isDeployLinkDisabled,
                                                         })}
                                                         component={RouterLink}
-                                                        to={api.isAPIProduct()
-                                                            ? '/api-products/' + api.id + '/deployments'
-                                                            : '/apis/' + api.id + '/deployments'}
+                                                        to={getBasePath(api) + api.id + '/deployments'}
                                                     >
                                                         <Typography variant='h6'>
                                                             <FormattedMessage
@@ -741,9 +796,11 @@ export default function CustomizedStepper() {
                                                         })}
                                                         underline='none'
                                                         component={RouterLink}
-                                                        to={api.isAPIProduct()
-                                                            ? '/api-products/' + api.id + '/test-console'
-                                                            : '/apis/' + api.id + '/test-console'}
+                                                        to={
+                                                            isMCPServer
+                                                                ? getBasePath(api) + api.id + '/mcp-playground'
+                                                                : getBasePath(api) + api.id + '/test-console'
+                                                        }
                                                     >
                                                         <Typography variant='h6'>
                                                             <FormattedMessage
@@ -787,9 +844,7 @@ export default function CustomizedStepper() {
                                                                 underline='none'
                                                                 component={RouterLink}
                                                                 className={classes.pageLinks}
-                                                                to={api.isAPIProduct()
-                                                                    ? '/api-products/' + api.id + '/subscriptions'
-                                                                    : '/apis/' + api.id + '/subscriptions'}
+                                                                to={getBasePath(api) + api.id + '/subscriptions'}
                                                             >
                                                                 <Typography variant='h6'>
                                                                     <FormattedMessage

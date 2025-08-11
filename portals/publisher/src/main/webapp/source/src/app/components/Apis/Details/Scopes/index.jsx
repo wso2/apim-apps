@@ -26,7 +26,15 @@ import Scopes from './Scopes';
 
 const Scope = () => {
     const [api, updateAPI] = useAPI();
-    const urlPrefix = api.isAPIProduct() ? 'api-products' : 'apis';
+    let urlPrefix;
+    if (api.isMCPServer()) {
+        urlPrefix = 'mcp-servers';
+    } else if (api.isAPIProduct()) {
+        urlPrefix = 'api-products';
+    } else {
+        urlPrefix = 'apis';
+    }
+
     return (
         <Switch>
             <Route exact path={'/' + urlPrefix + '/:api_uuid/scopes/'} component={Scopes} />

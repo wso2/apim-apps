@@ -128,6 +128,46 @@ function GlobalNavBar(props) {
                 {(selected === 'apis' && !drawerView) && (<div className={classes.triangleDown} />)}
             </Link>
             <Link
+                data-testid='itest-link-to-mcp-servers'
+                to={(theme.custom.tagWise.active && theme.custom.tagWise.style === 'page') ? '/api-groups' : '/mcp-servers'}
+                className={classNames({
+                    [classes.selected]: selected === 'mcp-servers',
+                    // eslint-disable-next-line quote-props
+                    'selected': selected === 'mcp-servers',
+                    [classes.links]: true,
+                }, 'header-link')}
+            >
+                <ListItem component='div' classes={{ root: classes.listItemRoot }}>
+                    <ListItemIcon classes={{
+                        root: classNames({ [classes.smallIcon]: !drawerView },
+                            'heder-menu-icon-mcp-servers', 'header-menu-icon'),
+                    }}
+                    >
+                        <CustomIcon
+                            width={iconWidth}
+                            height={iconWidth}
+                            icon='mcp-server'
+                            className={classes.listText}
+                            strokeColor={selected === 'mcp-servers' ? strokeColorSelected : strokeColor}
+                        />
+                    </ListItemIcon>
+                    <ListItemText
+                        classes={{
+                            root: classes.listItemTextRoot,
+                            primary: classNames({
+                                [classes.selectedText]: selected === 'mcp-servers',
+                                [classes.listText]: selected !== 'mcp-servers',
+                            }),
+                        }}
+                        primary={intl.formatMessage({
+                            id: 'Base.Header.GlobalNavbar.menu.mcpServers',
+                            defaultMessage: 'MCP Servers',
+                        })}
+                    />
+                </ListItem>
+                {(selected === 'mcp-servers' && !drawerView) && (<div className={classes.triangleDown} />)}
+            </Link>
+            <Link
                 id='itest-link-to-applications'
                 to='/applications'
                 className={classNames({

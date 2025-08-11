@@ -18,18 +18,11 @@
 
 import React from 'react';
 import { styled } from '@mui/material/styles';
-import Grid from '@mui/material/Grid';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import Icon from '@mui/material/Icon';
 import IconButton from '@mui/material/IconButton';
 import Dialog from '@mui/material/Dialog';
-import Button from '@mui/material/Button';
 import MuiDialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -40,13 +33,11 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import Progress from 'AppComponents/Shared/Progress';
 import Alert from 'AppComponents/Shared/Alert';
 import APIList from 'AppComponents/Apis/Listing/APICardView';
-import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import CONSTANTS from 'AppData/Constants';
 import Subscription from 'AppData/Subscription';
 import Api from 'AppData/api';
 import { app } from 'Settings';
-import InlineMessage from 'AppComponents/Shared/InlineMessage';
-import SubscriptionTableData from './SubscriptionTableData';
+import SubscriptionSection from './SubscriptionSection';
 
 const PREFIX = 'Subscriptions';
 
@@ -127,6 +118,15 @@ const Root = styled('div')((
     [`& .${classes.subsTable}`]: {
         '& td': {
             padding: '4px 8px',
+        },
+        // Ensure consistent table styling across all subscription sections
+        tableLayout: 'fixed',
+        width: '100%',
+        '& th, & td': {
+            borderRight: `1px solid ${theme.palette.divider}`,
+            '&:last-child': {
+                borderRight: 'none',
+            },
         },
     },
 
@@ -213,12 +213,16 @@ class Subscriptions extends React.Component {
         super(props);
         this.state = {
             subscriptions: null,
+            apiSubscriptions: null,
+            mcpSubscriptions: null,
             apisNotFound: false,
             subscriptionsNotFound: false,
             isAuthorize: true,
             openDialog: false,
+            openMcpDialog: false,
             searchText: '',
             pseudoSubscriptions: false,
+            pseudoMcpSubscriptions: false,
         };
         this.checkSubValidationDisabled = this.checkSubValidationDisabled.bind(this);
         this.handleSubscriptionDelete = this.handleSubscriptionDelete.bind(this);
@@ -226,6 +230,7 @@ class Subscriptions extends React.Component {
         this.updateSubscriptions = this.updateSubscriptions.bind(this);
         this.handleSubscribe = this.handleSubscribe.bind(this);
         this.handleOpenDialog = this.handleOpenDialog.bind(this);
+        this.handleOpenMcpDialog = this.handleOpenMcpDialog.bind(this);
         this.handleSearchTextChange = this.handleSearchTextChange.bind(this);
         this.handleSearchTextTmpChange = this.handleSearchTextTmpChange.bind(this);
         this.handleClearSearch = this.handleClearSearch.bind(this);
@@ -245,6 +250,10 @@ class Subscriptions extends React.Component {
 
     handleOpenDialog() {
         this.setState((prevState) => ({ openDialog: !prevState.openDialog, searchText: '' }));
+    }
+
+    handleOpenMcpDialog() {
+        this.setState((prevState) => ({ openMcpDialog: !prevState.openMcpDialog, searchText: '' }));
     }
 
     /**
@@ -270,6 +279,27 @@ class Subscriptions extends React.Component {
 
     /**
      *
+     * Check if the MCP subscription validation is disabled
+     * @param {*} subList MCP Subscriptions list response object
+     * @returns
+     */
+    checkMcpSubValidationDisabled(subList) {
+        if (subList !== null && subList.length > 0) {
+            const pseudoList = subList.filter((sub) => (sub.apiInfo.throttlingPolicies
+                && sub.apiInfo.throttlingPolicies.length === 1
+                && sub.apiInfo.throttlingPolicies[0].includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)));
+            if (pseudoList.length === subList.length) {
+                this.setState({ pseudoMcpSubscriptions: true });
+            } else {
+                this.setState({ pseudoMcpSubscriptions: false });
+            }
+            return;
+        }
+        this.setState({ pseudoMcpSubscriptions: false });
+    }
+
+    /**
+     *
      * Update subscriptions list of Application
      * @param {*} applicationId application id
      * @memberof Subscriptions
@@ -280,8 +310,19 @@ class Subscriptions extends React.Component {
         const promisedSubscriptions = client.getSubscriptions(null, applicationId, subscriptionLimit);
         promisedSubscriptions
             .then((response) => {
-                this.setState({ subscriptions: response.body.list });
-                this.checkSubValidationDisabled(response.body.list);
+                const allSubscriptions = response.body.list;
+                // Separate API and MCP subscriptions based on some criteria
+                // For now, assuming all are API subscriptions - you may need to modify this logic
+                const apiSubscriptions = allSubscriptions.filter((sub) => sub.apiInfo && sub.apiInfo.type !== 'MCP');
+                const mcpSubscriptions = allSubscriptions.filter((sub) => sub.apiInfo && sub.apiInfo.type === 'MCP');
+
+                this.setState({
+                    subscriptions: allSubscriptions,
+                    apiSubscriptions,
+                    mcpSubscriptions,
+                });
+                this.checkSubValidationDisabled(apiSubscriptions);
+                this.checkMcpSubValidationDisabled(mcpSubscriptions);
             })
             .catch((error) => {
                 const { status } = error;
@@ -330,18 +371,27 @@ class Subscriptions extends React.Component {
                     }));
                     return;
                 }
-                const { subscriptions } = this.state;
-                for (const endpointIndex in subscriptions) {
-                    if (
-                        Object.prototype.hasOwnProperty.call(subscriptions, endpointIndex)
-                        && subscriptions[endpointIndex].subscriptionId === subscriptionId
-                    ) {
-                        subscriptions.splice(endpointIndex, 1);
-                        break;
-                    }
-                }
-                this.setState({ subscriptions });
-                this.checkSubValidationDisabled(subscriptions);
+                const { subscriptions, apiSubscriptions, mcpSubscriptions } = this.state;
+
+                // Remove from main subscriptions array
+                const updatedSubscriptions = subscriptions.filter((sub) => sub.subscriptionId !== subscriptionId);
+
+                // Remove from API subscriptions array
+                const updatedApiSubscriptions = apiSubscriptions
+                    ? apiSubscriptions.filter((sub) => sub.subscriptionId !== subscriptionId) : [];
+
+                // Remove from MCP subscriptions array
+                const updatedMcpSubscriptions = mcpSubscriptions
+                    ? mcpSubscriptions.filter((sub) => sub.subscriptionId !== subscriptionId) : [];
+
+                this.setState({
+                    subscriptions: updatedSubscriptions,
+                    apiSubscriptions: updatedApiSubscriptions,
+                    mcpSubscriptions: updatedMcpSubscriptions,
+                });
+
+                this.checkSubValidationDisabled(updatedApiSubscriptions);
+                this.checkMcpSubValidationDisabled(updatedMcpSubscriptions);
                 this.props.getApplication();
             })
             .catch((error) => {
@@ -506,15 +556,24 @@ class Subscriptions extends React.Component {
      * @memberof Subscriptions
      */
     render() {
-        const { isAuthorize, openDialog, searchText } = this.state;
+        const {
+            isAuthorize,
+            openDialog,
+            openMcpDialog,
+            searchText,
+            subscriptions,
+            apiSubscriptions,
+            mcpSubscriptions,
+            apisNotFound,
+            subscriptionsNotFound,
+            pseudoSubscriptions,
+            pseudoMcpSubscriptions,
+        } = this.state;
 
         if (!isAuthorize) {
             window.location = app.context + '/services/configs';
         }
 
-        const {
-            subscriptions, apisNotFound, subscriptionsNotFound,
-        } = this.state;
         const { applicationId } = this.props.application;
         const { intl } = this.props;
 
@@ -522,123 +581,97 @@ class Subscriptions extends React.Component {
             return (
                 <Root>
                     <Box className={classes.root}>
-                        <Box className={classes.titleWrapper}>
-                            <Typography
-                                variant='h5'
-                                sx={{
-                                    textTransform: 'capitalize',
-                                }}
-                            >
+                        <Typography
+                            variant='h4'
+                            sx={{
+                                textTransform: 'capitalize',
+                                marginBottom: 3,
+                            }}
+                        >
+                            <FormattedMessage
+                                id='Applications.Details.Subscriptions.subscriptions'
+                                defaultMessage='Subscriptions'
+                            />
+                        </Typography>
+
+                        <SubscriptionSection
+                            title={(
                                 <FormattedMessage
-                                    id='Applications.Details.Subscriptions.subscription.management'
-                                    defaultMessage='Subscription Management'
+                                    id='Applications.Details.Subscriptions.subscribed.apis'
+                                    defaultMessage='Subscribed APIs'
                                 />
-                            </Typography>
-                            <Button
-                                color='secondary'
-                                className={classes.buttonElm}
-                                size='small'
-                                onClick={this.handleOpenDialog}
-                            >
-                                <Icon>add_circle_outline</Icon>
+                            )}
+                            buttonText={(
                                 <FormattedMessage
-                                    id='Applications.Details.Subscriptions.subscription.management.add'
-                                    defaultMessage='Subscribe APIs'
+                                    id='Applications.Details.Subscriptions.apis.add.subscription.button'
+                                    defaultMessage='Subscribe'
                                 />
-                            </Button>
-                        </Box>
-                        <Grid container sx='tab-grid' spacing={2}>
-                            <Grid item xs={12} xl={11}>
-                                {((subscriptions && subscriptions.length === 0) || this.state.pseudoSubscriptions)
-                                    ? (
-                                        <Box className={classes.genericMessageWrapper}>
-                                            <InlineMessage
-                                                type='info'
-                                                sx={(theme) => ({
-                                                    width: 1000,
-                                                    padding: theme.spacing(2),
-                                                })}
-                                            >
-                                                <Typography variant='h5' component='h3'>
-                                                    <FormattedMessage
-                                                        id='Applications.Details.Subscriptions.no.subscriptions'
-                                                        defaultMessage='No Subscriptions Available'
-                                                    />
-                                                </Typography>
-                                                <Typography component='p'>
-                                                    <FormattedMessage
-                                                        id='Applications.Details.Subscriptions.no.subscriptions.content'
-                                                        defaultMessage='No subscriptions are available for this Application'
-                                                    />
-                                                </Typography>
-                                            </InlineMessage>
-                                        </Box>
-                                    )
-                                    : (
-                                        <Box className={classes.cardContent}>
-                                            {subscriptionsNotFound ? (
-                                                <ResourceNotFound />
-                                            ) : (
-                                                <Table className={classes.subsTable}>
-                                                    <TableHead>
-                                                        <TableRow>
-                                                            <TableCell className={classes.firstCell}>
-                                                                <FormattedMessage
-                                                                    id='Applications.Details.Subscriptions.api.name'
-                                                                    defaultMessage='API'
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <FormattedMessage
-                                                                    id={`Applications.Details.Subscriptions
-                                                                            .subscription.state`}
-                                                                    defaultMessage='Lifecycle State'
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <FormattedMessage
-                                                                    id={`Applications.Details.Subscriptions
-                                                                            .business.plan`}
-                                                                    defaultMessage='Business Plan'
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <FormattedMessage
-                                                                    id='Applications.Details.Subscriptions.Status'
-                                                                    defaultMessage='Subscription Status'
-                                                                />
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                <FormattedMessage
-                                                                    id='Applications.Details.Subscriptions.action'
-                                                                    defaultMessage='Action'
-                                                                />
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    </TableHead>
-                                                    <TableBody>
-                                                        {subscriptions
-                                                                    && subscriptions.map((subscription) => {
-                                                                        return (
-                                                                            <SubscriptionTableData
-                                                                                key={subscription.subscriptionId}
-                                                                                subscription={subscription}
-                                                                                handleSubscriptionDelete={
-                                                                                    this.handleSubscriptionDelete
-                                                                                }
-                                                                                handleSubscriptionUpdate={
-                                                                                    this.handleSubscriptionUpdate
-                                                                                }
-                                                                            />
-                                                                        );
-                                                                    })}
-                                                    </TableBody>
-                                                </Table>
-                                            )}
-                                        </Box>
-                                    )}
-                            </Grid>
-                        </Grid>
+                            )}
+                            subscriptions={apiSubscriptions}
+                            subscriptionsNotFound={subscriptionsNotFound}
+                            pseudoSubscriptions={pseudoSubscriptions}
+                            onAddClick={this.handleOpenDialog}
+                            handleSubscriptionDelete={this.handleSubscriptionDelete}
+                            handleSubscriptionUpdate={this.handleSubscriptionUpdate}
+                            noSubscriptionsMessage={(
+                                <FormattedMessage
+                                    id='Applications.Details.Subscriptions.no.api.subscriptions'
+                                    defaultMessage='No API Subscriptions Available'
+                                />
+                            )}
+                            noSubscriptionsContent={(
+                                <FormattedMessage
+                                    id='Applications.Details.Subscriptions.no.api.subscriptions.content'
+                                    defaultMessage='No API subscriptions are available for this Application'
+                                />
+                            )}
+                            entityNameColumn={(
+                                <FormattedMessage
+                                    id='Applications.Details.Subscriptions.api.name'
+                                    defaultMessage='API'
+                                />
+                            )}
+                        />
+
+                        <SubscriptionSection
+                            title={(
+                                <FormattedMessage
+                                    id='Applications.Details.Subscriptions.subscribed.mcp.servers'
+                                    defaultMessage='Subscribed MCP Servers'
+                                />
+                            )}
+                            buttonText={(
+                                <FormattedMessage
+                                    id='Applications.Details.Subscriptions.mcp.servers.add.subscription.button'
+                                    defaultMessage='Subscribe'
+                                />
+                            )}
+                            subscriptions={mcpSubscriptions}
+                            subscriptionsNotFound={subscriptionsNotFound}
+                            pseudoSubscriptions={pseudoMcpSubscriptions}
+                            onAddClick={this.handleOpenMcpDialog}
+                            handleSubscriptionDelete={this.handleSubscriptionDelete}
+                            handleSubscriptionUpdate={this.handleSubscriptionUpdate}
+                            noSubscriptionsMessage={(
+                                <FormattedMessage
+                                    id='Applications.Details.Subscriptions.no.mcp.subscriptions'
+                                    defaultMessage='No MCP Server Subscriptions Available'
+                                />
+                            )}
+                            noSubscriptionsContent={(
+                                <FormattedMessage
+                                    id='Applications.Details.Subscriptions.no.mcp.subscriptions.content'
+                                    defaultMessage='No MCP server subscriptions are available for this Application'
+                                />
+                            )}
+                            entityNameColumn={(
+                                <FormattedMessage
+                                    id='Applications.Details.Subscriptions.mcp.server.name'
+                                    defaultMessage='MCP Server'
+                                />
+                            )}
+                        />
+
                         <StyledDialog
                             onClose={this.handleOpenDialog}
                             aria-labelledby='simple-dialog-title'
@@ -651,8 +684,8 @@ class Subscriptions extends React.Component {
                                 <MuiDialogTitle className={classes.dialogTitle} disableTypography>
                                     <Typography variant='h6'>
                                         <FormattedMessage
-                                            id='Applications.Details.Subscriptions.subscription.management.add'
-                                            defaultMessage='Subscribe APIs'
+                                            id='Applications.Details.Subscriptions.subscription.subscribe.apis'
+                                            defaultMessage='Subscribe to API(s)'
                                         />
                                     </Typography>
                                 </MuiDialogTitle>
@@ -725,10 +758,105 @@ class Subscriptions extends React.Component {
                             <Box padding={2}>
                                 <APIList
                                     apisNotFound={apisNotFound}
-                                    subscriptions={subscriptions}
+                                    subscriptions={apiSubscriptions || []}
                                     applicationId={applicationId}
                                     handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
                                     searchText={searchText}
+                                />
+                            </Box>
+                        </StyledDialog>
+
+                        <StyledDialog
+                            onClose={this.handleOpenMcpDialog}
+                            aria-labelledby='mcp-dialog-title'
+                            open={openMcpDialog}
+                            fullWidth='true'
+                            maxWidth='sm'
+                            className={classes.subscribePop}
+                        >
+                            <Box className={classes.dialogHeader}>
+                                <MuiDialogTitle className={classes.dialogTitle} disableTypography>
+                                    <Typography variant='h6'>
+                                        <FormattedMessage
+                                            id='Applications.Details.Subscriptions.subscription.subscribe.mcp.servers'
+                                            defaultMessage='Subscribe to MCP Server(s)'
+                                        />
+                                    </Typography>
+                                </MuiDialogTitle>
+                                <Box className={classes.searchRoot}>
+                                    <Paper
+                                        component='form'
+                                        className={classes.searchBar}
+                                    >
+                                        {searchText && (
+                                            <HighlightOffIcon
+                                                className={classes.clearSearchIcon}
+                                                onClick={this.handleClearSearch}
+                                            />
+                                        )}
+                                        <InputBase
+                                            className={classes.input}
+                                            placeholder={intl.formatMessage({
+                                                defaultMessage: 'Search MCP Servers',
+                                                id: 'Applications.Details.Subscriptions.search.mcp',
+                                            })}
+                                            inputProps={{
+                                                'aria-label': intl.formatMessage({
+                                                    defaultMessage: 'Search MCP Servers',
+                                                    id: 'Applications.Details.Subscriptions.search.mcp',
+                                                }),
+                                            }}
+                                            inputRef={(el) => { this.searchInputElem = el; }}
+                                            onChange={this.handleSearchTextTmpChange}
+                                            onKeyDown={this.handleEnterPress}
+                                        />
+                                        <IconButton
+                                            className={classes.iconButton}
+                                            aria-label='search'
+                                            onClick={this.handleSearchTextChange}
+                                            size='large'
+                                        >
+                                            <SearchIcon />
+                                        </IconButton>
+                                    </Paper>
+                                    <Box className={classes.searchResults}>
+                                        {(searchText && searchText !== '') ? (
+                                            <>
+                                                <Typography variant='caption'>
+                                                    <FormattedMessage
+                                                        id='Applications.Details.Subscriptions.filter.mcp.msg'
+                                                        defaultMessage='Filtered MCP Servers for'
+                                                    />
+                                                    {` ${searchText}`}
+                                                </Typography>
+                                            </>
+                                        ) : (
+                                            <Typography variant='caption'>
+                                                <FormattedMessage
+                                                    id='Applications.Details.Subscriptions.filter.msg.all.mcp'
+                                                    defaultMessage='Displaying all MCP Servers'
+                                                />
+                                            </Typography>
+                                        )}
+                                    </Box>
+                                </Box>
+                                <IconButton
+                                    aria-label='close'
+                                    className={classes.closeButton}
+                                    onClick={this.handleOpenMcpDialog}
+                                    size='large'
+                                >
+                                    <Icon>cancel</Icon>
+                                </IconButton>
+                            </Box>
+                            <Box padding={2}>
+                                <APIList
+                                    apisNotFound={apisNotFound}
+                                    subscriptions={mcpSubscriptions || []}
+                                    applicationId={applicationId}
+                                    handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
+                                    searchText={searchText}
+                                    entityType='mcp'
                                 />
                             </Box>
                         </StyledDialog>
@@ -741,8 +869,13 @@ class Subscriptions extends React.Component {
     }
 }
 Subscriptions.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
-    intl: PropTypes.shape({}).isRequired,
+    application: PropTypes.shape({
+        applicationId: PropTypes.string.isRequired,
+    }).isRequired,
+    getApplication: PropTypes.func.isRequired,
+    intl: PropTypes.shape({
+        formatMessage: PropTypes.func.isRequired,
+    }).isRequired,
 };
 
 export default injectIntl((Subscriptions));

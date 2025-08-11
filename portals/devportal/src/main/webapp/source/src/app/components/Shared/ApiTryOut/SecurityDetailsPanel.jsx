@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -32,7 +32,7 @@ import Application from 'AppData/Application';
 import IconButton from '@mui/material/IconButton';
 import { Close } from '@mui/icons-material';
 
-const ConfigureKeyDrawer = ({
+const SecurityDetailsPanel = ({
     isDrawerOpen,
     updateDrawerOpen,
     setTestAccessToken,
@@ -170,8 +170,8 @@ const ConfigureKeyDrawer = ({
                         <Grid item xs={10}>
                             <Typography variant='h6'>
                                 <FormattedMessage
-                                    id='Apis.Details.ApiChat.components.ConfigureKeyDrawer.title'
-                                    defaultMessage='Configure Key'
+                                    id='ApiTryOut.SecurityDetailsPanel.title'
+                                    defaultMessage='Security Configuration'
                                 />
                             </Typography>
                         </Grid>
@@ -250,7 +250,7 @@ const ConfigureKeyDrawer = ({
                             }}
                         >
                             <FormattedMessage
-                                id='Apis.Details.ApiChat.components.ConfigureKeyDrawer.cancel'
+                                id='ApiTryOut.SecurityDetailsPanel.btn.cancel'
                                 defaultMessage='Cancel'
                             />
                         </Button>
@@ -262,7 +262,7 @@ const ConfigureKeyDrawer = ({
                             onClick={() => updateDrawerOpen(false)}
                         >
                             <FormattedMessage
-                                id='Apis.Details.ApiChat.components.ConfigureKeyDrawer.done'
+                                id='ApiTryOut.SecurityDetailsPanel.btn.done'
                                 defaultMessage='Done'
                             />
                         </Button>
@@ -273,11 +273,11 @@ const ConfigureKeyDrawer = ({
     );
 };
 
-ConfigureKeyDrawer.propTypes = {
+SecurityDetailsPanel.propTypes = {
     isDrawerOpen: PropTypes.bool.isRequired,
     updateDrawerOpen: PropTypes.func.isRequired,
     setTestAccessToken: PropTypes.func.isRequired,
     onConfigChange: PropTypes.func.isRequired,
 };
 
-export default ConfigureKeyDrawer;
+export default SecurityDetailsPanel;

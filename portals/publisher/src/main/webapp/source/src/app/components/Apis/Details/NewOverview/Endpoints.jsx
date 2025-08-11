@@ -16,55 +16,166 @@
  * under the License.
  */
 
-import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import React, { useState, useEffect } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
+import Alert from 'AppComponents/Shared/Alert';
+import MCPServer from 'AppData/MCPServer';
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 
-const showEndpoint = (api, type) => {
-    if (api.advertiseInfo && api.advertiseInfo.advertised) {
-        if (type === 'prod') {
-            return api.advertiseInfo.apiExternalProductionEndpoint;
-        }
-        if (type === 'sand') {
-            return api.advertiseInfo.apiExternalSandboxEndpoint;
-        }
-    } else if (api.endpointConfig) {
-        if (type === 'prod') {
-            return api.getProductionEndpoint();
-        }
-        if (type === 'sand') {
-            return api.getSandboxEndpoint();
-        }
+/**
+ * Get the endpoint security type based on the endpoint configuration and environment type.
+ * @param {*} endpointConfig endpoint configuration
+ * @param {*} type type of endpoint ('prod' or 'sand')
+ * @returns {string|null} the endpoint security type or null if not available
+ */
+const getEndpointSecurity = (endpointConfig, type) => {
+    if (type === 'prod') {
+        return endpointConfig && endpointConfig.endpoint_security
+            && endpointConfig.endpoint_security.production
+            && endpointConfig.endpoint_security.production.type;
+    } else if (type === 'sand') {
+        return endpointConfig && endpointConfig.endpoint_security
+            && endpointConfig.endpoint_security.sandbox
+            && endpointConfig.endpoint_security.sandbox.type;
+    } else {
+        return null;
     }
-    return null;
-};
+}
 
 /**
+ * Get the production endpoint URL of the MCP Server.
+ * @param {*} endpointConfig - The endpoint configuration of the MCP Server.
+ * @returns {string|null} The production endpoint URL of the MCP Server.
+ */
+const getProductionEndpoint = (endpointConfig) => {
+    if (!endpointConfig) {
+        return null;
+    }
+
+    if (!endpointConfig.production_endpoints) {
+        return '';
+    }
+    if (Array.isArray(endpointConfig.production_endpoints)) {
+        return endpointConfig.production_endpoints[0].url;
+    } else {
+        return endpointConfig.production_endpoints.url;
+    }
+}
+
+/**
+ * Get the sandbox endpoint URL of the MCP Server.
+ * @param {*} endpointConfig - The endpoint configuration of the MCP Server.
+ * @returns {string|null} The sandbox endpoint URL of the MCP Server.
+ */
+const getSandboxEndpoint = (endpointConfig) => {
+    if (!endpointConfig) {
+        return null;
+    }
+    if (!endpointConfig.sandbox_endpoints) {
+        return '';
+    }
+    if (Array.isArray(endpointConfig.sandbox_endpoints)) {
+        return endpointConfig.sandbox_endpoints[0].url;
+    } else {
+        return endpointConfig.sandbox_endpoints.url;
+    }
+}
+
+/**
+ * Endpoints component displays the API endpoints and their security types under the Overview page
  *
- *
- * @param {*} props
- * @returns
+ * @param {*} props props of the component
+ * @returns {JSX.Element} Endpoints component
  */
 function Endpoints(props) {
     const { parentClasses, api } = props;
-    const isPrototypedAvailable = api.endpointConfig !== null
-        && api.endpointConfig.implementation_status === 'prototyped'
-        && api.lifeCycleStatus === 'PROTOTYPED';
-    const productionEndpointSecurity = api.endpointConfig && api.endpointConfig.endpoint_security
-        && api.endpointConfig.endpoint_security.production && api.endpointConfig.endpoint_security.production.type;
-    const sandboxEndpointSecurity = api.endpointConfig && api.endpointConfig.endpoint_security
-        && api.endpointConfig.endpoint_security.sandbox && api.endpointConfig.endpoint_security.sandbox.type;
+    
+    const [productionEndpointSecurity, setProductionEndpointSecurity] = useState(null);
+    const [sandboxEndpointSecurity, setSandboxEndpointSecurity] = useState(null);
+    const [endpointConfig, setEndpointConfig] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const intl = useIntl();
     const authTypes = {
         NONE: 'None',
         BASIC: 'Basic Auth',
         DIGEST: 'Digest Auth',
         OAUTH: 'OAuth2',
     };
+    const isMCPServer = api.type === MCPServer.CONSTS.MCP;
+    const isPrototypedAvailable = !isMCPServer && api.endpointConfig !== null
+        && api.endpointConfig.implementation_status === 'prototyped'
+        && api.lifeCycleStatus === 'PROTOTYPED';
+
+    useEffect(() => {
+        if (isMCPServer) {
+            setLoading(true);
+            MCPServer.getMCPServerEndpoints(api.id)
+                .then((response) => {
+                    const fetchedEndpoints = response.body;
+
+                    if (fetchedEndpoints && fetchedEndpoints.length > 0) {
+                        const { endpointConfig: endpointConfiguration } = fetchedEndpoints[0];
+                        try {
+                            const parsedConfig = JSON.parse(endpointConfiguration);
+                            setEndpointConfig(parsedConfig);
+                        } catch (error) {
+                            console.error('Error parsing endpoint configuration:', error);
+                            setEndpointConfig(null);
+                        }
+                        setProductionEndpointSecurity(getEndpointSecurity(endpointConfiguration, 'prod'));
+                        setSandboxEndpointSecurity(getEndpointSecurity(endpointConfiguration, 'sand'));
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching endpoints:', error);
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.NewOverview.Endpoints.fetch.error',
+                        defaultMessage: 'Something went wrong while fetching endpoints',
+                    }));
+                })
+                .finally(() => setLoading(false));
+        } else {
+            setEndpointConfig(api.endpointConfig);
+            setProductionEndpointSecurity(getEndpointSecurity(api.endpointConfig, 'prod'));
+            setSandboxEndpointSecurity(getEndpointSecurity(api.endpointConfig, 'sand'));
+        }
+    }, [api]);
+
+    const showEndpoint = (endpointType) => {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            if (endpointType === 'prod') {
+                return api.advertiseInfo.apiExternalProductionEndpoint;
+            }
+            if (endpointType === 'sand') {
+                return api.advertiseInfo.apiExternalSandboxEndpoint;
+            }
+        } else if (api.type === MCPServer.CONSTS.MCP) {
+            if (endpointType === 'prod') {
+                return getProductionEndpoint(endpointConfig);
+            }
+            if (endpointType === 'sand') {
+                return getSandboxEndpoint(endpointConfig);
+            }
+        } else if (api.endpointConfig) {
+            if (endpointType === 'prod') {
+                return api.getProductionEndpoint();
+            }
+            if (endpointType === 'sand') {
+                return api.getSandboxEndpoint();
+            }
+        }
+        return null;
+    };
+
+    if (loading) {
+        return <CircularProgress />
+    }
 
     return (
         <>
@@ -108,17 +219,17 @@ function Endpoints(props) {
                                 }}
                                 interactive
                                 title={
-                                    showEndpoint(api, 'prod')
-                                    && <>{showEndpoint(api, 'prod')}</>
+                                    showEndpoint('prod')
+                                    && <>{showEndpoint('prod')}</>
                                 }
                             >
                                 <Typography component='p' variant='body1' className={parentClasses.url}>
-                                    {showEndpoint(api, 'prod')
-                                    && <>{showEndpoint(api, 'prod')}</>}
+                                    {showEndpoint('prod')
+                                    && <>{showEndpoint('prod')}</>}
                                 </Typography>
                             </Tooltip>
                             <Typography component='p' variant='body1' className={parentClasses.notConfigured}>
-                                {!showEndpoint(api, 'prod') && (
+                                {!showEndpoint('prod') && (
                                     <>
                                         <FormattedMessage
                                             id='Apis.Details.NewOverview.Endpoints.not.set'
@@ -151,17 +262,17 @@ function Endpoints(props) {
                                     }}
                                     interactive
                                     title={
-                                        showEndpoint(api, 'sand')
-                                        && <>{showEndpoint(api, 'sand')}</>
+                                        showEndpoint('sand')
+                                        && <>{showEndpoint('sand')}</>
                                     }
                                 >
                                     <Typography component='p' variant='body1' className={parentClasses.url}>
-                                        {showEndpoint(api, 'sand')
-                                        && <>{showEndpoint(api, 'sand')}</>}
+                                        {showEndpoint('sand')
+                                        && <>{showEndpoint('sand')}</>}
                                     </Typography>
                                 </Tooltip>
                                 <Typography component='p' variant='body1' className={parentClasses.notConfigured}>
-                                    {!showEndpoint(api, 'sand') && (
+                                    {!showEndpoint('sand') && (
                                         <>
                                             <FormattedMessage
                                                 id='Apis.Details.NewOverview.Endpoints.sandbox.not.set'
@@ -273,17 +384,17 @@ function Endpoints(props) {
                                 }}
                                 interactive
                                 title={
-                                    showEndpoint(api, 'prod')
-                                    && <>{showEndpoint(api, 'prod')}</>
+                                    showEndpoint('prod')
+                                    && <>{showEndpoint('prod')}</>
                                 }
                             >
                                 <Typography component='p' variant='body1' className={parentClasses.url}>
-                                    {showEndpoint(api, 'prod')
-                                    && <>{showEndpoint(api, 'prod')}</>}
+                                    {showEndpoint('prod')
+                                    && <>{showEndpoint('prod')}</>}
                                 </Typography>
                             </Tooltip>
                             <Typography component='p' variant='body1' className={parentClasses.notConfigured}>
-                                {!showEndpoint(api, 'prod') && (
+                                {!showEndpoint('prod') && (
                                     <>
                                         <FormattedMessage
                                             id='Apis.Details.NewOverview.Endpoints.sandbox.not.set'
@@ -309,17 +420,17 @@ function Endpoints(props) {
                                 }}
                                 interactive
                                 title={
-                                    showEndpoint(api, 'sand')
-                                    && <>{showEndpoint(api, 'sand')}</>
+                                    showEndpoint('sand')
+                                    && <>{showEndpoint('sand')}</>
                                 }
                             >
                                 <Typography component='p' variant='body1' className={parentClasses.url}>
-                                    {showEndpoint(api, 'sand')
-                                    && <>{showEndpoint(api, 'sand')}</>}
+                                    {showEndpoint('sand')
+                                    && <>{showEndpoint('sand')}</>}
                                 </Typography>
                             </Tooltip>
                             <Typography component='p' variant='body1' className={parentClasses.notConfigured}>
-                                {!showEndpoint(api, 'sand') && (
+                                {!showEndpoint('sand') && (
                                     <>
                                         <FormattedMessage
                                             id='Apis.Details.NewOverview.Endpoints.sandbox.not.set'

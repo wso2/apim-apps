@@ -155,6 +155,10 @@ export default {
             mutation: '#c1dea0',
             subscription: '#ffcc80',
         },
+        mcpToolBar: {
+            backgroundColor: '#fef6ea',
+            border: '1px solid #f2d4a7',
+        },
         policyFlowChipColor: {
             request: '#b3e6fe',
             response: '#c1dea0',
@@ -255,7 +259,11 @@ export default {
                 scopesAddIcon: '/site/public/images/landing-icons/scopes.svg',
                 commonPolicyAddIcon: '/site/public/images/landing-icons/scopes.svg',
                 apiproductAddIcon: '/site/public/images/landing-icons/apiproduct.svg',
-                globalPolicyAddIcon: '/site/public/images/landing-icons/globalpolicies.svg'
+                globalPolicyAddIcon: '/site/public/images/landing-icons/globalpolicies.svg',
+                mcpServerFromScratchIcon: '/site/public/images/landing-icons/mcp-server-from-scratch.svg',
+                mcpServerFromExistingApiIcon: '/site/public/images/landing-icons/mcp-server-from-existing-api.svg',
+                mcpServerProxyIcon: '/site/public/images/landing-icons/mcp-server-proxy.svg',
+                noDataIcon: '/site/public/images/landing-icons/no-data.svg',
             },
             menu: {
                 primary: '#34679D',

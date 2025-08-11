@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl'
@@ -19,7 +19,7 @@ import MenuList from '@mui/material/MenuList';
  * @returns
  */
 export default function CustomSplitButton(props) {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const {
         advertiseInfo, handleSave, handleSaveAndDeploy, isUpdating, api, id, isValidSequenceBackend,
         isCustomBackendSelected
@@ -41,12 +41,20 @@ export default function CustomSplitButton(props) {
             }),
         }];
     const anchorRef = React.useRef(null);
-    const [selectedIndex, setSelectedIndex] = React.useState(1);
+    const [selectedIndex, setSelectedIndex] = useState(1);
+    const [isEndpointAvailable, setEndpointAvailable] = useState(false);
     const securityScheme = [...api.securityScheme];
     const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
     && securityScheme.includes('mutualssl_mandatory');
-    const isEndpointAvailable = api.endpointConfig !== null;
     const isTierAvailable = api.policies.length !== 0;
+
+    useEffect(() => {
+        if (api.isMCPServer()) {
+            setEndpointAvailable(true);
+        } else {
+            setEndpointAvailable(api.endpointConfig !== null);
+        }
+    })
 
     const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && (!isCustomBackendSelected && !isEndpointAvailable)))
     || (!isMutualSslOnly && !isTierAvailable)

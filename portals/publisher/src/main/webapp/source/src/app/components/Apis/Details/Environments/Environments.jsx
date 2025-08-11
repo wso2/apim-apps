@@ -66,6 +66,7 @@ import { CircularProgress, Link } from '@mui/material';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import { ConfirmDialog } from 'AppComponents/Shared/index';
 import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import Utils from 'AppData/Utils';
@@ -491,10 +492,7 @@ export default function Environments() {
     const complianceErrorCode = 903300;
     const intl = useIntl();
     const { api, updateAPI } = useContext(APIContext);
-    const isEndpointAvailable = api.endpointConfig !== null;
 
-    const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
-        || api.workflowStatus === 'CREATED');
     const history = useHistory();
     const { data: settings, isLoading } = usePublisherSettings();
     const {
@@ -518,6 +516,8 @@ export default function Environments() {
     const [noEnv, setNoEnv] = useState(false);
     const [isUndeploying, setIsUndeploying] = useState(false);
     const [isDeploying, setIsDeploying] = useState(false);
+    const [isEndpointAvailable, setEndpointAvailable] = useState(false);
+    const isMCPServer = api.isMCPServer();
 
     useEffect(() => {
         if (settings) {
@@ -591,6 +591,19 @@ export default function Environments() {
                 }
             }
         }
+        if (isMCPServer) {
+            MCPServer.getMCPServerEndpoints(api.id)
+                .then((response) => {
+                    const fetchedEndpoints = response.body;
+                    if (fetchedEndpoints && fetchedEndpoints.length > 0) {
+                        setEndpointAvailable(true);
+                    } else {
+                        setEndpointAvailable(false);
+                    }
+                })
+        } else {
+            setEndpointAvailable(api.endpointConfig !== null);
+        }
     }, [isLoading]);
 
     const [extraRevisionToDelete, setExtraRevisionToDelete] = useState(null);
@@ -605,6 +618,8 @@ export default function Environments() {
     const [isGovernanceViolation, setIsGovernanceViolation] = useState(false);
     const [governanceError, setGovernanceError] = useState('');
 
+    const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
+        || api.workflowStatus === 'CREATED');
 
     const externalEnvWithEndpoints = [];
     useEffect(() => {
@@ -698,20 +713,6 @@ export default function Environments() {
         setRevision(revisions);
     };
 
-    /* const isDisplayOnDevPortalCheckedForThirdPartyEnv = (env) => {
-        if (allExternalGatewaysMap[env].revision) {
-            return allExternalGatewaysMap[env].revision.deploymentInfo.find(
-                (r) => r.name === env,
-            ).displayOnDevportal;
-        }
-        const oldRevision = selectedRevision.find((r) => r.env === env);
-        let displayOnDevPortal = true;
-        if (oldRevision) {
-            displayOnDevPortal = oldRevision.displayOnDevPortal;
-        }
-        return displayOnDevPortal;
-    }; */
-
     const handleVhostSelect = (event) => {
         const vhosts = selectedVhosts.filter((v) => v.env !== event.target.name);
         vhosts.push({ env: event.target.name, vhost: event.target.value });
@@ -752,58 +753,63 @@ export default function Environments() {
         let promiseDelete;
         if (api.apiType === API.CONSTS.APIProduct) {
             promiseDelete = restProductApi.deleteProductRevision(api.id, revisionId)
-                .then(() => {
-                    Alert.info(intl.formatMessage({
-                        defaultMessage: 'Revision Deleted Successfully',
-                        id: 'Apis.Details.Environments.Environments.revision.delete.success',
-                    }));
-                })
-                .catch((error) => {
-                    if (error.response) {
-                        Alert.error(error.response.body.description);
-                    } else {
-                        Alert.error(intl.formatMessage({
-                            defaultMessage: 'Something went wrong while deleting the revision',
-                            id: 'Apis.Details.Environments.Environments.revision.delete.error',
-                        }));
-                    }
-                }).finally(() => {
-                    history.replace();
-                    getRevision();
-                });
+        } else if (isMCPServer) {
+            promiseDelete = MCPServer.deleteRevision(api.id, revisionId)
         } else {
-            promiseDelete = restApi.deleteRevision(api.id, revisionId)
-                .then(() => {
-                    Alert.info(intl.formatMessage({
-                        defaultMessage: 'Revision Deleted Successfully',
-                        id: 'Apis.Details.Environments.Environments.revision.delete.success',
-                    }));
-                })
-                .catch((error) => {
-                    if (error.response) {
-                        Alert.error(error.response.body.description);
-                    } else {
-                        Alert.error(intl.formatMessage({
-                            defaultMessage: 'Something went wrong while deleting the revision',
-                            id: 'Apis.Details.Environments.Environments.revision.delete.error',
-                        }));
-                    }
-                }).finally(() => {
-                    history.replace();
-                    getRevision();
-                });
+            promiseDelete = restApi.deleteRevision(api.id, revisionId);
         }
+        promiseDelete
+            .then(() => {
+                Alert.info(intl.formatMessage({
+                    defaultMessage: 'Revision Deleted Successfully',
+                    id: 'Apis.Details.Environments.Environments.revision.delete.success',
+                }));
+            })
+            .catch((error) => {
+                if (error.response) {
+                    Alert.error(error.response.body.description);
+                } else {
+                    Alert.error(intl.formatMessage({
+                        defaultMessage: 'Something went wrong while deleting the revision',
+                        id: 'Apis.Details.Environments.Environments.revision.delete.error',
+                    }));
+                }
+            }).finally(() => {
+                history.replace();
+                getRevision();
+            });
+
         return promiseDelete;
     }
 
     /**
      * Handles creating a new revision
      * @param {Object} body the request body
-     * @returns {Object} promised create
      */
     function createRevision(body) {
         if (api.apiType === API.CONSTS.APIProduct) {
             restProductApi.createProductRevision(api.id, body)
+                .then(() => {
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.Environments.Environments.revision.create.success',
+                        defaultMessage: 'Revision Created Successfully',
+                    }));
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        Alert.error(intl.formatMessage({
+                            id: 'Apis.Details.Environments.Environments.revision.create.error',
+                            defaultMessage: 'Something went wrong while creating the revision',
+                        }));
+                    }
+                    console.error(error);
+                }).finally(() => {
+                    getRevision();
+                });
+        } else if (isMCPServer) {
+            MCPServer.createRevision(api.id, body)
                 .then(() => {
                     Alert.info(intl.formatMessage({
                         id: 'Apis.Details.Environments.Environments.revision.create.success',
@@ -925,10 +931,34 @@ export default function Environments() {
 
     /**
       * Handles restore revision
+      * @param {string} revisionId the revision Id
       * @memberof Revisions
       */
     function restoreRevision(revisionId) {
-        if (api.apiType !== API.CONSTS.APIProduct) {
+        if (isMCPServer) {
+            MCPServer.restoreRevision(api.id, revisionId)
+                .then(() => {
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.Environments.Environments.revision.restore.success',
+                        defaultMessage: 'Revision Restored Successfully',
+                    }));
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        Alert.error(intl.formatMessage({
+                            id: 'Apis.Details.Environments.Environments.revision.restore.error',
+                            defaultMessage: 'Something went wrong while restoring the revision',
+                        }));
+                    }
+                    console.error(error);
+                }).finally(() => {
+                    getRevision();
+                    getDeployedEnv();
+                    updateAPI();
+                });
+        } else if (api.apiType !== API.CONSTS.APIProduct) {
             restApi.restoreRevision(api.id, revisionId)
                 .then(() => {
                     Alert.info(intl.formatMessage({
@@ -986,6 +1016,8 @@ export default function Environments() {
 
     /**
       * Handles undeploy a revision
+      * @param {string} revisionId the revision Id
+      * @param {string} envName the environment name
       * @memberof Revisions
       */
     function undeployRevision(revisionId, envName) {
@@ -993,7 +1025,29 @@ export default function Environments() {
             name: envName,
             displayOnDevportal: false,
         }];
-        if (api.apiType !== API.CONSTS.APIProduct) {
+        if (isMCPServer) {
+            MCPServer.undeployRevision(api.id, revisionId, body)
+                .then(() => {
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.Environments.Environments.revision.undeploy.success',
+                        defaultMessage: 'Revision Undeployed Successfully',
+                    }));
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        Alert.error(intl.formatMessage({
+                            id: 'Apis.Details.Environments.Environments.revision.undeploy.error',
+                            defaultMessage: 'Something went wrong while undeploying the revision',
+                        }));
+                    }
+                    console.error(error);
+                }).finally(() => {
+                    getRevision();
+                    getDeployedEnv();
+                });
+        } else if (api.apiType !== API.CONSTS.APIProduct) {
             setIsUndeploying(true);
             restApi.undeployRevision(api.id, revisionId, body)
                 .then(() => {
@@ -1044,6 +1098,8 @@ export default function Environments() {
 
     /**
      * Handles canceling a revision deployment workflow
+     * @param {string} revisionId the revision Id
+     * @param {string} envName the environment name
      * @memberof Revisions
      */
     function cancelRevisionDeploymentWorkflow(revisionId, envName) {
@@ -1075,6 +1131,10 @@ export default function Environments() {
 
     /**
       * Handles deploy a revision
+      * @param {string} revisionId the revision Id
+      * @param {string} envName the environment name
+      * @param {string} vhost the vhost to deploy
+      * @param {boolean} displayOnDevportal whether to display on devportal
       * @memberof Revisions
       */
     function deployRevision(revisionId, envName, vhost, displayOnDevportal) {
@@ -1084,7 +1144,29 @@ export default function Environments() {
             vhost,
         }];
         let isBlockedByGovernanceViolation = false;
-        if (api.apiType !== API.CONSTS.APIProduct) {
+        if (isMCPServer) {
+            MCPServer.deployRevision(api.id, revisionId, body)
+                .then(() => {
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.Environments.Environments.revision.deploy.success',
+                        defaultMessage: 'Deploy revision Successfully',
+                    }));
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        Alert.error(intl.formatMessage({
+                            id: 'Apis.Details.Environments.Environments.revision.deploy.error',
+                            defaultMessage: 'Something went wrong while deploying the revision',
+                        }));
+                    }
+                    console.error(error);
+                }).finally(() => {
+                    getRevision();
+                    getDeployedEnv();
+                });
+        } else if (api.apiType !== API.CONSTS.APIProduct) {
             setIsDeploying(true);
             restApi.deployRevision(api.id, revisionId, body).then((response) => {
                 if (response && response.obj && response.obj.length > 0) {
@@ -1189,13 +1271,67 @@ export default function Environments() {
 
     /**
       * Handles adding a new revision and deploy
+      * @param {Array} envList the list of environments to deploy
+      * @param {Array} vhostList the list of vhosts to deploy
       * @memberof Revisions
       */
     function createDeployRevision(envList, vhostList) {
         const body = {
             description,
         };
-        if (api.apiType !== API.CONSTS.APIProduct) {
+        if (isMCPServer) {
+            MCPServer.createRevision(api.id, body)
+                .then((response) => {
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.Environments.Environments.revision.create.success',
+                        defaultMessage: 'Revision Created Successfully',
+                    }));
+                    const body1 = [];
+                    for (const env of envList) {
+                        body1.push({
+                            name: env,
+                            vhost: vhostList.find((v) => v.env === env).vhost,
+                            displayOnDevportal: true,
+                        });
+                    }
+                    setIsDeploying(true);
+                    MCPServer.deployRevision(api.id, response.body.id, body1)
+                        .then(() => {
+                            Alert.info(intl.formatMessage({
+                                id: 'Apis.Details.Environments.Environments.api.revision.deploy.success',
+                                defaultMessage: 'Revision Deployed Successfully',
+                            }));
+                        })
+                        .catch((error) => {
+                            if (error.response) {
+                                Alert.error(error.response.body.description);
+                            } else {
+                                Alert.error(intl.formatMessage({
+                                    id: 'Apis.Details.Environments.Environments.revision.deploy.error',
+                                    defaultMessage: 'Something went wrong while deploying the revision',
+                                }));
+                            }
+                            console.error(error);
+                        }).finally(() => {
+                            history.replace();
+                            getRevision();
+                            getDeployedEnv();
+                            setIsDeploying(false);
+                            setOpenDeployPopup(false);
+                        });
+                })
+                .catch((error) => {
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        Alert.error(intl.formatMessage({
+                            id: 'Apis.Details.Environments.Environments.revision.create.error',
+                            defaultMessage: 'Something went wrong while creating the revision',
+                        }));
+                    }
+                    console.error(error);
+                });
+        } else if (api.apiType !== API.CONSTS.APIProduct) {
             restApi.createRevision(api.id, body)
                 .then((response) => {
                     Alert.info(intl.formatMessage({
@@ -1993,14 +2129,14 @@ export default function Environments() {
                     </TextField>
                     <Button
                         className={classes.button2}
-                        disabled={
-                            api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) ||
-                            isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
-                            !selectedRevision.some((r) => r.env === row.name && r.revision) ||
-                            !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
-                            (api.advertiseInfo && api.advertiseInfo.advertised) ||
-                            isDeployButtonDisabled || isDeploying
-                        }
+                        // disabled={
+                        //     api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                        //     isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
+                        //     !selectedRevision.some((r) => r.env === row.name && r.revision) ||
+                        //     !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
+                        //     (api.advertiseInfo && api.advertiseInfo.advertised) ||
+                        //     isDeployButtonDisabled || isDeploying
+                        // }
                         variant='outlined'
                         onClick={() =>
                             deployRevision(
@@ -2803,17 +2939,17 @@ export default function Environments() {
                                 () => handleCreateAndDeployRevision(SelectedEnvironment, selectedVhostDeploy)
                             }
                             color='primary'
-                            disabled={SelectedEnvironment.length === 0
-                                || (allRevisions && allRevisions.length === revisionCount && !extraRevisionToDelete)
-                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                || (api.advertiseInfo && api.advertiseInfo.advertised)
-                                || (SelectedEnvironment.length === 1
-                                    && allEnvRevision && allEnvRevision.some(revision => {
-                                    return revision.deploymentInfo.some(deployment =>
-                                        deployment.name === SelectedEnvironment[0] &&
-                                        deployment.status === 'CREATED');
-                                }) )
-                                || isDeployButtonDisabled || isDeploying}
+                            // disabled={SelectedEnvironment.length === 0
+                            //     || (allRevisions && allRevisions.length === revisionCount && !extraRevisionToDelete)
+                            //     || isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                            //     || (api.advertiseInfo && api.advertiseInfo.advertised)
+                            //     || (SelectedEnvironment.length === 1
+                            //         && allEnvRevision && allEnvRevision.some(revision => {
+                            //         return revision.deploymentInfo.some(deployment =>
+                            //             deployment.name === SelectedEnvironment[0] &&
+                            //             deployment.status === 'CREATED');
+                            //     }) )
+                            //     || isDeployButtonDisabled || isDeploying}
                         >
                             <FormattedMessage
                                 id='Apis.Details.Environments.Environments.deploy.deploy'

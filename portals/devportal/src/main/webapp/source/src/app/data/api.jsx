@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 import APIClientFactory from './APIClientFactory';
 import Resource from './Resource';
 import Wsdl from './Wsdl';

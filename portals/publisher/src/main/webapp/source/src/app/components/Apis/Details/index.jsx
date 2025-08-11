@@ -40,6 +40,7 @@ import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import LeftMenuItem from 'AppComponents/Shared/LeftMenuItem';
 import API from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
+import MCPServer from 'AppData/MCPServer';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Progress } from 'AppComponents/Shared';
@@ -213,7 +214,7 @@ class Details extends Component {
     static isValidURL(pathname) {
         for (const [subPathKey, subPath] of Object.entries(Details.subPaths)) {
             // Skip the BASE path , because it will match for any `/apis/:apiUUID/*` values
-            if ((subPathKey !== 'BASE') && (subPathKey !== 'BASE_PRODUCT')) {
+            if ((subPathKey !== 'BASE') && (subPathKey !== 'BASE_PRODUCT') && (subPathKey !== 'BASE_MCP')) {
                 const matched = matchPath(pathname, subPath);
                 if (matched) {
                     return matched;
@@ -231,11 +232,12 @@ class Details extends Component {
     constructor(props) {
         super(props);
         const isAPIProduct = null;
+        const isMCPServer = null;
         this.state = {
             api: null,
             apiNotFound: false,
-            // updateAPI: this.updateAPI,
             isAPIProduct,
+            isMCPServer,
             imageUpdate: 0,
             allRevisions: null,
             allEnvRevision: null,
@@ -252,6 +254,7 @@ class Details extends Component {
         this.handleAccordionState = this.handleAccordionState.bind(this);
         this.getLeftMenuItemForResourcesByType = this.getLeftMenuItemForResourcesByType.bind(this);
         this.getLeftMenuItemForDefinitionByType = this.getLeftMenuItemForDefinitionByType.bind(this);
+        this.setMCPServer = this.setMCPServer.bind(this);
     }
 
     /**
@@ -262,11 +265,14 @@ class Details extends Component {
         const {
             location: { pathname },
             isAPIProduct,
+            isMCPServer,
         } = this.props;
         // Load API data iff request page is valid
         if (Details.isValidURL(pathname)) {
             if (isAPIProduct) {
                 this.setAPIProduct();
+            } else if (isMCPServer) {
+                this.setMCPServer();
             } else {
                 this.setAPI();
             }
@@ -291,17 +297,20 @@ class Details extends Component {
         const { api } = this.state;
         const { settings: prevSettings } = prevProps;
 
-        const { match, isAPIProduct, settings } = this.props;
+        const { match, isAPIProduct, isMCPServer, settings } = this.props;
         const { apiUUID } = match.params;
         const { apiProdUUID } = match.params;
+        const { mcpServerUUID } = match.params;
         if (prevSettings !== settings) {
             this.props.updateSettings(settings);
         }
-        if (!api || (api.id === apiUUID || api.id === apiProdUUID)) {
+        if (!api || (api.id === apiUUID || api.id === apiProdUUID || api.id === mcpServerUUID)) {
             return;
         }
         if (isAPIProduct) {
             this.setAPIProduct();
+        } else if (isMCPServer) {
+            this.setMCPServer();
         } else {
             this.setAPI();
         }
@@ -356,6 +365,42 @@ class Details extends Component {
     }
 
     /**
+     * Set the MCP Server
+     */
+    setMCPServer() {
+        // this.setState({ isMCPServerLoading: true });
+        const { match } = this.props;
+        const { mcpServerUUID } = match.params;
+        const promisedMCPServer = MCPServer.getMCPServerById(mcpServerUUID);
+        promisedMCPServer
+            .then((mcpServer) => {
+                this.setState({
+                    isMCPServer: true,
+                    api: mcpServer,
+                    // isMCPServerLoading: false, 
+                }, () => {
+                    // This code will run after the state has been updated
+                    this.getRevision();
+                    this.getDeployedEnv();
+                });
+            })
+            .catch((error) => {
+                // this.setState({ isMCPServerLoading: false });
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+                const { status } = error;
+                if (status === 404) {
+                    this.setState({ apiNotFound: true });
+                } else if (status === 403) {
+                    this.setState({ authorizedAPI: true });
+                } else if (status === 401) {
+                    doRedirectToLogin();
+                }
+            });
+    }
+
+    /**
      * Set open state for page search
      * @param {*} status
      */
@@ -405,8 +450,11 @@ class Details extends Component {
     getLeftMenuItemForDefinitionByType(apiType) {
         const { isAPIProduct } = this.state;
         const { intl, match } = this.props;
-        const uuid = match.params.apiUUID || match.params.api_uuid || match.params.apiProdUUID;
-        const pathPrefix = '/' + (isAPIProduct ? 'api-products' : 'apis') + '/' + uuid + '/';
+        const uuid = match.params.apiUUID
+            || match.params.api_uuid
+            || match.params.apiProdUUID
+            || match.params.mcpServerUUID;
+        const pathPrefix = '/' + (isAPIProduct ? 'api-products' : 'apis') + '/' + uuid + '/'; // TODO:
         const apiDefinitionMenuItem = (
             <LeftMenuItem
                 text={intl.formatMessage({
@@ -467,6 +515,10 @@ class Details extends Component {
                         />
                     </>
                 );
+            case 'MCP':
+                return (
+                    <></>
+                )
             default:
                 return (
                     <>
@@ -477,10 +529,20 @@ class Details extends Component {
     }
 
     getLeftMenuItemForResourcesByType(apiType) {
-        const { isAPIProduct } = this.state;
+        const { isAPIProduct, isMCPServer } = this.state;
         const { intl, match } = this.props;
-        const uuid = match.params.apiUUID || match.params.api_uuid || match.params.apiProdUUID;
-        const pathPrefix = '/' + (isAPIProduct ? 'api-products' : 'apis') + '/' + uuid + '/';
+        const uuid = match.params.apiUUID
+            || match.params.api_uuid
+            || match.params.apiProdUUID
+            || match.params.mcpServerUUID;
+
+        let basePath = 'apis';
+        if (isAPIProduct) {
+            basePath = 'api-products';
+        } else if (isMCPServer) {
+            basePath = 'mcp-servers';
+        }
+        const pathPrefix = '/' + basePath + '/' + uuid + '/';
 
         switch (apiType) {
             case 'GRAPHQL':
@@ -514,6 +576,18 @@ class Details extends Component {
                         />
                     </>
                 );
+            case 'MCP':
+                return (
+                    <LeftMenuItem
+                        text={intl.formatMessage({
+                            id: 'Apis.Details.index.tools',
+                            defaultMessage: 'tools',
+                        })}
+                        to={pathPrefix + 'tools'}
+                        Icon={<ResourcesIcon />}
+                        id='left-menu-tools'
+                    />
+                )
             default:
                 return (
                     <>
@@ -546,7 +620,10 @@ class Details extends Component {
 
         let promisedUpdate;
         let apiId = null;
-        if (!isAPIProduct) {
+        if (api.isMCPServer()) {
+            apiId = api.isRevision ? api.revisionedMCPServerId : api.id;
+            promisedUpdate = MCPServer.getRevisions(apiId);
+        } else if (!isAPIProduct) {
             apiId = api.isRevision ? api.revisionedApiId : api.id;
             promisedUpdate = restApi.getRevisions(apiId);
         } else if (isAPIProduct) {
@@ -577,9 +654,13 @@ class Details extends Component {
         if (api.apiType === API.CONSTS.APIProduct) {
             isAPIProduct = true;
         }
+        const isMCPServer = api.isMCPServer();
 
         let promisedUpdate;
-        if (!isAPIProduct) {
+        if (isMCPServer) {
+            promisedUpdate = MCPServer.getRevisionsWithEnv(api.isRevision
+                ? api.revisionedMCPServerId : api.id);
+        } else if(!isAPIProduct) {
             promisedUpdate = restApi.getRevisionsWithEnv(api.isRevision ? api.revisionedApiId : api.id);
         } else if (isAPIProduct) {
             promisedUpdate = restApiProduct.getProductRevisionsWithEnv(api.isRevision
@@ -627,9 +708,12 @@ class Details extends Component {
     updateAPI(_updatedProperties = {}) {
         const { api } = this.state;
         const { intl } = this.props;
+        let isMCPServer = false;
         let isAPIProduct = false;
         if (api.apiType === API.CONSTS.APIProduct) {
             isAPIProduct = true;
+        } else if (api.apiType === MCPServer.CONSTS.MCP) {
+            isMCPServer = true;
         }
 
         const updatedProperties = _updatedProperties instanceof API ? _updatedProperties.toJson() : _updatedProperties;
@@ -638,21 +722,39 @@ class Details extends Component {
         // which we could call it's `update` method safely ~tmkb
         if (!isEmpty(updatedProperties)) {
             // newApi object has to be provided as the updatedProperties. Then api will be updated.
-            promisedUpdate = api.update(updatedProperties);
-        } else if (!isAPIProduct) {
+            if (isMCPServer) {
+                promisedUpdate = api.updateMCPServer(updatedProperties);
+            } else {
+                promisedUpdate = api.update(updatedProperties);
+            }
+        } else if (isMCPServer) {
+            // Just sync-up the MCP Server state with backend
+            promisedUpdate = MCPServer.getMCPServerById(api.id);
+        } else if (isAPIProduct) {
+            promisedUpdate = APIProduct.get(api.id);
+        } else {
             // Just like calling noArg `setState()` will just trigger a re-render without modifying the state,
             // Calling `updateAPI()` without args wil return the API without any update.
             // Just sync-up the api state with backend
             promisedUpdate = API.get(api.id);
-        } else if (isAPIProduct) {
-            promisedUpdate = APIProduct.get(api.id);
         }
+
         return promisedUpdate
             .then((updatedAPI) => {
                 if (isAPIProduct) {
                     Alert.info(intl.formatMessage({
                         id: 'Apis.Details.index.api.product.update.success',
                         defaultMessage: '{updatedAPIName} API Product updated successfully',
+                    },
+                    {
+                        updatedAPIName: updatedAPI.name,
+                    }));
+                    this.setState({ api: updatedAPI });
+                    return updatedAPI;
+                } else if (isMCPServer) {
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.index.api.mcp.update.success',
+                        defaultMessage: '{updatedAPIName} MCP Server updated successfully',
                     },
                     {
                         updatedAPIName: updatedAPI.name,
@@ -695,7 +797,15 @@ class Details extends Component {
      */
     render() {
         const {
-            api, apiNotFound, isAPIProduct, imageUpdate, tenantList, allRevisions, allEnvRevision, openPageSearch,
+            api,
+            apiNotFound,
+            isAPIProduct,
+            isMCPServer,
+            imageUpdate,
+            tenantList,
+            allRevisions,
+            allEnvRevision,
+            openPageSearch,
             authorizedAPI,
         } = this.state;
         const {
@@ -712,8 +822,19 @@ class Details extends Component {
         if (!Details.isValidURL(pathname)) {
             return <ResourceNotFound location={pageLocation} />;
         }
-        const uuid = match.params.apiUUID || match.params.api_uuid || match.params.apiProdUUID;
-        const pathPrefix = '/' + (isAPIProduct ? 'api-products' : 'apis') + '/' + uuid + '/';
+        const uuid = match.params.apiUUID
+            || match.params.api_uuid
+            || match.params.apiProdUUID
+            || match.params.mcpServerUUID;
+        let basePath;
+        if (isAPIProduct) {
+            basePath = 'api-products';
+        } else if (isMCPServer) {
+            basePath = 'mcp-servers';
+        } else {
+            basePath = 'apis';
+        }
+        const pathPrefix = `/${basePath}/${uuid}/`;
         const redirectUrl = pathPrefix;
         const readOnlyUser = AuthManager.isReadOnlyUser();
         const isAsyncAPI = api && (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE'
@@ -747,11 +868,28 @@ class Details extends Component {
         }
 
         if (!api) {
-            return <Progress per={70} message='Loading API data ...' />;
+            if (isMCPServer) { // TODO check why loading api data is always getting showing 
+                return <Progress per={70} message='Loading MCP Server data ...' />;
+            } else if (isAPIProduct) {
+                return <Progress per={70} message='Loading API Product data ...' />;
+            } else {
+                return <Progress per={70} message='Loading API data ...' />;
+            }
         } else if (isSettingsLoading) {
             return <Progress per={80} message='Loading portal settings ...' />;
         }
         const { leftMenuIconMainSize } = theme.custom;
+
+        const getResourceType = () => {
+            if (isAPIProduct) {
+                return 'api-products';
+            } else if (isMCPServer) {
+                return 'mcp-servers';
+            } else {
+                return 'apis';
+            }
+        }
+
         return (
             <StyledBox display='flex' alignItems='stretch' flexDirection='row'>
                 <APIProvider
@@ -759,6 +897,7 @@ class Details extends Component {
                         api,
                         updateAPI: this.updateAPI,
                         isAPIProduct,
+                        isMCPServer,
                         setAPI: this.setAPI,
                         setImageUpdate: this.setImageUpdate,
                         imageUpdate,
@@ -767,14 +906,14 @@ class Details extends Component {
                 >
                     <Box className={classes.LeftMenu}>
                         <nav name='secondaryNavigation' aria-label='secondary navigation'>
-                            <Link to={'/' + (isAPIProduct ? 'api-products' : 'apis') + '/'}
+                            <Link to={'/' + getResourceType() + '/'}
                                 aria-label='ALL APIs'>
                                 <div className={classes.leftLInkMain}>
                                     <CustomIcon
                                         className={classes.customIcon}
                                         width={leftMenuIconMainSize}
                                         height={leftMenuIconMainSize}
-                                        icon={isAPIProduct ? 'api-product' : 'apis'}
+                                        icon={getResourceType()}
                                     />
                                 </div>
                             </Link>
@@ -788,18 +927,24 @@ class Details extends Component {
                                 head='valueOnly'
                                 id='left-menu-overview'
                             />
-                            {!isAPIProduct && !api.isGraphql() && !api.isSOAPToREST() && !api.isSOAP() && (
-                                <LeftMenuItem
-                                    text={intl.formatMessage({
-                                        id: 'Apis.Details.index.compliance',
-                                        defaultMessage: 'compliance',
-                                    })}
-                                    to={pathPrefix + 'compliance'}
-                                    Icon={<PolicyIcon />}
-                                    head='valueOnly'
-                                    id='left-menu-compliance'
-                                />
-                            )}
+                            {
+                                !isAPIProduct
+                                && !api.isGraphql()
+                                && !api.isSOAPToREST()
+                                && !api.isSOAP()
+                                && !api.isMCPServer()
+                                && (
+                                    <LeftMenuItem
+                                        text={intl.formatMessage({
+                                            id: 'Apis.Details.index.compliance',
+                                            defaultMessage: 'compliance',
+                                        })}
+                                        to={pathPrefix + 'compliance'}
+                                        Icon={<PolicyIcon />}
+                                        head='valueOnly'
+                                        id='left-menu-compliance'
+                                    />
+                                )}
                             <Typography className={classes.headingText}>
                                 <FormattedMessage id='Apis.Details.index.develop.title'
                                     defaultMessage='Develop' />
@@ -815,46 +960,24 @@ class Details extends Component {
                                         .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']}
                             />
                             <Divider />
-                            {!isAPIProduct && (
-                                <>
-                                    <Typography className={classes.headingText}>
-                                        <FormattedMessage
-                                            id='Apis.Details.index.deploy.title'
-                                            defaultMessage='Deploy'
-                                        />
-                                    </Typography>
-                                    <LeftMenuItem
-                                        text={intl.formatMessage({
-                                            id: 'Apis.Details.index.environments',
-                                            defaultMessage: 'Deployments',
-                                        })}
-                                        route='deployments'
-                                        to={pathPrefix + 'deployments'}
-                                        Icon={<PersonPinCircleOutlinedIcon />}
-                                        id='left-menu-itemdeployments'
+                            <>
+                                <Typography className={classes.headingText}>
+                                    <FormattedMessage
+                                        id='Apis.Details.index.deploy.title'
+                                        defaultMessage='Deploy'
                                     />
-                                </>
-                            )}
-                            {isAPIProduct && (
-                                <>
-                                    <Typography className={classes.headingText}>
-                                        <FormattedMessage
-                                            id='Apis.Details.index.deploy.title'
-                                            defaultMessage='Deploy'
-                                        />
-                                    </Typography>
-                                    <LeftMenuItem
-                                        text={intl.formatMessage({
-                                            id: 'Apis.Details.index.environments',
-                                            defaultMessage: 'Deployments',
-                                        })}
-                                        route='deployments'
-                                        to={pathPrefix + 'deployments'}
-                                        Icon={<PersonPinCircleOutlinedIcon />}
-                                        id='left-menu-itemdeployments'
-                                    />
-                                </>
-                            )}
+                                </Typography>
+                                <LeftMenuItem
+                                    text={intl.formatMessage({
+                                        id: 'Apis.Details.index.environments',
+                                        defaultMessage: 'Deployments',
+                                    })}
+                                    route='deployments'
+                                    to={pathPrefix + 'deployments'}
+                                    Icon={<PersonPinCircleOutlinedIcon />}
+                                    id='left-menu-itemdeployments'
+                                />
+                            </>
                             {!readOnlyUser && (isAPIProduct || (!isAPIProduct && !api.isWebSocket()
                                 && !api.isGraphql() && !isAsyncAPI)) &&
                             (settings && settings.gatewayFeatureCatalog
@@ -868,16 +991,29 @@ class Details extends Component {
                                             defaultMessage='Test'
                                         />
                                     </Typography>
-                                    <LeftMenuItem
-                                        route='test-console'
-                                        text={intl.formatMessage({
-                                            id: 'Apis.Details.index.Tryout.menu.name',
-                                            defaultMessage: 'Try Out',
-                                        })}
-                                        to={pathPrefix + 'test-console'}
-                                        iconText='test'
-                                        id='left-menu-itemTestConsole'
-                                    />
+                                    {api.isMCPServer() ? (
+                                        <LeftMenuItem
+                                            route='mcp-playground'
+                                            text={intl.formatMessage({
+                                                id: 'Apis.Details.index.MCPPlayground.menu.name',
+                                                defaultMessage: 'MCP Playground',
+                                            })}
+                                            to={pathPrefix + 'mcp-playground'}
+                                            iconText='test'
+                                            id='left-menu-itemMCPPlayground'
+                                        />
+                                    ) : (
+                                        <LeftMenuItem
+                                            route='test-console'
+                                            text={intl.formatMessage({
+                                                id: 'Apis.Details.index.Tryout.menu.name',
+                                                defaultMessage: 'Try Out',
+                                            })}
+                                            to={pathPrefix + 'test-console'}
+                                            iconText='test'
+                                            id='left-menu-itemTestConsole'
+                                        />
+                                    )}
                                 </div>
                             )}
                             {!isRestricted(['apim:api_publish'], api) && (
@@ -958,6 +1094,16 @@ class Details extends Component {
                                         )}
                                     />
                                     <Route
+                                        path={Details.subPaths.OVERVIEW_MCP}
+                                        key={Details.subPaths.OVERVIEW_MCP}
+                                        component={() => (
+                                            <Overview
+                                                setOpenPageSearch={this.setOpenPageSearch}
+                                                api={api}
+                                            />
+                                        )}
+                                    />
+                                    <Route
                                         path={Details.subPaths.API_DEFINITION}
                                         component={() => <APIDefinition api={api}
                                             updateAPI={this.updateAPI} />}
@@ -988,6 +1134,10 @@ class Details extends Component {
                                         component={() => <LifeCycle api={api} isAPIProduct={isAPIProduct} />}
                                     />
                                     <Route
+                                        path={Details.subPaths.LIFE_CYCLE_MCP}
+                                        component={() => <LifeCycle api={api} isMCPServer={isMCPServer} />}
+                                    />
+                                    <Route
                                         path={Details.subPaths.CONFIGURATION}
                                         component={() => <DesignConfigurations api={api}
                                             updateAPI={this.updateAPI} />}
@@ -1015,7 +1165,20 @@ class Details extends Component {
                                         component={() => <RuntimeConfiguration api={api} />}
                                     />
                                     <Route
+                                        path={Details.subPaths.CONFIGURATION_MCP}
+                                        component={() => <DesignConfigurations api={api}
+                                            updateAPI={this.updateAPI} />}
+                                    />
+                                    <Route
+                                        path={Details.subPaths.RUNTIME_CONFIGURATION_MCP}
+                                        component={() => <RuntimeConfiguration api={api} />}
+                                    />
+                                    <Route
                                         path={Details.subPaths.ENDPOINTS}
+                                        component={() => <Endpoint />}
+                                    />
+                                    <Route
+                                        path={Details.subPaths.ENDPOINTS_MCP}
                                         component={() => <Endpoint />}
                                     />
                                     <Route
@@ -1024,6 +1187,10 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.ENVIRONMENTS_PRODUCT}
+                                        component={() => <Environments api={api} />}
+                                    />
+                                    <Route
+                                        path={Details.subPaths.ENVIRONMENTS_MCP}
                                         component={() => <Environments api={api} />}
                                     />
                                     <Route
@@ -1050,6 +1217,12 @@ class Details extends Component {
                                         key={Details.subPaths.RESOURCES}
                                         component={APIOperations}
                                     />
+                                    <Route
+                                        path={Details.subPaths.TOOLS}
+                                        key={Details.subPaths.TOOLS}
+                                        component={APIOperations}
+                                    />
+    
                                     {settings && settings.gatewayFeatureCatalog
                                         .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
                                         .localScopes.includes("operationScopes") &&
@@ -1057,11 +1230,19 @@ class Details extends Component {
                                             <Scope api={api} />} />
                                     }
                                     <Route
+                                        path={Details.subPaths.SCOPES_MCP}
+                                        component={() => <Scope api={api} />}
+                                    />
+                                    <Route
                                         path={Details.subPaths.DOCUMENTS}
                                         component={() => <Documents api={api} />}
                                     />
                                     <Route
                                         path={Details.subPaths.DOCUMENTS_PRODUCT}
+                                        component={() => <Documents api={api} />}
+                                    />
+                                    <Route
+                                        path={Details.subPaths.DOCUMENTS_MCP}
                                         component={() => <Documents api={api} />}
                                     />
                                     {settings && settings.gatewayFeatureCatalog
@@ -1078,16 +1259,28 @@ class Details extends Component {
                                         component={() => <Subscriptions api={api}
                                             updateAPI={this.updateAPI} />}
                                     />
+                                    <Route
+                                        path={Details.subPaths.SUBSCRIPTIONS_MCP}
+                                        component={() => <Subscriptions api={api}
+                                            updateAPI={this.updateAPI} />}
+                                    />
                                     <Route path={Details.subPaths.SECURITY} component={() =>
                                         <Security api={api} />} />
                                     <Route path={Details.subPaths.COMMENTS} component={() =>
                                         <Comments api={api} />} />
+                                    <Route path={Details.subPaths.COMMENTS_MCP} component={() =>
+                                        <Comments api={api} />}
+                                    />
                                     <Route
                                         path={Details.subPaths.BUSINESS_INFO}
                                         component={() => <BusinessInformation api={api} />}
                                     />
                                     <Route
                                         path={Details.subPaths.BUSINESS_INFO_PRODUCT}
+                                        component={() => <BusinessInformation api={api} />}
+                                    />
+                                    <Route
+                                        path={Details.subPaths.BUSINESS_INFO_MCP}
                                         component={() => <BusinessInformation api={api} />}
                                     />
                                     <Route
@@ -1098,12 +1291,21 @@ class Details extends Component {
                                         path={Details.subPaths.PROPERTIES_PRODUCT}
                                         component={() => <Properties api={api} />}
                                     />
+                                    <Route
+                                        path={Details.subPaths.PROPERTIES_MCP}
+                                        component={() => <Properties api={api} />}
+                                    />
                                     <Route path={Details.subPaths.SHARE} component={() => <ShareAPI
                                         api={api} updateAPI={this.updateAPI} />} />
                                     <Route path={Details.subPaths.NEW_VERSION} component={() => <CreateNewVersion />} />
                                     <Route
                                         path={Details.subPaths.NEW_VERSION_PRODUCT}
-                                        component={() => <CreateNewVersion />} />
+                                        component={() => <CreateNewVersion />}
+                                    />
+                                    <Route
+                                        path={Details.subPaths.NEW_VERSION_MCP}
+                                        component={() => <CreateNewVersion />}
+                                    />
 
                                     <Route path={Details.subPaths.SUBSCRIPTIONS} component={() =>
                                         <Subscriptions />} />
@@ -1127,6 +1329,10 @@ class Details extends Component {
                                         path={Details.subPaths.TRYOUT_PRODUCT}
                                         component={() => <TryOutConsole apiObj={api} />}
                                     />
+                                    <Route
+                                        path={Details.subPaths.MCP_PLAYGROUND}
+                                        component={() => <TryOutConsole apiObj={api} />}
+                                    />
                                     <Route path={Details.subPaths.EXTERNAL_STORES}
                                         component={ExternalStores} />
                                     <Route
@@ -1144,7 +1350,7 @@ class Details extends Component {
                                                 !isAPIProduct &&
                                                 !api.isGraphql() &&
                                                 !api.isSOAPToREST() &&
-                                                !api.isSOAP() ? 
+                                                !api.isSOAP() ?
                                                     (
                                                         <Compliance api={api} />
                                                     ) : (
@@ -1170,45 +1376,61 @@ Details.contextType = AppContext;
 Details.subPaths = {
     BASE: '/apis/:api_uuid',
     BASE_PRODUCT: '/api-products/:apiprod_uuid',
+    BASE_MCP: '/mcp-servers/:mcpserver_uuid',
     OVERVIEW: '/apis/:api_uuid/overview',
     OVERVIEW_PRODUCT: '/api-products/:apiprod_uuid/overview',
+    OVERVIEW_MCP: '/mcp-servers/:mcpserver_uuid/overview',
     API_DEFINITION: '/apis/:api_uuid/api-definition',
     WSDL: '/apis/:api_uuid/wsdl',
     API_DEFINITION_PRODUCT: '/api-products/:apiprod_uuid/api-definition',
     SCHEMA_DEFINITION: '/apis/:api_uuid/schema definition',
     LIFE_CYCLE: '/apis/:api_uuid/lifecycle',
     LIFE_CYCLE_PRODUCT: '/api-products/:apiprod_uuid/lifecycle',
+    LIFE_CYCLE_MCP: '/mcp-servers/:mcpserver_uuid/lifecycle',
     CONFIGURATION: '/apis/:api_uuid/configuration',
     RUNTIME_CONFIGURATION: '/apis/:api_uuid/runtime-configuration',
     CONFIGURATION_PRODUCT: '/api-products/:apiprod_uuid/configuration',
     RUNTIME_CONFIGURATION_PRODUCT: '/api-products/:apiprod_uuid/runtime-configuration',
+    CONFIGURATION_MCP: '/mcp-servers/:mcpserver_uuid/configuration',
+    RUNTIME_CONFIGURATION_MCP: '/mcp-servers/:mcpserver_uuid/runtime-configuration',
     RUNTIME_CONFIGURATION_WEBSOCKET: '/apis/:api_uuid/runtime-configuration-websocket',
     ENDPOINTS: '/apis/:api_uuid/endpoints',
+    ENDPOINTS_MCP: '/mcp-servers/:mcpserver_uuid/endpoints',
     ENVIRONMENTS: '/apis/:api_uuid/deployments',
     ENVIRONMENTS_PRODUCT: '/api-products/:apiprod_uuid/deployments',
+    ENVIRONMENTS_MCP: '/mcp-servers/:mcpserver_uuid/deployments',
     OPERATIONS: '/apis/:api_uuid/operations',
     RESOURCES: '/apis/:api_uuid/resources',
+    TOOLS: '/mcp-servers/:mcpserver_uuid/tools',
     RESOURCES_PRODUCT: '/api-products/:apiprod_uuid/resources',
     RESOURCES_PRODUCT_EDIT: '/api-products/:apiprod_uuid/resources/edit',
     SCOPES: '/apis/:api_uuid/scopes',
+    SCOPES_MCP: '/mcp-servers/:mcpserver_uuid/scopes',
     DOCUMENTS: '/apis/:api_uuid/documents',
     DOCUMENTS_PRODUCT: '/api-products/:apiprod_uuid/documents',
+    DOCUMENTS_MCP: '/mcp-servers/:mcpserver_uuid/documents',
     SUBSCRIPTIONS_PRODUCT: '/api-products/:apiprod_uuid/subscriptions',
     SUBSCRIPTIONS: '/apis/:api_uuid/subscriptions',
+    SUBSCRIPTIONS_MCP: '/mcp-servers/:mcpserver_uuid/subscriptions',
     SECURITY: '/apis/:api_uuid/security',
     COMMENTS: '/apis/:api_uuid/comments',
+    COMMENTS_MCP: '/mcp-servers/:mcpserver_uuid/comments',
     BUSINESS_INFO: '/apis/:api_uuid/business-info',
     BUSINESS_INFO_PRODUCT: '/api-products/:apiprod_uuid/business-info',
+    BUSINESS_INFO_MCP: '/mcp-servers/:mcpserver_uuid/business-info',
     PROPERTIES: '/apis/:api_uuid/properties',
     PROPERTIES_PRODUCT: '/api-products/:apiprod_uuid/properties',
+    PROPERTIES_MCP: '/mcp-servers/:mcpserver_uuid/properties',
     NEW_VERSION: '/apis/:api_uuid/new_version',
     NEW_VERSION_PRODUCT: '/api-products/:api_uuid/new_version',
+    NEW_VERSION_MCP: '/mcp-servers/:mcpserver_uuid/new_version',
     SHARE: '/apis/:api_uuid/share',
     MONETIZATION: '/apis/:api_uuid/monetization',
     MONETIZATION_PRODUCT: '/api-products/:apiprod_uuid/monetization',
     EXTERNAL_STORES: '/apis/:api_uuid/external-devportals',
     TRYOUT: '/apis/:api_uuid/test-console',
     TRYOUT_PRODUCT: '/api-products/:apiprod_uuid/test-console',
+    MCP_PLAYGROUND: '/mcp-servers/:mcpserver_uuid/mcp-playground',
     QUERYANALYSIS: '/apis/:api_uuid/queryanalysis',
     TOPICS: '/apis/:api_uuid/topics',
     ASYNCAPI_DEFINITION: '/apis/:api_uuid/asyncApi-definition',
@@ -1242,9 +1464,9 @@ Details.propTypes = {
         }),
     }).isRequired,
     isAPIProduct: PropTypes.bool.isRequired,
+    isMCPServer: PropTypes.bool.isRequired,
     intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
 };
-
 export default withSettings(injectIntl((props) => {
     const theme = useTheme();
     return <Details {...props} theme={theme} />;

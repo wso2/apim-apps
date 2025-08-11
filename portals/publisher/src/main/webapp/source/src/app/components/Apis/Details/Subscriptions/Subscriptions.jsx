@@ -63,9 +63,9 @@ const Root = styled('div')((
 
 /**
  * Subscriptions component
- *
- * @class Subscriptions
- * @extends {Component}
+ * @param {object} props - Props passed to the component
+ * @returns {JSX.Element} Rendered component
+ * @memberof Subscriptions
  */
 function Subscriptions(props) {
 
