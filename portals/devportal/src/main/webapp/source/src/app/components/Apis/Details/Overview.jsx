@@ -48,6 +48,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import Progress from 'AppComponents/Shared/Progress';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import CONSTANTS from 'AppData/Constants';
 import View from 'AppComponents/Apis/Details/Documents/View';
 import Settings from 'Settings';
@@ -291,8 +292,14 @@ function Overview() {
     };
 
     const getDocuments = () => {
-        const restApi = new API();
-        return restApi.getDocumentsByAPIId(api.id)
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        let promisedApi;
+        if (isMCPServersRoute) {
+            promisedApi = new MCPServer().getDocuments(api.id);
+        } else {
+            promisedApi = new API().getDocumentsByAPIId(api.id);
+        }
+        return promisedApi
             .then((response) => {
                 const overviewDoc = response.body.list.filter((item) => item.otherTypeName === '_overview');
                 if (overviewDoc.length > 0) {
@@ -327,9 +334,15 @@ function Overview() {
             });
     }, [api]);
     useEffect(() => {
-        const restApi = new API();
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
         if (showSwaggerDescriptionOnOverview) {
-            restApi.getSwaggerByAPIIdAndEnvironment(api.id, selectedEndpoint.environmentName)
+            let promisedSwagger;
+            if (isMCPServersRoute) {
+                promisedSwagger = new MCPServer().getSwaggerByMCPServerIdAndEnvironment(api.id, selectedEndpoint.environmentName);
+            } else {
+                promisedSwagger = new API().getSwaggerByAPIIdAndEnvironment(api.id, selectedEndpoint.environmentName);
+            }
+            promisedSwagger
                 .then((swaggerResponse) => {
                     const swagger = swaggerResponse.obj;
                     if (swagger && swagger.info) {

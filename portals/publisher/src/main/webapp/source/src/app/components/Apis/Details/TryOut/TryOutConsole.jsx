@@ -30,20 +30,13 @@ import React, {
     useState,
 } from 'react';
 
-import Alert from 'AppComponents/Shared/MuiAlert';
 import Api from 'AppData/api';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
+import MCPServer from 'AppData/MCPServer';
 import CONSTS from 'AppData/Constants';
 import CircularProgress from '@mui/material/CircularProgress';
-import { FormattedMessage } from 'react-intl';
-import Grid from '@mui/material/Grid';
-import LaunchIcon from '@mui/icons-material/Launch';
-import { Link } from 'react-router-dom';
-import MenuItem from '@mui/material/MenuItem';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Utils from 'AppData/Utils';
 import cloneDeep from 'lodash.clonedeep';
@@ -51,16 +44,24 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
-import { isRestricted } from 'AppData/AuthManager';
 import AdvertiseDetailsPanel from "AppComponents/Apis/Details/TryOut/AdvertiseDetailsPanel";
+import MCPPlayground from '@wso2-org/mcp-playground';
+import Alert from 'AppComponents/Shared/Alert';
+import Drawer from '@mui/material/Drawer';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import SecurityDetailsPanel from './SecurityDetailsPanel';
 
 const PREFIX = 'TryOutConsole';
 
 const classes = {
     centerItems: `${PREFIX}-centerItems`,
     tryoutHeading: `${PREFIX}-tryoutHeading`,
-    menuItem: `${PREFIX}-menuItem`,
-    tokenType: `${PREFIX}-tokenType`
+    tokenType: `${PREFIX}-tokenType`,
+    mcpPlaygroundWrapper: `${PREFIX}-mcpPlaygroundWrapper`,
+    drawerContent: `${PREFIX}-drawerContent`,
+    drawerActions: `${PREFIX}-drawerActions`,
 };
 
 
@@ -79,17 +80,39 @@ const Root = styled('div')((
         display: 'block',
     },
 
-    [`& .${classes.menuItem}`]: {
-        color: theme.palette.getContrastText(theme.palette.background.paper),
-    },
-
     [`& .${classes.tokenType}`]: {
         margin: 'auto',
         display: 'flex',
         '& .MuiButton-contained.Mui-disabled span.MuiButton-label': {
             color: '#6d6d6d',
         },
-    }
+    },
+
+    [`& .${classes.mcpPlaygroundWrapper}`]: {
+        marginTop: theme.spacing(2),
+        // Apply the portal's font family to the MCP playground
+        fontFamily: theme.typography.fontFamily,
+        '& *': {
+            fontFamily: theme.typography.fontFamily,
+        },
+        // Ensure all text elements within the playground inherit the font family
+        '& input, & textarea, & select, & button, & div, & span, & p, & label, & h1, & h2, & h3, & h4, & h5, & h6': {
+            fontFamily: theme.typography.fontFamily,
+        },
+    },
+
+    [`& .${classes.drawerContent}`]: {
+        padding: theme.spacing(1),
+        marginTop: theme.spacing(3),
+        overflowY: 'auto',
+        flex: 1,
+        position: 'relative',
+    },
+
+    [`& .${classes.drawerActions}`]: {
+        padding: theme.spacing(2),
+        marginTop: 'auto',
+    },
 }));
 
 // disabled because webpack magic comment for chunk name require to be in the same line
@@ -99,9 +122,22 @@ const SwaggerUI = lazy(() => import('AppComponents/Apis/Details/TryOut/SwaggerUI
 dayjs.extend(relativeTime);
 
 const tasksReducer = (state, action) => {
-    const { name, status } = action;
-    // In the case of a key collision, the right-most (last) object's value wins out
-    return { ...state, [name]: { ...state[name], ...status } };
+    switch (action.type) {
+        case 'GENERATE_KEY_START':
+            return { ...state, generateKey: { ...state.generateKey, inProgress: true } };
+        case 'GENERATE_KEY_SUCCESS':
+            return { ...state, generateKey: { ...state.generateKey, inProgress: false, completed: true } };
+        case 'GENERATE_KEY_ERROR':
+            return { ...state, generateKey: { ...state.generateKey, inProgress: false, error: action.error } };
+        case 'GET_DEPLOYMENTS_START':
+            return { ...state, getDeployments: { ...state.getDeployments, inProgress: true } };
+        case 'GET_DEPLOYMENTS_SUCCESS':
+            return { ...state, getDeployments: { ...state.getDeployments, inProgress: false, completed: true } };
+        case 'GET_DEPLOYMENTS_ERROR':
+            return { ...state, getDeployments: { ...state.getDeployments, inProgress: false, error: action.error } };
+        default:
+            return state;
+    }
 };
 
 /**
@@ -118,7 +154,10 @@ const TryOutConsole = () => {
     const [advAuthHeader, setAdvAuthHeader] = useState('Authorization');
     const [advAuthHeaderValue, setAdvAuthHeaderValue] = useState('');
     const [selectedEndpoint, setSelectedEndpoint] = useState('PRODUCTION');
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const { data: publisherSettings } = usePublisherSettings();
+    const isMCPServer = api.type === MCPServer.CONSTS.MCP;
+    const intl = useIntl();
 
     const [tasksStatus, tasksStatusDispatcher] = useReducer(tasksReducer, {
         generateKey: { inProgress: false, completed: false, error: false },
@@ -127,19 +166,22 @@ const TryOutConsole = () => {
     });
 
     const generateInternalKey = useCallback(() => {
-        tasksStatusDispatcher({ name: 'generateKey', status: { inProgress: true } });
-        Api.generateInternalKey(api.id).then((keyResponse) => {
-            const { apikey } = keyResponse.body;
-            setAPIKey(apikey);
-            tasksStatusDispatcher({ name: 'generateKey', status: { inProgress: false, completed: true } });
-        }).catch((error) => tasksStatusDispatcher({ name: 'generateKey', status: { error, inProgress: false } }));
+        tasksStatusDispatcher({ type: 'GENERATE_KEY_START' });
+        Api.generateInternalKey(api.id)
+            .then((keyResponse) => {
+                const { apikey } = keyResponse.body;
+                setAPIKey(apikey);
+                tasksStatusDispatcher({ type: 'GENERATE_KEY_SUCCESS' });
+            })
+            .catch((error) => tasksStatusDispatcher({ type: 'GENERATE_KEY_ERROR', error }))
     }, [api.id]);
+
     useEffect(generateInternalKey, []); // Auto generate API Key on page load
     useEffect(() => {
-        tasksStatusDispatcher({ name: 'getDeployments', status: { inProgress: true } });
+        tasksStatusDispatcher({ type: 'GET_DEPLOYMENTS_START' });
         if (publisherSettings) {
             api.getDeployedRevisions(api.id).then((deploymentsResponse) => {
-                tasksStatusDispatcher({ name: 'getDeployments', status: { inProgress: false, completed: true } });
+                tasksStatusDispatcher({ type: 'GET_DEPLOYMENTS_SUCCESS' });
                 const currentDeployments = deploymentsResponse.body;
                 const currentDeploymentsWithDisplayName = currentDeployments
                     .filter(deploy => deploy.status !== 'CREATED').map((deploy) => {
@@ -153,9 +195,11 @@ const TryOutConsole = () => {
                     setSelectedDeployment(initialDeploymentSelection);
                 }
             }).catch(
-                (error) => tasksStatusDispatcher({ name: 'getDeployments', status: { inProgress: false, error } }),
+                (error) => tasksStatusDispatcher({ type: 'GET_DEPLOYMENTS_ERROR', error }),
             );
-            api.getSwagger().then((swaggerResponse) => setOasDefinition(swaggerResponse.body));
+            if (!isMCPServer) {
+                api.getSwagger().then((swaggerResponse) => setOasDefinition(swaggerResponse.body));
+            }
         }
     }, [publisherSettings]);
 
@@ -202,10 +246,10 @@ const TryOutConsole = () => {
                             + `${selectedDeploymentVhost.httpContext}${api.context}/${api.version}`;
                         if (`${api.context}`.includes('{version}')) {
                             url = `${baseURL}${pathSeparator}`
-                                        + `${selectedDeploymentVhost.httpContext}${api.context}`
-                                            .replaceAll('{version}', `${api.version}`);
+                                + `${selectedDeploymentVhost.httpContext}${api.context}`
+                                    .replaceAll('{version}', `${api.version}`);
                         }
-                        return {url};
+                        return { url };
                     }
                     return null;
                 });
@@ -232,10 +276,10 @@ const TryOutConsole = () => {
                 }
 
                 let schemes = api.transport.slice().sort((a, b) => ((a > b) ? -1 : 1));
-                if (selectedDeploymentVhost.httpPort === -1){
+                if (selectedDeploymentVhost.httpPort === -1) {
                     schemes = schemes.filter(item => item !== 'http');
                 }
-                if (selectedDeploymentVhost.httpsPort === -1){
+                if (selectedDeploymentVhost.httpsPort === -1) {
                     schemes = schemes.filter(item => item !== 'https');
                 }
                 oasCopy.schemes = schemes;
@@ -286,12 +330,47 @@ const TryOutConsole = () => {
     const decodedJWT = useMemo(() => Utils.decodeJWT(apiKey || ''), [apiKey]);
     const isAPIRetired = api.lifeCycleStatus === 'RETIRED';
 
+    const getMCPServerUrl = () => {
+        if (selectedDeployment && selectedDeployment.vhost) {
+            const selectedGWEnvironment = publisherSettings.environment
+                .find((env) => env.name === selectedDeployment.name);
+            let selectedDeploymentVhost = selectedGWEnvironment && selectedGWEnvironment.vhosts
+                .find((vhost) => vhost.host === selectedDeployment.vhost);
+
+            if (!selectedDeploymentVhost) {
+                selectedDeploymentVhost = { ...CONSTS.DEFAULT_VHOST, host: selectedDeployment.vhost };
+            }
+
+            const protocol = selectedDeploymentVhost.httpsPort !== -1 ? 'https' : 'http';
+            const port = protocol === 'https'
+                ? selectedDeploymentVhost.httpsPort
+                : selectedDeploymentVhost.httpPort;
+            let pathSeparator = '';
+            if (selectedDeploymentVhost.httpContext
+                && !selectedDeploymentVhost.httpContext.startsWith('/')) {
+                pathSeparator = '/';
+            }
+
+            let url = `${protocol}://${selectedDeployment.vhost}:${port}${pathSeparator}`
+                + `${selectedDeploymentVhost.httpContext}${api.context}/${api.version}`;
+
+            if (`${api.context}`.includes('{version}')) {
+                url = `${protocol}://${selectedDeployment.vhost}:${port}${pathSeparator}`
+                    + `${selectedDeploymentVhost.httpContext}${api.context}`
+                        .replaceAll('{version}', `${api.version}`);
+            }
+            return url + '/mcp';
+        }
+        // Fallback URL
+        return `https://localhost:8243${api.context}/${api.version}/mcp`;
+    };
+
     const accessTokenProvider = () => {
         if (isAdvertised) {
             return advAuthHeaderValue;
         }
         return apiKey;
-    }; 
+    };
 
     const getAuthorizationHeader = () => {
         if (isAdvertised) {
@@ -300,158 +379,69 @@ const TryOutConsole = () => {
         return 'Internal-Key';
     };
 
+    // Determine artifact type for display messages
+    const getArtifactType = () => {
+        if (isMCPServer) {
+            return 'MCP Server';
+        }
+        return api.isRevision ? 'Revision' : 'API';
+    };
+
+    const handleDrawerOpen = () => {
+        setDrawerOpen(true);
+    };
+
+    const handleDrawerClose = () => {
+        setDrawerOpen(false);
+    };
+
+    const handleKeyGeneration = () => {
+        generateInternalKey();
+        setDrawerOpen(false);
+
+        // Show success alert if token was generated
+        if (apiKey && apiKey.trim() !== '') {
+            Alert.info(intl.formatMessage({
+                id: 'Apis.Details.TryOut.key.generation.success',
+                defaultMessage: 'Key generated successfully!',
+            }));
+        }
+    };
+
     return (
         (<Root>
             <Typography id='itest-api-details-try-out-head' variant='h4' component='h2'>
-                <FormattedMessage id='Apis.Details.ApiConsole.ApiConsole.title' defaultMessage='Try Out' />
+                {isMCPServer ? (
+                    <FormattedMessage
+                        id='Apis.Details.TryOut.TryOutConsole.mcp.playground.title'
+                        defaultMessage='MCP Playground'
+                    />
+                ) : (
+                    <FormattedMessage
+                        id='Apis.Details.TryOut.TryOutConsole.title'
+                        defaultMessage='Try Out'
+                    />
+                )}
             </Typography>
             <Paper elevation={0} sx={{ mt: 1, p: 3 }}>
-                {(!api.advertiseInfo || !api.advertiseInfo.advertised) ? (
-                    <>
-                        <Box display='flex' justifyContent='center' sx={{ mb: 3 }}>
-                            <Grid container>
-                                <Grid item xs={3} />
-                                <Grid xs={6} md={6} item>
-                                    <Typography variant='h5' component='h3' color='textPrimary'>
-                                        <FormattedMessage
-                                            id='api.console.security.heading'
-                                            defaultMessage='Security'
-                                        />
-                                    </Typography>
-                                    <TextField
-                                        fullWidth
-                                        label={(
-                                            <FormattedMessage
-                                                id='Apis.Details.TryOutConsole.token.label'
-                                                defaultMessage='Internal API Key'
-                                            />
-                                        )}
-                                        InputLabelProps={{
-                                            shrink: true,
-                                        }}
-                                        type='password'
-                                        value={apiKey}
-                                        helperText={decodedJWT ? (
-                                            <Box color='success.main'>
-                                                {`Expires ${dayjs.unix(decodedJWT.payload.exp).fromNow()}`}
-                                            </Box>
-                                        ) : (
-                                            <FormattedMessage
-                                                id='Apis.Details.TryOutConsole.token.helper'
-                                                defaultMessage='Generate or provide an internal API Key'
-                                            />
-                                        )}
-                                        margin='normal'
-                                        variant='outlined'
-                                        name='internal'
-                                        multiline
-                                        rows={4}
-                                        onChange={(e) => setAPIKey(e.target.value)}
-                                        disabled={isAPIRetired}
-                                    />
-                                    <Button
-                                        onClick={generateInternalKey}
-                                        variant='contained'
-                                        color='primary'
-                                        disabled={tasksStatus.generateKey.inProgress || isAPIRetired
-                                        || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Details.ApiConsole.generate.test.key'
-                                            defaultMessage='Generate Key'
-                                        />
-                                    </Button>
-                                    {tasksStatus.generateKey.inProgress
-                                    && (
-                                        <Box
-                                            display='inline'
-                                            position='absolute'
-                                            mt={1}
-                                            ml={-8}
-                                        >
-                                            <CircularProgress size={24} />
-                                        </Box>
-                                    )}
-                                </Grid>
-                            </Grid>
-                        </Box>
-                        <Box display='flex' justifyContent='center'>
-                            <Grid container>
-                                <Grid item xs={3} />
-                                <Grid xs={6} md={6} item>
-                                    {(tasksStatus.getDeployments.completed && !deployments.length && !isAPIRetired) && (
-                                        <Alert variant='outlined' severity='error'>
-                                            <FormattedMessage
-                                                id='Apis.Details.ApiConsole.deployments.no'
-                                                defaultMessage={'{artifactType} is not deployed yet! Please deploy '
-                                                + 'the {artifactType} before trying out'}
-                                                values={{ artifactType: api.isRevision ? 'Revision' : 'API' }}
-                                            />
-                                            <Link to={'/apis/' + api.id + '/deployments'}>
-                                                <LaunchIcon
-                                                    color='primary'
-                                                    fontSize='small'
-                                                />
-                                            </Link>
-                                        </Alert>
-                                    )}
-                                    {isAPIRetired && (
-                                        <Alert variant='outlined' severity='error'>
-                                            <FormattedMessage
-                                                id='Apis.Details.ApiConsole.deployments.isAPIRetired'
-                                                defaultMessage='Can not Try Out retired APIs!'
-                                            />
-                                        </Alert>
-                                    )}
-                                    {((deployments && deployments.length > 0))
-                                    && (
-                                        <>
-                                            <Typography
-                                                variant='h5'
-                                                component='h3'
-                                                color='textPrimary'
-                                            >
-                                                <FormattedMessage
-                                                    id='Apis.Details.ApiConsole.deployments.api.gateways'
-                                                    defaultMessage='API Gateways'
-                                                />
-                                            </Typography>
-                                            <TextField
-                                                fullWidth
-                                                select
-                                                label={(
-                                                    <FormattedMessage
-                                                        defaultMessage='Environment'
-                                                        id='Apis.Details.ApiConsole.environment'
-                                                    />
-                                                )}
-                                                value={(selectedDeployment && selectedDeployment.name) || ''}
-                                                name='selectedEnvironment'
-                                                onChange={deploymentSelectionHandler}
-                                                margin='normal'
-                                                variant='outlined'
-                                                SelectProps={{
-                                                    MenuProps: {
-                                                        getContentAnchorEl: null,
-                                                    },
-                                                }}
-                                            >
-                                                {deployments.map((deployment) => (
-                                                    <MenuItem
-                                                        value={deployment.name}
-                                                        key={deployment.name}
-                                                    >
-                                                        {deployment.displayName}
-                                                    </MenuItem>
-                                                ))}
-                                            </TextField>
-                                        </>
-                                    )}
-                                </Grid>
-                            </Grid>
-                        </Box>
-                    </>
-                ) : (
+                {/* Security Details Panel for regular APIs that are not advertised */}
+                {!isMCPServer && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
+                    <SecurityDetailsPanel
+                        apiKey={apiKey}
+                        setAPIKey={setAPIKey}
+                        decodedJWT={decodedJWT}
+                        isAPIRetired={isAPIRetired}
+                        generateInternalKey={generateInternalKey}
+                        tasksStatus={tasksStatus}
+                        deployments={deployments}
+                        selectedDeployment={selectedDeployment}
+                        deploymentSelectionHandler={deploymentSelectionHandler}
+                        getArtifactType={getArtifactType}
+                    />
+                )}
+
+                {/* Advertise Details Panel for advertised APIs */}
+                {!isMCPServer && api.advertiseInfo && api.advertiseInfo.advertised && (
                     <AdvertiseDetailsPanel
                         classes={classes}
                         advAuthHeader={advAuthHeader}
@@ -463,21 +453,127 @@ const TryOutConsole = () => {
                         advertiseInfo={api.advertiseInfo}
                     />
                 )}
-                {updatedOasDefinition && apiKey !== null ? (
-                    <Suspense
-                        fallback={(
+                {isMCPServer && (
+                    // Render MCP Playground for MCP servers
+                    <>
+                        <div className={classes.mcpPlaygroundWrapper}>
+                            <MCPPlayground
+                                disableTitle
+                                enableConfiguration
+                                onConfigurationClick={handleDrawerOpen}
+                                url={getMCPServerUrl()}
+                                token={apiKey}
+                                headerName='internal-key'
+                                shouldSetHeaderNameExternally
+                                disableConnectionButton={apiKey === null || apiKey === ''}
+                            />
+                        </div>
+                    </>
+                )}
+                {!isMCPServer && (
+                    // Render SwaggerUI for regular APIs
+                    <>
+                        {updatedOasDefinition && apiKey !== null ? (
+                            <Suspense
+                                fallback={(
+                                    <CircularProgress />
+                                )}
+                            >
+                                <SwaggerUI
+                                    api={api}
+                                    accessTokenProvider={accessTokenProvider}
+                                    spec={updatedOasDefinition}
+                                    authorizationHeader={getAuthorizationHeader()}
+                                />
+                            </Suspense>
+                        ) : (
                             <CircularProgress />
                         )}
-                    >
-                        <SwaggerUI
-                            api={api}
-                            accessTokenProvider={accessTokenProvider}
-                            spec={updatedOasDefinition}
-                            authorizationHeader={getAuthorizationHeader()}
-                        />
-                    </Suspense>
-                ) : <CircularProgress />}
+                    </>
+                )}
             </Paper>
+
+            {/* Security Details Drawer for MCP Servers */}
+            <Drawer
+                anchor='right'
+                open={drawerOpen}
+                onClose={handleDrawerClose}
+                PaperProps={{
+                    sx: { 
+                        width: 600,
+                        zIndex: 1300,
+                        position: 'fixed',
+                        top: 0,
+                        height: '100vh',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        backgroundColor: 'white',
+                    }
+                }}
+                sx={{
+                    zIndex: 1300,
+                    '& .MuiDrawer-paper': {
+                        backgroundColor: 'white',
+                        color: 'black'
+                    }
+                }}
+            >
+                <Box 
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: 2,
+                        backgroundColor: 'white',
+                        position: 'sticky',
+                        top: 0,
+                        zIndex: 1,
+                        minHeight: '64px',
+                        flexWrap: 'nowrap',
+                        marginBottom: 2,
+                    }}
+                >
+                    <Typography 
+                        variant='h5' 
+                        component='h3'
+                        sx={{ 
+                            flex: 1,
+                            margin: 0,
+                            padding: 0,
+                        }}
+                    >
+                        <FormattedMessage
+                            id='api.console.security.heading'
+                            defaultMessage='Security Configuration'
+                        />
+                    </Typography>
+                    <IconButton 
+                        onClick={handleDrawerClose}
+                        sx={{ 
+                            flexShrink: 0,
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
+                
+                <Box className={classes.drawerContent}>
+                    <SecurityDetailsPanel
+                        apiKey={apiKey}
+                        setAPIKey={setAPIKey}
+                        decodedJWT={decodedJWT}
+                        isAPIRetired={isAPIRetired}
+                        generateInternalKey={handleKeyGeneration}
+                        tasksStatus={tasksStatus}
+                        deployments={deployments}
+                        selectedDeployment={selectedDeployment}
+                        deploymentSelectionHandler={deploymentSelectionHandler}
+                        getArtifactType={getArtifactType}
+                        securityPanelWidth='100%'
+                        isSecurityPanelDrawer
+                    />
+                </Box>
+            </Drawer>
         </Root>)
     );
 };

@@ -19,12 +19,13 @@ import React, { Component } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Paper from '@mui/material/Paper';
-import {Typography, useTheme} from '@mui/material';
+import { Typography, useTheme } from '@mui/material';
 import Grid from '@mui/material/Grid/Grid';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
+import MCPServer from 'AppData/MCPServer';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import withSettings from 'AppComponents/Shared/withSettingsContext';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -112,7 +113,7 @@ const StyledApiContextConsumer = styled(ApiContext.Consumer)((
 
     [`& .${classes.button}`]: {
         textTransform: 'capitalize',
-    }
+    },
 }));
 
 /**
@@ -155,10 +156,13 @@ class CommentsLegacy extends Component {
         let {
             apiId, match, intl, isOverview, setCount,
         } = this.props;
-        if (match) apiId = match.params.apiUuid;
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        if (match) {
+            apiId = isMCPServersRoute ? match.params.serverUuid : match.params.apiUuid;
+        }
         this.setState({ apiId });
 
-        const restApi = new API();
+        const restApi = isMCPServersRoute ? new MCPServer() : new API();
         const limit = this.props.commentsLimit;
         const offset = 0;
 
@@ -191,7 +195,8 @@ class CommentsLegacy extends Component {
      */
     handleLoadMoreComments() {
         const { allComments, apiId, comments } = this.state;
-        const restApi = new API();
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        const restApi = isMCPServersRoute ? new MCPServer() : new API();
         const limit = this.props.commentsLimit;
         const offset = comments.length;
 
@@ -268,7 +273,8 @@ class CommentsLegacy extends Component {
         const newTotal = totalComments - 1;
 
         if (newTotal > remainingComments.length) {
-            const restApi = new API();
+            const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+            const restApi = isMCPServersRoute ? new MCPServer() : new API();
 
             restApi
                 .getAllComments(apiId, 1, remainingComments.length)

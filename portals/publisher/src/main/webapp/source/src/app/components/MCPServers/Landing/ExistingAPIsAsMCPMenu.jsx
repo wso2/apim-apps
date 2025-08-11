@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,46 +16,46 @@
  * under the License.
  */
 
-// **** DEPRECATED ****
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import LandingMenuItem from 'AppComponents/Apis/Listing/Landing/components/LandingMenuItem';
 import LandingMenu from 'AppComponents/Apis/Listing/Landing/components/LandingMenu';
 import APICreateMenuSection from 'AppComponents/Apis/Listing/components/APICreateMenuSection';
 
-/**
- * NOTE: This is no longer in use and deprecated !!!!
- * @param {Object} props Component interface
- * @returns
- */
-const ServiceCatalogMenu = (props) => {
+const ExistingAPIsAsMCPMenu = (props) => {
     const { icon, isCreateMenu } = props;
     const Component = isCreateMenu ? APICreateMenuSection : LandingMenu;
     const dense = isCreateMenu;
+
     return (
         <Component
-            id='itest-rest-api-create-menu'
-            openList={dense}
+            id='itest-mcp-servers-create-menu'
             title={(
                 <FormattedMessage
-                    id='Apis.Listing.SampleAPI.SampleAPI.service.catalog.api'
-                    defaultMessage='Service Catalog'
+                    id='MCPServers.Landing.ExistingAPIsAsMCPMenu.title'
+                    defaultMessage='MCP From Existing APIs'
                 />
             )}
             icon={icon}
         >
             <LandingMenuItem
                 dense={dense}
-                id='itest-id-create-from-service-catalog'
-                linkTo='/service-catalog'
+                id='itest-id-mcp-servers-create-from-existing-api'
+                linkTo='/mcp-servers/create/existing-api'
+                helperText={(
+                    <FormattedMessage
+                        id='MCPServers.Landing.ExistingAPIsAsMCPMenu.helperText'
+                        defaultMessage='Use an existing API'
+                    />
+                )}
             >
                 <FormattedMessage
-                    id='Apis.Listing.import.from.service.catalog.title'
-                    defaultMessage='Import From Service Catalog'
+                    id='MCPServers.Landing.ExistingAPIsAsMCPMenu.create.title'
+                    defaultMessage='Create MCP Server From Existing API'
                 />
             </LandingMenuItem>
         </Component>
     );
 };
 
-export default ServiceCatalogMenu;
+export default ExistingAPIsAsMCPMenu;

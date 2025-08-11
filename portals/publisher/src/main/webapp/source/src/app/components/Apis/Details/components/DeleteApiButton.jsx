@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import { resourceMethod, resourcePath, ScopeValidation } from 'AppData/ScopeValidation';
 import Alert from 'AppComponents/Shared/Alert';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
@@ -142,8 +143,9 @@ class DeleteApiButton extends React.Component {
      */
     handleApiDelete() {
         const {
-            api: { id, name }, setLoading, updateData, isAPIProduct, history, intl,
+            api: { id, name, type }, setLoading, updateData, isAPIProduct, history, intl,
         } = this.props;
+        const isMCPServer = type === MCPServer.CONSTS.MCP;
         if (isAPIProduct) {
             const promisedDelete = API.deleteProduct(id);
             promisedDelete
@@ -176,6 +178,42 @@ class DeleteApiButton extends React.Component {
                         Alert.error(intl.formatMessage({
                             id: 'Apis.Details.components.api.product.delete.error',
                             defaultMessage: 'Something went wrong while deleting the API Product!',
+                        }));
+                    }
+                    setLoading(false);
+                });
+        } else if (isMCPServer) {
+            const promisedDelete = MCPServer.deleteMCPServer(id);
+            promisedDelete
+                .then((response) => {
+                    if (response.status !== 200) {
+                        Alert.info(intl.formatMessage({
+                            id: 'Apis.Details.components.api.mcp.delete.error',
+                            defaultMessage: 'Something went wrong while deleting the MCP Server!',
+                        }));
+                        return;
+                    }
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.components.api.mcp.delete.success',
+                        defaultMessage: 'MCP Server {name} deleted Successfully',
+                    },
+                    {
+                        name,
+                    }));
+                    if (updateData) {
+                        updateData(id);
+                        setLoading(false);
+                    } else {
+                        history.push('/mcp-servers');
+                    }
+                })
+                .catch((error) => {
+                    if (error.status === 409) {
+                        Alert.error('[ ' + name + ' ] : ' + error.response.body.description);
+                    } else {
+                        Alert.error(intl.formatMessage({
+                            id: 'Apis.Details.components.api.mcp.delete.error',
+                            defaultMessage: 'Something went wrong while deleting the MCP Server!',
                         }));
                     }
                     setLoading(false);
@@ -227,9 +265,17 @@ class DeleteApiButton extends React.Component {
      */
     render() {
         const { api, onClick, updateData } = this.props;
-        const type = api.apiType === API.CONSTS.APIProduct ? 'API Product ' : 'API ';
         const version = api.apiType === API.CONSTS.APIProduct ? null : '-' + api.version;
         const deleteHandler = onClick || this.handleApiDelete;
+
+        let type;
+        if (api.apiType === API.CONSTS.APIProduct) {
+            type = 'API Product';
+        } else if (api.type === MCPServer.CONSTS.MCP) {
+            type = 'MCP Server';
+        } else {
+            type = 'API';
+        }
 
         let path = resourcePath.SINGLE_API;
 

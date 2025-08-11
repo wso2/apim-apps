@@ -36,10 +36,10 @@ import { CircularProgress, Typography } from '@mui/material';
 import Utils from 'AppData/Utils';
 import AuthManager from 'AppData/AuthManager';
 import { fetchToCurl } from 'fetch-to-curl';
+import SecurityDetailsPanel from 'AppComponents/Shared/ApiTryOut/SecurityDetailsPanel';
 import ApiChatPoweredBy from './components/ApiChatPoweredBy';
 import ApiChatBanner from './components/ApiChatBanner';
 import ApiChatExecute from './components/ApiChatExecute';
-import ConfigureKeyDrawer from './components/ConfigureKeyDrawer';
 import SampleQueryCard from './components/SampleQueryCard';
 import ApiChatResponse from './components/ApiChatResponse';
 
@@ -737,7 +737,7 @@ const ApiChat = () => {
             <Box className={classes.tryWithAiMain}>
                 <Box sx={{ flexGrow: 1 }}>
                     {apiChatEnabled && aiAuthTokenProvided && (
-                        <ConfigureKeyDrawer
+                        <SecurityDetailsPanel
                             isDrawerOpen={configureKeyDrawerOpen}
                             updateDrawerOpen={setConfigureKeyDrawerOpen}
                             onConfigChange={handleConfigChange}

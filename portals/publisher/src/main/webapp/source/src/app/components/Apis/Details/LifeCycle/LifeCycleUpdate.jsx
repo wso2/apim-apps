@@ -31,6 +31,7 @@ import PropTypes from 'prop-types';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import { ScopeValidation, resourceMethod, resourcePath } from 'AppData/ScopeValidation';
 import Alert from 'AppComponents/Shared/Alert';
 import Banner from 'AppComponents/Shared/Banner';
@@ -125,11 +126,19 @@ class LifeCycleUpdate extends Component {
             selectedTransitionState: null,
             isGovernanceViolation: false,
             governanceError: null,
+            isEndpointAvailable: false,
         };
         this.setIsOpen = this.setIsOpen.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.handleRequestOpen = this.handleRequestOpen.bind(this);
         this.handleRequestClose = this.handleRequestClose.bind(this);
+    }
+
+    /**
+     * Set Deployment & Mandatory Properties availability
+     */
+    componentDidMount() {
+        this.fetchData();
     }
 
     /**
@@ -146,7 +155,6 @@ class LifeCycleUpdate extends Component {
     }
 
     /**
-     *
      * Set the openMenu state
      */
     handleRequestClose() {
@@ -154,23 +162,70 @@ class LifeCycleUpdate extends Component {
     }
 
     /**
-     *
-     * Set Deployment & Mandatory Properties availability
+     * Set handle click warning
      */
-    componentDidMount() {
-        this.fetchData();
+    handleClick() {
+        const {
+            api: { id: apiUUID, type },
+        } = this.props;
+        this.setIsOpen(false);
+        this.updateLCStateOfAPI(apiUUID, 'Publish', type);
     }
 
+    /**
+     *
+     * Set isOpen state of the dialog box which shows the caution message when publish without deploying
+     * @param {Boolean} isOpen Should dialog box is open or not
+     */
+    setIsOpen(isOpen) {
+        this.setState({ isOpen });
+    }
+
+    /**
+     * Fetch the revisions and settings of the API
+     */
     fetchData() {
         const {
-            api: { id: apiUUID },
+            api: { id: apiUUID, type }, isAPIProduct
         } = this.props;
         const { api } = this.context;
+        const isMCPServer = type === MCPServer.CONSTS.MCP;
 
-        this.api.getRevisionsWithEnv(apiUUID)
-            .then((result) => {
-                this.setState({ deploymentsAvailable: result.body.count > 0 && this.hasApprovedStatus(result.body)});
-                api.getSettings()
+        // Create a promises array to hold multiple promises
+        const promises = [];
+    
+        const getRevisionPromise = isMCPServer
+            ? MCPServer.getRevisionsWithEnv(apiUUID)
+            : this.api.getRevisionsWithEnv(apiUUID);
+        promises.push(getRevisionPromise);
+
+        // Add endpoint check promise for MCP servers
+        let endpointPromise;
+        if (isMCPServer) {
+            endpointPromise = MCPServer.getMCPServerEndpoints(apiUUID)
+                .then(response => {
+                    const endpoints = response.body;
+                    return { hasEndpoint: endpoints && endpoints.length > 0 };
+                })
+                .catch(() => {
+                    return { hasEndpoint: false };
+                });
+        } else if (isAPIProduct) {
+            endpointPromise = Promise.resolve({ hasEndpoint: false });
+        } else {
+            endpointPromise = Promise.resolve({ hasEndpoint: api.endpointConfig !== null });
+        }
+        promises.push(endpointPromise);
+
+        // Execute all promises in parallel
+        Promise.all(promises)
+            .then(([revisionResult, endpointResult]) => {
+                this.setState({
+                    deploymentsAvailable: revisionResult.body.count > 0 && this.hasApprovedStatus(revisionResult.body),
+                    isEndpointAvailable: endpointResult.hasEndpoint,
+                });
+
+                API.getSettings()
                     .then((response) => {
                         const { customProperties } = response;
                         let isMandatoryPropertiesAvailable;
@@ -181,7 +236,8 @@ class LifeCycleUpdate extends Component {
                             if (requiredPropertyNames.length > 0) {
                                 this.setState({ isMandatoryPropertiesConfigured: true })
                                 isMandatoryPropertiesAvailable = requiredPropertyNames.every(propertyName => {
-                                    const property = api.additionalProperties.find(prop => prop.name === propertyName);
+                                    const property = api.additionalProperties.find(
+                                        prop => prop.name === propertyName);
                                     return property && property.value !== '';
                                 });
                             } else {
@@ -200,32 +256,29 @@ class LifeCycleUpdate extends Component {
             .catch((error) => {
                 console.error('Error fetching revisions:', error);
             });
-    }
+    };
 
     /**
-     *
-     * Set isOpen state of the dialog box which shows the caution message when publish without deploying
-     * @param {Boolean} isOpen Should dialog box is open or not
-     */
-    setIsOpen(isOpen) {
-        this.setState({ isOpen });
-    }
-
-    /**
-     * @param {*} apiUUID api UUID
-     * @param {*} action life cycle action
+     * @param {string} apiUUID api UUID
+     * @param {string} action life cycle action
+     * @param {string} type API type
      * @memberof LifeCycleUpdate
      */
-    updateLCStateOfAPI(apiUUID, action) {
+    updateLCStateOfAPI(apiUUID, action, type) {
         this.setState({ isUpdating: action });
         let promisedUpdate;
         const complianceErrorCode = 903300;
         const { intl } = this.props;
         const lifecycleChecklist = this.props.checkList.map((item) => item.value + ':' + item.checked);
         const { isAPIProduct } = this.props;
+        const isMCPServer = type === MCPServer.CONSTS.MCP;
         if (isAPIProduct) {
             promisedUpdate = this.apiProduct.updateLcState(apiUUID, action, lifecycleChecklist.length > 0
                 ? lifecycleChecklist.toString() : lifecycleChecklist );
+        } else if (isMCPServer) {
+            promisedUpdate  = (lifecycleChecklist.length > 0)
+                ? MCPServer.updateLcState(apiUUID, action, lifecycleChecklist.toString())
+                : MCPServer.updateLcState(apiUUID, action);
         } else {
             promisedUpdate = (lifecycleChecklist.length > 0)
                 ? this.api.updateLcState(apiUUID, action, lifecycleChecklist.toString())
@@ -343,18 +396,6 @@ class LifeCycleUpdate extends Component {
 
     /**
      *
-     * Set handle click warning
-     */
-    handleClick() {
-        const {
-            api: { id: apiUUID },
-        } = this.props;
-        this.setIsOpen(false);
-        this.updateLCStateOfAPI(apiUUID, 'Publish');
-    }
-
-    /**
-     *
      *
      * @param {*} event event
      * @memberof LifeCycleUpdate
@@ -367,20 +408,20 @@ class LifeCycleUpdate extends Component {
             action = 'Deploy as a Prototype';
         }
         const {
-            api: { id: apiUUID, advertiseInfo }, isAPIProduct,
+            api: { id: apiUUID, advertiseInfo, type }, isAPIProduct,
         } = this.props;
         if (action === 'Publish' && !deploymentsAvailable && ((advertiseInfo && !advertiseInfo.advertised)
             || isAPIProduct)) {
             this.setIsOpen(true);
         } else {
-            this.updateLCStateOfAPI(apiUUID, action);
+            this.updateLCStateOfAPI(apiUUID, action, type);
         }
     }
 
     /**
-     * 
-     * @param {*} data 
-     * @returns boolean
+     * Check if the API has at least one deployment with APPROVED status
+     * @param {Object} data API data containing deployment information
+     * @returns {boolean} True if at least one deployment has APPROVED status, otherwise
      */
     hasApprovedStatus(data) {
         for (const item of data.list) {
@@ -467,7 +508,7 @@ class LifeCycleUpdate extends Component {
                 return {
                     ...lifecycleState,
                     disabled:
-                        (api.type !== 'WEBSUB' && api.endpointConfig == null && !isAPIProduct),
+                        (api.type !== 'WEBSUB' && !this.state.isEndpointAvailable && !isAPIProduct),
                 };
             }
             if (lifecycleState.event === 'Publish') {
@@ -524,6 +565,7 @@ class LifeCycleUpdate extends Component {
                                             isAPIProduct={isAPIProduct}
                                             isMandatoryPropertiesAvailable={isMandatoryPropertiesAvailable}
                                             isMandatoryPropertiesConfigured={isMandatoryPropertiesConfigured}
+                                            isEndpointAvailable={this.state.isEndpointAvailable}
                                         />
                                     </Grid>
                                 )}

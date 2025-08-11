@@ -68,6 +68,14 @@ const ResourceNotFound = (props) => {
                                             />
                                         </Button>
                                     </Link>
+                                    <Link to='/mcp-servers/' style={{ marginRight: 8 }}>
+                                        <Button variant='contained' color='primary'>
+                                            <FormattedMessage
+                                                id='Base.Errors.ResourceNotFound.mcp.server.list'
+                                                defaultMessage='MCP Server List'
+                                            />
+                                        </Button>
+                                    </Link>
                                     <Link to='/api-products/'>
                                         <Button variant='contained' color='primary'>
                                             <FormattedMessage

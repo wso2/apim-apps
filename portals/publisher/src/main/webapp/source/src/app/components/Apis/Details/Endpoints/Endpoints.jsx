@@ -134,6 +134,7 @@ function Endpoints(props) {
     });
     const [componentValidator, setComponentValidator] = useState([]);
     const [endpointSecurityTypes, setEndpointSecurityTypes] = useState([]);
+    const isMCPServer = api.isMCPServer();
 
     useEffect(() => {
         if (api.subtypeConfiguration?.subtype === 'AIAPI') {
@@ -586,7 +587,7 @@ function Endpoints(props) {
                 }),
             };
         }
-        if (endpointConfig === null) {
+        if (endpointConfig === undefined || endpointConfig === null) {
             return { isValid: true, message: '' };
         }
         const endpointType = endpointConfig.endpoint_type;
@@ -703,7 +704,7 @@ function Endpoints(props) {
     };
 
     useEffect(() => {
-        if (api.type !== 'WS') {
+        if (api.type !== 'WS' && !api.isMCPServer()) {
             api.getSwagger(apiObject.id).then((resp) => {
                 setSwagger(resp.obj);
             }).catch((err) => {
@@ -754,7 +755,7 @@ function Endpoints(props) {
     return (
         (<Root>
             {/* Since the api is set to the state in component did mount, check both the api and the apiObject. */}
-            {(api.endpointConfig === null && apiObject.endpointConfig === null) ?
+            {(api.endpointConfig === null && apiObject.endpointConfig === null && !isMCPServer) ?
                 <NewEndpointCreate generateEndpointConfig={generateEndpointConfig} apiType={apiObject.type}
                     componentValidator={componentValidator}
                 />
@@ -794,7 +795,7 @@ function Endpoints(props) {
                                 </Button>
                             )}
                         </div>
-                        {(api.subtypeConfiguration?.subtype === 'AIAPI' && (
+                        {((api.subtypeConfiguration?.subtype === 'AIAPI' || isMCPServer) && (
                             <AIEndpoints
                                 swaggerDef={swagger}
                                 updateSwagger={changeSwagger}
@@ -805,7 +806,7 @@ function Endpoints(props) {
                                 endpointConfiguration={endpointConfiguration}
                             />
                         ))}
-                        {(api.subtypeConfiguration?.subtype !== 'AIAPI') && (
+                        {(api.subtypeConfiguration?.subtype !== 'AIAPI' && !isMCPServer) && (
                             <div>
                                 <Grid container>
                                     <Grid item xs={12} className={classes.endpointsContainer}>

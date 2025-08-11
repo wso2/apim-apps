@@ -28,6 +28,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import MaterialIcons from 'MaterialIcons';
+import MCPServer from 'AppData/MCPServer';
 import StarRatingBar from 'AppComponents/Apis/Listing/StarRatingBar';
 import { app, apis } from 'Settings';
 import classNames from 'classnames';
@@ -318,9 +319,13 @@ class ApiThumbClassicLegacy extends React.Component {
         const { imageLoaded } = this.state;
         if (imageLoaded) return;
         const { api } = this.props;
-        const restApi = new Api();
-
-        const promisedThumbnail = restApi.getAPIThumbnail(api.id);
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        let promisedThumbnail;
+        if (isMCPServersRoute) {
+            promisedThumbnail = new MCPServer().getMCPServerThumbnail(api.id);
+        } else {
+            promisedThumbnail = new Api().getAPIThumbnail(api.id);
+        }
         promisedThumbnail.then((response) => {
             if (response && response.data) {
                 if (response.headers['content-type'] === 'application/json') {
@@ -357,8 +362,8 @@ class ApiThumbClassicLegacy extends React.Component {
      * @memberof ApiThumb
      */
     getPathPrefix() {
-        const path = '/apis/';
-        return path;
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        return isMCPServersRoute ? '/mcp-servers/' : '/apis/';
     }
 
     handleBusinessPopoverOpen = (event) => {

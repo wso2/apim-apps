@@ -24,6 +24,7 @@ import AuthManager from 'AppData/AuthManager';
 const resourcePath = {
     APIS: '/apis',
     API_PRODUCTS: '/api-products',
+    MCP_SERVERS: '/mcp-servers',
     SINGLE_API: '/apis/{apiId}',
     SINGLE_API_PRODUCT: '/api-products/{apiProductId}',
     API_SWAGGER: '/apis/{apiId}/swagger',

@@ -38,6 +38,7 @@ import Radio from '@mui/material/Radio';
 import FormLabel from '@mui/material/FormLabel';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 
 const PREFIX = 'NewVersion';
@@ -195,6 +196,7 @@ class CreateNewVersion extends React.Component {
      * @param {API} api current API
      * @param {string} newVersion new version to create
      * @param {string} isDefaultVersion specifies whether the new API should be marked as default version ('yes' | 'no')
+     * @param {string} serviceVersion service version to be used for the new API version (if applicable)
      */
     handleSubmit(api, newVersion, isDefaultVersion, serviceVersion) {
         if (!newVersion) {
@@ -205,61 +207,51 @@ class CreateNewVersion extends React.Component {
         const isDefaultVersionBool = isDefaultVersion === 'yes';
         const apiClient = new API();
         const { intl } = this.props;
+        
+        let versionCreationPromise;
         if (api.apiType === 'APIPRODUCT') {
-            apiClient.createNewAPIProductVersion(api.id ,newVersion, isDefaultVersionBool)
-                .then((response) => {
-                    this.setState({
-                        redirectToReferrer: true,
-                        apiId: response.obj.id,
-                        isLoading: false,
-                    });
-                    Alert.info(intl.formatMessage({
-                        id: 'Apis.Details.APIProduct.NewVersion.NewVersion.success',
-                        defaultMessage: 'Successfully created new version ',
-                    }) + newVersion);
-                })
-                .catch((error) => {
-                    if (error.status === 409) {
-                        this.setState({
-                            valid: { version: { alreadyExists: true } },
-                            isLoading: false,
-                        });
-                    } else {
-                        this.setState({ isLoading: false });
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.APIProduct.NewVersion.NewVersion.error',
-                            defaultMessage: 'Something went wrong while creating a new version!. Error: ',
-                        }) + error.status);
-                    }
-                });
+            versionCreationPromise = apiClient.createNewAPIProductVersion(api.id ,newVersion, isDefaultVersionBool)
+        } else if (api.apiType === MCPServer.CONSTS.MCP) {
+            versionCreationPromise = MCPServer.createNewMCPServerVersion(
+                api.id,
+                newVersion,
+                isDefaultVersionBool,
+                serviceVersion,
+            )
         } else {
-            apiClient.createNewAPIVersion(api.id, newVersion, isDefaultVersionBool, serviceVersion)
-                .then((response) => {
+            versionCreationPromise =  apiClient.createNewAPIVersion(
+                api.id,
+                newVersion,
+                isDefaultVersionBool,
+                serviceVersion
+            )
+        }
+        versionCreationPromise
+            .then((response) => {
+                this.setState({
+                    redirectToReferrer: true,
+                    apiId: response.obj.id,
+                    isLoading: false,
+                });
+                Alert.info(intl.formatMessage({
+                    id: 'Apis.Details.NewVersion.NewVersion.success',
+                    defaultMessage: 'Successfully created new version ',
+                }) + newVersion);
+            })
+            .catch((error) => {
+                if (error.status === 409) {
                     this.setState({
-                        redirectToReferrer: true,
-                        apiId: response.obj.id,
+                        valid: { version: { alreadyExists: true } },
                         isLoading: false,
                     });
-                    Alert.info(intl.formatMessage({
-                        id: 'Apis.Details.NewVersion.NewVersion.success',
-                        defaultMessage: 'Successfully created new version ',
-                    }) + newVersion);
-                })
-                .catch((error) => {
-                    if (error.status === 409) {
-                        this.setState({
-                            valid: { version: { alreadyExists: true } },
-                            isLoading: false,
-                        });
-                    } else {
-                        this.setState({ isLoading: false });
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.NewVersion.NewVersion.error',
-                            defaultMessage: 'Something went wrong while creating a new version!. Error: ',
-                        }) + error.status);
-                    }
-                });
-        }
+                } else {
+                    this.setState({ isLoading: false });
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.NewVersion.NewVersion.error',
+                        defaultMessage: 'Something went wrong while creating a new version!. Error: ',
+                    }) + error.status);
+                }
+            });
     }
 
     /**
@@ -294,7 +286,15 @@ class CreateNewVersion extends React.Component {
             isDefaultVersion, newVersion, redirectToReferrer, apiId, valid, serviceVersion, versionList, isLoading
         } = this.state;
         if (redirectToReferrer) {
-            return <Redirect to={(api.apiType === 'APIPRODUCT' ? '/api-products/' : '/apis/') + apiId + '/overview'} />;
+            let redirectPath;
+            if (api.apiType === 'APIPRODUCT') {
+                redirectPath = '/api-products/' + apiId + '/overview';
+            } else if (api.apiType === MCPServer.CONSTS.MCP) {
+                redirectPath = '/mcp-servers/' + apiId + '/overview';
+            } else {
+                redirectPath = '/apis/' + apiId + '/overview';
+            }
+            return <Redirect to={redirectPath} />;
         }
 
         let helperText = '';
@@ -471,7 +471,15 @@ class CreateNewVersion extends React.Component {
                                             </div>
                                         </Grid>
                                         <Grid item>
-                                            <Link to={'/apis/' + api.id + '/overview'}>
+                                            <Link to={(() => {
+                                                if (api.apiType === 'APIPRODUCT') {
+                                                    return '/api-products/' + api.id + '/overview';
+                                                } else if (api.apiType === MCPServer.CONSTS.MCP) {
+                                                    return '/mcp-servers/' + api.id + '/overview';
+                                                } else {
+                                                    return '/apis/' + api.id + '/overview';
+                                                }
+                                            })()}>
                                                 <Button id='cancelBtn'>
                                                     <FormattedMessage
                                                         id='Apis.Details.NewVersion.NewVersion.cancel'

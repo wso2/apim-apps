@@ -54,7 +54,7 @@ const checkedIcon = <CheckBoxIcon fontSize='small' />;
 export default function OperationGovernance(props) {
     const {
         operation, operationsDispatcher, operationRateLimits, api, disableUpdate, spec, target, verb, sharedScopes,
-        setFocusOperationLevel, componentValidator
+        setFocusOperationLevel, componentValidator, isMCPServer
     } = props;
     const operationScopes = getOperationScopes(operation, spec);
     const isOperationRateLimiting = api.apiThrottlingPolicy === null || 
@@ -324,7 +324,10 @@ export default function OperationGovernance(props) {
                     <Grid item md={3} style={{ marginTop: '14px' }}>
                         { operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none' 
                             ? !disableUpdate && (
-                                <Link to={`/apis/${api.id}/scopes/create`} target='_blank'>
+                                <Link
+                                    to={`/${isMCPServer ? 'mcp-servers' : 'apis'}/${api.id}/scopes/create`}
+                                    target='_blank'
+                                >
                                     <Typography style={{ marginLeft: '10px' }} color='primary' 
                                         display='inline' variant='caption'>
                                         <FormattedMessage
@@ -357,6 +360,7 @@ OperationGovernance.propTypes = {
     target: PropTypes.string.isRequired,
     verb: PropTypes.string.isRequired,
     sharedScopes: PropTypes.arrayOf(PropTypes.shape({})),
+    isMCPServer: PropTypes.bool,
 };
 
 OperationGovernance.defaultProps = {
@@ -364,4 +368,5 @@ OperationGovernance.defaultProps = {
     api: { scopes: [] },
     sharedScopes: [],
     disableUpdate: false,
+    isMCPServer: false,
 };
