@@ -363,6 +363,12 @@ class HeaderSearch extends React.Component {
                                          defaultMessage='By Tags [ Syntax - tags:xxxx ]'
                                      />
                                  </li>
+                                 <li style={{ marginTop: '5px' }}>
+                                     <FormattedMessage
+                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option13'
+                                         defaultMessage='Gateway Vendor [ Syntax - vendor:xxxx ]'
+                                     />
+                                </li>
                                  <li>
                                      <FormattedMessage
                                          id='Base.Header.headersearch.HeaderSearch.tooltip.option12'

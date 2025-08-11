@@ -362,6 +362,12 @@ class HeaderSearch extends React.Component {
                                     </li>
                                     <li style={{ marginTop: '5px' }}>
                                         <FormattedMessage
+                                            id='Base.Header.headersearch.HeaderSearch.tooltip.option13'
+                                            defaultMessage='Gateway Vendor [ Syntax - vendor:xxxx ]'
+                                        />
+                                    </li>
+                                    <li style={{ marginTop: '5px' }}>
+                                        <FormattedMessage
                                             id='Base.Header.headersearch.HeaderSearch.tooltip.option12'
                                             defaultMessage='Api Category [ Syntax - api-category:xxxx ]'
                                         />
