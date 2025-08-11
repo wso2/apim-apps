@@ -20,6 +20,6 @@
       "timeout": 2000
     },
     "logoutSessionStateAppender" : "OIDC" ,
-    "docUrl": "https://apim.docs.wso2.com/en/4.5.0/"
+    "docUrl": "https://apim.docs.wso2.com/en/4.6.0/"
   }
 }
