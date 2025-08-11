@@ -414,7 +414,7 @@ class TableView extends React.Component {
                 name: 'gatewayType',
                 label: intl.formatMessage({
                     id: 'Apis.Listing.ApiTableView.vendor',
-                    defaultMessage: 'Gateway Provider',
+                    defaultMessage: 'Gateway Vendor',
                 }),
                 options: {
                     customBodyRender: (value, tableMeta, updateValue, tableViewObj = this) => {
