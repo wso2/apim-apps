@@ -538,6 +538,13 @@ KeyConfiguration.propTypes = {
     updateKeyRequest: PropTypes.func.isRequired,
     validating: PropTypes.bool,
     mode: PropTypes.string,
+    selectedApp: PropTypes.shape({
+        tokenType: PropTypes.string.isRequired,
+        appId: PropTypes.string,
+        value: PropTypes.string,
+        owner: PropTypes.string,
+        hashEnabled: PropTypes.bool,
+    }),
 };
 
 
