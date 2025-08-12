@@ -3399,7 +3399,7 @@ export default function Environments() {
                                             </IconButton>
                                         </Tooltip>
                                     </TableCell>
-                                    {settings.isGatewayNotificationEnabled === true && (
+                                    {settings.isGatewayNotificationEnabled && (
                                         <TableCell align='justify'>
                                             <FormattedMessage
                                                 id='Apis.Details.Environments.Environments.gateway.deployment.status'
@@ -3544,7 +3544,7 @@ export default function Environments() {
                                                 EnvDeployments={allEnvDeployments[row.name]}
                                             />
                                         </TableCell>
-                                        {settings.isGatewayNotificationEnabled === true && (
+                                        {settings.isGatewayNotificationEnabled && (
                                             <TableCell align='justify'>
                                                 {envDeploymentStatusComponent(row, allEnvDeployments)}
                                             </TableCell>

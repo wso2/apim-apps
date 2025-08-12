@@ -69,7 +69,6 @@ function apiCall() {
  */
 export default function ListGWEnviornments() {
     const intl = useIntl();
-    let columProps;
     const { settings } = useAppContext();
     // Dialog state for Live Gateways
     const [liveGatewaysOpen, setLiveGatewaysOpen] = useState(false);
@@ -89,19 +88,82 @@ export default function ListGWEnviornments() {
     };
 
     const isGatewayTypeAvailable = settings.gatewayTypes.length >= 2;
-    if (isGatewayTypeAvailable) {
-        columProps = [
-            { name: 'name', options: { display: false } },
-            {
-                name: 'displayName',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.displayName',
-                    defaultMessage: 'Name',
-                }),
-                options: {
-                    sort: true,
-                },
+
+    // Helper function to render virtual hosts
+    const renderVhosts = (vhosts) => {
+        return (
+            vhosts.map((vhost) => (
+                <div key={`${vhost.host}:${vhost.httpsPort}`}>
+                    {
+                        'https://' + vhost.host + (vhost.httpsPort === 443 ? '' : ':' + vhost.httpsPort)
+                        + (vhost.httpContext ? '/' + vhost.httpContext.replace(/^\//g, '') : '')
+                    }
+                </div>
+            ))
+        );
+    };
+
+    // Helper function to render permissions
+    const renderPermissions = (permissions) => {
+        return (
+            <div>
+                <Permission
+                    type={permissions.permissionType}
+                    roles={permissions.roles}
+                />
+            </div>
+        );
+    };
+
+    // Helper function to render gateway instances
+    const renderGatewayInstances = (value, tableMeta) => {
+        if (typeof tableMeta.rowData === 'object') {
+            const envId = tableMeta.rowData[isGatewayTypeAvailable ? 8 : 7];
+            const envName = tableMeta.rowData[1]; // 'displayName'
+            // Default to 'Regular' if no gatewayType column
+            const gatewayType = isGatewayTypeAvailable ? tableMeta.rowData[2] : 'Regular';
+            const isDisabled = gatewayType !== 'Regular';
+
+            const button = (
+                <IconButton
+                    onClick={() => handleOpenLiveGateways(envId, envName)}
+                    disabled={isDisabled}
+                >
+                    <FormatListBulletedIcon aria-label='gateway-instances-list-icon' />
+                </IconButton>
+            );
+
+            return isDisabled ? (
+                <StyledTooltip
+                    title={intl.formatMessage({
+                        id: 'AdminPages.Gateways.table.gatewayInstances.tooltip.'
+                            + 'notSupported',
+                        defaultMessage: 'Not supported for this gateway type',
+                    })}
+                >
+                    <span>{button}</span>
+                </StyledTooltip>
+            ) : button;
+        } else {
+            return <div />;
+        }
+    };
+
+    // Build column configuration
+    const columProps = [
+        { name: 'name', options: { display: false } },
+        {
+            name: 'displayName',
+            label: intl.formatMessage({
+                id: 'AdminPages.Gateways.table.header.displayName',
+                defaultMessage: 'Name',
+            }),
+            options: {
+                sort: true,
             },
+        },
+        // Conditionally include gatewayType column
+        ...(isGatewayTypeAvailable ? [
             {
                 name: 'gatewayType',
                 label: intl.formatMessage({
@@ -112,232 +174,65 @@ export default function ListGWEnviornments() {
                     sort: false,
                 },
             },
+        ] : []),
+        {
+            name: 'type',
+            label: intl.formatMessage({
+                id: 'AdminPages.Gateways.table.header.type',
+                defaultMessage: 'Type',
+            }),
+            options: {
+                sort: false,
+            },
+        },
+        {
+            name: 'description',
+            label: intl.formatMessage({
+                id: 'AdminPages.Gateways.table.header.description',
+                defaultMessage: 'Description',
+            }),
+            options: {
+                sort: false,
+            },
+        },
+        {
+            name: 'vhosts',
+            label: intl.formatMessage({
+                id: 'AdminPages.Gateways.table.header.vhosts',
+                defaultMessage: 'Virtual Host(s)',
+            }),
+            options: {
+                sort: false,
+                customBodyRender: renderVhosts,
+            },
+        },
+        {
+            name: 'permissions',
+            label: intl.formatMessage({
+                id: 'AdminPages.Gateways.table.header.permission',
+                defaultMessage: 'Visibility',
+            }),
+            options: {
+                sort: false,
+                customBodyRender: renderPermissions,
+            },
+        },
+        // Conditionally include gateway instances column
+        ...(settings.isGatewayNotificationEnabled ? [
             {
-                name: 'type',
+                name: 'gatewayInstances',
                 label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.type',
-                    defaultMessage: 'Type',
+                    id: 'AdminPages.Gateways.table.header.gatewayInstances',
+                    defaultMessage: 'Gateway Instances',
                 }),
                 options: {
                     sort: false,
+                    customBodyRender: renderGatewayInstances,
                 },
             },
-            {
-                name: 'description',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.description',
-                    defaultMessage: 'Description',
-                }),
-                options: {
-                    sort: false,
-                },
-            },
-            {
-                name: 'vhosts',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.vhosts',
-                    defaultMessage: 'Virtual Host(s)',
-                }),
-                options: {
-                    sort: false,
-                    customBodyRender: (vhosts) => {
-                        return (
-                            vhosts.map((vhost) => (
-                                <div>
-                                    {
-                                        'https://' + vhost.host + (vhost.httpsPort === 443 ? '' : ':' + vhost.httpsPort)
-                                        + (vhost.httpContext ? '/' + vhost.httpContext.replace(/^\//g, '') : '')
-                                    }
-                                </div>
-                            ))
-                        );
-                    },
-                },
-            },
-            {
-                name: 'permissions',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.permission',
-                    defaultMessage: 'Visibility',
-                }),
-                options: {
-                    sort: false,
-                    customBodyRender: (permissions) => {
-                        return (
-                            <div>
-                                <Permission
-                                    type={permissions.permissionType}
-                                    roles={permissions.roles}
-                                />
-                            </div>
-                        );
-                    },
-                },
-            },
-            ...(settings.isGatewayNotificationEnabled ? [
-                {
-                    name: 'gatewayInstances',
-                    label: intl.formatMessage({
-                        id: 'AdminPages.Gateways.table.header.gatewayInstances',
-                        defaultMessage: 'Gateway Instances',
-                    }),
-                    options: {
-                        sort: false,
-                        customBodyRender: (value, tableMeta) => {
-                            if (typeof tableMeta.rowData === 'object') {
-                                const envId = tableMeta.rowData[8]; // 'id' is the last column
-                                const envName = tableMeta.rowData[1]; // 'displayName'
-                                const gatewayType = tableMeta.rowData[2]; // 'gatewayType'
-                                const isDisabled = gatewayType !== 'Regular';
-
-                                const button = (
-                                    <IconButton
-                                        onClick={() => handleOpenLiveGateways(envId, envName)}
-                                        disabled={isDisabled}
-                                    >
-                                        <FormatListBulletedIcon aria-label='gateway-instances-list-icon' />
-                                    </IconButton>
-                                );
-
-                                return isDisabled ? (
-                                    <StyledTooltip
-                                        title={intl.formatMessage({
-                                            id: 'AdminPages.Gateways.table.gatewayInstances.tooltip.notSupported',
-                                            defaultMessage: 'Not supported for this gateway type',
-                                        })}
-                                    >
-                                        <span>{button}</span>
-                                    </StyledTooltip>
-                                ) : button;
-                            } else {
-                                return <div />;
-                            }
-                        },
-                    },
-                },
-            ] : []),
-            { name: 'id', options: { display: false } },
-        ];
-    } else {
-        columProps = [
-            { name: 'name', options: { display: false } },
-            {
-                name: 'displayName',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.displayName',
-                    defaultMessage: 'Name',
-                }),
-                options: {
-                    sort: true,
-                },
-            },
-            {
-                name: 'type',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.type',
-                    defaultMessage: 'Type',
-                }),
-                options: {
-                    sort: false,
-                },
-            },
-            {
-                name: 'description',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.description',
-                    defaultMessage: 'Description',
-                }),
-                options: {
-                    sort: false,
-                },
-            },
-            {
-                name: 'vhosts',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.vhosts',
-                    defaultMessage: 'Virtual Host(s)',
-                }),
-                options: {
-                    sort: false,
-                    customBodyRender: (vhosts) => {
-                        return (
-                            vhosts.map((vhost) => (
-                                <div>
-                                    {
-                                        'https://' + vhost.host + (vhost.httpsPort === 443 ? '' : ':' + vhost.httpsPort)
-                                        + (vhost.httpContext ? '/' + vhost.httpContext.replace(/^\//g, '') : '')
-                                    }
-                                </div>
-                            ))
-                        );
-                    },
-                },
-            },
-            {
-                name: 'permissions',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.permission',
-                    defaultMessage: 'Visibility',
-                }),
-                options: {
-                    sort: false,
-                    customBodyRender: (permissions) => {
-                        return (
-                            <div>
-                                <Permission
-                                    type={permissions.permissionType}
-                                    roles={permissions.roles}
-                                />
-                            </div>
-                        );
-                    },
-                },
-            },
-            ...(settings.isGatewayNotificationEnabled ? [
-                {
-                    name: 'gatewayInstances',
-                    label: intl.formatMessage({
-                        id: 'AdminPages.Gateways.table.header.gatewayInstances',
-                        defaultMessage: 'Gateway Instances',
-                    }),
-                    options: {
-                        sort: false,
-                        customBodyRender: (value, tableMeta) => {
-                            if (typeof tableMeta.rowData === 'object') {
-                                const envId = tableMeta.rowData[8]; // 'id' is the last column
-                                const envName = tableMeta.rowData[1]; // 'displayName'
-                                const gatewayType = tableMeta.rowData[2]; // 'gatewayType'
-                                const isDisabled = gatewayType !== 'Regular';
-
-                                const button = (
-                                    <IconButton
-                                        onClick={() => handleOpenLiveGateways(envId, envName)}
-                                        disabled={isDisabled}
-                                    >
-                                        <FormatListBulletedIcon aria-label='gateway-instances-list-icon' />
-                                    </IconButton>
-                                );
-
-                                return isDisabled ? (
-                                    <StyledTooltip
-                                        title={intl.formatMessage({
-                                            id: 'AdminPages.Gateways.table.gatewayInstances.tooltip.notSupported',
-                                            defaultMessage: 'Not supported for this gateway type',
-                                        })}
-                                    >
-                                        <span>{button}</span>
-                                    </StyledTooltip>
-                                ) : button;
-                            } else {
-                                return <div />;
-                            }
-                        },
-                    },
-                },
-            ] : []),
-            { name: 'id', options: { display: false } },
-        ];
-    }
+        ] : []),
+        { name: 'id', options: { display: false } },
+    ];
     const addButtonProps = {
         triggerButtonText: intl.formatMessage({
             id: 'AdminPages.Gateways.List.addButtonProps.triggerButtonText',
