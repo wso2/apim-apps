@@ -33,7 +33,7 @@ const APIsAsMCPMenu = (props) => {
             title={(
                 <FormattedMessage
                     id='MCPServers.Landing.APIsAsMCPMenu.title'
-                    defaultMessage='MCP From Scratch'
+                    defaultMessage='Import API Definition'
                 />
             )}
             icon={icon}
@@ -45,13 +45,13 @@ const APIsAsMCPMenu = (props) => {
                 helperText={(
                     <FormattedMessage
                         id='MCPServers.Landing.APIsAsMCPMenu.helperText'
-                        defaultMessage='Start with OpenAPI definition'
+                        defaultMessage='Start with OpenAPI Definition'
                     />
                 )}
             >
                 <FormattedMessage
                     id='MCPServers.Landing.APIsAsMCPMenu.create.title'
-                    defaultMessage='Create MCP Server From Scratch'
+                    defaultMessage='Create MCP Server from Definition'
                 />
             </LandingMenuItem>
         </Component>

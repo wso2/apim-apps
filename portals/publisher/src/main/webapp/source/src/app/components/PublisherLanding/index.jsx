@@ -65,7 +65,7 @@ const Root = styled('div')(({ theme }) => ({
  * @returns {JSX.Element} Landing page to render
  */
 const PublisherLanding = () => {
-    const [selectedType, setSelectedType] = useState('apis');
+    const [selectedType, setSelectedType] = useState('api');
     const [apis, setApis] = useState([]);
     const [mcpServers, setMcpServers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -220,15 +220,15 @@ const PublisherLanding = () => {
 
     const creationTypes = [
         {
-            value: 'APIs',
-            name: 'APIs',
-            description: 'Expose APIs',
+            value: 'API',
+            name: 'API',
+            description: 'Expose your APIs',
             icon: 'apis',
         },
         {
-            value: 'MCP Servers',
-            name: 'MCP Servers',
-            description: 'Expose MCP Servers',
+            value: 'MCP Server',
+            name: 'MCP Server',
+            description: 'Expose your APIs as MCP Servers or manage external MCP Servers',
             icon: 'mcp-servers',
         },
     ];
@@ -247,7 +247,7 @@ const PublisherLanding = () => {
                         <Typography variant='body1' color='textSecondary' mt={1}>
                             <FormattedMessage
                                 id='Publisher.Landing.description'
-                                defaultMessage='Manage APIs and MCP Servers — From Design to Deployment'
+                                defaultMessage='Let’s get started!'
                             />
                         </Typography>
                     </Grid>
@@ -284,8 +284,8 @@ const PublisherLanding = () => {
                             <Grid container spacing={2}>
                                 {creationTypes.map((type) => {
                                     const isActive = selectedType === type.value.toLowerCase() ||
-                                        (type.value === 'APIs' && selectedType === 'apis') ||
-                                        (type.value === 'MCP Servers' && selectedType === 'mcp-servers');
+                                        (type.value === 'API' && selectedType === 'api') ||
+                                        (type.value === 'MCP Server' && selectedType === 'mcp-server');
                                     return (
                                         <Grid item xs={12} sm={6} key={type.value}>
                                             <TabButton
@@ -305,7 +305,7 @@ const PublisherLanding = () => {
                                                 disableRipple
                                                 variant='outlined'
                                                 onClick={() => setSelectedType(
-                                                    type.value === 'APIs' ? 'apis' : 'mcp-servers'
+                                                    type.value === 'API' ? 'api' : 'mcp-server'
                                                 )}
                                                 data-testid={`create-${type.value.toLowerCase()}-button`}
                                                 isActive={!!isActive}
@@ -337,8 +337,8 @@ const PublisherLanding = () => {
                         </Grid>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
-                                {selectedType === 'apis' && <APILanding />}
-                                {selectedType === 'mcp-servers' && <MCPServerLanding />}
+                                {selectedType === 'api' && <APILanding />}
+                                {selectedType === 'mcp-server' && <MCPServerLanding />}
                             </Grid>
                         </Grid>
                     </>

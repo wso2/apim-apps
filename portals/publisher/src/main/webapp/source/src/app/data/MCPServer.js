@@ -135,7 +135,7 @@ class MCPServer extends Resource {
                 }
             };
 
-            const promisedResponse = client.apis['MCP Servers'].createMCPServerFromOpenAPI(
+            const promisedResponse = client.apis['MCP Servers'].createMCPServerFromDefinition(
                 null,
                 payload,
                 this._requestMetaData({
@@ -164,7 +164,7 @@ class MCPServer extends Resource {
                 }
             };
 
-            const promisedResponse = client.apis['MCP Servers'].createMCPServerFromOpenAPI(
+            const promisedResponse = client.apis['MCP Servers'].createMCPServerFromDefinition(
                 null,
                 payload,
                 this._requestMetaData({

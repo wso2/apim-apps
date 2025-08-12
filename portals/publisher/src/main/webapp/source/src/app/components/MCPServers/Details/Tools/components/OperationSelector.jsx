@@ -117,57 +117,53 @@ function OperationSelector({
                 clearOnBlur={false}
                 getOptionLabel={(option) => {
                     if (!option) return '';
-                    // Return empty string for the selected value to prevent duplicate display
-                    if (value && option.target === value.target && option.verb === value.verb) {
-                        return '';
-                    }
                     return `${option.verb.toUpperCase()} ${option.target}`;
                 }}
                 isOptionEqualToValue={(option, selectedValue) => {
                     if (!option || !selectedValue) return false;
                     return `${option.target}_${option.verb}` === `${selectedValue.target}_${selectedValue.verb}`;
                 }}
-                renderOption={(renderProps, option) => (
-                    <Box
-                        component='li'
-                        key={`${option.target}_${option.verb}`}
-                        onClick={renderProps.onClick}
-                        onMouseDown={renderProps.onMouseDown}
-                        style={renderProps.style}
-                        className={renderProps.className}
-                        role={renderProps.role}
-                        aria-selected={renderProps['aria-selected']}
-                    >
-                        <Box display='flex' alignItems='center' gap={1}>
-                            <MethodView
-                                method={option.verb}
-                                className={classes.methodView}
-                            />
-                            <span>{option.target}</span>
-                        </Box>
-                    </Box>
-                )}
-                renderInput={(params) => {
+                renderOption={(renderProps, option) => {
+                    const { key, ...otherProps } = renderProps;
                     return (
-                        <TextField
-                            {...params}
-                            label={defaultLabel}
-                            variant={variant}
-                            error={error}
-                            helperText={helperText}
-                            placeholder={defaultPlaceholder}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            InputProps={{
-                                ...params.InputProps,
-                                startAdornment: value && value.verb && value.target ? (
+                        <Box
+                            component='li'
+                            {...otherProps}
+                            key={key || `${option.target}_${option.verb}`}
+                        >
+                            <Box display='flex' alignItems='center' gap={1}>
+                                <MethodView
+                                    method={option.verb}
+                                    className={classes.methodView}
+                                />
+                                <span>{option.target}</span>
+                            </Box>
+                        </Box>
+                    );
+                }}
+                renderInput={(params) => {
+                    const hasValue = value && value.verb && value.target;
+                    
+                    // Modify the params to hide text when we have a value
+                    const modifiedParams = hasValue ? {
+                        ...params,
+                        inputProps: {
+                            ...params.inputProps,
+                            style: {
+                                ...params.inputProps.style,
+                                // Hide the text when we have custom display, but keep input active
+                                color: 'transparent',
+                                caretColor: 'black',
+                            }
+                        },
+                        InputProps: {
+                            ...params.InputProps,
+                            startAdornment: (
+                                <>
                                     <Box
                                         display='flex'
                                         alignItems='center'
-                                        sx={{ 
-                                            marginRight: 1,
-                                        }}
+                                        sx={{ marginRight: 1 }}
                                     >
                                         <MethodView
                                             method={value.verb}
@@ -177,10 +173,33 @@ function OperationSelector({
                                             {value.target}
                                         </span>
                                     </Box>
-                                ) : params.InputProps.startAdornment,
-                                style: {
-                                    minHeight: '56px',
-                                },
+                                    {params.InputProps.startAdornment}
+                                </>
+                            ),
+                            style: {
+                                minHeight: '56px',
+                            },
+                        }
+                    } : {
+                        ...params,
+                        InputProps: {
+                            ...params.InputProps,
+                            style: {
+                                minHeight: '56px',
+                            },
+                        }
+                    };
+                    
+                    return (
+                        <TextField
+                            {...modifiedParams}
+                            label={defaultLabel}
+                            variant={variant}
+                            error={error}
+                            helperText={helperText}
+                            placeholder={defaultPlaceholder}
+                            InputLabelProps={{
+                                shrink: true,
                             }}
                         />
                     );

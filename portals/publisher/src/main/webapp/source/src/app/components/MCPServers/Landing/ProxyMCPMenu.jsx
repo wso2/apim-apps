@@ -33,7 +33,7 @@ const ProxyMCPMenu = (props) => {
             title={(
                 <FormattedMessage
                     id='MCPServers.Landing.ProxyMCPMenu.title'
-                    defaultMessage='Proxy MCP Servers'
+                    defaultMessage='Proxy Existing MCP Server'
                 />
             )}
             icon={icon}

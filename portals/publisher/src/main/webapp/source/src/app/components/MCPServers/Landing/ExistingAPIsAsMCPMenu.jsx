@@ -33,7 +33,7 @@ const ExistingAPIsAsMCPMenu = (props) => {
             title={(
                 <FormattedMessage
                     id='MCPServers.Landing.ExistingAPIsAsMCPMenu.title'
-                    defaultMessage='MCP From Existing APIs'
+                    defaultMessage='Start from Existing API'
                 />
             )}
             icon={icon}
@@ -45,13 +45,13 @@ const ExistingAPIsAsMCPMenu = (props) => {
                 helperText={(
                     <FormattedMessage
                         id='MCPServers.Landing.ExistingAPIsAsMCPMenu.helperText'
-                        defaultMessage='Use an existing API'
+                        defaultMessage='Start from Existing API'
                     />
                 )}
             >
                 <FormattedMessage
                     id='MCPServers.Landing.ExistingAPIsAsMCPMenu.create.title'
-                    defaultMessage='Create MCP Server From Existing API'
+                    defaultMessage='Create MCP Server from Existing API'
                 />
             </LandingMenuItem>
         </Component>
