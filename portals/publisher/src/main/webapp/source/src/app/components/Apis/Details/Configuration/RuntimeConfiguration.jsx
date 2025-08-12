@@ -536,21 +536,39 @@ export default function RuntimeConfiguration() {
             updateComplexity();
         }
         // Validate the key managers
+        const isMCPAPI = api.apiType === MCPServer.CONSTS.MCP;
+        const filteredKeyManagers = apiConfig.keyManagers.filter(km => km !== 'all');
+        
         if (
             !api.isAPIProduct()
             && apiConfig.securityScheme.includes('oauth2')
             && !apiConfig.keyManagers.includes('all')
-            && (apiConfig.keyManagers && apiConfig.keyManagers.length === 0)
         ) {
-            Alert.error(
-                intl.formatMessage(
-                    {
-                        id: 'Apis.Details.Configuration.RuntimeConfiguration.no.km.error',
-                        defaultMessage: 'Select one or more Key Managers',
-                    },
-                ),
-            );
-            return;
+            if (isMCPAPI) {
+                // For MCP APIs, ensure exactly one key manager is selected
+                if (!filteredKeyManagers.length || !filteredKeyManagers[0]) {
+                    Alert.error(
+                        intl.formatMessage(
+                            {
+                                id: 'Apis.Details.Configuration.RuntimeConfiguration.no.km.error.mcp',
+                                defaultMessage: 'Select a Key Manager for MCP Server',
+                            },
+                        ),
+                    );
+                    return;
+                }
+            } else if (apiConfig.keyManagers && apiConfig.keyManagers.length === 0) {
+                // For other APIs, ensure at least one key manager is selected
+                Alert.error(
+                    intl.formatMessage(
+                        {
+                            id: 'Apis.Details.Configuration.RuntimeConfiguration.no.km.error',
+                            defaultMessage: 'Select one or more Key Managers',
+                        },
+                    ),
+                );
+                return;
+            }
         }
         setIsUpdating(true);
         updateAPI(apiConfig)
@@ -574,21 +592,39 @@ export default function RuntimeConfiguration() {
             updateComplexity();
         }
         // Validate the key managers
+        const isMCPAPI = api.apiType === MCPServer.CONSTS.MCP;
+        const filteredKeyManagers = apiConfig.keyManagers.filter(km => km !== 'all');
+        
         if (
             !api.isAPIProduct()
             && apiConfig.securityScheme.includes('oauth2')
             && !apiConfig.keyManagers.includes('all')
-            && (apiConfig.keyManagers && apiConfig.keyManagers.length === 0)
         ) {
-            Alert.error(
-                intl.formatMessage(
-                    {
-                        id: 'Apis.Details.Configuration.RuntimeConfiguration.no.km.error',
-                        defaultMessage: 'Select one or more Key Managers',
-                    },
-                ),
-            );
-            return;
+            if (isMCPAPI) {
+                // For MCP APIs, ensure exactly one key manager is selected
+                if (!filteredKeyManagers.length || !filteredKeyManagers[0]) {
+                    Alert.error(
+                        intl.formatMessage(
+                            {
+                                id: 'Apis.Details.Configuration.RuntimeConfiguration.no.km.error.mcp',
+                                defaultMessage: 'Select a Key Manager for MCP Server',
+                            },
+                        ),
+                    );
+                    return;
+                }
+            } else if (apiConfig.keyManagers && apiConfig.keyManagers.length === 0) {
+                // For other APIs, ensure at least one key manager is selected
+                Alert.error(
+                    intl.formatMessage(
+                        {
+                            id: 'Apis.Details.Configuration.RuntimeConfiguration.no.km.error',
+                            defaultMessage: 'Select one or more Key Managers',
+                        },
+                    ),
+                );
+                return;
+            }
         }
         setIsUpdating(true);
         updateAPI(apiConfig)

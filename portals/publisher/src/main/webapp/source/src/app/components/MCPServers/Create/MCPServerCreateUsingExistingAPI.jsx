@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const MCPServerCreateUsingExistingAPI = () => {
     return (
@@ -27,5 +28,10 @@ const MCPServerCreateUsingExistingAPI = () => {
         </div>
     );
 }
+
+MCPServerCreateUsingExistingAPI.propTypes = {
+    history: PropTypes.shape({ push: PropTypes.func }).isRequired,
+    multiGateway: PropTypes.string.isRequired,
+};
 
 export default MCPServerCreateUsingExistingAPI;

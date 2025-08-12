@@ -30,6 +30,7 @@ import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/material/FormLabel';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import { green } from '@mui/material/colors';
 
 const PREFIX = 'DefaultAPIForm';
@@ -172,6 +173,7 @@ export default function DefaultAPIForm(props) {
         'wso2/apk': true,
         'AWS': true,
     });
+    const isMCPServer = api.type === MCPServer.CONSTS.MCP;
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
 
     const getBorderColor = (gatewayType) => {
@@ -393,10 +395,20 @@ export default function DefaultAPIForm(props) {
         }
     }
 
+    /**
+     * Test the endpoint of an API.
+     * @param {string} endpoint The endpoint to test.
+     */
     function testEndpoint(endpoint) {
         setUpdating(true);
-        const restApi = new API();
-        restApi.testEndpoint(endpoint)
+        let testEndpointPromise;
+        if (isMCPServer) {
+            testEndpointPromise = MCPServer.testEndpoint(endpoint, api.id);
+        } else {
+            testEndpointPromise = new API().testEndpoint(endpoint);
+        }
+
+        testEndpointPromise
             .then((result) => {
                 if (result.body.error !== null) {
                     setStatusCode(result.body.error);

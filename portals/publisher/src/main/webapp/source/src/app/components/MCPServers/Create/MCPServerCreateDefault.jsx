@@ -80,7 +80,6 @@ function mcpServerInputsReducer(currentState, inputAction) {
 const MCPServerCreateDefault = (props) => {
     const [wizardStep, setWizardStep] = useState(0);
     const [isCreating, setCreating] = useState();
-    // const [apiResources, setApiResources] = useState([]);
     const location = useLocation();
     const { history } = props;
     const intl = useIntl();

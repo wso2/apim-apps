@@ -17,12 +17,13 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import LandingMenuItem from 'AppComponents/Apis/Listing/Landing/components/LandingMenuItem';
 import LandingMenu from 'AppComponents/Apis/Listing/Landing/components/LandingMenu';
 import APICreateMenuSection from 'AppComponents/Apis/Listing/components/APICreateMenuSection';
 
-const ProxyMCPMenu = (props) => {
+const MCPFromOpenAPIDefinition = (props) => {
     const { icon, isCreateMenu } = props;
     const Component = isCreateMenu ? APICreateMenuSection : LandingMenu;
     const dense = isCreateMenu;
@@ -32,30 +33,35 @@ const ProxyMCPMenu = (props) => {
             id='itest-mcp-servers-create-menu'
             title={(
                 <FormattedMessage
-                    id='MCPServers.Landing.ProxyMCPMenu.title'
-                    defaultMessage='Proxy Existing MCP Server'
+                    id='MCPServers.Landing.APIsAsMCPMenu.title'
+                    defaultMessage='Import API Definition'
                 />
             )}
             icon={icon}
         >
             <LandingMenuItem
                 dense={dense}
-                id='itest-id-landing-create-proxy-mcp-server'
-                linkTo='/mcp-servers/create/proxy-mcp-server'
+                id='itest-id-landing-create-mcp-from-scratch'
+                linkTo='/mcp-servers/create/import-api-definition'
                 helperText={(
                     <FormattedMessage
-                        id='MCPServers.Landing.ProxyMCPMenu.helperText'
-                        defaultMessage='Start with MCP Server URL'
+                        id='MCPServers.Landing.APIsAsMCPMenu.helperText'
+                        defaultMessage='Start with OpenAPI Definition'
                     />
                 )}
             >
                 <FormattedMessage
-                    id='MCPServers.Landing.ProxyMCPMenu.create.title'
-                    defaultMessage='Proxy an Existing MCP Server'
+                    id='MCPServers.Landing.APIsAsMCPMenu.create.title'
+                    defaultMessage='Create MCP Server from Definition'
                 />
             </LandingMenuItem>
         </Component>
     );
 };
 
-export default ProxyMCPMenu;
+MCPFromOpenAPIDefinition.propTypes = {
+    icon: PropTypes.string.isRequired,
+    isCreateMenu: PropTypes.bool.isRequired,
+};
+
+export default MCPFromOpenAPIDefinition;

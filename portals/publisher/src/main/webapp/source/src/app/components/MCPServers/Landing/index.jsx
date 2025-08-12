@@ -26,9 +26,9 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useLocation } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useBackNavigation } from 'AppComponents/Shared';
-import APIsAsMCPMenu from './APIsAsMCPMenu';
-import ExistingAPIsAsMCPMenu from './ExistingAPIsAsMCPMenu';
-import ProxyMCPMenu from './ProxyMCPMenu';
+import MCPFromOpenAPIDefinition from './MCPFromOpenAPIDefinition';
+import MCPFromExistingAPI from './MCPFromExistingAPI';
+import MCPFromMCPServerURL from './MCPFromMCPServerURL';
 
 const PREFIX = 'MCPLanding';
 
@@ -165,9 +165,9 @@ const MCPServerLanding = () => {
                                 alignItems='flex-start'
                                 spacing={3}
                             >
-                                <APIsAsMCPMenu icon={mcpServerFromScratchIcon} />
-                                <ExistingAPIsAsMCPMenu icon={mcpServerFromExistingApiIcon} />
-                                <ProxyMCPMenu icon={mcpServerProxyIcon} />
+                                <MCPFromOpenAPIDefinition icon={mcpServerFromScratchIcon} />
+                                <MCPFromExistingAPI icon={mcpServerFromExistingApiIcon} />
+                                <MCPFromMCPServerURL icon={mcpServerProxyIcon} />
                             </Grid>
                         </Grid>
                     </Box>

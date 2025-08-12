@@ -135,7 +135,7 @@ class MCPServer extends Resource {
                 }
             };
 
-            const promisedResponse = client.apis['MCP Servers'].createMCPServerFromDefinition(
+            const promisedResponse = client.apis['MCP Servers'].createMCPServerFromOpenAPI(
                 null,
                 payload,
                 this._requestMetaData({
@@ -164,7 +164,64 @@ class MCPServer extends Resource {
                 }
             };
 
-            const promisedResponse = client.apis['MCP Servers'].createMCPServerFromDefinition(
+            const promisedResponse = client.apis['MCP Servers'].createMCPServerFromOpenAPI(
+                null,
+                payload,
+                this._requestMetaData({
+                    'Content-Type': 'application/json',
+                }),
+            );
+            return promisedResponse.then(response => new MCPServer(response.body));
+        });
+        return promisedCreate;
+    }
+
+    /**
+     * Create a new MCP Server using an existing API.
+     * @returns {Promise<MCPServer>} A promise that resolves to the created MCPServer instance.
+     */
+    createMCPServerUsingExistingAPI() {
+        const promisedCreate = this.client.then(client => {
+            const { properties } = client.spec.definitions.API;
+            const data = {};
+
+            Object.keys(this).forEach(apiAttribute => {
+                if (apiAttribute in properties) {
+                    data[apiAttribute] = this[apiAttribute];
+                }
+            });
+            const payload = {
+                body: data,
+                'Content-Type': 'application/json',
+            };
+            return client.apis['MCP Servers'].createMCPServerFromAPI(
+                payload,
+                this._requestMetaData(),
+            );
+        });
+        return promisedCreate.then(response => {
+            return new MCPServer(response.body);
+        });
+    }
+
+    /**
+     * Create a new MCP Server using an MCP Server URL.
+     * @param {string} mcpServerUrl - The URL of the MCP Server to create.
+     * @returns {Promise<MCPServer>} A promise that resolves to the created MCPServer instance.
+     */
+    createMCPServerUsingMCPServerURL(mcpServerUrl) {
+        let payload;
+        const promisedCreate = this.client.then(client => {
+            const apiData = this.getDataFromSpecFields(client);
+
+            payload = {
+                requestBody: {
+                    url: mcpServerUrl,
+                    additionalProperties: JSON.stringify(apiData),
+                }
+            };
+
+            const promisedResponse = client.apis['MCP Servers'].createMCPServerProxy(
                 null,
                 payload,
                 this._requestMetaData({
@@ -232,6 +289,41 @@ class MCPServer extends Resource {
                 },
             };
             return client.apis.Validation.validateOpenAPIDefinitionOfMCPServer(
+                payload,
+                requestBody,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+    }
+
+    /**
+     * Validate the MCP Server URL.
+     * @param {string} url - The URL of the MCP Server to validate.
+     * @returns {Promise} A promise that resolves to the validation result.
+     */
+    static validateThirdPartyMCPServerUrl(url) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            const payload = {
+                'Content-Type': 'multipart/form-data',
+            }
+            const requestBody = {
+                requestBody: {
+                    url,
+                    securityInfo: {
+                        isSecure: false,
+                        header: '',
+                        value: ''
+                    }
+                }
+            };
+            return client.apis.Validation.validateThirdPartyMCPServer(
                 payload,
                 requestBody,
                 this._requestMetaData({
