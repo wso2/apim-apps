@@ -192,7 +192,7 @@ const General: FC<GeneralProps> = ({
                 // or null (if user doesn't do any change),
                 // keep the previous value
                 if (value === null || value === '') {
-                    if (previousValue) {
+                    if (previousValue !== null && previousValue !== undefined) {
                         updateCandidates[key] = previousValue;
                     } else {
                         // If the previous value is also empty, delete it from updateCandidates
@@ -230,7 +230,7 @@ const General: FC<GeneralProps> = ({
         let error = '';
         const value = state[specInCheck.name];
         if (value !== null) {
-            if (specInCheck.required && value === '') {
+            if (specInCheck.required && (value === '' || value === undefined)){
                 error = intl.formatMessage({
                     id: 'Apis.Details.Policies.AttachedPolicyForm.General.required.error',
                     defaultMessage: 'Required field is empty',
