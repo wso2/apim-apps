@@ -58,7 +58,8 @@ export default function CustomSplitButton(props) {
 
     const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && (!isCustomBackendSelected && !isEndpointAvailable)))
     || (!isMutualSslOnly && !isTierAvailable)
-    || api.workflowStatus === 'CREATED');
+    || api.workflowStatus === 'CREATED'
+    || api.initiatedFromGateway);
 
     const handleClick = (event, index) => {
         setSelectedIndex(index);
@@ -101,12 +102,14 @@ export default function CustomSplitButton(props) {
                         color='primary'
                         ref={anchorRef}
                         aria-label='split button'
-                        disabled={isUpdating || (!isValidSequenceBackend && isCustomBackendSelected)}
+                        disabled={isUpdating || (!isValidSequenceBackend && isCustomBackendSelected) 
+                            || api.initiatedFromGateway}
                         style={{ width: '200px' }}
                     >
                         <Button
                             onClick={(event) => handleClick(event, selectedIndex)}
-                            disabled={isUpdating || (!isValidSequenceBackend && isCustomBackendSelected)}
+                            disabled={isUpdating || (!isValidSequenceBackend && isCustomBackendSelected) 
+                                || api.initiatedFromGateway}
                             data-testid = 'custom-select-save-button'
                             style={{ width: '200px' }}
                             id={id}

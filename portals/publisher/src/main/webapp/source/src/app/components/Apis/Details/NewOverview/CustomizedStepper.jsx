@@ -710,8 +710,9 @@ export default function CustomizedStepper() {
                                                 </Grid>
                                             </Box>
                                         </Grid>
-                                        {api.type !== 'WEBSUB' && api.type !== 'APIPRODUCT'
-                                        && !api.isMCPServerFromExistingAPI() && (
+                                        {!api.initiatedFromGateway && api.type !== 'WEBSUB'
+                                        && api.type !== 'APIPRODUCT' && !api.isMCPServerFromExistingAPI()
+                                        && (
                                             <Box ml={3}>
                                                 <Grid
                                                     container

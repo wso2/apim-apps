@@ -98,33 +98,37 @@ function CreateNewVersionButton(props) {
         return '/apis/';
     };
 
-    return (
-        <Root>
-            {/* allowing create new version based on scopes */}
-            <ScopeValidation resourceMethod={resourceMethod.POST}
-                resourcePath={isAPIProduct ? resourcePath.API_PRODUCT_COPY : resourcePath.API_COPY}>
-                <div className={classes.createNewVersionWrapper} id='create-new-version-btn'>
-                    <VerticalDivider height={70} />
-                    <Link
-                        className={classes.createNewVersion}
-                        to={getBasePath() + api.id + '/new_version'}
-                        style={{ minWidth: 95 }}
-                    >
+    if (!api.initiatedFromGateway) {
+        return (
+            <Root>
+                {/* allowing create new version based on scopes */}
+                <ScopeValidation resourceMethod={resourceMethod.POST}
+                    resourcePath={isAPIProduct ? resourcePath.API_PRODUCT_COPY : resourcePath.API_COPY}>
+                    <div className={classes.createNewVersionWrapper} id='create-new-version-btn'>
+                        <VerticalDivider height={70} />
+                        <Link
+                            className={classes.createNewVersion}
+                            to={getBasePath() + api.id + '/new_version'}
+                            style={{ minWidth: 95 }}
+                        >
 
-                        <div>
-                            <LibraryAdd />
-                        </div>
-                        <Typography variant='caption'>
-                            <FormattedMessage
-                                id='Apis.Details.components.CreateNewVersionButton.create.new.version'
-                                defaultMessage='Create New Version'
-                            />
-                        </Typography>
-                    </Link>
-                </div>
-            </ScopeValidation>
-        </Root>
-    );
+                            <div>
+                                <LibraryAdd />
+                            </div>
+                            <Typography variant='caption'>
+                                <FormattedMessage
+                                    id='Apis.Details.components.CreateNewVersionButton.create.new.version'
+                                    defaultMessage='Create New Version'
+                                />
+                            </Typography>
+                        </Link>
+                    </div>
+                </ScopeValidation>
+            </Root>
+        );
+    } else {
+        return null;
+    }
 }
 
 CreateNewVersionButton.propTypes = {
