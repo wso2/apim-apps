@@ -33,7 +33,11 @@ import {
     FormHelperText,
     Theme,
     MenuItem,
+    InputAdornment,
+    IconButton,
 } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
@@ -108,6 +112,7 @@ const General: FC<GeneralProps> = ({
     const { updateGlobalOperations } = useContext<any>(GlobalPolicyContext);
     policySpec.policyAttributes.forEach(attr => { initState[attr.name] = null });
     const [state, setState] = useState(initState);
+    const [secretVisibility, setSecretVisibility] = useState<Record<string, boolean>>({});
 
     if (!policyObj) {
         return <Progress />
@@ -122,12 +127,47 @@ const General: FC<GeneralProps> = ({
             || specType.toLowerCase() === 'enum'
         ) {
             setState({ ...state, [event.target.name]: event.target.value });
+        } else if (specType.toLowerCase() === 'secret') {
+            const fieldName = event.target.name;
+            let value = event.target.value;
+
+            // If the value is empty, delete it from state
+            if (!value) {
+                const newState = { ...state };
+                delete newState[fieldName];
+                setState(newState);
+                return;
+            }
+
+            // If the value is equal to the masked placeholder, clear it
+            if (value === '********') {
+                value = '';
+            } else if (value.includes('********')) {
+                value = value.replace('********', '');
+            }
+
+            setState({ ...state, [fieldName]: value });
         }
     }
 
     const getValueOfPolicyParam = (policyParamName: string) => {
         return globalPolicy.parameters[policyParamName];
     }
+
+    /**
+     * Toggle visibility of Secret field
+     * @param {string} fieldName Name of the Secret field
+     */
+    const toggleSecretVisibility = (fieldName: string) => {
+        // Only toggle visibility if the value is not the masked placeholder
+        const value = getValue({ name: fieldName, type: 'Secret' } as PolicySpecAttribute);
+        if (value !== '********') {
+            setSecretVisibility(prev => ({
+                ...prev,
+                [fieldName]: !prev[fieldName]
+            }));
+        }
+    };
 
     /**
      * This function is triggered when the form is submitted for save.
@@ -143,7 +183,26 @@ const General: FC<GeneralProps> = ({
             const attributeSpec = policySpec.policyAttributes.find(
                 (attribute: PolicySpecAttribute) => attribute.name === key,
             );
-            if (value === null && getValueOfPolicyParam(key) && getValueOfPolicyParam(key) !== '') {
+
+            // Special handling for Secret fields
+            if (attributeSpec?.type.toLowerCase() === 'secret') {
+                const previousValue = getValueOfPolicyParam(key);
+
+                // If the value is empty (from masked placeholder), 
+                // or null (if user doesn't do any change),
+                // keep the previous value
+                if (value === null || value === '') {
+                    if (previousValue !== null && previousValue !== undefined) {
+                        updateCandidates[key] = previousValue;
+                    } else {
+                        // If the previous value is also empty, delete it from updateCandidates
+                        delete updateCandidates[key];
+                    }
+                } else {
+                    // If user has entered a new value, use that
+                    updateCandidates[key] = value;
+                }
+            } else if (value === null && getValueOfPolicyParam(key) && getValueOfPolicyParam(key) !== '') {
                 updateCandidates[key] = getValueOfPolicyParam(key);
             } else if (value === null && attributeSpec?.defaultValue && attributeSpec?.defaultValue !==  null) {
                 updateCandidates[key] = attributeSpec.defaultValue;
@@ -171,7 +230,7 @@ const General: FC<GeneralProps> = ({
         let error = '';
         const value = state[specInCheck.name];
         if (value !== null) {
-            if (specInCheck.required && value === '') {
+            if (specInCheck.required && (value === '' || value === undefined)){
                 error = intl.formatMessage({
                     id: 'Apis.Details.Policies.AttachedPolicyForm.General.required.error',
                     defaultMessage: 'Required field is empty',
@@ -203,7 +262,20 @@ const General: FC<GeneralProps> = ({
     const getValue = (spec: PolicySpecAttribute) => {
         const specName = spec.name;
         const previousVal = getValueOfPolicyParam(specName);
-        if (state[specName] !== null) {
+        if (spec.type.toLowerCase() === 'secret') {
+            // First check if user has entered a value (in state)
+            if (state[specName] !== null) {
+                return state[specName];
+            }
+            // Then check for previous values
+            else if (previousVal === null) {
+                return '';
+            } else if (previousVal === '') {
+                return '********';
+            } else {
+                return previousVal;
+            }
+        } else if (state[specName] !== null) {
             return state[specName];
         } else if (previousVal !== null && previousVal !== undefined) {
             if (spec.type.toLowerCase() === 'integer') return parseInt(previousVal, 10);
@@ -333,7 +405,7 @@ const General: FC<GeneralProps> = ({
                      * This will render the dynamical form fields based on the policy spec.
                      */}
                     {policySpec.policyAttributes && policySpec.policyAttributes.map((spec: PolicySpecAttribute) => (
-                        <Grid item xs={12}>
+                        <Grid item xs={12} key={spec.name}>
 
                             {/* When the attribute type is string or integer */}
                             {(spec.type.toLowerCase() === 'string'
@@ -424,6 +496,49 @@ const General: FC<GeneralProps> = ({
                                     )}
                                 />
                             )}
+
+                            {/* When attribute type is Secret */}
+                            {(spec.type.toLowerCase() === 'secret') && (
+                                <TextField
+                                    id={spec.name}
+                                    label={(
+                                        <>
+                                            {spec.displayName}
+                                            {spec.required && (
+                                                <sup className={classes.mandatoryStar}>*</sup>
+                                            )}
+                                        </>
+                                    )}
+                                    helperText={getError(spec) === '' ? spec.description : getError(spec)}
+                                    error={getError(spec) !== ''}
+                                    variant='outlined'
+                                    name={spec.name}
+                                    type={secretVisibility[spec.name] ? 'text' : 'password'}
+                                    value={getValue(spec)}
+                                    onChange={(e: any) => onInputChange(e, spec.type)}
+                                    InputLabelProps={{
+                                        shrink: Boolean(getValue(spec)),
+                                    }}
+                                    fullWidth
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position='end'>
+                                                <IconButton
+                                                    onClick={() => toggleSecretVisibility(spec.name)}
+                                                    edge='end'
+                                                    size='small'
+                                                >
+                                                    {secretVisibility[spec.name] ?
+                                                        <VisibilityIcon /> :
+                                                        <VisibilityOffIcon />
+                                                    }
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            )}
+
                         </Grid>
                     ))}
                     <Grid item container justifyContent='flex-end' xs={12}>
