@@ -182,20 +182,18 @@ class MCPServer extends Resource {
      */
     createMCPServerUsingExistingAPI() {
         const promisedCreate = this.client.then(client => {
-            const { properties } = client.spec.definitions.API;
+            const apiData = this.getDataFromSpecFields(client);
             const data = {};
 
             Object.keys(this).forEach(apiAttribute => {
-                if (apiAttribute in properties) {
+                if (apiAttribute in apiData) {
                     data[apiAttribute] = this[apiAttribute];
                 }
             });
-            const payload = {
-                body: data,
-                'Content-Type': 'application/json',
-            };
+
             return client.apis['MCP Servers'].createMCPServerFromAPI(
-                payload,
+                { 'Content-Type': 'application/json' },
+                { requestBody: data },
                 this._requestMetaData(),
             );
         });

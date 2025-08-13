@@ -158,7 +158,7 @@ function actualContext({ context, version }, isWebSocket) {
  */
 export default function DefaultAPIForm(props) {
     const {
-        onChange, onValidate, api, isAPIProduct, multiGateway,
+        onChange, onValidate, api, isAPIProduct, isMCPServer, multiGateway,
         isWebSocket, children, appendChildrenBeforeEndpoint, hideEndpoint,
         readOnlyAPIEndpoint, settings,
     } = props;
@@ -173,7 +173,6 @@ export default function DefaultAPIForm(props) {
         'wso2/apk': true,
         'AWS': true,
     });
-    const isMCPServer = api.type === MCPServer.CONSTS.MCP;
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
 
     const getBorderColor = (gatewayType) => {
@@ -464,7 +463,7 @@ export default function DefaultAPIForm(props) {
                     variant='outlined'
                 />
                 <Grid container spacing={2}>
-                    {!isAPIProduct ? (
+                    {!isAPIProduct && !isMCPServer ? (
                         <>
                             <Grid item md={8} xs={6}>
                                 <TextField
@@ -640,7 +639,7 @@ export default function DefaultAPIForm(props) {
                     )}
                 </Grid>
                 {appendChildrenBeforeEndpoint && !!children && children}
-                {!isAPIProduct && !hideEndpoint && (
+                {!isAPIProduct && !isMCPServer && !hideEndpoint && (
                     <TextField
                         fullWidth
                         id='itest-id-apiendpoint-input'
@@ -804,11 +803,13 @@ DefaultAPIForm.defaultProps = {
     api: {}, // Uncontrolled component
     isWebSocket: false,
     readOnlyAPIEndpoint: null,
+    isMCPServer: false,
 };
 DefaultAPIForm.propTypes = {
     api: PropTypes.shape({}),
     multiGateway: PropTypes.isRequired,
     isAPIProduct: PropTypes.shape({}).isRequired,
+    isMCPServer: PropTypes.shape({}),
     isWebSocket: PropTypes.shape({}),
     onChange: PropTypes.func.isRequired,
     onValidate: PropTypes.func,

@@ -529,20 +529,21 @@ export default function RuntimeConfiguration() {
      * Handle the configuration view save button action
      */
     function handleSave() {
-        if (api.isAPIProduct()) {
-            delete apiConfig.keyManagers; // remove keyManagers property if API type is API Product
+        if (api.isAPIProduct() || api.isMCPServerFromExistingAPI()) {
+            // remove keyManagers property if API type is API Product or MCP Server from existing API
+            delete apiConfig.keyManagers;
         }
         if (updateComplexityList !== null) {
             updateComplexity();
         }
         // Validate the key managers
         const isMCPAPI = api.apiType === MCPServer.CONSTS.MCP;
-        const filteredKeyManagers = apiConfig.keyManagers.filter(km => km !== 'all');
+        const filteredKeyManagers = apiConfig.keyManagers ? apiConfig.keyManagers.filter(km => km !== 'all') : [];
         
         if (
-            !api.isAPIProduct()
+            !api.isAPIProduct() && !api.isMCPServerFromExistingAPI()
             && apiConfig.securityScheme.includes('oauth2')
-            && !apiConfig.keyManagers.includes('all')
+            && apiConfig.keyManagers && !apiConfig.keyManagers.includes('all')
         ) {
             if (isMCPAPI) {
                 // For MCP APIs, ensure exactly one key manager is selected
@@ -585,20 +586,21 @@ export default function RuntimeConfiguration() {
      * Handle the configuration view save button action
      */
     function handleSaveAndDeploy() {
-        if (api.isAPIProduct()) {
-            delete apiConfig.keyManagers; // remove keyManagers property if API type is API Product
+        if (api.isAPIProduct() || api.isMCPServerFromExistingAPI()) {
+            // remove keyManagers property if API type is API Product or MCP Server from existing API
+            delete apiConfig.keyManagers;
         }
         if (updateComplexityList !== null) {
             updateComplexity();
         }
         // Validate the key managers
         const isMCPAPI = api.apiType === MCPServer.CONSTS.MCP;
-        const filteredKeyManagers = apiConfig.keyManagers.filter(km => km !== 'all');
+        const filteredKeyManagers = apiConfig.keyManagers ? apiConfig.keyManagers.filter(km => km !== 'all') : [];
         
         if (
-            !api.isAPIProduct()
+            !api.isAPIProduct() && !api.isMCPServerFromExistingAPI()
             && apiConfig.securityScheme.includes('oauth2')
-            && !apiConfig.keyManagers.includes('all')
+            && apiConfig.keyManagers && !apiConfig.keyManagers.includes('all')
         ) {
             if (isMCPAPI) {
                 // For MCP APIs, ensure exactly one key manager is selected
@@ -633,11 +635,20 @@ export default function RuntimeConfiguration() {
                     Alert.error(error.response.body.description);
                 }
             })
-            .finally(() => history.push({
-                pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
-                    : `/apis/${api.id}/deployments`,
-                state: 'deploy',
-            }));
+            .finally(() => {
+                let pathname;
+                if (api.isAPIProduct()) {
+                    pathname = `/api-products/${api.id}/deployments`;
+                } else if (api.isMCPServerFromExistingAPI()) {
+                    pathname = `/mcp-servers/${api.id}/deployments`;
+                } else {
+                    pathname = `/apis/${api.id}/deployments`;
+                }
+                history.push({
+                    pathname,
+                    state: 'deploy',
+                });
+            });
     }
 
     if (isLoading || loadingEndpointConfig) {
@@ -775,7 +786,9 @@ export default function RuntimeConfiguration() {
                                                 configDispatcher={configDispatcher}
                                             />
                                         )}
-                                        {api.subtypeConfiguration?.subtype !== 'AIAPI' && !api.isAPIProduct() && (
+                                        {api.subtypeConfiguration?.subtype !== 'AIAPI' 
+                                            && !api.isAPIProduct() 
+                                            && !api.isMCPServerFromExistingAPI() && (
                                             <>
                                                 {(!isAsyncAPI && componentValidator.includes("backendThroughput")) && (
                                                     <MaxBackendTps
@@ -785,7 +798,9 @@ export default function RuntimeConfiguration() {
                                                 )}
                                             </>
                                         )}
-                                        {!(api.isAPIProduct() || api.subtypeConfiguration?.subtype === 'AIAPI') && (
+                                        {!(api.isAPIProduct() 
+                                            || api.isMCPServerFromExistingAPI() 
+                                            || api.subtypeConfiguration?.subtype === 'AIAPI') && (
                                             <>
                                                 { !isWebSub && (
                                                     <Endpoints
@@ -804,6 +819,18 @@ export default function RuntimeConfiguration() {
                                                             + '.api.product.endpoint'}
                                                         defaultMessage={'Please refer respective APIs for endpoint '
                                                             + 'information'}
+                                                    />
+                                                </Typography>
+                                            </Box>
+                                        )}
+                                        {api.isMCPServerFromExistingAPI() && (
+                                            <Box alignItems='center' justifyContent='center' className={classes.info}>
+                                                <Typography variant='body1'>
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Configuration.RuntimeConfiguration.backend'
+                                                            + '.mcp.from.existing.api.endpoint'}
+                                                        defaultMessage={'Please refer to the respective API for '
+                                                            + 'endpoint information'}
                                                     />
                                                 </Typography>
                                             </Box>

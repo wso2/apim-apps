@@ -217,7 +217,8 @@ function Overview(props) {
             document.removeEventListener('keydown', handleKeyDown);
         };
     }, [setOpenPageSearch]);
-    if (api.apiType === API.CONSTS.API || api.type === MCPServer.CONSTS.MCP) {
+    if (api.apiType === API.CONSTS.API || (api.type === MCPServer.CONSTS.MCP
+        && !api.isMCPServerFromExistingAPI())) {
         loadEndpoints = <Endpoints parentClasses={classes} api={api} />;
     }
 
