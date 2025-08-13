@@ -149,6 +149,7 @@ export default {
             disabled: '#ebebeb',
             sub: '#38a169',
             pub: '#4299e1',
+            tool: '#f2d4a7',
         },
         operationChipColor: {
             query: '#b3e6fe',

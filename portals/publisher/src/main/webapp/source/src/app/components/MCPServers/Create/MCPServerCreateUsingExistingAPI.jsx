@@ -109,7 +109,7 @@ const MCPServerCreateUsingExistingAPI = (props) => {
     }, []);
 
     const pageTitle = (
-        (<Root>
+        <Root>
             <Typography variant='h5'>
                 <FormattedMessage
                     id='MCPServers.Create.MCPServerCreateUsingExistingAPI.heading'
@@ -125,7 +125,7 @@ const MCPServerCreateUsingExistingAPI = (props) => {
                     }
                 />
             </Typography>
-        </Root>)
+        </Root>
     );
 
     /**

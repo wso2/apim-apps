@@ -17,9 +17,10 @@
  */
 
 import React from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, Tooltip } from '@mui/material';
 import { Link } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
+import LaunchIcon from '@mui/icons-material/Launch';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Configurations from 'Config';
@@ -43,12 +44,34 @@ const ApisSection = ({ data, noDataIcon, totalCount, currentPage, pageSize, onPa
     return (
         <Box mb={4} mx={4}>
             <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
-                <Typography variant='h4'>
-                    <FormattedMessage
-                        id='Publisher.Landing.apis.section.title'
-                        defaultMessage='APIs'
-                    />
-                </Typography>
+                <Box display='flex' alignItems='center'>
+                    <Typography variant='h4'>
+                        <FormattedMessage
+                            id='Publisher.Landing.apis.section.title'
+                            defaultMessage='APIs'
+                        />
+                    </Typography>
+                    <Typography 
+                        variant='body2' 
+                        color='textSecondary' 
+                        sx={{ 
+                            ml: 1, 
+                            alignSelf: 'flex-end',
+                            mb: 0.5,
+                        }}
+                    >
+                        Total: <strong>{totalCount}</strong> {totalCount === 1 ? 'API' : 'APIs'}
+                    </Typography>
+                    <Tooltip title='Go to APIs'>
+                        <Link to='/apis' style={{ textDecoration: 'none' }}>
+                            <LaunchIcon 
+                                style={{ marginLeft: '2px' }} 
+                                fontSize='small' 
+                                sx={{ color: 'text.secondary' }}
+                            />
+                        </Link>
+                    </Tooltip>
+                </Box>
                 {data.length > 0 && (
                     <Button
                         variant='contained'
