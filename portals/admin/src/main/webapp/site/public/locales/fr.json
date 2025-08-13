@@ -455,7 +455,7 @@
   "GatewayEnvironments.AddEditGWEnvironment.form.displayName": "Display Name",
   "GatewayEnvironments.AddEditGWEnvironment.form.environment.name.empty": "Name is Empty",
   "GatewayEnvironments.AddEditGWEnvironment.form.environment.name.invalid": "Name must not contain special characters or spaces",
-  "GatewayEnvironments.AddEditGWEnvironment.form.mode\n                                                    .scheduled.interval": "API Discovery Scheduling Interval",
+  "GatewayEnvironments.AddEditGWEnvironment.form.mode\n                                                .scheduled.interval": "API Discovery Scheduling Interval",
   "GatewayEnvironments.AddEditGWEnvironment.form.mode.helper.text": "Select how the APIs in the Gateway should be managed",
   "GatewayEnvironments.AddEditGWEnvironment.form.mode.label": "Mode",
   "GatewayEnvironments.AddEditGWEnvironment.form.mode.select.label": "Mode",
