@@ -160,7 +160,7 @@ function APIThumbPlain(props) {
     } = props;
     const { custom: { thumbnail } } = theme;
     const {
-        name, version, context, provider
+        name, version, context, provider, gatewayVendor, gatewayType
     } = api;
 
     const [imageConf, setImageConf] = useState({
@@ -334,9 +334,9 @@ function APIThumbPlain(props) {
                                         </Typography>
                                         &nbsp;
                                         <Typography variant='body2' component='span'>
-                                            {api.gatewayVendor === 'wso2' || api.gatewayVendor === 'solace'
-                                                ? api.gatewayVendor.toUpperCase()
-                                                : api.gatewayType}
+                                            {gatewayVendor === 'wso2' || gatewayVendor === 'solace'
+                                                ? gatewayVendor.toUpperCase()
+                                                : gatewayType}
                                         </Typography>
                                     </>
                                 )}

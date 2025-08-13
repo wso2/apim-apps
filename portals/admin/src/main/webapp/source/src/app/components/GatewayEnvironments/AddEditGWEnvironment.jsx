@@ -906,35 +906,33 @@ function AddEditGWEnvironment(props) {
                         {
                             (gatewayMode === 'READ_ONLY' || gatewayMode === 'READ_WRITE')
                             && (
-                                <>
-                                    <Box display='flex' flexDirection='row'>
-                                        <TextField
-                                            margin='dense'
-                                            name='scheduledInterval'
-                                            value={scheduledInterval}
-                                            onChange={onChange}
-                                            type='number'
-                                            label={(
-                                                <FormattedMessage
-                                                    id='GatewayEnvironments.AddEditGWEnvironment.form.mode
-                                                    .scheduled.interval'
-                                                    defaultMessage='API Discovery Scheduling Interval'
-                                                />
-                                            )}
-                                            required
-                                            error={hasErrors('scheduledInterval', state.scheduledInterval, true)}
-                                            helperText={hasErrors('scheduledInterval', state.scheduledInterval, true)
-                                                || intl.formatMessage({
-                                                    id: 'GatewayEnvironments.AddEditGWEnvironment.form.name.'
-                                                        + 'form.scheduledInterval.help',
-                                                    defaultMessage: 'Provide interval in minutes for scheduling API'
-                                                    + ' discovery',
-                                                })}
-                                            sx={{ width: 350, mt: 3 }}
-                                            variant='outlined'
-                                        />
-                                    </Box>
-                                </>
+                                <Box display='flex' flexDirection='row'>
+                                    <TextField
+                                        margin='dense'
+                                        name='scheduledInterval'
+                                        value={scheduledInterval}
+                                        onChange={onChange}
+                                        type='number'
+                                        label={(
+                                            <FormattedMessage
+                                                id='GatewayEnvironments.AddEditGWEnvironment.form.mode
+                                                .scheduled.interval'
+                                                defaultMessage='API Discovery Scheduling Interval'
+                                            />
+                                        )}
+                                        required
+                                        error={hasErrors('scheduledInterval', state.scheduledInterval)}
+                                        helperText={hasErrors('scheduledInterval', state.scheduledInterval)
+                                            || intl.formatMessage({
+                                                id: 'GatewayEnvironments.AddEditGWEnvironment.form.name.'
+                                                    + 'form.scheduledInterval.help',
+                                                defaultMessage: 'Provide interval in minutes for scheduling API'
+                                                + ' discovery',
+                                            })}
+                                        sx={{ width: 350, mt: 3 }}
+                                        variant='outlined'
+                                    />
+                                </Box>
                             )
                         }
                     </Grid>
