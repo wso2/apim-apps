@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useEffect, useState, useContext } from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import cloneDeep from 'lodash.clonedeep';
@@ -34,9 +34,9 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import Settings from 'Settings';
 import PropTypes from 'prop-types';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
-import Validation from 'AppData/Validation';
 import AppConfiguration from './AppConfiguration';
 import ContextSettings from 'AppComponents/Shared/SettingsContext';
+import Application from 'AppData/Application';
 
 const PREFIX = 'KeyConfiguration';
 
@@ -145,7 +145,8 @@ const KeyConfiguration = (props) => {
     const [callbackHelper, setCallbackHelper] = useState(false);
     const intl = useIntl();
     const {
-        notFound, isUserOwner, keyManagerConfig, updateKeyRequest, keyRequest, updateHasError, callbackError,mode,
+        notFound, isUserOwner, keyManagerConfig, updateKeyRequest, keyRequest, updateHasError, callbackError, mode,
+        selectedApp
     } = props;
     const {
         selectedGrantTypes, callbackUrl,
@@ -157,6 +158,24 @@ const KeyConfiguration = (props) => {
     } = keyManagerConfig;
     const [isOrgWideAppUpdateEnabled, setIsOrgWideAppUpdateEnabled] = useState(false);
     const settingsContext = useContext(ContextSettings);
+    const [subscriptionScopes, setSubscriptionScopes] = useState([]);
+
+    useEffect(() => {
+        if (selectedApp) {
+            const appId = selectedApp.appId || selectedApp.value;
+            Application.get(appId)
+                .then((app) => {
+                    const scopes = app.subscriptionScopes
+                        .map((scope) => { return scope.key; });
+                    setSubscriptionScopes(scopes);
+                })
+                .catch((error) => {
+                    if (process.env.NODE_ENV !== 'production') {
+                        console.error(error);
+                    }
+                });
+        }
+    }, [selectedApp]);
 
     /**
      * Updates isOrgWideAppUpdateEnabled whenever settingsContext changes
@@ -490,6 +509,7 @@ const KeyConfiguration = (props) => {
                                 previousValue={getPreviousValue(config)}
                                 isUserOwner={isUserOwner}
                                 handleChange={handleChange}
+                                subscriptionScopes={subscriptionScopes}
                             />
                         ))}
                         </>)}
@@ -518,6 +538,13 @@ KeyConfiguration.propTypes = {
     updateKeyRequest: PropTypes.func.isRequired,
     validating: PropTypes.bool,
     mode: PropTypes.string,
+    selectedApp: PropTypes.shape({
+        tokenType: PropTypes.string.isRequired,
+        appId: PropTypes.string,
+        value: PropTypes.string,
+        owner: PropTypes.string,
+        hashEnabled: PropTypes.bool,
+    }),
 };
 
 
