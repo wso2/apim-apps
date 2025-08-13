@@ -16,34 +16,24 @@
  * under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { styled } from '@mui/material/styles';
+import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import Grid from '@mui/material/Grid';
-import List from '@mui/material/List';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Checkbox from '@mui/material/Checkbox';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import MethodView from 'AppComponents/Apis/Details/ProductResources/MethodView';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
+import { useToolSelection } from './hooks/useToolSelection';
+import TransferList from './components/TransferList';
 
 const PREFIX = 'ExistingAPIToolSelection';
 
 const classes = {
-    methodView: `${PREFIX}-methodView`,
     apiSelectionContainer: `${PREFIX}-apiSelectionContainer`,
-    apiSelectionCard: `${PREFIX}-apiSelectionCard`,
 };
 
 const Root = styled('div')((
@@ -51,65 +41,45 @@ const Root = styled('div')((
         theme
     }
 ) => ({
-    [`& .${classes.methodView}`]: {
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
-    },
     [`& .${classes.apiSelectionContainer}`]: {
+        marginTop: theme.spacing(3),
         marginBottom: theme.spacing(3),
     },
-    [`& .${classes.apiSelectionCard}`]: {
-        padding: theme.spacing(2),
-    },
 }));
-
-// Helper functions for managing lists and selections
-// `listA` is the array of actual items (objects in this case)
-// `selectedKeys` is the array of IDs that are currently checked
-// `itemKeyExtractor` extracts the unique key (ID) from an item in `listA`
-const getSelectedItems = (listA, selectedKeys, itemKeyExtractor = (item) => item) => {
-    const selectedKeysSet = new Set(selectedKeys);
-    return listA.filter(item => selectedKeysSet.has(itemKeyExtractor(item)));
-};
-
-// `listA` is the array of actual items (objects)
-// `keysToRemove` is the array of IDs to remove from `listA`
-// `itemKeyExtractor` extracts the unique key (ID) from an item in `listA`
-const getRemainingItems = (listA, keysToRemove, itemKeyExtractor = (item) => item) => {
-    const keysToRemoveSet = new Set(keysToRemove);
-    return listA.filter(item => !keysToRemoveSet.has(itemKeyExtractor(item)));
-};
-
-// `currentCheckedKeys` is the array of currently checked IDs
-// `keysToAdd` is the array of IDs to add to `currentCheckedKeys`
-const addKeys = (currentCheckedKeys, keysToAdd) => {
-    const newSet = new Set(currentCheckedKeys);
-    keysToAdd.forEach(key => newSet.add(key));
-    return Array.from(newSet);
-};
-
-// `currentCheckedKeys` is the array of currently checked IDs
-// `keysToRemove` is the array of IDs to remove from `currentCheckedKeys`
-const removeKeys = (currentCheckedKeys, keysToRemove) => {
-    const keysToRemoveSet = new Set(keysToRemove);
-    return currentCheckedKeys.filter(key => !keysToRemoveSet.has(key));
-};
 
 const ExistingAPIToolSelection = ({ 
     onValidate, 
     inputsDispatcher, 
     selectedAPI = null,
-    onAPIChange = null,
 }) => {
-    const [checked, setChecked] = useState([]);
-    const [availableOperations, setAvailableOperations] = useState([]);
-    const [selectedOperations, setSelectedOperations] = useState([]);
-    
     // API selection state
     const [apiList, setApiList] = useState([]);
     const [loadingAPIs, setLoadingAPIs] = useState(false);
     const [loadingOperations, setLoadingOperations] = useState(false);
     const [selectedAPIOption, setSelectedAPIOption] = useState(selectedAPI);
+    const processedSelectedAPIRef = useRef(null);
+
+    // Operation cleaner function to remove display properties before dispatching
+    const operationCleaner = (operations) => {
+        return operations.map(operation => {
+            const { verb, target, id, ...cleanOperation } = operation;
+            return cleanOperation;
+        });
+    };
+
+    const {
+        checked,
+        availableOperations,
+        selectedOperations,
+        getCheckedItemsInList,
+        handleToggle,
+        numberOfChecked,
+        handleToggleAll,
+        handleCheckedObjectsRight,
+        handleCheckedObjectsLeft,
+        updateAvailableOperations,
+    } = useToolSelection([], onValidate, inputsDispatcher, 
+        (obj) => `${obj.verb}-${obj.target}`, operationCleaner);
 
     const fetchAvailableAPIs = async () => {
         setLoadingAPIs(true);
@@ -154,12 +124,7 @@ const ExistingAPIToolSelection = ({
                 });
             }
             
-            setAvailableOperations(apiOperations);
-            
-            // Update the selected API in parent component
-            if (onAPIChange) {
-                onAPIChange(selectedAPIOption);
-            }
+            updateAvailableOperations(apiOperations);
         } catch (error) {
             console.error('Error fetching API operations:', error);
             Alert.error('Failed to fetch API operations');
@@ -170,11 +135,7 @@ const ExistingAPIToolSelection = ({
 
     const handleAPISelection = (event, newValue) => {
         setSelectedAPIOption(newValue);
-        setSelectedOperations([]);
-        setChecked([]);
-        if (onAPIChange) {
-            onAPIChange(newValue);
-        }
+        updateAvailableOperations([]);
     };
 
     // Fetch available APIs when component mounts
@@ -182,208 +143,89 @@ const ExistingAPIToolSelection = ({
         fetchAvailableAPIs();
     }, []);
 
-    // Fetch operations when API is selected
+    // Handle selectedAPI prop - fetch full API details if only ID is provided
     useEffect(() => {
-        if (selectedAPIOption) {
+        if (selectedAPI && selectedAPI.id && !selectedAPI.name) {
+            // If we only have an ID, fetch the full API details
+            const fetchSelectedAPI = async () => {
+                try {
+                    const api = await API.get(selectedAPI.id);
+                    setSelectedAPIOption(api);
+                } catch (error) {
+                    console.error('Error fetching selected API:', error);
+                    Alert.error('Failed to fetch selected API details');
+                }
+            };
+            fetchSelectedAPI();
+        } else if (selectedAPI) {
+            // If we have full API details, set it directly
+            setSelectedAPIOption(selectedAPI);
+        }
+    }, [selectedAPI]);
+
+    // Fetch operations when API is selected (only when API actually changes)
+    useEffect(() => {
+        if (selectedAPIOption && selectedAPIOption.id !== processedSelectedAPIRef.current) {
+            processedSelectedAPIRef.current = selectedAPIOption.id;
             fetchOperationsFromAPI(selectedAPIOption.id);
         }
     }, [selectedAPIOption]);
 
-    const getCheckedItemsInList = (items, keyExtractor = (item) => item) => {
-        const itemKeys = items.map(keyExtractor);
-        return getSelectedItems(itemKeys, checked);
-    };
-
-    // Update validation based on selected operations and dispatch to reducer
-    useEffect(() => {
-        const isValid = selectedOperations.length > 0;
-        onValidate(isValid);
-
-        // Clean operations by removing display properties before dispatching
-        const cleanOperations = selectedOperations.map(operation => {
-            const { verb, target, id, ...cleanOperation } = operation;
-            return cleanOperation;
-        });
-
-        // Dispatch cleaned operations to the reducer
-        inputsDispatcher({ action: 'operations', value: cleanOperations });
-    }, [selectedOperations, onValidate, inputsDispatcher]);
-
-    const handleToggle = (value, keyExtractor = (item) => item) => () => {
-        const valueKey = keyExtractor(value);
-        if (checked.includes(valueKey)) {
-            setChecked(removeKeys(checked, [valueKey]));
-        } else {
-            setChecked(addKeys(checked, [valueKey]));
-        }
-    };
-
-    const numberOfChecked = (items, keyExtractor = (item) => item) => {
-        const itemKeys = items.map(keyExtractor);
-        return getSelectedItems(itemKeys, checked).length;
-    };
-
-    const handleToggleAll = (items, keyExtractor = (item) => item) => () => {
-        const itemKeys = items.map(keyExtractor);
-        if (numberOfChecked(items, keyExtractor) === items.length) {
-            // All are checked, uncheck all of them from this list
-            setChecked(removeKeys(checked, itemKeys));
-        } else {
-            // Not all are checked, check all of them from this list
-            setChecked(addKeys(checked, itemKeys));
-        }
-    };
-
-    const handleCheckedObjectsRight = () => {
-        const keyExtractor = (obj) => `${obj.verb}-${obj.target}`;
-        const itemsToMove = getSelectedItems(availableOperations, checked, keyExtractor);
-        setSelectedOperations(selectedOperations.concat(itemsToMove));
-        // When removing from leftObjects, we need to pass the keys of the items to remove
-        setAvailableOperations(getRemainingItems(availableOperations, itemsToMove.map(keyExtractor), keyExtractor));
-        // When updating 'checked', remove the keys of the moved objects
-        setChecked(removeKeys(checked, itemsToMove.map(keyExtractor)));
-    };
-
-    const handleCheckedObjectsLeft = () => {
-        const keyExtractor = (obj) => `${obj.verb}-${obj.target}`;
-        const itemsToMove = getSelectedItems(selectedOperations, checked, keyExtractor);
-        setAvailableOperations(availableOperations.concat(itemsToMove));
-        // When removing from rightObjects, we need to pass the keys of the items to remove
-        setSelectedOperations(getRemainingItems(selectedOperations, itemsToMove.map(keyExtractor), keyExtractor));
-        // When updating 'checked', remove the keys of the moved objects
-        setChecked(removeKeys(checked, itemsToMove.map(keyExtractor)));
-    };
-
-    const customList = (title, items) => {
-        const keyExtractor = (item) => `${item.verb}-${item.target}`;
-        const checkedItemsInList = getCheckedItemsInList(items, keyExtractor);
-
-        return (
-            <Card>
-                <CardHeader
-                    sx={{ px: 2, py: 1 }}
-                    avatar={
-                        <Checkbox
-                            onClick={handleToggleAll(items, keyExtractor)}
-                            checked={numberOfChecked(items, keyExtractor) === items.length && items.length !== 0}
-                            indeterminate={
-                                numberOfChecked(items, keyExtractor) !== items.length
-                                && numberOfChecked(items, keyExtractor) !== 0
-                            }
-                            disabled={items.length === 0}
-                            inputProps={{
-                                'aria-label': 'all items selected',
-                            }}
-                        />
-                    }
-                    title={title}
-                    subheader={`${checkedItemsInList.length}/${items.length} selected`}
-                />
-                <Divider />
-                <List
-                    sx={{
-                        width: '100%',
-                        height: 300,
-                        bgcolor: 'background.paper',
-                        overflow: 'auto',
-                    }}
-                    dense
-                    component='div'
-                    role='list'
-                >
-                    {items.map((value) => {
-                        const labelId = `transfer-list-object-item-${keyExtractor(value)}-label`;
-                        const isChecked = checked.includes(keyExtractor(value));
-
-                        return (
-                            <ListItemButton
-                                key={keyExtractor(value)}
-                                role='listitem'
-                                onClick={handleToggle(value, keyExtractor)}
-                            >
-                                <ListItemIcon>
-                                    <Checkbox
-                                        checked={isChecked}
-                                        tabIndex={-1}
-                                        disableRipple
-                                        inputProps={{
-                                            'aria-labelledby': labelId,
-                                        }}
-                                    />
-                                </ListItemIcon>
-                                <ListItemText
-                                    id={labelId}
-                                    primary={(
-                                        <div>
-                                            <MethodView
-                                                method={value.verb}
-                                                className={classes.methodView}
-                                            />
-                                            <span>{value.target}</span>
-                                        </div>
-                                    )}
-                                />
-                            </ListItemButton>
-                        );
-                    })}
-                </List>
-            </Card>
-        )
-    };
-
     const renderAPISelection = () => {
         return (
             <Box className={classes.apiSelectionContainer}>
-                <Card className={classes.apiSelectionCard}>
-                    <Typography variant='h6' gutterBottom>
-                        Select API
-                    </Typography>
-                    <Autocomplete
-                        id='api-selection-autocomplete'
-                        options={apiList}
-                        getOptionLabel={(option) => `${option.name} (${option.version})`}
-                        value={selectedAPIOption}
-                        onChange={handleAPISelection}
-                        loading={loadingAPIs}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                label='Select an API'
-                                variant='outlined'
-                                InputProps={{
-                                    ...params.InputProps,
-                                    endAdornment: (
-                                        <>
-                                            {loadingAPIs ? <CircularProgress color='inherit' size={20} /> : null}
-                                            {params.InputProps.endAdornment}
-                                        </>
-                                    ),
-                                }}
-                            />
-                        )}
-                        renderOption={(props, option) => (
-                            <Box component='li' {...props}>
-                                <Box>
-                                    <Typography variant='body1'>
-                                        {option.name}
-                                    </Typography>
-                                    <Typography variant='caption' color='text.secondary'>
-                                        Version: {option.version} | Context: {option.context}
-                                    </Typography>
-                                </Box>
+                <Autocomplete
+                    id='api-selection-autocomplete'
+                    options={apiList}
+                    getOptionLabel={(option) => `${option.name} (${option.version})`}
+                    value={selectedAPIOption}
+                    onChange={handleAPISelection}
+                    loading={loadingAPIs}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label={
+                                <Typography variant='subtitle1' gutterBottom>
+                                    <FormattedMessage
+                                        id='MCPServers.Create.Steps.ExistingAPIToolSelection.api.selection.label'
+                                        defaultMessage='Select an API to create MCP Server from'
+                                    />
+                                </Typography>
+                            }
+                            variant='outlined'
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                    <>
+                                        {loadingAPIs ? <CircularProgress color='inherit' size={20} /> : null}
+                                        {params.InputProps.endAdornment}
+                                    </>
+                                ),
+                            }}
+                        />
+                    )}
+                    renderOption={(props, option) => (
+                        <Box component='li' {...props}>
+                            <Box>
+                                <Typography variant='body1'>
+                                    {option.name}
+                                </Typography>
+                                <Typography variant='caption' color='text.secondary'>
+                                    Version: {option.version} | Context: {option.context}
+                                </Typography>
                             </Box>
-                        )}
-                        isOptionEqualToValue={(option, value) => option.id === value.id}
-                    />
-                    {loadingOperations && (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                            <CircularProgress size={24} />
-                            <Typography variant='body2' sx={{ ml: 1 }}>
-                                Loading operations...
-                            </Typography>
                         </Box>
                     )}
-                </Card>
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                />
+                {loadingOperations && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                        <CircularProgress size={24} />
+                        <Typography variant='body2' sx={{ ml: 1 }}>
+                            Loading operations...
+                        </Typography>
+                    </Box>
+                )}
             </Box>
         );
     };
@@ -391,67 +233,41 @@ const ExistingAPIToolSelection = ({
     return (
         <Root>
             {renderAPISelection()}
-            <Grid container spacing={2} py={2}>
-                <Grid item xs={5}>
-                    {customList('Available Operations', availableOperations)}
-                </Grid>
-                <Grid item xs={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Grid container direction='column' spacing={1} px={2}>
-                        <Grid item>
-                            <Button
-                                variant='outlined'
-                                size='small'
-                                onClick={handleCheckedObjectsRight}
-                                disabled={getCheckedItemsInList(
-                                    availableOperations,
-                                    (obj) => `${obj.verb}-${obj.target}`
-                                ).length === 0}
-                                aria-label='move selected right'
-                                fullWidth
-                            >
-                                &gt;
-                            </Button>
-                        </Grid>
-                        <Grid item>
-                            <Button
-                                variant='outlined'
-                                size='small'
-                                onClick={handleCheckedObjectsLeft}
-                                disabled={getCheckedItemsInList(
-                                    selectedOperations,
-                                    (obj) => `${obj.verb}-${obj.target}`
-                                ).length === 0}
-                                aria-label='move selected left'
-                                fullWidth
-                            >
-                                &lt;
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item xs={5}>
-                    {customList('Selected Operations', selectedOperations)}
-                </Grid>
-            </Grid>
+            {selectedAPIOption !== null && (
+                <TransferList
+                    availableOperations={availableOperations}
+                    selectedOperations={selectedOperations}
+                    checked={checked}
+                    onToggle={handleToggle}
+                    onToggleAll={handleToggleAll}
+                    onMoveRight={handleCheckedObjectsRight}
+                    onMoveLeft={handleCheckedObjectsLeft}
+                    getCheckedItemsInList={getCheckedItemsInList}
+                    numberOfChecked={numberOfChecked}
+                />
+            )}
         </Root>
     );
-}
+};
 
 ExistingAPIToolSelection.propTypes = {
     onValidate: PropTypes.func.isRequired,
     inputsDispatcher: PropTypes.func.isRequired,
-    selectedAPI: PropTypes.shape({
-        id: PropTypes.string,
-        name: PropTypes.string,
-        version: PropTypes.string,
-        context: PropTypes.string,
-    }),
-    onAPIChange: PropTypes.func,
+    selectedAPI: PropTypes.oneOfType([
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string,
+            version: PropTypes.string,
+            context: PropTypes.string,
+        }),
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+        }),
+    ]),
 };
 
 ExistingAPIToolSelection.defaultProps = {
     selectedAPI: null,
-    onAPIChange: null,
 };
 
 export default ExistingAPIToolSelection;

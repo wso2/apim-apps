@@ -74,7 +74,7 @@ const Root = styled('div')(({ theme }) => ({
 }));
 
 const MCPServerCreateUsingExistingAPI = (props) => {
-    const { history } = props;
+    const { history, location } = props;
     const intl = useIntl();
     const [wizardStep, setWizardStep] = useState(0);
     const [isCreating, setCreating] = useState();
@@ -84,6 +84,13 @@ const MCPServerCreateUsingExistingAPI = (props) => {
     const [isPublishing, setIsPublishing] = useState(false);
     const [policies, setPolicies] = useState([]);
     const { data: settings } = usePublisherSettings();
+
+    // Extract API ID from URL parameters
+    const urlParams = new URLSearchParams(location.search);
+    const apiId = urlParams.get('apiId');
+
+    // Create selectedAPI object if API ID is present
+    const selectedAPI = apiId ? { id: apiId } : null;
 
     useEffect(() => {
         API.policies('subscription').then((response) => {
@@ -366,6 +373,7 @@ const MCPServerCreateUsingExistingAPI = (props) => {
                         <ExistingAPIToolSelection
                             onValidate={handleOnValidate}
                             inputsDispatcher={inputsDispatcher}
+                            selectedAPI={selectedAPI}
                         />
                     )}
                     {wizardStep === 1 && (
@@ -491,6 +499,7 @@ const MCPServerCreateUsingExistingAPI = (props) => {
 
 MCPServerCreateUsingExistingAPI.propTypes = {
     history: PropTypes.shape({ push: PropTypes.func }).isRequired,
+    location: PropTypes.shape({ search: PropTypes.string }).isRequired,
 };
 
 export default MCPServerCreateUsingExistingAPI;

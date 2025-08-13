@@ -268,15 +268,27 @@ export default function DeploymentOnboarding(props) {
         checkEndpointSecurity();
 
         if (isMCPServer) {
-            MCPServer.getMCPServerEndpoints(api.id)
-                .then((response) => {
-                    const fetchedEndpoints = response.body;
-                    if (fetchedEndpoints && fetchedEndpoints.length > 0) {
-                        setEndpointAvailable(true);
-                    } else {
-                        setEndpointAvailable(false);
-                    }
-                });
+            if (api.isMCPServerFromExistingAPI()) {
+                setEndpointAvailable(true); // TODO: Check the endpoint availability for MCP Server from existing API
+                // API.getAPIById(underlyingApi.id)
+                //     .then((response) => {
+                //         const apiObject = response.body;
+                //         setEndpointAvailable(apiObject.subtypeConfiguration?.subtype === 'AIAPI'
+                //             ? (apiObject.primaryProductionEndpointId !== null
+                //                 || apiObject.primarySandboxEndpointId !== null)
+                //             : apiObject.endpointConfig !== null);
+                //     });
+            } else {
+                MCPServer.getMCPServerEndpoints(api.id)
+                    .then((response) => {
+                        const fetchedEndpoints = response.body;
+                        if (fetchedEndpoints && fetchedEndpoints.length > 0) {
+                            setEndpointAvailable(true);
+                        } else {
+                            setEndpointAvailable(false);
+                        }
+                    });
+            }
         } else {
             setEndpointAvailable(api.subtypeConfiguration?.subtype === 'AIAPI'
                 ? (api.primaryProductionEndpointId !== null || api.primarySandboxEndpointId !== null)

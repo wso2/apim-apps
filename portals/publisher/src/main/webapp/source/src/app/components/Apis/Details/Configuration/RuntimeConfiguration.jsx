@@ -529,7 +529,7 @@ export default function RuntimeConfiguration() {
      * Handle the configuration view save button action
      */
     function handleSave() {
-        if (api.isAPIProduct() || api.isMCPServerFromExistingAPI()) {
+        if (api.isAPIProduct()) {
             // remove keyManagers property if API type is API Product or MCP Server from existing API
             delete apiConfig.keyManagers;
         }
@@ -541,7 +541,7 @@ export default function RuntimeConfiguration() {
         const filteredKeyManagers = apiConfig.keyManagers ? apiConfig.keyManagers.filter(km => km !== 'all') : [];
         
         if (
-            !api.isAPIProduct() && !api.isMCPServerFromExistingAPI()
+            !api.isAPIProduct()
             && apiConfig.securityScheme.includes('oauth2')
             && apiConfig.keyManagers && !apiConfig.keyManagers.includes('all')
         ) {
@@ -586,7 +586,7 @@ export default function RuntimeConfiguration() {
      * Handle the configuration view save button action
      */
     function handleSaveAndDeploy() {
-        if (api.isAPIProduct() || api.isMCPServerFromExistingAPI()) {
+        if (api.isAPIProduct()) {
             // remove keyManagers property if API type is API Product or MCP Server from existing API
             delete apiConfig.keyManagers;
         }
@@ -598,7 +598,7 @@ export default function RuntimeConfiguration() {
         const filteredKeyManagers = apiConfig.keyManagers ? apiConfig.keyManagers.filter(km => km !== 'all') : [];
         
         if (
-            !api.isAPIProduct() && !api.isMCPServerFromExistingAPI()
+            !api.isAPIProduct()
             && apiConfig.securityScheme.includes('oauth2')
             && apiConfig.keyManagers && !apiConfig.keyManagers.includes('all')
         ) {
@@ -639,7 +639,7 @@ export default function RuntimeConfiguration() {
                 let pathname;
                 if (api.isAPIProduct()) {
                     pathname = `/api-products/${api.id}/deployments`;
-                } else if (api.isMCPServerFromExistingAPI()) {
+                } else if (api.isMCPServer()) {
                     pathname = `/mcp-servers/${api.id}/deployments`;
                 } else {
                     pathname = `/apis/${api.id}/deployments`;

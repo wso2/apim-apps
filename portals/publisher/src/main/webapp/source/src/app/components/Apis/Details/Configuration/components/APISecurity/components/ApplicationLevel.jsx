@@ -333,8 +333,7 @@ export default function ApplicationLevel(props) {
                                 configDispatcher={configDispatcher}
                             />
                         )}
-                        {(apiFromContext.apiType === API.CONSTS.API || (apiFromContext.apiType === MCPServer.CONSTS.MCP
-                            && !apiFromContext.isMCPServerFromExistingAPI()))
+                        {(apiFromContext.apiType === API.CONSTS.API || apiFromContext.apiType === MCPServer.CONSTS.MCP)
                             && oauth2Enabled
                             && componentValidator.includes("keyManagerConfig") && (
                             <KeyManager

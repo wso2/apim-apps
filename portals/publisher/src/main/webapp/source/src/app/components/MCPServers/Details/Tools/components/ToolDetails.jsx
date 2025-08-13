@@ -181,6 +181,10 @@ function ToolDetails(props) {
             const backendOp = operation.backendOperationMapping.backendOperation;
             return `${backendOp.verb} ${backendOp.target}`;
         }
+        if (operation.apiOperationMapping && operation.apiOperationMapping.backendOperation) {
+            const apiOp = operation.apiOperationMapping.backendOperation;
+            return `${apiOp.verb} ${apiOp.target}`;
+        }
         return '';
     };
 
@@ -194,7 +198,8 @@ function ToolDetails(props) {
         return operation.target || target;
     };
 
-    const backendOperationVerb = operation.backendOperationMapping?.backendOperation?.verb;
+    const backendOperationVerb = operation.backendOperationMapping?.backendOperation?.verb || 
+                                 operation.apiOperationMapping?.backendOperation?.verb;
 
     return (
         <Root>
@@ -291,7 +296,8 @@ function ToolDetails(props) {
                                         title={getResourceMappingDisplay()}
                                     >
                                         <MethodView
-                                            method={operation.backendOperationMapping?.backendOperation?.verb}
+                                            method={operation.backendOperationMapping?.backendOperation?.verb || 
+                                                   operation.apiOperationMapping?.backendOperation?.verb}
                                             style={{ marginRight: theme.spacing(0.2), flexShrink: 0 }}
                                         />
                                         <Typography
@@ -302,7 +308,8 @@ function ToolDetails(props) {
                                             className={classes.truncatedText}
                                         >
                                             {getTruncatedTarget(
-                                                operation.backendOperationMapping?.backendOperation?.target, 15
+                                                operation.backendOperationMapping?.backendOperation?.target || 
+                                                operation.apiOperationMapping?.backendOperation?.target, 15
                                             )}
                                         </Typography>
                                     </Box>
@@ -440,6 +447,15 @@ ToolDetails.propTypes = {
         'x-throttling-tier': PropTypes.string,
         scopes: PropTypes.arrayOf(PropTypes.shape({})),
         backendOperationMapping: PropTypes.shape({
+            backendOperation: PropTypes.shape({
+                verb: PropTypes.string,
+                target: PropTypes.string,
+            }),
+        }),
+        apiOperationMapping: PropTypes.shape({
+            apiId: PropTypes.string,
+            apiName: PropTypes.string,
+            apiVersion: PropTypes.string,
             backendOperation: PropTypes.shape({
                 verb: PropTypes.string,
                 target: PropTypes.string,

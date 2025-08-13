@@ -52,6 +52,12 @@ function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, ta
                 op.target === backendOp.target && op.verb === backendOp.verb
             ) || null;
         }
+        if (operation.apiOperationMapping && operation.apiOperationMapping.backendOperation) {
+            const apiOp = operation.apiOperationMapping.backendOperation;
+            return availableOperations.find(op =>
+                op.target === apiOp.target && op.verb === apiOp.verb
+            ) || null;
+        }
         return null;
     };
 
@@ -103,17 +109,39 @@ function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, ta
                                 value={getCurrentSelectedOperation()}
                                 onChange={(selectedOp) => {
                                     if (selectedOp) {
-                                        operationsDispatcher({
-                                            action: 'updateBackendOperation',
-                                            data: {
-                                                target,
-                                                feature,
-                                                backendOperation: {
-                                                    target: selectedOp.target,
-                                                    verb: selectedOp.verb
-                                                }
-                                            },
-                                        });
+                                        // Determine which type of mapping to update based on the operation structure
+                                        const isFromExistingAPI = operation.apiOperationMapping && 
+                                            operation.apiOperationMapping.apiId;
+                                        
+                                        if (isFromExistingAPI) {
+                                            // For MCP servers created from existing APIs, 
+                                            // update apiOperationMapping
+                                            operationsDispatcher({
+                                                action: 'updateApiOperation',
+                                                data: {
+                                                    target,
+                                                    feature,
+                                                    apiOperation: {
+                                                        target: selectedOp.target,
+                                                        verb: selectedOp.verb
+                                                    }
+                                                },
+                                            });
+                                        } else {
+                                            // For MCP servers created from backend definitions,
+                                            // update backendOperationMapping
+                                            operationsDispatcher({
+                                                action: 'updateBackendOperation',
+                                                data: {
+                                                    target,
+                                                    feature,
+                                                    backendOperation: {
+                                                        target: selectedOp.target,
+                                                        verb: selectedOp.verb
+                                                    }
+                                                },
+                                            });
+                                        }
                                     }
                                 }}
                                 disabled={disableUpdate}
@@ -204,6 +232,15 @@ ToolDetailsSection.propTypes = {
         description: PropTypes.string,
         schemaDefinition: PropTypes.string,
         backendOperationMapping: PropTypes.shape({
+            backendOperation: PropTypes.shape({
+                verb: PropTypes.string,
+                target: PropTypes.string,
+            }),
+        }),
+        apiOperationMapping: PropTypes.shape({
+            apiId: PropTypes.string,
+            apiName: PropTypes.string,
+            apiVersion: PropTypes.string,
             backendOperation: PropTypes.shape({
                 verb: PropTypes.string,
                 target: PropTypes.string,
