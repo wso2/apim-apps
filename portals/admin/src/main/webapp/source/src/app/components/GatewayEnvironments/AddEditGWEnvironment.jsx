@@ -145,7 +145,7 @@ function AddEditGWEnvironment(props) {
         gatewayType: gatewayTypes && gatewayTypes.length > 1 && gatewayTypes.includes('Regular') ? 'Regular'
             : gatewayTypes[0],
         gatewayMode: 'WRITE_ONLY',
-        scheduledInterval: 0,
+        scheduledInterval: 60,
         type: 'hybrid',
         vhosts: [createDefaultVhost(initialGatewayType)],
         permissions: initialPermissions,
@@ -175,7 +175,7 @@ function AddEditGWEnvironment(props) {
                     description: body.description || '',
                     gatewayType: body.gatewayType || '',
                     gatewayMode: body.mode || '',
-                    scheduledInterval: body.apiDiscoveryScheduledWindow || 0,
+                    scheduledInterval: body.apiDiscoveryScheduledWindow || 60,
                     type: body.type || '',
                     vhosts: body.vhosts || [],
                     permissions: body.permissions || initialPermissions,
@@ -190,7 +190,7 @@ function AddEditGWEnvironment(props) {
                 description: '',
                 gatewayType: '',
                 gatewayMode: 'WRITE_ONLY',
-                scheduledInterval: 0,
+                scheduledInterval: 60,
                 type: 'hybrid',
                 vhosts: [createDefaultVhost('Regular')],
                 permissions: {
@@ -550,28 +550,19 @@ function AddEditGWEnvironment(props) {
         }
     };
 
-    const getGWModeDisplayName = (value) => {
-        if (value === 'WRITE_ONLY') {
-            return 'Write-Only';
-        } else if (value === 'READ_ONLY') {
-            return 'Read-Only';
-        } else if (value === 'READ_WRITE') {
-            return 'Read-Write';
-        } else {
-            return value;
-        }
-    };
-
-    const getGWModeHelperText = (value) => {
-        if (value === 'WRITE_ONLY') {
-            return 'APIs can only be deployed to the Gateway';
-        } else if (value === 'READ_ONLY') {
-            return 'APIs can only be discovered from the Gateway';
-        } else if (value === 'READ_WRITE') {
-            return 'APIs can be both deployed to and discovered from the Gateway';
-        } else {
-            return value;
-        }
+    const GW_MODE_METADATA = {
+        WRITE_ONLY: {
+            displayName: 'Write-Only',
+            helperText: 'APIs can only be deployed to the Gateway',
+        },
+        READ_ONLY: {
+            displayName: 'Read-Only',
+            helperText: 'APIs can only be discovered from the Gateway',
+        },
+        READ_WRITE: {
+            displayName: 'Read-Write',
+            helperText: 'APIs can be both deployed to and discovered from the Gateway',
+        },
     };
 
     return (
@@ -776,6 +767,119 @@ function AddEditGWEnvironment(props) {
                             </FormControl>
                         </Box>
                     </Grid>
+                    <Grid item xs={12}>
+                        <Box marginTop={2} marginBottom={2}>
+                            <StyledHr />
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} md={12} lg={3}>
+                        <Box display='flex' flexDirection='row' alignItems='center'>
+                            <Box flex='1'>
+                                <Typography color='inherit' variant='subtitle2' component='div'>
+                                    <FormattedMessage
+                                        id='GatewayEnvironment.mode'
+                                        defaultMessage='Gateway Mode'
+                                    />
+                                </Typography>
+                                <Typography color='inherit' variant='caption' component='p'>
+                                    <FormattedMessage
+                                        id='GatewayEnvironments.AddEditGWEnvironment.mode.description'
+                                        defaultMessage='Deployability or discoverabilty of APIs'
+                                    />
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} md={12} lg={9}>
+                        <FormControl
+                            variant='outlined'
+                            fullWidth
+                        >
+                            <InputLabel id='demo-simple-select-label'>
+                                <FormattedMessage
+                                    id='GatewayEnvironments.AddEditGWEnvironment.form.mode.label'
+                                    defaultMessage='Mode'
+                                />
+                            </InputLabel>
+                            <Select
+                                labelId='demo-simple-select-label'
+                                id='demo-simple-select'
+                                name='gatewayMode'
+                                value={gatewayMode}
+                                label={(
+                                    <FormattedMessage
+                                        id='GatewayEnvironments.AddEditGWEnvironment.form.mode.select.label'
+                                        defaultMessage='Mode'
+                                    />
+                                )}
+                                onChange={onChange}
+                                disabled={editMode}
+                            >
+                                {supportedModes?.length > 0
+                                    && supportedModes.map((item) => (
+                                        <MenuItem key={item} value={item}>
+                                            <Box display='flex' flexDirection='column'>
+                                                <Typography
+                                                    color='inherit'
+                                                    variant='subtitle3'
+                                                    component='div'
+                                                    id='GatewayEnvironments.AddEditGWEnvironment.mode.select.heading'
+                                                >
+                                                    {GW_MODE_METADATA[item]?.displayName || item}
+                                                </Typography>
+                                                <Typography
+                                                    color='inherit'
+                                                    variant='caption'
+                                                    component='p'
+                                                    id='GatewayEnvironments.AddEditGWEnvironment.mode.select
+                                                    .helper'
+                                                >
+                                                    {GW_MODE_METADATA[item]?.helperText || item}
+                                                </Typography>
+                                            </Box>
+                                        </MenuItem>
+                                    ))}
+                            </Select>
+                            <FormHelperText>
+                                <FormattedMessage
+                                    id='GatewayEnvironments.AddEditGWEnvironment.form.mode.helper.text'
+                                    defaultMessage='Select the deployability or discoverability of APIs'
+                                />
+                            </FormHelperText>
+                        </FormControl>
+                        {
+                            (gatewayMode === 'READ_ONLY' || gatewayMode === 'READ_WRITE')
+                            && (
+                                <Box display='flex' flexDirection='row'>
+                                    <TextField
+                                        margin='dense'
+                                        name='scheduledInterval'
+                                        value={scheduledInterval}
+                                        onChange={onChange}
+                                        type='number'
+                                        label={(
+                                            <FormattedMessage
+                                                id='GatewayEnvironments.AddEditGWEnvironment.form.mode
+                                                .scheduled.interval'
+                                                defaultMessage='API Discovery Scheduling Interval'
+                                            />
+                                        )}
+                                        required
+                                        error={hasErrors('scheduledInterval', state.scheduledInterval)}
+                                        helperText={hasErrors('scheduledInterval', state.scheduledInterval)
+                                            || intl.formatMessage({
+                                                id: 'GatewayEnvironments.AddEditGWEnvironment.form.name.'
+                                                    + 'form.scheduledInterval.help',
+                                                defaultMessage: 'Provide interval in minutes for scheduling API'
+                                                + ' discovery',
+                                            })}
+                                        sx={{ width: 350, mt: 3 }}
+                                        variant='outlined'
+                                    />
+                                </Box>
+                            )
+                        }
+                    </Grid>
                     {(gatewayConfigurations && gatewayConfigurations.length > 0)
                     && (
                         <>
@@ -822,120 +926,6 @@ function AddEditGWEnvironment(props) {
                             </Grid>
                         </>
                     )}
-
-                    <Grid item xs={12}>
-                        <Box marginTop={2} marginBottom={2}>
-                            <StyledHr />
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={3}>
-                        <Box display='flex' flexDirection='row' alignItems='center'>
-                            <Box flex='1'>
-                                <Typography color='inherit' variant='subtitle2' component='div'>
-                                    <FormattedMessage
-                                        id='GatewayEnvironment.mode'
-                                        defaultMessage='Gateway Mode'
-                                    />
-                                </Typography>
-                                <Typography color='inherit' variant='caption' component='p'>
-                                    <FormattedMessage
-                                        id='GatewayEnvironments.AddEditGWEnvironment.mode.description'
-                                        defaultMessage='Specify the deployability or discoverabilty of APIs'
-                                    />
-                                </Typography>
-                            </Box>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={9}>
-                        <FormControl
-                            variant='outlined'
-                            fullWidth
-                        >
-                            <InputLabel id='demo-simple-select-label'>
-                                <FormattedMessage
-                                    id='GatewayEnvironments.AddEditGWEnvironment.form.mode.label'
-                                    defaultMessage='Mode'
-                                />
-                            </InputLabel>
-                            <Select
-                                labelId='demo-simple-select-label'
-                                id='demo-simple-select'
-                                name='gatewayMode'
-                                value={gatewayMode}
-                                label={(
-                                    <FormattedMessage
-                                        id='GatewayEnvironments.AddEditGWEnvironment.form.mode.select.label'
-                                        defaultMessage='Mode'
-                                    />
-                                )}
-                                onChange={onChange}
-                                disabled={editMode}
-                            >
-                                {supportedModes?.length > 0
-                                    && supportedModes.map((item) => (
-                                        <MenuItem key={item} value={item}>
-                                            <Box display='flex' flexDirection='column'>
-                                                <Typography
-                                                    color='inherit'
-                                                    variant='subtitle3'
-                                                    component='div'
-                                                    id='GatewayEnvironments.AddEditGWEnvironment.mode.select.heading'
-                                                >
-                                                    {getGWModeDisplayName(item)}
-                                                </Typography>
-                                                <Typography
-                                                    color='inherit'
-                                                    variant='caption'
-                                                    component='p'
-                                                    id='GatewayEnvironments.AddEditGWEnvironment.mode.select
-                                                    .helper'
-                                                >
-                                                    {getGWModeHelperText(item)}
-                                                </Typography>
-                                            </Box>
-                                        </MenuItem>
-                                    ))}
-                            </Select>
-                            <FormHelperText>
-                                <FormattedMessage
-                                    id='GatewayEnvironments.AddEditGWEnvironment.form.mode.helper.text'
-                                    defaultMessage='Select how the APIs in the Gateway should be managed'
-                                />
-                            </FormHelperText>
-                        </FormControl>
-                        {
-                            (gatewayMode === 'READ_ONLY' || gatewayMode === 'READ_WRITE')
-                            && (
-                                <Box display='flex' flexDirection='row'>
-                                    <TextField
-                                        margin='dense'
-                                        name='scheduledInterval'
-                                        value={scheduledInterval}
-                                        onChange={onChange}
-                                        type='number'
-                                        label={(
-                                            <FormattedMessage
-                                                id='GatewayEnvironments.AddEditGWEnvironment.form.mode
-                                                .scheduled.interval'
-                                                defaultMessage='API Discovery Scheduling Interval'
-                                            />
-                                        )}
-                                        required
-                                        error={hasErrors('scheduledInterval', state.scheduledInterval)}
-                                        helperText={hasErrors('scheduledInterval', state.scheduledInterval)
-                                            || intl.formatMessage({
-                                                id: 'GatewayEnvironments.AddEditGWEnvironment.form.name.'
-                                                    + 'form.scheduledInterval.help',
-                                                defaultMessage: 'Provide interval in minutes for scheduling API'
-                                                + ' discovery',
-                                            })}
-                                        sx={{ width: 350, mt: 3 }}
-                                        variant='outlined'
-                                    />
-                                </Box>
-                            )
-                        }
-                    </Grid>
 
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
