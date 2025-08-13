@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import API from 'AppData/api';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
@@ -27,7 +27,25 @@ import AddEdit from 'AppComponents/GatewayEnvironments/AddEditGWEnvironment';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import { styled } from '@mui/material/styles';
 import Permission from './Permission';
+import ListGatewayInstances from './ListGatewayInstances';
+
+const StyledTooltip = styled(({ className, ...props }) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+    '& .MuiTooltip-tooltip': {
+        backgroundColor: theme.palette.common.white,
+        color: theme.palette.text.primary,
+        fontSize: theme.typography.pxToRem(14),
+        boxShadow: theme.shadows[4],
+        borderRadius: theme.shape.borderRadius,
+        border: `1px solid ${theme.palette.divider}`,
+    },
+}));
 
 /**
  * API call to get Gateway labels
@@ -51,22 +69,101 @@ function apiCall() {
  */
 export default function ListGWEnviornments() {
     const intl = useIntl();
-    let columProps;
     const { settings } = useAppContext();
+    // Dialog state for Live Gateways
+    const [liveGatewaysOpen, setLiveGatewaysOpen] = useState(false);
+    const [selectedEnvId, setSelectedEnvId] = useState(null);
+    const [selectedEnvName, setSelectedEnvName] = useState('');
+
+    const handleOpenLiveGateways = (envId, envName) => {
+        setSelectedEnvId(envId);
+        setSelectedEnvName(envName);
+        setLiveGatewaysOpen(true);
+    };
+
+    const handleCloseLiveGateways = () => {
+        setLiveGatewaysOpen(false);
+        setSelectedEnvId(null);
+        setSelectedEnvName('');
+    };
+
     const isGatewayTypeAvailable = settings.gatewayTypes.length >= 2;
-    if (isGatewayTypeAvailable) {
-        columProps = [
-            { name: 'name', options: { display: false } },
-            {
-                name: 'displayName',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.displayName',
-                    defaultMessage: 'Name',
-                }),
-                options: {
-                    sort: true,
-                },
+
+    // Helper function to render virtual hosts
+    const renderVhosts = (vhosts) => {
+        return (
+            vhosts.map((vhost) => (
+                <div key={`${vhost.host}:${vhost.httpsPort}`}>
+                    {
+                        'https://' + vhost.host + (vhost.httpsPort === 443 ? '' : ':' + vhost.httpsPort)
+                        + (vhost.httpContext ? '/' + vhost.httpContext.replace(/^\//g, '') : '')
+                    }
+                </div>
+            ))
+        );
+    };
+
+    // Helper function to render permissions
+    const renderPermissions = (permissions) => {
+        return (
+            <div>
+                <Permission
+                    type={permissions.permissionType}
+                    roles={permissions.roles}
+                />
+            </div>
+        );
+    };
+
+    // Helper function to render gateway instances
+    const renderGatewayInstances = (value, tableMeta) => {
+        if (typeof tableMeta.rowData === 'object') {
+            const envId = tableMeta.rowData[isGatewayTypeAvailable ? 8 : 7];
+            const envName = tableMeta.rowData[1]; // 'displayName'
+            // Default to 'Regular' if no gatewayType column
+            const gatewayType = isGatewayTypeAvailable ? tableMeta.rowData[2] : 'Regular';
+            const isDisabled = gatewayType !== 'Regular';
+
+            const button = (
+                <IconButton
+                    onClick={() => handleOpenLiveGateways(envId, envName)}
+                    disabled={isDisabled}
+                >
+                    <FormatListBulletedIcon aria-label='gateway-instances-list-icon' />
+                </IconButton>
+            );
+
+            return isDisabled ? (
+                <StyledTooltip
+                    title={intl.formatMessage({
+                        id: 'AdminPages.Gateways.table.gatewayInstances.tooltip.'
+                            + 'notSupported',
+                        defaultMessage: 'Not supported for this gateway type',
+                    })}
+                >
+                    <span>{button}</span>
+                </StyledTooltip>
+            ) : button;
+        } else {
+            return <div />;
+        }
+    };
+
+    // Build column configuration
+    const columProps = [
+        { name: 'name', options: { display: false } },
+        {
+            name: 'displayName',
+            label: intl.formatMessage({
+                id: 'AdminPages.Gateways.table.header.displayName',
+                defaultMessage: 'Name',
+            }),
+            options: {
+                sort: true,
             },
+        },
+        // Conditionally include gatewayType column
+        ...(isGatewayTypeAvailable ? [
             {
                 name: 'gatewayType',
                 label: intl.formatMessage({
@@ -77,148 +174,65 @@ export default function ListGWEnviornments() {
                     sort: false,
                 },
             },
+        ] : []),
+        {
+            name: 'type',
+            label: intl.formatMessage({
+                id: 'AdminPages.Gateways.table.header.type',
+                defaultMessage: 'Type',
+            }),
+            options: {
+                sort: false,
+            },
+        },
+        {
+            name: 'description',
+            label: intl.formatMessage({
+                id: 'AdminPages.Gateways.table.header.description',
+                defaultMessage: 'Description',
+            }),
+            options: {
+                sort: false,
+            },
+        },
+        {
+            name: 'vhosts',
+            label: intl.formatMessage({
+                id: 'AdminPages.Gateways.table.header.vhosts',
+                defaultMessage: 'Virtual Host(s)',
+            }),
+            options: {
+                sort: false,
+                customBodyRender: renderVhosts,
+            },
+        },
+        {
+            name: 'permissions',
+            label: intl.formatMessage({
+                id: 'AdminPages.Gateways.table.header.permission',
+                defaultMessage: 'Visibility',
+            }),
+            options: {
+                sort: false,
+                customBodyRender: renderPermissions,
+            },
+        },
+        // Conditionally include gateway instances column
+        ...(settings.isGatewayNotificationEnabled ? [
             {
-                name: 'type',
+                name: 'gatewayInstances',
                 label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.type',
-                    defaultMessage: 'Type',
+                    id: 'AdminPages.Gateways.table.header.gatewayInstances',
+                    defaultMessage: 'Gateway Instances',
                 }),
                 options: {
                     sort: false,
+                    customBodyRender: renderGatewayInstances,
                 },
             },
-            {
-                name: 'description',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.description',
-                    defaultMessage: 'Description',
-                }),
-                options: {
-                    sort: false,
-                },
-            },
-            {
-                name: 'vhosts',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.vhosts',
-                    defaultMessage: 'Virtual Host(s)',
-                }),
-                options: {
-                    sort: false,
-                    customBodyRender: (vhosts) => {
-                        return (
-                            vhosts.map((vhost) => (
-                                <div>
-                                    {
-                                        'https://' + vhost.host + (vhost.httpsPort === 443 ? '' : ':' + vhost.httpsPort)
-                                        + (vhost.httpContext ? '/' + vhost.httpContext.replace(/^\//g, '') : '')
-                                    }
-                                </div>
-                            ))
-                        );
-                    },
-                },
-            },
-            {
-                name: 'permissions',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.permission',
-                    defaultMessage: 'Visibility',
-                }),
-                options: {
-                    sort: false,
-                    customBodyRender: (permissions) => {
-                        return (
-                            <div>
-                                <Permission
-                                    type={permissions.permissionType}
-                                    roles={permissions.roles}
-                                />
-                            </div>
-                        );
-                    },
-                },
-            },
-            { name: 'id', options: { display: false } },
-        ];
-    } else {
-        columProps = [
-            { name: 'name', options: { display: false } },
-            {
-                name: 'displayName',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.displayName',
-                    defaultMessage: 'Name',
-                }),
-                options: {
-                    sort: true,
-                },
-            },
-            {
-                name: 'type',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.type',
-                    defaultMessage: 'Type',
-                }),
-                options: {
-                    sort: false,
-                },
-            },
-            {
-                name: 'description',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.description',
-                    defaultMessage: 'Description',
-                }),
-                options: {
-                    sort: false,
-                },
-            },
-            {
-                name: 'vhosts',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.vhosts',
-                    defaultMessage: 'Virtual Host(s)',
-                }),
-                options: {
-                    sort: false,
-                    customBodyRender: (vhosts) => {
-                        return (
-                            vhosts.map((vhost) => (
-                                <div>
-                                    {
-                                        'https://' + vhost.host + (vhost.httpsPort === 443 ? '' : ':' + vhost.httpsPort)
-                                        + (vhost.httpContext ? '/' + vhost.httpContext.replace(/^\//g, '') : '')
-                                    }
-                                </div>
-                            ))
-                        );
-                    },
-                },
-            },
-            {
-                name: 'permissions',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.permission',
-                    defaultMessage: 'Visibility',
-                }),
-                options: {
-                    sort: false,
-                    customBodyRender: (permissions) => {
-                        return (
-                            <div>
-                                <Permission
-                                    type={permissions.permissionType}
-                                    roles={permissions.roles}
-                                />
-                            </div>
-                        );
-                    },
-                },
-            },
-            { name: 'id', options: { display: false } },
-        ];
-    }
+        ] : []),
+        { name: 'id', options: { display: false } },
+    ];
     const addButtonProps = {
         triggerButtonText: intl.formatMessage({
             id: 'AdminPages.Gateways.List.addButtonProps.triggerButtonText',
@@ -284,21 +298,29 @@ export default function ListGWEnviornments() {
     };
 
     return (
-        <ListBase
-            columProps={columProps}
-            pageProps={pageProps}
-            addButtonProps={addButtonProps}
-            searchProps={searchProps}
-            emptyBoxProps={emptyBoxProps}
-            apiCall={apiCall}
-            EditComponent={AddEdit}
-            addButtonOverride={addCreateButton()}
-            editComponentProps={{
-                icon: <EditIcon />,
-                title: 'Edit Gateway Label',
-                routeTo: '/settings/environments/',
-            }}
-            DeleteComponent={Delete}
-        />
+        <>
+            <ListBase
+                columProps={columProps}
+                pageProps={pageProps}
+                addButtonProps={addButtonProps}
+                searchProps={searchProps}
+                emptyBoxProps={emptyBoxProps}
+                apiCall={apiCall}
+                EditComponent={AddEdit}
+                addButtonOverride={addCreateButton()}
+                editComponentProps={{
+                    icon: <EditIcon />,
+                    title: 'Edit Gateway Label',
+                    routeTo: '/settings/environments/',
+                }}
+                DeleteComponent={Delete}
+            />
+            <ListGatewayInstances
+                open={liveGatewaysOpen}
+                onClose={handleCloseLiveGateways}
+                environmentId={selectedEnvId}
+                environmentName={selectedEnvName}
+            />
+        </>
     );
 }
