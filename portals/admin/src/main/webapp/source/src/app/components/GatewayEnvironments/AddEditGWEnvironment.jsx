@@ -80,9 +80,11 @@ function reducer(state, { field, value }) {
         case 'name':
         case 'displayName':
         case 'gatewayType':
+        case 'gatewayMode':
         case 'description':
         case 'type':
         case 'roles':
+        case 'scheduledInterval':
         case 'additionalProperties':
         case 'vhosts':
             return { ...state, [field]: value };
@@ -139,7 +141,10 @@ function AddEditGWEnvironment(props) {
     const [initialState, setInitialState] = useState({
         displayName: '',
         description: '',
-        gatewayType: initialGatewayType,
+        gatewayType: gatewayTypes && gatewayTypes.length > 1 && gatewayTypes.includes('Regular') ? 'Regular'
+            : gatewayTypes[0],
+        gatewayMode: 'WRITE_ONLY',
+        scheduledInterval: 0,
         type: 'hybrid',
         vhosts: [createDefaultVhost(initialGatewayType)],
         permissions: initialPermissions,
@@ -149,7 +154,7 @@ function AddEditGWEnvironment(props) {
 
     const [state, dispatch] = useReducer(reducer, initialState);
     const {
-        name, displayName, description, vhosts, type, gatewayType, permissions, additionalProperties,
+        name, displayName, description, vhosts, type, gatewayType, gatewayMode, scheduledInterval, permissions, additionalProperties,
     } = state;
 
     const [roles, setRoles] = useState([]);
@@ -167,6 +172,8 @@ function AddEditGWEnvironment(props) {
                     displayName: body.displayName || '',
                     description: body.description || '',
                     gatewayType: body.gatewayType || '',
+                    gatewayMode: body.mode || '',
+                    scheduledInterval: body.apiDiscoveryScheduledWindow || 0,
                     type: body.type || '',
                     vhosts: body.vhosts || [],
                     permissions: body.permissions || initialPermissions,
@@ -180,6 +187,8 @@ function AddEditGWEnvironment(props) {
                 displayName: '',
                 description: '',
                 gatewayType: '',
+                gatewayMode: 'WRITE_ONLY',
+                scheduledInterval: 0,
                 type: 'hybrid',
                 vhosts: [createDefaultVhost('Regular')],
                 permissions: {
@@ -396,6 +405,7 @@ function AddEditGWEnvironment(props) {
         if (vhostErrors) {
             errorText += vhostErrors + '\n';
         }
+        const unitTimeErrors = validate('unitTime', unitTime);
         return errorText;
     };
     const formSaveCallback = () => {
@@ -511,6 +521,99 @@ function AddEditGWEnvironment(props) {
         } else {
             return value + ' Gateway';
         }
+    };
+
+    const [validationError, setValidationError] = useState([]);
+    
+    const validate = (fieldName, value) => {
+        let error = '';
+        const schema = Joi.string().regex(/^[^~!@#;:%^*()+={}|\\<>"',&$\s+]*$/);
+        switch (fieldName) {
+            case 'policyName':
+                if (value === '') {
+                    error = intl.formatMessage({
+                        id: 'Throttling.Subscription.Policy.policy.name.empty.error.msg',
+                        defaultMessage: 'Name is Empty',
+                    });
+                } else if (value.indexOf(' ') !== -1) {
+                    error = intl.formatMessage({
+                        id: 'Throttling.Subscription.Policy.policy.name.space.error.msg',
+                        defaultMessage: 'Name contains spaces',
+                    });
+                } else if (value.length > 60) {
+                    error = intl.formatMessage({
+                        id: 'Throttling.Subscription.Policy.policy.name.too.long.error.msg',
+                        defaultMessage: 'Subscription policy name is too long',
+                    });
+                } else if (schema.validate(value).error) {
+                    error = intl.formatMessage({
+                        id: 'Throttling.Subscription.Policy.policy.name.invalid.character.error.msg',
+                        defaultMessage: 'Name contains one or more illegal characters',
+                    });
+                } else {
+                    error = '';
+                }
+                setValidationError({ policyName: error });
+                break;
+            case 'requestCount':
+                error = value === '' ? intl.formatMessage({
+                    id: 'Throttling.Subscription.Policy.policy.request.count.empty.error.msg',
+                    defaultMessage: 'Request Count is Empty',
+                }) : '';
+                setValidationError({ requestCount: error });
+                break;
+            case 'eventCount':
+                error = value === '' ? intl.formatMessage({
+                    id: 'Throttling.Subscription.Policy.policy.event.count.empty.error.msg',
+                    defaultMessage: 'Event Count is Empty',
+                }) : '';
+                setValidationError({ eventCount: error });
+                break;
+            case 'dataAmount':
+                error = value === '' ? intl.formatMessage({
+                    id: 'Throttling.Subscription.Policy.policy.data.amount.empty.error.msg',
+                    defaultMessage: 'Data Bandwidth amount is Empty',
+                }) : '';
+                setValidationError({ dataAmount: error });
+                break;
+            case 'unitTime':
+                if (value === '') {
+                    error = intl.formatMessage({
+                        id: 'Throttling.Subscription.Policy.policy.unit.time.empty.error.msg',
+                        defaultMessage: 'Unit Time is Empty',
+                    });
+                } else if (parseInt(value, 10) <= 0) {
+                    error = intl.formatMessage({
+                        id: 'Throttling.Subscription.Policy.policy.unit.time.negative.error.msg',
+                        defaultMessage: 'Invalid Time Value',
+                    });
+                } else {
+                    error = '';
+                }
+                setValidationError({ unitTime: error });
+                break;
+            default:
+                break;
+        }
+        return error;
+    };
+
+    const getAllFormErrors = () => {
+        let errorText = '';
+        const policyNameErrors = validate('policyName', policyName);
+        const requestCountErrors = validate('requestCount', requestCount);
+        const eventCountErrors = validate('eventCount', eventCount);
+        const dataAmountErrors = validate('dataAmount', dataAmount);
+        const unitTimeErrors = validate('unitTime', unitTime);
+
+        if (type === 'BANDWIDTHLIMIT') {
+            errorText += policyNameErrors + dataAmountErrors + unitTimeErrors;
+        } else if (type === 'REQUESTCOUNTLIMIT') {
+            errorText += policyNameErrors + requestCountErrors + unitTimeErrors;
+        } else {
+            errorText += policyNameErrors + eventCountErrors + unitTimeErrors;
+        }
+        return errorText;
     };
 
     return (
@@ -761,6 +864,120 @@ function AddEditGWEnvironment(props) {
                             </Grid>
                         </>
                     )}
+
+                    <Grid item xs={12}>
+                        <Box marginTop={2} marginBottom={2}>
+                            <StyledHr />
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} md={12} lg={3}>
+                        <Box display='flex' flexDirection='row' alignItems='center'>
+                            <Box flex='1'>
+                                <Typography color='inherit' variant='subtitle2' component='div'>
+                                    <FormattedMessage
+                                        id='GatewayEnvironment.mode'
+                                        defaultMessage='Gateway Mode'
+                                    />
+                                </Typography>
+                                <Typography color='inherit' variant='caption' component='p'>
+                                    <FormattedMessage
+                                        id='GatewayEnvironments.AddEditGWEnvironment.mode.description'
+                                        defaultMessage='Mode of the Gateway Environment'
+                                    />
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} md={12} lg={9}>
+                        <FormControl
+                            variant='outlined'
+                            fullWidth
+                        >
+                            <InputLabel id='demo-simple-select-label'>
+                                <FormattedMessage
+                                    id='GatewayEnvironments.AddEditGWEnvironment.form.mode.label'
+                                    defaultMessage='Mode'
+                                />
+                            </InputLabel>
+                            <Select
+                                labelId='demo-simple-select-label'
+                                id='demo-simple-select'
+                                name='gatewayMode'
+                                value={gatewayMode}
+                                label={(
+                                    <FormattedMessage
+                                        id='GatewayEnvironments.AddEditGWEnvironment.form.mode.select.label'
+                                        defaultMessage='Mode'
+                                    />
+                                )}
+                                onChange={onChange}
+                                disabled={editMode}
+                            >
+                                <MenuItem value='WRITE_ONLY'>
+                                    <FormattedMessage
+                                        id='GatewayEnvironments.AddEditGWEnvironment.form.mode.write.only.option'
+                                        defaultMessage='Write-only'
+                                    />
+                                </MenuItem>
+                                <MenuItem value='READ_ONLY'>
+                                    <FormattedMessage
+                                        id='GatewayEnvironments.AddEditGWEnvironment.form.mode.read.only.option'
+                                        defaultMessage='Read-only'
+                                    />
+                                </MenuItem>
+                                <MenuItem value='READ_WRITE'>
+                                    <FormattedMessage
+                                        id='GatewayEnvironments.AddEditGWEnvironment.form.mode.read.write.option'
+                                        defaultMessage='Read-Write'
+                                    />
+                                </MenuItem>
+                            </Select>
+                            <FormHelperText>
+                                <FormattedMessage
+                                    id='GatewayEnvironments.AddEditGWEnvironment.form.mode.helper.text'
+                                    defaultMessage='Select Gateway Mode'
+                                />
+                            </FormHelperText>
+                        </FormControl>
+                        {
+                            (gatewayMode === 'READ_ONLY' || gatewayMode === 'READ_WRITE')
+                            && (
+                                <>
+                                    <Box display='flex' flexDirection='row'>
+                                        <TextField
+                                            margin='dense'
+                                            name='scheduledInterval'
+                                            value={scheduledInterval}
+                                            onChange={onChange}
+                                            type='number'
+                                            label={(
+                                                <FormattedMessage
+                                                    id='GatewayEnvironments.AddEditGWEnvironment.form.mode
+                                                    .scheduled.interval'
+                                                    defaultMessage='Scheduled Interval'
+                                                />
+                                            )}
+                                            required
+                                            InputProps={{
+                                                id: 'scheduledInterval',
+                                                onBlur: ({ target: { value } }) => {
+                                                    validate('scheduledInterval', value);
+                                                },
+                                            }}
+                                            error={validationError.scheduledInterval}
+                                            helperText={validationError.scheduledInterval || intl.formatMessage({
+                                                id: 'GatewayEnvironments.AddEditGWEnvironment.form.mode'
+                                                + '.scheduled.interval.helper.text',
+                                                defaultMessage: 'Specify a scheduling interval in minutes to sync APIs',
+                                            })}
+                                            sx={{ width: 350 }}
+                                            variant='outlined'
+                                        />
+                                    </Box>
+                                </>
+                            )
+                        }
+                    </Grid>
 
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
