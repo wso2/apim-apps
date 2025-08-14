@@ -393,7 +393,7 @@ function AddEditGWEnvironment(props) {
                     error = intl.formatMessage({
                         id: 'AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment'
                         + '.scheduledInterval.empty',
-                        defaultMessage: 'Scheduled Interval is empty',
+                        defaultMessage: 'Scheduled interval is empty',
                     });
                 } else if (parseInt(value, 10) < 0) {
                     error = intl.formatMessage({
@@ -777,7 +777,7 @@ function AddEditGWEnvironment(props) {
                             <Box flex='1'>
                                 <Typography color='inherit' variant='subtitle2' component='div'>
                                     <FormattedMessage
-                                        id='GatewayEnvironment.mode'
+                                        id='GatewayEnvironments.AddEditGWEnvironment.mode'
                                         defaultMessage='Gateway Mode'
                                     />
                                 </Typography>
@@ -868,8 +868,8 @@ function AddEditGWEnvironment(props) {
                                         error={hasErrors('scheduledInterval', state.scheduledInterval)}
                                         helperText={hasErrors('scheduledInterval', state.scheduledInterval)
                                             || intl.formatMessage({
-                                                id: 'GatewayEnvironments.AddEditGWEnvironment.form.name.'
-                                                    + 'form.scheduledInterval.help',
+                                                id: 'GatewayEnvironments.AddEditGWEnvironment.form.mode.'
+                                                    + 'scheduledInterval.help',
                                                 defaultMessage: 'Provide interval in minutes for scheduling API'
                                                 + ' discovery',
                                             })}
