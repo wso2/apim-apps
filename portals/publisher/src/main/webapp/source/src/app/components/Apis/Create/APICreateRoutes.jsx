@@ -168,17 +168,17 @@ function APICreateRoutes() {
                 />
                 <Route
                     path='/mcp-servers/create/import-api-definition'
-                    component={WithSomeValue(MCPServerCreateDefault, { multiGateway: apiTypes?.mcp
+                    component={WithSomeValue(MCPServerCreateDefault, { multiGateway: apiTypes?.ws
                         .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
                 />
                 <Route
                     path='/mcp-servers/create/mcp-from-existing-api'
-                    component={WithSomeValue(MCPServerCreateUsingExistingAPI, { multiGateway: apiTypes?.mcp
+                    component={WithSomeValue(MCPServerCreateUsingExistingAPI, { multiGateway: apiTypes?.ws
                         .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
                 />
                 <Route
                     path='/mcp-servers/create/mcp-proxy-from-endpoint'
-                    component={WithSomeValue(MCPServerCreateProxy, { multiGateway: apiTypes?.mcp
+                    component={WithSomeValue(MCPServerCreateProxy, { multiGateway: apiTypes?.ws
                         .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
                 />
                 <Route component={ResourceNotFound} />
