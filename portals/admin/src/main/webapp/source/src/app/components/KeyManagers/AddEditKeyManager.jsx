@@ -282,7 +282,7 @@ function AddEditKeyManager(props) {
     const updateKeyManagerConnectorConfiguration = (keyManagerType) => {
         if (settings.keyManagerConfiguration) {
             settings.keyManagerConfiguration.map(({
-                type: key, defaultConsumerKeyClaim, defaultScopesClaim, configurations,
+                type: key, defaultConsumerKeyClaim, defaultScopesClaim, configurations, authConfigurations,
             }) => {
                 if (key === keyManagerType) {
                     if (!id) {
@@ -293,7 +293,11 @@ function AddEditKeyManager(props) {
                             dispatch({ field: 'scopesClaim', value: defaultScopesClaim });
                         }
                     }
-                    setKeyManagerConfiguration(configurations);
+                    // Merge configurations with authConfigurations
+                    setKeyManagerConfiguration([
+                        ...(Array.isArray(authConfigurations) ? authConfigurations : []),
+                        ...configurations,
+                    ]);
                     return true;
                 } else {
                     return false;
@@ -445,12 +449,37 @@ function AddEditKeyManager(props) {
 
     const formHasErrors = (validatingActive = false) => {
         let connectorConfigHasErrors = false;
-        keymanagerConnectorConfigurations.forEach((connector) => {
-            if (connector.required && (!additionalProperties[connector.name]
-                || additionalProperties[connector.name] === '')) {
-                connectorConfigHasErrors = true;
+
+        // Recursive function to check for errors in nested configurations
+        const checkConfigErrors = (configurations) => {
+            for (const config of configurations) {
+                if (config.required && (!additionalProperties[config.name]
+                    || additionalProperties[config.name] === '')) {
+                    return true;
+                }
+
+                // Check nested configurations if they exist and are visible
+                if (config.values && config.values.length > 0 && additionalProperties[config.name]) {
+                    // Find the selected option
+                    const selectedOption = config.values.find((option) => {
+                        if (typeof option === 'string') {
+                            return option === additionalProperties[config.name];
+                        }
+                        return option.name === additionalProperties[config.name];
+                    });
+
+                    // If selected option has nested values, check them recursively
+                    if (selectedOption && typeof selectedOption === 'object' && selectedOption.values) {
+                        if (checkConfigErrors(selectedOption.values)) {
+                            return true;
+                        }
+                    }
+                }
             }
-        });
+            return false;
+        };
+
+        connectorConfigHasErrors = checkConfigErrors(keymanagerConnectorConfigurations);
         if (enableDirectToken) {
             return hasErrors('name', name, validatingActive)
                 || hasErrors('displayName', displayName, validatingActive)
@@ -557,7 +586,12 @@ function AddEditKeyManager(props) {
     };
     const setAdditionalProperties = (key, value) => {
         const clonedAdditionalProperties = cloneDeep(additionalProperties);
-        clonedAdditionalProperties[key] = value;
+        if (value === undefined) {
+            // Remove the key entirely when value is undefined
+            delete clonedAdditionalProperties[key];
+        } else {
+            clonedAdditionalProperties[key] = value;
+        }
         dispatch({ field: 'additionalProperties', value: clonedAdditionalProperties });
     };
     const setTokenValidations = (value) => {
