@@ -181,7 +181,7 @@ function AddEditGWEnvironment(props) {
                 description: '',
                 gatewayType: '',
                 type: 'hybrid',
-                vhosts: [createDefaultVhost('')],
+                vhosts: [createDefaultVhost('Regular')],
                 permissions: {
                     roles: [],
                     permissionType: 'PUBLIC',
