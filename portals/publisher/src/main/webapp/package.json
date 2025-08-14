@@ -48,7 +48,7 @@
         "@stoplight/elements": "^8.5.2",
         "@stoplight/spectral-core": "^1.20.0",
         "@stoplight/spectral-rulesets": "^1.22.0",
-        "@wso2-org/mcp-playground": "^1.0.6",
+        "@wso2-org/mcp-playground": "^1.0.7",
         "async-mutex": "^0.5.0",
         "autosuggest-highlight": "^3.3.4",
         "base64url": "3.0.1",
