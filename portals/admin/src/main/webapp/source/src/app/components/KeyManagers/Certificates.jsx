@@ -24,7 +24,7 @@ const cache = {};
  */
 export default function Certificates(props) {
     const intl = useIntl();
-    const { certificates: { type, value }, dispatch } = props;
+    const { certificates: { type, value }, dispatch, showJwks = true } = props;
     const [selectedTab, setSelectedTab] = useState(0);
     const [file, setFile] = useState(null);
     cache[type] = value;
@@ -84,10 +84,12 @@ export default function Certificates(props) {
                     onChange={handleChange}
                 >
                     <FormControlLabel id='pem-certificate' value='PEM' control={<Radio />} label='PEM' />
-                    <FormControlLabel id='jwks-certificate' value='JWKS' control={<Radio />} label='JWKS' />
+                    {showJwks && (
+                        <FormControlLabel id='jwks-certificate' value='JWKS' control={<Radio />} label='JWKS' />
+                    )}
                 </RadioGroup>
             </FormControl>
-            {type === 'JWKS' && (
+            {showJwks && type === 'JWKS' && (
                 <TextField
                     id='jwks-url'
                     label={intl.formatMessage(
@@ -172,7 +174,13 @@ export default function Certificates(props) {
         </>
     );
 }
+
+Certificates.defaultProps = {
+    showJwks: true,
+};
+
 Certificates.propTypes = {
     certificates: PropTypes.shape({}).isRequired,
     dispatch: PropTypes.func.isRequired,
+    showJwks: PropTypes.bool,
 };
