@@ -341,7 +341,20 @@ const Tools = ({
                                     ? JSON.parse(endpoint.definition)
                                     : endpoint.definition;
 
-                                if (apiDefinition && apiDefinition.paths) {
+                                if (api.isMCPServerFromProxy()) {
+                                    // For MCP Server Proxy, extract tools from definition
+                                    if (apiDefinition && apiDefinition.tools && Array.isArray(apiDefinition.tools)) {
+                                        apiDefinition.tools.forEach(tool => {
+                                            operationsTemp.push({
+                                                target: tool.name,
+                                                verb: 'TOOL',
+                                                summary: tool.name,
+                                                description: tool.description || ''
+                                            });
+                                        });
+                                    }
+                                } else if (apiDefinition && apiDefinition.paths) {
+                                    // For other MCP Server types, extract operations from paths
                                     Object.entries(apiDefinition.paths).forEach(([path, pathObj]) => {
                                         Object.entries(pathObj).forEach(
                                             ([verb, operation]) => {

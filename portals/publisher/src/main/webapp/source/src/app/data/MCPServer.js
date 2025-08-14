@@ -215,7 +215,12 @@ class MCPServer extends Resource {
             payload = {
                 requestBody: {
                     url: mcpServerUrl,
-                    additionalProperties: JSON.stringify(apiData),
+                    additionalProperties: apiData,
+                    securityInfo: {
+                        isSecure: false,
+                        header: '',
+                        value: ''
+                    }
                 }
             };
 

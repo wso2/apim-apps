@@ -178,20 +178,13 @@ const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
                 const { body } = response;
 
                 if (body.isValid) {
-                    // Set the endpoint URL for step 2 (with /mcp appended)
-                    inputsDispatcher({ action: 'endpointUrl', value: url });
-                    
                     // Extract tool information from the response
                     if (body.toolInfo && body.toolInfo.operations) {
                         const tools = body.toolInfo.operations.map(operation => ({
                             id: `${operation.target}`,
-                            verb: 'POST', // MCP tools are typically POST operations
                             target: operation.target,
                             description: operation.description,
-                            schemaDefinition: operation.schemaDefinition,
                             feature: operation.feature,
-                            authType: operation.authType,
-                            scopes: operation.scopes,
                         }));
                         
                         setToolInfo(body.toolInfo);
@@ -220,20 +213,14 @@ const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
     // Handle URL input change
     const handleUrlChange = (event) => {
         const { value } = event.target;
-        // Store the original value (without /mcp) in the text field
         inputsDispatcher({ action: 'mcpServerUrl', value });
-        
-        // Append '/mcp' internally for validation
-        const urlWithMCP = value.endsWith('/mcp') ? value : value + '/mcp';
-        validateURLDebounced(urlWithMCP);
+        validateURLDebounced(value);
     };
 
     // Handle URL blur
     const handleUrlBlur = (event) => {
         const { value } = event.target;
-        // Append '/mcp' internally for validation
-        const urlWithMCP = value.endsWith('/mcp') ? value : value + '/mcp';
-        validateURLDebounced(urlWithMCP);
+        validateURLDebounced(value);
     };
 
     // Custom render function for MCP tools - using same style as default renderItem

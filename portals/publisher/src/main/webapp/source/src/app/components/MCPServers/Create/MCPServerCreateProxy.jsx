@@ -159,9 +159,6 @@ const MCPServerCreateProxy = (props) => {
             operations = [],
         } = mcpServerInputs;
         
-        // Append '/mcp' to the URL for backend call
-        const urlWithMCP = mcpServerUrl && !mcpServerUrl.endsWith('/mcp') ? mcpServerUrl + '/mcp' : mcpServerUrl;
-        
         let defaultGatewayType;
         if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
             defaultGatewayType = 'wso2/synapse';
@@ -192,7 +189,7 @@ const MCPServerCreateProxy = (props) => {
         }
 
         const newMCPServer = new MCPServer(additionalProperties);
-        const promisedCreatedMCPServer = newMCPServer.createMCPServerUsingMCPServerURL(urlWithMCP);
+        const promisedCreatedMCPServer = newMCPServer.createMCPServerUsingMCPServerURL(mcpServerUrl);
         promisedCreatedMCPServer
             .then((mcpServer) => {
                 Alert.info(intl.formatMessage({
