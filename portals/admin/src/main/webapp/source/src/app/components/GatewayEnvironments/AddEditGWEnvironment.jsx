@@ -108,9 +108,6 @@ function AddEditGWEnvironment(props) {
     const intl = useIntl();
     const { dataRow } = props;
 
-    const defaultVhost = {
-        host: '', httpContext: '', httpsPort: 8243, httpPort: 8280, wssPort: 8099, wsPort: 9099, isNew: true,
-    };
     const { settings } = useAppContext();
     const [validRoles, setValidRoles] = useState([]);
     const [invalidRoles, setInvalidRoles] = useState([]);
@@ -119,17 +116,32 @@ function AddEditGWEnvironment(props) {
     const [validating, setValidating] = useState(false);
     const [saving, setSaving] = useState(false);
     const { gatewayTypes } = settings;
+
+    const createDefaultVhost = (currentGatewayType) => {
+        const gatewaysProvidedByWSO2 = ['Regular', 'APK'];
+        const isExternalGateway = !gatewaysProvidedByWSO2.includes(currentGatewayType);
+        return {
+            host: '',
+            httpContext: '',
+            httpsPort: isExternalGateway ? 443 : 8243,
+            httpPort: isExternalGateway ? 80 : 8280,
+            wssPort: 8099,
+            wsPort: 9099,
+            isNew: true,
+        };
+    };
     const { match: { params: { id } }, history } = props;
     const initialPermissions = dataRow && dataRow.permissions
         ? dataRow.permissions
         : { roles: [], permissionType: 'PUBLIC' };
+    const initialGatewayType = gatewayTypes && gatewayTypes.length > 1 && gatewayTypes.includes('Regular') ? 'Regular'
+        : gatewayTypes[0];
     const [initialState, setInitialState] = useState({
         displayName: '',
         description: '',
-        gatewayType: gatewayTypes && gatewayTypes.length > 1 && gatewayTypes.includes('Regular') ? 'Regular'
-            : gatewayTypes[0],
+        gatewayType: initialGatewayType,
         type: 'hybrid',
-        vhosts: [defaultVhost],
+        vhosts: [createDefaultVhost(initialGatewayType)],
         permissions: initialPermissions,
         additionalProperties: {},
     });
@@ -169,7 +181,7 @@ function AddEditGWEnvironment(props) {
                 description: '',
                 gatewayType: '',
                 type: 'hybrid',
-                vhosts: [defaultVhost],
+                vhosts: [createDefaultVhost('')],
                 permissions: {
                     roles: [],
                     permissionType: 'PUBLIC',

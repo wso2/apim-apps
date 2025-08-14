@@ -47,9 +47,20 @@ function AddEditVhost(props) {
     } = props;
     const [userVhosts, setUserVhosts] = useState([]);
     const [id, setId] = useState(0);
-    const defaultVhost = {
-        host: '', httpContext: '', httpsPort: 443, httpPort: 80, wssPort: 8099, wsPort: 9099, isNew: true,
+    const createDefaultVhost = (currentGatewayType) => {
+        const gatewaysProvidedByWSO2 = ['Regular', 'APK'];
+        const isExternalGateway = !gatewaysProvidedByWSO2.includes(currentGatewayType);
+        return {
+            host: '',
+            httpContext: '',
+            httpsPort: isExternalGateway ? 443 : 8243,
+            httpPort: isExternalGateway ? 80 : 8280,
+            wssPort: 8099,
+            wsPort: 9099,
+            isNew: true,
+        };
     };
+
     const prevRef = useRef();
     const { settings } = useAppContext();
 
@@ -99,7 +110,7 @@ function AddEditVhost(props) {
     };
 
     const handleNewVhost = () => {
-        const vhost = defaultVhost;
+        const vhost = createDefaultVhost(gatewayType);
         vhost.key = '' + id;
         setId(id + 1);
         const tempItems = [...userVhosts, vhost];
@@ -127,7 +138,7 @@ function AddEditVhost(props) {
             setId(i);
         } else {
             setId(id + 1);
-            const vhost = defaultVhost;
+            const vhost = createDefaultVhost(gatewayType);
             vhost.key = '' + id;
             setUserVhosts([vhost]);
         }
@@ -171,7 +182,7 @@ function AddEditVhost(props) {
                 setId(i);
             } else {
                 setId(id + 1);
-                const vhost = defaultVhost;
+                const vhost = createDefaultVhost(gatewayType);
                 vhost.key = '' + id;
                 if (config && config.defaultHostnameTemplate) {
                     vhost.host = config.defaultHostnameTemplate;
