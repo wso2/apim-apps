@@ -102,14 +102,12 @@ export default function CustomSplitButton(props) {
                         color='primary'
                         ref={anchorRef}
                         aria-label='split button'
-                        disabled={isUpdating || (!isValidSequenceBackend && isCustomBackendSelected) 
-                            || api.initiatedFromGateway}
+                        disabled={isUpdating || (!isValidSequenceBackend && isCustomBackendSelected)}
                         style={{ width: '200px' }}
                     >
                         <Button
                             onClick={(event) => handleClick(event, selectedIndex)}
-                            disabled={isUpdating || (!isValidSequenceBackend && isCustomBackendSelected) 
-                                || api.initiatedFromGateway}
+                            disabled={isUpdating || (!isValidSequenceBackend && isCustomBackendSelected)}
                             data-testid = 'custom-select-save-button'
                             style={{ width: '200px' }}
                             id={id}

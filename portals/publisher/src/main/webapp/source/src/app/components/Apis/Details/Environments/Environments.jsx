@@ -1729,7 +1729,7 @@ export default function Environments() {
         >
             <Grid item className={classes.shapeRec} />
             <Grid item className={clsx(classes.shapeCircleBack, classes.shapeCircle)}>
-                {api.advertiseInfo && api.advertiseInfo.advertised ? (
+                {(api.advertiseInfo && api.advertiseInfo.advertised) || api.initiatedFromGateway ? (
                     <Grid
                         className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
                         style={{ cursor: 'pointer' }}
