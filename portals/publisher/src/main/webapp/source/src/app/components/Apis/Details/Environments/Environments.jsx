@@ -612,15 +612,19 @@ export default function Environments() {
             }
         }
         if (isMCPServer) {
-            MCPServer.getMCPServerEndpoints(api.id)
-                .then((response) => {
-                    const fetchedEndpoints = response.body;
-                    if (fetchedEndpoints && fetchedEndpoints.length > 0) {
-                        setEndpointAvailable(true);
-                    } else {
-                        setEndpointAvailable(false);
-                    }
-                })
+            if (api.isMCPServerFromExistingAPI()) {
+                setEndpointAvailable(true); // TODO: Check the endpoint availability for MCP Server from existing API
+            } else {
+                MCPServer.getMCPServerEndpoints(api.id)
+                    .then((response) => {
+                        const fetchedEndpoints = response.body;
+                        if (fetchedEndpoints && fetchedEndpoints.length > 0) {
+                            setEndpointAvailable(true);
+                        } else {
+                            setEndpointAvailable(false);
+                        }
+                    })   
+            }
         } else {
             setEndpointAvailable(api.endpointConfig !== null);
         }
@@ -2149,14 +2153,14 @@ export default function Environments() {
                     </TextField>
                     <Button
                         className={classes.button2}
-                        // disabled={
-                        //     api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) ||
-                        //     isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
-                        //     !selectedRevision.some((r) => r.env === row.name && r.revision) ||
-                        //     !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
-                        //     (api.advertiseInfo && api.advertiseInfo.advertised) ||
-                        //     isDeployButtonDisabled || isDeploying
-                        // }
+                        disabled={
+                            api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                            isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
+                            !selectedRevision.some((r) => r.env === row.name && r.revision) ||
+                            !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
+                            (api.advertiseInfo && api.advertiseInfo.advertised) ||
+                            isDeployButtonDisabled || isDeploying
+                        }
                         variant='outlined'
                         onClick={() =>
                             deployRevision(
@@ -3127,17 +3131,17 @@ export default function Environments() {
                                 () => handleCreateAndDeployRevision(SelectedEnvironment, selectedVhostDeploy)
                             }
                             color='primary'
-                            // disabled={SelectedEnvironment.length === 0
-                            //     || (allRevisions && allRevisions.length === revisionCount && !extraRevisionToDelete)
-                            //     || isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                            //     || (api.advertiseInfo && api.advertiseInfo.advertised)
-                            //     || (SelectedEnvironment.length === 1
-                            //         && allEnvRevision && allEnvRevision.some(revision => {
-                            //         return revision.deploymentInfo.some(deployment =>
-                            //             deployment.name === SelectedEnvironment[0] &&
-                            //             deployment.status === 'CREATED');
-                            //     }) )
-                            //     || isDeployButtonDisabled || isDeploying}
+                            disabled={SelectedEnvironment.length === 0
+                                || (allRevisions && allRevisions.length === revisionCount && !extraRevisionToDelete)
+                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                                || (api.advertiseInfo && api.advertiseInfo.advertised)
+                                || (SelectedEnvironment.length === 1
+                                    && allEnvRevision && allEnvRevision.some(revision => {
+                                    return revision.deploymentInfo.some(deployment =>
+                                        deployment.name === SelectedEnvironment[0] &&
+                                        deployment.status === 'CREATED');
+                                }) )
+                                || isDeployButtonDisabled || isDeploying}
                         >
                             <FormattedMessage
                                 id='Apis.Details.Environments.Environments.deploy.deploy'

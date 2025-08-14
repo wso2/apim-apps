@@ -177,6 +177,66 @@ class MCPServer extends Resource {
     }
 
     /**
+     * Create a new MCP Server using an existing API.
+     * @returns {Promise<MCPServer>} A promise that resolves to the created MCPServer instance.
+     */
+    createMCPServerUsingExistingAPI() {
+        const promisedCreate = this.client.then(client => {
+            const apiData = this.getDataFromSpecFields(client);
+            const data = {};
+
+            Object.keys(this).forEach(apiAttribute => {
+                if (apiAttribute in apiData) {
+                    data[apiAttribute] = this[apiAttribute];
+                }
+            });
+
+            return client.apis['MCP Servers'].createMCPServerFromAPI(
+                { 'Content-Type': 'application/json' },
+                { requestBody: data },
+                this._requestMetaData(),
+            );
+        });
+        return promisedCreate.then(response => {
+            return new MCPServer(response.body);
+        });
+    }
+
+    /**
+     * Create a new MCP Server using an MCP Server URL.
+     * @param {string} mcpServerUrl - The URL of the MCP Server to create.
+     * @returns {Promise<MCPServer>} A promise that resolves to the created MCPServer instance.
+     */
+    createMCPServerUsingMCPServerURL(mcpServerUrl) {
+        let payload;
+        const promisedCreate = this.client.then(client => {
+            const apiData = this.getDataFromSpecFields(client);
+
+            payload = {
+                requestBody: {
+                    url: mcpServerUrl,
+                    additionalProperties: apiData,
+                    securityInfo: {
+                        isSecure: false,
+                        header: '',
+                        value: ''
+                    }
+                }
+            };
+
+            const promisedResponse = client.apis['MCP Servers'].createMCPServerProxy(
+                null,
+                payload,
+                this._requestMetaData({
+                    'Content-Type': 'application/json',
+                }),
+            );
+            return promisedResponse.then(response => new MCPServer(response.body));
+        });
+        return promisedCreate;
+    }
+
+    /**
      * Validate an OpenAPI file.
      * This method is used to validate an OpenAPI file before creating an MCP Server.
      * @param {*} openAPIData - The OpenAPI data to validate.
@@ -238,6 +298,63 @@ class MCPServer extends Resource {
                     'Content-Type': 'multipart/form-data',
                 }),
             );
+        });
+    }
+
+    /**
+     * Validate the MCP Server URL.
+     * @param {string} url - The URL of the MCP Server to validate.
+     * @returns {Promise} A promise that resolves to the validation result.
+     */
+    static validateThirdPartyMCPServerUrl(url) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            const payload = {
+                'Content-Type': 'multipart/form-data',
+            }
+            const requestBody = {
+                requestBody: {
+                    url,
+                    securityInfo: {
+                        isSecure: false,
+                        header: '',
+                        value: ''
+                    }
+                }
+            };
+            return client.apis.Validation.validateThirdPartyMCPServer(
+                payload,
+                requestBody,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+    }
+
+    /**
+     * Validate the MCP Server parameters for existence. (MCP Server name, context)
+     * @param {string} query The parameters that should be validated.
+     * @return {boolean} True if the MCP Server parameters are valid, false otherwise.
+     */
+    static validateMCPServerParameter(query) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis.Validation.validateMCPServer({ query })
+                .then(resp => {
+                    return resp.ok;
+                })
+                .catch(() => {
+                    return false;
+                });
         });
     }
 
@@ -369,12 +486,6 @@ class MCPServer extends Resource {
                 data[apiAttribute] = this[apiAttribute];
             }
         });
-        
-        // // Ensure backendAPIEndpointConfig is always included if it exists on the instance
-        // if (this.backendAPIEndpointConfig !== undefined && !('backendAPIEndpointConfig' in data)) {
-        //     data.backendAPIEndpointConfig = this.backendAPIEndpointConfig;
-        // }
-        
         return data;
     }
 

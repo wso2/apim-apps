@@ -17,24 +17,54 @@
  */
 
 import React, { useContext, useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Chip from '@mui/material/Chip';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import { isRestricted } from 'AppData/AuthManager';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 
 const PREFIX = 'KeyManager';
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 300,
+        },
+    },
+};
+
+/**
+ * Get styles for menu items based on selection state
+ * @param {string} name - Key manager name
+ * @param {Array} selectedKeyManagers - Array of selected key managers
+ * @param {Object} theme - MUI theme object
+ * @returns {Object} Style object
+ */
+function getStyles(name, selectedKeyManagers, theme) {
+    return {
+        fontWeight:
+            selectedKeyManagers.indexOf(name) === -1
+                ? theme.typography.fontWeightRegular
+                : theme.typography.fontWeightMedium,
+    };
+}
 
 const classes = {
     expansionPanel: `${PREFIX}-expansionPanel`,
@@ -81,37 +111,77 @@ const Root = styled('div')((
 }));
 
 /**
- *
- * KeyManager configuration
- * @param {*} props
- * @returns
+ * KeyManager configuration component
+ * @param {Object} props - Component props
+ * @param {Object} props.api - API object
+ * @param {Function} props.configDispatcher - Configuration dispatcher function
+ * @returns {JSX.Element} KeyManager component
  */
 export default function KeyManager(props) {
+    const theme = useTheme();
     const [keyManagersConfigured, setKeyManagersConfigured] = useState([]);
     const {
         configDispatcher,
         api: { keyManagers, securityScheme },
     } = props;
 
+    const { api } = useContext(APIContext);
+    const isMCPAPI = api.apiType === MCPServer.CONSTS.MCP;
+
     const handleChange = (event) => {
-        const newKeyManagers = [...keyManagers];
-        const { target: { checked, name } } = event;
-        if (newKeyManagers.indexOf(name) === -1 && checked) {
-            newKeyManagers.push(name);
-        } else if (newKeyManagers.indexOf(name) !== -1 && !checked) {
-            newKeyManagers.splice(newKeyManagers.indexOf(name), 1);
+        const {
+            target: { value },
+        } = event;
+        let newKeyManagers;
+        
+        if (isMCPAPI) {
+            // For MCP APIs, only allow single selection
+            newKeyManagers = typeof value === 'string' ? [value] : [value[value.length - 1]];
+        } else {
+            // For other APIs, allow multiple selection
+            newKeyManagers = typeof value === 'string' ? value.split(',') : value;
         }
+        
         configDispatcher({
             action: 'keymanagers',
             value: newKeyManagers,
         });
     };
-    const { api } = useContext(APIContext);
     useEffect(() => {
         if (!isRestricted(['apim:api_create'], api)) {
-            API.keyManagers().then((response) => setKeyManagersConfigured(response.body.list));
+            API.keyManagers().then((response) => {
+                setKeyManagersConfigured(response.body.list);
+                
+                // For MCP APIs, set Resident Key Manager as default if no key manager is selected
+                if (isMCPAPI && (!keyManagers || keyManagers.length === 0 || 
+                    (keyManagers.length === 1 && keyManagers[0] === 'all'))) {
+                    
+                    // Find the Resident Key Manager
+                    const residentKM = response.body.list.find(km => 
+                        km.name === 'Resident Key Manager' || 
+                        km.displayName === 'Resident Key Manager' ||
+                        km.name.toLowerCase().includes('resident')
+                    );
+                    
+                    if (residentKM && residentKM.enabled) {
+                        configDispatcher({
+                            action: 'keymanagers',
+                            value: [residentKM.name],
+                        });
+                    } else {
+                        // Fallback to first enabled key manager if Resident not found
+                        const firstEnabled = response.body.list.find(km => km.enabled);
+                        if (firstEnabled) {
+                            configDispatcher({
+                                action: 'keymanagers',
+                                value: [firstEnabled.name],
+                            });
+                        }
+                    }
+                }
+            });
         }
-    }, []);
+    }, [isMCPAPI, keyManagers, configDispatcher, api]);
     if (!securityScheme.includes('oauth2')) {
         return (
             (<Root>
@@ -141,75 +211,138 @@ export default function KeyManager(props) {
                 />
             </Typography>
             <Box ml={1}>
-                <RadioGroup
-                    value={keyManagers.includes('all') ? 'all' : 'selected'}
-                    onChange={({ target: { value } }) => configDispatcher({
-                        action: 'allKeyManagersEnabled',
-                        value: value === 'all',
-                    })}
-                    style={{ flexDirection: 'row' }}
-                >
-                    <FormControlLabel
-                        value='all'
-                        control={<Radio disabled={isRestricted(['apim:api_create'], api)} />}
-                        label={(
-                            <FormattedMessage
-                                id='Apis.Details.Configuration.components.KeyManager.allow.all'
-                                defaultMessage='Allow all'
-                            />
-                        )}
-                    />
-                    <FormControlLabel
-                        value='selected'
-                        control={<Radio disabled={isRestricted(['apim:api_create'], api)} />}
-                        label={(
-                            <FormattedMessage
-                                id='Apis.Details.Configuration.components.KeyManager.allow.selected'
-                                defaultMessage='Allow selected'
-                            />
-                        )}
-                    />
-                </RadioGroup>
-                {!keyManagers.includes('all') && (
-                    <Box display='flex' flexDirection='column' m={2}>
-                        <FormControl
+                {!isMCPAPI && (
+                    <RadioGroup
+                        value={keyManagers.includes('all') ? 'all' : 'selected'}
+                        onChange={({ target: { value } }) => configDispatcher({
+                            action: 'allKeyManagersEnabled',
+                            value: value === 'all',
+                        })}
+                        style={{ flexDirection: 'row' }}
+                    >
+                        <FormControlLabel
+                            value='all'
+                            control={<Radio disabled={isRestricted(['apim:api_create'], api)} />}
+                            label={(
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.components.KeyManager.allow.all'
+                                    defaultMessage='Allow all'
+                                />
+                            )}
+                        />
+                        <FormControlLabel
+                            value='selected'
+                            control={<Radio disabled={isRestricted(['apim:api_create'], api)} />}
+                            label={(
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.components.KeyManager.allow.selected'
+                                    defaultMessage='Allow selected'
+                                />
+                            )}
+                        />
+                    </RadioGroup>
+                )}
+                {(isMCPAPI || !keyManagers.includes('all')) && (
+                    <Box display='flex' flexDirection='column' m={2} pr={5}>
+                        <FormControl 
                             required
-                            error={!keyManagers || (keyManagers && keyManagers.length === 0)}
-                            component='fieldset'
-                            className={classes.formControl}
+                            error={(() => {
+                                const filteredKeyManagers = keyManagers.filter(km => km !== 'all');
+                                if (isMCPAPI) {
+                                    return !filteredKeyManagers.length || !filteredKeyManagers[0];
+                                }
+                                return !keyManagers || keyManagers.length === 0 || filteredKeyManagers.length === 0;
+                            })()}
+                            sx={{ minWidth: 300 }}
                         >
-                            <FormLabel component='legend'>
-                                <FormattedMessage
-                                    id='Apis.Details.Configuration.components.KeyManager.more.than.one.info'
-                                    defaultMessage='Select one or more Key Managers'
-                                />
-                            </FormLabel>
-                            <FormGroup
-                                style={{ flexDirection: 'row' }}
-
-                            >
-                                {keyManagersConfigured.map((key) => (
-                                    <FormControlLabel
-                                        control={(
-                                            <Checkbox
-                                                color='primary'
-                                                checked={keyManagers.includes(key.name)}
-                                                disabled={!key.enabled}
-                                                onChange={handleChange}
-                                                name={key.name}
-                                            />
-                                        )}
-                                        label={key.displayName || key.name}
+                            <InputLabel id='key-managers-select-label'>
+                                {isMCPAPI ? (
+                                    <FormattedMessage
+                                        id='Apis.Details.Configuration.components.KeyManager.single.selection.info'
+                                        defaultMessage='Select a Key Manager'
                                     />
+                                ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.Configuration.components.KeyManager.more.than.one.info'
+                                        defaultMessage='Select one or more Key Managers'
+                                    />
+                                )}
+                            </InputLabel>
+                            <Select
+                                labelId='key-managers-select-label'
+                                id='key-managers-select'
+                                multiple={!isMCPAPI}
+                                value={isMCPAPI 
+                                    ? keyManagers.filter(km => km !== 'all')[0] || '' 
+                                    : keyManagers.filter(km => km !== 'all')
+                                }
+                                onChange={handleChange}
+                                input={
+                                    <OutlinedInput 
+                                        id='select-multiple-key-managers' 
+                                        label={isMCPAPI 
+                                            ? 'Select a Key Manager' 
+                                            : 'Select one or more Key Managers'
+                                        } 
+                                    />
+                                }
+                                renderValue={(selected) => {
+                                    if (isMCPAPI) {
+                                        // Single selection for MCP - render as single chip
+                                        const keyManager = keyManagersConfigured.find(km => km.name === selected);
+                                        return (
+                                            <Chip 
+                                                label={keyManager?.displayName || selected}
+                                                size='small'
+                                            />
+                                        );
+                                    } else {
+                                        // Multiple selection for other APIs - render as multiple chips
+                                        return (
+                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                                {selected.map((value) => {
+                                                    const keyManager = keyManagersConfigured.find(
+                                                        km => km.name === value
+                                                    );
+                                                    return (
+                                                        <Chip 
+                                                            key={value} 
+                                                            label={keyManager?.displayName || value}
+                                                            size='small'
+                                                        />
+                                                    );
+                                                })}
+                                            </Box>
+                                        );
+                                    }
+                                }}
+                                MenuProps={MenuProps}
+                                disabled={isRestricted(['apim:api_create'], api)}
+                            >
+                                {keyManagersConfigured.map((keyManager) => (
+                                    <MenuItem
+                                        key={keyManager.name}
+                                        value={keyManager.name}
+                                        disabled={!keyManager.enabled}
+                                        style={getStyles(keyManager.name, keyManagers, theme)}
+                                    >
+                                        {keyManager.displayName || keyManager.name}
+                                    </MenuItem>
                                 ))}
-                            </FormGroup>
+                            </Select>
                             <FormHelperText>
-                                <FormattedMessage
-                                    id='Apis.Details.Configuration.components.KeyManager.more.than.one.error'
-                                    defaultMessage='Select at least one Key Manager'
-                                />
+                                {isMCPAPI ? (
+                                    <FormattedMessage
+                                        id='Apis.Details.Configuration.components.KeyManager.single.selection.error'
+                                        defaultMessage='Select a Key Manager'
+                                    />
+                                ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.Configuration.components.KeyManager.more.than.one.error'
+                                        defaultMessage='Select at least one Key Manager'
+                                    />
+                                )}
                             </FormHelperText>
-
                         </FormControl>
                     </Box>
                 )}

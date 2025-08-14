@@ -23,8 +23,9 @@ import { useTheme, Box, Grid, Button } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useBackNavigation } from 'AppComponents/Shared';
 import RestAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/RestAPIMenu';
 import SoapAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/SoapAPIMenu';
 import GraphqlAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/GraphqlAPIMenu';
@@ -51,6 +52,7 @@ const APILanding = () => {
     const [gateway, setGatewayType] = useState(true);
     const [pageMode, setPageMode] = useState('default');
     const location = useLocation();
+    const handleBackClick = useBackNavigation('/apis');
 
     const getGatewayType = () => {
         if (settings != null) {
@@ -100,8 +102,7 @@ const APILanding = () => {
                                     <Box pt={isXsOrBelow ? 2 : 4} />
                                     <Button
                                         variant='text'
-                                        component={Link}
-                                        to='/apis'
+                                        onClick={handleBackClick}
                                         startIcon={<ArrowBackIcon />}
                                         id='itest-apis-back-to-listing'
                                         sx={{ ml: 15}}

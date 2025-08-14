@@ -17,12 +17,13 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import LandingMenuItem from 'AppComponents/Apis/Listing/Landing/components/LandingMenuItem';
 import LandingMenu from 'AppComponents/Apis/Listing/Landing/components/LandingMenu';
 import APICreateMenuSection from 'AppComponents/Apis/Listing/components/APICreateMenuSection';
 
-const ProxyMCPMenu = (props) => {
+const MCPFromMCPServerURL = (props) => {
     const { icon, isCreateMenu } = props;
     const Component = isCreateMenu ? APICreateMenuSection : LandingMenu;
     const dense = isCreateMenu;
@@ -33,7 +34,7 @@ const ProxyMCPMenu = (props) => {
             title={(
                 <FormattedMessage
                     id='MCPServers.Landing.ProxyMCPMenu.title'
-                    defaultMessage='Proxy MCP Servers'
+                    defaultMessage='Proxy Existing MCP Server'
                 />
             )}
             icon={icon}
@@ -41,7 +42,7 @@ const ProxyMCPMenu = (props) => {
             <LandingMenuItem
                 dense={dense}
                 id='itest-id-landing-create-proxy-mcp-server'
-                linkTo='/mcp-servers/create/proxy-mcp-server'
+                linkTo='/mcp-servers/create/mcp-proxy-from-endpoint'
                 helperText={(
                     <FormattedMessage
                         id='MCPServers.Landing.ProxyMCPMenu.helperText'
@@ -58,4 +59,9 @@ const ProxyMCPMenu = (props) => {
     );
 };
 
-export default ProxyMCPMenu;
+MCPFromMCPServerURL.propTypes = {
+    icon: PropTypes.string.isRequired,
+    isCreateMenu: PropTypes.bool.isRequired,
+};
+
+export default MCPFromMCPServerURL;

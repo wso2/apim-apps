@@ -890,6 +890,16 @@ class Details extends Component {
             }
         }
 
+        const getIconForResourceType = () => {
+            if (isAPIProduct) {
+                return 'api-product';
+            } else if (isMCPServer) {
+                return 'mcp-servers';
+            } else {
+                return 'apis';
+            }
+        }
+
         return (
             <StyledBox display='flex' alignItems='stretch' flexDirection='row'>
                 <APIProvider
@@ -913,7 +923,7 @@ class Details extends Component {
                                         className={classes.customIcon}
                                         width={leftMenuIconMainSize}
                                         height={leftMenuIconMainSize}
-                                        icon={getResourceType()}
+                                        icon={getIconForResourceType()}
                                     />
                                 </div>
                             </Link>

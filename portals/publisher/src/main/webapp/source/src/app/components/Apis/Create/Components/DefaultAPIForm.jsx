@@ -30,6 +30,7 @@ import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/material/FormLabel';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import { green } from '@mui/material/colors';
 
 const PREFIX = 'DefaultAPIForm';
@@ -157,9 +158,9 @@ function actualContext({ context, version }, isWebSocket) {
  */
 export default function DefaultAPIForm(props) {
     const {
-        onChange, onValidate, api, isAPIProduct, multiGateway,
+        onChange, onValidate, api, isAPIProduct, isMCPServer, multiGateway,
         isWebSocket, children, appendChildrenBeforeEndpoint, hideEndpoint,
-        readOnlyAPIEndpoint, settings,
+        readOnlyAPIEndpoint, settings, mcpServerType,
     } = props;
 
     const [validity, setValidity] = useState({});
@@ -393,23 +394,56 @@ export default function DefaultAPIForm(props) {
         }
     }
 
+    /**
+     * Test the endpoint of an API.
+     * @param {string} endpoint The endpoint to test.
+     */
     function testEndpoint(endpoint) {
         setUpdating(true);
-        const restApi = new API();
-        restApi.testEndpoint(endpoint)
+        let testEndpointPromise;
+        
+        if (isMCPServer) {
+            if (mcpServerType === 'DIRECT_BACKEND') {
+                testEndpointPromise = MCPServer.testEndpoint(endpoint, api.id);
+            } else if (mcpServerType === 'SERVER_PROXY') {
+                testEndpointPromise = MCPServer.validateThirdPartyMCPServerUrl(endpoint);
+            } else {
+                // For EXISTING_API, we don't test the endpoint
+                setUpdating(false);
+                return;
+            }
+        } else {
+            testEndpointPromise = new API().testEndpoint(endpoint);
+        }
+
+        testEndpointPromise
             .then((result) => {
-                if (result.body.error !== null) {
-                    setStatusCode(result.body.error);
-                    setIsErrorCode(true);
+                if (mcpServerType === 'SERVER_PROXY') {
+                    // Handle SERVER_PROXY validation response
+                    if (result.body.isValid) {
+                        setStatusCode('200 OK - Valid MCP Server URL');
+                        setIsErrorCode(false);
+                        setIsEndpointValid(true);
+                    } else {
+                        setStatusCode(result.body.errorMessage || 'Invalid MCP Server URL');
+                        setIsErrorCode(true);
+                        setIsEndpointValid(false);
+                    }
                 } else {
-                    setStatusCode(result.body.statusCode + ' ' + result.body.statusMessage);
-                    setIsErrorCode(false);
-                }
-                if (result.body.statusCode >= 200 && result.body.statusCode < 300) {
-                    setIsEndpointValid(true);
-                    setIsErrorCode(false);
-                } else {
-                    setIsEndpointValid(false);
+                    // Handle regular endpoint testing response
+                    if (result.body.error !== null) {
+                        setStatusCode(result.body.error);
+                        setIsErrorCode(true);
+                    } else {
+                        setStatusCode(result.body.statusCode + ' ' + result.body.statusMessage);
+                        setIsErrorCode(false);
+                    }
+                    if (result.body.statusCode >= 200 && result.body.statusCode < 300) {
+                        setIsEndpointValid(true);
+                        setIsErrorCode(false);
+                    } else {
+                        setIsEndpointValid(false);
+                    }
                 }
             }).finally(() => {
                 setUpdating(false);
@@ -452,7 +486,7 @@ export default function DefaultAPIForm(props) {
                     variant='outlined'
                 />
                 <Grid container spacing={2}>
-                    {!isAPIProduct ? (
+                    {!isAPIProduct && !isMCPServer ? (
                         <>
                             <Grid item md={8} xs={6}>
                                 <TextField
@@ -628,7 +662,7 @@ export default function DefaultAPIForm(props) {
                     )}
                 </Grid>
                 {appendChildrenBeforeEndpoint && !!children && children}
-                {!isAPIProduct && !hideEndpoint && (
+                {!isAPIProduct && !hideEndpoint && mcpServerType !== 'EXISTING_API' && (
                     <TextField
                         fullWidth
                         id='itest-id-apiendpoint-input'
@@ -640,7 +674,7 @@ export default function DefaultAPIForm(props) {
                             />
                         )}
                         name='endpoint'
-                        value={api.endpoint}
+                        value={isMCPServer && api.mcpServerUrl ? api.mcpServerUrl : api.endpoint}
                         onChange={onChange}
                         helperText={
                             (validity.endpointURL
@@ -792,13 +826,17 @@ DefaultAPIForm.defaultProps = {
     api: {}, // Uncontrolled component
     isWebSocket: false,
     readOnlyAPIEndpoint: null,
+    isMCPServer: false,
+    mcpServerType: null,
 };
 DefaultAPIForm.propTypes = {
     api: PropTypes.shape({}),
     multiGateway: PropTypes.isRequired,
     isAPIProduct: PropTypes.shape({}).isRequired,
+    isMCPServer: PropTypes.shape({}),
     isWebSocket: PropTypes.shape({}),
     onChange: PropTypes.func.isRequired,
     onValidate: PropTypes.func,
     readOnlyAPIEndpoint: PropTypes.string,
+    mcpServerType: PropTypes.oneOf(['DIRECT_BACKEND', 'EXISTING_API', 'SERVER_PROXY']),
 };

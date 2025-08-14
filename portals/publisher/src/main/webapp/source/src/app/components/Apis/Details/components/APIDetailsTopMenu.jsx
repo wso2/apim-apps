@@ -41,6 +41,7 @@ import Tooltip from '@mui/material/Tooltip';
 import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
 import MUIAlert from 'AppComponents/Shared/MuiAlert';
+import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import DeleteApiButton from './DeleteApiButton';
 import CreateNewVersionButton from './CreateNewVersionButton';
 import ShareButton from './ShareButton';
@@ -511,6 +512,34 @@ const APIDetailsTopMenu = (props) => {
                         </Typography>
                     </a>
                 )}
+                {api.type === 'HTTP' && (() => {
+                    const mcpServerUrl = `/mcp-servers/create/mcp-from-existing-api?apiId=${api.id}`;
+                    return (
+                        <>
+                            <VerticalDivider height={70} />
+                            <Link
+                                className={classes.viewInStoreLauncher}
+                                to={mcpServerUrl}
+                                style={{ minWidth: 90, marginTop: -8 }}
+                            >
+                                <div>
+                                    <CustomIcon
+                                        width={20}
+                                        height={20}
+                                        icon='mcp-servers'
+                                        strokeColor={theme.palette.getContrastText(theme.palette.background.paper)}
+                                    />
+                                </div>
+                                <Typography variant='caption'>
+                                    <FormattedMessage
+                                        id='Apis.Details.components.APIDetailsTopMenu.generate.mcp.server.label'
+                                        defaultMessage='Generate MCP Server'
+                                    />
+                                </Typography>
+                            </Link>
+                        </>
+                    );
+                })()}
                 {/* Page error banner */}
                 {/* end of Page error banner */}
                 {api.apiType !== API.CONSTS.APIProduct && isVisibleInStore && userOrg 

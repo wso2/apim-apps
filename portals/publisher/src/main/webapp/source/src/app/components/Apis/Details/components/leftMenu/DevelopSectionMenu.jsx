@@ -299,7 +299,7 @@ export default function DevelopSectionMenu(props) {
                         {getLeftMenuItemForResourcesByType(api.type)}
                         {getLeftMenuItemForDefinitionByType(api.type)}
                         {(!api.advertiseInfo || !api.advertiseInfo.advertised) && !isAPIProduct
-                            && api.type !== 'WEBSUB' && (
+                            && api.type !== 'WEBSUB' && !api.isMCPServerFromExistingAPI() && (
                             <LeftMenuItem
                                 text={intl.formatMessage({
                                     id: 'Apis.Details.index.endpoints',

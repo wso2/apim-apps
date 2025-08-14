@@ -88,4 +88,19 @@ export default class Resource {
         return this.type === 'MCP';
     }
 
+    /**
+     * Check whether current resource is of type MCPServer from existing API
+     * @returns {boolean} whether the resource is an MCP Server from existing API
+     */
+    isMCPServerFromExistingAPI() {
+        return this.type === 'MCP' && this.subtypeConfiguration?.subtype === 'EXISTING_API';
+    }
+
+    /**
+     * Check whether current resource is of type MCPServer from proxy
+     * @returns {boolean} whether the resource is an MCP Server from proxy
+     */
+    isMCPServerFromProxy() {
+        return this.type === 'MCP' && this.subtypeConfiguration?.subtype === 'SERVER_PROXY';
+    }
 }

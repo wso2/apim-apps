@@ -213,6 +213,8 @@ export default function CustomizedStepper() {
                 .finally(() => {
                     setMCPEndpointLoading(false);
                 });
+        } else {
+            setMCPEndpointLoading(false);
         }
     }, [isMCPServer, api.id]);
 
@@ -229,13 +231,21 @@ export default function CustomizedStepper() {
     && securityScheme.includes('mutualssl_mandatory');
     const isSubValidationDisabled = api.policies 
     && api.policies.length === 1 && api.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
-    let devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview` : '';
-    const intl = useIntl();
-    // TODO: tmkasun need to handle is loading
-    if (tenantList && tenantList.length > 0) {
-        // TODO: tmkasun need to handle is loading
-        devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview?tenant=${tenantDomain}` : '';
+    let devportalUrl = '';
+    if (settings) {
+        if (isMCPServer) {
+            devportalUrl = `${settings.devportalUrl}/mcp-servers/${api.id}/overview`;
+            if (tenantList && tenantList.length > 0) {
+                devportalUrl += `?tenant=${tenantDomain}`;
+            }
+        } else {
+            devportalUrl = `${settings.devportalUrl}/apis/${api.id}/overview`;
+            if (tenantList && tenantList.length > 0) {
+                devportalUrl += `?tenant=${tenantDomain}`;
+            }
+        }
     }
+    const intl = useIntl();
     const steps = (api.isWebSocket() || api.isGraphql() || api.isAsyncAPI() || api.gatewayVendor !== 'wso2')
         ? ['Develop', 'Deploy', 'Publish'] : ['Develop', 'Deploy', 'Test', 'Publish'];
     const forceComplete = [];
@@ -286,28 +296,40 @@ export default function CustomizedStepper() {
     }
 
     useEffect(() => {
-        api.getRevisionsWithEnv(api.isRevision ? api.revisionedApiId : api.id).then((result) => {
-            if (api.apiType === API.CONSTS.APIProduct){
-                setDeploymentsAvailable(result.body.count > 0);
-            } else {
-                let hasApprovedDeployment = false;
-                result.body.list.forEach((revision) => {
-                    if (revision.deploymentInfo) {
-                        for (const deployment of revision.deploymentInfo) {
-                            if (deployment.status === 'APPROVED') {
-                                hasApprovedDeployment = true;
-                                break;
+        const fetchRevisionsAndValidateProperties = async () => {
+            try {
+                let result;
+                if (isMCPServer) {
+                    result = await MCPServer.getRevisionsWithEnv(api.isRevision ? api.revisionedApiId : api.id);
+                } else {
+                    result = await api.getRevisionsWithEnv(api.isRevision ? api.revisionedApiId : api.id);
+                }
+
+                if (api.apiType === API.CONSTS.APIProduct || isMCPServer) {
+                    setDeploymentsAvailable(result.body.count > 0);
+                } else {
+                    let hasApprovedDeployment = false;
+                    result.body.list.forEach((revision) => {
+                        if (revision.deploymentInfo) {
+                            for (const deployment of revision.deploymentInfo) {
+                                if (deployment.status === 'APPROVED') {
+                                    hasApprovedDeployment = true;
+                                    break;
+                                }
                             }
                         }
-                    }
-                });
-                setDeploymentsAvailable(hasApprovedDeployment);
-
+                    });
+                    setDeploymentsAvailable(hasApprovedDeployment);
+                }
+            } catch (error) {
+                console.error('Error fetching revisions:', error);
+                setDeploymentsAvailable(false);
             }
+        };
 
-        });
+        fetchRevisionsAndValidateProperties();
         validateMandatoryCustomProperties();
-    }, []);
+    }, [isMCPServer]);
 
     useEffect(() => {
         const checkEndpointSecurity = async () => {
@@ -358,7 +380,7 @@ export default function CustomizedStepper() {
  */
     function updateLCStateOfAPI(apiId, state) {
         setUpdating(true);
-        const promisedUpdate = api.updateLcState(apiId, state);
+        const promisedUpdate = isMCPServer ? MCPServer.updateLcState(apiId, state) : api.updateLcState(apiId, state);
         promisedUpdate
             .then(() => {
                 updateAPI()
@@ -366,6 +388,11 @@ export default function CustomizedStepper() {
                     .catch((error) => {
                         if (error.response) {
                             Alert.error(error.response.body.description);
+                        } else if (isMCPServer) {
+                            Alert.error(intl.formatMessage({
+                                id: 'MCPServers.Details.LifeCycle.Policies.update.error',
+                                defaultMessage: 'Something went wrong while updating the MCP Server',
+                            }));
                         } else {
                             Alert.error(intl.formatMessage({
                                 id: 'Apis.Details.LifeCycle.Policies.update.error',
@@ -381,7 +408,7 @@ export default function CustomizedStepper() {
             })
             .finally(() => setUpdating(false))
             .catch((errorResponse) => {
-                if (errorResponse.response?.body?.code === 903300) {
+                if (errorResponse.response?.body?.code === 903300 && !isMCPServer) {
                     Alert.error(
                         <Box sx={{ width: '100%' }}>
                             <Typography>
@@ -451,10 +478,18 @@ export default function CustomizedStepper() {
                                             defaultMessage=' Published'
                                         />
                                         <Box display='inline' pl={0.4} color='text.secondary'>
-                                            <FormattedMessage
-                                                id='Apis.Details.Overview.CustomizedStepper.publish.current.api'
-                                                defaultMessage=' (Current API)'
-                                            />
+                                            {isMCPServer ? (
+                                                <FormattedMessage
+                                                    id={'MCPServers.Details.Overview.CustomizedStepper.'
+                                                        + 'publish.current.mcp.server'}
+                                                    defaultMessage=' (Current MCP Server)'
+                                                />
+                                            ) : (
+                                                <FormattedMessage
+                                                    id='Apis.Details.Overview.CustomizedStepper.publish.current.api'
+                                                    defaultMessage=' (Current API)'
+                                                />
+                                            )}
                                         </Box>
                                     </Typography>
                                 </Grid>
@@ -675,7 +710,8 @@ export default function CustomizedStepper() {
                                                 </Grid>
                                             </Box>
                                         </Grid>
-                                        {api.type !== 'WEBSUB' && api.type !== 'APIPRODUCT' && (
+                                        {api.type !== 'WEBSUB' && api.type !== 'APIPRODUCT'
+                                        && !api.isMCPServerFromExistingAPI() && (
                                             <Box ml={3}>
                                                 <Grid
                                                     container

@@ -18,6 +18,7 @@
 
 import Joi from '@hapi/joi';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import queryString from 'query-string';
 
 /**
@@ -105,7 +106,10 @@ const apiSchema = Joi.extend((joi) => ({
                 composeQueryJSON.limit = 10;
                 composeQueryJSON.offset = 0;
                 const api = new API();
-                return api.validateAPIParameter(composeQueryJSON);
+                const isMCPServer = window.location.pathname.includes('/mcp-servers');
+                return isMCPServer
+                    ? MCPServer.validateMCPServerParameter(composeQueryJSON) 
+                    : api.validateAPIParameter(composeQueryJSON);
             },
         },
     ],

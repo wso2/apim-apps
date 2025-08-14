@@ -23,11 +23,12 @@ import { useTheme, Box, Button, Grid, Typography } from '@mui/material';
 import { PropTypes } from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import APIsAsMCPMenu from './APIsAsMCPMenu';
-import ExistingAPIsAsMCPMenu from './ExistingAPIsAsMCPMenu';
-import ProxyMCPMenu from './ProxyMCPMenu';
+import { useBackNavigation } from 'AppComponents/Shared';
+import MCPFromOpenAPIDefinition from './MCPFromOpenAPIDefinition';
+import MCPFromExistingAPI from './MCPFromExistingAPI';
+import MCPFromMCPServerURL from './MCPFromMCPServerURL';
 
 const PREFIX = 'MCPLanding';
 
@@ -51,6 +52,7 @@ const MCPServerLanding = () => {
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
     const [pageMode, setPageMode] = useState('default');
     const location = useLocation();
+    const handleBackClick = useBackNavigation('/mcp-servers');
 
     const {
         mcpServerFromScratchIcon,
@@ -84,8 +86,7 @@ const MCPServerLanding = () => {
                                     <Box pt={isXsOrBelow ? 2 : 4} />
                                     <Button
                                         variant='text'
-                                        component={Link}
-                                        to='/mcp-servers'
+                                        onClick={handleBackClick}
                                         startIcon={<ArrowBackIcon />}
                                         id='itest-mcp-servers-back-to-listing'
                                         sx={{
@@ -164,9 +165,9 @@ const MCPServerLanding = () => {
                                 alignItems='flex-start'
                                 spacing={3}
                             >
-                                <APIsAsMCPMenu icon={mcpServerFromScratchIcon} />
-                                <ExistingAPIsAsMCPMenu icon={mcpServerFromExistingApiIcon} />
-                                <ProxyMCPMenu icon={mcpServerProxyIcon} />
+                                <MCPFromOpenAPIDefinition icon={mcpServerFromScratchIcon} />
+                                <MCPFromExistingAPI icon={mcpServerFromExistingApiIcon} />
+                                <MCPFromMCPServerURL icon={mcpServerProxyIcon} />
                             </Grid>
                         </Grid>
                     </Box>

@@ -17,12 +17,13 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import LandingMenuItem from 'AppComponents/Apis/Listing/Landing/components/LandingMenuItem';
 import LandingMenu from 'AppComponents/Apis/Listing/Landing/components/LandingMenu';
 import APICreateMenuSection from 'AppComponents/Apis/Listing/components/APICreateMenuSection';
 
-const APIsAsMCPMenu = (props) => {
+const MCPFromOpenAPIDefinition = (props) => {
     const { icon, isCreateMenu } = props;
     const Component = isCreateMenu ? APICreateMenuSection : LandingMenu;
     const dense = isCreateMenu;
@@ -33,7 +34,7 @@ const APIsAsMCPMenu = (props) => {
             title={(
                 <FormattedMessage
                     id='MCPServers.Landing.APIsAsMCPMenu.title'
-                    defaultMessage='MCP From Scratch'
+                    defaultMessage='Import API Definition'
                 />
             )}
             icon={icon}
@@ -41,21 +42,26 @@ const APIsAsMCPMenu = (props) => {
             <LandingMenuItem
                 dense={dense}
                 id='itest-id-landing-create-mcp-from-scratch'
-                linkTo='/mcp-servers/create/direct-endpoint'
+                linkTo='/mcp-servers/create/import-api-definition'
                 helperText={(
                     <FormattedMessage
                         id='MCPServers.Landing.APIsAsMCPMenu.helperText'
-                        defaultMessage='Start with OpenAPI definition'
+                        defaultMessage='Start with OpenAPI Definition'
                     />
                 )}
             >
                 <FormattedMessage
                     id='MCPServers.Landing.APIsAsMCPMenu.create.title'
-                    defaultMessage='Create MCP Server From Scratch'
+                    defaultMessage='Create MCP Server from Definition'
                 />
             </LandingMenuItem>
         </Component>
     );
 };
 
-export default APIsAsMCPMenu;
+MCPFromOpenAPIDefinition.propTypes = {
+    icon: PropTypes.string.isRequired,
+    isCreateMenu: PropTypes.bool.isRequired,
+};
+
+export default MCPFromOpenAPIDefinition;

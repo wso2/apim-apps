@@ -17,12 +17,13 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import LandingMenuItem from 'AppComponents/Apis/Listing/Landing/components/LandingMenuItem';
 import LandingMenu from 'AppComponents/Apis/Listing/Landing/components/LandingMenu';
 import APICreateMenuSection from 'AppComponents/Apis/Listing/components/APICreateMenuSection';
 
-const ExistingAPIsAsMCPMenu = (props) => {
+const MCPFromExistingAPI = (props) => {
     const { icon, isCreateMenu } = props;
     const Component = isCreateMenu ? APICreateMenuSection : LandingMenu;
     const dense = isCreateMenu;
@@ -33,7 +34,7 @@ const ExistingAPIsAsMCPMenu = (props) => {
             title={(
                 <FormattedMessage
                     id='MCPServers.Landing.ExistingAPIsAsMCPMenu.title'
-                    defaultMessage='MCP From Existing APIs'
+                    defaultMessage='Start from Existing API'
                 />
             )}
             icon={icon}
@@ -41,21 +42,26 @@ const ExistingAPIsAsMCPMenu = (props) => {
             <LandingMenuItem
                 dense={dense}
                 id='itest-id-mcp-servers-create-from-existing-api'
-                linkTo='/mcp-servers/create/existing-api'
+                linkTo='/mcp-servers/create/mcp-from-existing-api'
                 helperText={(
                     <FormattedMessage
                         id='MCPServers.Landing.ExistingAPIsAsMCPMenu.helperText'
-                        defaultMessage='Use an existing API'
+                        defaultMessage='Start from Existing API'
                     />
                 )}
             >
                 <FormattedMessage
                     id='MCPServers.Landing.ExistingAPIsAsMCPMenu.create.title'
-                    defaultMessage='Create MCP Server From Existing API'
+                    defaultMessage='Create MCP Server from Existing API'
                 />
             </LandingMenuItem>
         </Component>
     );
 };
 
-export default ExistingAPIsAsMCPMenu;
+MCPFromExistingAPI.propTypes = {
+    icon: PropTypes.string.isRequired,
+    isCreateMenu: PropTypes.bool.isRequired,
+};
+
+export default MCPFromExistingAPI;

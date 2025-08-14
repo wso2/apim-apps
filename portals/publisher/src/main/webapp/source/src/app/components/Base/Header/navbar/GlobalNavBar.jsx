@@ -98,7 +98,7 @@ const GlobalNavBar = (props) => {
     if (
         new RegExp(
             '^\\/(apis|subscription(\\/.*)?|api-products|scopes|policies|' +
-            'global-policies|service-catalog|mcp-servers|)($|\\/$)',
+            'global-policies|service-catalog|mcp-servers|home|)($|\\/$)',
             'g'
         ).test(pathname)
     ) {

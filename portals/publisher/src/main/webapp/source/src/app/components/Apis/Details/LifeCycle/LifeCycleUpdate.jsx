@@ -202,14 +202,19 @@ class LifeCycleUpdate extends Component {
         // Add endpoint check promise for MCP servers
         let endpointPromise;
         if (isMCPServer) {
-            endpointPromise = MCPServer.getMCPServerEndpoints(apiUUID)
-                .then(response => {
-                    const endpoints = response.body;
-                    return { hasEndpoint: endpoints && endpoints.length > 0 };
-                })
-                .catch(() => {
-                    return { hasEndpoint: false };
-                });
+            if (api.isMCPServerFromExistingAPI()) {
+                // TODO: Check the endpoint availability for MCP Server from existing API
+                endpointPromise = Promise.resolve({ hasEndpoint: true });
+            } else {
+                endpointPromise = MCPServer.getMCPServerEndpoints(apiUUID)
+                    .then(response => {
+                        const endpoints = response.body;
+                        return { hasEndpoint: endpoints && endpoints.length > 0 };
+                    })
+                    .catch(() => {
+                        return { hasEndpoint: false };
+                    });
+            }
         } else if (isAPIProduct) {
             endpointPromise = Promise.resolve({ hasEndpoint: false });
         } else {
