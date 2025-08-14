@@ -2219,7 +2219,6 @@
   "Publisher.Landing.delete.dialog.content": "{type} {name} will be deleted permanently. This action cannot be undone.",
   "Publisher.Landing.delete.dialog.delete": "Delete",
   "Publisher.Landing.delete.dialog.title": "Delete {type}",
-  "Publisher.Landing.description": "Let’s get started!",
   "Publisher.Landing.error.title": "Error Loading Data",
   "Publisher.Landing.mcpServers.section.title": "MCP Servers",
   "Publisher.Landing.no.api.products.message": "No API Products found. Create your first API Product to get started.",
