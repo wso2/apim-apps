@@ -350,8 +350,8 @@ const MCPServerCreateUsingExistingAPI = (props) => {
                 variant='caption'
                 id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.two'
                 defaultMessage='Create MCP Server'
-            />]
-        ;
+            />,
+        ];
     }
 
     return (
@@ -383,6 +383,7 @@ const MCPServerCreateUsingExistingAPI = (props) => {
                             api={mcpServerInputs}
                             isAPIProduct={false}
                             isMCPServer
+                            mcpServerType='EXISTING_API'
                             settings={settings}
                         />
                     )}

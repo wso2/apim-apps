@@ -197,7 +197,7 @@ const MCPServerCreateDefault = (props) => {
                 } else {
                     Alert.error(intl.formatMessage({
                         id: 'MCPServers.Create.MCPServerCreateDefault.created.error',
-                        defaultMessage: 'Something went wrong while adding the MCP Server',
+                        defaultMessage: 'Something went wrong while creating the MCP Server',
                     }));
                 }
             })
@@ -276,6 +276,8 @@ const MCPServerCreateDefault = (props) => {
                             multiGateway={multiGateway}
                             api={mcpServerInputs}
                             isAPIProduct={false}
+                            isMCPServer
+                            mcpServerType='DIRECT_BACKEND'
                             settings={settings}
                         />
                     )}

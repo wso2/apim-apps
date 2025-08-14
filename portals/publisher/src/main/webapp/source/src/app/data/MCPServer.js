@@ -481,12 +481,6 @@ class MCPServer extends Resource {
                 data[apiAttribute] = this[apiAttribute];
             }
         });
-        
-        // // Ensure backendAPIEndpointConfig is always included if it exists on the instance
-        // if (this.backendAPIEndpointConfig !== undefined && !('backendAPIEndpointConfig' in data)) {
-        //     data.backendAPIEndpointConfig = this.backendAPIEndpointConfig;
-        // }
-        
         return data;
     }
 

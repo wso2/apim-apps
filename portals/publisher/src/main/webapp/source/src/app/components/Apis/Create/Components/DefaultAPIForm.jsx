@@ -160,7 +160,7 @@ export default function DefaultAPIForm(props) {
     const {
         onChange, onValidate, api, isAPIProduct, isMCPServer, multiGateway,
         isWebSocket, children, appendChildrenBeforeEndpoint, hideEndpoint,
-        readOnlyAPIEndpoint, settings,
+        readOnlyAPIEndpoint, settings, mcpServerType,
     } = props;
 
     const [validity, setValidity] = useState({});
@@ -401,26 +401,49 @@ export default function DefaultAPIForm(props) {
     function testEndpoint(endpoint) {
         setUpdating(true);
         let testEndpointPromise;
+        
         if (isMCPServer) {
-            testEndpointPromise = MCPServer.testEndpoint(endpoint, api.id);
+            if (mcpServerType === 'DIRECT_BACKEND') {
+                testEndpointPromise = MCPServer.testEndpoint(endpoint, api.id);
+            } else if (mcpServerType === 'SERVER_PROXY') {
+                testEndpointPromise = MCPServer.validateThirdPartyMCPServerUrl(endpoint);
+            } else {
+                // For EXISTING_API, we don't test the endpoint
+                setUpdating(false);
+                return;
+            }
         } else {
             testEndpointPromise = new API().testEndpoint(endpoint);
         }
 
         testEndpointPromise
             .then((result) => {
-                if (result.body.error !== null) {
-                    setStatusCode(result.body.error);
-                    setIsErrorCode(true);
+                if (mcpServerType === 'SERVER_PROXY') {
+                    // Handle SERVER_PROXY validation response
+                    if (result.body.isValid) {
+                        setStatusCode('200 OK - Valid MCP Server URL');
+                        setIsErrorCode(false);
+                        setIsEndpointValid(true);
+                    } else {
+                        setStatusCode(result.body.errorMessage || 'Invalid MCP Server URL');
+                        setIsErrorCode(true);
+                        setIsEndpointValid(false);
+                    }
                 } else {
-                    setStatusCode(result.body.statusCode + ' ' + result.body.statusMessage);
-                    setIsErrorCode(false);
-                }
-                if (result.body.statusCode >= 200 && result.body.statusCode < 300) {
-                    setIsEndpointValid(true);
-                    setIsErrorCode(false);
-                } else {
-                    setIsEndpointValid(false);
+                    // Handle regular endpoint testing response
+                    if (result.body.error !== null) {
+                        setStatusCode(result.body.error);
+                        setIsErrorCode(true);
+                    } else {
+                        setStatusCode(result.body.statusCode + ' ' + result.body.statusMessage);
+                        setIsErrorCode(false);
+                    }
+                    if (result.body.statusCode >= 200 && result.body.statusCode < 300) {
+                        setIsEndpointValid(true);
+                        setIsErrorCode(false);
+                    } else {
+                        setIsEndpointValid(false);
+                    }
                 }
             }).finally(() => {
                 setUpdating(false);
@@ -639,7 +662,7 @@ export default function DefaultAPIForm(props) {
                     )}
                 </Grid>
                 {appendChildrenBeforeEndpoint && !!children && children}
-                {!isAPIProduct && !isMCPServer && !hideEndpoint && (
+                {!isAPIProduct && !hideEndpoint && mcpServerType !== 'EXISTING_API' && (
                     <TextField
                         fullWidth
                         id='itest-id-apiendpoint-input'
@@ -651,7 +674,7 @@ export default function DefaultAPIForm(props) {
                             />
                         )}
                         name='endpoint'
-                        value={api.endpoint}
+                        value={isMCPServer && api.mcpServerUrl ? api.mcpServerUrl : api.endpoint}
                         onChange={onChange}
                         helperText={
                             (validity.endpointURL
@@ -804,6 +827,7 @@ DefaultAPIForm.defaultProps = {
     isWebSocket: false,
     readOnlyAPIEndpoint: null,
     isMCPServer: false,
+    mcpServerType: null,
 };
 DefaultAPIForm.propTypes = {
     api: PropTypes.shape({}),
@@ -814,4 +838,5 @@ DefaultAPIForm.propTypes = {
     onChange: PropTypes.func.isRequired,
     onValidate: PropTypes.func,
     readOnlyAPIEndpoint: PropTypes.string,
+    mcpServerType: PropTypes.oneOf(['DIRECT_BACKEND', 'EXISTING_API', 'SERVER_PROXY']),
 };
