@@ -21,6 +21,7 @@ import moment from 'moment';
 // Constants for entity types
 export const ENTITY_TYPES = {
     APIS: 'apis',
+    API_PRODUCTS: 'api-products',
     MCP_SERVERS: 'mcp-servers'
 };
 
@@ -38,5 +39,11 @@ export const formatUpdatedTime = (updatedTime) => {
 
 // Helper function to get detail path for navigation
 export const getDetailPath = (type, id) => {
-    return type === ENTITY_TYPES.APIS ? `/apis/${id}/overview` : `/mcp-servers/${id}/overview`;
+    if (type === ENTITY_TYPES.APIS) {
+        return `/apis/${id}/overview`;
+    } else if (type === ENTITY_TYPES.API_PRODUCTS) {
+        return `/api-products/${id}/overview`;
+    } else {
+        return `/mcp-servers/${id}/overview`;
+    }
 };

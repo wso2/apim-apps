@@ -29,23 +29,23 @@ import DataTable from './DataTable';
 import { ENTITY_TYPES } from './utils';
 
 /**
- * MCP Servers Section Component
+ * API Products Section Component
  * @param {Object} props - Component props
- * @param {Array} props.data - Array of MCP Servers to display
+ * @param {Array} props.data - Array of API Products to display
  * @param {string} props.noDataIcon - Path to no data icon
- * @param {number} props.totalCount - Total number of MCP Servers
- * @param {Function} props.onDelete - Callback for MCP Server deletion
- * @returns {JSX.Element} MCP Servers section component
+ * @param {number} props.totalCount - Total number of API Products
+ * @param {Function} props.onDelete - Callback for API Product deletion
+ * @returns {JSX.Element} API Products section component
  */
-const McpServersSection = ({ data, noDataIcon, totalCount, onDelete }) => {
+const APIProductSection = ({ data, noDataIcon, totalCount, onDelete }) => {
     return (
         <Box mb={4} mx={4}>
             <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
                 <Box display='flex' alignItems='center'>
                     <Typography variant='h4'>
                         <FormattedMessage
-                            id='Publisher.Landing.mcpServers.section.title'
-                            defaultMessage='MCP Servers'
+                            id='Publisher.Landing.api.products.section.title'
+                            defaultMessage='API Products'
                         />
                     </Typography>
                     <Typography 
@@ -54,13 +54,13 @@ const McpServersSection = ({ data, noDataIcon, totalCount, onDelete }) => {
                         sx={{ 
                             ml: 1, 
                             alignSelf: 'flex-end',
-                            mb: 0.5 
+                            mb: 0.5,
                         }}
                     >
-                        Total: <strong>{totalCount}</strong> {totalCount === 1 ? 'MCP Server' : 'MCP Servers'}
+                        Total: <strong>{totalCount}</strong> {totalCount === 1 ? 'API Product' : 'API Products'}
                     </Typography>
-                    <Tooltip title='Go to MCP Servers'>
-                        <Link to='/mcp-servers' style={{ textDecoration: 'none' }}>
+                    <Tooltip title='Go to API Products'>
+                        <Link to='/api-products' style={{ textDecoration: 'none' }}>
                             <LaunchIcon 
                                 style={{ marginLeft: '2px' }} 
                                 fontSize='small' 
@@ -75,12 +75,12 @@ const McpServersSection = ({ data, noDataIcon, totalCount, onDelete }) => {
                         color='primary'
                         component={Link}
                         disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                        to='/mcp-servers/create'
+                        to='/api-products/create'
                         startIcon={<AddIcon />}
                     >
                         <FormattedMessage
-                            id='Publisher.Landing.create.mcp.button'
-                            defaultMessage='Create MCP Server'
+                            id='Publisher.Landing.create.api.product.button'
+                            defaultMessage='Create API Product'
                         />
                     </Button>
                 )}
@@ -89,12 +89,12 @@ const McpServersSection = ({ data, noDataIcon, totalCount, onDelete }) => {
                 <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
                     <img
                         src={Configurations.app.context + noDataIcon}
-                        alt='No MCP Servers available'
+                        alt='No API Products available'
                     />
                     <Typography variant='body1' color='textSecondary' mt={2} mb={3}>
                         <FormattedMessage
-                            id='Publisher.Landing.no.mcpServers.message'
-                            defaultMessage='No MCP Servers found. Create your first MCP Server to get started.'
+                            id='Publisher.Landing.no.api.products.message'
+                            defaultMessage='No API Products found. Create your first API Product to get started.'
                         />
                     </Typography>
                     <Button
@@ -102,19 +102,19 @@ const McpServersSection = ({ data, noDataIcon, totalCount, onDelete }) => {
                         color='primary'
                         component={Link}
                         disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                        to='/mcp-servers'
+                        to='/api-products'
                         startIcon={<AddIcon />}
                     >
                         <FormattedMessage
-                            id='Publisher.Landing.create.mcp.button'
-                            defaultMessage='Create MCP Server'
+                            id='Publisher.Landing.create.api.product.button'
+                            defaultMessage='Create API Product'
                         />
                     </Button>
                 </Box>
             ) : (
                 <DataTable 
                     data={data} 
-                    type={ENTITY_TYPES.MCP_SERVERS} 
+                    type={ENTITY_TYPES.API_PRODUCTS} 
                     onDelete={onDelete}
                 />
             )}
@@ -122,7 +122,7 @@ const McpServersSection = ({ data, noDataIcon, totalCount, onDelete }) => {
     );
 };
 
-McpServersSection.propTypes = {
+APIProductSection.propTypes = {
     data: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
@@ -136,8 +136,8 @@ McpServersSection.propTypes = {
     onDelete: PropTypes.func,
 };
 
-McpServersSection.defaultProps = {
+APIProductSection.defaultProps = {
     onDelete: null,
 };
 
-export default McpServersSection;
+export default APIProductSection;

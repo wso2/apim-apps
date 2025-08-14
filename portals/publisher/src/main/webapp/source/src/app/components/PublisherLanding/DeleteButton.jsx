@@ -59,6 +59,7 @@ const DeleteButton = ({ item, type, onDelete }) => {
         try {
             let response;
             const isAPI = type === ENTITY_TYPES.APIS;
+            const isAPIProduct = type === ENTITY_TYPES.API_PRODUCTS;
             const isMCPServer = type === ENTITY_TYPES.MCP_SERVERS;
 
             if (isAPI) {
@@ -67,6 +68,8 @@ const DeleteButton = ({ item, type, onDelete }) => {
                 } else {
                     response = await API.delete(item.id);
                 }
+            } else if (isAPIProduct) {
+                response = await API.deleteProduct(item.id);
             } else if (isMCPServer) {
                 response = await MCPServer.deleteMCPServer(item.id);
             }
@@ -81,7 +84,14 @@ const DeleteButton = ({ item, type, onDelete }) => {
                 throw new Error('Deletion failed');
             }
         } catch (error) {
-            const entityType = type === ENTITY_TYPES.APIS ? 'API' : 'MCP Server';
+            let entityType;
+            if (type === ENTITY_TYPES.APIS) {
+                entityType = 'API';
+            } else if (type === ENTITY_TYPES.API_PRODUCTS) {
+                entityType = 'API Product';
+            } else {
+                entityType = 'MCP Server';
+            }
             if (error.status === 409) {
                 Alert.error(`[${item.name}]: ${error.response?.body?.description || 'Conflict occurred'}`);
             } else {
@@ -99,7 +109,12 @@ const DeleteButton = ({ item, type, onDelete }) => {
         setOpen(true);
     };
 
-    const entityType = type === ENTITY_TYPES.APIS ? 'API' : 'MCP Server';
+    let entityType = 'MCP Server';
+    if (type === ENTITY_TYPES.APIS) {
+        entityType = 'API';
+    } else if (type === ENTITY_TYPES.API_PRODUCTS) {
+        entityType = 'API Product';
+    }
 
     return (
         <>

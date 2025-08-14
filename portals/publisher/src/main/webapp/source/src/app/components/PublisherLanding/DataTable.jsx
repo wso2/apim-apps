@@ -26,8 +26,7 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Paper,
-    Pagination
+    Paper
 } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import { useHistory } from 'react-router-dom';
@@ -47,16 +46,12 @@ const classes = {
  * Reusable DataTable Component for APIs and MCP Servers
  * @param {Object} props - Component props
  * @param {Array} props.data - Array of items to display in the table
- * @param {string} props.type - Entity type (apis or mcp-servers)
+ * @param {string} props.type - Entity type (apis, api-products, or mcp-servers)
  * @param {Function} props.onRowClick - Optional callback for row clicks
- * @param {number} props.totalCount - Total number of items
- * @param {number} props.currentPage - Current page number
- * @param {number} props.pageSize - Number of items per page
- * @param {Function} props.onPageChange - Callback for page changes
  * @param {Function} props.onDelete - Callback for item deletion
  * @returns {JSX.Element} DataTable component
  */
-const DataTable = ({ data, type, onRowClick, totalCount, currentPage, pageSize, onPageChange, onDelete }) => {
+const DataTable = ({ data, type, onRowClick, onDelete }) => {
     const history = useHistory();
 
     const handleRowClick = useCallback((item) => {
@@ -65,7 +60,7 @@ const DataTable = ({ data, type, onRowClick, totalCount, currentPage, pageSize, 
         if (onRowClick) onRowClick(item);
     }, [type, history, onRowClick]);
 
-    const totalPages = Math.ceil(totalCount / pageSize);
+
 
     return (
         <Box>
@@ -182,18 +177,7 @@ const DataTable = ({ data, type, onRowClick, totalCount, currentPage, pageSize, 
                     </TableBody>
                 </Table>
             </TableContainer>
-            {totalPages > 1 && (
-                <Box display='flex' justifyContent='center' mt={2}>
-                    <Pagination
-                        count={totalPages}
-                        page={currentPage}
-                        onChange={(event, page) => onPageChange(page)}
-                        color='primary'
-                        showFirstButton
-                        showLastButton
-                    />
-                </Box>
-            )}
+
         </Box>
     );
 };
@@ -209,10 +193,6 @@ DataTable.propTypes = {
     })).isRequired,
     type: PropTypes.string.isRequired,
     onRowClick: PropTypes.func,
-    totalCount: PropTypes.number.isRequired,
-    currentPage: PropTypes.number.isRequired,
-    pageSize: PropTypes.number.isRequired,
-    onPageChange: PropTypes.func.isRequired,
     onDelete: PropTypes.func,
 };
 

@@ -34,13 +34,10 @@ import { ENTITY_TYPES } from './utils';
  * @param {Array} props.data - Array of APIs to display
  * @param {string} props.noDataIcon - Path to no data icon
  * @param {number} props.totalCount - Total number of APIs
- * @param {number} props.currentPage - Current page number
- * @param {number} props.pageSize - Number of items per page
- * @param {Function} props.onPageChange - Callback for page changes
  * @param {Function} props.onDelete - Callback for API deletion
  * @returns {JSX.Element} APIs section component
  */
-const ApisSection = ({ data, noDataIcon, totalCount, currentPage, pageSize, onPageChange, onDelete }) => {
+const ApisSection = ({ data, noDataIcon, totalCount, onDelete }) => {
     return (
         <Box mb={4} mx={4}>
             <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
@@ -118,10 +115,6 @@ const ApisSection = ({ data, noDataIcon, totalCount, currentPage, pageSize, onPa
                 <DataTable 
                     data={data} 
                     type={ENTITY_TYPES.APIS} 
-                    totalCount={totalCount}
-                    currentPage={currentPage}
-                    pageSize={pageSize}
-                    onPageChange={onPageChange}
                     onDelete={onDelete}
                 />
             )}
@@ -140,9 +133,6 @@ ApisSection.propTypes = {
     })).isRequired,
     noDataIcon: PropTypes.string.isRequired,
     totalCount: PropTypes.number.isRequired,
-    currentPage: PropTypes.number.isRequired,
-    pageSize: PropTypes.number.isRequired,
-    onPageChange: PropTypes.func.isRequired,
     onDelete: PropTypes.func,
 };
 

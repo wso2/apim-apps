@@ -29,12 +29,13 @@ import {
 import { FormattedMessage } from 'react-intl';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import API from 'AppData/api';
+import APIProduct from 'AppData/APIProduct';
 import MCPServer from 'AppData/MCPServer';
 import { Progress } from 'AppComponents/Shared';
 import ApisSection from './ApisSection';
+import APIProductSection from './APIProductSection';
 import McpServersSection from './McpServersSection';
 import TabButton from './TabButton';
-import { PAGINATION_CONFIG } from './utils';
 
 const PREFIX = 'PublisherLanding';
 
@@ -67,24 +68,23 @@ const Root = styled('div')(({ theme }) => ({
 const PublisherLanding = () => {
     const [selectedType, setSelectedType] = useState('api');
     const [apis, setApis] = useState([]);
+    const [apiProducts, setApiProducts] = useState([]);
     const [mcpServers, setMcpServers] = useState([]);
+    const [apisTotalCount, setApisTotalCount] = useState(0);
+    const [apiProductsTotalCount, setApiProductsTotalCount] = useState(0);
+    const [mcpServersTotalCount, setMcpServersTotalCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const theme = useTheme();
     const { noDataIcon } = theme.custom.landingPage.icons;
 
-    // Pagination state
-    const [apisPage, setApisPage] = useState(PAGINATION_CONFIG.DEFAULT_PAGE);
-    const [apisTotalCount, setApisTotalCount] = useState(0);
-    const [mcpServersPage, setMcpServersPage] = useState(PAGINATION_CONFIG.DEFAULT_PAGE);
-    const [mcpServersTotalCount, setMcpServersTotalCount] = useState(0);
-    const pageSize = PAGINATION_CONFIG.DEFAULT_PAGE_SIZE;
+    // Fixed page size for displaying first 5 entries
+    const pageSize = 5;
 
     // Fetch APIs data
-    const fetchApis = useCallback(async (page = apisPage) => {
+    const fetchApis = useCallback(async () => {
         try {
-            const offset = (page - 1) * pageSize;
-            const response = await API.all({ limit: pageSize, offset });
+            const response = await API.all({ limit: pageSize, offset: 0 });
             
             if (response.body) {
                 setApis(response.body.list || []);
@@ -94,13 +94,27 @@ const PublisherLanding = () => {
             // eslint-disable-next-line no-console
             console.error('Failed to fetch APIs:', err);
         }
-    }, [apisPage, pageSize]);
+    }, [pageSize]);
+
+    // Fetch API Products data
+    const fetchApiProducts = useCallback(async () => {
+        try {
+            const response = await APIProduct.all({ limit: pageSize, offset: 0 });
+            
+            if (response.body) {
+                setApiProducts(response.body.list || []);
+                setApiProductsTotalCount(response.body.pagination?.total || response.body.count || 0);
+            }
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error('Failed to fetch API Products:', err);
+        }
+    }, [pageSize]);
 
     // Fetch MCP Servers data
-    const fetchMcpServers = useCallback(async (page = mcpServersPage) => {
+    const fetchMcpServers = useCallback(async () => {
         try {
-            const offset = (page - 1) * pageSize;
-            const response = await MCPServer.all({ limit: pageSize, offset });
+            const response = await MCPServer.all({ limit: pageSize, offset: 0 });
             
             if (response.body) {
                 setMcpServers(response.body.list || []);
@@ -110,7 +124,7 @@ const PublisherLanding = () => {
             // eslint-disable-next-line no-console
             console.error('Failed to fetch MCP Servers:', err);
         }
-    }, [mcpServersPage, pageSize]);
+    }, [pageSize]);
 
     // Fetch initial data
     useEffect(() => {
@@ -119,10 +133,11 @@ const PublisherLanding = () => {
                 setLoading(true);
                 setError(null);
 
-                // Fetch both APIs and MCP Servers concurrently
+                // Fetch APIs, API Products, and MCP Servers concurrently
                 await Promise.allSettled([
-                    fetchApis(apisPage),
-                    fetchMcpServers(mcpServersPage)
+                    fetchApis(),
+                    fetchApiProducts(),
+                    fetchMcpServers()
                 ]);
 
             } catch (err) {
@@ -135,65 +150,33 @@ const PublisherLanding = () => {
         };
 
         fetchData();
-    }, [fetchApis, fetchMcpServers, apisPage, mcpServersPage]);
-
-    // Pagination handlers
-    const handleApisPageChange = useCallback((page) => {
-        setApisPage(page);
-        fetchApis(page);
-    }, [fetchApis]);
-
-    const handleMcpServersPageChange = useCallback((page) => {
-        setMcpServersPage(page);
-        fetchMcpServers(page);
-    }, [fetchMcpServers]);
+    }, [fetchApis, fetchApiProducts, fetchMcpServers]);
 
     // Delete handlers
     const handleApiDelete = useCallback((deletedId) => {
         // Remove the deleted API from the current list
         setApis(prevApis => prevApis.filter(api => api.id !== deletedId));
-        // Update total count
-        setApisTotalCount(prevCount => Math.max(0, prevCount - 1));
-        
-        // If current page becomes empty and it's not the first page, go to previous page
-        const currentApisCount = apis.length;
-        if (currentApisCount === 1 && apisPage > 1) {
-            const newPage = apisPage - 1;
-            setApisPage(newPage);
-            fetchApis(newPage);
-        } else if (currentApisCount === 1) {
-            // If it's the first page and becomes empty, refetch to get updated data
-            fetchApis(apisPage);
-        }
-    }, [apis.length, apisPage, fetchApis]);
+    }, []);
+
+    const handleApiProductDelete = useCallback((deletedId) => {
+        // Remove the deleted API Product from the current list
+        setApiProducts(prevProducts => prevProducts.filter(product => product.id !== deletedId));
+    }, []);
 
     const handleMcpServerDelete = useCallback((deletedId) => {
         // Remove the deleted MCP Server from the current list
         setMcpServers(prevServers => prevServers.filter(server => server.id !== deletedId));
-        // Update total count
-        setMcpServersTotalCount(prevCount => Math.max(0, prevCount - 1));
-        
-        // If current page becomes empty and it's not the first page, go to previous page
-        const currentServersCount = mcpServers.length;
-        if (currentServersCount === 1 && mcpServersPage > 1) {
-            const newPage = mcpServersPage - 1;
-            setMcpServersPage(newPage);
-            fetchMcpServers(newPage);
-        } else if (currentServersCount === 1) {
-            // If it's the first page and becomes empty, refetch to get updated data
-            fetchMcpServers(mcpServersPage);
-        }
-    }, [mcpServers.length, mcpServersPage, fetchMcpServers]);
+    }, []);
 
     // Check if we have any data to display
-    const hasData = apisTotalCount > 0 || mcpServersTotalCount > 0;
+    const hasData = apisTotalCount > 0 || apiProductsTotalCount > 0 || mcpServersTotalCount > 0;
 
     // Render loading state
     if (loading) {
         return (
             <Root>
                 <Box display='flex' justifyContent='center' alignItems='center' height='400px'>
-                    <Progress per={80} message='Loading APIs and MCP Servers...' />
+                    <Progress per={80} message='Loading app...' />
                 </Box>
             </Root>
         );
@@ -244,12 +227,6 @@ const PublisherLanding = () => {
                                 defaultMessage='Welcome to the Publisher Portal!'
                             />
                         </Typography>
-                        <Typography variant='body1' color='textSecondary' mt={1}>
-                            <FormattedMessage
-                                id='Publisher.Landing.description'
-                                defaultMessage='Let’s get started!'
-                            />
-                        </Typography>
                     </Grid>
                 </Grid>
 
@@ -261,19 +238,19 @@ const PublisherLanding = () => {
                                 data={apis} 
                                 noDataIcon={noDataIcon}
                                 totalCount={apisTotalCount}
-                                currentPage={apisPage}
-                                pageSize={pageSize}
-                                onPageChange={handleApisPageChange}
                                 onDelete={handleApiDelete}
                             />
                             <McpServersSection 
                                 data={mcpServers} 
                                 noDataIcon={noDataIcon}
                                 totalCount={mcpServersTotalCount}
-                                currentPage={mcpServersPage}
-                                pageSize={pageSize}
-                                onPageChange={handleMcpServersPageChange}
                                 onDelete={handleMcpServerDelete}
+                            />
+                            <APIProductSection 
+                                data={apiProducts} 
+                                noDataIcon={noDataIcon}
+                                totalCount={apiProductsTotalCount}
+                                onDelete={handleApiProductDelete}
                             />
                         </Grid>
                     </Grid>

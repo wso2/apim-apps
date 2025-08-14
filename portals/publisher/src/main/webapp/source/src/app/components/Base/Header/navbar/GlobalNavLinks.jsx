@@ -131,20 +131,6 @@ function GlobalNavLinks(props) {
                 {gateway && (settings && !settings.portalConfigurationOnlyModeEnabled) && (
                     <div>
                         <GlobalNavLink
-                            to='/service-catalog'
-                            type='service-catalog'
-                            title={intl.formatMessage({
-                                id: 'Base.Header.navbar.GlobalNavBar.title.services',
-                                defaultMessage: 'Services',
-                            })}
-                            active={selected === 'service-catalog'}
-                        >
-                            <FormattedMessage
-                                id='Base.Header.navbar.GlobalNavBar.Service.Catalog'
-                                defaultMessage='Services'
-                            />
-                        </GlobalNavLink>
-                        <GlobalNavLink
                             to='/api-products'
                             type='api-product'
                             title={intl.formatMessage({
@@ -156,6 +142,20 @@ function GlobalNavLinks(props) {
                             <FormattedMessage
                                 id='Base.Header.navbar.GlobalNavBar.api.products'
                                 defaultMessage='API Products'
+                            />
+                        </GlobalNavLink>
+                        <GlobalNavLink
+                            to='/service-catalog'
+                            type='service-catalog'
+                            title={intl.formatMessage({
+                                id: 'Base.Header.navbar.GlobalNavBar.title.services',
+                                defaultMessage: 'Services',
+                            })}
+                            active={selected === 'service-catalog'}
+                        >
+                            <FormattedMessage
+                                id='Base.Header.navbar.GlobalNavBar.Service.Catalog'
+                                defaultMessage='Services'
                             />
                         </GlobalNavLink>
                         <GlobalNavLink
