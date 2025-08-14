@@ -425,8 +425,9 @@ function AddEditGWEnvironment(props) {
             vhosts.forEach((vhost) => {
                 vhostDto.push({
                     host: vhost.host,
-                    httpPort: 80,
-                    httpsPort: 443,
+                    httpContext: vhost.httpContext,
+                    httpPort: vhost.httpPort,
+                    httpsPort: vhost.httpsPort,
                 });
             });
             provider = 'external';
