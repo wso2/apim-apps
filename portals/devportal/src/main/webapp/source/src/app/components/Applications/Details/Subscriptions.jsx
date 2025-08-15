@@ -770,6 +770,7 @@ class SubscriptionsBase extends React.Component {
                                         applicationId={applicationId}
                                         handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
                                         searchText={searchText}
+                                        entityType='API'
                                     />
                                 </Box>
                             </StyledDialog>
@@ -866,7 +867,7 @@ class SubscriptionsBase extends React.Component {
                                         applicationId={applicationId}
                                         handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
                                         searchText={searchText}
-                                        entityType='mcp'
+                                        entityType='MCP'
                                     />
                                 </Box>
                             </StyledDialog>

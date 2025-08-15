@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
@@ -26,6 +26,7 @@ import Typography from '@mui/material/Typography';
 import * as monaco from 'monaco-editor'
 import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
 import { FormattedMessage } from 'react-intl';
+import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import OperationSelector from './OperationSelector';
 
 // load Monaco from node_modules instead of CDN
@@ -42,7 +43,10 @@ loader.config({ monaco });
  * @param {Array} props.availableOperations - Array of available operations
  * @returns {React.Component} Tool details section component
  */
-function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, target, feature, availableOperations }) {
+function ToolDetailsSection({
+    operation, operationsDispatcher, disableUpdate, target, feature, availableOperations
+}) {
+    const { api } = useContext(APIContext);
 
     // Get current selected operation for the OperationSelector component
     const getCurrentSelectedOperation = () => {
@@ -60,6 +64,13 @@ function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, ta
         }
         return null;
     };
+
+    // Determine if this is an MCP Server Proxy to show appropriate labels
+    const isMCPServerProxy = api && api.isMCPServerFromProxy();
+    
+    // Set appropriate labels based on MCP Server type
+    const selectorLabel = isMCPServerProxy ? 'Tool' : 'Operation';
+    const selectorPlaceholder = isMCPServerProxy ? 'Select a tool' : 'Select an operation';
 
     const editorOptions = {
         selectOnLineNumbers: true,
@@ -148,7 +159,8 @@ function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, ta
                                 fullWidth
                                 margin='dense'
                                 variant='outlined'
-                                label='Operation'
+                                label={selectorLabel}
+                                placeholder={selectorPlaceholder}
                             />
                         </Grid>
 

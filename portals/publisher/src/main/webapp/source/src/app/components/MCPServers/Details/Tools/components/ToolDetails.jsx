@@ -67,7 +67,7 @@ const Root = styled('div')(({ theme }) => {
         [`& .${classes.overlayUnmarkDelete}`]: {
             position: 'absolute',
             zIndex: theme.zIndex.operationDeleteUndo,
-            right: '10%',
+            right: '9%',
         },
         [`& .${classes.toolName}`]: {
             fontWeight: 400,
@@ -84,6 +84,11 @@ const Root = styled('div')(({ theme }) => {
             },
             transition: 'box-shadow 0.2s ease-in-out',
             overflow: 'hidden'
+        },
+        [`& .${classes.accordionContainer}.markedForDelete`]: {
+            opacity: 0.5,
+            filter: 'grayscale(50%)',
+            pointerEvents: 'none',
         },
         [`& .${classes.resourceMappingChip}`]: {
             display: 'flex',
@@ -163,7 +168,7 @@ function ToolDetails(props) {
         event.stopPropagation();
         event.preventDefault();
         setExpandedResource(false);
-        onMarkAsDelete({ feature, target }, !markAsDelete);
+        onMarkAsDelete({ target }, !markAsDelete);
     }
 
     const handleExpansion = (panel) => (event, isExpanded) => {
@@ -206,7 +211,12 @@ function ToolDetails(props) {
             {markAsDelete && (
                 <Box className={classes.overlayUnmarkDelete}>
                     <Tooltip title='Marked for delete'>
-                        <Button onClick={toggleDelete} variant='outlined' style={{ marginTop: '10px' }}>
+                        <Button
+                            onClick={toggleDelete}
+                            variant='outlined'
+                            style={{ marginTop: '10px' }}
+                            size='small'
+                        >
                             <FormattedMessage
                                 id='Apis.Details.Resources.components.Operation.undo.delete'
                                 defaultMessage='Undo Delete'
@@ -219,7 +229,9 @@ function ToolDetails(props) {
                 expanded={expandedResource === stableId}
                 onChange={handleExpansion(stableId)}
                 disabled={markAsDelete}
-                className={`${classes.paperStyles} ${classes.accordionContainer}`}
+                className={`${classes.paperStyles} ${classes.accordionContainer} ${
+                    markAsDelete ? 'markedForDelete' : ''
+                }`}
             >
                 <AccordionSummary
                     className={highlight ? classes.highlightSelected : ''}

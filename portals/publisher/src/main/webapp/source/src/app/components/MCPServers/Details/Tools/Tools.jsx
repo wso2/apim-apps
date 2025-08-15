@@ -41,6 +41,7 @@ import { Progress } from 'AppComponents/Shared';
 import {
     mapAPIOperations,
 } from 'AppComponents/Apis/Details/Resources/operationUtils';
+import OperationsSelector from 'AppComponents/Apis/Details/Resources/components/OperationsSelector';
 import AddTool from './components/AddTool';
 import ToolDetails from './components/ToolDetails';
 
@@ -126,6 +127,42 @@ const Tools = ({
     }, []);
 
     /**
+     * Generate a static ID for an operation based on target and verb
+     * @param {string} target - The operation target
+     * @param {string} verb - The operation verb
+     * @returns {string} - The generated ID
+     */
+    function generateOperationId(target, verb) {
+        return `tool_${target}_${verb}`;
+    }
+
+    /**
+     * Create operation object from API operation data
+     * @param {Object} operation - The operation data from API
+     * @returns {Object} - The formatted operation object
+     */
+    function createOperationFromAPI(operation) {
+        const operationName = operation.target || operation.id;
+        if (!operationName) return null;
+        
+        return {
+            id: operation.id || generateOperationId(operation.target, operation.verb || 'GET'),
+            target: operation.target,
+            feature: 'TOOL',
+            name: operation.target,
+            description: operation.description || '',
+            'x-auth-type': operation.authType || 'Application & Application User',
+            throttlingPolicy: operation.throttlingPolicy || 'Unlimited',
+            'x-throttling-tier': operation.throttlingPolicy || 'Unlimited',
+            schemaDefinition: operation.schemaDefinition,
+            backendOperationMapping: operation.backendOperationMapping,
+            apiOperationMapping: operation.apiOperationMapping,
+            scopes: operation.scopes || [],
+            'x-wso2-new': false
+        };
+    }
+
+    /**
      * Operations reducer for MCP tools management
      * @param {Object} currentOperations Current state
      * @param {Object} operationAction action and payload  
@@ -147,33 +184,20 @@ const Tools = ({
                 const operationsMap = {};
                 if (api.operations && api.operations.length > 0) {
                     api.operations.forEach(operation => {
-                        const operationName = operation.target || operation.id;
-                        if (operationName) {
-                            operationsMap[operationName] = {
-                                id: operation.id || `${operationName}_${Date.now()}`,
-                                target: operation.target,
-                                feature: 'TOOL',
-                                name: operation.target,
-                                description: operation.description || '',
-                                'x-auth-type': operation.authType || 'Application & Application User',
-                                throttlingPolicy: operation.throttlingPolicy || 'Unlimited',
-                                'x-throttling-tier': operation.throttlingPolicy || 'Unlimited',
-                                schemaDefinition: operation.schemaDefinition,
-                                backendOperationMapping: operation.backendOperationMapping,
-                                scopes: operation.scopes || [],
-                                'x-wso2-new': false
-                            };
+                        const formattedOperation = createOperationFromAPI(operation);
+                        if (formattedOperation) {
+                            operationsMap[formattedOperation.target] = formattedOperation;
                         }
                     });
                 }
                 return operationsMap;
             }
-            // case 'removeAllSecurity':
-            //     setSelectedOperation({});
-            //     return Object.entries(currentOperations).reduce((acc, [key, operation]) => {
-            //         const newOperation = { ...operation, 'x-auth-type': data.disable ? 'None' : 'Any' };
-            //         return { ...acc, [key]: newOperation };
-            //     }, {});
+            case 'removeAllSecurity':
+                setSelectedOperation({});
+                return Object.entries(currentOperations).reduce((acc, [key, operation]) => {
+                    const newOperation = { ...operation, 'x-auth-type': data.disable ? 'None' : 'Any' };
+                    return { ...acc, [key]: newOperation };
+                }, {});
             case 'description':
                 if (target) {
                     updatedOperation = cloneDeep(currentOperations[target]);
@@ -259,8 +283,8 @@ const Tools = ({
                 }
 
                 updatedOperations = cloneDeep(currentOperations);
-                // Generate a ID for the operation
-                const operationId = `tool_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                // Generate a static ID for the operation based on target and verb
+                const operationId = generateOperationId(selectedOperation.target, selectedOperation.verb);
 
                 // Determine which type of mapping to create based on MCP server type
                 const isFromExistingAPI = api.isMCPServerFromExistingAPI();
@@ -302,6 +326,78 @@ const Tools = ({
 
     // Operations state management
     const [operations, operationsDispatcher] = useReducer(operationsReducer, {});
+
+    const enableSecurity = () => {
+        operationsDispatcher({ action: 'removeAllSecurity', data: { disable: false } });
+    };
+    const disableSecurity = () => {
+        operationsDispatcher({ action: 'removeAllSecurity', data: { disable: true } });
+    };
+
+    /**
+     * Transform tools operations to the format expected by OperationsSelector
+     * @param {Object} toolsOperations - The flat tools operations object
+     * @returns {Object} - Transformed operations in nested format
+     */
+    function transformOperationsForSelector(toolsOperations) {
+        const transformed = {};
+        Object.entries(toolsOperations).forEach(([target, operation]) => {
+            // Create a nested structure with a default verb for tools
+            transformed[target] = {
+                TOOL: operation
+            };
+        });
+        return transformed;
+    }
+
+    /**
+     * Transform marked operations to the format expected by OperationsSelector
+     * @param {Object} markedOps - The flat marked operations object
+     * @returns {Object} - Transformed marked operations in nested format
+     */
+    function transformMarkedOperationsForSelector(markedOps) {
+        const transformed = {};
+        Object.entries(markedOps).forEach(([target, isMarked]) => {
+            if (isMarked) {
+                transformed[target] = {
+                    TOOL: true
+                };
+            }
+        });
+        return transformed;
+    }
+
+    /**
+     * Handle operations selection from OperationsSelector
+     * @param {Object} selectedOps - The selected operations in nested format
+     */
+    function handleOperationsSelection(selectedOps) {
+        const flatSelected = {};
+        Object.entries(selectedOps).forEach(([target, verbObj]) => {
+            if (verbObj.TOOL) {
+                flatSelected[target] = true;
+            }
+        });
+        setSelectedOperation(flatSelected);
+    }
+
+    /**
+     * Handle marking tools for deletion
+     * @param {Object} operation - The operation object with target
+     * @param {boolean} checked - Whether to mark for deletion
+     */
+    function onMarkAsDelete(operation, checked) {
+        const { target } = operation;
+        setSelectedOperation((currentSelections) => {
+            const nextSelectedOperations = cloneDeep(currentSelections);
+            if (checked) {
+                nextSelectedOperations[target] = true;
+            } else {
+                delete nextSelectedOperations[target];
+            }
+            return nextSelectedOperations;
+        });
+    }
 
     /**
      * Fetch available operations from MCP Server endpoints
@@ -416,23 +512,9 @@ const Tools = ({
         const operationsMap = {};
         if (api.operations && api.operations.length > 0) {
             api.operations.forEach(operation => {
-                const operationName = operation.target || operation.id;
-                if (operationName) {
-                    operationsMap[operationName] = {
-                        id: operation.id || `${operationName}_${Date.now()}`,
-                        target: operation.target,
-                        feature: 'TOOL',
-                        name: operation.target,
-                        description: operation.description || '',
-                        'x-auth-type': operation.authType || 'Application & Application User',
-                        throttlingPolicy: operation.throttlingPolicy || 'Unlimited',
-                        'x-throttling-tier': operation.throttlingPolicy || 'Unlimited',
-                        schemaDefinition: operation.schemaDefinition,
-                        backendOperationMapping: operation.backendOperationMapping,
-                        apiOperationMapping: operation.apiOperationMapping,
-                        scopes: operation.scopes || [],
-                        'x-wso2-new': false
-                    };
+                const formattedOperation = createOperationFromAPI(operation);
+                if (formattedOperation) {
+                    operationsMap[formattedOperation.target] = formattedOperation;
                 }
             });
         }
@@ -477,6 +559,24 @@ const Tools = ({
         });
 
         return updateAPI({ operations: operationsArray })
+            .then((updatedApi) => {
+                // Update local operations state with the response from API
+                const operationsMap = {};
+                if (updatedApi.operations && updatedApi.operations.length > 0) {
+                    updatedApi.operations.forEach(operation => {
+                        const formattedOperation = createOperationFromAPI(operation);
+                        if (formattedOperation) {
+                            operationsMap[formattedOperation.target] = formattedOperation;
+                        }
+                    });
+                }
+                operationsDispatcher({ action: 'init', data: operationsMap });
+                
+                // Clear marked operations after successful update
+                setSelectedOperation({});
+                
+                return updatedApi;
+            })
             .catch((error) => {
                 console.error(error);
                 Alert.error(intl.formatMessage({
@@ -570,10 +670,11 @@ const Tools = ({
 
     useEffect(() => {
         if (!isLoading) {
-            setComponentValidator(publisherSettings.gatewayFeatureCatalog
-                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].resources);
+            const validator = publisherSettings.gatewayFeatureCatalog
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].resources;
+            setComponentValidator(Array.isArray(validator) ? validator : []);
         }
-    }, [isLoading]);
+    }, [isLoading, publisherSettings, api.gatewayType]);
 
     useEffect(() => {
         setThrottlingPolicy(api.throttlingPolicy);
@@ -643,33 +744,43 @@ const Tools = ({
                                 </Box>
                             </Grid>
                         ) : (
-                            Object.entries(operations).map(([target, operation]) => (
-                                <Grid key={operation.id || target} item md={12}>
-                                    <ToolDetails
-                                        target={target}
-                                        feature={operation.feature || 'TOOL'}
-                                        operation={operation}
-                                        operationsDispatcher={operationsDispatcher}
-                                        api={localAPI}
-                                        disableUpdate={disableUpdate}
-                                        markedOperations={markedOperations}
-                                        onMarkAsDelete={setSelectedOperation}
-                                        markAsDelete={Boolean(markedOperations[target])}
-                                        spec={{}}
-                                        operationRateLimits={operationRateLimits}
-                                        sharedScopes={sharedScopes}
-                                        setFocusOperationLevel={setFocusOperationLevel}
-                                        expandedResource={expandedResource}
-                                        setExpandedResource={setExpandedResource}
-                                        componentValidator={componentValidator}
-                                        resourcePolicy={{}}
-                                        resolvedSpec={{}}
-                                        highlight={false}
-                                        disableDelete={false}
-                                        availableOperations={availableOperations}
-                                    />
-                                </Grid>
-                            ))
+                            <>
+                                <OperationsSelector
+                                    operations={transformOperationsForSelector(operations)}
+                                    selectedOperations={transformMarkedOperationsForSelector(markedOperations)}
+                                    setSelectedOperation={handleOperationsSelection}
+                                    enableSecurity={enableSecurity}
+                                    disableSecurity={disableSecurity}
+                                    componentValidator={componentValidator}
+                                />
+                                {Object.entries(operations).map(([target, operation]) => (
+                                    <Grid key={operation.id || target} item md={12}>
+                                        <ToolDetails
+                                            target={target}
+                                            feature={operation.feature || 'TOOL'}
+                                            operation={operation}
+                                            operationsDispatcher={operationsDispatcher}
+                                            api={localAPI}
+                                            disableUpdate={disableUpdate}
+                                            markedOperations={markedOperations}
+                                            onMarkAsDelete={onMarkAsDelete}
+                                            markAsDelete={Boolean(markedOperations[target])}
+                                            spec={{}}
+                                            operationRateLimits={operationRateLimits}
+                                            sharedScopes={sharedScopes}
+                                            setFocusOperationLevel={setFocusOperationLevel}
+                                            expandedResource={expandedResource}
+                                            setExpandedResource={setExpandedResource}
+                                            componentValidator={componentValidator}
+                                            resourcePolicy={{}}
+                                            resolvedSpec={{}}
+                                            highlight={false}
+                                            disableDelete={false}
+                                            availableOperations={availableOperations}
+                                        />
+                                    </Grid>
+                                ))}
+                            </>
                         )}
                     </Paper>
                     <Grid
