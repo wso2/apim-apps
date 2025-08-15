@@ -142,8 +142,7 @@ function AddEditGWEnvironment(props) {
     const [initialState, setInitialState] = useState({
         displayName: '',
         description: '',
-        gatewayType: gatewayTypes && gatewayTypes.length > 1 && gatewayTypes.includes('Regular') ? 'Regular'
-            : gatewayTypes[0],
+        gatewayType: initialGatewayType,
         gatewayMode: 'WRITE_ONLY',
         scheduledInterval: 60,
         type: 'hybrid',
