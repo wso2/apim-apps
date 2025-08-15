@@ -34,6 +34,7 @@ import AuthManager from 'AppData/AuthManager';
 import withSettings from 'AppComponents/Shared/withSettingsContext';
 import SolaceTopicsInfo from 'AppComponents/Apis/Details/SolaceApi/SolaceTopicsInfo';
 import Alert from 'AppComponents/Shared/Alert';
+import PortalModeRouteGuard from 'AppComponents/Shared/PortalModeRouteGuard';
 import classNames from 'classnames';
 import { Helmet } from 'react-helmet';
 import { app } from 'Settings';
@@ -881,12 +882,14 @@ class DetailsLegacy extends React.Component {
                                 { [classes.contentLoaderRightMenu]: position === 'vertical-right' },
                             )}
                         >
-                            <LoadableSwitch
-                                api={api}
-                                updateSubscriptionData={this.updateSubscriptionData}
-                                setbreadcrumbDocument={this.setbreadcrumbDocument}
-                                apiChatEnabled={apiChatEnabled}
-                            />
+                            <PortalModeRouteGuard>
+                                <LoadableSwitch
+                                    api={api}
+                                    updateSubscriptionData={this.updateSubscriptionData}
+                                    setbreadcrumbDocument={this.setbreadcrumbDocument}
+                                    apiChatEnabled={apiChatEnabled}
+                                />
+                            </PortalModeRouteGuard>
                         </div>
                     </div>
                 </ApiContext.Provider>

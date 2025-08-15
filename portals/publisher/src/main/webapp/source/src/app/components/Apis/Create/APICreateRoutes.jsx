@@ -21,6 +21,7 @@ import { Route, Switch } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { Progress } from 'AppComponents/Shared';
+import MCPRouteGuard from 'AppComponents/Shared/MCPRouteGuard';
 import APILanding from 'AppComponents/Apis/Listing/Landing';
 import MCPServerLanding from 'AppComponents/MCPServers/Landing';
 import MCPServerCreateDefault from 'AppComponents/MCPServers/Create/MCPServerCreateDefault';
@@ -164,22 +165,38 @@ function APICreateRoutes() {
                 <Route
                     exact
                     path='/mcp-servers/create'
-                    component={MCPServerLanding}
+                    render={(props) => (
+                        <MCPRouteGuard>
+                            <MCPServerLanding {...props} />
+                        </MCPRouteGuard>
+                    )}
                 />
                 <Route
                     path='/mcp-servers/create/import-api-definition'
-                    component={WithSomeValue(MCPServerCreateDefault, { multiGateway: apiTypes?.ws
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                    render={(props) => (
+                        <MCPRouteGuard>
+                            {WithSomeValue(MCPServerCreateDefault, { multiGateway: apiTypes?.ws
+                                .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })(props)}
+                        </MCPRouteGuard>
+                    )}
                 />
                 <Route
                     path='/mcp-servers/create/mcp-from-existing-api'
-                    component={WithSomeValue(MCPServerCreateUsingExistingAPI, { multiGateway: apiTypes?.ws
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                    render={(props) => (
+                        <MCPRouteGuard>
+                            {WithSomeValue(MCPServerCreateUsingExistingAPI, { multiGateway: apiTypes?.ws
+                                .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })(props)}
+                        </MCPRouteGuard>
+                    )}
                 />
                 <Route
                     path='/mcp-servers/create/mcp-proxy-from-endpoint'
-                    component={WithSomeValue(MCPServerCreateProxy, { multiGateway: apiTypes?.ws
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                    render={(props) => (
+                        <MCPRouteGuard>
+                            {WithSomeValue(MCPServerCreateProxy, { multiGateway: apiTypes?.ws
+                                .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })(props)}
+                        </MCPRouteGuard>
+                    )}
                 />
                 <Route component={ResourceNotFound} />
             </Switch>

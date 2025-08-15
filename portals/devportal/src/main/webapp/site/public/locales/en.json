@@ -534,6 +534,7 @@
   "Applications.Listing.ResetPolicyDialog.dialog.user.required": "Application name is required",
   "Base.Errors.ResourceNotFound.api.list": "API List",
   "Base.Errors.ResourceNotFound.applications": "Applications",
+  "Base.Errors.ResourceNotFound.mcp.list": "MCP Server List",
   "Base.Errors.ResourceNotFound.more.links": "You may check the links below",
   "Base.Errors.ResourceNotfound.default_body": "The page you are looking for is not available",
   "Base.Errors.ResourceNotfound.default_tittle": "Page Not Found",

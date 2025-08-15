@@ -16,6 +16,7 @@
  * under the License.
  */
 import React from 'react';
+import PropTypes from 'prop-types';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
@@ -25,8 +26,12 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Image404 from './Custom404Image';
+import { useAreApisAccessible, useAreMcpServersAccessible } from '../../../utils/PortalModeUtils';
 
-const ResourceNotFound = (props) => {
+const ResourceNotFound = ({ response, message }) => {
+    const apisAccessible = useAreApisAccessible();
+    const mcpServersAccessible = useAreMcpServersAccessible();
+
     return (
         <Container maxWidth='md'>
             <Box padding={4}>
@@ -35,19 +40,27 @@ const ResourceNotFound = (props) => {
                         <Grid container alignItems='center' justifyContent='center' style={{ height: '100%' }}>
                             <Grid item xs={12} md={6}>
                                 <Typography variant='h5' gutterBottom>
-                                    <FormattedMessage
-                                        id='Base.Errors.ResourceNotfound.default_tittle'
-                                        defaultMessage='Page Not Found'
-                                    />
+                                    {message && message.title ? (
+                                        message.title
+                                    ) : (
+                                        <FormattedMessage
+                                            id='Base.Errors.ResourceNotfound.default_tittle'
+                                            defaultMessage='Page Not Found'
+                                        />
+                                    )}
                                 </Typography>
                                 <Typography variant='subtitle1' gutterBottom>
-                                    <FormattedMessage
-                                        id='Base.Errors.ResourceNotfound.default_body'
-                                        defaultMessage='The page you are looking for is not available'
-                                    />
+                                    {message && message.body ? (
+                                        message.body
+                                    ) : (
+                                        <FormattedMessage
+                                            id='Base.Errors.ResourceNotfound.default_body'
+                                            defaultMessage='The page you are looking for is not available'
+                                        />
+                                    )}
                                     <span style={{ color: 'green' }}>
                                         {' '}
-                                        {props.response ? props.response.statusText : ''}
+                                        {response ? response.statusText : ''}
                                         {' '}
                                     </span>
                                 </Typography>
@@ -60,14 +73,26 @@ const ResourceNotFound = (props) => {
                                             />
                                         </Typography>
                                     </Box>
-                                    <Link to='/apis/' style={{ marginRight: 8 }}>
-                                        <Button variant='contained' color='primary'>
-                                            <FormattedMessage
-                                                id='Base.Errors.ResourceNotFound.api.list'
-                                                defaultMessage='API List'
-                                            />
-                                        </Button>
-                                    </Link>
+                                    {apisAccessible && (
+                                        <Link to='/apis/' style={{ marginRight: 8 }}>
+                                            <Button variant='contained' color='primary'>
+                                                <FormattedMessage
+                                                    id='Base.Errors.ResourceNotFound.api.list'
+                                                    defaultMessage='API List'
+                                                />
+                                            </Button>
+                                        </Link>
+                                    )}
+                                    {mcpServersAccessible && (
+                                        <Link to='/mcp-servers/' style={{ marginRight: 8 }}>
+                                            <Button variant='contained' color='primary'>
+                                                <FormattedMessage
+                                                    id='Base.Errors.ResourceNotFound.mcp.list'
+                                                    defaultMessage='MCP Server List'
+                                                />
+                                            </Button>
+                                        </Link>
+                                    )}
                                     <Link to='/applications/'>
                                         <Button variant='contained' color='primary'>
                                             <FormattedMessage
@@ -88,6 +113,21 @@ const ResourceNotFound = (props) => {
             </Box>
         </Container>
     );
+};
+
+ResourceNotFound.propTypes = {
+    response: PropTypes.shape({
+        statusText: PropTypes.string,
+    }),
+    message: PropTypes.shape({
+        title: PropTypes.string,
+        body: PropTypes.string,
+    }),
+};
+
+ResourceNotFound.defaultProps = {
+    response: null,
+    message: null,
 };
 
 export default ResourceNotFound;
