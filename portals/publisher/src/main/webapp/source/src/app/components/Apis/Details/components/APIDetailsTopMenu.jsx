@@ -512,7 +512,7 @@ const APIDetailsTopMenu = (props) => {
                         </Typography>
                     </a>
                 )}
-                {api.type === 'HTTP' && (() => {
+                {(settings && settings.isMCPSupportEnabled) && api.type === 'HTTP' && (() => {
                     const mcpServerUrl = `/mcp-servers/create/mcp-from-existing-api?apiId=${api.id}`;
                     return (
                         <>

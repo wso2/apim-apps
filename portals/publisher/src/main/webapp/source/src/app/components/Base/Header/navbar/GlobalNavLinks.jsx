@@ -63,6 +63,7 @@ function GlobalNavLinks(props) {
     const theme = useTheme();
     const intl = useIntl();
     const { data: settings } = usePublisherSettings();
+    const isMCPSupportEnabled = settings && settings.isMCPSupportEnabled;
     const [gateway, setGatewayType] = useState(true);
     
     const getGatewayType = () => {
@@ -114,20 +115,22 @@ function GlobalNavLinks(props) {
                         defaultMessage='APIs'
                     />
                 </GlobalNavLink>
-                <GlobalNavLink
-                    to='/mcp-servers'
-                    type='mcp-servers'
-                    title={intl.formatMessage({
-                        id: 'Base.Header.navbar.GlobalNavBar.title.mcp.servers',
-                        defaultMessage: 'MCP Servers',
-                    })}
-                    active={selected === 'mcp-servers'}
-                >
-                    <FormattedMessage
-                        id='Base.Header.navbar.GlobalNavBar.mcp.servers'
-                        defaultMessage='MCP Servers'
-                    />
-                </GlobalNavLink>
+                {isMCPSupportEnabled && (
+                    <GlobalNavLink
+                        to='/mcp-servers'
+                        type='mcp-servers'
+                        title={intl.formatMessage({
+                            id: 'Base.Header.navbar.GlobalNavBar.title.mcp.servers',
+                            defaultMessage: 'MCP Servers',
+                        })}
+                        active={selected === 'mcp-servers'}
+                    >
+                        <FormattedMessage
+                            id='Base.Header.navbar.GlobalNavBar.mcp.servers'
+                            defaultMessage='MCP Servers'
+                        />
+                    </GlobalNavLink>
+                )}
                 {gateway && (settings && !settings.portalConfigurationOnlyModeEnabled) && (
                     <div>
                         <GlobalNavLink

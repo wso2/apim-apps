@@ -513,7 +513,7 @@ class ApiConsole extends React.Component {
         const downloadSwagger = JSON.stringify({ ...swagger });
         const downloadLink = 'data:text/json;charset=utf-8, ' + encodeURIComponent(downloadSwagger);
         const fileName = 'swagger.json';
-        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        const isMCPServer = api.type === 'MCP';
 
         if (api == null || swagger == null) {
             return <Progress />;
@@ -617,7 +617,7 @@ class ApiConsole extends React.Component {
                         />
                     </Grid>
 
-                    {api.type !== 'SOAP' && !isMCPServersRoute && (
+                    {api.type !== 'SOAP' && !isMCPServer && (
                         <Grid container>
                             <Grid xs={7} item />
                             <Grid xs={2} item>
@@ -673,7 +673,7 @@ class ApiConsole extends React.Component {
                         </Grid>
                     )}
                 </Paper>
-                {!isMCPServersRoute && (
+                {!isMCPServer && (
                     <Paper className={classes.swaggerUIPaper}>
                         <SwaggerUI
                             api={this.state.api}
@@ -684,7 +684,7 @@ class ApiConsole extends React.Component {
                         />
                     </Paper>
                 )}
-                {isMCPServersRoute && (
+                {isMCPServer && (
                     <Grid container className={classes.grid}>
                         <MCPTryOut
                             api={this.state.api}

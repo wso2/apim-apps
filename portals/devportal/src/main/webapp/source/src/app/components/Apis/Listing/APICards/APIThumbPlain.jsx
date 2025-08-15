@@ -151,12 +151,12 @@ function APIThumbPlain(props) {
     const [technicalAnchorEl, setTechnicalAnchorEl] = useState(null);
     const [businessOpenPopover, setBusinessOpenPopover] = useState(false);
     const [technicalOpenPopover, setTechnicalOpenPopover] = useState(false);
-    const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
-    const pathPrefix = isMCPServersRoute ? '/mcp-servers/' : '/apis/';
+    const isMCPServer = api.type === 'MCP';
+    const pathPrefix = isMCPServer ? '/mcp-servers/' : '/apis/';
 
     useEffect(() => {
         let promisedThumbnail;
-        if (isMCPServersRoute) {
+        if (isMCPServer) {
             promisedThumbnail = new MCPServer().getMCPServerThumbnail(api.id);
         } else {
             promisedThumbnail = new Api().getAPIThumbnail(api.id);

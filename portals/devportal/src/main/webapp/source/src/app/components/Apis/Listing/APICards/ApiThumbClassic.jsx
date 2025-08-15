@@ -319,9 +319,8 @@ class ApiThumbClassicLegacy extends React.Component {
         const { imageLoaded } = this.state;
         if (imageLoaded) return;
         const { api } = this.props;
-        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
         let promisedThumbnail;
-        if (isMCPServersRoute) {
+        if (api.type === 'MCP') {
             promisedThumbnail = new MCPServer().getMCPServerThumbnail(api.id);
         } else {
             promisedThumbnail = new Api().getAPIThumbnail(api.id);
@@ -355,17 +354,6 @@ class ApiThumbClassicLegacy extends React.Component {
         }
     }
 
-    /**
-     * Get Path Prefix depedning on the respective API Type being rendered
-     *
-     * @returns {String} path
-     * @memberof ApiThumb
-     */
-    getPathPrefix() {
-        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
-        return isMCPServersRoute ? '/mcp-servers/' : '/apis/';
-    }
-
     handleBusinessPopoverOpen = (event) => {
         this.setState({ businessAnchorEl: event.currentTarget, buniessOpenPopover: true });
     };
@@ -391,13 +379,13 @@ class ApiThumbClassicLegacy extends React.Component {
         const {
             imageObj, selectedIcon, color, backgroundIndex, category, imageLoaded,
         } = this.state;
-        const path = this.getPathPrefix();
         const { isMonetizationEnabled } = this.context;
 
-        const detailsLink = path + this.props.api.id;
         const {
             api, theme, customWidth, customHeight, showInfo,
         } = this.props;
+        const path = api.type === 'MCP' ? '/mcp-servers/' : '/apis/';
+        const detailsLink = path + api.id;
         const { custom: { thumbnail, social: { showRating }, thumbnailTemplates: { variant, active } } } = theme;
         const { name, version, context } = api;
 

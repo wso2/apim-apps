@@ -38,6 +38,7 @@ import Subscription from 'AppData/Subscription';
 import Api from 'AppData/api';
 import { app } from 'Settings';
 import SubscriptionSection from './SubscriptionSection';
+import { useAreApisAccessible, useAreMcpServersAccessible } from '../../../utils/PortalModeUtils';
 
 const PREFIX = 'Subscriptions';
 
@@ -200,10 +201,10 @@ const StyledDialog = styled(Dialog)((
 /**
  *
  *
- * @class Subscriptions
+ * @class SubscriptionsBase
  * @extends {React.Component}
  */
-class Subscriptions extends React.Component {
+class SubscriptionsBase extends React.Component {
     /**
      *Creates an instance of Subscriptions.
      * @param {*} props properties
@@ -574,8 +575,10 @@ class Subscriptions extends React.Component {
             window.location = app.context + '/services/configs';
         }
 
-        const { applicationId } = this.props.application;
-        const { intl } = this.props;
+        const {
+            application, intl, apisAccessible, mcpServersAccessible,
+        } = this.props;
+        const { applicationId } = application;
 
         if (subscriptions) {
             return (
@@ -594,272 +597,280 @@ class Subscriptions extends React.Component {
                             />
                         </Typography>
 
-                        <SubscriptionSection
-                            title={(
-                                <FormattedMessage
-                                    id='Applications.Details.Subscriptions.subscribed.apis'
-                                    defaultMessage='Subscribed APIs'
-                                />
-                            )}
-                            buttonText={(
-                                <FormattedMessage
-                                    id='Applications.Details.Subscriptions.apis.add.subscription.button'
-                                    defaultMessage='Subscribe'
-                                />
-                            )}
-                            subscriptions={apiSubscriptions}
-                            subscriptionsNotFound={subscriptionsNotFound}
-                            pseudoSubscriptions={pseudoSubscriptions}
-                            onAddClick={this.handleOpenDialog}
-                            handleSubscriptionDelete={this.handleSubscriptionDelete}
-                            handleSubscriptionUpdate={this.handleSubscriptionUpdate}
-                            noSubscriptionsMessage={(
-                                <FormattedMessage
-                                    id='Applications.Details.Subscriptions.no.api.subscriptions'
-                                    defaultMessage='No API Subscriptions Available'
-                                />
-                            )}
-                            noSubscriptionsContent={(
-                                <FormattedMessage
-                                    id='Applications.Details.Subscriptions.no.api.subscriptions.content'
-                                    defaultMessage='No API subscriptions are available for this Application'
-                                />
-                            )}
-                            entityNameColumn={(
-                                <FormattedMessage
-                                    id='Applications.Details.Subscriptions.api.name'
-                                    defaultMessage='API'
-                                />
-                            )}
-                        />
+                        {apisAccessible && (
+                            <SubscriptionSection
+                                title={(
+                                    <FormattedMessage
+                                        id='Applications.Details.Subscriptions.subscribed.apis'
+                                        defaultMessage='Subscribed APIs'
+                                    />
+                                )}
+                                buttonText={(
+                                    <FormattedMessage
+                                        id='Applications.Details.Subscriptions.apis.add.subscription.button'
+                                        defaultMessage='Subscribe'
+                                    />
+                                )}
+                                subscriptions={apiSubscriptions}
+                                subscriptionsNotFound={subscriptionsNotFound}
+                                pseudoSubscriptions={pseudoSubscriptions}
+                                onAddClick={this.handleOpenDialog}
+                                handleSubscriptionDelete={this.handleSubscriptionDelete}
+                                handleSubscriptionUpdate={this.handleSubscriptionUpdate}
+                                noSubscriptionsMessage={(
+                                    <FormattedMessage
+                                        id='Applications.Details.Subscriptions.no.api.subscriptions'
+                                        defaultMessage='No API Subscriptions Available'
+                                    />
+                                )}
+                                noSubscriptionsContent={(
+                                    <FormattedMessage
+                                        id='Applications.Details.Subscriptions.no.api.subscriptions.content'
+                                        defaultMessage='No API subscriptions are available for this Application'
+                                    />
+                                )}
+                                entityNameColumn={(
+                                    <FormattedMessage
+                                        id='Applications.Details.Subscriptions.api.name'
+                                        defaultMessage='API'
+                                    />
+                                )}
+                            />
+                        )}
 
-                        <SubscriptionSection
-                            title={(
-                                <FormattedMessage
-                                    id='Applications.Details.Subscriptions.subscribed.mcp.servers'
-                                    defaultMessage='Subscribed MCP Servers'
-                                />
-                            )}
-                            buttonText={(
-                                <FormattedMessage
-                                    id='Applications.Details.Subscriptions.mcp.servers.add.subscription.button'
-                                    defaultMessage='Subscribe'
-                                />
-                            )}
-                            subscriptions={mcpSubscriptions}
-                            subscriptionsNotFound={subscriptionsNotFound}
-                            pseudoSubscriptions={pseudoMcpSubscriptions}
-                            onAddClick={this.handleOpenMcpDialog}
-                            handleSubscriptionDelete={this.handleSubscriptionDelete}
-                            handleSubscriptionUpdate={this.handleSubscriptionUpdate}
-                            noSubscriptionsMessage={(
-                                <FormattedMessage
-                                    id='Applications.Details.Subscriptions.no.mcp.subscriptions'
-                                    defaultMessage='No MCP Server Subscriptions Available'
-                                />
-                            )}
-                            noSubscriptionsContent={(
-                                <FormattedMessage
-                                    id='Applications.Details.Subscriptions.no.mcp.subscriptions.content'
-                                    defaultMessage='No MCP server subscriptions are available for this Application'
-                                />
-                            )}
-                            entityNameColumn={(
-                                <FormattedMessage
-                                    id='Applications.Details.Subscriptions.mcp.server.name'
-                                    defaultMessage='MCP Server'
-                                />
-                            )}
-                        />
+                        {mcpServersAccessible && (
+                            <SubscriptionSection
+                                title={(
+                                    <FormattedMessage
+                                        id='Applications.Details.Subscriptions.subscribed.mcp.servers'
+                                        defaultMessage='Subscribed MCP Servers'
+                                    />
+                                )}
+                                buttonText={(
+                                    <FormattedMessage
+                                        id='Applications.Details.Subscriptions.mcp.servers.add.subscription.button'
+                                        defaultMessage='Subscribe'
+                                    />
+                                )}
+                                subscriptions={mcpSubscriptions}
+                                subscriptionsNotFound={subscriptionsNotFound}
+                                pseudoSubscriptions={pseudoMcpSubscriptions}
+                                onAddClick={this.handleOpenMcpDialog}
+                                handleSubscriptionDelete={this.handleSubscriptionDelete}
+                                handleSubscriptionUpdate={this.handleSubscriptionUpdate}
+                                noSubscriptionsMessage={(
+                                    <FormattedMessage
+                                        id='Applications.Details.Subscriptions.no.mcp.subscriptions'
+                                        defaultMessage='No MCP Server Subscriptions Available'
+                                    />
+                                )}
+                                noSubscriptionsContent={(
+                                    <FormattedMessage
+                                        id='Applications.Details.Subscriptions.no.mcp.subscriptions.content'
+                                        defaultMessage='No MCP server subscriptions are available for this Application'
+                                    />
+                                )}
+                                entityNameColumn={(
+                                    <FormattedMessage
+                                        id='Applications.Details.Subscriptions.mcp.server.name'
+                                        defaultMessage='MCP Server'
+                                    />
+                                )}
+                            />
+                        )}
 
-                        <StyledDialog
-                            onClose={this.handleOpenDialog}
-                            aria-labelledby='simple-dialog-title'
-                            open={openDialog}
-                            fullWidth='true'
-                            maxWidth='sm'
-                            className={classes.subscribePop}
-                        >
-                            <Box className={classes.dialogHeader}>
-                                <MuiDialogTitle className={classes.dialogTitle} disableTypography>
-                                    <Typography variant='h6'>
-                                        <FormattedMessage
-                                            id='Applications.Details.Subscriptions.subscription.subscribe.apis'
-                                            defaultMessage='Subscribe to API(s)'
-                                        />
-                                    </Typography>
-                                </MuiDialogTitle>
-                                <Box className={classes.searchRoot}>
-                                    <Paper
-                                        component='form'
-                                        className={classes.searchBar}
-                                    >
-                                        {searchText && (
-                                            <HighlightOffIcon
-                                                className={classes.clearSearchIcon}
-                                                onClick={this.handleClearSearch}
+                        {apisAccessible && (
+                            <StyledDialog
+                                onClose={this.handleOpenDialog}
+                                aria-labelledby='simple-dialog-title'
+                                open={openDialog}
+                                fullWidth='true'
+                                maxWidth='sm'
+                                className={classes.subscribePop}
+                            >
+                                <Box className={classes.dialogHeader}>
+                                    <MuiDialogTitle className={classes.dialogTitle} disableTypography>
+                                        <Typography variant='h6'>
+                                            <FormattedMessage
+                                                id='Applications.Details.Subscriptions.subscription.subscribe.apis'
+                                                defaultMessage='Subscribe to API(s)'
                                             />
-                                        )}
-                                        <InputBase
-                                            className={classes.input}
-                                            placeholder={intl.formatMessage({
-                                                defaultMessage: 'Search APIs',
-                                                id: 'Applications.Details.Subscriptions.search',
-                                            })}
-                                            inputProps={{
-                                                'aria-label': intl.formatMessage({
+                                        </Typography>
+                                    </MuiDialogTitle>
+                                    <Box className={classes.searchRoot}>
+                                        <Paper
+                                            component='form'
+                                            className={classes.searchBar}
+                                        >
+                                            {searchText && (
+                                                <HighlightOffIcon
+                                                    className={classes.clearSearchIcon}
+                                                    onClick={this.handleClearSearch}
+                                                />
+                                            )}
+                                            <InputBase
+                                                className={classes.input}
+                                                placeholder={intl.formatMessage({
                                                     defaultMessage: 'Search APIs',
                                                     id: 'Applications.Details.Subscriptions.search',
-                                                }),
-                                            }}
-                                            inputRef={(el) => { this.searchInputElem = el; }}
-                                            onChange={this.handleSearchTextTmpChange}
-                                            onKeyDown={this.handleEnterPress}
-                                        />
-                                        <IconButton
-                                            className={classes.iconButton}
-                                            aria-label='search'
-                                            onClick={this.handleSearchTextChange}
-                                            size='large'
-                                        >
-                                            <SearchIcon />
-                                        </IconButton>
-                                    </Paper>
-                                    <Box className={classes.searchResults}>
-                                        {(searchText && searchText !== '') ? (
-                                            <>
+                                                })}
+                                                inputProps={{
+                                                    'aria-label': intl.formatMessage({
+                                                        defaultMessage: 'Search APIs',
+                                                        id: 'Applications.Details.Subscriptions.search',
+                                                    }),
+                                                }}
+                                                inputRef={(el) => { this.searchInputElem = el; }}
+                                                onChange={this.handleSearchTextTmpChange}
+                                                onKeyDown={this.handleEnterPress}
+                                            />
+                                            <IconButton
+                                                className={classes.iconButton}
+                                                aria-label='search'
+                                                onClick={this.handleSearchTextChange}
+                                                size='large'
+                                            >
+                                                <SearchIcon />
+                                            </IconButton>
+                                        </Paper>
+                                        <Box className={classes.searchResults}>
+                                            {(searchText && searchText !== '') ? (
+                                                <>
+                                                    <Typography variant='caption'>
+                                                        <FormattedMessage
+                                                            id='Applications.Details.Subscriptions.filter.msg'
+                                                            defaultMessage='Filtered APIs for'
+                                                        />
+                                                        {` ${searchText}`}
+                                                    </Typography>
+                                                </>
+                                            ) : (
                                                 <Typography variant='caption'>
                                                     <FormattedMessage
-                                                        id='Applications.Details.Subscriptions.filter.msg'
-                                                        defaultMessage='Filtered APIs for'
+                                                        id='Applications.Details.Subscriptions.filter.msg.all.apis'
+                                                        defaultMessage='Displaying all APIs'
                                                     />
-                                                    {` ${searchText}`}
                                                 </Typography>
-                                            </>
-                                        ) : (
-                                            <Typography variant='caption'>
-                                                <FormattedMessage
-                                                    id='Applications.Details.Subscriptions.filter.msg.all.apis'
-                                                    defaultMessage='Displaying all APIs'
-                                                />
-                                            </Typography>
-                                        )}
+                                            )}
+                                        </Box>
                                     </Box>
-                                </Box>
-                                <IconButton
-                                    aria-label='close'
-                                    className={classes.closeButton}
-                                    onClick={this.handleOpenDialog}
-                                    size='large'
-                                >
-                                    <Icon>cancel</Icon>
-                                </IconButton>
-                            </Box>
-                            <Box padding={2}>
-                                <APIList
-                                    apisNotFound={apisNotFound}
-                                    subscriptions={apiSubscriptions || []}
-                                    applicationId={applicationId}
-                                    handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
-                                    searchText={searchText}
-                                />
-                            </Box>
-                        </StyledDialog>
-
-                        <StyledDialog
-                            onClose={this.handleOpenMcpDialog}
-                            aria-labelledby='mcp-dialog-title'
-                            open={openMcpDialog}
-                            fullWidth='true'
-                            maxWidth='sm'
-                            className={classes.subscribePop}
-                        >
-                            <Box className={classes.dialogHeader}>
-                                <MuiDialogTitle className={classes.dialogTitle} disableTypography>
-                                    <Typography variant='h6'>
-                                        <FormattedMessage
-                                            id='Applications.Details.Subscriptions.subscription.subscribe.mcp.servers'
-                                            defaultMessage='Subscribe to MCP Server(s)'
-                                        />
-                                    </Typography>
-                                </MuiDialogTitle>
-                                <Box className={classes.searchRoot}>
-                                    <Paper
-                                        component='form'
-                                        className={classes.searchBar}
+                                    <IconButton
+                                        aria-label='close'
+                                        className={classes.closeButton}
+                                        onClick={this.handleOpenDialog}
+                                        size='large'
                                     >
-                                        {searchText && (
-                                            <HighlightOffIcon
-                                                className={classes.clearSearchIcon}
-                                                onClick={this.handleClearSearch}
+                                        <Icon>cancel</Icon>
+                                    </IconButton>
+                                </Box>
+                                <Box padding={2}>
+                                    <APIList
+                                        apisNotFound={apisNotFound}
+                                        subscriptions={apiSubscriptions || []}
+                                        applicationId={applicationId}
+                                        handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
+                                        searchText={searchText}
+                                    />
+                                </Box>
+                            </StyledDialog>
+                        )}
+
+                        {mcpServersAccessible && (
+                            <StyledDialog
+                                onClose={this.handleOpenMcpDialog}
+                                aria-labelledby='mcp-dialog-title'
+                                open={openMcpDialog}
+                                fullWidth='true'
+                                maxWidth='sm'
+                                className={classes.subscribePop}
+                            >
+                                <Box className={classes.dialogHeader}>
+                                    <MuiDialogTitle className={classes.dialogTitle} disableTypography>
+                                        <Typography variant='h6'>
+                                            <FormattedMessage
+                                                id='Applications.Details.Subscriptions.subscription.subscribe.mcp.servers'
+                                                defaultMessage='Subscribe to MCP Server(s)'
                                             />
-                                        )}
-                                        <InputBase
-                                            className={classes.input}
-                                            placeholder={intl.formatMessage({
-                                                defaultMessage: 'Search MCP Servers',
-                                                id: 'Applications.Details.Subscriptions.search.mcp',
-                                            })}
-                                            inputProps={{
-                                                'aria-label': intl.formatMessage({
+                                        </Typography>
+                                    </MuiDialogTitle>
+                                    <Box className={classes.searchRoot}>
+                                        <Paper
+                                            component='form'
+                                            className={classes.searchBar}
+                                        >
+                                            {searchText && (
+                                                <HighlightOffIcon
+                                                    className={classes.clearSearchIcon}
+                                                    onClick={this.handleClearSearch}
+                                                />
+                                            )}
+                                            <InputBase
+                                                className={classes.input}
+                                                placeholder={intl.formatMessage({
                                                     defaultMessage: 'Search MCP Servers',
                                                     id: 'Applications.Details.Subscriptions.search.mcp',
-                                                }),
-                                            }}
-                                            inputRef={(el) => { this.searchInputElem = el; }}
-                                            onChange={this.handleSearchTextTmpChange}
-                                            onKeyDown={this.handleEnterPress}
-                                        />
-                                        <IconButton
-                                            className={classes.iconButton}
-                                            aria-label='search'
-                                            onClick={this.handleSearchTextChange}
-                                            size='large'
-                                        >
-                                            <SearchIcon />
-                                        </IconButton>
-                                    </Paper>
-                                    <Box className={classes.searchResults}>
-                                        {(searchText && searchText !== '') ? (
-                                            <>
+                                                })}
+                                                inputProps={{
+                                                    'aria-label': intl.formatMessage({
+                                                        defaultMessage: 'Search MCP Servers',
+                                                        id: 'Applications.Details.Subscriptions.search.mcp',
+                                                    }),
+                                                }}
+                                                inputRef={(el) => { this.searchInputElem = el; }}
+                                                onChange={this.handleSearchTextTmpChange}
+                                                onKeyDown={this.handleEnterPress}
+                                            />
+                                            <IconButton
+                                                className={classes.iconButton}
+                                                aria-label='search'
+                                                onClick={this.handleSearchTextChange}
+                                                size='large'
+                                            >
+                                                <SearchIcon />
+                                            </IconButton>
+                                        </Paper>
+                                        <Box className={classes.searchResults}>
+                                            {(searchText && searchText !== '') ? (
+                                                <>
+                                                    <Typography variant='caption'>
+                                                        <FormattedMessage
+                                                            id='Applications.Details.Subscriptions.filter.mcp.msg'
+                                                            defaultMessage='Filtered MCP Servers for'
+                                                        />
+                                                        {` ${searchText}`}
+                                                    </Typography>
+                                                </>
+                                            ) : (
                                                 <Typography variant='caption'>
                                                     <FormattedMessage
-                                                        id='Applications.Details.Subscriptions.filter.mcp.msg'
-                                                        defaultMessage='Filtered MCP Servers for'
+                                                        id='Applications.Details.Subscriptions.filter.msg.all.mcp'
+                                                        defaultMessage='Displaying all MCP Servers'
                                                     />
-                                                    {` ${searchText}`}
                                                 </Typography>
-                                            </>
-                                        ) : (
-                                            <Typography variant='caption'>
-                                                <FormattedMessage
-                                                    id='Applications.Details.Subscriptions.filter.msg.all.mcp'
-                                                    defaultMessage='Displaying all MCP Servers'
-                                                />
-                                            </Typography>
-                                        )}
+                                            )}
+                                        </Box>
                                     </Box>
+                                    <IconButton
+                                        aria-label='close'
+                                        className={classes.closeButton}
+                                        onClick={this.handleOpenMcpDialog}
+                                        size='large'
+                                    >
+                                        <Icon>cancel</Icon>
+                                    </IconButton>
                                 </Box>
-                                <IconButton
-                                    aria-label='close'
-                                    className={classes.closeButton}
-                                    onClick={this.handleOpenMcpDialog}
-                                    size='large'
-                                >
-                                    <Icon>cancel</Icon>
-                                </IconButton>
-                            </Box>
-                            <Box padding={2}>
-                                <APIList
-                                    apisNotFound={apisNotFound}
-                                    subscriptions={mcpSubscriptions || []}
-                                    applicationId={applicationId}
-                                    handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
-                                    searchText={searchText}
-                                    entityType='mcp'
-                                />
-                            </Box>
-                        </StyledDialog>
+                                <Box padding={2}>
+                                    <APIList
+                                        apisNotFound={apisNotFound}
+                                        subscriptions={mcpSubscriptions || []}
+                                        applicationId={applicationId}
+                                        handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
+                                        searchText={searchText}
+                                        entityType='mcp'
+                                    />
+                                </Box>
+                            </StyledDialog>
+                        )}
                     </Box>
                 </Root>
             );
@@ -868,7 +879,8 @@ class Subscriptions extends React.Component {
         }
     }
 }
-Subscriptions.propTypes = {
+
+SubscriptionsBase.propTypes = {
     application: PropTypes.shape({
         applicationId: PropTypes.string.isRequired,
     }).isRequired,
@@ -876,6 +888,33 @@ Subscriptions.propTypes = {
     intl: PropTypes.shape({
         formatMessage: PropTypes.func.isRequired,
     }).isRequired,
+    apisAccessible: PropTypes.bool.isRequired,
+    mcpServersAccessible: PropTypes.bool.isRequired,
 };
 
-export default injectIntl((Subscriptions));
+/**
+ * Wrapper component that provides portal mode accessibility to SubscriptionsBase
+ * @param {Object} props - Component props
+ * @returns {React.ReactElement} SubscriptionsBase with portal mode props
+ */
+const Subscriptions = (props) => {
+    const apisAccessible = useAreApisAccessible();
+    const mcpServersAccessible = useAreMcpServersAccessible();
+
+    return (
+        <SubscriptionsBase
+            {...props}
+            apisAccessible={apisAccessible}
+            mcpServersAccessible={mcpServersAccessible}
+        />
+    );
+};
+
+Subscriptions.propTypes = {
+    application: PropTypes.shape({
+        applicationId: PropTypes.string.isRequired,
+    }).isRequired,
+    getApplication: PropTypes.func.isRequired,
+};
+
+export default injectIntl(Subscriptions);
