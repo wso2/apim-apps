@@ -112,6 +112,7 @@ class TableView extends React.Component {
         };
         this.setListType = this.setListType.bind(this);
         this.updateData = this.updateData.bind(this);
+        this.getDisplayStatus = this.getDisplayStatus.bind(this);
     }
 
     /**
@@ -250,6 +251,18 @@ class TableView extends React.Component {
         localStorage.setItem('publisher.listType', value);
         this.setState({ listType: value });
     };
+
+    /**
+     * Get the display status for the table
+     * @returns {string} 'excluded' or 'true'
+     */
+    getDisplayStatus = () => {
+        const { isAPIProduct, isMCPServer } = this.props;
+        if (isAPIProduct || isMCPServer) {
+            return 'excluded';
+        }
+        return 'true';
+    }
 
     changePage = (page) => {
         const { intl } = this.props;
@@ -430,7 +443,7 @@ class TableView extends React.Component {
                         return '-';
                     },
                     sort: false,
-                    display: isAPIProduct ? 'excluded' : 'true',
+                    display: this.getDisplayStatus(),
                     filter: false,
                 },
             },
