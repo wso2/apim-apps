@@ -804,7 +804,7 @@ class APIDefinition extends React.Component {
                             size='small'
                             className={classes.button}
                             onClick={this.openEditor}
-                            disabled={isRestricted(['apim:api_create'], api)}
+                            disabled={isRestricted(['apim:api_create'], api) || api.initiatedFromGateway}
                         >
                             <EditRounded className={classes.buttonIcon} />
                             <FormattedMessage
@@ -819,7 +819,8 @@ class APIDefinition extends React.Component {
                                 className={classes.button}
                                 onClick={this.openEditor}
                                 disabled={isRestricted(['apim:api_create'], api) || api.isRevision
-                                || (settings && settings.portalConfigurationOnlyModeEnabled)}
+                                || (settings && settings.portalConfigurationOnlyModeEnabled) 
+                                || api.initiatedFromGateway}
                                 id='edit-definition-btn'
                             >
                                 <EditRounded className={classes.buttonIcon} />
@@ -830,7 +831,7 @@ class APIDefinition extends React.Component {
                             </Button>
                         )
                     )}
-                    {!isApiProduct && (
+                    {(!api.initiatedFromGateway && !isApiProduct) && (
                         <ImportDefinition setSchemaDefinition={this.setSchemaDefinition} 
                             editAndImport={this.openEditorToImport}/>
                     )}

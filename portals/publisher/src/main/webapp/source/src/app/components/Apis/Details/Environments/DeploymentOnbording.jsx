@@ -302,7 +302,7 @@ export default function DeploymentOnboarding(props) {
             ? isEndpointSecurityConfigured
             : true
         )
-    )) || api.workflowStatus === 'CREATED');
+    )) || api.workflowStatus === 'CREATED' || api.initiatedFromGateway);
 
     /**
      * Handle Description

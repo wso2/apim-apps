@@ -30,6 +30,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
 import API from 'AppData/api';
 import Popover from '@mui/material/Popover';
+import Tooltip from '@mui/material/Tooltip';
 import DeleteApiButton from 'AppComponents/Apis/Details/components/DeleteApiButton';
 import Configurations from 'Config';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
@@ -53,6 +54,7 @@ const classes = {
     thumbRight: `${PREFIX}-thumbRight`,
     thumbInfo: `${PREFIX}-thumbInfo`,
     textTruncate: `${PREFIX}-textTruncate`,
+    truncateProvider: `${PREFIX}-truncateProvider`,
     imageOverlap: `${PREFIX}-imageOverlap`,
     row: `${PREFIX}-row`,
     textWrapper: `${PREFIX}-textWrapper`,
@@ -130,6 +132,15 @@ const StyledCard = styled(Card)((
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+    },
+
+    [`& .${classes.truncateProvider}`]: {
+        display: 'inline-block',
+        maxWidth: '40%',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        verticalAlign: 'bottom',
     },
 
     [`& .${classes.imageOverlap}`]: {
@@ -320,12 +331,27 @@ class APIThumb extends Component {
                         </Link>
                     </div>
                     <div className={classes.row}>
-                        <Typography variant='caption' gutterBottom align='left'>
-                            <FormattedMessage id='by' defaultMessage='By' />
-                            <FormattedMessage id='colon' defaultMessage=':' />
-                            &nbsp;
-                            {api.provider}
-                        </Typography>
+                        <div className={classes.thumbLeft}>
+                            <Typography variant='caption' gutterBottom align='left'>
+                                <FormattedMessage id='by' defaultMessage='By' />
+                                &nbsp;
+                                <Tooltip title={api.provider} arrow>
+                                    <span className={classes.truncateProvider}>
+                                        {api.provider}
+                                    </span>
+                                </Tooltip>
+                                {!isAPIProduct && (
+                                    <>
+                                        &nbsp;
+                                        <FormattedMessage id='on' defaultMessage='on' />
+                                        &nbsp;
+                                        {api.gatewayVendor === 'wso2' || api.gatewayVendor === 'solace'
+                                            ? api.gatewayVendor.toUpperCase()
+                                            : api.gatewayType}
+                                    </>
+                                )}
+                            </Typography>
+                        </div>
                     </div>
                     <div className={classes.row}>
                         <div className={classes.thumbLeft}>

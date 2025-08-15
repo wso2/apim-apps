@@ -643,7 +643,7 @@ export default function Environments() {
     const [governanceError, setGovernanceError] = useState('');
 
     const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
-        || api.workflowStatus === 'CREATED');
+        || api.workflowStatus === 'CREATED' || api.initiatedFromGateway);
 
     const externalEnvWithEndpoints = [];
     useEffect(() => {
@@ -1729,7 +1729,7 @@ export default function Environments() {
         >
             <Grid item className={classes.shapeRec} />
             <Grid item className={clsx(classes.shapeCircleBack, classes.shapeCircle)}>
-                {api.advertiseInfo && api.advertiseInfo.advertised ? (
+                {(api.advertiseInfo && api.advertiseInfo.advertised) || api.initiatedFromGateway ? (
                     <Grid
                         className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
                         style={{ cursor: 'pointer' }}
@@ -1920,7 +1920,8 @@ export default function Environments() {
                                     )}
                                     size='small'
                                     type='submit'
-                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) 
+                                        || api.initiatedFromGateway}
                                     startIcon={<RestoreIcon />}
                                 >
                                     <FormattedMessage
@@ -1970,7 +1971,8 @@ export default function Environments() {
                                         allRevisions[revision].displayName, allRevisions[revision].id,
                                     )}
                                     size='small'
-                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) 
+                                        || api.initiatedFromGateway}
                                     type='submit'
                                     startIcon={<RestoreIcon />}
                                 >
@@ -2451,7 +2453,7 @@ export default function Environments() {
                     <Button
                         className={classes.button1}
                         variant='outlined'
-                        disabled={isUndeploying || api.isRevision ||
+                        disabled={isUndeploying || api.isRevision || api.initiatedFromGateway ||
                             (settings && settings.portalConfigurationOnlyModeEnabled) ||
                             isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                         onClick={() => undeployRevision(approvedDeployment.id, row.name)}

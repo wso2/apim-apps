@@ -550,6 +550,7 @@
   "Base.Header.headersearch.HeaderSearch.tooltip.option1": "Name [ Syntax - name:xxxx ]",
   "Base.Header.headersearch.HeaderSearch.tooltip.option10": "By API Properties [Syntax - property_name:property_value]",
   "Base.Header.headersearch.HeaderSearch.tooltip.option12": "By Api Category [ Syntax - api-category:xxxx ]",
+  "Base.Header.headersearch.HeaderSearch.tooltip.option13": "Gateway Vendor [ Syntax - vendor:xxxx ]",
   "Base.Header.headersearch.HeaderSearch.tooltip.option2": "By API Provider [ Syntax - provider:xxxx ]",
   "Base.Header.headersearch.HeaderSearch.tooltip.option3": "By API Version [ Syntax - version:xxxx ]",
   "Base.Header.headersearch.HeaderSearch.tooltip.option4": "By Context [ Syntax - context:xxxx ]",

@@ -58,7 +58,8 @@ export default function CustomSplitButton(props) {
 
     const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && (!isCustomBackendSelected && !isEndpointAvailable)))
     || (!isMutualSslOnly && !isTierAvailable)
-    || api.workflowStatus === 'CREATED');
+    || api.workflowStatus === 'CREATED'
+    || api.initiatedFromGateway);
 
     const handleClick = (event, index) => {
         setSelectedIndex(index);

@@ -33,7 +33,7 @@ const StyledFormControl = styled(FormControl)(({ theme }) => ({
  * @returns {React.Component}
  */
 /**
- * Gateway Agent configuration
+ * Gateway Connector configuration
  * @param {JSON} props props passed from parents.
  * @returns {JSX} gateway agent connection configuration form.
  */
@@ -122,7 +122,7 @@ GatewayConfiguration.defaultProps = {
     required: false,
     helperText: <FormattedMessage
         id='Gateway.Configuration.Helper.text'
-        defaultMessage='Add Gateway Agent Configurations'
+        defaultMessage='Add Gateway Connector Configurations'
     />,
     hasErrors: () => {},
     validating: false,
