@@ -327,6 +327,70 @@ const Tools = ({
     // Operations state management
     const [operations, operationsDispatcher] = useReducer(operationsReducer, {});
 
+    /**
+     * Filter out operations that are already added to the MCP server
+     * @param {Array} availableOps - Array of available operations
+     * @param {Object} currentOps - Current operations in the MCP server
+     * @param {string} excludeTarget - Optional target to exclude from filtering (for editing)
+     * @returns {Array} - Filtered available operations
+     */
+    function filterAlreadyAddedOperations(availableOps, currentOps, excludeTarget = null) {
+        if (!availableOps || !Array.isArray(availableOps)) {
+            return [];
+        }
+
+        const currentOperationKeys = new Set();
+        
+        // Collect all current operation targets and their verb-target combinations
+        Object.entries(currentOps).forEach(([target, operation]) => {
+            // Skip the operation being edited - this allows the current operation to remain available
+            if (excludeTarget && target === excludeTarget) {
+                return;
+            }
+            
+            // Add verb-target combinations from backend mappings
+            if (operation.backendOperationMapping?.backendOperation) {
+                const backendOp = operation.backendOperationMapping.backendOperation;
+                const key = `${backendOp.verb}_${backendOp.target}`;
+                currentOperationKeys.add(key);
+                // Also add just the target for broader matching in some cases
+                currentOperationKeys.add(backendOp.target);
+            }
+            
+            // Add verb-target combinations from API mappings
+            if (operation.apiOperationMapping?.backendOperation) {
+                const apiOp = operation.apiOperationMapping.backendOperation;
+                const key = `${apiOp.verb}_${apiOp.target}`;
+                currentOperationKeys.add(key);
+                // Also add just the target for broader matching in some cases
+                currentOperationKeys.add(apiOp.target);
+            }
+        });
+
+        // Filter out operations that are already added
+        return availableOps.filter(operation => {
+            const verbTargetKey = `${operation.verb}_${operation.target}`;
+            const targetKey = operation.target;
+            
+            // Check if this operation is already used by another tool
+            // We check both the precise verb-target combination and just the target
+            return !currentOperationKeys.has(verbTargetKey) && !currentOperationKeys.has(targetKey);
+        });
+    }
+
+    /**
+     * Get filtered available operations for components
+     * This function dynamically filters based on current operations state,
+     * ensuring that when a tool's operation mapping is updated, the old operation
+     * becomes available again and the new operation is removed from available options.
+     * 
+     * @param {string} excludeTarget - Optional target to exclude from filtering (for editing)
+     * @returns {Array} - Filtered available operations
+     */
+    function getFilteredAvailableOperations(excludeTarget = null) {
+        return filterAlreadyAddedOperations(availableOperations, operations, excludeTarget);
+    }
+
     const enableSecurity = () => {
         operationsDispatcher({ action: 'removeAllSecurity', data: { disable: false } });
     };
@@ -725,7 +789,7 @@ const Tools = ({
                     <Grid item md={12} xs={12}>
                         <AddTool
                             operationsDispatcher={operationsDispatcher}
-                            availableOperations={availableOperations}
+                            availableOperations={getFilteredAvailableOperations()}
                             api={api}
                         />
                     </Grid>
@@ -776,7 +840,7 @@ const Tools = ({
                                             resolvedSpec={{}}
                                             highlight={false}
                                             disableDelete={false}
-                                            availableOperations={availableOperations}
+                                            availableOperations={getFilteredAvailableOperations(target)}
                                         />
                                     </Grid>
                                 ))}
@@ -808,21 +872,15 @@ const Tools = ({
 }
 
 Tools.defaultProps = {
-    // operationProps: { disableDelete: false },
     disableUpdate: false,
     disableRateLimiting: false,
-    // disableMultiSelect: false,
     disableAddOperation: false,
 }
 
 Tools.propTypes = {
     disableRateLimiting: PropTypes.bool,
-    // disableMultiSelect: PropTypes.bool,
     disableAddOperation: PropTypes.bool,
     disableUpdate: PropTypes.bool,
-    // operationProps: PropTypes.shape({
-    //     disableDelete: PropTypes.bool,
-    // }),
 }
 
 export default Tools;
