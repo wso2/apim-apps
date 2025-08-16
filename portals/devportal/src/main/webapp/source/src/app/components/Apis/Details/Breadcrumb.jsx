@@ -156,7 +156,7 @@ export default function Breadcrumb(props) {
                         component={Link}
                         underline='hover'
                     >
-                        {api.name}
+                        {api.displayName || api.name}
                     </MUILink>
                     {(selected.route === 'api-console' || selected.route === 'api-chat') && (
                         <Typography color='textPrimary'>
