@@ -62,6 +62,7 @@ import DefaultVersion from './components/DefaultVersion';
 import DescriptionEditor from './components/DescriptionEditor';
 import AccessControl from './components/AccessControl';
 import AdvertiseInfo from './components/AdvertiseInfo';
+import DisplayName from './components/DisplayName';
 import StoreVisibility from './components/StoreVisibility';
 import Tags from './components/Tags';
 import Social from './components/Social';
@@ -205,6 +206,7 @@ function copyAPIConfig(api) {
     const copiedConfig = {
         id: api.id,
         name: api.name,
+        displayName: api.displayName,
         description: api.description,
         lifeCycleStatus: api.lifeCycleStatus,
         accessControl: api.accessControl,
@@ -295,6 +297,7 @@ function configReducer(state, configAction) {
     const { action, value } = configAction;
     const nextState = copyAPIConfig(state);
     switch (action) {
+        case 'displayName': 
         case 'description':
         case 'isDefaultVersion':
         case 'authorizationHeader':
@@ -906,6 +909,9 @@ export default function DesignConfigurations() {
                                                 />
                                             </Grid>
                                         </Grid>
+                                    </Box>
+                                    <Box py={1}>
+                                        <DisplayName api={apiConfig} configDispatcher={configDispatcher}/>
                                     </Box>
                                     <Box py={1}>
                                         <APIDescription

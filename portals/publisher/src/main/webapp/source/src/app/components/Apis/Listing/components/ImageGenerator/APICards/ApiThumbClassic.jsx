@@ -326,7 +326,7 @@ class APIThumb extends Component {
                                 className={classes.thumbHeader}
                                 title={api.name}
                                 id={api.name}>
-                                {api.name}
+                                {api.displayName || api.name}
                             </Typography>
                         </Link>
                     </div>
