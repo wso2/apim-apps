@@ -151,8 +151,9 @@ export default function OperationGovernance(props) {
                                             <FormattedMessage
                                                 id={'Apis.Details.Resources.components.operationComponents.'
                                 + 'OperationGovernance.rate.limiting.governed.by'}
-                                                defaultMessage='Rate limiting is governed by '
+                                                defaultMessage='Rate limiting is governed by'
                                             />
+                                            {' '}
                                             <Box
                                                 fontWeight='fontWeightBold'
                                                 display='inline'
@@ -190,8 +191,9 @@ export default function OperationGovernance(props) {
                                             <FormattedMessage
                                                 id={'Apis.Details.Resources.components.operationComponents.'
                                 + 'OperationGovernance.rate.limiting.helperText.section1'}
-                                                defaultMessage='Use '
+                                                defaultMessage='Use'
                                             />
+                                            {' '}
                                             <Box fontWeight='fontWeightBold' display='inline' color='primary.main'>
                                                 <FormattedMessage
                                                     id={'Apis.Details.Resources.components.operationComponents.'
@@ -199,11 +201,13 @@ export default function OperationGovernance(props) {
                                                     defaultMessage='Operation Level'
                                                 />
                                             </Box>
+                                            {' '}
                                             <FormattedMessage
                                                 id={'Apis.Details.Resources.components.operationComponents.'
                                 + 'OperationGovernance.rate.limiting.helperText.section3'}
-                                                defaultMessage=' rate limiting to '
+                                                defaultMessage='rate limiting to'
                                             />
+                                            {' '}
                                             <b>
                                                 <FormattedMessage
                                                     id={'Apis.Details.Resources.components.operationComponents.'
@@ -211,10 +215,11 @@ export default function OperationGovernance(props) {
                                                     defaultMessage='enable'
                                                 />
                                             </b>
+                                            {' '}
                                             <FormattedMessage
                                                 id={'Apis.Details.Resources.components.operationComponents.'
                                 + 'OperationGovernance.rate.limiting.helperText.section5'}
-                                                defaultMessage=' rate limiting per operation'
+                                                defaultMessage='rate limiting per operation'
                                             />
                                         </span>
                                     )

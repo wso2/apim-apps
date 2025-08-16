@@ -163,6 +163,43 @@ const Tools = ({
     }
 
     /**
+     * Map operation to API format for sending to backend
+     * @param {string} name - The operation name
+     * @param {Object} operation - The operation object
+     * @returns {Object} - The mapped operation for API
+     */
+    function mapOperationForAPI(name, operation) {
+        return {
+            id: operation.id || '',
+            target: operation.target || name,
+            feature: 'TOOL',
+            authType: operation['x-auth-type'] || 'Application & Application User',
+            throttlingPolicy: operation.throttlingPolicy || 'Unlimited',
+            description: operation.description || '',
+            schemaDefinition: operation.schemaDefinition,
+            scopes: operation.scopes || [],
+            payloadSchema: operation.payloadSchema || null,
+            uriMapping: operation.uriMapping || null,
+            operationPolicies: operation.operationPolicies || {
+                request: [],
+                response: [],
+                fault: []
+            },
+            backendOperationMapping: operation.apiOperationMapping
+                ? null
+                : (operation.backendOperationMapping || {
+                    backendId: operation.backendOperationMapping?.backendId || (mcpEndpoints?.[0]?.id || ''),
+                    backendOperation: {
+                        target: (operation.backendOperationMapping?.backendOperation?.target
+                            || operation.target || name),
+                        verb: operation.backendOperationMapping?.backendOperation?.verb || 'GET'
+                    }
+                }),
+            apiOperationMapping: operation.apiOperationMapping || null
+        };
+    }
+
+    /**
      * Operations reducer for MCP tools management
      * @param {Object} currentOperations Current state
      * @param {Object} operationAction action and payload  
@@ -263,6 +300,18 @@ const Tools = ({
                     return { ...currentOperations, [target]: updatedOperation };
                 }
                 break;
+            case 'updateApiThrottlingPolicy':
+                // This action is handled at the component level, not in the operations reducer
+                // It's used to trigger API-level throttling policy updates
+                return currentOperations;
+            case 'batchUpdate': {
+                // Handle batch updates for multiple operations or API-level changes
+                const { operations: batchOperations } = data;
+                if (batchOperations) {
+                    return { ...currentOperations, ...batchOperations };
+                }
+                return currentOperations;
+            }
             case 'add': {
                 const { name, description, selectedOperation } = data;
                 if (!name || !selectedOperation) {
@@ -561,6 +610,8 @@ const Tools = ({
         () => ({
             id: api.id,
             throttlingPolicy,
+            // Set apiThrottlingPolicy to null when throttlingPolicy is null to enable operation-level throttling
+            apiThrottlingPolicy: throttlingPolicy === null ? null : throttlingPolicy,
             scopes: api.scopes,
             operations: api.isAPIProduct() ? {} : mapAPIOperations(api.operations),
             endpointConfig: mcpEndpoints.endpointConfig,
@@ -585,71 +636,7 @@ const Tools = ({
         operationsDispatcher({ action: 'init', data: operationsMap });
     }
 
-    /**
-     * Update MCP Server tools using API update
-     * @param {Object} toolsOperations Updated tools operations
-     * @returns {Promise} Promise resolving to updated API object
-     */
-    function updateMCPServerTools(toolsOperations) {
-        console.log('Updating MCP Server tools with operations:', toolsOperations);
-        const operationsArray = Object.entries(toolsOperations).map(([name, operation]) => {
-            const mappedOperation = {
-                id: operation.id || '',
-                target: operation.target || name,
-                feature: 'TOOL',
-                authType: operation['x-auth-type'] || 'Application & Application User',
-                throttlingPolicy: operation.throttlingPolicy || 'Unlimited',
-                description: operation.description || '',
-                schemaDefinition: operation.schemaDefinition,
-                scopes: operation.scopes || [],
-                payloadSchema: operation.payloadSchema || null,
-                uriMapping: operation.uriMapping || null,
-                operationPolicies: operation.operationPolicies || {
-                    request: [],
-                    response: [],
-                    fault: []
-                },
-                backendOperationMapping: operation.apiOperationMapping ? null : (operation.backendOperationMapping || {
-                    backendId: operation.backendOperationMapping?.backendId || (mcpEndpoints?.[0]?.id || ''),
-                    backendOperation: {
-                        target: operation.backendOperationMapping?.backendOperation?.target || operation.target || name,
-                        verb: operation.backendOperationMapping?.backendOperation?.verb || 'GET'
-                    }
-                }),
-                apiOperationMapping: operation.apiOperationMapping || null
-            };
-            console.log(`Mapped operation for ${name}:`, mappedOperation);
-            return mappedOperation;
-        });
 
-        return updateAPI({ operations: operationsArray })
-            .then((updatedApi) => {
-                // Update local operations state with the response from API
-                const operationsMap = {};
-                if (updatedApi.operations && updatedApi.operations.length > 0) {
-                    updatedApi.operations.forEach(operation => {
-                        const formattedOperation = createOperationFromAPI(operation);
-                        if (formattedOperation) {
-                            operationsMap[formattedOperation.target] = formattedOperation;
-                        }
-                    });
-                }
-                operationsDispatcher({ action: 'init', data: operationsMap });
-                
-                // Clear marked operations after successful update
-                setSelectedOperation({});
-                
-                return updatedApi;
-            })
-            .catch((error) => {
-                console.error(error);
-                Alert.error(intl.formatMessage({
-                    id: 'MCPServers.Details.Tools.update.error',
-                    defaultMessage: 'Error while updating MCP Server tools',
-                }));
-                throw error;
-            });
-    }
 
     /**
      * Save the MCP Server tools changes
@@ -688,24 +675,58 @@ const Tools = ({
                 return Promise.reject(new Error('Unsupported tool operation!'));
         }
 
-        if (throttlingPolicy !== api.throttlingPolicy) {
-            return updateAPI({ throttlingPolicy })
-                .then((updatedApi) => {
-                    setThrottlingPolicy(updatedApi.throttlingPolicy);
-                    return updatedApi;
-                })
-                .catch((error) => {
-                    console.error(error);
-                    Alert.error(intl.formatMessage({
-                        id: 'MCPServers.Details.Tools.api.update.error',
-                        defaultMessage: 'Error while updating the MCP Server',
-                    }));
-                    throw error;
-                })
-                .then(() => updateMCPServerTools(copyOfOperations));
-        } else {
-            return updateMCPServerTools(copyOfOperations);
+        // Prepare the update payload based on what needs to be updated
+        const updatePayload = {};
+        const throttlingPolicyChanged = throttlingPolicy !== api.throttlingPolicy;
+        
+        if (throttlingPolicyChanged) {
+            updatePayload.throttlingPolicy = throttlingPolicy;
         }
+
+        // Always include operations in the payload
+        const operationsArray = Object.entries(copyOfOperations).map(([name, operation]) => 
+            mapOperationForAPI(name, operation)
+        );
+        
+        updatePayload.operations = operationsArray;
+
+        console.log('Update payload:', updatePayload);
+
+        // Single API call with all necessary updates
+        return updateAPI(updatePayload)
+            .then((updatedApi) => {
+                console.log('Successfully updated MCP Server');
+                
+                // Update local throttling policy state if it was changed
+                if (throttlingPolicyChanged) {
+                    setThrottlingPolicy(updatedApi.throttlingPolicy);
+                }
+                
+                // Update local operations state with the response from API
+                const operationsMap = {};
+                if (updatedApi.operations && updatedApi.operations.length > 0) {
+                    updatedApi.operations.forEach(operation => {
+                        const formattedOperation = createOperationFromAPI(operation);
+                        if (formattedOperation) {
+                            operationsMap[formattedOperation.target] = formattedOperation;
+                        }
+                    });
+                }
+                operationsDispatcher({ action: 'init', data: operationsMap });
+                
+                // Clear marked operations after successful update
+                setSelectedOperation({});
+                
+                return updatedApi;
+            })
+            .catch((error) => {
+                console.error('Error updating MCP Server:', error);
+                Alert.error(intl.formatMessage({
+                    id: 'MCPServers.Details.Tools.update.error',
+                    defaultMessage: 'Error while updating MCP Server',
+                }));
+                throw error;
+            });
     }
 
     useEffect(() => {

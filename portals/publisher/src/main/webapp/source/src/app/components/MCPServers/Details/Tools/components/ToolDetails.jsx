@@ -300,7 +300,7 @@ function ToolDetails(props) {
                             </Box>
                         </Grid>
                         <Grid item md={2}>
-                            <Box display='flex' alignItems='center' justifyContent='flex-start' marginLeft={10}>
+                            <Box display='flex' alignItems='center' justifyContent='flex-start'>
                                 {/* Resource Mapping Display */}
                                 {getResourceMappingDisplay() && (
                                     <Box
