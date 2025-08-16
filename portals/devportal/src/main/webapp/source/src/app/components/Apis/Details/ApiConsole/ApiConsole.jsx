@@ -513,7 +513,7 @@ class ApiConsole extends React.Component {
         const downloadSwagger = JSON.stringify({ ...swagger });
         const downloadLink = 'data:text/json;charset=utf-8, ' + encodeURIComponent(downloadSwagger);
         const fileName = 'swagger.json';
-        const isMCPServer = api.type === 'MCP';
+        let isMCPServer = false;
 
         if (api == null || swagger == null) {
             return <Progress />;
@@ -528,6 +528,9 @@ class ApiConsole extends React.Component {
             if (isApiKeyEnabled && securitySchemeType === 'API-KEY') {
                 authorizationHeader = api.apiKeyHeader ? api.apiKeyHeader : 'ApiKey';
             }
+        }
+        if (api && api.type === 'MCP') {
+            isMCPServer = true;
         }
         let swaggerSpec = swagger;
         if (api.advertiseInfo && api.advertiseInfo.advertised) {
