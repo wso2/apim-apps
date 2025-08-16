@@ -107,7 +107,7 @@ function getArtifactMetaInfo(suggestion) {
         case 'APIPRODUCT':
             return '';
         default:
-            return suggestion.apiName + ' ' + suggestion.apiVersion;
+            return (suggestion.apiDisplayName || suggestion.apiName) + ' ' + suggestion.apiVersion;
     }
 }
 
@@ -138,8 +138,8 @@ function getIcon(type) {
  * @returns {React.Component} @inheritdoc
  */
 function renderSuggestion(suggestion, { query, isHighlighted }) {
-    const matches = match(suggestion.name, query);
-    const parts = parse(suggestion.name, matches);
+    const matches = match(suggestion.displayName || suggestion.name, query);
+    const parts = parse(suggestion.displayName || suggestion.name, matches);
     const path = getPath(suggestion);
     const artifactMetaInfo = getArtifactMetaInfo(suggestion);
     // TODO: Style the version ( and apiName if docs) apearing in the menu item
@@ -181,7 +181,7 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
  * @returns {String} API Name
  */
 function getSuggestionValue(suggestion) {
-    return suggestion.name;
+    return suggestion.displayName || suggestion.name;
 }
 
 /**
