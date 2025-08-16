@@ -20,6 +20,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import Progress from 'AppComponents/Shared/Progress';
 
 /**
  * Route guard component that checks if MCP support is enabled
@@ -29,7 +30,13 @@ import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
  * @returns {JSX.Element} Component or 404 page
  */
 const MCPRouteGuard = ({ children }) => {
-    const { data: settings } = usePublisherSettings();
+    const { data: settings, isLoading } = usePublisherSettings();
+    
+    // Show loading state while settings are being fetched
+    if (isLoading) {
+        return <Progress per={80} message='Loading app settings ...' />;
+    }
+    
     const isMCPSupportEnabled = settings && settings.isMCPSupportEnabled;
 
     if (!isMCPSupportEnabled) {

@@ -16,6 +16,7 @@
  * under the License.
  */
 import React from 'react';
+import PropTypes from 'prop-types';
 import { styled, useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -47,24 +48,42 @@ const Root = styled('div')((
 }));
 
 /**
- * Render no api section
- * @returns {void}
+ * Render no api/mcp server section
+ * @param {Object} props - Component props
+ * @param {boolean} props.isMCPServersRoute - Whether this is for MCP servers or APIs
+ * @returns {React.ReactElement} No data component
  */
-export default function NoApi() {
+export default function NoApi({ isMCPServersRoute }) {
     const theme = useTheme();
+
+    // Determine content based on entity type
+    const titleId = isMCPServersRoute
+        ? 'MCPServers.Listing.NoMCPServers.nodata.title'
+        : 'Apis.Listing.NoApi.nodata.title';
+    const titleDefault = isMCPServersRoute
+        ? 'No MCP Servers Available'
+        : 'No APIs Available';
+    const contentId = isMCPServersRoute
+        ? 'MCPServers.Listing.NoMCPServers.nodata.content'
+        : 'Apis.Listing.NoApi.nodata.content';
+    const contentDefault = isMCPServersRoute
+        ? 'There are no MCP servers to display right now.'
+        : 'There are no APIs to display right now.';
+    const altText = isMCPServersRoute ? 'MCP Server icon' : 'API icon';
+    const testId = isMCPServersRoute ? 'itest-no-mcp-servers' : 'itest-no-apis';
 
     return (
         <Root className={classes.root}>
             <Grid container spacing={3}>
                 <Grid item xs={12} className={classes.messageWrapper}>
-                    <img alt='API icon' src={app.context + theme.custom.noApiImage} className={classes.messageWrapper} />
-                    <Typography id='itest-no-apis' variant='h5' gutterBottom>
-                        <FormattedMessage id='Apis.Listing.NoApi.nodata.title' defaultMessage='No APIs Available' />
+                    <img alt={altText} src={app.context + theme.custom.noApiImage} className={classes.messageWrapper} />
+                    <Typography id={testId} variant='h5' gutterBottom>
+                        <FormattedMessage id={titleId} defaultMessage={titleDefault} />
                     </Typography>
                     <Typography variant='subtitle1' gutterBottom>
                         <FormattedMessage
-                            id='Apis.Listing.NoApi.nodata.content'
-                            defaultMessage='There are no APIs to display right now.'
+                            id={contentId}
+                            defaultMessage={contentDefault}
                         />
                     </Typography>
                 </Grid>
@@ -72,3 +91,11 @@ export default function NoApi() {
         </Root>
     );
 }
+
+NoApi.propTypes = {
+    isMCPServersRoute: PropTypes.bool,
+};
+
+NoApi.defaultProps = {
+    isMCPServersRoute: false,
+};

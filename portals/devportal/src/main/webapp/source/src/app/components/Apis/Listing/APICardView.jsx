@@ -90,7 +90,7 @@ class APICardView extends React.Component {
     // get data
     getData = () => {
         const { intl, entityType } = this.props;
-        const isMCPServersRoute = entityType === 'mcp' || window.location.pathname.includes('/mcp-servers');
+        const isMCPServersRoute = entityType === 'MCP';
         this.xhrRequest()
             .then((data) => {
                 const { body } = data;
@@ -138,7 +138,7 @@ class APICardView extends React.Component {
 
     changePage = (page) => {
         const { intl, entityType } = this.props;
-        const isMCPServersRoute = entityType === 'mcp' || window.location.pathname.includes('/mcp-servers');
+        const isMCPServersRoute = entityType === 'MCP';
         this.page = page;
         this.setState({ loading: true });
         this.xhrRequest()
@@ -164,7 +164,7 @@ class APICardView extends React.Component {
         const { searchText, entityType } = this.props;
         const { page, rowsPerPage } = this;
         // Determine entity type from props, fallback to route-based detection
-        const isMCPServersRoute = entityType === 'mcp' || window.location.pathname.includes('/mcp-servers');
+        const isMCPServersRoute = entityType === 'MCP';
         const api = isMCPServersRoute ? new MCPServer() : new API();
 
         if (searchText && searchText !== '') {
@@ -223,7 +223,7 @@ class APICardView extends React.Component {
         const {
             handleSubscribe, applicationId, intl, entityType,
         } = this.props;
-        const isMCPServersRoute = entityType === 'mcp' || window.location.pathname.includes('/mcp-servers');
+        const isMCPServersRoute = entityType === 'MCP';
         const columns = [
             {
                 name: 'id',
@@ -352,7 +352,7 @@ class APICardView extends React.Component {
             return <Loading />;
         }
         if ((data && data.length === 0) || !data) {
-            return <NoApi />;
+            return <NoApi isMCPServersRoute={isMCPServersRoute} />;
         }
         return (
             <Root id={isMCPServersRoute ? 'subscribe-to-mcp-server-table' : 'subscribe-to-api-table'}>
@@ -377,7 +377,7 @@ APICardView.propTypes = {
     applicationId: PropTypes.string.isRequired,
     apisNotFound: PropTypes.bool,
     setTenantDomain: PropTypes.func,
-    entityType: PropTypes.oneOf(['api', 'mcp']),
+    entityType: PropTypes.oneOf(['API', 'MCP']),
 };
 
 APICardView.defaultProps = {
@@ -385,6 +385,6 @@ APICardView.defaultProps = {
     searchText: '',
     apisNotFound: false,
     setTenantDomain: () => {},
-    entityType: 'api',
+    entityType: 'API',
 };
 export default injectIntl((APICardView));
