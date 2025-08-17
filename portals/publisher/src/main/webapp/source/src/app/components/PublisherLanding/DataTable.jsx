@@ -121,8 +121,7 @@ const DataTable = ({ data, type, onRowClick, onDelete }) => {
                                                 backgroundColor: Utils.stringToColor(item.displayName || item.name),
                                             }}
                                         >
-                                            {Utils.stringAvatar(item.displayName.toUpperCase()
-                                            || item.name.toUpperCase())}
+                                            {Utils.stringAvatar((item.displayName || item.name)?.toUpperCase())}
                                         </Avatar>
                                         <Typography variant='body2' fontWeight='medium' ml={1}>
                                             {item.displayName || item.name}
