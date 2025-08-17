@@ -387,7 +387,9 @@ class ApiThumbClassicLegacy extends React.Component {
         const path = api.type === 'MCP' ? '/mcp-servers/' : '/apis/';
         const detailsLink = path + api.id;
         const { custom: { thumbnail, social: { showRating }, thumbnailTemplates: { variant, active } } } = theme;
-        const { name, version, context } = api;
+        const {
+            name, version, context, displayName,
+        } = api;
 
         let { provider } = api;
         if (
@@ -585,7 +587,7 @@ class ApiThumbClassicLegacy extends React.Component {
                                 onClick={this.handleRedirectToAPIOverview}
                                 title={name}
                             >
-                                {name}
+                                {displayName || name}
                             </Typography>
                             <div className={classNames(classes.row, 'image-thumb-provider-wrapper')}>
                                 <Typography

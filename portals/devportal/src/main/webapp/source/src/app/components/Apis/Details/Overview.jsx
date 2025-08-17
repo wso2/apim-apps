@@ -473,7 +473,7 @@ function Overview() {
                                     </Box>
                                 )}
                                 <Box ml={3} mr={2}>
-                                    <Typography variant='h4' component='h2'>{api.name}</Typography>
+                                    <Typography variant='h4' component='h2'>{api.displayName || api.name}</Typography>
                                     {api.description && (
                                         <Typography variant='body2' gutterBottom align='left' className={classes.description}>
                                             {(descriptionIsBig && descriptionHidden) ? smallDescription : api.description}

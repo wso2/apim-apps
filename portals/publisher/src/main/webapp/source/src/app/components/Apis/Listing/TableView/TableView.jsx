@@ -330,7 +330,7 @@ class TableView extends React.Component {
                 name: 'name',
                 label: intl.formatMessage({
                     id: 'Apis.Listing.ApiTableView.name',
-                    defaultMessage: 'Name',
+                    defaultMessage: 'Display Name',
                 }),
                 options: {
                     customBodyRender: (value, tableMeta, updateValue, tableViewObj = this) => {
@@ -338,18 +338,19 @@ class TableView extends React.Component {
                             const { isAPIProduct, isMCPServer } = tableViewObj.props; // eslint-disable-line no-shadow
                             const artifact = tableViewObj.state.apisAndApiProducts[tableMeta.rowIndex];
                             const apiName = tableMeta.rowData[1];
+                            const displayName = artifact?.displayName;
                             const apiId = tableMeta.rowData[0];
                             if (isAPIProduct) {
                                 return (
                                     <Link to={'/api-products/' + apiId + '/overview'} className={classes.apiNameLink}>
                                         <CustomIcon width={16} height={16} icon='api-product' strokeColor='#444444' />
-                                        <span>{apiName}</span>
+                                        <span>{displayName || apiName}</span>
                                     </Link>
                                 );
                             } else if (isMCPServer) {
                                 return (
                                     <Link to={'/mcp-servers/' + apiId + '/overview'} className={classes.apiNameLink}>
-                                        <span>{apiName}</span>
+                                        <span>{displayName || apiName}</span>
                                     </Link>
                                 );
                             }
@@ -365,7 +366,7 @@ class TableView extends React.Component {
                                                 id='Apis.Listing.TableView.TableView.doc.flag'
                                                 defaultMessage=' [Doc]'
                                             />
-                                            <span>{apiName}</span>
+                                            <span>{displayName || apiName}</span>
                                         </Link>
                                     );
                                 } else if (artifact.type === 'DEFINITION') {
@@ -389,7 +390,7 @@ class TableView extends React.Component {
                                 return (
                                     <Link to={'/apis/' + apiId + '/overview'} className={classes.apiNameLink}>
                                         <CustomIcon width={16} height={16} icon='api' strokeColor='#444444' />
-                                        <span>{apiName}</span>
+                                        <span>{displayName || apiName}</span>
                                     </Link>
                                 );
                             }

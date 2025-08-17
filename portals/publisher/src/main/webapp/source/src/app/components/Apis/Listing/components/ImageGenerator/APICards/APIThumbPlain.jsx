@@ -160,7 +160,7 @@ function APIThumbPlain(props) {
     } = props;
     const { custom: { thumbnail } } = theme;
     const {
-        name, version, context, provider, gatewayVendor, gatewayType
+        name, version, context, provider, gatewayVendor, gatewayType, displayName
     } = api;
 
     const [imageConf, setImageConf] = useState({
@@ -295,7 +295,7 @@ function APIThumbPlain(props) {
                                 title={name}
                                 className={classes.thumbHeader}
                             >
-                                {name}
+                                {displayName || name}
                             </Typography>
                         </Box>
 

@@ -191,11 +191,12 @@ function getPath(suggestion) {
  * @returns {React.Component} @inheritdoc
  */
 function renderSuggestion(suggestion, { query, isHighlighted }) {
-    const matches = match(suggestion.name, query);
-    const parts = parse(suggestion.name, matches);
+    const matches = match(suggestion.displayName || suggestion.name, query);
+    const parts = parse(suggestion.displayName || suggestion.name, matches);
     const path = getPath(suggestion);
     // TODO: Style the version ( and apiName if docs) apearing in the menu item
-    const suffix = suggestion.type === 'API' ? suggestion.version : (suggestion.apiName + ' ' + suggestion.apiVersion);
+    const suffix = suggestion.type === 'API' ? suggestion.version : ((suggestion.apiDisplayName
+        || suggestion.apiName) + ' ' + suggestion.apiVersion);
     const getIcon = (type) => {
         if (type === 'API') {
             return <APIsIcon />;

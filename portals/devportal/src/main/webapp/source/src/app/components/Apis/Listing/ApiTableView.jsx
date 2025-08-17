@@ -360,12 +360,13 @@ class ApiTableViewLegacy extends React.Component {
                 name: 'name',
                 label: intl.formatMessage({
                     id: 'Apis.Listing.ApiTableView.name',
-                    defaultMessage: 'Name',
+                    defaultMessage: 'Display Name',
                 }),
                 options: {
                     customBodyRender: (value, tableMeta, updateValue, tableViewObj = this) => {
                         if (tableMeta.rowData) {
                             const artifact = tableViewObj.state.data[tableMeta.rowIndex];
+                            const displayName = artifact?.displayName;
                             const apiName = tableMeta.rowData[2];
                             const apiId = tableMeta.rowData[0];
 
@@ -385,7 +386,7 @@ class ApiTableViewLegacy extends React.Component {
                                                     defaultMessage='[Doc] '
                                                 />
                                                 {' '}
-                                                {apiName}
+                                                {displayName || apiName}
                                             </span>
                                         </Link>
                                     );
@@ -404,7 +405,7 @@ class ApiTableViewLegacy extends React.Component {
                                                     defaultMessage='[Def] '
                                                 />
                                                 {' '}
-                                                {apiName}
+                                                {displayName || apiName}
                                             </span>
                                         </Link>
                                     );
@@ -417,7 +418,7 @@ class ApiTableViewLegacy extends React.Component {
                                     >
                                         <CustomIcon width={16} height={16} icon='api' strokeColor={strokeColor} />
 
-                                        <span>{apiName}</span>
+                                        <span>{displayName || apiName}</span>
                                     </Link>
                                 );
                             }

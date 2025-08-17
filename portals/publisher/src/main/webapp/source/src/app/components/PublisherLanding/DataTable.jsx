@@ -71,7 +71,7 @@ const DataTable = ({ data, type, onRowClick, onDelete }) => {
                             <TableCell width='16%'>
                                 <FormattedMessage
                                     id='Publisher.Landing.table.name'
-                                    defaultMessage='Name'
+                                    defaultMessage='Display Name'
                                 />
                             </TableCell>
                             <TableCell width='12%'>
@@ -118,13 +118,13 @@ const DataTable = ({ data, type, onRowClick, onDelete }) => {
                                     <Box display='flex' alignItems='center'>
                                         <Avatar
                                             style={{
-                                                backgroundColor: Utils.stringToColor(item.name),
+                                                backgroundColor: Utils.stringToColor(item.displayName || item.name),
                                             }}
                                         >
-                                            {Utils.stringAvatar(item.name.toUpperCase())}
+                                            {Utils.stringAvatar((item.displayName || item.name)?.toUpperCase())}
                                         </Avatar>
                                         <Typography variant='body2' fontWeight='medium' ml={1}>
-                                            {item.name}
+                                            {item.displayName || item.name}
                                         </Typography>
                                     </Box>
                                 </TableCell>
