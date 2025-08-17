@@ -52,11 +52,6 @@ const Root = styled('div')(({ theme }) => ({
  * Handles URL validation and tool selection for MCP Proxy servers
  */
 const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
-    // Safety check to prevent crashes if apiInputs is undefined
-    if (!apiInputs) {
-        console.warn('MCPProxyToolSelection: apiInputs is undefined');
-        return null;
-    }
     const [isValidating, setIsValidating] = useState(false);
     const [validationError, setValidationError] = useState(null);
     const [toolInfo, setToolInfo] = useState(null);
@@ -192,52 +187,13 @@ const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
                     updateAvailableOperations([]);
                 }
             } else {
-                setValidationError(body.errorMessage || 'Invalid MCP Server URL');
+                setValidationError('Invalid MCP Server URL. Please try again.');
                 setToolInfo(null);
                 updateAvailableOperations([]);
             }
         } catch (error) {
             console.error('Error validating MCP Server URL:', error);
-            
-            // Provide more meaningful error messages based on the error type
-            let errorMessage = 'Failed to validate MCP Server URL';
-            
-            if (error.response) {
-                const { status, body } = error.response;
-                
-                if (status === 404) {
-                    errorMessage = 'MCP Server not found. Please check the URL and try again.';
-                } else if (status === 400) {
-                    errorMessage = 'Invalid MCP Server URL format.';
-                } else if (status === 500) {
-                    errorMessage = 'MCP Server is currently unavailable. Please try again later.';
-                } else if (status === 403) {
-                    errorMessage = 'Access denied. Please check your credentials.';
-                } else if (body && body.description) {
-                    // Extract meaningful error from response body
-                    const bodyText = body.description;
-                    if (bodyText.includes('404 Not Found')) {
-                        errorMessage = 'MCP Server not found. Please check the URL and try again.';
-                    } else if (bodyText.includes('Connection refused')) {
-                        errorMessage = 'Unable to connect to MCP Server. Please check the URL.';
-                    } else if (bodyText.includes('timeout')) {
-                        errorMessage = 'Connection timeout. Please check the URL and try again.';
-                    } else {
-                        // Use a more concise version of the error message
-                        errorMessage = bodyText.length > 100 
-                            ? bodyText.substring(0, 100) + '...' 
-                            : bodyText;
-                    }
-                }
-            } else if (error.message) {
-                if (error.message.includes('Network Error')) {
-                    errorMessage = 'Network error. Please check your connection and try again.';
-                } else if (error.message.includes('timeout')) {
-                    errorMessage = 'Request timeout. Please try again.';
-                }
-            }
-            
-            setValidationError(errorMessage);
+            setValidationError('Failed to validate MCP Server URL');
             setToolInfo(null);
             updateAvailableOperations([]);
         } finally {
@@ -276,25 +232,35 @@ const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
         </div>
     );
 
-    // URL validation end adornment
-    const getEndAdornment = () => {
-        if (isValidating) {
-            return <CircularProgress size={20} />;
-        }
+    // URL validation end adornment - matching ProvideOpenAPI.jsx pattern
+    let urlStateEndAdornment = null;
+    if (isValidating) {
+        urlStateEndAdornment = (
+            <InputAdornment position='end'>
+                <CircularProgress />
+            </InputAdornment>
+        );
+    } else if (validationError !== null || toolInfo !== null) {
         if (validationError) {
-            return <ErrorOutlineIcon color='error' />;
+            urlStateEndAdornment = (
+                <InputAdornment position='end'>
+                    <ErrorOutlineIcon fontSize='large' color='error' />
+                </InputAdornment>
+            );
+        } else {
+            urlStateEndAdornment = (
+                <InputAdornment position='end' id='url-validated'>
+                    <CheckIcon fontSize='large' color='primary' />
+                </InputAdornment>
+            );
         }
-        if (toolInfo) {
-            return <CheckIcon color='success' />;
-        }
-        return null;
-    };
+    }
 
-    const urlStateEndAdornment = (
-        <InputAdornment position='end'>
-            {getEndAdornment()}
-        </InputAdornment>
-    );
+    // Safety check to prevent crashes if apiInputs is undefined
+    if (!apiInputs) {
+        console.warn('MCPProxyToolSelection: apiInputs is undefined');
+        return null;
+    }
 
     return (
         <Root>
@@ -316,21 +282,20 @@ const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
                         variant='outlined'
                         value={apiInputs?.mcpServerUrl || ''}
                         onChange={handleUrlChange}
-                        onBlur={handleUrlBlur}
                         InputLabelProps={{
                             shrink: true,
                         }}
                         InputProps={{
+                            onBlur: handleUrlBlur,
                             endAdornment: urlStateEndAdornment,
                         }}
-                        helperText={
-                            validationError || (
+                        helperText={(validationError)
+                            || (
                                 <FormattedMessage
                                     id='MCPServers.Create.MCPProxyToolSelection.url.helper.text'
-                                    defaultMessage='Enter MCP Server URL and click away to validate'
+                                    defaultMessage='Click away to validate the URL'
                                 />
-                            )
-                        }
+                            )}
                         error={!!validationError}
                         data-testid='mcp-server-url-input'
                     />

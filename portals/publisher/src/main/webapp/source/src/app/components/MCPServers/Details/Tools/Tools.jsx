@@ -478,6 +478,25 @@ const Tools = ({
      * @param {Object} selectedOps - The selected operations in nested format
      */
     function handleOperationsSelection(selectedOps) {
+        // Handle the case where OperationsSelector passes the full operations object (select all)
+        if (selectedOps === operations) {
+            // This is a "select all" operation - mark all operations for deletion
+            const allSelected = {};
+            Object.keys(operations).forEach(target => {
+                allSelected[target] = true;
+            });
+            setSelectedOperation(allSelected);
+            return;
+        }
+        
+        // Handle the case where OperationsSelector passes an empty object (clear all)
+        if (Object.keys(selectedOps).length === 0) {
+            setSelectedOperation({});
+            return;
+        }
+        
+        // Handle individual selections - this should not happen with the current OperationsSelector
+        // but we keep it for safety
         const flatSelected = {};
         Object.entries(selectedOps).forEach(([target, verbObj]) => {
             if (verbObj.TOOL) {
@@ -698,6 +717,18 @@ const Tools = ({
                 // Clear marked operations after successful update
                 setSelectedOperation({});
                 
+                // Re-initialize operations from the updated API to ensure state synchronization
+                const updatedOperationsMap = {};
+                if (updatedApi.operations && updatedApi.operations.length > 0) {
+                    updatedApi.operations.forEach(operation => {
+                        const formattedOperation = createOperationFromAPI(operation);
+                        if (formattedOperation) {
+                            updatedOperationsMap[formattedOperation.target] = formattedOperation;
+                        }
+                    });
+                }
+                operationsDispatcher({ action: 'init', data: updatedOperationsMap });
+                
                 return updatedApi;
             })
             .catch((error) => {
@@ -732,7 +763,7 @@ const Tools = ({
             // Fallback to default if MCPServer doesn't have policies method
             setOperationRateLimits([]);
         }
-    }, [api.id]);
+    }, [api.id, api.operations]); // Add api.operations as dependency to re-initialize when operations change
 
     useEffect(() => {
         if (!isLoading) {
