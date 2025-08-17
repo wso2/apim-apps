@@ -16,7 +16,6 @@
  * under the License.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
@@ -63,7 +62,7 @@ export default function OperationGovernance(props) {
     const intl = useIntl();
     const scrollToTop = () => {
         setFocusOperationLevel(true);
-        document.querySelector('#react-root').scrollTop = 195;
+        window.scrollTo({ top: 195, behavior: 'smooth' });
     };
     return (
         <>
@@ -158,6 +157,7 @@ export default function OperationGovernance(props) {
                                                 display='inline'
                                                 color='primary.main'
                                                 cursor='pointer'
+                                                sx ={{ marginLeft: '4px' }}
                                             >
                                                 <FormattedMessage
                                                     id={'Apis.Details.Resources.components.operationComponents.'
@@ -192,7 +192,12 @@ export default function OperationGovernance(props) {
                                 + 'OperationGovernance.rate.limiting.helperText.section1'}
                                                 defaultMessage='Use '
                                             />
-                                            <Box fontWeight='fontWeightBold' display='inline' color='primary.main'>
+                                            <Box 
+                                                fontWeight='fontWeightBold' 
+                                                display='inline' 
+                                                color='primary.main'  
+                                                sx={{ margin: '0 2px' }}
+                                            >
                                                 <FormattedMessage
                                                     id={'Apis.Details.Resources.components.operationComponents.'
                                 + 'OperationGovernance.rate.limiting.helperText.section2'}
@@ -204,13 +209,17 @@ export default function OperationGovernance(props) {
                                 + 'OperationGovernance.rate.limiting.helperText.section3'}
                                                 defaultMessage=' rate limiting to '
                                             />
-                                            <b>
+                                            <Box 
+                                                fontWeight='fontWeightBold' 
+                                                display='inline'
+                                                sx={{ margin: '0 2px' }}
+                                            >
                                                 <FormattedMessage
                                                     id={'Apis.Details.Resources.components.operationComponents.'
                                 + 'OperationGovernance.rate.limiting.helperText.section4'}
                                                     defaultMessage='enable'
                                                 />
-                                            </b>
+                                            </Box>
                                             <FormattedMessage
                                                 id={'Apis.Details.Resources.components.operationComponents.'
                                 + 'OperationGovernance.rate.limiting.helperText.section5'}
