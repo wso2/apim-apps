@@ -1,12 +1,12 @@
 name: API Manager UI Build
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
+  # pull_request:
+  #   branches:
+  #     - main
   workflow_dispatch:
 concurrency:
   group: ${{ github.event.number }}
@@ -41,55 +41,55 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Build apim-apps with Test.
         run: mvn clean install --file apim-apps/pom.xml
-      # - name: Get apim.apps.version
-      #   run: mvn help:evaluate -Dexpression=project.version -q --file apim-apps/pom.xml -DforceStdout > ../APIM_APPS_VERSION_FILE
-      # - name: Print apim.apps.version
-      #   run: |
-      #     echo $(cat ../APIM_APPS_VERSION_FILE)
-      # - name: Checkout Product-APIM
-      #   uses: actions/checkout@v2
-      #   with: 
-      #     repository: wso2/product-apim
-      #     ref: refs/heads/master
-      #     path: product-apim
-      # - name: Build Product-Apim with Maven
-      #   run: mvn clean install -Dcarbon.apimgt.ui.version=$(cat ../APIM_APPS_VERSION_FILE) -fae --file product-apim/all-in-one-apim/pom.xml -DskipBenchMarkTest=true -DskipIntegrationTests=true
-      # - name: Get product.version
-      #   run: mvn help:evaluate -Dexpression=project.version -q --file product-apim/all-in-one-apim/pom.xml -DforceStdout > ../PRODUCT_APIM_VERSION_FILE
-      # - name: Print product.apim.version
-      #   run: |
-      #     echo $(cat ../PRODUCT_APIM_VERSION_FILE)
-      # - name: start APIM server
-      #   run: |
-      #     unzip product-apim/all-in-one-apim/modules/distribution/product/target/wso2am-$(cat ../PRODUCT_APIM_VERSION_FILE).zip
-      #     printf "\n[apim.devportal]\nenable_application_sharing = true\napplication_sharing_type = \"default\"\n" >> wso2am-$(cat ../PRODUCT_APIM_VERSION_FILE)/repository/conf/deployment.toml
-      #     sh wso2am-$(cat ../PRODUCT_APIM_VERSION_FILE)/bin/api-manager.sh start
-      #     sleep 5m # sleep for 5 min to start the server
-      #     nc -zv localhost 9443
-      # - uses: actions/setup-node@v4
-      #   with:
-      #     node-version: '18'
-      # - name: Cypress run
-      #   uses: cypress-io/github-action@v4
-      #   with:
-      #     record: false
-      #     working-directory: 'apim-apps/tests'
-      #     spec: '**/*.spec.js'
-      # - name: Upload ScreenShots
-      #   uses: actions/upload-artifact@v4
-      #   if: failure()
-      #   with:
-      #     name: cypress-screenshots
-      #     path: apim-apps/tests/cypress/screenshots
-      # - name: Upload videos
-      #   uses: actions/upload-artifact@v4
-      #   if: always()
-      #   with:
-      #     name: cypress-videos
-      #     path: apim-apps/tests/cypress/videos
-      # - name: Upload Logs
-      #   uses: actions/upload-artifact@v4
-      #   if: always()
-      #   with:
-      #     name: server-logs
-      #     path: wso2am-*/repository/logs
+      - name: Get apim.apps.version
+        run: mvn help:evaluate -Dexpression=project.version -q --file apim-apps/pom.xml -DforceStdout > ../APIM_APPS_VERSION_FILE
+      - name: Print apim.apps.version
+        run: |
+          echo $(cat ../APIM_APPS_VERSION_FILE)
+      - name: Checkout Product-APIM
+        uses: actions/checkout@v2
+        with: 
+          repository: wso2/product-apim
+          ref: refs/heads/master
+          path: product-apim
+      - name: Build Product-Apim with Maven
+        run: mvn clean install -Dcarbon.apimgt.ui.version=$(cat ../APIM_APPS_VERSION_FILE) -fae --file product-apim/all-in-one-apim/pom.xml -DskipBenchMarkTest=true -DskipIntegrationTests=true
+      - name: Get product.version
+        run: mvn help:evaluate -Dexpression=project.version -q --file product-apim/all-in-one-apim/pom.xml -DforceStdout > ../PRODUCT_APIM_VERSION_FILE
+      - name: Print product.apim.version
+        run: |
+          echo $(cat ../PRODUCT_APIM_VERSION_FILE)
+      - name: start APIM server
+        run: |
+          unzip product-apim/all-in-one-apim/modules/distribution/product/target/wso2am-$(cat ../PRODUCT_APIM_VERSION_FILE).zip
+          printf "\n[apim.devportal]\nenable_application_sharing = true\napplication_sharing_type = \"default\"\n" >> wso2am-$(cat ../PRODUCT_APIM_VERSION_FILE)/repository/conf/deployment.toml
+          sh wso2am-$(cat ../PRODUCT_APIM_VERSION_FILE)/bin/api-manager.sh start
+          sleep 5m # sleep for 5 min to start the server
+          nc -zv localhost 9443
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Cypress run
+        uses: cypress-io/github-action@v4
+        with:
+          record: false
+          working-directory: 'apim-apps/tests'
+          spec: '**/*.spec.js'
+      - name: Upload ScreenShots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: apim-apps/tests/cypress/screenshots
+      - name: Upload videos
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-videos
+          path: apim-apps/tests/cypress/videos
+      - name: Upload Logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: server-logs
+          path: wso2am-*/repository/logs
