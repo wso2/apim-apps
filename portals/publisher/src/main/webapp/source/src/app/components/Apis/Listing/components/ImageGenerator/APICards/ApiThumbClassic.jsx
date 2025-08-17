@@ -340,7 +340,7 @@ class APIThumb extends Component {
                                         {api.provider}
                                     </span>
                                 </Tooltip>
-                                {!isAPIProduct && (
+                                {!isAPIProduct && !isMCPServer && (
                                     <>
                                         &nbsp;
                                         <FormattedMessage id='on' defaultMessage='on' />

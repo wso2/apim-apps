@@ -33,7 +33,6 @@ import openapiToPostman from 'openapi-to-postmanv2';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import Tooltip from '@mui/material/Tooltip';
 import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
-import MCPTryOut from 'AppComponents/Apis/Details/MCPTryOut/MCPTryOut';
 import queryString from 'query-string';
 import Settings from 'Settings';
 import Utils from 'AppData/Utils';
@@ -513,7 +512,6 @@ class ApiConsole extends React.Component {
         const downloadSwagger = JSON.stringify({ ...swagger });
         const downloadLink = 'data:text/json;charset=utf-8, ' + encodeURIComponent(downloadSwagger);
         const fileName = 'swagger.json';
-        let isMCPServer = false;
 
         if (api == null || swagger == null) {
             return <Progress />;
@@ -529,9 +527,7 @@ class ApiConsole extends React.Component {
                 authorizationHeader = api.apiKeyHeader ? api.apiKeyHeader : 'ApiKey';
             }
         }
-        if (api && api.type === 'MCP') {
-            isMCPServer = true;
-        }
+
         let swaggerSpec = swagger;
         if (api.advertiseInfo && api.advertiseInfo.advertised) {
             authorizationHeader = advAuthHeader;
@@ -620,7 +616,7 @@ class ApiConsole extends React.Component {
                         />
                     </Grid>
 
-                    {api.type !== 'SOAP' && !isMCPServer && (
+                    {api.type !== 'SOAP' && (
                         <Grid container>
                             <Grid xs={7} item />
                             <Grid xs={2} item>
@@ -676,27 +672,15 @@ class ApiConsole extends React.Component {
                         </Grid>
                     )}
                 </Paper>
-                {!isMCPServer && (
-                    <Paper className={classes.swaggerUIPaper}>
-                        <SwaggerUI
-                            api={this.state.api}
-                            accessTokenProvider={this.accessTokenProvider}
-                            spec={swaggerSpec}
-                            authorizationHeader={authorizationHeader}
-                            securitySchemeType={securitySchemeType}
-                        />
-                    </Paper>
-                )}
-                {isMCPServer && (
-                    <Grid container className={classes.grid}>
-                        <MCPTryOut
-                            api={this.state.api}
-                            authorizationHeader={authorizationHeader}
-                            securitySchemeType={securitySchemeType}
-                            accessToken={productionAccessToken || sandboxAccessToken}
-                        />
-                    </Grid>
-                )}
+                <Paper className={classes.swaggerUIPaper}>
+                    <SwaggerUI
+                        api={this.state.api}
+                        accessTokenProvider={this.accessTokenProvider}
+                        spec={swaggerSpec}
+                        authorizationHeader={authorizationHeader}
+                        securitySchemeType={securitySchemeType}
+                    />
+                </Paper>
             </Root>
         );
     }

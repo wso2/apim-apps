@@ -56,10 +56,14 @@ export default function OperationGovernance(props) {
         operation, operationsDispatcher, operationRateLimits, api, disableUpdate, spec, target, verb, sharedScopes,
         setFocusOperationLevel, componentValidator, isMCPServer
     } = props;
-    const operationScopes = getOperationScopes(operation, spec);
+    // Get operation scopes - handle MCP servers differently since they store scopes directly
+    const operationScopes = isMCPServer && operation.scopes 
+        ? operation.scopes 
+        : getOperationScopes(operation, spec);
     const isOperationRateLimiting = api.apiThrottlingPolicy === null || 
         !componentValidator.includes('apiLevelRateLimiting');
     const filteredApiScopes = api.scopes.filter((sharedScope) => !sharedScope.shared);
+
     const intl = useIntl();
     const scrollToTop = () => {
         setFocusOperationLevel(true);
@@ -151,8 +155,9 @@ export default function OperationGovernance(props) {
                                             <FormattedMessage
                                                 id={'Apis.Details.Resources.components.operationComponents.'
                                 + 'OperationGovernance.rate.limiting.governed.by'}
-                                                defaultMessage='Rate limiting is governed by '
+                                                defaultMessage='Rate limiting is governed by'
                                             />
+                                            {' '}
                                             <Box
                                                 fontWeight='fontWeightBold'
                                                 display='inline'
@@ -190,8 +195,9 @@ export default function OperationGovernance(props) {
                                             <FormattedMessage
                                                 id={'Apis.Details.Resources.components.operationComponents.'
                                 + 'OperationGovernance.rate.limiting.helperText.section1'}
-                                                defaultMessage='Use '
+                                                defaultMessage='Use'
                                             />
+                                            {' '}
                                             <Box fontWeight='fontWeightBold' display='inline' color='primary.main'>
                                                 <FormattedMessage
                                                     id={'Apis.Details.Resources.components.operationComponents.'
@@ -199,11 +205,13 @@ export default function OperationGovernance(props) {
                                                     defaultMessage='Operation Level'
                                                 />
                                             </Box>
+                                            {' '}
                                             <FormattedMessage
                                                 id={'Apis.Details.Resources.components.operationComponents.'
                                 + 'OperationGovernance.rate.limiting.helperText.section3'}
-                                                defaultMessage=' rate limiting to '
+                                                defaultMessage='rate limiting to'
                                             />
+                                            {' '}
                                             <b>
                                                 <FormattedMessage
                                                     id={'Apis.Details.Resources.components.operationComponents.'
@@ -211,10 +219,11 @@ export default function OperationGovernance(props) {
                                                     defaultMessage='enable'
                                                 />
                                             </b>
+                                            {' '}
                                             <FormattedMessage
                                                 id={'Apis.Details.Resources.components.operationComponents.'
                                 + 'OperationGovernance.rate.limiting.helperText.section5'}
-                                                defaultMessage=' rate limiting per operation'
+                                                defaultMessage='rate limiting per operation'
                                             />
                                         </span>
                                     )
@@ -258,7 +267,7 @@ export default function OperationGovernance(props) {
                                 multiple
                                 limitTags={5}
                                 id={verb + target + '-operation-scope-autocomplete'}
-                                options={[...filteredApiScopes, ...sharedScopes]}
+                                options={[...filteredApiScopes, ...(sharedScopes || [])]}
                                 groupBy={(option) => option.shared ? 'Shared Scopes' : 'API Scopes'}
                                 noOptionsText={intl.formatMessage({
                                     id: 'Apis.Details.Topics.components.operationComponents.OperationGovernance.'
@@ -273,7 +282,7 @@ export default function OperationGovernance(props) {
                                     const selectedScopes = newValue.map((val) => val.scope.name);
                                     operationsDispatcher({
                                         action: 'scopes',
-                                        data: { target, verb, value: selectedScopes ? [selectedScopes] : [] },
+                                        data: { target, verb, value: [selectedScopes] },
                                     });
                                 }}
                                 renderOption={(listOfOptions, option, { selected }) => (

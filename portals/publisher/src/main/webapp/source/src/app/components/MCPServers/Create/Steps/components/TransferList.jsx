@@ -152,7 +152,7 @@ const TransferList = ({
                     <Grid container direction='column' spacing={1} px={2}>
                         <Grid item>
                             <Button
-                                variant='outlined'
+                                variant='contained'
                                 size='small'
                                 onClick={onMoveRight}
                                 disabled={getCheckedItemsInList(
@@ -167,7 +167,7 @@ const TransferList = ({
                         </Grid>
                         <Grid item>
                             <Button
-                                variant='outlined'
+                                variant='contained'
                                 size='small'
                                 onClick={onMoveLeft}
                                 disabled={getCheckedItemsInList(

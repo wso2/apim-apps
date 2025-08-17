@@ -646,7 +646,8 @@ class ApiTableViewLegacy extends React.Component {
             return <Loading />;
         }
         if ((data && data.length === 0) || !data) {
-            return <NoApi />;
+            const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+            return <NoApi isMCPServersRoute={isMCPServersRoute} />;
         }
         return (
             <StyledStyledEngineProvider injectFirst>
