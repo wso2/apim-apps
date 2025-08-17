@@ -26,7 +26,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 import CheckIcon from '@mui/icons-material/Check';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { FormattedMessage, useIntl } from 'react-intl';
-import debounce from 'lodash.debounce';
 import MCPServer from 'AppData/MCPServer';
 import MethodView from 'AppComponents/Apis/Details/ProductResources/MethodView';
 import TransferList from './components/TransferList';
@@ -160,67 +159,110 @@ const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
     }, [apiInputs?.mcpServerUrl, validationError, toolInfo, selectedOperations,
         onValidate, inputsDispatcher, operationCleaner]);
 
-    // Debounced URL validation function
-    const validateURLDebounced = useCallback(
-        debounce(async (url) => {
-            if (!url || url.trim() === '') {
-                setValidationError(null);
-                setToolInfo(null);
-                updateAvailableOperations([]);
-                return;
-            }
-
-            setIsValidating(true);
+    // URL validation function (no debounce - only triggered on blur)
+    const validateURL = useCallback(async (url) => {
+        if (!url || url.trim() === '') {
             setValidationError(null);
+            setToolInfo(null);
+            updateAvailableOperations([]);
+            return;
+        }
 
-            try {
-                const response = await MCPServer.validateThirdPartyMCPServerUrl(url);
-                const { body } = response;
+        setIsValidating(true);
+        setValidationError(null);
 
-                if (body.isValid) {
-                    // Extract tool information from the response
-                    if (body.toolInfo && body.toolInfo.operations) {
-                        const tools = body.toolInfo.operations.map(operation => ({
-                            id: `${operation.target}`,
-                            target: operation.target,
-                            description: operation.description,
-                            feature: operation.feature,
-                        }));
-                        
-                        setToolInfo(body.toolInfo);
-                        updateAvailableOperations(tools);
-                    } else {
-                        setToolInfo(null);
-                        updateAvailableOperations([]);
-                    }
+        try {
+            const response = await MCPServer.validateThirdPartyMCPServerUrl(url);
+            const { body } = response;
+
+            if (body.isValid) {
+                // Extract tool information from the response
+                if (body.toolInfo && body.toolInfo.operations) {
+                    const tools = body.toolInfo.operations.map(operation => ({
+                        id: `${operation.target}`,
+                        target: operation.target,
+                        description: operation.description,
+                        feature: operation.feature,
+                    }));
+                    
+                    setToolInfo(body.toolInfo);
+                    updateAvailableOperations(tools);
                 } else {
-                    setValidationError(body.errorMessage || 'Invalid MCP Server URL');
                     setToolInfo(null);
                     updateAvailableOperations([]);
                 }
-            } catch (error) {
-                console.error('Error validating MCP Server URL:', error);
-                setValidationError('Failed to validate MCP Server URL');
+            } else {
+                setValidationError(body.errorMessage || 'Invalid MCP Server URL');
                 setToolInfo(null);
                 updateAvailableOperations([]);
-            } finally {
-                setIsValidating(false);
             }
-        }, 500),
-        [updateAvailableOperations]
-    );
+        } catch (error) {
+            console.error('Error validating MCP Server URL:', error);
+            
+            // Provide more meaningful error messages based on the error type
+            let errorMessage = 'Failed to validate MCP Server URL';
+            
+            if (error.response) {
+                const { status, body } = error.response;
+                
+                if (status === 404) {
+                    errorMessage = 'MCP Server not found. Please check the URL and try again.';
+                } else if (status === 400) {
+                    errorMessage = 'Invalid MCP Server URL format.';
+                } else if (status === 500) {
+                    errorMessage = 'MCP Server is currently unavailable. Please try again later.';
+                } else if (status === 403) {
+                    errorMessage = 'Access denied. Please check your credentials.';
+                } else if (body && body.description) {
+                    // Extract meaningful error from response body
+                    const bodyText = body.description;
+                    if (bodyText.includes('404 Not Found')) {
+                        errorMessage = 'MCP Server not found. Please check the URL and try again.';
+                    } else if (bodyText.includes('Connection refused')) {
+                        errorMessage = 'Unable to connect to MCP Server. Please check the URL.';
+                    } else if (bodyText.includes('timeout')) {
+                        errorMessage = 'Connection timeout. Please check the URL and try again.';
+                    } else {
+                        // Use a more concise version of the error message
+                        errorMessage = bodyText.length > 100 
+                            ? bodyText.substring(0, 100) + '...' 
+                            : bodyText;
+                    }
+                }
+            } else if (error.message) {
+                if (error.message.includes('Network Error')) {
+                    errorMessage = 'Network error. Please check your connection and try again.';
+                } else if (error.message.includes('timeout')) {
+                    errorMessage = 'Request timeout. Please try again.';
+                }
+            }
+            
+            setValidationError(errorMessage);
+            setToolInfo(null);
+            updateAvailableOperations([]);
+        } finally {
+            setIsValidating(false);
+        }
+    }, [updateAvailableOperations]);
 
-    // Handle URL input change
+    // Handle URL input change (no validation on change)
     const handleUrlChange = (event) => {
         const { value } = event.target;
         inputsDispatcher({ action: 'mcpServerUrl', value });
-        validateURLDebounced(value);
+        // Clear validation state when user starts typing
+        if (validationError) {
+            setValidationError(null);
+        }
+        if (toolInfo) {
+            setToolInfo(null);
+            updateAvailableOperations([]);
+        }
     };
 
-    // Handle URL blur
+    // Handle URL blur (validation triggered only on blur)
     const handleUrlBlur = (event) => {
         const { value } = event.target;
-        validateURLDebounced(value);
+        validateURL(value);
     };
 
     // Custom render function for MCP tools - using same style as default renderItem
@@ -285,7 +327,7 @@ const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
                             validationError || (
                                 <FormattedMessage
                                     id='MCPServers.Create.MCPProxyToolSelection.url.helper.text'
-                                    defaultMessage='Click away to validate the URL'
+                                    defaultMessage='Enter MCP Server URL and click away to validate'
                                 />
                             )
                         }

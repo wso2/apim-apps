@@ -93,10 +93,7 @@ const Tools = ({
     const [mcpEndpoints, setMcpEndpoints] = useState([]);
     const [availableOperations, setAvailableOperations] = useState([]);
     const [sharedScopes, setSharedScopes] = useState();
-    // const [sharedScopesByName, setSharedScopesByName] = useState();
-    // const [securityDefScopes, setSecurityDefScopes] = useState({});
     const [throttlingPolicy, setThrottlingPolicy] = useState(api.throttlingPolicy);
-    // const [resolvedSpec, setResolvedSpec] = useState({ spec: {}, errors: [] });
     const [focusOperationLevel, setFocusOperationLevel] = useState(false);
     const [expandedResource, setExpandedResource] = useState('');
     const [componentValidator, setComponentValidator] = useState([]);
@@ -110,17 +107,14 @@ const Tools = ({
                 .then((response) => {
                     if (response.body && response.body.list) {
                         const sharedScopesList = [];
-                        const sharedScopesByNameList = {};
                         const shared = true;
                         for (const scope of response.body.list) {
                             const modifiedScope = {};
                             modifiedScope.scope = scope;
                             modifiedScope.shared = shared;
                             sharedScopesList.push(modifiedScope);
-                            sharedScopesByNameList[scope.name] = modifiedScope;
                         }
                         setSharedScopes(sharedScopesList);
-                        // setSharedScopesByName(sharedScopesByNameList);
                     }
                 });
         }
@@ -145,7 +139,7 @@ const Tools = ({
         const operationName = operation.target || operation.id;
         if (!operationName) return null;
         
-        return {
+        const formattedOperation = {
             id: operation.id || generateOperationId(operation.target, operation.verb || 'GET'),
             target: operation.target,
             feature: 'TOOL',
@@ -160,6 +154,7 @@ const Tools = ({
             scopes: operation.scopes || [],
             'x-wso2-new': false
         };
+        return formattedOperation;
     }
 
     /**
@@ -169,7 +164,7 @@ const Tools = ({
      * @returns {Object} - The mapped operation for API
      */
     function mapOperationForAPI(name, operation) {
-        return {
+        const mappedOperation = {
             id: operation.id || '',
             target: operation.target || name,
             feature: 'TOOL',
@@ -197,6 +192,7 @@ const Tools = ({
                 }),
             apiOperationMapping: operation.apiOperationMapping || null
         };
+        return mappedOperation;
     }
 
     /**
@@ -265,21 +261,18 @@ const Tools = ({
                     return { ...currentOperations, [target]: updatedOperation };
                 }
                 break;
-            case 'scopes':
+            case 'scopes': {
                 if (target) {
                     updatedOperation = cloneDeep(currentOperations[target]);
-                    if (!updatedOperation.security) {
-                        updatedOperation.security = [{ default: [] }];
-                    } else if (!updatedOperation.security.find((item) => item.default)) {
-                        updatedOperation.security.push({ default: [] });
-                    }
-                    const defValue = value[0] || value;
-                    updatedOperation.scopes = Array.isArray(defValue)
-                        ? defValue : [defValue];
-                    updatedOperation.security.find((item) => item.default).default = updatedOperation.scopes;
+                    const defValue = value[0];
+                    
+                    // For MCP servers, directly update the scopes property
+                    updatedOperation.scopes = defValue || [];
+                    
                     return { ...currentOperations, [target]: updatedOperation };
                 }
                 break;
+            }
             case 'updateBackendOperation':
                 if (target) {
                     updatedOperation = cloneDeep(currentOperations[target]);
@@ -701,19 +694,7 @@ const Tools = ({
                 if (throttlingPolicyChanged) {
                     setThrottlingPolicy(updatedApi.throttlingPolicy);
                 }
-                
-                // Update local operations state with the response from API
-                const operationsMap = {};
-                if (updatedApi.operations && updatedApi.operations.length > 0) {
-                    updatedApi.operations.forEach(operation => {
-                        const formattedOperation = createOperationFromAPI(operation);
-                        if (formattedOperation) {
-                            operationsMap[formattedOperation.target] = formattedOperation;
-                        }
-                    });
-                }
-                operationsDispatcher({ action: 'init', data: operationsMap });
-                
+
                 // Clear marked operations after successful update
                 setSelectedOperation({});
                 

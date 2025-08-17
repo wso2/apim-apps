@@ -48,6 +48,33 @@ function ToolDetailsSection({
 }) {
     const { api } = useContext(APIContext);
 
+    /**
+     * Format schema definition as JSON if it's not already formatted
+     * @param {string} schemaDefinition - The schema definition string
+     * @returns {string} - Formatted JSON string
+     */
+    const formatJsonSchema = (schemaDefinition) => {
+        if (!schemaDefinition) return '';
+        
+        try {
+            // If it's already a string, try to parse and format it
+            if (typeof schemaDefinition === 'string') {
+                const parsed = JSON.parse(schemaDefinition);
+                return JSON.stringify(parsed, null, 2);
+            }
+            // If it's already an object, stringify it with formatting
+            if (typeof schemaDefinition === 'object') {
+                return JSON.stringify(schemaDefinition, null, 2);
+            }
+            // Fallback to string representation
+            return String(schemaDefinition);
+        } catch (error) {
+            // If parsing fails, return the original string
+            console.warn('Failed to format schema definition as JSON:', error);
+            return String(schemaDefinition);
+        }
+    };
+
     // Get current selected operation for the OperationSelector component
     const getCurrentSelectedOperation = () => {
         if (operation.backendOperationMapping && operation.backendOperationMapping.backendOperation) {
@@ -192,7 +219,7 @@ function ToolDetailsSection({
                                         width='100%'
                                         height='200px'
                                         theme='vs-light'
-                                        value={operation.schemaDefinition}
+                                        value={formatJsonSchema(operation.schemaDefinition)}
                                         options={editorOptions}
                                     />
                                 ) : (

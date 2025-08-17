@@ -416,7 +416,7 @@ function ToolDetails(props) {
                             disableUpdate={disableUpdate}
                             spec={spec}
                             target={target}
-                            feature={feature}
+                            verb={feature}
                             sharedScopes={sharedScopes}
                             setFocusOperationLevel={setFocusOperationLevel}
                             componentValidator={componentValidator}
@@ -484,7 +484,7 @@ ToolDetails.propTypes = {
     expandedResource: PropTypes.string.isRequired,
     setExpandedResource: PropTypes.func.isRequired,
     setFocusOperationLevel: PropTypes.func.isRequired,
-    componentValidator: PropTypes.shape({}).isRequired,
+    componentValidator: PropTypes.arrayOf(PropTypes.string).isRequired,
     availableOperations: PropTypes.arrayOf(PropTypes.shape({
         target: PropTypes.string,
         verb: PropTypes.string,

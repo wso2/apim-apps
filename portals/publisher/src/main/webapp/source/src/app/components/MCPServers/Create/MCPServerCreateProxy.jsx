@@ -285,7 +285,12 @@ const MCPServerCreateProxy = (props) => {
                         </Grid>
                         <Grid item>
                             {(wizardStep === 0) && (
-                                <Button onClick={() => setWizardStep((step) => step + 1)}>
+                                <Button 
+                                    variant='contained'
+                                    color='primary'
+                                    disabled={!mcpServerInputs.isFormValid}
+                                    onClick={() => setWizardStep((step) => step + 1)}
+                                >
                                     <FormattedMessage
                                         id='MCPServers.Create.MCPServerCreateProxy.next'
                                         defaultMessage='Next'
