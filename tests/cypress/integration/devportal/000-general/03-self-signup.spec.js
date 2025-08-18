@@ -132,7 +132,7 @@ describe("Self SignUp", () => {
     it.only("Test - Disable self signup from the carbon portal for the super tenant", () => {
         cy.disableSelfSignUpInCarbonPortal(carbonUsername, carbonPassword, superTenant);
         cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${superTenant}`);
-        cy.get('#itest-devportal-sign-in').click();
+        cy.get('#itest-devportal-sign-in').click({ force: true });
         cy.get('#registerLink').click();
         cy.get('#username').type(superTenant3Username);
         cy.get('#registrationSubmit').click();
@@ -142,7 +142,7 @@ describe("Self SignUp", () => {
     it.only("Test - Disable self signup from the carbon portal for the wso2 tenant", () => {
         cy.disableSelfSignUpInCarbonPortal(tenantAdminUsername, tenantAdminPassword, testTenant);
         cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${testTenant}`);
-        cy.get('#itest-devportal-sign-in').click();
+        cy.get('#itest-devportal-sign-in').click({ force: true });
         cy.get('#registerLink').click();
         cy.get('#username').type(Utils.getTenantUser(tenant3Username, testTenant));
         cy.get('#registrationSubmit').click();
@@ -191,7 +191,7 @@ describe("Self SignUp", () => {
 
     it.only("Test - Create a user for a unregistered tenant", () => {
         cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${testTenant}`);
-        cy.get('#itest-devportal-sign-in').click();
+        cy.get('#itest-devportal-sign-in').click({ force: true });
         cy.get('#registerLink').click();
         cy.get('#username').type('test@abc.com');
         cy.get('#registrationSubmit').click();
