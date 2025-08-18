@@ -419,7 +419,7 @@ const APIDetailsTopMenu = (props) => {
                                 let menuItemProps = {};
                                 
                                 if (isMCPServer) {
-                                    const mcpServerId = api.isRevision ? api.revisionedApiId : api.id;
+                                    const mcpServerId = api.isRevision ? api.revisionedMCPServerId : api.id;
                                     menuItemProps = {
                                         value: mcpServerId,
                                         component: Link,
