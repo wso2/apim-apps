@@ -453,38 +453,66 @@ export default function DefaultAPIForm(props) {
     return (
         <StyledGrid item md={12}>
             <form noValidate autoComplete='off'>
-                <TextField
-                    autoFocus
-                    fullWidth
-                    id='api-name'
-                    error={Boolean(validity.name)}
-                    label={(
-                        <>
-                            <FormattedMessage id='Apis.Create.Components.DefaultAPIForm.name' defaultMessage='Name' />
-                            <sup className={classes.mandatoryStar}>*</sup>
-                        </>
-                    )}
-                    helperText={
-                        validity.name
-                        && validity.name.details.map((detail, index) => {
-                            return <div style={{ marginTop: index !== 0 && '10px' }}>{detail.message}</div>;
-                        })
-                    }
-                    value={api.name}
-                    name='name'
-                    onChange={onChange}
-                    InputProps={{
-                        id: 'itest-id-apiname-input',
-                        onBlur: ({ target: { value } }) => {
-                            validate('name', value);
-                        },
-                    }}
-                    InputLabelProps={{
-                        for: 'itest-id-apiname-input',
-                    }}
-                    margin='normal'
-                    variant='outlined'
-                />
+                <Grid container spacing={2}>
+                    <Grid item md={6} xs={6}>
+                        <TextField
+                            autoFocus
+                            fullWidth
+                            id='api-name'
+                            error={Boolean(validity.name)}
+                            label={(
+                                <>
+                                    <FormattedMessage id='Apis.Create.Components.DefaultAPIForm.name'
+                                        defaultMessage='Name' />
+                                    <sup className={classes.mandatoryStar}>*</sup>
+                                </>
+                            )}
+                            helperText={
+                                validity.name
+                                && validity.name.details.map((detail, index) => {
+                                    return <div style={{ marginTop: index !== 0 && '10px' }}>{detail.message}</div>;
+                                })
+                            }
+                            value={api.name}
+                            name='name'
+                            onChange={onChange}
+                            InputProps={{
+                                id: 'itest-id-apiname-input',
+                                onBlur: ({ target: { value } }) => {
+                                    validate('name', value);
+                                },
+                            }}
+                            InputLabelProps={{
+                                for: 'itest-id-apiname-input',
+                            }}
+                            margin='normal'
+                            variant='outlined'
+                        />
+                    </Grid>
+                    <Grid item md={6} xs={6}>
+                        <TextField
+                            fullWidth
+                            id='api-display-name'
+                            label={(
+                                <>
+                                    <FormattedMessage id='Apis.Create.Components.DefaultAPIForm.display.name'
+                                        defaultMessage='Display Name' />
+                                </>
+                            )}
+                            helperText={
+                                <FormattedMessage
+                                    id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text'
+                                    defaultMessage='Provide a display name for the API (optional)'
+                                />
+                            }
+                            value={api.displayName}
+                            name='displayName'
+                            onChange={onChange}
+                            margin='normal'
+                            variant='outlined'
+                        />
+                    </Grid>
+                </Grid>
                 <Grid container spacing={2}>
                     {!isAPIProduct && !isMCPServer ? (
                         <>

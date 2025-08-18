@@ -77,6 +77,7 @@ function APICreateDefault(props) {
         const { action, value } = inputAction;
         switch (action) {
             case 'name':
+            case 'displayName':
             case 'version':
             case 'endpoint':
             case 'context':
@@ -188,7 +189,7 @@ function APICreateDefault(props) {
     async function createAPI() {
         setIsCreating(true);
         const {
-            name, version, context, endpoint, gatewayType
+            name, version, context, endpoint, gatewayType, displayName,
         } = apiInputs;
         let promisedCreatedAPI;
         let policies;
@@ -206,6 +207,7 @@ function APICreateDefault(props) {
 
         const apiData = {
             name,
+            displayName,
             version,
             context,
             gatewayType,
