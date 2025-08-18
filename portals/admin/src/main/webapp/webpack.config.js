@@ -23,6 +23,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const DeadCodePlugin = require('webpack-deadcode-plugin');
 const { clientRoutingBypass, devServerBefore } = require('./source/dev/auth_login.js');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = function (env, args) {
     const isDevelopmentBuild = args.mode === 'development';
@@ -214,6 +215,7 @@ module.exports = function (env, args) {
                     '**/*.(stories|spec).(js|jsx)',
                 ],
             }),
+            new MonacoWebpackPlugin(),
         ],
     };
 
