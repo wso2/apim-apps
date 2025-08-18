@@ -74,6 +74,11 @@ const Root = styled('div')((
         transition: 'all .35s ease-in-out',
         padding: '5px 5px 5px 5px',
         minHeight: '40px',
+        '&.Mui-focused': {
+            width: '400px !important',
+            background: theme.custom.appBar.searchInputActiveBackground,
+            color: theme.palette.getContrastText(theme.custom.appBar.searchInputActiveBackground),
+        },
     },
 
     [`& .${classes.inputFocused}`]: {
@@ -154,7 +159,6 @@ function renderInput(inputProps) {
                     InputProps={{
                         inputRef: ref,
                         className: classes.input,
-                        classes: { focused: classes.inputFocused },
                         startAdornment: (
                             <InputAdornment position='start'>
                                 <SearchOutlined />
