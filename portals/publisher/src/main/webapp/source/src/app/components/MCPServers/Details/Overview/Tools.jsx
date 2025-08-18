@@ -52,7 +52,7 @@ const Root = styled('div')((
     },
 
     [`& .${classes.contentWrapper}`]: {
-        maxHeight: '125px',
+        maxHeight: '200px',
         overflowY: 'auto',
     },
 

@@ -293,9 +293,15 @@ const APIDetailsTopMenu = (props) => {
         <Root>
             <div className={classes.root}>
                 <Link
-                    to={isAPIProduct
-                        ? `/api-products/${api.id}/overview`
-                        : `/apis/${api.id}/overview`}
+                    to={(() => {
+                        if (api.isMCPServer()) {
+                            return `/mcp-servers/${api.id}/overview`;
+                        } else if (isAPIProduct) {
+                            return `/api-products/${api.id}/overview`;
+                        } else {
+                            return `/apis/${api.id}/overview`;
+                        }
+                    })()}
                     className={classes.backLink}
                 >
                     <Box width={70} height={50} marginLeft={1}>
@@ -304,9 +310,15 @@ const APIDetailsTopMenu = (props) => {
                     </Box>
                     <div style={{ marginLeft: theme.spacing(1), maxWidth: 500 }}>
                         <Link
-                            to={isAPIProduct
-                                ? `/api-products/${api.id}/overview`
-                                : `/apis/${api.id}/overview`}
+                            to={(() => {
+                                if (api.isMCPServer()) {
+                                    return `/mcp-servers/${api.id}/overview`;
+                                } else if (isAPIProduct) {
+                                    return `/api-products/${api.id}/overview`;
+                                } else {
+                                    return `/apis/${api.id}/overview`;
+                                }
+                            })()}
                             className={classes.backLink}
                         >
                             <Typography id='itest-api-name-version' variant='h4' component='h1' 
@@ -402,56 +414,85 @@ const APIDetailsTopMenu = (props) => {
                             margin='dense'
                             variant='outlined'
                         >
-                            {!isAPIProduct ? (
-                                <MenuItem
-                                    value={api.isRevision ? api.revisionedApiId : api.id}
-                                    component={Link}
-                                    to={'/apis/' + (api.isRevision ? api.revisionedApiId : api.id) + '/' + lastIndex}
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Details.components.APIDetailsTopMenu.current.api'
-                                        defaultMessage='Current API'
-                                    />
-                                </MenuItem>
-                            ) : (
-                                <MenuItem
-                                    value={api.isRevision ? api.revisionedApiProductId : api.id}
-                                    component={Link}
-                                    to={'/api-products/' + (api.isRevision
-                                        ? api.revisionedApiProductId : api.id) + '/' + lastIndex}
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Details.components.APIDetailsTopMenu.current.api'
-                                        defaultMessage='Current API'
-                                    />
-                                </MenuItem>
-                            )}
-                            {allRevisions && !isAPIProduct && allRevisions.map((item) => (
-                                <MenuItem key={item.id} 
-                                    value={item.id} component={Link} to={'/apis/' + item.id + '/' + lastIndex}>
-                                    <Grid
-                                        container
-                                        direction='row'
-                                        alignItems='center'
-                                    >
-                                        <Grid item>
-                                            {item.displayName}
-                                        </Grid>
-                                        {allEnvRevision && allEnvRevision.find((env) => env.id === item.id) && (
+                            {(() => {
+                                const isMCPServer = api.isMCPServer();
+                                let menuItemProps = {};
+                                
+                                if (isMCPServer) {
+                                    const mcpServerId = api.isRevision ? api.revisionedApiId : api.id;
+                                    menuItemProps = {
+                                        value: mcpServerId,
+                                        component: Link,
+                                        to: `/mcp-servers/${mcpServerId}/${lastIndex}`,
+                                        children: (
+                                            <FormattedMessage
+                                                id='Apis.Details.components.APIDetailsTopMenu.current.mcp.server'
+                                                defaultMessage='Current MCP Server'
+                                            />
+                                        )
+                                    };
+                                } else if (isAPIProduct) {
+                                    const apiProductId = api.isRevision ? api.revisionedApiProductId : api.id;
+                                    menuItemProps = {
+                                        value: apiProductId,
+                                        component: Link,
+                                        to: `/api-products/${apiProductId}/${lastIndex}`,
+                                        children: (
+                                            <FormattedMessage
+                                                id='Apis.Details.components.APIDetailsTopMenu.current.api'
+                                                defaultMessage='Current API'
+                                            />
+                                        )
+                                    };
+                                } else {
+                                    menuItemProps = {
+                                        value: api.isRevision ? api.revisionedApiId : api.id,
+                                        component: Link,
+                                        to: `/apis/${api.isRevision ? api.revisionedApiId : api.id}/${lastIndex}`,
+                                        children: (
+                                            <FormattedMessage
+                                                id='Apis.Details.components.APIDetailsTopMenu.current.api'
+                                                defaultMessage='Current API'
+                                            />
+                                        )
+                                    };
+                                }
+                                
+                                return <MenuItem {...menuItemProps} />;
+                            })()}
+                            {allRevisions && !isAPIProduct && allRevisions.map((item) => {
+                                const isMCPServer = api.isMCPServer();
+                                const revisionUrl = isMCPServer 
+                                    ? `/mcp-servers/${item.id}/${lastIndex}`
+                                    : `/apis/${item.id}/${lastIndex}`;
+                                
+                                return (
+                                    <MenuItem key={item.id} 
+                                        value={item.id} component={Link} to={revisionUrl}>
+                                        <Grid
+                                            container
+                                            direction='row'
+                                            alignItems='center'
+                                        >
                                             <Grid item>
-                                                <Box ml={2}>
-                                                    <Tooltip
-                                                        title={getDeployments(item.id)}
-                                                        placement='bottom'
-                                                    >
-                                                        <Grid className={classes.active} />
-                                                    </Tooltip>
-                                                </Box>
+                                                {item.displayName}
                                             </Grid>
-                                        )}
-                                    </Grid>
-                                </MenuItem>
-                            ))}
+                                            {allEnvRevision && allEnvRevision.find((env) => env.id === item.id) && (
+                                                <Grid item>
+                                                    <Box ml={2}>
+                                                        <Tooltip
+                                                            title={getDeployments(item.id)}
+                                                            placement='bottom'
+                                                        >
+                                                            <Grid className={classes.active} />
+                                                        </Tooltip>
+                                                    </Box>
+                                                </Grid>
+                                            )}
+                                        </Grid>
+                                    </MenuItem>
+                                );
+                            })}
                             {allRevisions && isAPIProduct && allRevisions.map((item) => (
                                 <MenuItem
                                     value={item.id}

@@ -141,7 +141,22 @@ const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
         setAvailableOperations(newOperations);
         setSelectedOperations([]);
         setChecked([]);
+        // Also reset toolInfo when clearing operations
+        if (newOperations.length === 0) {
+            setToolInfo(null);
+        }
     };
+
+    // Reset state when URL changes
+    useEffect(() => {
+        if (!apiInputs?.mcpServerUrl || apiInputs.mcpServerUrl.trim() === '') {
+            setValidationError(null);
+            setToolInfo(null);
+            setAvailableOperations([]);
+            setSelectedOperations([]);
+            setChecked([]);
+        }
+    }, [apiInputs?.mcpServerUrl]);
 
     // Dispatch selected operations to parent and validate form
     useEffect(() => {
@@ -205,13 +220,18 @@ const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
     const handleUrlChange = (event) => {
         const { value } = event.target;
         inputsDispatcher({ action: 'mcpServerUrl', value });
+        
         // Clear validation state when user starts typing
         if (validationError) {
             setValidationError(null);
         }
-        if (toolInfo) {
+        
+        // Clear tool info and operations when URL is cleared or changed
+        if (toolInfo || availableOperations.length > 0 || selectedOperations.length > 0) {
             setToolInfo(null);
-            updateAvailableOperations([]);
+            setAvailableOperations([]);
+            setSelectedOperations([]);
+            setChecked([]);
         }
     };
 

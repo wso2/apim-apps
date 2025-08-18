@@ -651,6 +651,34 @@ const Tools = ({
 
 
     /**
+     * Collect all shared scopes used in operations
+     * @returns {Array} - Array of shared scope objects
+     */
+    function collectSharedScopesFromOperations() {
+        const sharedScopesSet = new Set();
+        const sharedScopesMap = new Map();
+        
+        // Collect all shared scopes used in operations
+        Object.values(operations).forEach(operation => {
+            if (operation.scopes && Array.isArray(operation.scopes)) {
+                operation.scopes.forEach(scopeName => {
+                    // Check if this scope is a shared scope
+                    if (sharedScopes) {
+                        const sharedScope = sharedScopes.find(ss => ss.scope.name === scopeName);
+                        if (sharedScope) {
+                            sharedScopesSet.add(scopeName);
+                            sharedScopesMap.set(scopeName, sharedScope);
+                        }
+                    }
+                });
+            }
+        });
+        
+        // Convert to array format expected by API
+        return Array.from(sharedScopesSet).map(scopeName => sharedScopesMap.get(scopeName));
+    }
+
+    /**
      * Save the MCP Server tools changes
      * @param {String} type Type of operation
      * @returns {Promise} Promise resolving to updated MCP Server
@@ -693,6 +721,28 @@ const Tools = ({
         
         if (throttlingPolicyChanged) {
             updatePayload.throttlingPolicy = throttlingPolicy;
+        }
+
+        // Collect shared scopes from operations and combine with existing API scopes
+        const sharedScopesFromOperations = collectSharedScopesFromOperations(copyOfOperations);
+        const existingApiScopes = api.scopes || [];
+        
+        // Create a map of existing scopes by name for easy lookup
+        const existingScopesMap = new Map();
+        existingApiScopes.forEach(scope => {
+            existingScopesMap.set(scope.scope.name, scope);
+        });
+        
+        // Add shared scopes from operations to the map
+        sharedScopesFromOperations.forEach(sharedScope => {
+            existingScopesMap.set(sharedScope.scope.name, sharedScope);
+        });
+        
+        // Convert back to array
+        const combinedScopes = Array.from(existingScopesMap.values());
+        
+        if (combinedScopes.length > 0) {
+            updatePayload.scopes = combinedScopes;
         }
 
         // Always include operations in the payload
