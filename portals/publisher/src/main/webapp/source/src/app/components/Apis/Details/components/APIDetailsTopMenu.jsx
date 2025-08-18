@@ -330,10 +330,22 @@ const APIDetailsTopMenu = (props) => {
                             <Typography variant='caption' gutterBottom align='left'>
                                 <FormattedMessage
                                     id='Apis.Details.components.APIDetailsTopMenu.created.by'
-                                    defaultMessage='Created by:'
+                                    defaultMessage='Created by '
                                 />
                                 {' '}
                                 {api.provider}
+                                {!isAPIProduct && !api.isMCPServer() && (
+                                    <>
+                                        &nbsp;
+                                        <FormattedMessage 
+                                            id='Apis.Details.components.APIDetailsTopMenu.created.on' 
+                                            defaultMessage='on' />
+                                        &nbsp;
+                                        {api.gatewayVendor === 'wso2' || api.gatewayVendor === 'solace'
+                                            ? api.gatewayVendor.toUpperCase()
+                                            : api.gatewayType}
+                                    </>
+                                )}
                             </Typography>
                         </Link>
                     </div>
