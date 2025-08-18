@@ -652,14 +652,15 @@ const Tools = ({
 
     /**
      * Collect all shared scopes used in operations
+     * @param {Object} copyOfOperations - The operations object to collect shared scopes from
      * @returns {Array} - Array of shared scope objects
      */
-    function collectSharedScopesFromOperations() {
+    function collectSharedScopesFromOperations(copyOfOperations) {
         const sharedScopesSet = new Set();
         const sharedScopesMap = new Map();
         
         // Collect all shared scopes used in operations
-        Object.values(operations).forEach(operation => {
+        Object.values(copyOfOperations).forEach(operation => {
             if (operation.scopes && Array.isArray(operation.scopes)) {
                 operation.scopes.forEach(scopeName => {
                     // Check if this scope is a shared scope
