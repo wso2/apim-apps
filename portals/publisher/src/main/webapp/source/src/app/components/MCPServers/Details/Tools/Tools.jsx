@@ -395,8 +395,6 @@ const Tools = ({
                 const backendOp = operation.backendOperationMapping.backendOperation;
                 const key = `${backendOp.verb}_${backendOp.target}`;
                 currentOperationKeys.add(key);
-                // Also add just the target for broader matching in some cases
-                currentOperationKeys.add(backendOp.target);
             }
             
             // Add verb-target combinations from API mappings
@@ -404,19 +402,16 @@ const Tools = ({
                 const apiOp = operation.apiOperationMapping.backendOperation;
                 const key = `${apiOp.verb}_${apiOp.target}`;
                 currentOperationKeys.add(key);
-                // Also add just the target for broader matching in some cases
-                currentOperationKeys.add(apiOp.target);
             }
         });
 
         // Filter out operations that are already added
+        // Use precise verb-target matching instead of broad target matching
         return availableOps.filter(operation => {
             const verbTargetKey = `${operation.verb}_${operation.target}`;
-            const targetKey = operation.target;
             
-            // Check if this operation is already used by another tool
-            // We check both the precise verb-target combination and just the target
-            return !currentOperationKeys.has(verbTargetKey) && !currentOperationKeys.has(targetKey);
+            // Only check the precise verb-target combination
+            return !currentOperationKeys.has(verbTargetKey);
         });
     }
 
