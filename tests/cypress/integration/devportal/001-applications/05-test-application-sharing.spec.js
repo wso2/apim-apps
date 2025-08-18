@@ -71,7 +71,7 @@ describe("Invoke API Product", () => {
 
             //Create Users in Devportal
             cy.visit(`/devportal/apis?tenant=carbon.super`);
-            cy.get('#itest-devportal-sign-in', { timeout: Cypress.config().largeTimeout }).click();
+            cy.get('#itest-devportal-sign-in', { timeout: Cypress.config().largeTimeout }).click({ force: true });
             cy.get('#registerLink', { timeout: Cypress.config().largeTimeout }).click();
 
             //Creating user 1

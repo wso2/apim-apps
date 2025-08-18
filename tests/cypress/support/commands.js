@@ -59,7 +59,9 @@ Cypress.Commands.add('portalLogin', (username, password, portal, tenant = 'carbo
     if (portal === 'devportal') {
         cy.visit(`/devportal/apis?tenant=${tenant}`);
         cy.wait(3000)
-        cy.get('#itest-devportal-sign-in', { timeout: Cypress.config().largeTimeout }).wait(3000).click();
+        cy.get('#itest-devportal-sign-in', { timeout: Cypress.config().largeTimeout })
+          .wait(3000)
+          .click({ force: true });
     }
     cy.url().should('contains', `/authenticationendpoint/login.do`);
     cy.get('[data-testid=login-page-username-input]').click();
@@ -612,7 +614,7 @@ Cypress.Commands.add('createAndPublishApi', (apiName = null) => {
 
 Cypress.Commands.add('logoutFromDevportal', (referer = '/devportal/apis') => {
 
-    cy.get('#userToggleButton').click();
+    cy.get('#userToggleButton').click({ force: true });
     cy.get("#userPopup").get("#menu-list-grow").get('ul').contains('li', 'Logout').click();
     cy.url().should('contain', '/devportal/logout');
     cy.url().should('contain', referer);
@@ -949,7 +951,7 @@ Cypress.Commands.add('addNewUserUsingSelfSignUp', (username, password, firstName
     })
 
     cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${tenant}`);
-    cy.get('#itest-devportal-sign-in').click();
+    cy.get('#itest-devportal-sign-in').click({ force: true });
     cy.get('#registerLink').click();
     cy.get('#username').type(username);
     cy.get('#registrationSubmit').click();
@@ -977,7 +979,7 @@ Cypress.Commands.add('addExistingUserUsingSelfSignUp', (username, tenant) => {
     })
 
     cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${tenant}`);
-    cy.get('#itest-devportal-sign-in').click();
+    cy.get('#itest-devportal-sign-in').click({ force: true });
     cy.get('#registerLink').click();
     cy.get('#username').type(username);
     cy.get('#registrationSubmit').click();
@@ -1013,7 +1015,7 @@ Cypress.Commands.add('portalLoginUsingIncorrectUserCredentials', (username, pass
     cy.visit(`${Utils.getAppOrigin()}/${portal}`);
     if (portal === 'devportal') {
         cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${tenant}`);
-        cy.get('#itest-devportal-sign-in').click();
+        cy.get('#itest-devportal-sign-in').click({ force: true });
     }
     cy.url().should('contains', `${Utils.getAppOrigin()}/authenticationendpoint/login.do`);
     cy.get('[data-testid=login-page-username-input]').click();
