@@ -446,6 +446,87 @@ const getSampleAPIData = (defaultAdvancePolicy, defaultSubscriptionPolicy) => {
     };
 };
 
+const getSampleMCPServerData = (defaultAdvancePolicy, defaultSubscriptionPolicy) => {
+    return {
+        name: 'PizzaShackServer',
+        description: 'This is a simple MCP Server for Pizza Shack online pizza delivery store.',
+        context: '/pizzashackserver',
+        version: '1.0.0',
+        transport: ['http', 'https'],
+        tags: ['pizza'],
+        policies: [defaultSubscriptionPolicy],
+        securityScheme: ['oauth2'],
+        visibility: 'PUBLIC',
+        businessInformation: {
+            businessOwner: 'Jane Roe',
+            businessOwnerEmail: 'marketing@pizzashack.com',
+            technicalOwner: 'John Doe',
+            technicalOwnerEmail: 'architecture@pizzashack.com',
+        },
+        endpointConfig: {
+            endpoint_type: 'http',
+            sandbox_endpoints: {
+                url: 'https://localhost:9443/am/sample/pizzashack/v1/api/',
+            },
+            production_endpoints: {
+                url: 'https://localhost:9443/am/sample/pizzashack/v1/api/',
+            },
+        },
+        operations: [
+            {
+                feature: 'TOOL',
+                backendOperationMapping: {
+                    backendId: '',
+                    backendOperation: {
+                        target: '/order/{orderId}',
+                        verb: 'GET',
+                    },
+                },
+            },
+            {
+                feature: 'TOOL',
+                backendOperationMapping: {
+                    backendId: '',
+                    backendOperation: {
+                        target: '/order/{orderId}',
+                        verb: 'DELETE',
+                    },
+                },
+            },
+            {
+                feature: 'TOOL',
+                backendOperationMapping: {
+                    backendId: '',
+                    backendOperation: {
+                        target: '/order/{orderId}',
+                        verb: 'PUT',
+                    },
+                },
+            },
+            {
+                feature: 'TOOL',
+                backendOperationMapping: {
+                    backendId: '',
+                    backendOperation: {
+                        target: '/menu',
+                        verb: 'GET',
+                    },
+                },
+            },
+            {
+                feature: 'TOOL',
+                backendOperationMapping: {
+                    backendId: '',
+                    backendOperation: {
+                        target: '/order',
+                        verb: 'POST',
+                    },
+                },
+            },
+        ],
+    };
+};
+
 const getSampleServiceMeta = () => ({
     name: 'Pizzashack-Endpoint',
     description: 'A Catalog Entry that exposes a REST endpoint',
@@ -455,4 +536,4 @@ const getSampleServiceMeta = () => ({
     definitionType: 'OAS3',
 });
 
-export { getSampleOpenAPI, getSampleAPIData, getSampleServiceMeta };
+export { getSampleOpenAPI, getSampleAPIData, getSampleMCPServerData, getSampleServiceMeta };

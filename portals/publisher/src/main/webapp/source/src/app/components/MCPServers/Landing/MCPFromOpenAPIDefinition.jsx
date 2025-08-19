@@ -16,17 +16,39 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
+import queryString from 'query-string';
 import LandingMenuItem from 'AppComponents/Apis/Listing/Landing/components/LandingMenuItem';
 import LandingMenu from 'AppComponents/Apis/Listing/Landing/components/LandingMenu';
 import APICreateMenuSection from 'AppComponents/Apis/Listing/components/APICreateMenuSection';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
+import Configurations from 'Config';
+import API from 'AppData/api';
+import SampleMCPServer from 'AppComponents/MCPServers/Listing/SampleMCPServer';
 
 const MCPFromOpenAPIDefinition = (props) => {
     const { icon, isCreateMenu } = props;
+    const { data: settings } = usePublisherSettings();
+    const noRegularGw = settings && !settings.gatewayTypes.includes('Regular');
     const Component = isCreateMenu ? APICreateMenuSection : LandingMenu;
     const dense = isCreateMenu;
+    const { alwaysShowDeploySampleButton } = Configurations.apis;
+    const [showSampleDeploy, setShowSampleDeploy] = useState(false);
+
+    useEffect(() => {
+        const composeQuery = '?query=name:PizzaShackMCPServer version:1.0 context:pizzashackmcp';
+        const composeQueryJSON = queryString.parse(composeQuery);
+        composeQueryJSON.limit = 1;
+        composeQueryJSON.offset = 0;
+        API.search(composeQueryJSON).then((resp) => {
+            const data = JSON.parse(resp.data);
+            setShowSampleDeploy(data.count === 0);
+        });
+    }, []);
 
     return (
         <Component
@@ -55,6 +77,16 @@ const MCPFromOpenAPIDefinition = (props) => {
                     defaultMessage='Create MCP Server from Definition'
                 />
             </LandingMenuItem>
+
+            {(!isCreateMenu || (isCreateMenu && alwaysShowDeploySampleButton)) && showSampleDeploy &&
+                !noRegularGw && (
+                <>
+                    <Box width={1} sx={{ pt: 2, pr: 2, pl: 2, ml: 2 }}>
+                        <Divider variant='middle' />
+                    </Box>
+                    <SampleMCPServer dense={dense} />
+                </>
+            )}
         </Component>
     );
 };
