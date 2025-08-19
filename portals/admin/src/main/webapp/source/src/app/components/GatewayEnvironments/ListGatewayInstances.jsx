@@ -140,6 +140,10 @@ export default function ListGatewayInstances({
         viewColumns: false,
         customToolbar: false,
         responsive: 'stacked',
+        sortOrder: {
+            name: 'lastActive',
+            direction: 'desc',
+        },
         textLabels: {
             body: {
                 noMatch: intl.formatMessage({
