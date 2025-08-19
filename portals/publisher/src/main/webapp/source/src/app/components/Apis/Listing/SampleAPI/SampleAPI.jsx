@@ -103,7 +103,7 @@ const SampleAPI = (props) => {
         return taskResult;
     };
     /**
-     *Handle onClick event for `Deploy Sample API` Button
+     * Handle onClick event for `Deploy Sample API` Button
      * @memberof SampleAPI
      */
     const handleDeploySample = async () => {
@@ -116,60 +116,180 @@ const SampleAPI = (props) => {
 
         const sampleAPIObj = new API(getSampleAPIData(defaultAdvancePolicy || 'Unlimited',
             defaultSubscriptionPolicy || 'Unlimited'));
-        // Creat the sample API -- 1st API call
+        
+        // Check scopes for 1st API call (Create API)
+        if (AuthManager.isRestricted(['apim:api_create', 'apim:api_manage'])) {
+            // Mark all tasks as completed with permission error and skip the flow
+            tasksStatusDispatcher({ 
+                name: 'update', 
+                status: { 
+                    completed: true, 
+                    errors: 'Insufficient permissions: apim:api_create and apim:api_manage scopes required' 
+                } 
+            });
+            tasksStatusDispatcher({ 
+                name: 'revision', 
+                status: { 
+                    completed: true, 
+                    errors: 'Skipped due to insufficient permissions' 
+                } 
+            });
+            tasksStatusDispatcher({ 
+                name: 'deploy', 
+                status: { 
+                    completed: true, 
+                    errors: 'Skipped due to insufficient permissions' 
+                } 
+            });
+            tasksStatusDispatcher({ 
+                name: 'publish', 
+                status: { 
+                    completed: true, 
+                    errors: 'Skipped due to insufficient permissions' 
+                } 
+            });
+            return;
+        }
+        
+        // Create the sample API -- 1st API call
         const sampleAPI = await taskManager(sampleAPIObj.save(), 'create');
         setNewSampleAPI(sampleAPI);
         if (!sampleAPI) {
             throw new Error('Error while creating sample API');
         }
+        
+        // Check scopes for 2nd API call (Update Swagger)
+        if (AuthManager.isRestricted(['apim:api_create', 'apim:api_manage'])) {
+            // Mark remaining tasks as completed with permission error and skip the flow
+            tasksStatusDispatcher({ 
+                name: 'revision', 
+                status: { 
+                    completed: true, 
+                    errors: 'Skipped due to insufficient permissions' 
+                } 
+            });
+            tasksStatusDispatcher({ 
+                name: 'deploy', 
+                status: { 
+                    completed: true, 
+                    errors: 'Skipped due to insufficient permissions' 
+                } 
+            });
+            tasksStatusDispatcher({ 
+                name: 'publish', 
+                status: { 
+                    completed: true, 
+                    errors: 'Skipped due to insufficient permissions' 
+                } 
+            });
+            return;
+        }
+        
         // Update the sample API -- 2nd API call
         await taskManager(sampleAPI
             .updateSwagger(
                 getSampleOpenAPI(defaultAdvancePolicy || 'Unlimited'),
             ), 'update');
 
-        if (!AuthManager.isNotPublisher()) {
-            const revisionPayload = {
-                description: 'Initial Revision',
-            };
+        const revisionPayload = {
+            description: 'Initial Revision',
+        };
 
-            // Creat a revision of sample API -- 3rd API call
-            const sampleAPIRevision = await taskManager(
-                restApi.createRevision(sampleAPI.id, revisionPayload),
-                'revision',
-            );
-            const envList = internalGateways.map((env) => env.name);
-            const deployRevisionPayload = [];
-            const getFirstVhost = (envName) => {
-                const env = internalGateways.find(
-                    (ev) => ev.name === envName && ev.vhosts.length > 0,
-                );
-                return env && env.vhosts[0].host;
-            };
-            if (envList && envList.length > 0) {
-                if (envList.includes('Default') && getFirstVhost('Default')) {
-                    deployRevisionPayload.push({
-                        name: 'Default',
-                        displayOnDevportal: true,
-                        vhost: getFirstVhost('Default'),
-                    });
-                } else if (getFirstVhost(envList[0])) {
-                    deployRevisionPayload.push({
-                        name: envList[0],
-                        displayOnDevportal: true,
-                        vhost: getFirstVhost(envList[0]),
-                    });
-                }
-            }
-            const revisionId = sampleAPIRevision.body.id;
-
-            // Deploy a revision of sample API -- 4th API call
-            await taskManager(restApi.deployRevision(sampleAPI.id,
-                revisionId, deployRevisionPayload), 'deploy');
-
-            // Deploy a revision of sample API -- 5th API call
-            await taskManager(sampleAPI.publish(), 'publish');
+        // Check scopes for 3rd API call (Create Revision)
+        if (AuthManager.isRestricted([
+            'apim:api_create', 
+            'apim:api_manage', 
+            'apim:api_publish', 
+            'apim:api_import_export'
+        ])) {
+            // Mark remaining tasks as completed with permission error and skip the flow
+            tasksStatusDispatcher({ 
+                name: 'deploy', 
+                status: { 
+                    completed: true, 
+                    errors: 'Skipped due to insufficient permissions' 
+                } 
+            });
+            tasksStatusDispatcher({ 
+                name: 'publish', 
+                status: { 
+                    completed: true, 
+                    errors: 'Skipped due to insufficient permissions' 
+                } 
+            });
+            return;
         }
+
+        // Create a revision of sample API -- 3rd API call
+        const sampleAPIRevision = await taskManager(
+            restApi.createRevision(sampleAPI.id, revisionPayload),
+            'revision',
+        );
+        const envList = internalGateways.map((env) => env.name);
+        const deployRevisionPayload = [];
+        const getFirstVhost = (envName) => {
+            const env = internalGateways.find(
+                (ev) => ev.name === envName && ev.vhosts.length > 0,
+            );
+            return env && env.vhosts[0].host;
+        };
+        if (envList && envList.length > 0) {
+            if (envList.includes('Default') && getFirstVhost('Default')) {
+                deployRevisionPayload.push({
+                    name: 'Default',
+                    displayOnDevportal: true,
+                    vhost: getFirstVhost('Default'),
+                });
+            } else if (getFirstVhost(envList[0])) {
+                deployRevisionPayload.push({
+                    name: envList[0],
+                    displayOnDevportal: true,
+                    vhost: getFirstVhost(envList[0]),
+                });
+            }
+        }
+        const revisionId = sampleAPIRevision.body.id;
+
+        // Check scopes for 4th API call (Deploy Revision)
+        if (AuthManager.isRestricted([
+            'apim:api_create', 
+            'apim:api_manage', 
+            'apim:api_publish'
+        ])) {
+            // Mark remaining task as completed with permission error and skip the flow
+            tasksStatusDispatcher({ 
+                name: 'publish', 
+                status: { 
+                    completed: true, 
+                    errors: 'Skipped due to insufficient permissions' 
+                } 
+            });
+            return;
+        }
+
+        // Deploy a revision of sample API -- 4th API call
+        await taskManager(restApi.deployRevision(sampleAPI.id,
+            revisionId, deployRevisionPayload), 'deploy');
+
+        // Check scopes for 5th API call (Publish API)
+        if (AuthManager.isRestricted([
+            'apim:api_publish', 
+            'apim:api_manage', 
+            'apim:api_import_export'
+        ])) {
+            // Mark the last task as completed with permission error
+            tasksStatusDispatcher({ 
+                name: 'publish', 
+                status: { 
+                    completed: true, 
+                    errors: 'Skipped due to insufficient permissions' 
+                } 
+            });
+            return;
+        }
+
+        // Publish the sample API -- 5th API call
+        await taskManager(sampleAPI.publish(), 'publish');
     };
 
     const allDone = !AuthManager.isNotPublisher() ? Object.values(tasksStatus)
@@ -190,15 +310,13 @@ const SampleAPI = (props) => {
                 component='button'
                 helperText={(
                     <FormattedMessage
-                        id='Apis.Listing.SampleAPI.SampleAPI.rest.d.sample.content'
-                        defaultMessage={`Sample Pizza Shack
-                                    API`}
+                        id='Apis.Listing.SampleAPI.SampleAPI.rest.sample.content'
+                        defaultMessage='Sample Pizza Shack API'
                     />
                 )}
             >
                 <FormattedMessage
-                    id={'Apis.Listing.SampleAPI.SampleAPI.'
-                        + 'rest.d.sample.title'}
+                    id='Apis.Listing.SampleAPI.SampleAPI.rest.sample.title'
                     defaultMessage='Deploy Sample API'
                 />
             </LandingMenuItem>

@@ -117,11 +117,15 @@ function OperationSelector({
                 clearOnBlur={false}
                 getOptionLabel={(option) => {
                     if (!option) return '';
-                    return `${option.verb.toUpperCase()} ${option.target}`;
+                    const verb = option.verb ? option.verb.toUpperCase() : '';
+                    const target = option.target || '';
+                    return `${verb} ${target}`.trim();
                 }}
                 isOptionEqualToValue={(option, selectedValue) => {
                     if (!option || !selectedValue) return false;
-                    return `${option.target}_${option.verb}` === `${selectedValue.target}_${selectedValue.verb}`;
+                    // Compare by target and verb, case-insensitive for verb
+                    return option.target === selectedValue.target && 
+                           option.verb.toLowerCase() === selectedValue.verb.toLowerCase();
                 }}
                 renderOption={(renderProps, option) => {
                     const { key, ...otherProps } = renderProps;
@@ -166,7 +170,7 @@ function OperationSelector({
                                         sx={{ marginRight: 1 }}
                                     >
                                         <MethodView
-                                            method={value.verb}
+                                            method={value.verb.toUpperCase()}
                                             className={classes.methodView}
                                         />
                                         <span style={{ marginLeft: '4px' }}>

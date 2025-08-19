@@ -395,8 +395,6 @@ const Tools = ({
                 const backendOp = operation.backendOperationMapping.backendOperation;
                 const key = `${backendOp.verb}_${backendOp.target}`;
                 currentOperationKeys.add(key);
-                // Also add just the target for broader matching in some cases
-                currentOperationKeys.add(backendOp.target);
             }
             
             // Add verb-target combinations from API mappings
@@ -404,19 +402,16 @@ const Tools = ({
                 const apiOp = operation.apiOperationMapping.backendOperation;
                 const key = `${apiOp.verb}_${apiOp.target}`;
                 currentOperationKeys.add(key);
-                // Also add just the target for broader matching in some cases
-                currentOperationKeys.add(apiOp.target);
             }
         });
 
         // Filter out operations that are already added
+        // Use precise verb-target matching instead of broad target matching
         return availableOps.filter(operation => {
             const verbTargetKey = `${operation.verb}_${operation.target}`;
-            const targetKey = operation.target;
             
-            // Check if this operation is already used by another tool
-            // We check both the precise verb-target combination and just the target
-            return !currentOperationKeys.has(verbTargetKey) && !currentOperationKeys.has(targetKey);
+            // Only check the precise verb-target combination
+            return !currentOperationKeys.has(verbTargetKey);
         });
     }
 
@@ -651,6 +646,35 @@ const Tools = ({
 
 
     /**
+     * Collect all shared scopes used in operations
+     * @param {Object} copyOfOperations - The operations object to collect shared scopes from
+     * @returns {Array} - Array of shared scope objects
+     */
+    function collectSharedScopesFromOperations(copyOfOperations) {
+        const sharedScopesSet = new Set();
+        const sharedScopesMap = new Map();
+        
+        // Collect all shared scopes used in operations
+        Object.values(copyOfOperations).forEach(operation => {
+            if (operation.scopes && Array.isArray(operation.scopes)) {
+                operation.scopes.forEach(scopeName => {
+                    // Check if this scope is a shared scope
+                    if (sharedScopes) {
+                        const sharedScope = sharedScopes.find(ss => ss.scope.name === scopeName);
+                        if (sharedScope) {
+                            sharedScopesSet.add(scopeName);
+                            sharedScopesMap.set(scopeName, sharedScope);
+                        }
+                    }
+                });
+            }
+        });
+        
+        // Convert to array format expected by API
+        return Array.from(sharedScopesSet).map(scopeName => sharedScopesMap.get(scopeName));
+    }
+
+    /**
      * Save the MCP Server tools changes
      * @param {String} type Type of operation
      * @returns {Promise} Promise resolving to updated MCP Server
@@ -693,6 +717,28 @@ const Tools = ({
         
         if (throttlingPolicyChanged) {
             updatePayload.throttlingPolicy = throttlingPolicy;
+        }
+
+        // Collect shared scopes from operations and combine with existing API scopes
+        const sharedScopesFromOperations = collectSharedScopesFromOperations(copyOfOperations);
+        const existingApiScopes = api.scopes || [];
+        
+        // Create a map of existing scopes by name for easy lookup
+        const existingScopesMap = new Map();
+        existingApiScopes.forEach(scope => {
+            existingScopesMap.set(scope.scope.name, scope);
+        });
+        
+        // Add shared scopes from operations to the map
+        sharedScopesFromOperations.forEach(sharedScope => {
+            existingScopesMap.set(sharedScope.scope.name, sharedScope);
+        });
+        
+        // Convert back to array
+        const combinedScopes = Array.from(existingScopesMap.values());
+        
+        if (combinedScopes.length > 0) {
+            updatePayload.scopes = combinedScopes;
         }
 
         // Always include operations in the payload

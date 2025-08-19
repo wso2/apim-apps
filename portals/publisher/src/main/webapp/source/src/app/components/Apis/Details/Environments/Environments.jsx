@@ -647,53 +647,55 @@ export default function Environments() {
 
     const externalEnvWithEndpoints = [];
     useEffect(() => {
-        const promise = restApi.getAsyncAPIDefinition(api.id);
-        promise.then(async (response) => {
-            if (response.data && (typeof response.data === "string" || typeof response.data === "object")) {
-                let doc;
-                try {
-                    doc = await Parser.parse(response.data);
-                } catch (err) {
-                    console.warn("Async API does not found");
-                    return;
-                }
-                const protocolBindings = [];
-                // eslint-disable-next-line array-callback-return
-                doc.channelNames().map((channelName) => {
-                    if (doc.channel(channelName).hasPublish()) {
-                        // eslint-disable-next-line array-callback-return
-                        doc.channel(channelName).publish().bindingProtocols().map((protocol) => {
-                            if (!protocolBindings.includes(protocol)) {
-                                protocolBindings.push(protocol);
-                            }
-                        });
+        if (!isMCPServer) {
+            const promise = restApi.getAsyncAPIDefinition(api.id);
+            promise.then(async (response) => {
+                if (response.data && (typeof response.data === "string" || typeof response.data === "object")) {
+                    let doc;
+                    try {
+                        doc = await Parser.parse(response.data);
+                    } catch (err) {
+                        console.warn("Async API does not found");
+                        return;
                     }
-                    if (doc.channel(channelName).hasSubscribe()) {
-                        // eslint-disable-next-line array-callback-return
-                        doc.channel(channelName).subscribe().bindingProtocols().map((protocol) => {
-                            if (!protocolBindings.includes(protocol)) {
-                                protocolBindings.push(protocol);
-                            }
-                        });
-                    }
-                });
-                // eslint-disable-next-line array-callback-return
-                allExternalGateways.map((env) => {
-                    const endpoints = [];
+                    const protocolBindings = [];
                     // eslint-disable-next-line array-callback-return
-                    env.endpointURIs.map((endpoint) => {
-                        // eslint-disable-next-line array-callback-return
-                        protocolBindings.map((protocol) => {
-                            if (protocol === endpoint.protocol) {
-                                const uri = endpoint.endpointURI;
-                                endpoints.push({ protocol, uri });
-                            }
-                        });
+                    doc.channelNames().map((channelName) => {
+                        if (doc.channel(channelName).hasPublish()) {
+                            // eslint-disable-next-line array-callback-return
+                            doc.channel(channelName).publish().bindingProtocols().map((protocol) => {
+                                if (!protocolBindings.includes(protocol)) {
+                                    protocolBindings.push(protocol);
+                                }
+                            });
+                        }
+                        if (doc.channel(channelName).hasSubscribe()) {
+                            // eslint-disable-next-line array-callback-return
+                            doc.channel(channelName).subscribe().bindingProtocols().map((protocol) => {
+                                if (!protocolBindings.includes(protocol)) {
+                                    protocolBindings.push(protocol);
+                                }
+                            });
+                        }
                     });
-                    externalEnvWithEndpoints[env.name] = endpoints;
-                });
-            }
-        })
+                    // eslint-disable-next-line array-callback-return
+                    allExternalGateways.map((env) => {
+                        const endpoints = [];
+                        // eslint-disable-next-line array-callback-return
+                        env.endpointURIs.map((endpoint) => {
+                            // eslint-disable-next-line array-callback-return
+                            protocolBindings.map((protocol) => {
+                                if (protocol === endpoint.protocol) {
+                                    const uri = endpoint.endpointURI;
+                                    endpoints.push({ protocol, uri });
+                                }
+                            });
+                        });
+                        externalEnvWithEndpoints[env.name] = endpoints;
+                    });
+                }
+            })
+        }
     }, [api.id]);
 
     const toggleOpenConfirmDelete = (revisionName, revisionId) => {

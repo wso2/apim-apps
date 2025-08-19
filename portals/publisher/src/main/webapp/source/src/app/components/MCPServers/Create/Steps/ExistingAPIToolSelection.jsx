@@ -136,11 +136,21 @@ const ExistingAPIToolSelection = ({
     const handleAPISelection = (event, newValue) => {
         setSelectedAPIOption(newValue);
         updateAvailableOperations([]);
+        
+        // Reset the processed ref when API is deselected
+        if (!newValue) {
+            processedSelectedAPIRef.current = null;
+        }
     };
 
     // Fetch available APIs when component mounts
     useEffect(() => {
         fetchAvailableAPIs();
+        
+        // Cleanup function to reset state when component unmounts
+        return () => {
+            processedSelectedAPIRef.current = null;
+        };
     }, []);
 
     // Handle selectedAPI prop - fetch full API details if only ID is provided
@@ -160,6 +170,10 @@ const ExistingAPIToolSelection = ({
         } else if (selectedAPI) {
             // If we have full API details, set it directly
             setSelectedAPIOption(selectedAPI);
+        } else {
+            // Reset when selectedAPI is null
+            setSelectedAPIOption(null);
+            processedSelectedAPIRef.current = null;
         }
     }, [selectedAPI]);
 
@@ -168,6 +182,11 @@ const ExistingAPIToolSelection = ({
         if (selectedAPIOption && selectedAPIOption.id !== processedSelectedAPIRef.current) {
             processedSelectedAPIRef.current = selectedAPIOption.id;
             fetchOperationsFromAPI(selectedAPIOption.id);
+        } else if (!selectedAPIOption) {
+            // Clear the ref when no API is selected
+            processedSelectedAPIRef.current = null;
+            // Also clear operations when no API is selected
+            updateAvailableOperations([]);
         }
     }, [selectedAPIOption]);
 

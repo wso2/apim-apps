@@ -36,7 +36,6 @@ import MethodView from 'AppComponents/Apis/Details/ProductResources/MethodView';
 import { FormattedMessage } from 'react-intl';
 import OperationGovernance
     from 'AppComponents/Apis/Details/Resources/components/operationComponents/OperationGovernance';
-import { getOperationScopes } from 'AppComponents/Apis/Details/Resources/operationUtils';
 import ToolDetailsSection from './ToolDetailsSection';
 
 const PREFIX = 'ToolDetails';
@@ -294,8 +293,12 @@ function ToolDetails(props) {
                                         whiteSpace: 'nowrap'
                                     }}
                                 >
-                                    <b>{getOperationScopes(operation, spec).length !== 0 && 'Scope : '}</b>
-                                    {getOperationScopes(operation, spec).join(', ')}
+                                    {operation.scopes && operation.scopes.length > 0 && (
+                                        <>
+                                            <b>Scope : </b>
+                                            {operation.scopes.join(', ')}
+                                        </>
+                                    )}
                                 </Typography>
                             </Box>
                         </Grid>

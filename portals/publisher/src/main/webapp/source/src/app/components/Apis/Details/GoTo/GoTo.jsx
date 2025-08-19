@@ -234,6 +234,7 @@ function GoTo(props) {
                                                     inputValue={inputValue}
                                                     isAPIProduct={isAPIProduct}
                                                     isGraphQL={isGraphQL}
+                                                    isMCPServer={api.isMCPServer()}
                                                     getItemProps={getItemProps}
                                                     highlightedIndex={highlightedIndex}
                                                     selectedItem={selectedItem}

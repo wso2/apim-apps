@@ -62,7 +62,8 @@ function getSuggestions(value, isAPIProduct, isGraphQL, { showEmpty = false } = 
 
 const GoToSuggestions = (props) => {
     const {
-        inputValue, isAPIProduct, isGraphQL, getItemProps, highlightedIndex, selectedItem, handleClickAway, apiId,
+        inputValue, isAPIProduct, isGraphQL, isMCPServer, getItemProps, highlightedIndex,
+        selectedItem, handleClickAway, apiId,
     } = props;
     const currentSuggestions = getSuggestions(inputValue, isAPIProduct, isGraphQL);
     const theme = useTheme();
@@ -87,6 +88,7 @@ const GoToSuggestions = (props) => {
                         selectedItem={selectedItem}
                         handleClickAway={handleClickAway}
                         apiId={apiId}
+                        isMCPServer={isMCPServer}
                     />
                 ))
                 : (
