@@ -1201,7 +1201,7 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.ENVIRONMENTS_MCP}
-                                        component={() => <Environments api={api} />}
+                                        render={(props) => <Environments {...props} api={api} />}
                                     />
                                     <Route
                                         path={Details.subPaths.OPERATIONS}
