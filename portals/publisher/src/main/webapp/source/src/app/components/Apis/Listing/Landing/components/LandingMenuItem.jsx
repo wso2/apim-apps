@@ -72,6 +72,9 @@ const LandingMenuItem = (props) => {
                 color='text.secondary'
                 fontFamily='fontFamily'
                 fontSize={dense ? 'caption.fontSize' : 'body2.fontSize'}
+                sx={{
+                    marginTop: 1,
+                }}
             >
                 {helperText}
             </Box>
