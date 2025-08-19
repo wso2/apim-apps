@@ -314,13 +314,13 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
             </Box>
             <Box component='div' m={3}>
                 <Grid container spacing={2}>
-                    {policyAttributes.map((attribute: PolicyAttribute) => (
-                        <Grid item xs={12} key={attribute.name}>
+                    {policyAttributes.map((attribute: PolicyAttribute, index: number) => (
+                        <Grid item xs={12} key={attribute.id}>
                             <Box component='div' mt={1} mb={1}>
                                 <Box display='flex' flexDirection='row' justifyContent='center' mb={1}>
                                     <Grid item xs={12} md={12} lg={3} className={classes.attributeProperty}>
                                         <TextField
-                                            autoFocus
+                                            autoFocus={index === policyAttributes.length - 1 && !isViewMode}
                                             fullWidth
                                             required
                                             name='name'
