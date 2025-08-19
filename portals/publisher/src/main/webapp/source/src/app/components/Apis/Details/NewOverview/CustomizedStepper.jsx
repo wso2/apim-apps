@@ -179,7 +179,7 @@ export default function CustomizedStepper() {
     const [deploymentsAvailable, setDeploymentsAvailable] = useState(false);
     const [isEndpointSecurityConfigured, setIsEndpointSecurityConfigured] = useState(false);
     const [isMCPEndpointAvailable, setMCPEndpointAvailable] = useState(false);
-    const [MCPEndpointLoading, setMCPEndpointLoading] = useState(true);
+    const [MCPEndpointLoading, setMCPEndpointLoading] = useState(false);
     const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
     const isPrototypedAvailable = api.apiType !== API.CONSTS.APIProduct
         && api.endpointConfig !== null
@@ -196,6 +196,7 @@ export default function CustomizedStepper() {
 
     useEffect(() => {
         if (isMCPServer) {
+            setMCPEndpointLoading(true);
             if (api.isMCPServerFromExistingAPI()) {
                 // EXISTING_API subtype
                 const underlyingApiId = api.operations[0]
@@ -209,6 +210,10 @@ export default function CustomizedStepper() {
                             } else {
                                 setMCPEndpointAvailable(false);
                             }
+                        })
+                        .catch((error) => {
+                            console.error('Error fetching underlying API:', error);
+                            setMCPEndpointAvailable(false);
                         })
                         .finally(() => {
                             setMCPEndpointLoading(false);
@@ -235,8 +240,6 @@ export default function CustomizedStepper() {
                         setMCPEndpointLoading(false);
                     });
             }
-        } else {
-            setMCPEndpointLoading(false);
         }
     }, [isMCPServer, api.id]);
 
