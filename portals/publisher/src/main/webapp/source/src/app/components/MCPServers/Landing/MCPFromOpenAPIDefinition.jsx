@@ -28,7 +28,7 @@ import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import Configurations from 'Config';
 import API from 'AppData/api';
-import SampleMCPServer from 'AppComponents/MCPServers/Listing/SampleMCPServer';
+import SampleMCPServer from 'AppComponents/MCPServers/SampleMCPServer/SampleMCPServer';
 
 const MCPFromOpenAPIDefinition = (props) => {
     const { icon, isCreateMenu } = props;
