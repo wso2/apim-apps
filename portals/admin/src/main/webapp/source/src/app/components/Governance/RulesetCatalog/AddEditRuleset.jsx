@@ -44,7 +44,6 @@ import {
     Link,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Editor from '@monaco-editor/react';
 import cloneDeep from 'lodash.clonedeep';
 import PropTypes from 'prop-types';
 import Configurations from 'Config';
@@ -55,6 +54,12 @@ import GovernanceAPI from 'AppData/GovernanceAPI';
 import CONSTS from 'AppData/Constants';
 import AuthManager from 'AppData/AuthManager';
 import Utils from 'AppData/Utils';
+
+import * as monaco from 'monaco-editor';
+import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
+
+// load Monaco from node_modules instead of CDN
+loader.config({ monaco });
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 const StyledHr = styled('hr')({ border: 'solid 1px #efefef' });
@@ -619,7 +624,7 @@ function AddEditRuleset(props) {
                                     </Box>
                                 </EditorToolbar>
                                 <EditorContainer>
-                                    <Editor
+                                    <MonacoEditor
                                         height='100%'
                                         defaultLanguage='yaml'
                                         value={rulesetContent}
