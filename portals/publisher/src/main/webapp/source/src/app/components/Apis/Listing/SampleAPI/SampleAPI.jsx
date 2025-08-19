@@ -310,15 +310,13 @@ const SampleAPI = (props) => {
                 component='button'
                 helperText={(
                     <FormattedMessage
-                        id='Apis.Listing.SampleAPI.SampleAPI.rest.d.sample.content'
-                        defaultMessage={`Sample Pizza Shack
-                                    API`}
+                        id='Apis.Listing.SampleAPI.SampleAPI.rest.sample.content'
+                        defaultMessage='Sample Pizza Shack API'
                     />
                 )}
             >
                 <FormattedMessage
-                    id={'Apis.Listing.SampleAPI.SampleAPI.'
-                        + 'rest.d.sample.title'}
+                    id='Apis.Listing.SampleAPI.SampleAPI.rest.sample.title'
                     defaultMessage='Deploy Sample API'
                 />
             </LandingMenuItem>

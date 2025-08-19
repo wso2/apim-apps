@@ -195,14 +195,13 @@ const SampleMCPServer = (props) => {
                 component='button'
                 helperText={
                     <FormattedMessage
-                        id='MCPServers.Listing.SampleMCPServer.SampleMCPServer.rest.d.sample.content'
+                        id='MCPServers.Listing.SampleMCPServer.SampleMCPServer.sample.content'
                         defaultMessage='Sample MCP Server'
                     />
                 }
             >
                 <FormattedMessage
-                    id={'MCPServers.Listing.SampleMCPServer.SampleMCPServer.'
-                        + 'rest.d.sample.title'}
+                    id='MCPServers.Listing.SampleMCPServer.SampleMCPServer.sample.title'
                     defaultMessage='Deploy Sample MCP Server'
                 />
             </LandingMenuItem>
