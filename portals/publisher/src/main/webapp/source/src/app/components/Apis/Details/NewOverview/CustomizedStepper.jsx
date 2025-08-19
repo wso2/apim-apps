@@ -199,8 +199,7 @@ export default function CustomizedStepper() {
             setMCPEndpointLoading(true);
             if (api.isMCPServerFromExistingAPI()) {
                 // EXISTING_API subtype
-                const underlyingApiId = api.operations[0]
-                    && api.operations[0].apiOperationMapping?.apiId;
+                const underlyingApiId = api.operations[0]?.apiOperationMapping?.apiId;
                 if (underlyingApiId) {
                     const propmisedApi = API.get(underlyingApiId);
                     propmisedApi
