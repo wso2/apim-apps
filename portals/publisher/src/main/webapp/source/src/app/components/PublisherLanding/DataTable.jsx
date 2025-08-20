@@ -261,8 +261,18 @@ const DataTable = ({ data, type, totalCount, onRowClick, onDelete }) => {
                                             noWrap 
                                             fontWeight={300}
                                         >
-                                            By: {displayValues.provider.charAt(0).toUpperCase()
-                                                + displayValues.provider.slice(1)}
+                                            <FormattedMessage id='by' defaultMessage='By' />
+                                            &nbsp;{displayValues.provider}
+                                            {type === ENTITY_TYPES.APIS && (
+                                                <>
+                                                    &nbsp;
+                                                    <FormattedMessage id='on' defaultMessage='on' />
+                                                    &nbsp;
+                                                    {item.gatewayVendor === 'wso2' || item.gatewayVendor === 'solace'
+                                                        ? item.gatewayVendor.toUpperCase()
+                                                        : item.gatewayType}
+                                                </>
+                                            )}
                                         </Typography>
                                         <Box display='flex' gap={2} sx={{ overflow: 'hidden'}}>
                                             <Box sx={{ overflow: 'hidden', minWidth: '48px' }}>
