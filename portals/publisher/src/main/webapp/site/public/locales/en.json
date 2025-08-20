@@ -1795,6 +1795,7 @@
   "Apis.Details.components.APIDetailsTopMenu.created.on": "on",
   "Apis.Details.components.APIDetailsTopMenu.current.api": "Current API",
   "Apis.Details.components.APIDetailsTopMenu.current.mcp.server": "Current MCP Server",
+  "Apis.Details.components.APIDetailsTopMenu.discovered.api.label": "This is a discovered API",
   "Apis.Details.components.APIDetailsTopMenu.error": "Something went wrong while downloading the API.",
   "Apis.Details.components.APIDetailsTopMenu.generate.mcp.server.label": "Generate MCP Server",
   "Apis.Details.components.APIDetailsTopMenu.last.updated.time": "Last updated:",

@@ -363,7 +363,24 @@ const APIDetailsTopMenu = (props) => {
                         />
                     </Typography>
                 </div>
-
+                {api.initiatedFromGateway && (
+                    <>
+                        <VerticalDivider height={70} />
+                        <div className={classes.infoItem}>
+                            <MUIAlert
+                                variant='outlined'
+                                severity='info'
+                                icon={false}
+                                className={classes.alertMargin}
+                            >
+                                <FormattedMessage
+                                    id='Apis.Details.components.APIDetailsTopMenu.discovered.api.label'
+                                    defaultMessage='This is a discovered API'
+                                />
+                            </MUIAlert>
+                        </div>
+                    </>
+                )}
                 <div className={classes.dateWrapper} />
                 {api.isRevision && (
                     <MUIAlert
