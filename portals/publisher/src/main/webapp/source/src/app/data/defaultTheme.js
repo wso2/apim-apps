@@ -265,6 +265,8 @@ export default {
                 mcpServerFromExistingApiIcon: '/site/public/images/landing-icons/mcp-server-from-existing-api.svg',
                 mcpServerProxyIcon: '/site/public/images/landing-icons/mcp-server-proxy.svg',
                 noDataIcon: '/site/public/images/landing-icons/no-data.svg',
+                createFirstApiProductIcon: '/site/public/images/landing-icons/create-first-api-product.svg',
+                createFirstMcpIcon: '/site/public/images/landing-icons/create-first-mcp.svg',
             },
             menu: {
                 primary: '#34679D',

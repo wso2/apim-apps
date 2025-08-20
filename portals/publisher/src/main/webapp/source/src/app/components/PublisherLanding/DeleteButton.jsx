@@ -23,9 +23,10 @@ import {
     DialogActions,
     DialogContent,
     DialogContentText,
-    DialogTitle
+    DialogTitle,
+    IconButton
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
@@ -35,7 +36,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import { ENTITY_TYPES } from './utils';
 
 /**
- * Delete Button Component for table rows
+ * Delete Button Component for card actions
  * @param {Object} props - Component props
  * @param {Object} props.item - Item to delete (API or MCP Server)
  * @param {string} props.type - Entity type (apis or mcp-servers)
@@ -118,25 +119,14 @@ const DeleteButton = ({ item, type, onDelete }) => {
 
     return (
         <>
-            <Button
+            <IconButton 
                 onClick={handleClick}
                 disabled={loading || isRestricted(['apim:api_delete'], item)}
-                size='small'
+                size='small' 
                 color='error'
-                variant='outlined'
-                startIcon={<DeleteIcon fontSize='small' />}
-                sx={{
-                    minWidth: 'auto',
-                    textTransform: 'none',
-                    fontSize: '0.75rem',
-                    padding: '4px 8px'
-                }}
             >
-                <FormattedMessage
-                    id='Publisher.Landing.delete.button.text'
-                    defaultMessage='Delete'
-                />
-            </Button>
+                <DeleteOutlineIcon fontSize='small' />
+            </IconButton>
             <Dialog 
                 open={open} 
                 onClose={handleClose}

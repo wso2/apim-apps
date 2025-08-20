@@ -73,13 +73,13 @@ const getAvatarSx = (theme, char, width, height, bgColor) => {
 
 export default (props) => {
     const {
-        artifact, width, height, charLength = 2, ThumbIcon, bgColor,
+        artifact, width, height, charLength = 2, ThumbIcon, bgColor, avatarVariant = 'square',
     } = props;
     const name = artifact.name.substring(0, charLength);
     const theme = useTheme();
     return (
         <div style={{ display: 'flex' }}>
-            <Avatar variant='square' sx={getAvatarSx(theme, name.substring(0, 1), width, height, bgColor)}>
+            <Avatar variant={avatarVariant} sx={getAvatarSx(theme, name.substring(0, 1), width, height, bgColor)}>
                 {ThumbIcon ? <ThumbIcon sx={getThumbIconSx(theme, width)} /> : capitalizeFirstLetter(name)}
             </Avatar>
         </div>

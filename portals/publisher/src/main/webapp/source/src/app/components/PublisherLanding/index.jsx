@@ -233,7 +233,10 @@ const PublisherLanding = () => {
                         <Typography variant='h4' component='h1'>
                             <FormattedMessage
                                 id='Publisher.Landing.title'
-                                defaultMessage='Welcome to the Publisher Portal!'
+                                defaultMessage='Welcome to the {portal}!'
+                                values={{
+                                    portal: <span style={{ fontWeight: '600' }}>Publisher Portal</span>
+                                }}
                             />
                         </Typography>
                         {!hasData && (
@@ -260,14 +263,12 @@ const PublisherLanding = () => {
                             {isMCPSupportEnabled && (
                                 <McpServersSection 
                                     data={mcpServers} 
-                                    noDataIcon={noDataIcon}
                                     totalCount={mcpServersTotalCount}
                                     onDelete={handleMcpServerDelete}
                                 />
                             )}
                             <APIProductSection 
                                 data={apiProducts} 
-                                noDataIcon={noDataIcon}
                                 totalCount={apiProductsTotalCount}
                                 onDelete={handleApiProductDelete}
                             />
