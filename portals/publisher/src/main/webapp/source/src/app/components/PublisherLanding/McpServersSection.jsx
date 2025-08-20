@@ -17,10 +17,10 @@
  */
 
 import React from 'react';
-import { Box, Typography, Button, Tooltip } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
+import { styled, useTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
-import LaunchIcon from '@mui/icons-material/Launch';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Configurations from 'Config';
@@ -28,97 +28,174 @@ import { isRestricted } from 'AppData/AuthManager';
 import DataTable from './DataTable';
 import { ENTITY_TYPES } from './utils';
 
+const PREFIX = 'McpServersSection';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    section: `${PREFIX}-section`,
+    header: `${PREFIX}-header`,
+    headerContent: `${PREFIX}-headerContent`,
+    title: `${PREFIX}-title`,
+    emptyState: `${PREFIX}-emptyState`,
+    emptyStateContent: `${PREFIX}-emptyStateContent`,
+    emptyStateImage: `${PREFIX}-emptyStateImage`,
+    emptyStateText: `${PREFIX}-emptyStateText`,
+    emptyStateButton: `${PREFIX}-emptyStateButton`,
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
+        marginBottom: theme.spacing(4),
+        marginLeft: theme.spacing(4),
+        marginRight: theme.spacing(4),
+    },
+
+    [`& .${classes.section}`]: {
+        marginBottom: theme.spacing(4),
+        marginLeft: theme.spacing(4),
+        marginRight: theme.spacing(4),
+    },
+
+    [`& .${classes.header}`]: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: theme.spacing(2),
+    },
+
+    [`& .${classes.headerContent}`]: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+
+    [`& .${classes.title}`]: {
+        fontWeight: 600,
+    },
+
+    [`& .${classes.emptyState}`]: {
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+    },
+
+    [`& .${classes.emptyStateContent}`]: {
+        display: 'flex',
+        gap: theme.spacing(3),
+        minWidth: '600px',
+        marginBottom: theme.spacing(3),
+    },
+
+    [`& .${classes.emptyStateImage}`]: {
+        height: '100px',
+        width: 'auto',
+        verticalAlign: 'middle',
+    },
+
+    [`& .${classes.emptyStateText}`]: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: theme.spacing(0.5),
+        alignSelf: 'center',
+    },
+
+    [`& .${classes.emptyStateButton}`]: {
+        width: 'fit-content',
+    },
+}));
+
 /**
  * MCP Servers Section Component
  * @param {Object} props - Component props
  * @param {Array} props.data - Array of MCP Servers to display
- * @param {string} props.noDataIcon - Path to no data icon
  * @param {number} props.totalCount - Total number of MCP Servers
  * @param {Function} props.onDelete - Callback for MCP Server deletion
  * @returns {JSX.Element} MCP Servers section component
  */
-const McpServersSection = ({ data, noDataIcon, totalCount, onDelete }) => {
+const McpServersSection = ({ data, totalCount, onDelete }) => {
+    const theme = useTheme();
+    const { createFirstMcpIcon } = theme.custom.landingPage.icons;
     return (
-        <Box mb={4} mx={4}>
-            <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
-                <Box display='flex' alignItems='center'>
-                    <Typography variant='h4'>
-                        <FormattedMessage
-                            id='Publisher.Landing.mcpServers.section.title'
-                            defaultMessage='MCP Servers'
-                        />
-                    </Typography>
-                    <Typography 
-                        variant='body2' 
-                        color='textSecondary' 
-                        sx={{ 
-                            ml: 1, 
-                            alignSelf: 'flex-end',
-                            mb: 0.5 
-                        }}
-                    >
-                        Total: <strong>{totalCount}</strong> {totalCount === 1 ? 'MCP Server' : 'MCP Servers'}
-                    </Typography>
-                    <Tooltip title='Go to MCP Servers'>
-                        <Link to='/mcp-servers' style={{ textDecoration: 'none' }}>
-                            <LaunchIcon 
-                                style={{ marginLeft: '2px' }} 
-                                fontSize='small' 
-                                sx={{ color: 'text.secondary' }}
+        <Root>
+            <div className={classes.root}>
+                <div className={classes.header}>
+                    <div className={classes.headerContent}>
+                        <Typography variant='h4' className={classes.title}>
+                            <FormattedMessage
+                                id='Publisher.Landing.mcpServers.section.title'
+                                defaultMessage='MCP Servers'
                             />
-                        </Link>
-                    </Tooltip>
-                </Box>
-                {data.length > 0 && (
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        component={Link}
-                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                        to='/mcp-servers/create'
-                        startIcon={<AddIcon />}
-                    >
-                        <FormattedMessage
-                            id='Publisher.Landing.create.mcp.button'
-                            defaultMessage='Create MCP Server'
-                        />
-                    </Button>
-                )}
-            </Box>
-            {data.length === 0 ? (
-                <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
-                    <img
-                        src={Configurations.app.context + noDataIcon}
-                        alt='No MCP Servers available'
+                        </Typography>
+                    </div>
+                    {data.length > 0 && (
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            component={Link}
+                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                            to='/mcp-servers/create'
+                            startIcon={<AddIcon />}
+                        >
+                            <FormattedMessage
+                                id='Publisher.Landing.create.mcp.button'
+                                defaultMessage='Create MCP Server'
+                            />
+                        </Button>
+                    )}
+                </div>
+                {data.length === 0 ? (
+                    <div className={classes.emptyState}>
+                        <div className={classes.emptyStateContent}>
+                            <Box>
+                                <img
+                                    src={Configurations.app.context + createFirstMcpIcon}
+                                    alt='Create your first MCP Server'
+                                    className={classes.emptyStateImage}
+                                />
+                            </Box>
+                            <div className={classes.emptyStateText}>
+                                <Typography variant='h4'>
+                                    <FormattedMessage
+                                        id='Publisher.Landing.create.first.mcp.title'
+                                        defaultMessage='Create your first MCP Server'
+                                    />
+                                </Typography>
+                                <Typography variant='body1' color='textSecondary' style={{ marginBottom: '4px' }}>
+                                    <FormattedMessage
+                                        id='Publisher.Landing.mcp.description'
+                                        defaultMessage='Expose your APIs as MCP Servers or manage external MCP Servers'
+                                    />
+                                </Typography>
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    component={Link}
+                                    disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                                    to='/mcp-servers/create'
+                                    startIcon={<AddIcon />}
+                                    className={classes.emptyStateButton}
+                                >
+                                    <FormattedMessage
+                                        id='Publisher.Landing.create.mcp.button'
+                                        defaultMessage='Create'
+                                    />
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <DataTable 
+                        data={data} 
+                        type={ENTITY_TYPES.MCP_SERVERS} 
+                        totalCount={totalCount}
+                        onDelete={onDelete}
                     />
-                    <Typography variant='body1' color='textSecondary' mt={2} mb={3}>
-                        <FormattedMessage
-                            id='Publisher.Landing.no.mcpServers.message'
-                            defaultMessage='No MCP Servers found. Create your first MCP Server to get started.'
-                        />
-                    </Typography>
-                    <Button
-                        variant='outlined'
-                        color='primary'
-                        component={Link}
-                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                        to='/mcp-servers'
-                        startIcon={<AddIcon />}
-                    >
-                        <FormattedMessage
-                            id='Publisher.Landing.create.mcp.button'
-                            defaultMessage='Create MCP Server'
-                        />
-                    </Button>
-                </Box>
-            ) : (
-                <DataTable 
-                    data={data} 
-                    type={ENTITY_TYPES.MCP_SERVERS} 
-                    onDelete={onDelete}
-                />
-            )}
-        </Box>
+                )}
+            </div>
+        </Root>
     );
 };
 
@@ -131,7 +208,6 @@ McpServersSection.propTypes = {
         context: PropTypes.string,
         updatedTime: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     })).isRequired,
-    noDataIcon: PropTypes.string.isRequired,
     totalCount: PropTypes.number.isRequired,
     onDelete: PropTypes.func,
 };
