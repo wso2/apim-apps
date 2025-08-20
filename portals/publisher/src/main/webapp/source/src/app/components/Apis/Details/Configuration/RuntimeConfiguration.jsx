@@ -651,6 +651,13 @@ export default function RuntimeConfiguration() {
             });
     }
 
+    const getRedirectUrl = () => {
+        if (api.isMCPServer()) {
+            return `/mcp-servers/${api.id}/overview`;
+        }
+        return `/apis/${api.id}/overview`;
+    };
+
     if (isLoading || loadingEndpointConfig) {
         return <Progress per={80} message='Loading app settings ...' />;
     }
@@ -872,7 +879,7 @@ export default function RuntimeConfiguration() {
                         <Grid item>
                             <Button
                                 component={Link}
-                                to={'/apis/' + api.id + '/overview'}
+                                to={getRedirectUrl()}
                                 aria-label='Cancel'
                             >
                                 <FormattedMessage

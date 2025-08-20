@@ -264,7 +264,12 @@ class EditScope extends React.Component {
             description: originalScope.description,
             bindings: validRoles,
         };
-        const urlPrefix = api.apiType === Api.CONSTS.APIProduct ? 'api-products' : 'apis';
+        let urlPrefix;
+        if (api.isMCPServer()) {
+            urlPrefix = 'mcp-servers';
+        } else {
+            urlPrefix = api.apiType === Api.CONSTS.APIProduct ? 'api-products' : 'apis';
+        }
         const scopes = api.scopes.map((scopeObj) => {
             if (scopeObj.scope.name === apiScope.scope.name) {
                 return apiScope;
@@ -337,7 +342,12 @@ class EditScope extends React.Component {
         const {
             apiScope, roleValidity, validRoles, invalidRoles,
         } = this.state;
-        const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
+        let urlPrefix;
+        if (api.isMCPServer()) {
+            urlPrefix = 'mcp-servers';
+        } else {
+            urlPrefix = isAPIProduct ? 'api-products' : 'apis';
+        }
         const url = `/${urlPrefix}/${api.id}/scopes`;
         return (
             <StyledGrid container spacing={3}>

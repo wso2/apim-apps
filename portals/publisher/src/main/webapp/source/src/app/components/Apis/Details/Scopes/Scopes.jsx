@@ -298,7 +298,7 @@ class Scopes extends React.Component {
                     return op.scopes.includes(apiScope.scope.name);
                 })
                 .map((op) => {
-                    return op.target + ' ' + op.verb;
+                    return api.isMCPServer() ? `${op.feature} ${op.target}` : `${op.verb} ${op.target}`;
                 });
             aScope.push(resources);
             return aScope;
@@ -326,10 +326,17 @@ class Scopes extends React.Component {
                         </Typography>
                         <Tooltip
                             title={(
-                                <FormattedMessage
-                                    id='Apis.Details.Scopes.Scopes.heading.scope.title.tooltip'
-                                    defaultMessage='Manage scopes that are local to this API'
-                                />
+                                api.isMCPServer() ? (
+                                    <FormattedMessage
+                                        id='Apis.Details.Scopes.Scopes.heading.scope.title.tooltip.mcp'
+                                        defaultMessage='Manage scopes that are local to this MCP Server'
+                                    />
+                                ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.Scopes.Scopes.heading.scope.title.tooltip'
+                                        defaultMessage='Manage scopes that are local to this API'
+                                    />
+                                )
                             )}
                             placement='top-end'
                         >
@@ -343,16 +350,13 @@ class Scopes extends React.Component {
                             <Typography variant='h5' component='h3' className={classes.head}>
                                 <FormattedMessage
                                     id='Apis.Details.Scopes.Scopes.create.scopes.title'
-                                    defaultMessage='Create API Local Scopes'
+                                    defaultMessage='Create Local Scopes'
                                 />
                             </Typography>
                             <Typography component='p' className={classes.content}>
                                 <FormattedMessage
                                     id='Apis.Details.Scopes.Scopes.scopes.enable.fine.gained.access.control'
-                                    defaultMessage={
-                                        'Scopes enable fine-grained access control to API resources'
-                                        + ' based on user roles.'
-                                    }
+                                    defaultMessage='Scopes enable fine-grained access control based on user roles.'
                                 />
                             </Typography>
                             <div className={classes.actions}>
@@ -368,7 +372,7 @@ class Scopes extends React.Component {
                                 >
                                     <FormattedMessage
                                         id='Apis.Details.Scopes.Scopes.create.scopes.button'
-                                        defaultMessage='Create Scopes'
+                                        defaultMessage='Create Scope'
                                     />
                                 </Button>
                             </div>

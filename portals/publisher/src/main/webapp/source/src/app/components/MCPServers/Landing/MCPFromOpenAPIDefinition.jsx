@@ -40,7 +40,7 @@ const MCPFromOpenAPIDefinition = (props) => {
     const [showSampleDeploy, setShowSampleDeploy] = useState(false);
 
     useEffect(() => {
-        const composeQuery = '?query=name:PizzaShackServer version:1.0.0 context:pizzashackserver';
+        const composeQuery = '?query=name:PizzaShackServer version:1.0.0 context:pizzashackserver type:MCP';
         const composeQueryJSON = queryString.parse(composeQuery);
         composeQueryJSON.limit = 1;
         composeQueryJSON.offset = 0;
