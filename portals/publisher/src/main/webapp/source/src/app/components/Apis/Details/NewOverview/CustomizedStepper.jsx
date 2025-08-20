@@ -178,9 +178,9 @@ export default function CustomizedStepper() {
     const [isMandatoryPropertiesAvailable, setIsMandatoryPropertiesAvailable] = useState(false);
     const [deploymentsAvailable, setDeploymentsAvailable] = useState(false);
     const [isEndpointSecurityConfigured, setIsEndpointSecurityConfigured] = useState(false);
-    const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
     const [isMCPEndpointAvailable, setMCPEndpointAvailable] = useState(false);
-    const [MCPEndpointLoading, setMCPEndpointLoading] = useState(true);
+    const [MCPEndpointLoading, setMCPEndpointLoading] = useState(false);
+    const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
     const isPrototypedAvailable = api.apiType !== API.CONSTS.APIProduct
         && api.endpointConfig !== null
         && api.endpointConfig.implementation_status === 'prototyped';
@@ -197,24 +197,48 @@ export default function CustomizedStepper() {
     useEffect(() => {
         if (isMCPServer) {
             setMCPEndpointLoading(true);
-            MCPServer.getMCPServerEndpoints(api.id)
-                .then((response) => {
-                    const fetchedEndpoints = response.body;
-                    if (fetchedEndpoints && fetchedEndpoints.length > 0) {
-                        setMCPEndpointAvailable(true);
-                    } else {
-                        setMCPEndpointAvailable(false);
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching MCP server endpoints:', error);
-                    setMCPEndpointAvailable(false);
-                })
-                .finally(() => {
+            if (api.isMCPServerFromExistingAPI()) {
+                // EXISTING_API subtype
+                const underlyingApiId = api.operations[0]?.apiOperationMapping?.apiId;
+                if (underlyingApiId) {
+                    const propmisedApi = API.get(underlyingApiId);
+                    propmisedApi
+                        .then((apiObj) => {
+                            if (apiObj.endpointConfig !== null) {
+                                setMCPEndpointAvailable(true);
+                            } else {
+                                setMCPEndpointAvailable(false);
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error fetching underlying API:', error);
+                            setMCPEndpointAvailable(false);
+                        })
+                        .finally(() => {
+                            setMCPEndpointLoading(false);
+                        });
+                } else {
                     setMCPEndpointLoading(false);
-                });
-        } else {
-            setMCPEndpointLoading(false);
+                }
+            } else {
+                // DIRECT_BACKEND and SERVER_PROXY subtypes
+                MCPServer.getMCPServerEndpoints(api.id)
+                    .then((response) => {
+                        const fetchedEndpoints = response.body;
+                        if (fetchedEndpoints && fetchedEndpoints.length > 0) {
+                            setMCPEndpointAvailable(true);
+                        } else {
+                            setMCPEndpointAvailable(false);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching MCP server endpoints:', error);
+                        setMCPEndpointAvailable(false);
+                    })
+                    .finally(() => {
+                        setMCPEndpointLoading(false);
+                    });
+            }
         }
     }, [isMCPServer, api.id]);
 
@@ -305,7 +329,7 @@ export default function CustomizedStepper() {
                     result = await api.getRevisionsWithEnv(api.isRevision ? api.revisionedApiId : api.id);
                 }
 
-                if (api.apiType === API.CONSTS.APIProduct || isMCPServer) {
+                if (api.apiType === API.CONSTS.APIProduct) {
                     setDeploymentsAvailable(result.body.count > 0);
                 } else {
                     let hasApprovedDeployment = false;
@@ -375,9 +399,11 @@ export default function CustomizedStepper() {
     }, [api]);
 
     /**
- * Update the LifeCycle state of the API
- *
- */
+     * Update the LifeCycle state of the API
+     *
+     * @param {string} apiId - The ID of the API
+     * @param {string} state - The new lifecycle state
+     */
     function updateLCStateOfAPI(apiId, state) {
         setUpdating(true);
         const promisedUpdate = isMCPServer ? MCPServer.updateLcState(apiId, state) : api.updateLcState(apiId, state);
