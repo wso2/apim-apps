@@ -31,6 +31,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 /**
  *
@@ -47,6 +48,10 @@ export default function SaveOperations(props) {
     const history = useHistory();
     const [isOpen, setIsOpen] = useState(false);
     const { settings } = useAppContext();
+
+    /**
+     * Handle save and deploy
+     */
     function handleSaveAndDeploy() {
         setIsSaving(true);
         if (updateAsyncAPI) {
@@ -59,8 +64,7 @@ export default function SaveOperations(props) {
         } else {
             updateOpenAPI('save')
                 .finally(() => history.push({
-                    pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
-                        : `/apis/${api.id}/deployments`,
+                    pathname: getBasePath(api.apiType) + api.id + '/deployments',
                     state: 'deploy',
                 }));
         }
