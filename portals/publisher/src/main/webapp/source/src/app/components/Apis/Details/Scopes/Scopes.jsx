@@ -308,7 +308,9 @@ class Scopes extends React.Component {
             return <Progress />;
         }
 
-        if (scopes.length === 0) {
+        // Check if there are no scopes OR if all scopes are shared (no local scopes)
+        const hasLocalScopes = scopes.some(scope => !scope.shared);
+        if (scopes.length === 0 || !hasLocalScopes) {
             return (
                 <Root className={classes.root}>
                     <div className={classes.titleWrapper}>

@@ -20,7 +20,7 @@ import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { Typography } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import Button from '@mui/material/Button';
 import UsageIcon from '@mui/icons-material/List';
 import Dialog from '@mui/material/Dialog';
@@ -41,7 +41,8 @@ const classes = {
     button: `${PREFIX}-button`,
     root: `${PREFIX}-root`,
     usageDialogHeader: `${PREFIX}-usageDialogHeader`,
-    buttonIcon: `${PREFIX}-buttonIcon`
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    sectionContainer: `${PREFIX}-sectionContainer`,
 };
 
 const Root = styled('div')(() => ({
@@ -59,7 +60,11 @@ const Root = styled('div')(() => ({
 
     [`& .${classes.buttonIcon}`]: {
         marginRight: 10,
-    }
+    },
+
+    [`& .${classes.sectionContainer}`]: {
+        width: '100%',
+    },
 }));
 
 /**
@@ -76,44 +81,83 @@ function Usage(props) {
     useEffect(() => {
         API.getSharedScopeUsages(scopeId).then((response) =>
         {
-            // process revision resources, in case a shared scope applied resource is used in current API and a revision
+            // Process the usages array to separate HTTP and MCP types
+            const usagesList = response.body.usages || [];
+            
+            // Process revision resources, in case a shared scope applied resource is used in current API and a revision
             // the response from API will have 2 records. Here we flatten it to a single API record that has 2
             // revision resources.
-            const apiList = response.body.usedApiList;
-            const apisMap = new Map();
-            const processedAPIList = [];
-            for (let i = 0; i < apiList.length; i++) {
-                const api = apiList[i];
-                const key =  api.provider + ":" + api.name + ":" + api.version;
+            const httpApisMap = new Map();
+            const mcpServersMap = new Map();
+            const processedHttpList = [];
+            const processedMCPList = [];
+            
+            for (let i = 0; i < usagesList.length; i++) {
+                const usageItem = usagesList[i];
+                const key = usageItem.provider + ":" + usageItem.name + ":" + usageItem.version;
+                
+                const usageData = {
+                    name: usageItem.name,
+                    context: usageItem.context,
+                    version: usageItem.version,
+                    provider: usageItem.provider,
+                    usedResourceList: usageItem.usedResourceList || []
+                };
 
-                let apiData = null;
-                if (apisMap.has(key)) {
-                    apiData = apisMap.get(key);
-                    for (let j = 0; j < api.usedResourceList.length; j++) {
-                        const resource = api.usedResourceList[j];
-                        resource.revisionID = api.revisionID;
-                        apiData.usedResourceList.push(resource);
+                if (usageItem.type === 'HTTP') {
+                    let apiData = null;
+                    if (httpApisMap.has(key)) {
+                        apiData = httpApisMap.get(key);
+                        for (let j = 0; j < usageItem.usedResourceList.length; j++) {
+                            const resource = usageItem.usedResourceList[j];
+                            resource.revisionID = usageItem.revisionId;
+                            apiData.usedResourceList.push(resource);
+                        }
+                    } else {
+                        const resourceList = [];
+                        for (let k = 0; k < usageItem.usedResourceList.length; k++) {
+                            const resource = usageItem.usedResourceList[k];
+                            resource.revisionID = usageItem.revisionId;
+                            resourceList.push(resource);
+                        }
+                        apiData = {
+                            ...usageData,
+                            usedResourceList: resourceList
+                        };
+                        httpApisMap.set(key, apiData);
+                        processedHttpList.push(apiData);
                     }
-                } else {
-                    const resourceList = [];
-                    for (let k = 0; k < api.usedResourceList.length; k++) {
-                        const resource = api.usedResourceList[k];
-                        resource.revisionID = api.revisionID;
-                        resourceList.push(resource);
+                } else if (usageItem.type === 'MCP') {
+                    let mcpData = null;
+                    if (mcpServersMap.has(key)) {
+                        mcpData = mcpServersMap.get(key);
+                        for (let j = 0; j < usageItem.usedResourceList.length; j++) {
+                            const resource = usageItem.usedResourceList[j];
+                            resource.revisionID = usageItem.revisionId;
+                            mcpData.usedResourceList.push(resource);
+                        }
+                    } else {
+                        const resourceList = [];
+                        for (let k = 0; k < usageItem.usedResourceList.length; k++) {
+                            const resource = usageItem.usedResourceList[k];
+                            resource.revisionID = usageItem.revisionId;
+                            resourceList.push(resource);
+                        }
+                        mcpData = {
+                            ...usageData,
+                            usedResourceList: resourceList
+                        };
+                        mcpServersMap.set(key, mcpData);
+                        processedMCPList.push(mcpData);
                     }
-                    apiData = {
-                        name: api.name,
-                        context: api.context,
-                        version: api.version,
-                        provider: api.provider,
-                        usedResourceList: resourceList
-                    };
-                    apisMap.set(key, apiData);
-                    processedAPIList.push(apiData);
                 }
             }
-            response.body.usedApiList = processedAPIList;
-            setUsage(response.body);
+            
+            setUsage({
+                ...response.body,
+                usedApiList: processedHttpList,
+                mcpServersList: processedMCPList
+            });
         });
     }, [scopeName, scopeId, usageCount]);
 
@@ -138,8 +182,39 @@ function Usage(props) {
             </Typography>
         </Root>
     );
+
+    const renderAPISection = () => {
+        if (!usage.usedApiList || usage.usedApiList.length === 0) {
+            return null;
+        }
+        
+        return (
+            <Box className={classes.sectionContainer}>
+                <UsageViewAPI scopeUsage={{ usedApiList: usage.usedApiList }} />
+            </Box>
+        );
+    };
+
+    const renderMCPSection = () => {
+        if (!usage.mcpServersList || usage.mcpServersList.length === 0) {
+            return null;
+        }
+        
+        return (
+            <Box className={classes.sectionContainer}>
+                <UsageViewAPI 
+                    scopeUsage={{ usedApiList: usage.mcpServersList }} 
+                    sectionTitle='List of MCP Servers'
+                />
+            </Box>
+        );
+    };
+
     const dialogContent = (
-        <UsageViewAPI scopeUsage={usage} />
+        <Box>
+            {renderAPISection()}
+            {renderMCPSection()}
+        </Box>
     );
 
     return (
