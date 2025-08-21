@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -42,6 +42,15 @@ export default function GatewayConfiguration(props) {
         gatewayConfigurations, additionalProperties, setAdditionalProperties,
     } = props;
 
+    // Populate default values in additional properties when loading
+    useEffect(() => {
+        for (const gatewayConfiguration of gatewayConfigurations) {
+            if (gatewayConfiguration.default) {
+                setAdditionalProperties(gatewayConfiguration.name, gatewayConfiguration.default);
+            }
+        }
+    }, [gatewayConfigurations]);
+
     const onChange = (e) => {
         const { name, value } = e.target;
         setAdditionalProperties(name, value);
@@ -53,6 +62,8 @@ export default function GatewayConfiguration(props) {
         let value = '';
         if (additionalProperties[gatewayConfiguration.name]) {
             value = additionalProperties[gatewayConfiguration.name];
+        } else if (gatewayConfiguration.default) {
+            value = gatewayConfiguration.default;
         }
         if (gatewayConfiguration.type === 'options') {
             return (
