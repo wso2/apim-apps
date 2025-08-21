@@ -22,46 +22,32 @@ import PropTypes from 'prop-types';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import { isRestricted } from 'AppData/AuthManager';
-// import AddEditEndpoint from 'AppComponents/Shared/Endpoints/AddEditEndpoint';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import Endpoints from './Endpoints';
 import AddEditAIEndpoint from './AIEndpoints/AddEditAIEndpoint';
 
 const Endpoint = () => {
     const [api] = useAPI();
-    let urlPrefix;
-    if (api.isAPIProduct()) {
-        urlPrefix = 'api-products';
-    } else if (api.isMCPServer()) {
-        urlPrefix = 'mcp-servers';
-    } else {
-        urlPrefix = 'apis';
-    }
+    const urlPrefix = getBasePath(api.apiType);
     
     return (
         <Switch>
             <Route
                 exact
-                path={'/' + urlPrefix + '/:api_uuid/endpoints/'}
+                path={ urlPrefix + ':api_uuid/endpoints/'}
                 component={() => <Endpoints api={api} />}
             />
             {!isRestricted(['apim:api_create']) && (
                 <Route
                     exact
-                    path={'/' + urlPrefix + '/:api_uuid/endpoints/create'}
+                    path={urlPrefix + ':api_uuid/endpoints/create'}
                     component={(props) => <AddEditAIEndpoint apiObject={api} {...props} />}
                 />
             )}
-            {/* {(!isRestricted(['apim:api_view', 'apim:api_create']) && urlPrefix === 'mcp-servers') && (
-                <Route
-                    exact
-                    path={'/' + urlPrefix + '/:api_uuid/endpoints/:id'}
-                    component={(props) => <AddEditEndpoint apiObject={api} {...props} />}
-                />
-            )} */}
             {!isRestricted(['apim:api_view', 'apim:api_create']) && (
                 <Route
                     exact
-                    path={'/' + urlPrefix + '/:api_uuid/endpoints/:id'}
+                    path={urlPrefix + ':api_uuid/endpoints/:id'}
                     component={(props) => <AddEditAIEndpoint apiObject={api} {...props} />}
                 />
             )}

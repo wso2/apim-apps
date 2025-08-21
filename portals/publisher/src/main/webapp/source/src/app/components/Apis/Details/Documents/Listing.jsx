@@ -35,6 +35,7 @@ import Progress from 'AppComponents/Shared/Progress';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { isRestricted } from 'AppData/AuthManager';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import Create from './Create';
 import MarkdownEditor from './MarkdownEditor';
 import Edit from './Edit';
@@ -161,29 +162,20 @@ const TextEditor = lazy(() => import('./TextEditor' /* webpackChunkName: "Listin
 
 /**
  * LinkGenerator component for generating document links
- * @param {*} props - Props passed to the component
+ * @param {Object} props - Props passed to the component
+ * @param {string} props.docName - The name of the document
+ * @param {string} props.docId - The ID of the document
+ * @param {string} props.apiId - The ID of the API
+ * @param {string} props.apiType - The type of the API
  * @returns {JSX.Element} - Rendered link element
  */
 function LinkGenerator(props) {
-    if (props.apiType === 'APIPRODUCT') {
-        return (
-            <Link to={'/api-products/' + props.apiId + '/documents/' + props.docId + '/details'}>
-                {props.docName}
-            </Link>
-        );
-    } else if (props.apiType === MCPServer.CONSTS.MCP) {
-        return (
-            <Link to={'/mcp-servers/' + props.apiId + '/documents/' + props.docId + '/details'}>
-                {props.docName}
-            </Link>
-        );
-    } else {
-        return (
-            <Link to={'/apis/' + props.apiId + '/documents/' + props.docId + '/details'}>
-                {props.docName}
-            </Link>
-        );
-    }
+    const { docName, docId, apiId, apiType } = props;
+    return (
+        <Link to={getBasePath(apiType) + apiId + '/documents/' + docId + '/details'}>
+            {docName}
+        </Link>
+    );
 }
 
 /**
@@ -295,19 +287,9 @@ class Listing extends React.Component {
      * @returns {JSX.Element} - Rendered component
      */
     render() {
-        const {  api, isAPIProduct, intl } = this.props;
+        const {  api, intl } = this.props;
         const { docs, showAddDocs, docsToDelete } = this.state;
-
-        let urlPrefix;
-        if (isAPIProduct) {
-            urlPrefix = 'api-products';
-        } else if (api.isMCPServer()) {
-            urlPrefix = 'mcp-servers';
-        } else {
-            urlPrefix = 'apis';
-        }
-
-        const url = `/${urlPrefix}/${api.id}/documents/create`;
+        const url = getBasePath(api.apiType) + api.id + '/documents/create';
         const showActionsColumn = isRestricted(['apim:api_publish', 'apim:api_create'], api) ? 'excluded' : true;
         const options = {
             title: false,

@@ -37,7 +37,7 @@ import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import Delete from './Delete';
 
 const PREFIX = 'Scopes';
@@ -141,18 +141,10 @@ class Scopes extends React.Component {
     render() {
         const { intl, api } = this.props;
         const { enableReadOnly } = this.state;
-        let urlPrefix;
-        if (api.isMCPServer()) {
-            urlPrefix = 'mcp-servers';
-        } else if (api.apiType === Api.CONSTS.APIProduct) {
-            urlPrefix = 'api-products';
-        } else {
-            urlPrefix = 'apis';
-        }
-
+        const urlPrefix = getBasePath(api.apiType);
         const { scopes } = api;
-        const url = `/${urlPrefix}/${api.id}/scopes/create`;
-        const editUrl = `/${urlPrefix}/${api.id}/scopes/edit`;
+        const url = `${urlPrefix}${api.id}/scopes/create`;
+        const editUrl = `${urlPrefix}${api.id}/scopes/edit`;
         const columns = [
             intl.formatMessage({
                 id: 'Apis.Details.Scopes.Scopes.table.header.name',

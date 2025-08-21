@@ -30,9 +30,9 @@ import { FormattedMessage } from 'react-intl';
 import DialogContentText from '@mui/material/DialogContentText';
 import LinkIcon from '@mui/icons-material/Link';
 import Box from '@mui/material/Box';
-// import Link from '@mui/material/Link';
 import Divider from '@mui/material/Divider';
 import { Link as RouterLink } from 'react-router-dom';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'PublishWithoutDeployProduct';
 
@@ -128,7 +128,7 @@ export default function PublishWithoutDeployProduct(props) {
                     variant='contained'
                     color='primary'
                     component={RouterLink}
-                    to={'/apis/' + api.id + '/deployments'}
+                    to={getBasePath(api.apiType) + api.id + '/deployments'}
                 >
                     <Box fontSize='button.fontSize' alignItems='center' display='flex' fontFamily='fontFamily'>
                         <FormattedMessage

@@ -18,6 +18,7 @@ import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import { isRestricted } from 'AppData/AuthManager';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'DeleteApiButton';
 
@@ -267,16 +268,7 @@ class DeleteApiButton extends React.Component {
         const { api, onClick, updateData } = this.props;
         const version = api.apiType === API.CONSTS.APIProduct ? null : '-' + api.version;
         const deleteHandler = onClick || this.handleApiDelete;
-
-        let type;
-        if (api.apiType === API.CONSTS.APIProduct) {
-            type = 'API Product';
-        } else if (api.type === MCPServer.CONSTS.MCP) {
-            type = 'MCP Server';
-        } else {
-            type = 'API';
-        }
-
+        const type = getTypeToDisplay(api.apiType);
         let path = resourcePath.SINGLE_API;
 
         if (api.apiType === API.CONSTS.APIProduct) {

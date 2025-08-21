@@ -37,6 +37,7 @@ import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import SampleAPIProduct from 'AppComponents/Apis/Listing/SampleAPI/SampleAPIProduct';
 import MCPServerLanding from 'AppComponents/MCPServers/Landing';
 import Alert from 'AppComponents/Shared/Alert';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import DefThumb from '../components/ImageGenerator/DefThumb';
 
 const PREFIX = 'TableView';
@@ -352,6 +353,7 @@ class TableView extends React.Component {
                             const artifact = tableViewObj.state.apisAndApiProducts[tableMeta.rowIndex];
                             const apiName = tableMeta.rowData[1];
                             const displayName = artifact?.displayName;
+                            const urlPrefix = getBasePath(artifact.apiType);
                             const apiId = tableMeta.rowData[0];
                             if (isAPIProduct) {
                                 return (
@@ -371,7 +373,7 @@ class TableView extends React.Component {
                                 if (artifact.type === 'DOC') {
                                     return (
                                         <Link
-                                            to={'/apis/' + artifact.apiUUID + '/documents/' + apiId + '/details'}
+                                            to={urlPrefix + artifact.apiUUID + '/documents/' + apiId + '/details'}
                                             className={classes.apiNameLink}
                                         >
                                             <Icon>library_books</Icon>
@@ -383,9 +385,10 @@ class TableView extends React.Component {
                                         </Link>
                                     );
                                 } else if (artifact.type === 'DEFINITION') {
-                                    const linkTo = artifact.associatedType === 'API'
-                                        ? `/apis/${artifact.apiUUID}/api-definition`
-                                        : `/api-products/${artifact.apiUUID}/api-definition`;
+                                    const linkTo = `${urlPrefix}${artifact.apiUUID}/api-definition`;
+                                    // const linkTo = artifact.associatedType === 'API'
+                                    //     ? `/apis/${artifact.apiUUID}/api-definition`
+                                    //     : `/api-products/${artifact.apiUUID}/api-definition`;
                                     return (
                                         <Link
                                             to={linkTo}
@@ -401,7 +404,7 @@ class TableView extends React.Component {
                                     );
                                 }
                                 return (
-                                    <Link to={'/apis/' + apiId + '/overview'} className={classes.apiNameLink}>
+                                    <Link to={urlPrefix + apiId + '/overview'} className={classes.apiNameLink}>
                                         <CustomIcon width={16} height={16} icon='api' strokeColor='#444444' />
                                         <span>{displayName || apiName}</span>
                                     </Link>

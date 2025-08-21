@@ -25,10 +25,10 @@ import { Link } from 'react-router-dom';
 import LaunchIcon from '@mui/icons-material/Launch';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-
 import Typography from '@mui/material/Typography';
 import Api from 'AppData/api';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'Topics';
 
@@ -52,27 +52,16 @@ const Root = styled('div')(({ theme }) => {
     };
 });
 
+/**
+ * VerbElement component
+ * @param {Object} props - The properties of the component
+ * @param {string} props.verb - The verb of the component
+ * @returns {React.Component} The VerbElement component
+ */
 function VerbElement(props) {
     const { verb } = props;
     const theme = useTheme();
     const verbColor = theme.custom.resourceChipColors[verb.toLowerCase()];
-
-    // const useMenuStyles = makeStyles((
-    //     {
-    //         theme
-    //     }
-    // ) => {
-    //     const backgroundColor = theme.custom.resourceChipColors[verb.toLowerCase()];
-    //     return {
-    //         [`& .${classes.customButton}`]: {
-    //             backgroundColor: '#ffffff',
-    //             borderColor: backgroundColor,
-    //             color: backgroundColor,
-    //             width: theme.spacing(2),
-    //         },
-    //     };
-    // });
-    // const classes = useMenuStyles();
     return (
         <Button disableFocusRipple variant='outlined' className={classes.customButton} size='small' 
             sx={{ borderColor: verbColor, color: verbColor }}>
@@ -129,7 +118,8 @@ class Topics extends React.Component {
     }
 
     /**
-     *
+     * Render the Topics component
+     * @returns {React.Component} The Topics component
      */
     render() {
         if (this.state.notFound) {
@@ -179,7 +169,7 @@ class Topics extends React.Component {
                             })
                         }
                     </div>
-                    <Link to={'/apis/' + api.id + '/topics'}>
+                    <Link to={getBasePath(api.apiType) + api.id + '/topics'}>
                         <Typography
                             className={classes.subHeading}
                             color='primary'

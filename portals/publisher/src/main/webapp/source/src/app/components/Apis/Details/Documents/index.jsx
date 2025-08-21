@@ -21,6 +21,7 @@ import PropTypes from 'prop-types';
 import { Route, Switch } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import Listing from './Listing';
 import View from './View';
 import Edit from './Edit';
@@ -30,27 +31,20 @@ import GenerateDocument from './GenerateDocument';
 
 const Documents = () => {
     const { api } = useContext(APIContext);
-    let urlPrefix;
-    if (api.isMCPServer()) {
-        urlPrefix = 'mcp-servers';
-    } else if (api.isAPIProduct()) {
-        urlPrefix = 'api-products';
-    } else {
-        urlPrefix = 'apis';
-    }
+    const urlPrefix = getBasePath(api.apiType);
 
     return (
         <div>
             <Switch>
-                <Route exact path={'/' + urlPrefix + '/:apiUUID/documents'} component={Listing} />
-                <Route exact path={'/' + urlPrefix + '/:apiUUID/documents/:documentId/details'} component={View} />
-                <Route exact path={'/' + urlPrefix + '/:apiUUID/documents/:documentId/edit'} component={Edit} />
+                <Route exact path={urlPrefix + ':apiUUID/documents'} component={Listing} />
+                <Route exact path={urlPrefix + ':apiUUID/documents/:documentId/details'} component={View} />
+                <Route exact path={urlPrefix + ':apiUUID/documents/:documentId/edit'} component={Edit} />
                 <Route
                     exact
-                    path={'/' + urlPrefix + '/:apiUUID/documents/:documentId/edit-content'}
+                    path={urlPrefix + ':apiUUID/documents/:documentId/edit-content'}
                     component={EditContent} />
-                <Route exact path={'/' + urlPrefix + '/:apiUUID/documents/create'} component={DocCreate} />
-                <Route exact path={'/' + urlPrefix + '/:apiUUID/documents/swaggerdoc'} component={GenerateDocument} />
+                <Route exact path={urlPrefix + ':apiUUID/documents/create'} component={DocCreate} />
+                <Route exact path={urlPrefix + ':apiUUID/documents/swaggerdoc'} component={GenerateDocument} />
                 <Route component={ResourceNotFound} />
             </Switch>
         </div>

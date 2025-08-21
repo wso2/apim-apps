@@ -28,6 +28,7 @@ import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import ApiContext from '../components/ApiContext';
 
 const PREFIX = 'Operations';
@@ -121,7 +122,10 @@ function Operations(props) {
                             </Table>
                         </div>
                         <Box py={2}>
-                            <Link to={'/apis/' + api.id + '/operations'} data-testid='show-more-navigate-to-operation'>
+                            <Link
+                                to={getBasePath(api.apiType) + api.id + '/operations'}
+                                data-testid='show-more-navigate-to-operation'
+                            >
                                 <Typography
                                     className={classes.subHeading}
                                     color='primary'

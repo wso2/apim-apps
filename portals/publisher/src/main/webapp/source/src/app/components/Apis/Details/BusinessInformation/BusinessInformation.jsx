@@ -34,6 +34,7 @@ import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { isRestricted } from 'AppData/AuthManager';
 import APIValidation from 'AppData/APIValidation';
 import { Alert } from 'AppComponents/Shared';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'BusinessInformation';
 
@@ -411,15 +412,7 @@ class BusinessInformation extends React.Component {
                                     <Grid item>
                                         <Button
                                             component={Link}
-                                            to={(() => {
-                                                if (api.apiType === MCPServer.CONSTS.MCP) {
-                                                    return `/mcp-servers/${api.id}/overview`;
-                                                } else if (api.apiType === API.CONSTS.APIProduct) {
-                                                    return `/api-products/${api.id}/overview`;
-                                                } else {
-                                                    return `/apis/${api.id}/overview`;
-                                                }
-                                            })()}
+                                            to={getBasePath(api.apiType) + api.id + '/overview'}
                                         >
                                             <FormattedMessage id='cancel' defaultMessage='Cancel' />
                                         </Button>

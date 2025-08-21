@@ -39,6 +39,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from 'AppComponents/Shared/Alert';
 import Api from 'AppData/api';
 import { isRestricted } from 'AppData/AuthManager';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'CreateScope';
 
@@ -423,14 +424,6 @@ class CreateScope extends React.Component {
         const {
             intl, api, history, updateAPI,
         } = this.props;
-        let urlPrefix;
-        if (api.isMCPServer()) {
-            urlPrefix = 'mcp-servers';
-        } else if (api.apiType === Api.CONSTS.APIProduct) {
-            urlPrefix = 'api-products';
-        } else {
-            urlPrefix = 'apis';
-        }
 
         if (this.validateScopeName('name', this.state.apiScope.name)) {
             // return status of the validation
@@ -455,7 +448,7 @@ class CreateScope extends React.Component {
                     defaultMessage: 'Scope added successfully',
                 }));
                 const { apiScopes } = this.state;
-                const redirectURL = '/' + urlPrefix + '/' + api.id + '/scopes/';
+                const redirectURL = getBasePath(api.apiType) + api.id + '/scopes/';
                 history.push(redirectURL);
                 this.setState({
                     apiScopes,
@@ -481,16 +474,7 @@ class CreateScope extends React.Component {
      */
     render() {
         const {  api, intl } = this.props;
-        let urlPrefix;
-        if (api.isMCPServer()) {
-            urlPrefix = 'mcp-servers';
-        } else if (api.apiType === Api.CONSTS.APIProduct) {
-            urlPrefix = 'api-products';
-        } else {
-            urlPrefix = 'apis';
-        }
-
-        const url = `/${urlPrefix}/${api.id}/scopes`;
+        const url = getBasePath(api.apiType) + api.id + '/scopes';
         const {
             roleValidity, validRoles, invalidRoles, scopeAddDisabled,
         } = this.state;

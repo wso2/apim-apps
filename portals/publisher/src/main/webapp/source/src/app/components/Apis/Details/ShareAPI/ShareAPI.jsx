@@ -30,9 +30,9 @@ import API from 'AppData/api';
 import { withAPI, useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import CONSTS from 'AppData/Constants';
 import { isRestricted } from 'AppData/AuthManager';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import OrganizationSubscriptionPoliciesManage from './OrganizationSubscriptionPoliciesManage';
 import SharedOrganizations from './SharedOrganizations';
-
 
 const PREFIX = 'ShareAPI';
 
@@ -307,7 +307,7 @@ function ShareAPI(props) {
                     <Grid item>
                         <Button
                             component={Link}
-                            to={'/apis/' + api.id + '/overview'}
+                            to={getBasePath(api.apiType) + api.id + '/overview'}
                         >
                             <FormattedMessage
                                 id='Apis.Details.ShareAPI.cancel'

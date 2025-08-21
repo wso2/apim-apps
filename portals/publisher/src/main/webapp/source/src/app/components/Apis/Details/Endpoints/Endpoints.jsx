@@ -33,6 +33,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import { Alert, Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
 import AddCircle from '@mui/icons-material/AddCircle';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import EndpointOverview from './EndpointOverview';
 import AIEndpoints from './AIEndpoints/AIEndpoints';
 import { createEndpointConfig, getEndpointTemplateByType } from './endpointUtils';
@@ -781,9 +782,7 @@ function Endpoints(props) {
                                     size='small'
                                     disabled={isRestricted(['apim:api_create'], api)}
                                     onClick={() => {
-                                        const urlPrefix 
-                                            = api.apiType === API.CONSTS.APIProduct ? 'api-products' : 'apis';
-                                        history.push(`/${urlPrefix}/${api.id}/endpoints/create`);
+                                        history.push(`${getBasePath(api.apiType)}${api.id}/endpoints/create`);
                                     }}
                                     style={{ marginLeft: '1em' }}
                                 >
@@ -880,7 +879,7 @@ function Endpoints(props) {
                                     <Grid item>
                                         <Button
                                             component={Link}
-                                            to={'/apis/' + api.id + '/overview'}
+                                            to={getBasePath(api.apiType) + api.id + '/overview'}
                                         >
                                             <FormattedMessage
                                                 id='Apis.Details.Endpoints.Endpoints.cancel'

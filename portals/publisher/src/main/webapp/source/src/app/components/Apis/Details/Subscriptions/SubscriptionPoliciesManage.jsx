@@ -142,6 +142,10 @@ class SubscriptionPoliciesManage extends Component {
         setPolices(newSelectedPolicies);
     }
 
+    /**
+     * Render the Subscription Policies Manage component
+     * @returns {React.Component} React Component
+     */
     render() {
         const {  api, policies } = this.props;
         const { subscriptionPolicies } = this.state;
