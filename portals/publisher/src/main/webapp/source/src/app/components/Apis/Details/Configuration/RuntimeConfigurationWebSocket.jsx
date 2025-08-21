@@ -39,6 +39,7 @@ import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import { isRestricted } from 'AppData/AuthManager';
 import API from 'AppData/api';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import Endpoints from './components/Endpoints';
 import KeyManager from './components/KeyManager';
 import APILevelRateLimitingPolicies from './components/APILevelRateLimitingPolicies';
@@ -420,7 +421,7 @@ export default function RuntimeConfiguration() {
                                 )}
                         </Grid>
                         <Grid item>
-                            <Link to={'/apis/' + api.id + '/overview'}>
+                            <Link to={getBasePath(api.apiType) + api.id + '/overview'}>
                                 <Button>
                                     <FormattedMessage
                                         id='Apis.Details.Configuration.Configuration.cancel'

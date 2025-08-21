@@ -36,7 +36,7 @@ import Icon from '@mui/material/Icon';
 import base64url from 'base64url';
 import InputAdornment from '@mui/material/InputAdornment';
 import Error from '@mui/material/SvgIcon';
-import Api from 'AppData/api';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'EditScope';
 
@@ -264,7 +264,6 @@ class EditScope extends React.Component {
             description: originalScope.description,
             bindings: validRoles,
         };
-        const urlPrefix = api.apiType === Api.CONSTS.APIProduct ? 'api-products' : 'apis';
         const scopes = api.scopes.map((scopeObj) => {
             if (scopeObj.scope.name === apiScope.scope.name) {
                 return apiScope;
@@ -279,7 +278,7 @@ class EditScope extends React.Component {
                 id: 'Apis.Details.Scopes.CreateScope.scope.updated.successfully',
                 defaultMessage: 'Scope updated successfully',
             }));
-            const redirectURL = '/' + urlPrefix + '/' + api.id + '/scopes/';
+            const redirectURL = getBasePath(api.apiType) + api.id + '/scopes/';
             history.push(redirectURL);
         }).catch((error) => {
             const { response } = error;
@@ -333,12 +332,11 @@ class EditScope extends React.Component {
      * @returns {JSX} rendered component.
      */
     render() {
-        const {  api, isAPIProduct } = this.props;
+        const {  api } = this.props;
         const {
             apiScope, roleValidity, validRoles, invalidRoles,
         } = this.state;
-        const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
-        const url = `/${urlPrefix}/${api.id}/scopes`;
+        const url = getBasePath(api.apiType) + api.id + '/scopes';
         return (
             <StyledGrid container spacing={3}>
                 <Grid item sm={12} md={12} />
@@ -523,7 +521,6 @@ EditScope.propTypes = {
         }),
     }).isRequired,
     history: PropTypes.shape({ push: PropTypes.func }).isRequired,
-    isAPIProduct: PropTypes.bool.isRequired,
     updateAPI: PropTypes.func.isRequired,
 };
 

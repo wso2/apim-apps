@@ -37,6 +37,7 @@ import { useAppContext, usePublisherSettings } from 'AppComponents/Shared/AppCon
 import { isRestricted } from 'AppData/AuthManager';
 import { Progress } from 'AppComponents/Shared';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import ResponseCaching from './components/ResponseCaching';
 import CORSConfiguration from './components/CORSConfiguration';
 import SchemaValidation from './components/SchemaValidation';
@@ -524,6 +525,35 @@ export default function RuntimeConfiguration() {
             });
     }
 
+    const getValidationError = () => {
+        // Validate the key managers
+        const isMCPAPI = api.apiType === MCPServer.CONSTS.MCP;
+        const filteredKeyManagers = apiConfig.keyManagers ? apiConfig.keyManagers.filter(km => km !== 'all') : [];
+        if (isMCPAPI) {
+            // For MCP APIs, ensure exactly one key manager is selected
+            if (!filteredKeyManagers.length || !filteredKeyManagers[0]) {
+                Alert.error(
+                    intl.formatMessage(
+                        {
+                            id: 'Apis.Details.Configuration.RuntimeConfiguration.no.km.error.mcp',
+                            defaultMessage: 'Select a Key Manager for MCP Server',
+                        },
+                    ),
+                );
+            }
+        } else if (apiConfig.keyManagers && apiConfig.keyManagers.length === 0) {
+            // For other APIs, ensure at least one key manager is selected
+            Alert.error(
+                intl.formatMessage(
+                    {
+                        id: 'Apis.Details.Configuration.RuntimeConfiguration.no.km.error',
+                        defaultMessage: 'Select one or more Key Managers',
+                    },
+                ),
+            );
+        }
+    }
+
     /**
      *
      * Handle the configuration view save button action
@@ -536,40 +566,14 @@ export default function RuntimeConfiguration() {
         if (updateComplexityList !== null) {
             updateComplexity();
         }
-        // Validate the key managers
-        const isMCPAPI = api.apiType === MCPServer.CONSTS.MCP;
-        const filteredKeyManagers = apiConfig.keyManagers ? apiConfig.keyManagers.filter(km => km !== 'all') : [];
         
         if (
             !api.isAPIProduct()
             && apiConfig.securityScheme.includes('oauth2')
             && apiConfig.keyManagers && !apiConfig.keyManagers.includes('all')
         ) {
-            if (isMCPAPI) {
-                // For MCP APIs, ensure exactly one key manager is selected
-                if (!filteredKeyManagers.length || !filteredKeyManagers[0]) {
-                    Alert.error(
-                        intl.formatMessage(
-                            {
-                                id: 'Apis.Details.Configuration.RuntimeConfiguration.no.km.error.mcp',
-                                defaultMessage: 'Select a Key Manager for MCP Server',
-                            },
-                        ),
-                    );
-                    return;
-                }
-            } else if (apiConfig.keyManagers && apiConfig.keyManagers.length === 0) {
-                // For other APIs, ensure at least one key manager is selected
-                Alert.error(
-                    intl.formatMessage(
-                        {
-                            id: 'Apis.Details.Configuration.RuntimeConfiguration.no.km.error',
-                            defaultMessage: 'Select one or more Key Managers',
-                        },
-                    ),
-                );
-                return;
-            }
+            getValidationError();
+            return;
         }
         setIsUpdating(true);
         updateAPI(apiConfig)
@@ -593,40 +597,14 @@ export default function RuntimeConfiguration() {
         if (updateComplexityList !== null) {
             updateComplexity();
         }
-        // Validate the key managers
-        const isMCPAPI = api.apiType === MCPServer.CONSTS.MCP;
-        const filteredKeyManagers = apiConfig.keyManagers ? apiConfig.keyManagers.filter(km => km !== 'all') : [];
         
         if (
             !api.isAPIProduct()
             && apiConfig.securityScheme.includes('oauth2')
             && apiConfig.keyManagers && !apiConfig.keyManagers.includes('all')
         ) {
-            if (isMCPAPI) {
-                // For MCP APIs, ensure exactly one key manager is selected
-                if (!filteredKeyManagers.length || !filteredKeyManagers[0]) {
-                    Alert.error(
-                        intl.formatMessage(
-                            {
-                                id: 'Apis.Details.Configuration.RuntimeConfiguration.no.km.error.mcp',
-                                defaultMessage: 'Select a Key Manager for MCP Server',
-                            },
-                        ),
-                    );
-                    return;
-                }
-            } else if (apiConfig.keyManagers && apiConfig.keyManagers.length === 0) {
-                // For other APIs, ensure at least one key manager is selected
-                Alert.error(
-                    intl.formatMessage(
-                        {
-                            id: 'Apis.Details.Configuration.RuntimeConfiguration.no.km.error',
-                            defaultMessage: 'Select one or more Key Managers',
-                        },
-                    ),
-                );
-                return;
-            }
+            getValidationError();
+            return;
         }
         setIsUpdating(true);
         updateAPI(apiConfig)
@@ -636,14 +614,7 @@ export default function RuntimeConfiguration() {
                 }
             })
             .finally(() => {
-                let pathname;
-                if (api.isAPIProduct()) {
-                    pathname = `/api-products/${api.id}/deployments`;
-                } else if (api.isMCPServer()) {
-                    pathname = `/mcp-servers/${api.id}/deployments`;
-                } else {
-                    pathname = `/apis/${api.id}/deployments`;
-                }
+                const pathname = getBasePath(api.apiType) + api.id + '/deployments';
                 history.push({
                     pathname,
                     state: 'deploy',
@@ -872,7 +843,7 @@ export default function RuntimeConfiguration() {
                         <Grid item>
                             <Button
                                 component={Link}
-                                to={'/apis/' + api.id + '/overview'}
+                                to={getBasePath(api.apiType) + api.id + '/overview'}
                                 aria-label='Cancel'
                             >
                                 <FormattedMessage

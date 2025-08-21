@@ -35,6 +35,7 @@ import CONSTS from 'AppData/Constants';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { isRestricted } from 'AppData/AuthManager';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import SubscriptionsTable from './SubscriptionsTable';
 import SubscriptionPoliciesManage from './SubscriptionPoliciesManage';
 import SubscriptionAvailability from './SubscriptionAvailability';
@@ -222,7 +223,7 @@ function Subscriptions(props) {
                     <Grid item>
                         <Button
                             component={Link}
-                            to={'/apis/' + api.id + '/overview'}
+                            to={getBasePath(api.apiType) + api.id + '/overview'}
                         >
                             <FormattedMessage
                                 id='Apis.Details.Subscriptions.Subscriptions.cancel'

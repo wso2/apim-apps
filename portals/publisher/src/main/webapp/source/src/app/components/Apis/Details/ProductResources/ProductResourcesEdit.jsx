@@ -29,6 +29,7 @@ import cloneDeep from 'lodash.clonedeep';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import ProductResourcesEditWorkspace from './ProductResourcesEditWorkspace';
 
 const PREFIX = 'ProductResourcesEdit';
@@ -151,7 +152,7 @@ function ProductResourcesEdit() {
                             </div>
                         </Grid>
                         <Grid item>
-                            <Link to={'/apis/' + api.id + '/overview'}>
+                            <Link to={getBasePath(api.apiType) + api.id + '/overview'}>
                                 <Button>
                                     <FormattedMessage
                                         id='Apis.Details.ProductResources.ProductResourcesEdit.cancel'

@@ -27,16 +27,23 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage } from 'react-intl';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
+/**
+ * Go to edit document page
+ *
+ * @param {*} props - The props
+ * @returns {JSX.Element} - The Go to edit document page
+ */
 function GoToEdit(props) {
     const { doc } = props;
     const [open, setOpen] = React.useState(true);
-    const { api, isAPIProduct } = useContext(APIContext);
-    const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
-    const listingPath = `/${urlPrefix}/${api.id}/documents`;
+    const { api } = useContext(APIContext);
+    const urlPrefix = getBasePath(api.apiType);
+    const listingPath = urlPrefix + api.id + '/documents';
     let docContentEditPath = null;
     if (doc && doc.body && doc.body.documentId) {
-        docContentEditPath = `/${urlPrefix}/${api.id}/documents/${doc.body.documentId}/edit-content`;
+        docContentEditPath = urlPrefix + api.id + '/documents/' + doc.body.documentId + '/edit-content';
     }
 
     let displayAddContent;
@@ -46,8 +53,7 @@ function GoToEdit(props) {
         displayAddContent= false;
     }
 
-    console.info('printing doc', doc);
-    function handleClose() {
+    const handleClose = () => {
         setOpen(false);
     }
 
@@ -68,16 +74,17 @@ function GoToEdit(props) {
             <DialogContent>
                 <DialogContentText id='alert-dialog-description'>
                     {displayAddContent ? (
-                    <FormattedMessage
-                        id='Apis.Details.Documents.GoToEdit.description.content'
-                        defaultMessage= 'You can add content to the document or go back to the document listing page.'
-                    />
+                        <FormattedMessage
+                            id='Apis.Details.Documents.GoToEdit.description.content'
+                            defaultMessage={'You can add content to the document or go back to the ' +
+                                'document listing page.'}
+                        />
                     ) : (
-                    <FormattedMessage
-                        id='Apis.Details.Documents.GoToEdit.description.file'
-                        defaultMessage= {'You can go back to the document listing page and upload' + 
-                        ' the file by editing the document.'}
-                    />
+                        <FormattedMessage
+                            id='Apis.Details.Documents.GoToEdit.description.file'
+                            defaultMessage= {'You can go back to the document listing page and upload' + 
+                            ' the file by editing the document.'}
+                        />
                     )}
                 </DialogContentText>
             </DialogContent>

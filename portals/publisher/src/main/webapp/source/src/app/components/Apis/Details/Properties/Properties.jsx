@@ -49,6 +49,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import Alert from 'AppComponents/Shared/Alert';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import Progress from 'AppComponents/Shared/Progress';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import EditableRow from './EditableRow';
 
 const PREFIX = 'Properties';
@@ -234,16 +235,6 @@ function Properties(props) {
 
     const keywords = ['provider', 'version', 'context', 'status', 'description',
         'subcontext', 'doc', 'lcstate', 'name', 'tags'];
-
-    const getBasePath = () => {
-        if (api.isAPIProduct()) {
-            return '/api-products/';
-        } else if (api.type === MCPServer.CONSTS.MCP) {
-            return '/mcp-servers/';
-        } else {
-            return '/apis/';
-        }
-    }
 
     const toggleAddProperty = () => {
         setShowAddProperty(!showAddProperty);
@@ -462,7 +453,7 @@ function Properties(props) {
                 }
             })
             .finally(() => history.push({
-                pathname: getBasePath() + api.id + '/deployments',
+                pathname: getBasePath(api.apiType) + api.id + '/deployments',
                 state: 'deploy',
             }));
     };
@@ -1154,7 +1145,7 @@ function Properties(props) {
                                 <Grid item>
                                     <Button
                                         component={Link}
-                                        to={getBasePath() + api.id + '/overview'}
+                                        to={getBasePath(api.apiType) + api.id + '/overview'}
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.Properties.Properties.cancel'

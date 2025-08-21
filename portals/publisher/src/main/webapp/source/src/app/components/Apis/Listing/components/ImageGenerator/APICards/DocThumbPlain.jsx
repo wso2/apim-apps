@@ -7,6 +7,8 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
+import { getBasePath } from 'AppComponents/Shared/Utils';
+import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 
 const PREFIX = 'DocThumbPlain';
 
@@ -83,11 +85,15 @@ const StyledCard = styled(Card)((
 function DocThumbPlain(props) {
 
     const { doc } = props;
+    const [api] = useAPI();
     return (
         <StyledCard className={classes.root} variant='outlined'>
             <CardContent>
                 <Box>
-                    <Link to={'/apis/' + doc.apiUUID + '/documents/' + doc.id + '/details'} aria-hidden='true'>
+                    <Link
+                        to={getBasePath(api.apiType) + doc.apiUUID + '/documents/' + doc.id + '/details'}
+                        aria-hidden='true'
+                    >
                         <Box display='flex'>
                             <Box>
                                 <Icon className={classes.icon} style={{ fontSize: 40 + 'px', color: '#ccc' }}>

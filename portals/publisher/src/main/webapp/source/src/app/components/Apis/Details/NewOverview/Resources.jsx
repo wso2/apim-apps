@@ -24,11 +24,11 @@ import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
 import LaunchIcon from '@mui/icons-material/Launch';
-
 import Typography from '@mui/material/Typography';
 import Api from 'AppData/api';
 import CONSTS from 'AppData/Constants';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'Resources';
 
@@ -94,6 +94,11 @@ RenderMethodBase.propTypes = {
 
 const RenderMethod = RenderMethodBase;
 
+/**
+ * Resources component
+ * @param {Object} props - The properties of the component
+ * @returns {React.Component} The Resources component
+ */
 class Resources extends React.Component {
     constructor(props) {
         super(props);
@@ -123,6 +128,10 @@ class Resources extends React.Component {
             });
     }
 
+    /**
+     * Render the Resources component
+     * @returns {React.Component} The Resources component
+     */
     render() {
         const { paths } = this.state;
         if (this.state.notFound) {
@@ -184,7 +193,7 @@ class Resources extends React.Component {
                         })}
                     </div>
                     <Link
-                        to={'/apis/' + api.id + '/resources'}
+                        to={getBasePath(api.apiType) + api.id + '/resources'}
                         id='resource-more'
                         aria-labelledby='resource-more resources'
                     >

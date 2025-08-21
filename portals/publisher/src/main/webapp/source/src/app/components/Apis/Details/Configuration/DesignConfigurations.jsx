@@ -58,6 +58,7 @@ import API from 'AppData/api.js';
 import MCPServer from 'AppData/MCPServer';
 import APIProduct from 'AppData/APIProduct';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import DefaultVersion from './components/DefaultVersion';
 import DescriptionEditor from './components/DescriptionEditor';
 import AccessControl from './components/AccessControl';
@@ -994,7 +995,7 @@ export default function DesignConfigurations() {
                                         </Button>
                                         <Button
                                             component={Link}
-                                            to={'/apis/' + api.id + '/overview'}
+                                            to={getBasePath(api.apiType) + api.id + '/overview'}
                                             aria-label='Cancel'
                                         >
                                             <FormattedMessage

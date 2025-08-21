@@ -26,6 +26,7 @@ import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const SecurityDetailsPanel = ({
     apiKey,
@@ -149,7 +150,7 @@ const SecurityDetailsPanel = ({
                                         artifactType: getArtifactType()
                                     }}
                                 />
-                                <Link to={'/apis/' + api.id + '/deployments'}>
+                                <Link to={getBasePath(api.apiType) + api.id + '/deployments'}>
                                     <LaunchIcon
                                         color='primary'
                                         fontSize='small'

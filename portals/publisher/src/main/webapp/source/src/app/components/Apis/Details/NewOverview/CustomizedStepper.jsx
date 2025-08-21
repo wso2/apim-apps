@@ -28,6 +28,7 @@ import styled from '@emotion/styled';
 import IconButton from '@mui/material/IconButton';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import MCPServer from 'AppData/MCPServer';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'CustomizedStepper';
 
@@ -151,21 +152,6 @@ function ColorlibStepIcon(props) {
             />
         </Root>
     );
-}
-
-/**
- * Gets the appropriate base path for API links based on API type
- * @param {Object} api - The API object
- * @returns {string} - The base path for links
- */
-function getBasePath(api) {
-    if (api.isAPIProduct()) {
-        return '/api-products/';
-    } else if (api.type === MCPServer.CONSTS.MCP) {
-        return '/mcp-servers/';
-    } else {
-        return '/apis/';
-    }
 }
 
 /**
@@ -766,7 +752,7 @@ export default function CustomizedStepper() {
                                                                 underline='none'
                                                                 className={classes.pageLinks}
                                                                 component={RouterLink}
-                                                                to={getBasePath(api) + api.id + '/endpoints'}
+                                                                to={getBasePath(api.apiType) + api.id + '/endpoints'}
                                                             >
                                                                 <Typography variant='h6'>
                                                                     <FormattedMessage
@@ -817,7 +803,7 @@ export default function CustomizedStepper() {
                                                             [classes.disabledLink]: isDeployLinkDisabled,
                                                         })}
                                                         component={RouterLink}
-                                                        to={getBasePath(api) + api.id + '/deployments'}
+                                                        to={getBasePath(api.apiType) + api.id + '/deployments'}
                                                     >
                                                         <Typography variant='h6'>
                                                             <FormattedMessage
@@ -861,8 +847,8 @@ export default function CustomizedStepper() {
                                                         component={RouterLink}
                                                         to={
                                                             isMCPServer
-                                                                ? getBasePath(api) + api.id + '/mcp-playground'
-                                                                : getBasePath(api) + api.id + '/test-console'
+                                                                ? getBasePath(api.apiType) + api.id + '/mcp-playground'
+                                                                : getBasePath(api.apiType) + api.id + '/test-console'
                                                         }
                                                     >
                                                         <Typography variant='h6'>
@@ -907,7 +893,9 @@ export default function CustomizedStepper() {
                                                                 underline='none'
                                                                 component={RouterLink}
                                                                 className={classes.pageLinks}
-                                                                to={getBasePath(api) + api.id + '/subscriptions'}
+                                                                to={
+                                                                    getBasePath(api.apiType) + api.id + '/subscriptions'
+                                                                }
                                                             >
                                                                 <Typography variant='h6'>
                                                                     <FormattedMessage

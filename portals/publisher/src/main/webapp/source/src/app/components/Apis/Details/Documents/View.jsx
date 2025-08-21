@@ -40,6 +40,7 @@ import remarkGfm from 'remark-gfm';
 import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Utils from 'AppData/Utils';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'View';
 
@@ -227,8 +228,7 @@ function View(props) {
                 }
             });
     };
-    const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
-    const listingPath = `/${urlPrefix}/${api.id}/documents`;
+    const listingPath = getBasePath(api.apiType) + api.id + '/documents';
     return doc && (
         <Root>
             <div className={classes.root}>

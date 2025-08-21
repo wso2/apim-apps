@@ -39,9 +39,9 @@ import * as monaco from 'monaco-editor'
 import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
 import { styled } from '@mui/material/styles';
 import { isRestricted } from 'AppData/AuthManager';
-import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
 import { useHistory } from 'react-router-dom';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'EndpointCard';
 
@@ -114,16 +114,7 @@ const EndpointCard = ({
     const history = useHistory();
     const [open, setOpen] = React.useState(false);
     const isMCPServer = apiObject.type === MCPServer.CONSTS.MCP;
-
-    const getUrlPrefix = () => {
-        if (isMCPServer) {
-            return 'mcp-servers';
-        }
-        if (apiObject.apiType === API.CONSTS.APIProduct) {
-            return 'api-products';
-        }
-        return 'apis';
-    }
+    const urlPrefix = getBasePath(apiObject.apiType);
 
     const toggleDefinitionViewDrawer = (state) => () => {
         setOpen(state);
@@ -186,12 +177,8 @@ const EndpointCard = ({
                             variant='outlined'
                             className={classes.warningChip}
                             onClick={() => {
-                                const urlPrefix =
-                                    apiObject.apiType === API.CONSTS.APIProduct
-                                        ? 'api-products'
-                                        : 'apis';
                                 history.push(
-                                    `/${urlPrefix}/${apiObject.id}/endpoints/${endpoint.id}`,
+                                    urlPrefix + apiObject.id + '/endpoints/' + endpoint.id,
                                 );
                             }}
                             sx={{ my: '4px' }}
@@ -214,12 +201,8 @@ const EndpointCard = ({
                             variant='outlined'
                             className={classes.warningChip}
                             onClick={() => {
-                                const urlPrefix =
-                                    apiObject.apiType === API.CONSTS.APIProduct
-                                        ? 'api-products'
-                                        : 'apis';
                                 history.push(
-                                    `/${urlPrefix}/${apiObject.id}/endpoints/${endpoint.id}`,
+                                    urlPrefix + apiObject.id + '/endpoints/' + endpoint.id,
                                 );
                             }}
                             sx={{ my: '4px' }}
@@ -367,7 +350,7 @@ const EndpointCard = ({
                         size='small'
                         onClick={() => {
                             history.push(
-                                `/${getUrlPrefix()}/${apiObject.id}/endpoints/${endpoint.id}`,
+                                urlPrefix + apiObject.id + '/endpoints/' + endpoint.id,
                             );
                         }}
                         disabled={isRestricted(['apim:api_create'], apiObject)}

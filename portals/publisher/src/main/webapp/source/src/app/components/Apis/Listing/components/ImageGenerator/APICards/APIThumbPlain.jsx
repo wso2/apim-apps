@@ -18,7 +18,7 @@ import DeleteApiButton from 'AppComponents/Apis/Details/components/DeleteApiButt
 import Configurations from 'Config';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import EmailIcon from '@mui/icons-material/Email';
-
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import getIcon from './ImageUtils';
 
 const PREFIX = 'APIThumbPlain';
@@ -176,6 +176,7 @@ function APIThumbPlain(props) {
     const [technicalAnchorEl, setTechnicalAnchorEl] = useState(null);
     const [businessOpenPopover, setBusinessOpenPopover] = useState(false);
     const [technicalOpenPopover, setTechnicalOpenPopover] = useState(false);
+    const urlPrefix = getBasePath(api.apiType);
 
     useEffect(() => {
         const restApi = new Api();
@@ -256,7 +257,7 @@ function APIThumbPlain(props) {
 
     if (!showInfo) {
         return (
-            <Link to={'/apis/' + api.id} aria-hidden='true'>
+            <Link to={urlPrefix + api.id} aria-hidden='true'>
                 <Box display='flex'>
                     <Box>
                         {!thumbnail.defaultApiImage && ImageView}
@@ -282,7 +283,7 @@ function APIThumbPlain(props) {
             </Box>
             <CardContent>
                 <Box id={api.name}>
-                    <Link to={'/apis/' + api.id + '/overview'} aria-hidden='true'>
+                    <Link to={urlPrefix + api.id + '/overview'} aria-hidden='true'>
                         <Box display='flex'>
                             <Box>
                                 {!thumbnail.defaultApiImage && ImageView}

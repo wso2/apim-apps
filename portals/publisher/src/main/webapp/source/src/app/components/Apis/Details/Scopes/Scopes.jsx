@@ -37,7 +37,7 @@ import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import Delete from './Delete';
 
 const PREFIX = 'Scopes';
@@ -141,18 +141,10 @@ class Scopes extends React.Component {
     render() {
         const { intl, api } = this.props;
         const { enableReadOnly } = this.state;
-        let urlPrefix;
-        if (api.isMCPServer()) {
-            urlPrefix = 'mcp-servers';
-        } else if (api.apiType === Api.CONSTS.APIProduct) {
-            urlPrefix = 'api-products';
-        } else {
-            urlPrefix = 'apis';
-        }
-
+        const urlPrefix = getBasePath(api.apiType);
         const { scopes } = api;
-        const url = `/${urlPrefix}/${api.id}/scopes/create`;
-        const editUrl = `/${urlPrefix}/${api.id}/scopes/edit`;
+        const url = `${urlPrefix}${api.id}/scopes/create`;
+        const editUrl = `${urlPrefix}${api.id}/scopes/edit`;
         const columns = [
             intl.formatMessage({
                 id: 'Apis.Details.Scopes.Scopes.table.header.name',
@@ -298,7 +290,7 @@ class Scopes extends React.Component {
                     return op.scopes.includes(apiScope.scope.name);
                 })
                 .map((op) => {
-                    return op.target + ' ' + op.verb;
+                    return api.isMCPServer() ? `${op.feature} ${op.target}` : `${op.verb} ${op.target}`;
                 });
             aScope.push(resources);
             return aScope;
@@ -308,7 +300,9 @@ class Scopes extends React.Component {
             return <Progress />;
         }
 
-        if (scopes.length === 0) {
+        // Check if there are no scopes OR if all scopes are shared (no local scopes)
+        const hasLocalScopes = scopes.some(scope => !scope.shared);
+        if (scopes.length === 0 || !hasLocalScopes) {
             return (
                 <Root className={classes.root}>
                     <div className={classes.titleWrapper}>
@@ -326,10 +320,17 @@ class Scopes extends React.Component {
                         </Typography>
                         <Tooltip
                             title={(
-                                <FormattedMessage
-                                    id='Apis.Details.Scopes.Scopes.heading.scope.title.tooltip'
-                                    defaultMessage='Manage scopes that are local to this API'
-                                />
+                                api.isMCPServer() ? (
+                                    <FormattedMessage
+                                        id='Apis.Details.Scopes.Scopes.heading.scope.title.tooltip.mcp'
+                                        defaultMessage='Manage scopes that are local to this MCP Server'
+                                    />
+                                ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.Scopes.Scopes.heading.scope.title.tooltip'
+                                        defaultMessage='Manage scopes that are local to this API'
+                                    />
+                                )
                             )}
                             placement='top-end'
                         >
@@ -343,16 +344,13 @@ class Scopes extends React.Component {
                             <Typography variant='h5' component='h3' className={classes.head}>
                                 <FormattedMessage
                                     id='Apis.Details.Scopes.Scopes.create.scopes.title'
-                                    defaultMessage='Create API Local Scopes'
+                                    defaultMessage='Create Local Scopes'
                                 />
                             </Typography>
                             <Typography component='p' className={classes.content}>
                                 <FormattedMessage
                                     id='Apis.Details.Scopes.Scopes.scopes.enable.fine.gained.access.control'
-                                    defaultMessage={
-                                        'Scopes enable fine-grained access control to API resources'
-                                        + ' based on user roles.'
-                                    }
+                                    defaultMessage='Scopes enable fine-grained access control based on user roles.'
                                 />
                             </Typography>
                             <div className={classes.actions}>
@@ -368,7 +366,7 @@ class Scopes extends React.Component {
                                 >
                                     <FormattedMessage
                                         id='Apis.Details.Scopes.Scopes.create.scopes.button'
-                                        defaultMessage='Create Scopes'
+                                        defaultMessage='Create Scope'
                                     />
                                 </Button>
                             </div>

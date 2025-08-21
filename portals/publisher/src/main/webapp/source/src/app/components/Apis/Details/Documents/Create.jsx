@@ -30,8 +30,9 @@ import Paper from '@mui/material/Paper';
 import Alert from 'AppComponents/Shared/Alert';
 import Api from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
-import CreateEditForm from './CreateEditForm';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
+import { getBasePath } from 'AppComponents/Shared/Utils';
+import CreateEditForm from './CreateEditForm';
 import GoToEdit from './GoToEdit';
 
 const PREFIX = 'Create';
@@ -104,15 +105,20 @@ const Root = styled('div')((
     }
 }));
 
+/**
+ * Create document page
+ *
+ * @param {*} props {classes, intl, history, api}
+ * @returns {JSX.Element} - The Create document page
+ */
 function Create(props) {
-    const { api, isAPIProduct } = useContext(APIContext);
+    const { api } = useContext(APIContext);
     const [newDoc, setNewDoc] = useState(null);
     const [saveDisabled, setSaveDisabled] = useState(true);
     const {  intl, history } = props;
-    const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
-    const listingPath = `/${urlPrefix}/${api.id}/documents`;
+    const listingPath = getBasePath(api.apiType) + api.id + '/documents';
     const restAPI = api.apiType === Api.CONSTS.APIProduct ? new APIProduct() : new Api();
-    let createEditForm = useRef(null);
+    const createEditForm = useRef(null);
 
     const addDocument = (apiId) => {
         const promiseWrapper = createEditForm.current.addDocument(apiId);

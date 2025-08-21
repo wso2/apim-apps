@@ -20,32 +20,26 @@ import { Route, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import CreateScope from './CreateScope';
 import EditScope from './EditScope';
 import Scopes from './Scopes';
 
 const Scope = () => {
     const [api, updateAPI] = useAPI();
-    let urlPrefix;
-    if (api.isMCPServer()) {
-        urlPrefix = 'mcp-servers';
-    } else if (api.isAPIProduct()) {
-        urlPrefix = 'api-products';
-    } else {
-        urlPrefix = 'apis';
-    }
+    const urlPrefix = getBasePath(api.apiType);
 
     return (
         <Switch>
-            <Route exact path={'/' + urlPrefix + '/:api_uuid/scopes/'} component={Scopes} />
+            <Route exact path={urlPrefix + ':api_uuid/scopes/'} component={Scopes} />
             <Route
                 exact
-                path={'/' + urlPrefix + '/:api_uuid/scopes/create'}
+                path={urlPrefix + ':api_uuid/scopes/create'}
                 component={(props) => <CreateScope api={api} {...props} updateAPI={updateAPI} />}
             />
             <Route
                 exact
-                path={'/' + urlPrefix + '/:api_uuid/scopes/edit'}
+                path={urlPrefix + ':api_uuid/scopes/edit'}
                 component={(props) => <EditScope api={api} {...props} updateAPI={updateAPI} />}
             />
             <Route component={ResourceNotFound} />

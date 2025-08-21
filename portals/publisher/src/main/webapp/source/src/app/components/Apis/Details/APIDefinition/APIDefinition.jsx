@@ -52,6 +52,7 @@ import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
 import Box from '@mui/material/Box';
 import { ToggleButton, ToggleButtonGroup } from '@mui/lab';
 import debounce from 'lodash.debounce'; // WARNING: This is coming from mui-datatable as a transitive dependency
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import ResourceNotFound from '../../../Base/Errors/ResourceNotFound';
 import APISecurityAudit from './APISecurityAudit';
 import ImportDefinition from './ImportDefinition';
@@ -443,8 +444,7 @@ class APIDefinition extends React.Component {
         } else {
             this.updateSwaggerDefinition(swaggerModified, '', '');
             history.push({
-                pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
-                    : `/apis/${api.id}/deployments`,
+                pathname: getBasePath(api.apiType) + api.id + '/deployments',
                 state: 'deploy',
             });
         }

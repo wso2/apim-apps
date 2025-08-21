@@ -142,8 +142,7 @@ function MarkdownEditor(props) {
     const toggleOpen = () => {
         if (!open) updateDoc();
         if (open && showAtOnce) {
-            const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
-            const listingPath = `/${urlPrefix}/${api.id}/documents`;
+            const listingPath = getBasePath(api.apiType) + api.id + '/documents';
             history.push(listingPath);
         }
         setOpen(!open);
