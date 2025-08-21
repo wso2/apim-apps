@@ -9,6 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
 import CONSTS from 'AppData/Constants';
+import Config from 'Config';
 
 const PREFIX = 'SelectPolicies';
 
@@ -38,9 +39,10 @@ export default function SelectPolicies(props) {
         onChange, policies: selectedPolicies, multiple, helperText, isAPIProduct, validate,
     } = props;
     const [policies, setPolicies] = useState({});
+    const { throttlingPolicyLimit } = Config.app;
 
     useEffect(() => {
-        API.policies('subscription').then((response) => setPolicies(response.body));
+        API.policies('subscription',throttlingPolicyLimit).then((response) => setPolicies(response.body));
     }, []);
     const handleValidateAndChange = ({ target: { value, name } }) => {
         validate('policies', value);
