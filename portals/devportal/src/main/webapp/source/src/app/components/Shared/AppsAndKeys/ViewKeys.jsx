@@ -38,6 +38,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage, injectIntl } from 'react-intl';
+import { enableTokenGenForMappedApps } from 'Settings';
 import ResourceNotFound from '../../Base/Errors/ResourceNotFound';
 import Loading from '../../Base/Loading/Loading';
 import Application from '../../../data/Application';
@@ -689,7 +690,7 @@ class ViewKeys extends React.Component {
                             <div className={classes.tokenSection}>
                                 {(keyManagerConfig.enableTokenGeneration && supportedGrantTypesUnchanged
                                     && supportedGrantTypesUnchanged.find((a) => a.includes('client_credentials')))
-                                    && mode !== 'MAPPED'
+                                    && (mode !== 'MAPPED' || enableTokenGenForMappedApps === true)
                                     && (
                                         <Button
                                             id='generate-access-token-oauth2'
