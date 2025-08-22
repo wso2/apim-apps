@@ -176,7 +176,7 @@ const SecurityDetailsPanel = ({
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.ApiConsole.deployments.api.gateways'
-                                            defaultMessage='API Gateways'
+                                            defaultMessage='Gateways'
                                         />
                                     </Typography>
                                     <TextField

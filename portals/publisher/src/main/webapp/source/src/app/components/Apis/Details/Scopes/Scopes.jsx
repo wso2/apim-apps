@@ -37,7 +37,7 @@ import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import { getBasePath } from 'AppComponents/Shared/Utils';
+import { getBasePath, getTypeToDisplay } from 'AppComponents/Shared/Utils';
 import Delete from './Delete';
 
 const PREFIX = 'Scopes';
@@ -320,17 +320,13 @@ class Scopes extends React.Component {
                         </Typography>
                         <Tooltip
                             title={(
-                                api.isMCPServer() ? (
-                                    <FormattedMessage
-                                        id='Apis.Details.Scopes.Scopes.heading.scope.title.tooltip.mcp'
-                                        defaultMessage='Manage scopes that are local to this MCP Server'
-                                    />
-                                ) : (
-                                    <FormattedMessage
-                                        id='Apis.Details.Scopes.Scopes.heading.scope.title.tooltip'
-                                        defaultMessage='Manage scopes that are local to this API'
-                                    />
-                                )
+                                <FormattedMessage
+                                    id='Apis.Details.Scopes.Scopes.heading.scope.title.tooltip'
+                                    defaultMessage='Manage scopes that are local to this {type}'
+                                    values ={{
+                                        type: getTypeToDisplay(api.apiType)
+                                    }}
+                                />
                             )}
                             placement='top-end'
                         >
@@ -389,7 +385,10 @@ class Scopes extends React.Component {
                         title={(
                             <FormattedMessage
                                 id='Apis.Details.Scopes.Scopes.heading.scope.title.tooltip2'
-                                defaultMessage='Manage scopes that are local to this API'
+                                defaultMessage='Manage scopes that are local to this {type}'
+                                values ={{
+                                    type: getTypeToDisplay(api.apiType)
+                                }}
                             />
                         )}
                         placement='top-end'

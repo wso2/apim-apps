@@ -31,6 +31,7 @@ import HelpOutline from '@mui/icons-material/HelpOutline';
 import API from 'AppData/api';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { isRestricted } from 'AppData/AuthManager';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'APICategories';
 
@@ -86,7 +87,7 @@ function APICategories(props) {
                     limitTags={5}
                     id='APICategories-autocomplete'
                     options={categories.list.map((category) => category.name)}
-                    noOptionsText='No API categories defined'
+                    noOptionsText='No categories defined'
                     disableCloseOnSelect
                     value={api.categories}
                     onChange={(e, newValue) => configDispatcher({ action: 'categories', value: newValue })}
@@ -116,23 +117,26 @@ function APICategories(props) {
                             label={categories.list.length !== 0 ? (
                                 <FormattedMessage
                                     id='Apis.Details.Configurations.api.categories'
-                                    defaultMessage='API Categories'
+                                    defaultMessage='Categories'
                                 />
                             ) : (
                                 <FormattedMessage
                                     id='Apis.Details.Configurations.api.categories.empty'
-                                    defaultMessage='No API Categories defined.'
+                                    defaultMessage='No Categories defined.'
                                 />
                             )
                             }
                             placeholder={intl.formatMessage({
                                 id:'Apis.Details.Configurations.api.categories.placeholder.text',
-                                defaultMessage:'Search API categories'
+                                defaultMessage:'Search Categories'
                             })}
                             helperText={(
                                 <FormattedMessage
                                     id='Apis.Details.Configurations.api.categories.helper.text'
-                                    defaultMessage='Select API Categories for the API'
+                                    defaultMessage='Select Categories for the {type}'
+                                    values={{
+                                        type: getTypeToDisplay(api.apiType)
+                                    }}
                                 />
                             )}
                             margin='normal'
@@ -147,14 +151,17 @@ function APICategories(props) {
                             <p>
                                 <FormattedMessage
                                     id='Api.category.dropdown.tooltip'
-                                    defaultMessage={'Allow to group APIs that have similar attributes.'
-                                        + ' There has to be pre-defined API categories in the'
-                                        + ' environment in order to be attached to an API.'}
+                                    defaultMessage={'Allow to group {type}s that have similar attributes.'
+                                        + ' There has to be pre-defined categories in the'
+                                        + ' environment in order to be attached to an {type}.'}
+                                    values={{
+                                        type: getTypeToDisplay(api.apiType)
+                                    }}
                                 />
                             </p>
                         </>
                     )}
-                    aria-label='API Categories'
+                    aria-label='Categories'
                     placement='right-end'
                     interactive
                     className={classes.tooltip}

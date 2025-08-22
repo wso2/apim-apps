@@ -35,6 +35,7 @@ import Chip from '@mui/material/Chip';
 import { red } from '@mui/material/colors/';
 import Alert from 'AppComponents/Shared/Alert';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'AccessControl';
 
@@ -231,7 +232,11 @@ export default function AccessControl(props) {
                                 {'  '}
                                 <FormattedMessage
                                     id='Apis.Details.Configuration.components.AccessControl.tooltip.all.desc'
-                                    defaultMessage='The API is viewable, modifiable by all the publishers and creators.'
+                                    defaultMessage={'The {type} is viewable, modifiable by all the ' +
+                                        'publishers and creators.'}
+                                    values={{
+                                        type: getTypeToDisplay(api.apiType)
+                                    }}
                                 />
                                 <br />
                                 <br />
@@ -245,8 +250,11 @@ export default function AccessControl(props) {
                                 <FormattedMessage
                                     id={'Apis.Details.Configuration.components.AccessControl.tooltip.restrict'
                                         + '.desc'}
-                                    defaultMessage={'The API can be viewed and modified only by specific'
+                                    defaultMessage={'The {type} can be viewed and modified only by specific'
                                     + ' publishers and creators with the roles that you specify'}
+                                    values={{
+                                        type: getTypeToDisplay(api.apiType)
+                                    }}
                                 />
                             </p>
                         </>

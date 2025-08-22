@@ -30,6 +30,7 @@ import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 /**
  *
@@ -97,10 +98,13 @@ export default function DefaultVersion(props) {
                             <FormattedMessage
                                 id='Apis.Details.Configuration.Configuration.defaultversion.tooltip'
                                 defaultMessage={
-                                    'Indicates if this is the default version of the API. If an '
-                                    + 'API is invoked without specifying a version, the API Gateway will '
-                                    + 'route the request to the default version of the API.'
+                                    'Indicates if this is the default version of the {type}. If an '
+                                    + '{type} is invoked without specifying a version, the Gateway will '
+                                    + 'route the request to the default version of the {type}.'
                                 }
+                                values={{
+                                    type: getTypeToDisplay(api.apiType)
+                                }}
                             />
                         )}
                         aria-label='add'

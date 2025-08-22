@@ -268,7 +268,7 @@ export default function OperationGovernance(props) {
                                 limitTags={5}
                                 id={verb + target + '-operation-scope-autocomplete'}
                                 options={[...filteredApiScopes, ...(sharedScopes || [])]}
-                                groupBy={(option) => option.shared ? 'Shared Scopes' : 'API Scopes'}
+                                groupBy={(option) => option.shared ? 'Shared Scopes' : 'Local Scopes'}
                                 noOptionsText={intl.formatMessage({
                                     id: 'Apis.Details.Topics.components.operationComponents.OperationGovernance.'
                                         + 'no.scopes.available',

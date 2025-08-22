@@ -40,10 +40,9 @@ import MUIDataTable from 'mui-datatables';
 import Configurations from 'Config';
 import InfoIcon from '@mui/icons-material/Info';
 import UserIcon from '@mui/icons-material/Person';
-
-
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 import { ScopeValidation, resourceMethod, resourcePath } from 'AppData/ScopeValidation';
 import AuthManager from 'AppData/AuthManager';
 import { Autocomplete } from '@mui/lab';
@@ -1114,7 +1113,10 @@ class SubscriptionsTable extends Component {
                     <Typography variant='caption' gutterBottom>
                         <FormattedMessage
                             id='Apis.Details.Subscriptions.SubscriptionsTable.sub.heading'
-                            defaultMessage='Manage subscriptions of the API'
+                            defaultMessage='Manage subscriptions of the {type}'
+                            values={{
+                                type: getTypeToDisplay(api.apiType)
+                            }}
                         />
                     </Typography>
                 </div>

@@ -653,46 +653,18 @@ class Listing extends React.Component {
                                     />
                                 </Typography>
                                 {(() => {
-                                    if (api.apiType === API.CONSTS.APIProduct) {
-                                        return (
-                                            <Typography component='p' className={classes.content}>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Documents.Listing.APIProduct.add.new.msg.content'
-                                                    defaultMessage={
-                                                        'You can add different types of documents to an API Product.' +
-                                                        ' Proper documentation helps API publishers to market their ' +
-                                                        ' APIs better and sustain competition. '
-                                                    }
-                                                />
-                                            </Typography>
-                                        );
-                                    } else if (api.apiType === MCPServer.CONSTS.MCP) {
-                                        return (
-                                            <Typography component='p' className={classes.content}>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Documents.Listing.MCP.add.new.msg.content'
-                                                    defaultMessage={
-                                                        'You can add different types of documents to a MCP Server.' +
-                                                        ' Proper documentation helps API publishers to market their ' +
-                                                        ' APIs better and sustain competition. '
-                                                    }
-                                                />
-                                            </Typography>
-                                        );
-                                    } else {
-                                        return (
-                                            <Typography component='p' className={classes.content}>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Documents.Listing.add.new.msg.content'
-                                                    defaultMessage={
-                                                        'You can add different types of documents to an API.' +
-                                                        ' Proper documentation helps API publishers to market their ' +
-                                                        ' APIs better and sustain competition. '
-                                                    }
-                                                />
-                                            </Typography>
-                                        );
-                                    }
+                                    return (
+                                        <Typography component='p' className={classes.content}>
+                                            <FormattedMessage
+                                                id='Apis.Details.Documents.Listing.APIProduct.add.new.msg.content'
+                                                defaultMessage={
+                                                    'You can add various types of documents to provide clarity, ' +
+                                                    'improve discoverability, and enhance the overall developer ' +
+                                                    'experience.'
+                                                }
+                                            />
+                                        </Typography>
+                                    );
                                 })()}
 
                                 <div className={classes.actions}>

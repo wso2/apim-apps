@@ -18,7 +18,6 @@
 import APIClientFactory from './APIClientFactory';
 import Utils from './Utils';
 import Resource from './Resource';
-import cloneDeep from 'lodash.clonedeep';
 
 /**
  * An abstract representation of an Comments
