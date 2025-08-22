@@ -476,19 +476,19 @@ class Details extends Component {
                             />
                             <Route
                                 path='/applications/:applicationId/productionkeys/oauth'
-                                component={() => (this.renderManager(application, 'PRODUCTION', 'oauth'))}
+                                render={() => (this.renderManager(application, 'PRODUCTION', 'oauth'))}
                             />
                             <Route
                                 path='/applications/:applicationId/productionkeys/apikey'
-                                component={() => (this.renderManager(application, 'PRODUCTION', 'apikey'))}
+                                render={() => (this.renderManager(application, 'PRODUCTION', 'apikey'))}
                             />
                             <Route
                                 path='/applications/:applicationId/sandboxkeys/oauth'
-                                component={() => (this.renderManager(application, 'SANDBOX', 'oauth'))}
+                                render={() => (this.renderManager(application, 'SANDBOX', 'oauth'))}
                             />
                             <Route
                                 path='/applications/:applicationId/sandboxkeys/apikey'
-                                component={() => (this.renderManager(application, 'SANDBOX', 'apikey'))}
+                                render={() => (this.renderManager(application, 'SANDBOX', 'apikey'))}
                             />
                             <Route
                                 path='/applications/:applicationId/subscriptions'

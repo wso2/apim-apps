@@ -35,20 +35,20 @@ const Endpoint = () => {
             <Route
                 exact
                 path={ urlPrefix + ':api_uuid/endpoints/'}
-                component={() => <Endpoints api={api} />}
+                render={(props) => <Endpoints {...props} api={api} />}
             />
             {!isRestricted(['apim:api_create']) && (
                 <Route
                     exact
                     path={urlPrefix + ':api_uuid/endpoints/create'}
-                    component={(props) => <AddEditAIEndpoint apiObject={api} {...props} />}
+                    render={(props) => <AddEditAIEndpoint apiObject={api} {...props} />}
                 />
             )}
             {!isRestricted(['apim:api_view', 'apim:api_create']) && (
                 <Route
                     exact
                     path={urlPrefix + ':api_uuid/endpoints/:id'}
-                    component={(props) => <AddEditAIEndpoint apiObject={api} {...props} />}
+                    render={(props) => <AddEditAIEndpoint apiObject={api} {...props} />}
                 />
             )}
             <Route component={ResourceNotFound} />
