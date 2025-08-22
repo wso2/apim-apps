@@ -25,7 +25,6 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import LetterGenerator from 'AppComponents/Apis/Listing/components/ImageGenerator/LetterGenerator';
 import Configurations from 'Config';
@@ -76,7 +75,6 @@ const StyledLink = styled(Link)((
 const DocThumb = (props) => {
     const { doc } = props;
     const [isHover, setIsHover] = useState(false);
-    const [api] = useAPI();
     const toggleMouseOver = () => setIsHover(!isHover);
 
     let thumbIcon;
@@ -106,7 +104,7 @@ const DocThumb = (props) => {
         <StyledLink
             underline='none'
             component={RouterLink}
-            to={getBasePath(api.apiType) + doc.apiUUID + '/documents/' + doc.id + '/details'}
+            to={getBasePath(doc.associatedType) + doc.apiUUID + '/documents/' + doc.id + '/details'}
             aria-hidden='true'
         >
             <Card

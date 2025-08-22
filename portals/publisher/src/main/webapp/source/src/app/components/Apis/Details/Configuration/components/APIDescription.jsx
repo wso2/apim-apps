@@ -58,8 +58,7 @@ function APIDescription(props) {
             helperText={(
                 <FormattedMessage
                     id='Apis.Details.Configuration.components.Description.help'
-                    defaultMessage='This Description will be available in the 
-                    API overview page in developer portal'
+                    defaultMessage='This description will be available in the overview page in developer portal'
                 />
             )}
             style={{ marginTop: 0, paddingBottom: 0  }}

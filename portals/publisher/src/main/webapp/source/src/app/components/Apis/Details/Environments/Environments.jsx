@@ -1130,6 +1130,7 @@ export default function Environments() {
      */
     function cancelRevisionDeploymentWorkflow(revisionId, envName) {
         if (api.apiType !== API.CONSTS.APIProduct) {
+            // TODO(Ashera): Handle for MCP servers
             restApi.cancelRevisionDeploymentWorkflow(api.id, revisionId, envName)
                 .then(() => {
                     Alert.info(intl.formatMessage({
@@ -2786,7 +2787,7 @@ export default function Environments() {
                                 <Typography variant='h6' align='left' className={classes.sectionTitle}>
                                     <FormattedMessage
                                         id='Apis.Details.Environments.Environments.api.gateways.heading'
-                                        defaultMessage='API Gateways'
+                                        defaultMessage='Gateways'
                                     />
                                 </Typography>
                                 <Grid
@@ -3009,7 +3010,7 @@ export default function Environments() {
                                 <Typography variant='h6' align='left' className={classes.sectionTitle}>
                                     <FormattedMessage
                                         id='Apis.Details.Environments.Environments.external.gateways.heading'
-                                        defaultMessage='API Gateways'
+                                        defaultMessage='Gateways'
                                     />
                                 </Typography>
                                 <Grid
@@ -3344,7 +3345,7 @@ export default function Environments() {
                     <Typography variant='h6' component='h2' className={classes.sectionTitle}>
                         <FormattedMessage
                             id='Apis.Details.Environments.Environments.APIGateways'
-                            defaultMessage='API Gateways'
+                            defaultMessage='Gateways'
                         />
                     </Typography>
                     <TableContainer component={Paper}>
@@ -3576,7 +3577,7 @@ export default function Environments() {
                     <Typography variant='h6' className={classes.sectionTitle}>
                         <FormattedMessage
                             id='Apis.Details.External.Gateways'
-                            defaultMessage='API Gateways'
+                            defaultMessage='Gateways'
                         />
                     </Typography>
                     <TableContainer component={Paper}>

@@ -440,7 +440,7 @@ export default function DeploymentOnboarding(props) {
                                     <Typography className={classes.textRevision}>
                                         <FormattedMessage
                                             id='Apis.Details.Environments.deploy.api.gateways.text'
-                                            defaultMessage='API Gateways'
+                                            defaultMessage='Gateways'
                                         />
                                     </Typography>
                                     <Box mt={4}>
@@ -665,7 +665,7 @@ export default function DeploymentOnboarding(props) {
                                     <Typography className={classes.textRevision}>
                                         <FormattedMessage 
                                             id='Apis.Details.Environments.deploy.api.external.gateways.text'
-                                            defaultMessage='API Gateways'
+                                            defaultMessage='Gateways'
                                         />
                                     </Typography>
                                     <Box mt={4}>
