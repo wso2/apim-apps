@@ -331,7 +331,7 @@ class Comments extends Component {
                                 <Typography component='p'>
                                     <FormattedMessage
                                         id='Apis.Details.Comments.no.comments.content'
-                                        defaultMessage='No comments available for this API yet'
+                                        defaultMessage='There are no comments available at the moment.'
                                     />
                                 </Typography>
                             </InlineMessage>

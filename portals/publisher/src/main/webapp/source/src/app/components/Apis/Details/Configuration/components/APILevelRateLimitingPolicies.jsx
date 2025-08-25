@@ -118,7 +118,7 @@ export default function APILevelRateLimitingPolicies(props) {
                             <FormattedMessage
                                 id='Apis.Details.APILevelRateLimitingPolicies.components.Configuration.tooltip'
                                 defaultMessage={'Selected Rate Limiting Policy will be applied to all the'
-                                + ' requests of this API.'}
+                                + ' requests.'}
                             />
                         )}
                         aria-label='Rate Limiting Policies'

@@ -75,7 +75,7 @@ const LoadableSwitch = withRouter((props) => {
     } = props;
 
     // Detect if we're on MCP servers route or APIs route
-    const isMCPServer = window.location.pathname.includes('/mcp-servers');
+    const isMCPServer = api.type === 'MCP';
     const { apiUuid, serverUuid } = match.params;
     const entityUuid = isMCPServer ? serverUuid : apiUuid;
     const basePath = isMCPServer ? '/mcp-servers/' : '/apis/';

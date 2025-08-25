@@ -292,9 +292,9 @@ function Overview() {
     };
 
     const getDocuments = () => {
-        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        const isMCPServer = api.type === 'MCP';
         let promisedApi;
-        if (isMCPServersRoute) {
+        if (isMCPServer) {
             promisedApi = new MCPServer().getDocuments(api.id);
         } else {
             promisedApi = new API().getDocumentsByAPIId(api.id);
@@ -337,24 +337,22 @@ function Overview() {
         const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
         if (showSwaggerDescriptionOnOverview) {
             let promisedSwagger;
-            if (isMCPServersRoute) {
-                promisedSwagger = new MCPServer().getSwaggerByMCPServerIdAndEnvironment(api.id, selectedEndpoint.environmentName);
-            } else {
+            if (!isMCPServersRoute) {
                 promisedSwagger = new API().getSwaggerByAPIIdAndEnvironment(api.id, selectedEndpoint.environmentName);
-            }
-            promisedSwagger
-                .then((swaggerResponse) => {
-                    const swagger = swaggerResponse.obj;
-                    if (swagger && swagger.info) {
-                        setSwaggerDescription(swagger.info.description);
-                    } else {
+                promisedSwagger
+                    .then((swaggerResponse) => {
+                        const swagger = swaggerResponse.obj;
+                        if (swagger && swagger.info) {
+                            setSwaggerDescription(swagger.info.description);
+                        } else {
+                            setSwaggerDescription('');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
                         setSwaggerDescription('');
-                    }
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setSwaggerDescription('');
-                });
+                    });
+            }
         } else {
             setIsLoading(true);
             Promise.all([getDocuments(), getSubscriptionPolicies()])

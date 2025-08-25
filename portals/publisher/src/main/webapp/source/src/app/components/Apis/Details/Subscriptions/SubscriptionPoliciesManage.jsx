@@ -28,6 +28,7 @@ import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Paper from '@mui/material/Paper';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import { isRestricted } from 'AppData/AuthManager';
 import Configurations from 'Config';
 import CONSTS from 'AppData/Constants';
@@ -201,23 +202,23 @@ class SubscriptionPoliciesManage extends Component {
                         defaultMessage='Business Plans'
                     />
                 </Typography>
-                {api.apiType === API.CONSTS.APIProduct
-                    ? (
-                        <Typography variant='caption' gutterBottom>
-                            <FormattedMessage
-                                id='Apis.Details.Subscriptions.SubscriptionPoliciesManage.APIProduct.sub.heading'
-                                defaultMessage='Attach business plans to API'
-                            />
-                        </Typography>
-                    )
-                    : (
-                        <Typography variant='caption' gutterBottom>
-                            <FormattedMessage
-                                id='Apis.Details.Subscriptions.SubscriptionPoliciesManage.sub.heading'
-                                defaultMessage='Attach business plans to API'
-                            />
-                        </Typography>
-                    )}
+                <Typography variant='caption' gutterBottom>
+                    <FormattedMessage
+                        id='Apis.Details.Subscriptions.SubscriptionPoliciesManage.sub.heading'
+                        defaultMessage='Attach business plans to {type}'
+                        values={{
+                            type: (() => {
+                                if (api.apiType === API.CONSTS.APIProduct) {
+                                    return 'API Product';
+                                }
+                                if (api.apiType === MCPServer.CONSTS.MCP) {
+                                    return 'MCP Server';
+                                }
+                                return 'API';
+                            })()
+                        }}
+                    />
+                </Typography>
                 <Paper className={classes.subscriptionPoliciesPaper}>
                     <FormControl className={classes.formControl}>
                         <FormGroup>

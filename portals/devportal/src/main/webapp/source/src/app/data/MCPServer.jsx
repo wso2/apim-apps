@@ -70,27 +70,6 @@ export default class MCPServer extends Resource {
     }
 
     /**
-     * Get the Swagger definition of a MCP server by its ID and environment.
-     * @param {*} mcpServerId - The ID of the MCP server.
-     * @param {*} environmentName - The name of the environment.
-     * @param {*} callback - Optional callback function to handle the response.
-     * @returns {Promise} - Promise resolving to the API response.
-     */
-    getSwaggerByMCPServerIdAndEnvironment(mcpServerId, environmentName, callback = null) {
-        const promise = this.client.then((client) => {
-            return client.apis['MCP Servers'].getMCPServerSwagger(
-                { mcpServerId, environmentName },
-                this._requestMetaData(),
-            );
-        });
-        if (callback) {
-            return promise.then(callback);
-        } else {
-            return promise;
-        }
-    }
-
-    /**
      * Get all comments of a MCP server.
      * @param {*} mcpServerId - The ID of the MCP server.
      * @param {*} limit - The maximum number of comments to retrieve.

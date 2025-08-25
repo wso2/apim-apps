@@ -21,7 +21,7 @@
  * @param {string} type - The type of the API
  * @returns {string} The base path for routing
  */
-export const getBasePath = (type) => {
+export const getBasePath = (type = '') => {
     if (type === 'APIPRODUCT') {
         return '/api-products/';
     } else if (type === 'MCP') {
