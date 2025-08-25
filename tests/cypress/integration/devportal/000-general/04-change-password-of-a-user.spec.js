@@ -36,7 +36,7 @@ describe("Change the password from devportal", () => {
     cy.carbonLogout();
 
     cy.loginToDevportal(username, password);
-    cy.get("#userToggleButton").click();
+    cy.get("#userToggleButton").click({ force: true });
     cy.get("#menu-list-grow").within(() => {
       cy.get("ul li:first").contains("Change Password").click();
     });
