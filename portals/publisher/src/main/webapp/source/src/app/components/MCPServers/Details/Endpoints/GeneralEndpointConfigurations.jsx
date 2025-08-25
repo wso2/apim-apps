@@ -31,7 +31,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import { FormattedMessage, useIntl } from 'react-intl';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
-import Certificates from '../GeneralConfiguration/Certificates';
+import Certificates from 'AppComponents/Apis/Details/Endpoints/GeneralConfiguration/Certificates';
 
 const PREFIX = 'GeneralConfiguration';
 

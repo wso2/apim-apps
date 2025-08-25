@@ -34,6 +34,7 @@ import { Alert, Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
 import AddCircle from '@mui/icons-material/AddCircle';
 import { getBasePath } from 'AppComponents/Shared/Utils';
+import MCPServerEndpoints from 'AppComponents/MCPServers/Details/Endpoints/Endpoints';
 import EndpointOverview from './EndpointOverview';
 import AIEndpoints from './AIEndpoints/AIEndpoints';
 import { createEndpointConfig, getEndpointTemplateByType } from './endpointUtils';
@@ -794,7 +795,7 @@ function Endpoints(props) {
                                 </Button>
                             )}
                         </div>
-                        {((api.subtypeConfiguration?.subtype === 'AIAPI' || isMCPServer) && (
+                        {((api.subtypeConfiguration?.subtype === 'AIAPI') && (
                             <AIEndpoints
                                 swaggerDef={swagger}
                                 updateSwagger={changeSwagger}
@@ -805,6 +806,12 @@ function Endpoints(props) {
                                 endpointConfiguration={endpointConfiguration}
                             />
                         ))}
+                        {isMCPServer && (
+                            <MCPServerEndpoints
+                                apiObject={apiObject}
+                                endpointConfiguration={endpointConfiguration}
+                            />
+                        )}
                         {(api.subtypeConfiguration?.subtype !== 'AIAPI' && !isMCPServer) && (
                             <div>
                                 <Grid container>
