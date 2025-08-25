@@ -282,23 +282,21 @@ export default function CustomizedStepper() {
         api.getSettings()
             .then((response) => {
                 const { customProperties } = response;
-                let mandatoryPropsAvailable;
                 if (customProperties && customProperties.length > 0) {
                     const requiredPropertyNames = customProperties
                         .filter(property => property.Required)
                         .map(property => property.Name);
                     if (requiredPropertyNames.length > 0) {
-                        mandatoryPropsAvailable = requiredPropertyNames.every(propertyName => {
+                        setIsMandatoryPropertiesAvailable(requiredPropertyNames.every(propertyName => {
                             const property = api.additionalProperties.find(prop => prop.name === propertyName);
                             return property && property.value !== '';
-                        });
+                        }));
                     } else {
-                        mandatoryPropsAvailable = true;
+                        setIsMandatoryPropertiesAvailable(true);
                     }
                 } else {
-                    mandatoryPropsAvailable = true;
+                    setIsMandatoryPropertiesAvailable(true);
                 }
-                setIsMandatoryPropertiesAvailable(mandatoryPropsAvailable);
             })
             .catch((error) => {
                 console.error('Error validating mandatory custom properties:', error);
