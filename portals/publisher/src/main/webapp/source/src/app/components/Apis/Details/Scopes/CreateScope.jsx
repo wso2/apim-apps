@@ -191,6 +191,7 @@ class CreateScope extends React.Component {
         this.addScope = this.addScope.bind(this);
         this.validateScopeName = this.validateScopeName.bind(this);
         this.handleScopeNameInput = this.handleScopeNameInput.bind(this);
+        this.handleScopeNameBlur = this.handleScopeNameBlur.bind(this);
         this.validateScopeDescription = this.validateScopeDescription.bind(this);
         this.validateScopeDisplayName = this.validateScopeDisplayName.bind(this);
         this.handleRoleAddition = this.handleRoleAddition.bind(this);
@@ -211,12 +212,24 @@ class CreateScope extends React.Component {
     };
 
     /**
-     * Handle ScopeName Input.
-     * @param {JSON} event click event.
+     * Handle scope name input.
+     * @param {any} target The id and value of the target.
+     * @memberof CreateScope
      */
     handleScopeNameInput({ target: { id, value } }) {
-        this.validateScopeName(id, value);
+        const { apiScope } = this.state;
+        apiScope[id] = value;
+        this.setState({ apiScope });
     }
+
+    /**
+     * Handle scope name blur.
+     * @param {any} target The id and value of the target.
+     * @memberof CreateScope
+     */
+    handleScopeNameBlur = ({ target: { id, value } }) => {
+        this.validateScopeName(id, value);
+    };
 
     /**
      * Handle Role Addition.
@@ -362,7 +375,7 @@ class CreateScope extends React.Component {
             valid[id].invalid = true;
             valid[id].error = intl.formatMessage({
                 id: 'Scopes.Create.Scope.name.already.exist',
-                defaultMessage: 'Scope name already exist'
+                defaultMessage: 'Scope name already exists'
             });
         }
         if (!valid[id].invalid && /[!@#$%^&*(),?"{}[\]|<>\t\n]|(^apim:)/i.test(value)) {
@@ -379,7 +392,7 @@ class CreateScope extends React.Component {
                     valid[id].invalid = true;
                     valid[id].error = intl.formatMessage({
                         id: 'Scopes.Create.Scope.name.already.used',
-                        defaultMessage: 'Scope name is already used by another API',
+                        defaultMessage: 'Scope name is already exist',
                     });
                     this.setState({
                         valid,
@@ -476,7 +489,7 @@ class CreateScope extends React.Component {
         const {  api, intl } = this.props;
         const url = getBasePath(api.apiType) + api.id + '/scopes';
         const {
-            roleValidity, validRoles, invalidRoles, scopeAddDisabled,
+            roleValidity, validRoles, invalidRoles, scopeAddDisabled, apiScope
         } = this.state;
 
         return (
@@ -538,8 +551,9 @@ class CreateScope extends React.Component {
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
-                                        value={this.state.apiScope.name || ''}
+                                        value={apiScope.name || ''}
                                         onChange={this.handleScopeNameInput}
+                                        onBlur={this.handleScopeNameBlur}
                                     />
                                 </FormControl>
                                 <FormControl margin='normal'>
