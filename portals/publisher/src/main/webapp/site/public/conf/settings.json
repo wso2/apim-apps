@@ -16,7 +16,7 @@
             "enabled": true,
             "timeout": 4000
         },
-        "logoutSessionStateAppender" : "OIDC" ,
+        "logoutSessionStateAppender" : "" ,
         "throttlingPolicyLimit": 80,
         "operationPolicyCount": 500,
         "documentCount": 1000,
