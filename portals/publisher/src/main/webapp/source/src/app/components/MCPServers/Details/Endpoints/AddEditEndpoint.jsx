@@ -57,6 +57,15 @@ import EndpointSecurity from 'AppComponents/Apis/Details/Endpoints/GeneralConfig
 
 const PREFIX = 'AddEditEndpoint';
 
+// Permission arrays for MCP Server operations
+const MCP_SERVER_BACKEND_VIEW_PERMISSIONS = [
+    'apim:mcp_server_view',
+    'apim:mcp_server_create',
+    'apim:mcp_server_manage',
+    'apim:mcp_server_publish',
+    'apim:mcp_server_import_export',
+];
+
 const classes = {
     root: `${PREFIX}-root`,
     titleWrapper: `${PREFIX}-titleWrapper`,
@@ -532,7 +541,7 @@ const AddEditEndpoint = ({
                 aria-label='TestEndpoint'
                 onClick={() => testEndpoint(endpointUrl, apiObject.id)}
                 disabled={
-                    (isRestricted(['apim:api_create'], apiObject)) || isUpdating
+                    (isRestricted(['apim:mcp_server_create', 'apim:mcp_server_manage'], apiObject)) || isUpdating
                 }
                 id='endpoint-test-icon-btn'
                 size='large'>
@@ -558,7 +567,7 @@ const AddEditEndpoint = ({
                 className={classes.iconButton}
                 aria-label='Settings'
                 onClick={handleAdvancedConfigOpen}
-                disabled={(isRestricted(['apim:api_create'], apiObject))}
+                disabled={isRestricted(MCP_SERVER_BACKEND_VIEW_PERMISSIONS, apiObject)}
                 id='endpoint-configuration-icon-btn'
                 size='large'>
                 <Tooltip
@@ -578,7 +587,7 @@ const AddEditEndpoint = ({
                 className={classes.iconButton}
                 aria-label='Security'
                 onClick={handleEndpointSecurityConfigOpen}
-                disabled={(isRestricted(['apim:api_create'], apiObject))}
+                disabled={isRestricted(MCP_SERVER_BACKEND_VIEW_PERMISSIONS, apiObject)}
                 id='endpoint-security-icon-btn'
                 size='large'>
                 <Tooltip
@@ -781,7 +790,7 @@ const AddEditEndpoint = ({
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <TextField
-                                        disabled={isRestricted(['apim:api_create'], apiObject)}
+                                        disabled={isRestricted(MCP_SERVER_BACKEND_VIEW_PERMISSIONS, apiObject)}
                                         label='Endpoint URL'
                                         id='url'
                                         fullWidth
@@ -809,7 +818,12 @@ const AddEditEndpoint = ({
                                 type='submit'
                                 onClick={formSave}
                                 disabled={
-                                    isRestricted(['apim:api_create'], apiObject)
+                                    isRestricted([
+                                        'apim:mcp_server_create',
+                                        'apim:mcp_server_manage',
+                                        'apim:mcp_server_publish',
+                                        'apim:mcp_server_import_export',
+                                    ], apiObject)
                                     || formHasErrors(validating || isEditing)
                                     || apiObject.isRevision
                                 }

@@ -61,6 +61,44 @@ const Endpoints = ({
 
     const intl = useIntl();
 
+    /**
+     * Parse endpoint configuration from string or object
+     * @param {Object} endpoint - The endpoint object
+     * @returns {Object} Parsed endpoint configuration
+     */
+    const parseEndpointConfig = (endpoint) => {
+        return typeof endpoint.endpointConfig === 'string'
+            ? JSON.parse(endpoint.endpointConfig)
+            : endpoint.endpointConfig;
+    };
+
+    /**
+     * Filter endpoints by type (production or sandbox)
+     * @param {Array} endpoints - Array of endpoints
+     * @param {string} type - 'production' or 'sandbox'
+     * @returns {Array} Filtered endpoints
+     */
+    const filterEndpointsByType = (endpoints, type) => {
+        return endpoints.filter(ep => {
+            const config = parseEndpointConfig(ep);
+            const endpointKey = `${type}_endpoints`;
+            return config?.[endpointKey] && config[endpointKey].url;
+        });
+    };
+
+    /**
+     * Extract endpoint URLs for general configurations
+     * @param {Array} endpoints - Array of endpoints
+     * @param {string} type - 'production' or 'sandbox'
+     * @returns {Array} Array of endpoint URLs
+     */
+    const extractEndpointUrls = (endpoints, type) => {
+        return endpoints.map(ep => {
+            const config = parseEndpointConfig(ep);
+            return config?.[`${type}_endpoints`];
+        }).filter(Boolean);
+    };
+
     const fetchEndpoints = () => {
         setLoading(true);
         MCPServer.getMCPServerEndpoints(apiObject.id)
@@ -68,38 +106,17 @@ const Endpoints = ({
                 const endpoints = response.body;
                 
                 // Filter endpoints based on their configuration
-                const filteredProductionEndpoints = endpoints.filter(ep => {
-                    const config = typeof ep.endpointConfig === 'string'
-                        ? JSON.parse(ep.endpointConfig)
-                        : ep.endpointConfig;
-                    return config?.production_endpoints && config.production_endpoints.url;
-                });
-                
-                const filteredSandboxEndpoints = endpoints.filter(ep => {
-                    const config = typeof ep.endpointConfig === 'string'
-                        ? JSON.parse(ep.endpointConfig)
-                        : ep.endpointConfig;
-                    return config?.sandbox_endpoints && config.sandbox_endpoints.url;
-                });
+                const filteredProductionEndpoints = filterEndpointsByType(endpoints, 'production');
+                const filteredSandboxEndpoints = filterEndpointsByType(endpoints, 'sandbox');
 
                 setProductionEndpoints(filteredProductionEndpoints);
                 setSandboxEndpoints(filteredSandboxEndpoints);
 
                 // Create endpoint URL list for general configurations
-                const endpointUrlList = [
-                    ...filteredProductionEndpoints.map(ep => {
-                        const config = typeof ep.endpointConfig === 'string'
-                            ? JSON.parse(ep.endpointConfig)
-                            : ep.endpointConfig;
-                        return config?.production_endpoints;
-                    }),
-                    ...filteredSandboxEndpoints.map(ep => {
-                        const config = typeof ep.endpointConfig === 'string'
-                            ? JSON.parse(ep.endpointConfig)
-                            : ep.endpointConfig;
-                        return config?.sandbox_endpoints;
-                    })
-                ].filter(Boolean);
+                const productionUrls = extractEndpointUrls(filteredProductionEndpoints, 'production');
+                const sandboxUrls = extractEndpointUrls(filteredSandboxEndpoints, 'sandbox');
+                const endpointUrlList = [...productionUrls, ...sandboxUrls];
+                
                 setEndpointList(endpointUrlList);
             })
             .catch((error) => {
@@ -110,7 +127,7 @@ const Endpoints = ({
                 }));
             })
             .finally(() => setLoading(false));
-    }
+    };
 
     useEffect(() => {
         fetchEndpoints();
@@ -123,6 +140,29 @@ const Endpoints = ({
             endpointType,
             endpoint,
         });
+    };
+
+    /**
+     * Handle adding a new endpoint section (production or sandbox)
+     * @param {string} targetEndpointType - The type of endpoint to add (PRODUCTION or SANDBOX)
+     */
+    const handleAddEndpoint = (targetEndpointType) => {
+        // Determine which endpoint to update based on existing endpoints
+        const isProduction = targetEndpointType === 'PRODUCTION';
+        const sourceEndpoints = isProduction ? sandboxEndpoints : productionEndpoints;
+        const targetEndpoints = isProduction ? productionEndpoints : sandboxEndpoints;
+        
+        // If source endpoints exist but target endpoints don't, update the first source endpoint
+        const targetEndpointId = (sourceEndpoints.length > 0 && targetEndpoints.length === 0)
+            ? sourceEndpoints[0].id
+            : 'new';
+        
+        const baseUrl = `/mcp-servers/${apiObject.id}/endpoints`;
+        const url = targetEndpointId === 'new' 
+            ? `${baseUrl}/create`
+            : `${baseUrl}/create/${targetEndpointId}/${targetEndpointType}`;
+        
+        history.push(url);
     };
 
     const confirmDelete = () => {
@@ -219,27 +259,7 @@ const Endpoints = ({
                                 color='primary'
                                 size='small'
                                 disabled={isRestricted(['apim:api_create'], apiObject)}
-                                onClick={() => {
-                                    // Determine which endpoint to update based on existing endpoints
-                                    let targetEndpointId = null;
-                                    
-                                    // If there are sandbox endpoints but no production endpoints,
-                                    // update the first sandbox endpoint to add production
-                                    if (sandboxEndpoints.length > 0 && productionEndpoints.length === 0) {
-                                        targetEndpointId = sandboxEndpoints[0].id;
-                                    }
-                                    // If neither exist, create a new endpoint
-                                    else {
-                                        targetEndpointId = 'new';
-                                    }
-                                    
-                                    const baseUrl = `/mcp-servers/${apiObject.id}/endpoints`;
-                                    const url = targetEndpointId === 'new' 
-                                        ? `${baseUrl}/create`
-                                        : `${baseUrl}/create/${targetEndpointId}/PRODUCTION`;
-                                    
-                                    history.push(url);
-                                }}
+                                onClick={() => handleAddEndpoint('PRODUCTION')}
                                 sx={{ marginLeft: 1 }}
                             >
                                 <AddCircle sx={{ marginRight: 1 }} />
@@ -287,27 +307,7 @@ const Endpoints = ({
                                 color='primary'
                                 size='small'
                                 disabled={isRestricted(['apim:api_create'], apiObject)}
-                                onClick={() => {
-                                    // Determine which endpoint to update based on existing endpoints
-                                    let targetEndpointId = null;
-                                    
-                                    // If there are production endpoints but no sandbox endpoints, 
-                                    // update the first production endpoint to add sandbox
-                                    if (productionEndpoints.length > 0 && sandboxEndpoints.length === 0) {
-                                        targetEndpointId = productionEndpoints[0].id;
-                                    }
-                                    // If neither exist, create a new endpoint
-                                    else {
-                                        targetEndpointId = 'new';
-                                    }
-                                    
-                                    const baseUrl = `/mcp-servers/${apiObject.id}/endpoints`;
-                                    const url = targetEndpointId === 'new' 
-                                        ? `${baseUrl}/create`
-                                        : `${baseUrl}/create/${targetEndpointId}/SANDBOX`;
-                                    
-                                    history.push(url);
-                                }}
+                                onClick={() => handleAddEndpoint('SANDBOX')}
                                 sx={{ marginLeft: 1 }}
                             >
                                 <AddCircle sx={{ marginRight: 1 }} />

@@ -140,6 +140,30 @@ const EndpointCard = ({
         return JSON.stringify(apiDef, null, 2);
     }
 
+    /**
+     * Check if delete button should be disabled based on endpoint configuration
+     * @returns {boolean} True if delete should be disabled (only one endpoint section exists)
+     */
+    const shouldDisableDelete = () => {
+        let endpointConfig;
+        if (typeof endpoint.endpointConfig === 'string') {
+            endpointConfig = JSON.parse(endpoint.endpointConfig);
+        } else {
+            endpointConfig = endpoint.endpointConfig;
+        }
+
+        // Check if both production and sandbox endpoints exist
+        const hasProduction = endpointConfig.production_endpoints && 
+            endpointConfig.production_endpoints.url && 
+            endpointConfig.production_endpoints.url.trim() !== '';
+        const hasSandbox = endpointConfig.sandbox_endpoints && 
+            endpointConfig.sandbox_endpoints.url && 
+            endpointConfig.sandbox_endpoints.url.trim() !== '';
+
+        // If only one endpoint section exists, disable delete
+        return (hasProduction && !hasSandbox) || (!hasProduction && hasSandbox);
+    };
+
     const editorOptions = {
         selectOnLineNumbers: true,
         readOnly: true,
@@ -228,7 +252,15 @@ const EndpointCard = ({
                                 '/mcp-servers/' + apiObject.id + '/endpoints/' + endpoint.id + '/' + endpointType,
                             );
                         }}
-                        disabled={isRestricted(['apim:api_create'], apiObject)}
+                        disabled={
+                            isRestricted([
+                                'apim:mcp_server_view',
+                                'apim:mcp_server_create',
+                                'apim:mcp_server_manage',
+                                'apim:mcp_server_publish',
+                                'apim:mcp_server_import_export',
+                            ], apiObject)
+                        }
                     >
                         <EditIcon fontSize='small' />
                     </IconButton>
@@ -239,10 +271,17 @@ const EndpointCard = ({
                             onClick={() => onDelete()}
                             disabled={
                                 isRestricted(
-                                    ['apim:api_create'],
+                                    [
+                                        'apim:mcp_server_view',
+                                        'apim:mcp_server_create',
+                                        'apim:mcp_server_manage',
+                                        'apim:mcp_server_publish',
+                                        'apim:mcp_server_import_export',
+                                    ],
                                     apiObject,
                                 ) ||
-                                isDeleting
+                                isDeleting ||
+                                shouldDisableDelete()
                             }
                         >
                             <DeleteIcon fontSize='small' />
