@@ -28,7 +28,6 @@ import MCPServer from 'AppData/MCPServer';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { green } from '@mui/material/colors';
 import Tools from 'AppComponents/MCPServers/Details/Overview/Tools';
-
 import Resources from './Resources';
 import Operations from './Operations';
 import ProductResources from './ProductResources';

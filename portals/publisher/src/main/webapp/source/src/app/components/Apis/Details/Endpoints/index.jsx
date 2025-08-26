@@ -56,6 +56,17 @@ const Endpoint = () => {
             )}
 
             {/* MCP Server Endpoints */}
+            {!isRestricted([
+                'apim:mcp_server_view', 'apim:mcp_server_create', 'apim:mcp_server_manage',
+                'apim:mcp_server_publish', 'apim:mcp_server_import_export',
+            ]) && isMCPServer && (
+                <Route
+                    exact
+                    path={urlPrefix + ':mcpserver_uuid/endpoints/create/:id/:endpointType'}
+                    render={(props) => <AddEditEndpoint apiObject={api} {...props} />}
+                />
+            )}
+
             {!isRestricted(['apim:mcp_server_view', 'apim:mcp_server_create', 'apim:mcp_server_manage',
                 'apim:mcp_server_publish', 'apim:mcp_server_import_export',
             ]) && isMCPServer && (
@@ -63,17 +74,6 @@ const Endpoint = () => {
                     exact
                     path={urlPrefix + ':mcpserver_uuid/endpoints/:id/:endpointType'}
                     render={(props) => <AddEditEndpoint {...props} apiObject={api} />}
-                />
-            )}
-
-            {!isRestricted([
-                'apim:mcp_server_view', 'apim:mcp_server_create', 'apim:mcp_server_manage',
-                'apim:mcp_server_publish', 'apim:mcp_server_import_export',
-            ]) && !isMCPServer && (
-                <Route
-                    exact
-                    path={urlPrefix + ':mcpserver_uuid/endpoints/create'}
-                    render={(props) => <AddEditEndpoint apiObject={api} {...props} />}
                 />
             )}
 

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect, useReducer, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -37,7 +37,9 @@ import {
     DialogContent,
 } from '@mui/material';
 import CONSTS from 'AppData/Constants';
-import { Link, useHistory } from 'react-router-dom';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import MCPServer from 'AppData/MCPServer';
 import { green } from '@mui/material/colors';
 import Alert from 'AppComponents/Shared/Alert';
@@ -49,9 +51,11 @@ import { getBasePath } from 'AppComponents/Shared/Utils';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
+import SecurityIcon from '@mui/icons-material/Security';
 import AdvanceEndpointConfig from 'AppComponents/Apis/Details/Endpoints/AdvancedConfig/AdvanceEndpointConfig';
+import EndpointSecurity from 'AppComponents/Apis/Details/Endpoints/GeneralConfiguration/EndpointSecurity';
 
-const PREFIX = 'AddEditAIEndpoint';
+const PREFIX = 'AddEditEndpoint';
 
 const classes = {
     root: `${PREFIX}-root`,
@@ -194,7 +198,7 @@ function endpointReducer(state, { field, value }) {
                 endpointConfig: {
                     ...state.endpointConfig,
                     endpoint_security: {
-                        ...state.endpointConfig.endpoint_security,
+                        ...(state.endpointConfig.endpoint_security || {}),
                         ...value
                     },
                 },
@@ -205,7 +209,7 @@ function endpointReducer(state, { field, value }) {
                 endpointConfig: {
                     ...state.endpointConfig,
                     production_endpoints: {
-                        ...state.endpointConfig.production_endpoints,
+                        ...(state.endpointConfig.production_endpoints || {}),
                         ...value
                     },
                 },
@@ -216,8 +220,36 @@ function endpointReducer(state, { field, value }) {
                 endpointConfig: {
                     ...state.endpointConfig,
                     sandbox_endpoints: {
-                        ...state.endpointConfig.sandbox_endpoints,
+                        ...(state.endpointConfig.sandbox_endpoints || {}),
                         ...value
+                    },
+                },
+            }
+        case 'updateProductionEndpointSecurity':
+            return {
+                ...state,
+                endpointConfig: {
+                    ...state.endpointConfig,
+                    endpoint_security: {
+                        ...state.endpointConfig.endpoint_security,
+                        production: {
+                            ...(state.endpointConfig.endpoint_security?.production || {}),
+                            ...value
+                        },
+                    },
+                },
+            }
+        case 'updateSandboxEndpointSecurity':
+            return {
+                ...state,
+                endpointConfig: {
+                    ...state.endpointConfig,
+                    endpoint_security: {
+                        ...state.endpointConfig.endpoint_security,
+                        sandbox: {
+                            ...(state.endpointConfig.endpoint_security?.sandbox || {}),
+                            ...value
+                        },
                     },
                 },
             }
@@ -226,25 +258,32 @@ function endpointReducer(state, { field, value }) {
     }
 }
 
-const AddEditAIEndpoint = ({
+const AddEditEndpoint = ({
     apiObject,
     match: { params: { id: endpointId, endpointType } },
 }) => {
+    const { data: publisherSettings, isLoading } = usePublisherSettings();
+    const { api } = useContext(APIContext);
+    const path = useLocation().pathname;
     const [isEndpointValid, setIsEndpointValid] = useState();
     const [statusCode, setStatusCode] = useState('');
     const [isUpdating, setUpdating] = useState(false);
     const [isErrorCode, setIsErrorCode] = useState(false);
     const [endpointUrl, setEndpointUrl] = useState('');
+    const [componentValidator, setComponentValidator] = useState([]);
     const [advanceConfig, setAdvancedConfig] = useState({});
     const [advancedConfigOpen, setAdvancedConfigOpen] = useState(false);
+    const [endpointSecurityConfig, setEndpointSecurityConfig] = useState({});
+    const [endpointSecurityTypes, setEndpointSecurityTypes] = useState([]);
+    const [endpointSecurityConfigOpen, setEndpointSecurityConfigOpen] = useState(false);
     const [isEndpointSaving, setEndpointSaving] = useState(false);
-    const [isEditing] = useState(!!endpointId);
+    const [isEditing] = useState(!path.includes('/endpoints/create'));
     const [validating, setValidating] = useState(false);
 
     const [state, dispatch] = useReducer(endpointReducer, {
         ...CONSTS.DEFAULT_ENDPOINT,
         // Set deployment stage based on endpointType parameter or default to production
-        deploymentStage: endpointType && endpointType === 'sandbox' 
+        deploymentStage: endpointType && endpointType === 'SANDBOX' 
             ? CONSTS.DEPLOYMENT_STAGE.sandbox 
             : CONSTS.DEPLOYMENT_STAGE.production,
         endpointConfig: {
@@ -258,6 +297,16 @@ const AddEditAIEndpoint = ({
     const history = useHistory();
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
     const endpointsUrl = getBasePath(apiObject.apiType) + apiObject.id + '/endpoints';
+
+    useEffect(() => {
+        if (!isLoading) {
+            setComponentValidator(publisherSettings.gatewayFeatureCatalog
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].endpoints);
+            setEndpointSecurityTypes(publisherSettings.gatewayFeatureCatalog
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].endpointSecurity);
+        }
+    }, [isLoading]);
+
 
     useEffect(() => {
         if (endpointId) {
@@ -286,16 +335,18 @@ const AddEditAIEndpoint = ({
                     if (endpointType === CONSTS.DEPLOYMENT_STAGE.production) {
                         setEndpointUrl(endpointConfig.production_endpoints?.url || '');
                         setAdvancedConfig(endpointConfig.production_endpoints?.config || {});
+                        setEndpointSecurityConfig(endpointConfig.endpoint_security?.production || {});
                     } else if (endpointType === CONSTS.DEPLOYMENT_STAGE.sandbox) {
                         setEndpointUrl(endpointConfig.sandbox_endpoints?.url || '');
                         setAdvancedConfig(endpointConfig.sandbox_endpoints?.config || {});
+                        setEndpointSecurityConfig(endpointConfig.endpoint_security?.sandbox || {});
                     }
 
                 })
                 .catch((error) => {
                     console.error('Error loading endpoint:', error);
                     Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.loading',
+                        id: 'MCPServers.Details.Endpoints.AddEditEndpoint.error.loading',
                         defaultMessage: 'Error loading endpoint',
                     }));
                 });
@@ -353,7 +404,7 @@ const AddEditAIEndpoint = ({
             case 'name':
                 if (!fieldValue) {
                     return intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.name',
+                        id: 'MCPServers.Details.Endpoints.AddEditEndpoint.error.empty.name',
                         defaultMessage: 'Endpoint name cannot be empty',
                     });
                 }
@@ -361,12 +412,12 @@ const AddEditAIEndpoint = ({
             case 'url':
                 if (!fieldValue) {
                     return intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.url',
+                        id: 'MCPServers.Details.Endpoints.AddEditEndpoint.error.empty.url',
                         defaultMessage: 'Endpoint URL cannot be empty',
                     });
                 } else if (!isValidUrl(fieldValue)) {
                     return intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.invalid.url',
+                        id: 'MCPServers.Details.Endpoints.AddEditEndpoint.error.invalid.url',
                         defaultMessage: 'Please enter a valid endpoint URL',
                     });
                 }
@@ -399,6 +450,20 @@ const AddEditAIEndpoint = ({
     };
 
     /**
+     * Method to open the endpoint security configuration dialog box.
+     */
+    const handleEndpointSecurityConfigOpen = () => {
+        setEndpointSecurityConfigOpen(true);
+    };
+
+    /**
+     * Method to close the endpoint security configuration dialog box.
+     */
+    const handleEndpointSecurityConfigClose = () => {
+        setEndpointSecurityConfigOpen(false);
+    };
+
+    /**
      * Method to save the advance configurations.
      *
      * @param {object} advanceConfigObj The advance configuration object
@@ -422,6 +487,115 @@ const AddEditAIEndpoint = ({
         }
         handleAdvancedConfigClose();
     };
+
+    const saveEndpointSecurityConfig = (endpointSecurityObj) => {
+        setEndpointSecurityConfig(endpointSecurityObj);
+        if (endpointType === CONSTS.DEPLOYMENT_STAGE.production) {
+            dispatch({
+                field: 'updateProductionEndpointSecurity',
+                value: endpointSecurityObj,
+            });
+        } else {
+            dispatch({
+                field: 'updateSandboxEndpointSecurity',
+                value: endpointSecurityObj,
+            });
+        }
+        setEndpointSecurityConfigOpen(false);
+    };
+
+    /**
+     * Method to render the endpoint URL input adornment with test, settings, and security buttons.
+     * @returns {JSX.Element} InputAdornment component
+     */
+    const renderEndpointUrlAdornment = () => (
+        <InputAdornment position='end'>
+            {statusCode && (
+                <Chip
+                    id={state.id + '-endpoint-test-status'}
+                    label={statusCode}
+                    className={
+                        isEndpointValid ?
+                            classes.endpointValidChip : iff(
+                                isErrorCode,
+                                classes.endpointErrorChip,
+                                classes.endpointInvalidChip,
+                            )}
+                    variant='outlined'
+                />
+            )}
+            <IconButton
+                className={
+                    isEndpointValid ?
+                        classes.iconButtonValid : classes.iconButton
+                }
+                aria-label='TestEndpoint'
+                onClick={() => testEndpoint(endpointUrl, apiObject.id)}
+                disabled={
+                    (isRestricted(['apim:api_create'], apiObject)) || isUpdating
+                }
+                id='endpoint-test-icon-btn'
+                size='large'>
+                {isUpdating
+                    ? <CircularProgress size={20} />
+                    : (
+                        <Tooltip
+                            placement='top-start'
+                            interactive
+                            title={(
+                                <FormattedMessage
+                                    id='MCPServers.Details.Endpoints.AddEditEndpoint.test.endpoint'
+                                    defaultMessage='Check endpoint status'
+                                />
+                            )}
+                        >
+                            <CheckCircleIcon />
+                        </Tooltip>
+
+                    )}
+            </IconButton>
+            <IconButton
+                className={classes.iconButton}
+                aria-label='Settings'
+                onClick={handleAdvancedConfigOpen}
+                disabled={(isRestricted(['apim:api_create'], apiObject))}
+                id='endpoint-configuration-icon-btn'
+                size='large'>
+                <Tooltip
+                    placement='top-start'
+                    interactive
+                    title={(
+                        <FormattedMessage
+                            id='MCPServers.Details.Endpoints.AddEditEndpoint.endpoint.configuration'
+                            defaultMessage='Endpoint configurations'
+                        />
+                    )}
+                >
+                    <SettingsIcon />
+                </Tooltip>
+            </IconButton>
+            <IconButton
+                className={classes.iconButton}
+                aria-label='Security'
+                onClick={handleEndpointSecurityConfigOpen}
+                disabled={(isRestricted(['apim:api_create'], apiObject))}
+                id='endpoint-security-icon-btn'
+                size='large'>
+                <Tooltip
+                    placement='top-start'
+                    interactive
+                    title={(
+                        <FormattedMessage
+                            id='MCPServers.Details.Endpoints.AddEditEndpoint.endpoint.security.button'
+                            defaultMessage='Endpoint security'
+                        />
+                    )}
+                >
+                    <SecurityIcon />
+                </Tooltip>
+            </IconButton>
+        </InputAdornment>
+    );
 
     const handleDeploymentStageChange = (event) => {
         const newStage = event.target.value;
@@ -475,7 +649,7 @@ const AddEditAIEndpoint = ({
         setValidating(true);
         if (formHasErrors(true)) {
             Alert.error(intl.formatMessage({
-                id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.form.has.errors',
+                id: 'MCPServers.Details.Endpoints.AddEditEndpoint.form.has.errors',
                 defaultMessage: 'One or more fields contain errors',
             }));
             return false;
@@ -493,12 +667,12 @@ const AddEditAIEndpoint = ({
             .then(() => {
                 if (isEditing) {
                     Alert.success(intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.edit.success',
+                        id: 'MCPServers.Details.Endpoints.AddEditEndpoint.edit.success',
                         defaultMessage: 'Endpoint updated successfully',
                     }));
                 } else {
                     Alert.success(intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.add.success',
+                        id: 'MCPServers.Details.Endpoints.AddEditEndpoint.add.success',
                         defaultMessage: 'Endpoint added successfully',
                     }));
                 }
@@ -507,7 +681,7 @@ const AddEditAIEndpoint = ({
             .catch((error) => {
                 console.error(error);
                 Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.saving',
+                    id: 'MCPServers.Details.Endpoints.AddEditEndpoint.error.saving',
                     defaultMessage: 'Error occurred while saving the endpoint',
                 }));
             })
@@ -525,7 +699,7 @@ const AddEditAIEndpoint = ({
                         <Link to={endpointsUrl} className={classes.titleLink}>
                             <Typography variant='h4' component='h2'>
                                 <FormattedMessage
-                                    id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.heading'
+                                    id='MCPServers.Details.Endpoints.AddEditEndpoint.heading'
                                     defaultMessage='Endpoints'
                                 />
                             </Typography>
@@ -535,11 +709,11 @@ const AddEditAIEndpoint = ({
                             {
                                 isEditing ?
                                     <FormattedMessage
-                                        id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.edit.endpoint'
+                                        id='MCPServers.Details.Endpoints.AddEditEndpoint.edit.endpoint'
                                         defaultMessage='Edit Endpoint'
                                     /> :
                                     <FormattedMessage
-                                        id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.create.new.endpoint'
+                                        id='MCPServers.Details.Endpoints.AddEditEndpoint.create.new.endpoint'
                                         defaultMessage='Add New Endpoint'
                                     />
                             }
@@ -552,7 +726,7 @@ const AddEditAIEndpoint = ({
                         <FormControl component='fieldset' className={classes.deploymentStageSelect}>
                             <Typography className={classes.deploymentTypeText}>
                                 <FormattedMessage
-                                    id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.select.endpoint.type'
+                                    id='MCPServers.Details.Endpoints.AddEditEndpoint.select.endpoint.type'
                                     defaultMessage='Select Endpoint Type'
                                 />
                             </Typography>
@@ -562,24 +736,24 @@ const AddEditAIEndpoint = ({
                                 name='deployment-stage'
                                 value={endpointType}
                                 onChange={handleDeploymentStageChange}
-                                disabled={isEditing || isRestricted(['apim:api_create'], apiObject)}
+                                disabled
                             >
                                 <FormControlLabel
                                     value={CONSTS.DEPLOYMENT_STAGE.production}
-                                    control={<Radio disabled={isEditing} />}
+                                    control={<Radio disabled />}
                                     label={
                                         <FormattedMessage
-                                            id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.production'
+                                            id='MCPServers.Details.Endpoints.AddEditEndpoint.production'
                                             defaultMessage='Production'
                                         />
                                     }
                                 />
                                 <FormControlLabel
                                     value={CONSTS.DEPLOYMENT_STAGE.sandbox}
-                                    control={<Radio disabled={isEditing} />}
+                                    control={<Radio disabled />}
                                     label={
                                         <FormattedMessage
-                                            id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.sandbox'
+                                            id='MCPServers.Details.Endpoints.AddEditEndpoint.sandbox'
                                             defaultMessage='Sandbox'
                                         />
                                     }
@@ -592,7 +766,7 @@ const AddEditAIEndpoint = ({
                             <Grid item xs={12}>
                                 <FormControl fullWidth>
                                     <TextField
-                                        disabled={isEditing || isRestricted(['apim:api_create'], apiObject)}
+                                        disabled
                                         label='Endpoint Name'
                                         id='name'
                                         fullWidth
@@ -619,76 +793,7 @@ const AddEditAIEndpoint = ({
                                         helperText={hasErrors('url', endpointUrl, validating)}
                                         required
                                         InputProps={{
-                                            endAdornment: (
-                                                <InputAdornment position='end'>
-                                                    {statusCode && (
-                                                        <Chip
-                                                            id={state.id + '-endpoint-test-status'}
-                                                            label={statusCode}
-                                                            className={
-                                                                isEndpointValid ?
-                                                                    classes.endpointValidChip : iff(
-                                                                        isErrorCode,
-                                                                        classes.endpointErrorChip,
-                                                                        classes.endpointInvalidChip,
-                                                                    )}
-                                                            variant='outlined'
-                                                        />
-                                                    )}
-                                                    <IconButton
-                                                        className={
-                                                            isEndpointValid ?
-                                                                classes.iconButtonValid : classes.iconButton
-                                                        }
-                                                        aria-label='TestEndpoint'
-                                                        onClick={() => testEndpoint(endpointUrl, apiObject.id)}
-                                                        disabled={
-                                                            (isRestricted(['apim:api_create'], apiObject)) || isUpdating
-                                                        }
-                                                        id='endpoint-test-icon-btn'
-                                                        size='large'>
-                                                        {isUpdating
-                                                            ? <CircularProgress size={20} />
-                                                            : (
-                                                                <Tooltip
-                                                                    placement='top-start'
-                                                                    interactive
-                                                                    title={(
-                                                                        <FormattedMessage
-                                                                            id={'Apis.Details.Endpoints.AIEndpoints.' +
-                                                                                'AddEditAIEndpoint.test.endpoint'}
-                                                                            defaultMessage='Check endpoint status'
-                                                                        />
-                                                                    )}
-                                                                >
-                                                                    <CheckCircleIcon />
-                                                                </Tooltip>
-
-                                                            )}
-                                                    </IconButton>
-                                                    <IconButton
-                                                        className={classes.iconButton}
-                                                        aria-label='Settings'
-                                                        onClick={handleAdvancedConfigOpen}
-                                                        disabled={(isRestricted(['apim:api_create'], apiObject))}
-                                                        id='endpoint-configuration-icon-btn'
-                                                        size='large'>
-                                                        <Tooltip
-                                                            placement='top-start'
-                                                            interactive
-                                                            title={(
-                                                                <FormattedMessage
-                                                                    id={'Apis.Details.Endpoints.AIEndpoints.' +
-                                                                        'AddEditAIEndpoint.endpoint.configuration'}
-                                                                    defaultMessage='Endpoint configurations'
-                                                                />
-                                                            )}
-                                                        >
-                                                            <SettingsIcon />
-                                                        </Tooltip>
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            ),
+                                            endAdornment: renderEndpointUrlAdornment(),
                                         }}
                                     />
                                 </FormControl>
@@ -713,7 +818,7 @@ const AddEditAIEndpoint = ({
                                 {isEndpointSaving ? (
                                     <>
                                         <FormattedMessage
-                                            id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.saving'
+                                            id='MCPServers.Details.Endpoints.AddEditEndpoint.saving'
                                             defaultMessage='Saving'
                                         />
                                         <CircularProgress size={16} classes={{ root: classes.progress }} />
@@ -722,12 +827,12 @@ const AddEditAIEndpoint = ({
                                     <>
                                         {isEditing ? (
                                             <FormattedMessage
-                                                id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.update.btn'
+                                                id='MCPServers.Details.Endpoints.AddEditEndpoint.update.btn'
                                                 defaultMessage='Update'
                                             />
                                         ) : (
                                             <FormattedMessage
-                                                id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.create.btn'
+                                                id='MCPServers.Details.Endpoints.AddEditEndpoint.create.btn'
                                                 defaultMessage='Create'
                                             />
                                         )}
@@ -739,7 +844,7 @@ const AddEditAIEndpoint = ({
                                 to={endpointsUrl}
                             >
                                 <FormattedMessage
-                                    id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.cancel'
+                                    id='MCPServers.Details.Endpoints.AddEditEndpoint.cancel'
                                     defaultMessage='Cancel'
                                 />
                             </Button>
@@ -747,7 +852,7 @@ const AddEditAIEndpoint = ({
                     </Paper>
                 </Grid>
             </Grid>
-            {apiObject.gatewayType !== 'wso2/apk' && (
+            {componentValidator.includes('advancedConfigurations') && (
                 <Dialog
                     open={advancedConfigOpen}
                     aria-labelledby='advanced-configurations-dialog-title'
@@ -756,7 +861,7 @@ const AddEditAIEndpoint = ({
                     <DialogTitle>
                         <Typography className={classes.configDialogHeader}>
                             <FormattedMessage
-                                id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.advanced.configurations'
+                                id='MCPServers.Details.Endpoints.AddEditEndpoint.advanced.configurations'
                                 defaultMessage='Advanced Configurations'
                             />
                         </Typography>
@@ -771,11 +876,47 @@ const AddEditAIEndpoint = ({
                     </DialogContent>
                 </Dialog>
             )}
+            {endpointSecurityTypes && endpointSecurityTypes.length > 0 &&
+                <>
+                    <Dialog
+                        open={endpointSecurityConfigOpen}
+                        aria-labelledby='endpoint-security-dialog-title'
+                        onClose={handleEndpointSecurityConfigClose}
+                    >
+                        <DialogTitle>
+                            <Typography className={classes.configDialogHeader}>
+                                <FormattedMessage
+                                    id='MCPServers.Details.Endpoints.AddEditEndpoint.security.configuration'
+                                    defaultMessage='Endpoint Security Configurations'
+                                />
+                            </Typography>
+                        </DialogTitle>
+                        <DialogContent>
+                            {endpointType === CONSTS.DEPLOYMENT_STAGE.production ? (
+                                <EndpointSecurity
+                                    securityInfo={endpointSecurityConfig}
+                                    saveEndpointSecurityConfig={saveEndpointSecurityConfig}
+                                    closeEndpointSecurityConfig={handleEndpointSecurityConfigClose}
+                                    isProduction
+                                    endpointSecurityTypes={endpointSecurityTypes}
+                                />
+                            ) : (
+                                <EndpointSecurity
+                                    securityInfo={endpointSecurityConfig}
+                                    saveEndpointSecurityConfig={saveEndpointSecurityConfig}
+                                    closeEndpointSecurityConfig={handleEndpointSecurityConfigClose}
+                                    endpointSecurityTypes={endpointSecurityTypes}
+                                />
+                            )}
+                        </DialogContent>
+                    </Dialog>
+                </>
+            }
         </StyledGrid>
     );
 }
 
-AddEditAIEndpoint.propTypes = {
+AddEditEndpoint.propTypes = {
     apiObject: PropTypes.shape({
         id: PropTypes.string,
         additionalProperties: PropTypes.shape({
@@ -792,4 +933,4 @@ AddEditAIEndpoint.propTypes = {
     }).isRequired,
 };
 
-export default AddEditAIEndpoint;
+export default AddEditEndpoint;

@@ -111,10 +111,20 @@ const EndpointCard = ({
     }
 
     const getEndpointUrl = () => {
-        const endpointConfig = JSON.parse(endpoint.endpointConfig) || {};
-        return endpointConfig.production_endpoints?.url ||
-            endpointConfig.sandbox_endpoints?.url ||
-            'No URL configured';
+        let endpointConfig;
+        if (typeof endpoint.endpointConfig === 'string') {
+            endpointConfig = JSON.parse(endpoint.endpointConfig);
+        } else {
+            endpointConfig = endpoint.endpointConfig;
+        }
+
+        if (endpointType === 'PRODUCTION') {
+            return endpointConfig.production_endpoints?.url || 'No URL configured';
+        } else if (endpointType === 'SANDBOX') {
+            return endpointConfig.sandbox_endpoints?.url || 'No URL configured';
+        }
+
+        return 'No URL configured';
     }
 
     const getEndpointName = () => {
@@ -226,7 +236,7 @@ const EndpointCard = ({
                         <IconButton
                             size='small'
                             color='error'
-                            onClick={() => onDelete(endpoint)}
+                            onClick={() => onDelete()}
                             disabled={
                                 isRestricted(
                                     ['apim:api_create'],
@@ -267,6 +277,7 @@ EndpointCard.propTypes = {
     apiObject: PropTypes.shape({
         id: PropTypes.string,
     }).isRequired,
+    endpointType: PropTypes.oneOf(['PRODUCTION', 'SANDBOX']).isRequired,
 };
 
 export default EndpointCard;

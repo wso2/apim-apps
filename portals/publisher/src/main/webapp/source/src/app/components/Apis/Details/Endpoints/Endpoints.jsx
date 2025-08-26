@@ -810,6 +810,7 @@ function Endpoints(props) {
                             <MCPServerEndpoints
                                 apiObject={apiObject}
                                 endpointConfiguration={endpointConfiguration}
+                                history={history}
                             />
                         )}
                         {(api.subtypeConfiguration?.subtype !== 'AIAPI' && !isMCPServer) && (
