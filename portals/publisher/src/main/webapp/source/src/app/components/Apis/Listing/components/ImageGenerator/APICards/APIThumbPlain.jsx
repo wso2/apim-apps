@@ -245,7 +245,7 @@ function APIThumbPlain(props) {
     };
 
     const isAccessRestricted = () => {
-        if (api.isMCPServer()) {
+        if (api.isMCPServer) {
             return isRestricted(
                 ['apim:mcp_server_delete', 'apim:mcp_server_manage', 'apim:mcp_server_import_export'],
                 api

@@ -240,12 +240,12 @@ div.image-load-animation2 {
 /* Standard syntax */
 @keyframes image-load-animation1 {
   0%   {background-color:#efefef; left:0px; top:0px;}
-  70%  {background-color:#e3e3e3; left:70%; top:0px;}
+  55%  {background-color:#e3e3e3; left:55%; top:0px;}
   100% {background-color:#efefef; left:0px; top:0px;}
 }
 @keyframes image-load-animation2 {
   0%   {background-color:#efefef; left:20%; top:0px;}
-  75%  {background-color:#e3e3e3; left:75%; top:0px;}
+  60%  {background-color:#e3e3e3; left:60%; top:0px;}
   100% {background-color:#efefef; left:0px; top:0px;}
 }
 body{

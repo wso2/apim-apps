@@ -158,7 +158,6 @@ export default function CustomIcon(props) {
                 viewBox="0 0 180 180"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                style={{ marginTop: '9px' }}
             >
                 <g clip-path="url(#clip0_1001_3912)">
                     <path d="M18 84.8526L85.8822 16.9704C95.2548 7.59776 110.451 7.59776 119.823 16.9704C129.196 26.3429 129.196 41.5389 119.823 50.9115L68.5581 102.177" stroke={strokeColor} stroke-width="12" stroke-linecap="round" />

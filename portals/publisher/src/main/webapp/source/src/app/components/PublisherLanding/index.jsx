@@ -20,12 +20,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { styled } from '@mui/material/styles';
 import APILanding from 'AppComponents/Apis/Listing/Landing';
 import MCPServerLanding from 'AppComponents/MCPServers/Landing';
-import {
-    useTheme,
-    Box,
-    Grid,
-    Typography,
-} from '@mui/material';
+import { useTheme, Box, Grid, Typography, IconButton } from '@mui/material';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { FormattedMessage } from 'react-intl';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import API from 'AppData/api';
@@ -41,24 +37,98 @@ import TabButton from './TabButton';
 const PREFIX = 'PublisherLanding';
 
 const classes = {
-    root: `${PREFIX}-root`,
-    tableContainer: `${PREFIX}-tableContainer`,
+    summaryCard: `${PREFIX}-summaryCard`,
+    summaryCardContent: `${PREFIX}-summaryCardContent`,
+    summaryIcon: `${PREFIX}-summaryIcon`,
+    summaryCount: `${PREFIX}-summaryCount`,
+    summaryTitle: `${PREFIX}-summaryTitle`,
+    summaryArrow: `${PREFIX}-summaryArrow`,
+    summarySection: `${PREFIX}-summarySection`,
+    summaryContainer: `${PREFIX}-summaryContainer`,
+    summaryItem: `${PREFIX}-summaryItem`,
+    verticalDivider: `${PREFIX}-verticalDivider`,
 };
 
 const Root = styled('div')(({ theme }) => ({
     '&': {
-        padding: theme.spacing(2),
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
+        marginLeft: theme.spacing(8),
+        marginRight: theme.spacing(8),
+        marginTop: theme.spacing(3),
     },
-    [`& .${classes.root}`]: {
-        flexGrow: 1,
-        marginTop: 10,
+    [`& .${classes.summaryCard}`]: {
+        borderRadius: theme.spacing(1),
+        width: '100%',
     },
-    [`& .${classes.tableContainer}`]: {
-        overflowX: 'auto',
-        maxWidth: '100%',
+    [`& .${classes.summaryCardContent}`]: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: theme.spacing(2),
+        position: 'relative',
+        '&:last-child': {
+            paddingBottom: theme.spacing(2),
+        },
+    },
+    [`& .${classes.summaryIcon}`]: {
+        marginRight: theme.spacing(2),
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 48,
+        height: 48,
+        borderRadius: theme.spacing(1),
+        backgroundColor: theme.palette.action.hover,
+    },
+    [`& .${classes.summaryCount}`]: {
+        fontSize: '2rem',
+        fontWeight: 'bold',
+        lineHeight: 1,
+    },
+    [`& .${classes.summaryTitle}`]: {
+        color: theme.palette.text.secondary,
+        fontSize: '0.875rem',
+        marginTop: theme.spacing(0.5),
+    },
+    [`& .${classes.summaryArrow}`]: {
+        color: theme.palette.action.active,
+        backgroundColor: theme.palette.background.paper,
+        border: `1px solid ${theme.palette.divider}`,
+        marginLeft: theme.spacing(2),
+        width: 28,
+        height: 28,
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: theme.palette.action.hover,
+        },
+        '& .MuiSvgIcon-root': {
+            fontSize: '0.875rem',
+        },
+        alignSelf: 'end',
+    },
+    [`& .${classes.summarySection}`]: {
+        marginBottom: theme.spacing(4),
+    },
+    [`& .${classes.summaryContainer}`]: {
+        borderRadius: theme.spacing(1),
+        border: `1px solid ${theme.palette.divider}`,
+        backgroundColor: theme.palette.background.paper,
+        padding: theme.spacing(2),
+        display: 'flex',
+    },
+    [`& .${classes.summaryItem}`]: {
+        display: 'flex',
+        alignItems: 'center',
+        flex: 1,
+        padding: theme.spacing(1, 2),
+        position: 'relative',
+    },
+    [`& .${classes.verticalDivider}`]: {
+        width: '1px',
+        backgroundColor: theme.palette.divider,
+        margin: theme.spacing(1, 0),
+        minHeight: '60px',
     },
 }));
 
@@ -84,11 +154,29 @@ const PublisherLanding = () => {
     // Fixed page size for displaying first 5 entries
     const pageSize = 5;
 
+    // Summary Item Component
+    const SummaryItem = ({ icon, title, count, onClick }) => (
+        <Box className={classes.summaryItem}>
+            <Box className={classes.summaryIcon}>
+                <CustomIcon width={24} height={24} icon={icon} strokeColor={theme.palette.primary.main} />
+            </Box>
+            <Box>
+                <Typography variant='h4' className={classes.summaryCount}>
+                    {count}
+                </Typography>
+                <Typography className={classes.summaryTitle}>{title}</Typography>
+            </Box>
+            <IconButton className={classes.summaryArrow} size='small' onClick={onClick}>
+                <ArrowForwardIosIcon />
+            </IconButton>
+        </Box>
+    );
+
     // Fetch APIs data
     const fetchApis = useCallback(async () => {
         try {
             const response = await API.all({ limit: pageSize, offset: 0 });
-            
+
             if (response.body) {
                 setApis(response.body.list || []);
                 setApisTotalCount(response.body.pagination?.total || response.body.count || 0);
@@ -103,7 +191,7 @@ const PublisherLanding = () => {
     const fetchApiProducts = useCallback(async () => {
         try {
             const response = await APIProduct.all({ limit: pageSize, offset: 0 });
-            
+
             if (response.body) {
                 setApiProducts(response.body.list || []);
                 setApiProductsTotalCount(response.body.pagination?.total || response.body.count || 0);
@@ -121,10 +209,10 @@ const PublisherLanding = () => {
             setMcpServersTotalCount(0);
             return;
         }
-        
+
         try {
             const response = await MCPServer.all({ limit: pageSize, offset: 0 });
-            
+
             if (response.body) {
                 setMcpServers(response.body.list || []);
                 setMcpServersTotalCount(response.body.pagination?.total || response.body.count || 0);
@@ -164,17 +252,17 @@ const PublisherLanding = () => {
     // Delete handlers
     const handleApiDelete = useCallback((deletedId) => {
         // Remove the deleted API from the current list
-        setApis(prevApis => prevApis.filter(api => api.id !== deletedId));
+        setApis((prevApis) => prevApis.filter((api) => api.id !== deletedId));
     }, []);
 
     const handleApiProductDelete = useCallback((deletedId) => {
         // Remove the deleted API Product from the current list
-        setApiProducts(prevProducts => prevProducts.filter(product => product.id !== deletedId));
+        setApiProducts((prevProducts) => prevProducts.filter((product) => product.id !== deletedId));
     }, []);
 
     const handleMcpServerDelete = useCallback((deletedId) => {
         // Remove the deleted MCP Server from the current list
-        setMcpServers(prevServers => prevServers.filter(server => server.id !== deletedId));
+        setMcpServers((prevServers) => prevServers.filter((server) => server.id !== deletedId));
     }, []);
 
     // Check if we have any data to display
@@ -227,15 +315,15 @@ const PublisherLanding = () => {
 
     return (
         <Root>
-            <Box display='flex' flexDirection='column' flexGrow={1} pt={3}>
-                <Grid container spacing={2} mb={3}>
+            {!hasData && (
+                <Grid container spacing={2} padding={2}>
                     <Grid item xs={12} alignItems='center' display='flex' flexDirection='column'>
                         <Typography variant='h4' component='h1'>
                             <FormattedMessage
                                 id='Publisher.Landing.title'
                                 defaultMessage='Welcome to the {portal}!'
                                 values={{
-                                    portal: <span style={{ fontWeight: '600' }}>Publisher Portal</span>
+                                    portal: <span style={{ fontWeight: '600' }}>Publisher Portal</span>,
                                 }}
                             />
                         </Typography>
@@ -249,108 +337,229 @@ const PublisherLanding = () => {
                         )}
                     </Grid>
                 </Grid>
+            )}
 
-                {hasData ? (
-                    // Show dynamic tables if we have data
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <ApisSection 
-                                data={apis} 
-                                noDataIcon={noDataIcon}
-                                totalCount={apisTotalCount}
-                                onDelete={handleApiDelete}
+            {hasData ? (
+                // Show dynamic tables if we have data
+                <Grid container padding={2}>
+                    <Grid item xs={12} className={classes.summarySection}>
+                        <Box className={classes.summaryContainer}>
+                            <SummaryItem
+                                icon='apis'
+                                title={<FormattedMessage id='Publisher.Landing.summary.apis' defaultMessage='APIs' />}
+                                count={apisTotalCount}
+                                onClick={() => {}}
                             />
+                            {isMCPSupportEnabled > 0 && <Box className={classes.verticalDivider} />}
                             {isMCPSupportEnabled && (
-                                <McpServersSection 
-                                    data={mcpServers} 
-                                    totalCount={mcpServersTotalCount}
-                                    onDelete={handleMcpServerDelete}
-                                />
+                                <>
+                                    <SummaryItem
+                                        icon='mcp-servers'
+                                        title={
+                                            <FormattedMessage
+                                                id='Publisher.Landing.summary.mcpServers'
+                                                defaultMessage='MCP Servers'
+                                            />
+                                        }
+                                        count={mcpServersTotalCount}
+                                        onClick={() => {}}
+                                    />
+                                    <Box className={classes.verticalDivider} />
+                                </>
                             )}
-                            <APIProductSection 
-                                data={apiProducts} 
-                                totalCount={apiProductsTotalCount}
-                                onDelete={handleApiProductDelete}
+                            <SummaryItem
+                                icon='api-product'
+                                title={
+                                    <FormattedMessage
+                                        id='Publisher.Landing.summary.apiProducts'
+                                        defaultMessage='API Products'
+                                    />
+                                }
+                                count={apiProductsTotalCount}
+                                onClick={() => {}}
                             />
-                        </Grid>
+                        </Box>
                     </Grid>
-                ) : (
-                    // Show static creation UI if no data
-                    <>
-                        {isMCPSupportEnabled ? (
-                            <>
-                                <Grid container mb={3} pl={13} pr={16}>
-                                    <Grid container spacing={2}>
-                                        {creationTypes.map((type) => {
-                                            const isActive = selectedType === type.value.toLowerCase() ||
-                                                (type.value === 'API' && selectedType === 'api') ||
-                                                (type.value === 'MCP Server' && selectedType === 'mcp-server');
-                                            return (
-                                                <Grid item xs={12} sm={6} key={type.value}>
-                                                    <TabButton
-                                                        startIcon={
-                                                            <CustomIcon
-                                                                width={32}
-                                                                height={32}
-                                                                icon={type.icon}
-                                                                strokeColor={isActive ?
-                                                                    theme.palette.getContrastText(
-                                                                        theme.custom.globalNavBar.active
-                                                                    ) :
-                                                                    theme.palette.text.primary}
-                                                            />
-                                                        }
-                                                        fullWidth
-                                                        disableRipple
-                                                        variant='outlined'
-                                                        onClick={() => setSelectedType(
-                                                            type.value === 'API' ? 'api' : 'mcp-server'
-                                                        )}
-                                                        data-testid={`create-${type.value.toLowerCase()}-button`}
-                                                        isActive={!!isActive}
-                                                    >
-                                                        <Box
-                                                            display='flex'
-                                                            flexDirection='column'
-                                                            alignItems='flex-start'
-                                                            pl={2}
-                                                        >
-                                                            <Typography
-                                                                variant='h6'
-                                                                color='text.primary'
-                                                            >
-                                                                {type.name}
-                                                            </Typography>
-                                                            <Typography
-                                                                variant='body1'
-                                                                color='text.secondary'
-                                                            >
-                                                                {type.description}
-                                                            </Typography>
-                                                        </Box>
-                                                    </TabButton>
-                                                </Grid>
-                                            );
-                                        })}
-                                    </Grid>
-                                </Grid>
+
+                    {/* Data Tables */}
+                    <Grid item xs={12}>
+                        {(() => {
+                            // Determine the order of sections based on data availability
+                            const sections = [];
+
+                            // Default order: APIs, MCPs, Products
+                            // But adjust based on availability:
+                            // - If MCPs empty while products not empty, MCP goes to bottom
+                            // - If APIs empty while MCPs not empty, MCP comes to top
+
+                            const hasApis = apisTotalCount > 0;
+                            const hasMcps = mcpServersTotalCount > 0 && isMCPSupportEnabled;
+                            const hasProducts = apiProductsTotalCount > 0;
+
+                            if (!hasApis && hasMcps) {
+                                // APIs empty, MCPs not empty - MCP comes to top
+                                sections.push(
+                                    <McpServersSection
+                                        key='mcp-servers'
+                                        data={mcpServers}
+                                        totalCount={mcpServersTotalCount}
+                                        onDelete={handleMcpServerDelete}
+                                    />
+                                );
+                                sections.push(
+                                    <ApisSection
+                                        key='apis'
+                                        data={apis}
+                                        noDataIcon={noDataIcon}
+                                        totalCount={apisTotalCount}
+                                        onDelete={handleApiDelete}
+                                    />
+                                );
+                                sections.push(
+                                    <APIProductSection
+                                        key='api-products'
+                                        data={apiProducts}
+                                        totalCount={apiProductsTotalCount}
+                                        onDelete={handleApiProductDelete}
+                                    />
+                                );
+                            } else if (!hasMcps && hasProducts) {
+                                // MCPs empty, products not empty - MCP goes to bottom
+                                sections.push(
+                                    <ApisSection
+                                        key='apis'
+                                        data={apis}
+                                        noDataIcon={noDataIcon}
+                                        totalCount={apisTotalCount}
+                                        onDelete={handleApiDelete}
+                                    />
+                                );
+                                sections.push(
+                                    <APIProductSection
+                                        key='api-products'
+                                        data={apiProducts}
+                                        totalCount={apiProductsTotalCount}
+                                        onDelete={handleApiProductDelete}
+                                    />
+                                );
+                                if (isMCPSupportEnabled) {
+                                    sections.push(
+                                        <McpServersSection
+                                            key='mcp-servers'
+                                            data={mcpServers}
+                                            totalCount={mcpServersTotalCount}
+                                            onDelete={handleMcpServerDelete}
+                                        />
+                                    );
+                                }
+                            } else {
+                                // Default order: APIs, MCPs, Products
+                                sections.push(
+                                    <ApisSection
+                                        key='apis'
+                                        data={apis}
+                                        noDataIcon={noDataIcon}
+                                        totalCount={apisTotalCount}
+                                        onDelete={handleApiDelete}
+                                    />
+                                );
+                                if (isMCPSupportEnabled) {
+                                    sections.push(
+                                        <McpServersSection
+                                            key='mcp-servers'
+                                            data={mcpServers}
+                                            totalCount={mcpServersTotalCount}
+                                            onDelete={handleMcpServerDelete}
+                                        />
+                                    );
+                                }
+                                sections.push(
+                                    <APIProductSection
+                                        key='api-products'
+                                        data={apiProducts}
+                                        totalCount={apiProductsTotalCount}
+                                        onDelete={handleApiProductDelete}
+                                    />
+                                );
+                            }
+
+                            return sections;
+                        })()}
+                    </Grid>
+                </Grid>
+            ) : (
+                // Show static creation UI if no data
+                <>
+                    {isMCPSupportEnabled ? (
+                        <>
+                            <Grid container mb={3} pl={13} pr={16}>
                                 <Grid container spacing={2}>
-                                    <Grid item xs={12}>
-                                        {selectedType === 'api' && <APILanding />}
-                                        {selectedType === 'mcp-server' && <MCPServerLanding />}
-                                    </Grid>
-                                </Grid>
-                            </>
-                        ) : (
-                            <Grid container spacing={2}>
-                                <Grid item xs={12}>
-                                    <APILanding />
+                                    {creationTypes.map((type) => {
+                                        const isActive =
+                                            selectedType === type.value.toLowerCase() ||
+                                            (type.value === 'API' && selectedType === 'api') ||
+                                            (type.value === 'MCP Server' && selectedType === 'mcp-server');
+                                        return (
+                                            <Grid item xs={12} sm={6} key={type.value}>
+                                                <TabButton
+                                                    startIcon={
+                                                        <CustomIcon
+                                                            width={32}
+                                                            height={32}
+                                                            icon={type.icon}
+                                                            strokeColor={
+                                                                isActive
+                                                                    ? theme.palette.getContrastText(
+                                                                        theme.custom.globalNavBar.active
+                                                                    )
+                                                                    : theme.palette.text.primary
+                                                            }
+                                                        />
+                                                    }
+                                                    fullWidth
+                                                    disableRipple
+                                                    variant='outlined'
+                                                    onClick={() =>
+                                                        setSelectedType(type.value === 'API' ? 'api' : 'mcp-server')
+                                                    }
+                                                    data-testid={`create-${type.value.toLowerCase()}-button`}
+                                                    isActive={!!isActive}
+                                                >
+                                                    <Box
+                                                        display='flex'
+                                                        flexDirection='column'
+                                                        alignItems='flex-start'
+                                                        pl={2}
+                                                    >
+                                                        <Typography variant='h6' color='text.primary'>
+                                                            {type.name}
+                                                        </Typography>
+                                                        <Typography variant='body1' color='text.secondary'>
+                                                            {type.description}
+                                                        </Typography>
+                                                    </Box>
+                                                </TabButton>
+                                            </Grid>
+                                        );
+                                    })}
                                 </Grid>
                             </Grid>
-                        )}
-                    </>
-                )}
-            </Box>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    {selectedType === 'api' && <APILanding />}
+                                    {selectedType === 'mcp-server' && <MCPServerLanding />}
+                                </Grid>
+                            </Grid>
+                        </>
+                    ) : (
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <APILanding />
+                            </Grid>
+                        </Grid>
+                    )}
+                </>
+            )}
         </Root>
     );
 };

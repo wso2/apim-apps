@@ -21,7 +21,6 @@ import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ButtonBase from '@mui/material/ButtonBase';
-import { Link } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 
@@ -33,23 +32,13 @@ import LetterGenerator from './LetterGenerator';
 const PREFIX = 'BaseThumbnail';
 
 const classes = {
-    suppressLinkStyles: `${PREFIX}-suppressLinkStyles`,
     thumbButton: `${PREFIX}-thumbButton`,
     thumbBackdrop: `${PREFIX}-thumbBackdrop`,
     thumb: `${PREFIX}-thumb`,
-    media: `${PREFIX}-media`
+    media: `${PREFIX}-media`,
 };
 
-const Root = styled('div')((
-    {
-        theme
-    }
-) => ({
-    [`& .${classes.suppressLinkStyles}`]: {
-        textDecoration: 'none',
-        color: theme.palette.text.disabled,
-    },
-
+const Root = styled('div')(({ theme }) => ({
     [`& .${classes.thumbButton}`]: {
         position: 'absolute',
         left: 0,
@@ -85,16 +74,20 @@ const Root = styled('div')((
     },
 
     [`& .${classes.media}`]: {
+        borderRadius: 5,
         // ⚠️ object-fit is not supported by IE11.
         objectFit: 'cover',
-    }
+    },
 }));
 
 const windowURL = window.URL || window.webkitURL;
 
 const BaseThumbnail = (props) => {
     const {
-        api, width, height, thumbnail: thumbnailPop,
+        api,
+        width,
+        height,
+        thumbnail: thumbnailPop,
         selectedIcon: selectedIconProp,
         color: colorProp,
         backgroundIndex: backgroundIndexProp,
@@ -103,17 +96,10 @@ const BaseThumbnail = (props) => {
         onClick,
         imageUpdate,
     } = props;
-    const {
-        apiType, id, type,
-    } = api;
+    const { apiType, id, type } = api;
 
     const [iconJson, setIconJson] = useState({});
-    const {
-        key,
-        color,
-        backgroundIndex,
-        category,
-    } = iconJson;
+    const { key, color, backgroundIndex, category } = iconJson;
     const [thumbnail, setThumbnail] = useState(null);
     const [imageLoaded, setImageLoaded] = useState(false);
     const theme = useTheme();
@@ -135,32 +121,34 @@ const BaseThumbnail = (props) => {
      */
     useEffect(() => {
         if (type !== 'DOC') {
-            if ((api.hasThumbnail !== null && api.hasThumbnail)
-                || (apiType === Api.CONSTS.APIProduct)) {
-                const promisedThumbnail = apiType === Api.CONSTS.APIProduct
-                    ? new APIProduct().getAPIProductThumbnail(id)
-                    : new Api().getAPIThumbnail(id);
+            if ((api.hasThumbnail !== null && api.hasThumbnail) || apiType === Api.CONSTS.APIProduct) {
+                const promisedThumbnail =
+                    apiType === Api.CONSTS.APIProduct
+                        ? new APIProduct().getAPIProductThumbnail(id)
+                        : new Api().getAPIThumbnail(id);
 
-                promisedThumbnail.then((response) => {
-                    if (response && response.data) {
-                        if (response.headers['content-type'] === 'application/json') {
+                promisedThumbnail
+                    .then((response) => {
+                        if (response && response.data) {
+                            if (response.headers['content-type'] === 'application/json') {
+                                setThumbnail(null);
+                                setIconJson(response.body);
+                            } else if (response.headers['content-type'] === 'image/svg+xml') {
+                                const blob = new Blob([response.data], { type: 'image/svg+xml' });
+                                const url = windowURL.createObjectURL(blob);
+                                setThumbnail(url);
+                            } else if (response && response.data.size > 0) {
+                                const url = windowURL.createObjectURL(response.data);
+                                setThumbnail(url);
+                            }
+                        } else if (response && response.data === '') {
                             setThumbnail(null);
-                            setIconJson(response.body);
-                        } else if (response.headers['content-type'] === 'image/svg+xml') {
-                            const blob = new Blob([response.data], { type: 'image/svg+xml' });
-                            const url = windowURL.createObjectURL(blob);
-                            setThumbnail(url);
-                        } else if (response && response.data.size > 0) {
-                            const url = windowURL.createObjectURL(response.data);
-                            setThumbnail(url);
+                            setIconJson({ key: null });
                         }
-                    } else if (response && response.data === '') {
-                        setThumbnail(null);
-                        setIconJson({ key: null });
-                    }
-                }).finally(() => {
-                    setImageLoaded(true);
-                });
+                    })
+                    .finally(() => {
+                        setImageLoaded(true);
+                    });
             } else {
                 setThumbnail(null);
                 setIconJson({ key: null });
@@ -178,25 +166,7 @@ const BaseThumbnail = (props) => {
             </Root>
         );
     }
-    let overviewPath = '';
-    if (apiType) {
-        if (apiType === Api.CONSTS.APIProduct) {
-            overviewPath = `/api-products/${api.id}/overview`;
-        } else if (type === 'MCP') { // change to constant from MCPServer.js
-            overviewPath = `/mcp-servers/${api.id}/overview`;
-        } else {
-            overviewPath = `/apis/${api.id}/overview`;
-        }
-    } else {
-        overviewPath = `/apis/${api.apiUUID}/documents/${api.id}/details`;
-    }
-    let view = (
-        <LetterGenerator
-            width={width}
-            height={height}
-            artifact={api}
-        />
-    );
+    let view = <LetterGenerator width={width} height={height} artifact={api} />;
     // If configured the thumbnail variant as `image` or migrated from old thumbnail
     if (variant === 'image' || key) {
         view = (
@@ -225,17 +195,17 @@ const BaseThumbnail = (props) => {
                     aria-label='edit api thumbnail'
                     data-testid='edit-api-thumbnail-button'
                 >
-                    {thumbnail
-                        ? (
-                            <img
-                                height={height}
-                                width={width}
-                                src={thumbnail}
-                                alt='API Thumbnail'
-                                className={classes.media}
-                            />
-                        )
-                        : view}
+                    {thumbnail ? (
+                        <img
+                            height={height}
+                            width={width}
+                            src={thumbnail}
+                            alt='API Thumbnail'
+                            className={classes.media}
+                        />
+                    ) : (
+                        view
+                    )}
                     <span className={classes.thumbBackdrop} />
                     <span className={classes.thumbButton}>
                         <Typography component='span' variant='subtitle1' color='inherit'>
@@ -244,26 +214,27 @@ const BaseThumbnail = (props) => {
                     </span>
                 </ButtonBase>
             ) : (
-                <Link className={classes.suppressLinkStyles} to={overviewPath} aria-label={api.name + ' Thumbnail'}>
-                    {thumbnail
-                        ? (
-                            <img
-                                height={height}
-                                width={width}
-                                src={thumbnail}
-                                alt='API Thumbnail'
-                                className={classes.media}
-                            />
-                        )
-                        : view}
-                </Link>
+                <>
+                    {thumbnail ? (
+                        <img
+                            height={height}
+                            width={width}
+                            src={thumbnail}
+                            alt='API Thumbnail'
+                            className={classes.media}
+                        />
+                    ) : (
+                        view
+                    )}
+                </>
             )}
         </Root>
     );
 };
 BaseThumbnail.defaultProps = {
-    height: 190,
-    width: 250,
+    height: 100,
+    width: 100,
+    imageUpdate: 0,
     isEditable: false,
 };
 BaseThumbnail.propTypes = {
@@ -271,6 +242,6 @@ BaseThumbnail.propTypes = {
     height: PropTypes.number,
     width: PropTypes.number,
     isEditable: PropTypes.bool,
-    imageUpdate: PropTypes.number.isRequired,
+    imageUpdate: PropTypes.number,
 };
 export default BaseThumbnail;

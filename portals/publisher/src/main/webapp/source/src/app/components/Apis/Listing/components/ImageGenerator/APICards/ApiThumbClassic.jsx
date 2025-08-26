@@ -31,62 +31,49 @@ import CircularProgress from '@mui/material/CircularProgress';
 import API from 'AppData/api';
 import Popover from '@mui/material/Popover';
 import Tooltip from '@mui/material/Tooltip';
-import DeleteApiButton from 'AppComponents/Apis/Details/components/DeleteApiButton';
 import Configurations from 'Config';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import EmailIcon from '@mui/icons-material/Email';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { Box, Divider } from '@mui/material';
 
 import { green } from '@mui/material/colors';
+import DeleteButton from './DeleteButton';
 import BaseThumbnail from '../BaseThumbnail';
+import { formatUpdatedTime } from './utils';
 
 const PREFIX = 'ApiThumbClassic';
 
 const classes = {
     card: `${PREFIX}-card`,
-    providerText: `${PREFIX}-providerText`,
     apiDetails: `${PREFIX}-apiDetails`,
     apiActions: `${PREFIX}-apiActions`,
     deleteProgress: `${PREFIX}-deleteProgress`,
     thumbHeader: `${PREFIX}-thumbHeader`,
-    imageWrapper: `${PREFIX}-imageWrapper`,
-    thumbContent: `${PREFIX}-thumbContent`,
-    thumbLeft: `${PREFIX}-thumbLeft`,
-    thumbRight: `${PREFIX}-thumbRight`,
-    thumbInfo: `${PREFIX}-thumbInfo`,
     textTruncate: `${PREFIX}-textTruncate`,
-    truncateProvider: `${PREFIX}-truncateProvider`,
-    imageOverlap: `${PREFIX}-imageOverlap`,
     row: `${PREFIX}-row`,
     textWrapper: `${PREFIX}-textWrapper`,
-    thumbRightBy: `${PREFIX}-thumbRightBy`,
-    thumbRightByLabel: `${PREFIX}-thumbRightByLabel`,
-    ribbon: `${PREFIX}-ribbon`
+    chip: `${PREFIX}-chip`,
+    ribbon: `${PREFIX}-ribbon`,
+    suppressLinkStyles: `${PREFIX}-suppressLinkStyles`,
 };
 
-const StyledCard = styled(Card)((
-    {
-        theme
-    }
-) => ({
+const StyledCard = styled(Card)(({ theme, useFlexibleWidth }) => ({
     [`&.${classes.card}`]: {
-        margin: theme.spacing(3 / 2),
-        maxWidth: theme.custom.thumbnail.width,
+        ...(useFlexibleWidth ? {} : { width: '300px', margin: theme.spacing(1) }),
+        borderRadius: theme.spacing(1),
         transition: 'box-shadow 0.3s ease-in-out',
     },
 
-    [`& .${classes.providerText}`]: {
-        textTransform: 'capitalize',
+    [`& .${classes.apiDetails}`]: {
+        padding: theme.spacing(1.5),
+        paddingBottom: 0,
+        gap: theme.spacing(2),
     },
 
-    [`& .${classes.apiDetails}`]: { 
-        padding: theme.spacing(1.5), 
-        paddingBottom: 0 
-    },
-
-    [`& .${classes.apiActions}`]: { 
+    [`& .${classes.apiActions}`]: {
         justifyContent: 'space-between',
-        padding: `0px 2px ${theme.spacing(1)} 12px`,
-        height: 48
+        padding: `8px 12px ${theme.spacing(1)} 12px`,
     },
 
     [`& .${classes.deleteProgress}`]: {
@@ -96,57 +83,16 @@ const StyledCard = styled(Card)((
     },
 
     [`& .${classes.thumbHeader}`]: {
-        width: '90%',
-        whiteSpace: 'nowrap',
-        color: theme.palette.text.secondary,
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
+        color: theme.palette.text.primary,
         cursor: 'pointer',
-        margin: 0,
-    },
-
-    [`& .${classes.imageWrapper}`]: {
-        color: theme.palette.text.secondary,
-        backgroundColor: theme.palette.background.paper,
-        width: theme.custom.thumbnail.width + theme.spacing(1),
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-
-    [`& .${classes.thumbContent}`]: {
-        width: theme.custom.thumbnail.width - theme.spacing(1),
-        backgroundColor: theme.palette.background.paper,
-        padding: theme.spacing(1),
-    },
-
-    [`& .${classes.thumbLeft}`]: {
-        width: `calc(50% - 4px)`,
-    },
-
-    [`& .${classes.thumbRight}`]: {
-        width: `calc(50% - 4px)`,
+        fontWeight: 600,
+        lineHeight: '1.3',
     },
 
     [`& .${classes.textTruncate}`]: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-    },
-
-    [`& .${classes.truncateProvider}`]: {
-        display: 'inline-block',
-        maxWidth: '40%',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-        verticalAlign: 'bottom',
-    },
-
-    [`& .${classes.imageOverlap}`]: {
-        position: 'absolute',
-        bottom: 1,
-        backgroundColor: theme.custom.thumbnail.contentBackgroundColor,
     },
 
     [`& .${classes.row}`]: {
@@ -159,15 +105,17 @@ const StyledCard = styled(Card)((
         textDecoration: 'none',
     },
 
-    [`& .${classes.thumbRightBy}`]: {
-        'margin-right': '5px',
-        height: 18,
-        borderRadius: 8,
-    },
-
-    [`& .${classes.thumbRightByLabel}`]: {
-        paddingLeft: 5,
-        paddingRight: 5,
+    [`& .${classes.chip}`]: {
+        height: 20,
+        borderRadius: 4,
+        backgroundColor: '#eef3f9ff',
+        overflow: 'hidden',
+        '& .MuiChip-icon': {
+            fontSize: '12px',
+            width: '12px',
+            height: '12px',
+            marginLeft: '4px',
+        },
     },
 
     [`& .${classes.ribbon}`]: {
@@ -184,15 +132,109 @@ const StyledCard = styled(Card)((
         textTransform: 'uppercase',
     },
 
-    [`& .${classes.popover}`]: {
-        pointerEvents: 'none',
-    },
-
-    [`& .${classes.paper}`]: {
-        padding: theme.spacing(1),
-        maxWidth: '300px',
+    [`& .${classes.suppressLinkStyles}`]: {
+        textDecoration: 'none',
+        color: 'inherit',
     },
 }));
+
+// Get type chip label for APIs
+const getTypeChipLabel = (apiType) => {
+    const typeMapping = {
+        HTTP: 'REST',
+        WS: 'WS',
+        SOAPTOREST: 'SOAPTOREST',
+        SOAP: 'SOAP',
+        GRAPHQL: 'GraphQL',
+        WEBSUB: 'WebSub',
+        SSE: 'SSE',
+        WEBHOOK: 'Webhook',
+        ASYNC: 'ASYNC',
+    };
+    return typeMapping[apiType?.toUpperCase()] || apiType;
+};
+
+// Get icon component for API type
+const getTypeIcon = (apiType) => {
+    const iconProps = {
+        style: {
+            width: '12px',
+            height: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+    };
+
+    switch (apiType?.toUpperCase()) {
+        case 'HTTP':
+            return (
+                <img
+                    src={Configurations.app.context + '/site/public/images/custom-icons/rest.svg'}
+                    alt='REST'
+                    {...iconProps}
+                />
+            );
+        case 'SOAP':
+            return (
+                <img
+                    src={Configurations.app.context + '/site/public/images/custom-icons/soap.svg'}
+                    alt='SOAP'
+                    {...iconProps}
+                />
+            );
+        case 'WS':
+            return (
+                <img
+                    src={Configurations.app.context + '/site/public/images/custom-icons/ws.svg'}
+                    alt='WebSocket'
+                    {...iconProps}
+                />
+            );
+        case 'SSE':
+            return (
+                <img
+                    src={Configurations.app.context + '/site/public/images/custom-icons/sse.svg'}
+                    alt='SSE'
+                    {...iconProps}
+                />
+            );
+        case 'WEBHOOK':
+            return (
+                <img
+                    src={Configurations.app.context + '/site/public/images/custom-icons/webhook.svg'}
+                    alt='Webhook'
+                    {...iconProps}
+                />
+            );
+        case 'WEBSUB':
+            return (
+                <img
+                    src={Configurations.app.context + '/site/public/images/custom-icons/websub.svg'}
+                    alt='WebSub'
+                    {...iconProps}
+                />
+            );
+        case 'GRAPHQL':
+            return (
+                <img
+                    src={Configurations.app.context + '/site/public/images/custom-icons/graphql.svg'}
+                    alt='GraphQL'
+                    {...iconProps}
+                />
+            );
+        case 'ASYNC':
+            return (
+                <img
+                    src={Configurations.app.context + '/site/public/images/custom-icons/async.svg'}
+                    alt='Async'
+                    {...iconProps}
+                />
+            );
+        default:
+            return null; // No icon for unknown types
+    }
+};
 
 /**
  *
@@ -208,12 +250,12 @@ class APIThumb extends Component {
      */
     constructor(props) {
         super(props);
-        this.state = { 
-            isHover: false, 
-            loading: false, 
-            businessAnchorEl: null, 
-            businessOpenPopover: false, 
-            technicalAnchorEl: null, 
+        this.state = {
+            isHover: false,
+            loading: false,
+            businessAnchorEl: null,
+            businessOpenPopover: false,
+            technicalAnchorEl: null,
             technicalOpenPopover: false,
         };
         this.toggleMouseOver = this.toggleMouseOver.bind(this);
@@ -299,265 +341,353 @@ class APIThumb extends Component {
                 elevation={isHover ? 4 : 1}
                 className={classes.card}
                 data-testid={'card-' + api.name + api.version}
+                useFlexibleWidth={this.props.useFlexibleWidth}
+                style={{ display: 'flex', flexDirection: 'column' }}
             >
                 {api.advertiseOnly && (
-                    <div className={classes.ribbon} data-testid='third-party-api-card-label'>third party</div>
+                    <div className={classes.ribbon} data-testid='third-party-api-card-label'>
+                        third party
+                    </div>
                 )}
-                <div style={{ position: "relative" }}>
-                    <CardMedia
-                        src='None'
-                        component={BaseThumbnail}
-                        height={theme.custom.thumbnail.height}
-                        width={theme.custom.thumbnail.width}
-                        title='Thumbnail'
-                        api={api}
-                    />
-                    {api.monetizedInfo && tileDisplayInfo.showMonetizedState && 
-                        <div className={classes.thumbLeft} style={{ position: "absolute", bottom: 0 }}>
-                            <MonetizationOnIcon fontSize='medium' style={{ color: '#FFD700', paddingLeft: '2px' }} />
-                        </div>
-                    }
-                </div>
-                <CardContent className={classes.apiDetails}>
-                    <div className={classes.textWrapper}>
-                        <Link to={overviewPath}>
-                            <Typography
-                                gutterBottom variant='h4'
-                                className={classes.thumbHeader}
-                                title={api.name}
-                                id={api.name}>
-                                {api.displayName || api.name}
-                            </Typography>
-                        </Link>
-                    </div>
-                    <div className={classes.row}>
-                        <div className={classes.thumbLeft}>
-                            <Typography variant='caption' gutterBottom align='left'>
-                                <FormattedMessage id='by' defaultMessage='By' />
-                                &nbsp;
-                                <Tooltip title={api.provider} arrow>
-                                    <span className={classes.truncateProvider}>
-                                        {api.provider}
-                                    </span>
-                                </Tooltip>
-                                {!isAPIProduct && !isMCPServer && (
-                                    <>
-                                        &nbsp;
-                                        <FormattedMessage id='on' defaultMessage='on' />
-                                        &nbsp;
-                                        {api.gatewayVendor === 'wso2' || api.gatewayVendor === 'solace'
-                                            ? api.gatewayVendor.toUpperCase()
-                                            : api.gatewayType}
-                                    </>
-                                )}
-                            </Typography>
-                        </div>
-                    </div>
-                    <div className={classes.row}>
-                        <div className={classes.thumbLeft}>
-                            <Typography variant='subtitle1' className={classes.textTruncate}>
-                                {api.version}
-                            </Typography>
-                            <Typography variant='caption' gutterBottom align='left'>
-                                <FormattedMessage defaultMessage='Version' id='Apis.Listing.ApiThumb.version' />
-                            </Typography>
-                        </div>
-
-                        <div className={classes.thumbRight}>
-                            <Typography variant='subtitle1' className={classes.textTruncate}>
-                                {api.context}
-                            </Typography>
-                            <Typography variant='caption' gutterBottom className={classes.context}>
-                                {api.type === 'WS' ? (
-                                    <FormattedMessage
-                                        defaultMessage='Channel'
-                                        id='Apis.Listing.ApiThumb.channel'
+                <Link to={overviewPath} className={classes.suppressLinkStyles}>
+                    <CardContent className={classes.apiDetails} style={{ display: 'flex', flex: 1, padding: '12px' }}>
+                        <div
+                            style={{
+                                position: 'relative',
+                                width: theme.custom.thumbnail.width,
+                                height: theme.custom.thumbnail.height,
+                            }}
+                        >
+                            <CardMedia
+                                src='None'
+                                component={BaseThumbnail}
+                                height={theme.custom.thumbnail.height}
+                                width={theme.custom.thumbnail.width}
+                                title='Thumbnail'
+                                api={api}
+                            />
+                            {api.monetizedInfo && tileDisplayInfo.showMonetizedState && (
+                                <div style={{ position: 'absolute', bottom: 0 }}>
+                                    <MonetizationOnIcon
+                                        fontSize='medium'
+                                        style={{ color: '#FFD700', paddingLeft: '2px' }}
                                     />
-                                ) : (
-                                    <FormattedMessage
-                                        defaultMessage='Context'
-                                        id='Apis.Listing.ApiThumb.context'
-                                    />
-                                )}
-                            </Typography>
+                                </div>
+                            )}
                         </div>
-                    </div>
-                    {(tileDisplayInfo.showBusinessDetails || tileDisplayInfo.showTechnicalDetails) && (
-                        <>
-                            <hr />
-                            <div className={classes.row}>
-                                <Typography variant='body2' gutterBottom align='left'>
-                                    <FormattedMessage
-                                        defaultMessage='Owners'
-                                        id='Apis.Listing.ApiThumb.owners'
-                                    />
+                        <div style={{ flex: 1, overflow: 'hidden' }}>
+                            <div className={classes.textWrapper}>
+                                <Typography
+                                    variant='h6'
+                                    className={classes.thumbHeader}
+                                    title={api.name}
+                                    id={api.name}
+                                    noWrap
+                                >
+                                    {api.displayName || api.name}
                                 </Typography>
                             </div>
-                            {tileDisplayInfo.showBusinessDetails &&
-                                <div className={classes.row}>
-                                    <Typography
-                                        variant='caption'
-                                        gutterBottom
-                                        align='left'
-                                        onMouseEnter={this.handleBusinessPopoverOpen}
-                                        onMouseLeave={this.handleBusinessPopoverClose}
-                                        className={classes.textTruncate}
-                                    >
-                                        <FormattedMessage
-                                            defaultMessage='Business'
-                                            id='Apis.Listing.ApiThumb.owners.business'
-                                        />
-                                        {': '}
-                                        {api.businessOwner ? (api.businessOwner): (
-                                            <span style={{ color: '#808080' }}>
-                                                Not Provided
-                                            </span>
+                            <div className={classes.row}>
+                                <Typography variant='caption' gutterBottom align='left' noWrap>
+                                    <FormattedMessage id='by' defaultMessage='By' />
+                                    &nbsp;
+                                    <Tooltip title={api.provider} arrow>
+                                        <span>{api.provider}</span>
+                                    </Tooltip>
+                                    {!isAPIProduct && !isMCPServer && (
+                                        <>
+                                            &nbsp;
+                                            <FormattedMessage id='on' defaultMessage='on' />
+                                            &nbsp;
+                                            {api.gatewayVendor === 'wso2' || api.gatewayVendor === 'solace'
+                                                ? api.gatewayVendor.toUpperCase()
+                                                : api.gatewayType}
+                                        </>
+                                    )}
+                                </Typography>
+                            </div>
+                            <div className={classes.row}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+                                    <Typography variant='body1' noWrap>
+                                        {api.version}
+                                    </Typography>
+                                    <Typography variant='caption' component='p' color='text.disabled' lineHeight={1}>
+                                        <FormattedMessage defaultMessage='Version' id='Apis.Listing.ApiThumb.version' />
+                                    </Typography>
+                                </div>
+
+                                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+                                    <Typography variant='body1' noWrap>
+                                        {api.context}
+                                    </Typography>
+                                    <Typography variant='caption' component='p' color='text.disabled' lineHeight={1}>
+                                        {api.type === 'WS' ? (
+                                            <FormattedMessage
+                                                defaultMessage='Channel'
+                                                id='Apis.Listing.ApiThumb.channel'
+                                            />
+                                        ) : (
+                                            <FormattedMessage
+                                                defaultMessage='Context'
+                                                id='Apis.Listing.ApiThumb.context'
+                                            />
                                         )}
                                     </Typography>
-                                    {api.businessOwnerEmail && (
-                                        <Popover
-                                            id='mouse-over-popover'
-                                            sx={{
-                                                pointerEvents: 'none',
-                                            }}
-                                            open={this.state.businessOpenPopover}
-                                            anchorEl={this.state.businessAnchorEl}
-                                            anchorOrigin={{
-                                                vertical: 'top',
-                                                horizontal: 'right',
-                                            }}
-                                            transformOrigin={{
-                                                vertical: 'bottom',
-                                                horizontal: 'left',
-                                            }}
-                                            onClose={this.handleBusinessPopoverClose}
-                                            disableRestoreFocus
-                                        >
-                                            <div style={{
-                                                display: 'flex',
-                                                flexDirection: 'column'
-                                            }}
+                                </div>
+                            </div>
+                            {(tileDisplayInfo.showBusinessDetails || tileDisplayInfo.showTechnicalDetails) && (
+                                <>
+                                    <hr />
+                                    <div className={classes.row}>
+                                        <Typography variant='body2' gutterBottom align='left'>
+                                            <FormattedMessage
+                                                defaultMessage='Owners'
+                                                id='Apis.Listing.ApiThumb.owners'
+                                            />
+                                        </Typography>
+                                    </div>
+                                    {tileDisplayInfo.showBusinessDetails && (
+                                        <div className={classes.row}>
+                                            <Typography
+                                                variant='caption'
+                                                gutterBottom
+                                                align='left'
+                                                onMouseEnter={this.handleBusinessPopoverOpen}
+                                                onMouseLeave={this.handleBusinessPopoverClose}
+                                                className={classes.textTruncate}
                                             >
-                                                <div style={{ display: 'flex', padding: '4px' }}>
-                                                    <EmailIcon fontSize='small' />
-                                                    <Typography
-                                                        variant='body2'
-                                                        style={{ marginLeft: '8px' }}
+                                                <FormattedMessage
+                                                    defaultMessage='Business'
+                                                    id='Apis.Listing.ApiThumb.owners.business'
+                                                />
+                                                {': '}
+                                                {api.businessOwner ? (
+                                                    api.businessOwner
+                                                ) : (
+                                                    <span style={{ color: '#808080' }}>Not Provided</span>
+                                                )}
+                                            </Typography>
+                                            {api.businessOwnerEmail && (
+                                                <Popover
+                                                    id='mouse-over-popover'
+                                                    sx={{
+                                                        pointerEvents: 'none',
+                                                    }}
+                                                    open={this.state.businessOpenPopover}
+                                                    anchorEl={this.state.businessAnchorEl}
+                                                    anchorOrigin={{
+                                                        vertical: 'top',
+                                                        horizontal: 'right',
+                                                    }}
+                                                    transformOrigin={{
+                                                        vertical: 'bottom',
+                                                        horizontal: 'left',
+                                                    }}
+                                                    onClose={this.handleBusinessPopoverClose}
+                                                    disableRestoreFocus
+                                                >
+                                                    <div
+                                                        style={{
+                                                            display: 'flex',
+                                                            flexDirection: 'column',
+                                                        }}
                                                     >
-                                                        {api.businessOwnerEmail}
-                                                    </Typography>
-                                                </div>
-                                            </div>
-                                        </Popover>
+                                                        <div style={{ display: 'flex', padding: '4px' }}>
+                                                            <EmailIcon fontSize='small' />
+                                                            <Typography variant='body2' style={{ marginLeft: '8px' }}>
+                                                                {api.businessOwnerEmail}
+                                                            </Typography>
+                                                        </div>
+                                                    </div>
+                                                </Popover>
+                                            )}
+                                        </div>
                                     )}
-                                </div>}
-                            {tileDisplayInfo.showTechnicalDetails &&
-                                <div className={classes.row}>
-                                    <Typography
-                                        variant='caption'
-                                        gutterBottom align='left'
-                                        onMouseEnter={this.handleTechnicalPopoverOpen}
-                                        onMouseLeave={this.handleTechnicalPopoverClose}
-                                        className={classes.textTruncate}
-                                    >
-                                        <FormattedMessage
-                                            defaultMessage='Technical'
-                                            id='Apis.Listing.ApiThumb.owners.technical'
-                                        />
-                                        {': '}
-                                        {api.technicalOwner ? (api.technicalOwner): (
-                                            <span style={{ color: '#808080' }}>
-                                                Not Provided
-                                            </span>
+                                    {tileDisplayInfo.showTechnicalDetails && (
+                                        <div className={classes.row}>
+                                            <Typography
+                                                variant='caption'
+                                                gutterBottom
+                                                align='left'
+                                                onMouseEnter={this.handleTechnicalPopoverOpen}
+                                                onMouseLeave={this.handleTechnicalPopoverClose}
+                                                className={classes.textTruncate}
+                                            >
+                                                <FormattedMessage
+                                                    defaultMessage='Technical'
+                                                    id='Apis.Listing.ApiThumb.owners.technical'
+                                                />
+                                                {': '}
+                                                {api.technicalOwner ? (
+                                                    api.technicalOwner
+                                                ) : (
+                                                    <span style={{ color: '#808080' }}>Not Provided</span>
+                                                )}
+                                            </Typography>
+                                            {api.technicalOwnerEmail && (
+                                                <Popover
+                                                    id='mouse-over-popover'
+                                                    sx={{
+                                                        pointerEvents: 'none',
+                                                    }}
+                                                    open={this.state.technicalOpenPopover}
+                                                    anchorEl={this.state.technicalAnchorEl}
+                                                    anchorOrigin={{
+                                                        vertical: 'top',
+                                                        horizontal: 'right',
+                                                    }}
+                                                    transformOrigin={{
+                                                        vertical: 'bottom',
+                                                        horizontal: 'left',
+                                                    }}
+                                                    onClose={this.handleTechnicalPopoverClose}
+                                                    disableRestoreFocus
+                                                >
+                                                    <div
+                                                        style={{
+                                                            display: 'flex',
+                                                            flexDirection: 'column',
+                                                        }}
+                                                    >
+                                                        <div style={{ display: 'flex', padding: '4px' }}>
+                                                            <EmailIcon fontSize='small' />
+                                                            <Typography variant='body2' style={{ marginLeft: '8px' }}>
+                                                                {api.technicalOwnerEmail}
+                                                            </Typography>
+                                                        </div>
+                                                    </div>
+                                                </Popover>
+                                            )}
+                                        </div>
+                                    )}
+                                    <hr />
+                                </>
+                            )}
+                            <div className={classes.row} style={{ marginTop: '8px' }}>
+                                <Chip
+                                    size='small'
+                                    classes={{ root: classes.chip }}
+                                    label={lifecycleState}
+                                    color='default'
+                                    data-testid='itest-api-lifecycleState'
+                                />
+                                {(api.type === 'GRAPHQL' || api.transportType === 'GRAPHQL') && (
+                                    <Chip
+                                        size='small'
+                                        classes={{ root: classes.chip }}
+                                        icon={getTypeIcon('GRAPHQL')}
+                                        label={getTypeChipLabel(
+                                            api.transportType === undefined ? api.type : api.transportType
                                         )}
-                                    </Typography>
-                                    {api.technicalOwnerEmail && (
-                                        <Popover
-                                            id='mouse-over-popover'
-                                            sx={{
-                                                pointerEvents: 'none',
-                                            }}
-                                            open={this.state.technicalOpenPopover}
-                                            anchorEl={this.state.technicalAnchorEl}
-                                            anchorOrigin={{
-                                                vertical: 'top',
-                                                horizontal: 'right',
-                                            }}
-                                            transformOrigin={{
-                                                vertical: 'bottom',
-                                                horizontal: 'left',
-                                            }}
-                                            onClose={this.handleTechnicalPopoverClose}
-                                            disableRestoreFocus
-                                        >
-                                            <div style={{
-                                                display: 'flex',
-                                                flexDirection: 'column'
-                                            }}
-                                            >
-                                                <div style={{ display: 'flex', padding: '4px' }}>
-                                                    <EmailIcon fontSize='small' />
-                                                    <Typography
-                                                        variant='body2'
-                                                        style={{ marginLeft: '8px' }}
-                                                    >
-                                                        {api.technicalOwnerEmail}
-                                                    </Typography>
-                                                </div>
-                                            </div>
-                                        </Popover>
-                                    )}
-                                </div>}
-                            <hr />
-                        </>
-                    )}
-                </CardContent>
+                                        color='primary'
+                                        variant='outlined'
+                                    />
+                                )}
+                                {api.type === 'WS' && (
+                                    <Chip
+                                        size='small'
+                                        classes={{ root: classes.chip }}
+                                        icon={getTypeIcon('WS')}
+                                        label={getTypeChipLabel('WS')}
+                                        color='primary'
+                                        variant='outlined'
+                                    />
+                                )}
+                                {api.type === 'WEBSUB' && api.gatewayVendor === 'wso2' && (
+                                    <Chip
+                                        size='small'
+                                        classes={{ root: classes.chip }}
+                                        icon={getTypeIcon('WEBSUB')}
+                                        label={getTypeChipLabel('WEBSUB')}
+                                        color='primary'
+                                        variant='outlined'
+                                    />
+                                )}
+                                {api.type === 'WEBSUB' && api.gatewayVendor === 'solace' && (
+                                    <Chip
+                                        size='small'
+                                        classes={{ root: classes.chip }}
+                                        icon={getTypeIcon('WEBSUB')}
+                                        label='SOLACE API'
+                                        style={{ backgroundColor: '#00c995' }}
+                                        variant='outlined'
+                                    />
+                                )}
+                                {api.type === 'HTTP' && (!api.subtype || api.subtype === 'DEFAULT') && (
+                                    <Chip
+                                        size='small'
+                                        classes={{ root: classes.chip }}
+                                        icon={getTypeIcon('HTTP')}
+                                        label={getTypeChipLabel('HTTP')}
+                                        color='primary'
+                                        variant='outlined'
+                                    />
+                                )}
+                                {api.type === 'SOAP' && (
+                                    <Chip
+                                        size='small'
+                                        classes={{ root: classes.chip }}
+                                        icon={getTypeIcon('SOAP')}
+                                        label={getTypeChipLabel('SOAP')}
+                                        color='primary'
+                                        variant='outlined'
+                                    />
+                                )}
+                                {api.type === 'SOAPTOREST' && (
+                                    <Chip
+                                        size='small'
+                                        classes={{ root: classes.chip }}
+                                        icon={getTypeIcon('SOAP')}
+                                        label={getTypeChipLabel('SOAPTOREST')}
+                                        color='primary'
+                                        variant='outlined'
+                                    />
+                                )}
+                                {api.type === 'SSE' && (
+                                    <Chip
+                                        size='small'
+                                        classes={{ root: classes.chip }}
+                                        icon={getTypeIcon('SSE')}
+                                        label={getTypeChipLabel('SSE')}
+                                        color='primary'
+                                        variant='outlined'
+                                    />
+                                )}
+                                {api.type === 'WEBHOOK' && (
+                                    <Chip
+                                        size='small'
+                                        classes={{ root: classes.chip }}
+                                        icon={getTypeIcon('WEBHOOK')}
+                                        label={getTypeChipLabel('WEBHOOK')}
+                                        color='primary'
+                                        variant='outlined'
+                                    />
+                                )}
+                                {api.type === 'ASYNC' && (
+                                    <Chip
+                                        size='small'
+                                        classes={{ root: classes.chip }}
+                                        icon={getTypeIcon('ASYNC')}
+                                        label={getTypeChipLabel('ASYNC')}
+                                        color='primary'
+                                        variant='outlined'
+                                    />
+                                )}
+                            </div>
+                        </div>
+                    </CardContent>
+                </Link>
+                <Divider sx={{ marginLeft: 1.5, marginRight: 1.5 }} />
                 <CardActions className={classes.apiActions} data-testid={'card-action-' + api.name + api.version}>
-                    <div>
-                        <Chip
-                            size='small'
-                            classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
-                            label={lifecycleState}
-                            color='default'
-                            data-testid='itest-api-lifecycleState'
-                        />
-                        {(api.type === 'GRAPHQL' || api.transportType === 'GRAPHQL') && (
-                            <Chip
-                                size='small'
-                                classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
-                                label={api.transportType === undefined
-                                    ? api.type : api.transportType}
-                                color='primary'
-                            />
-                        )}
-                        {(api.type === 'WS') && (
-                            <Chip
-                                size='small'
-                                classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
-                                label='WEBSOCKET'
-                                color='primary'
-                            />
-                        )}
-                        {(api.type === 'WEBSUB') && (api.gatewayVendor === 'wso2') && (
-                            <Chip
-                                size='small'
-                                classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
-                                label='WEBSUB'
-                                color='primary'
-                            />
-                        )}
-                        {(api.type === 'WEBSUB') && (api.gatewayVendor === 'solace') && (
-                            <Chip
-                                size='small'
-                                classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
-                                label='SOLACE API'
-                                style={{ backgroundColor: '#00c995' }}
-                            />
-                        )}
-                    </div>
+                    <Box display='flex' alignItems='center' gap={0.5}>
+                        <AccessTimeIcon fontSize='small' sx={{ color: 'text.disabled' }} />
+                        <Typography variant='caption' color='textSecondary'>
+                            {formatUpdatedTime(api.updatedTime)}
+                        </Typography>
+                    </Box>
                     {!isRestricted(['apim:api_create'], api) && (
                         <>
-                            <DeleteApiButton
+                            <DeleteButton
                                 setLoading={this.setLoading}
                                 api={api}
                                 updateData={updateData}
@@ -574,6 +704,7 @@ class APIThumb extends Component {
 
 APIThumb.defaultProps = {
     isMCPServer: false,
+    useFlexibleWidth: false,
 };
 
 APIThumb.propTypes = {
@@ -585,6 +716,7 @@ APIThumb.propTypes = {
     isAPIProduct: PropTypes.bool.isRequired,
     isMCPServer: PropTypes.bool,
     updateData: PropTypes.func.isRequired,
+    useFlexibleWidth: PropTypes.bool,
 };
 
 export default injectIntl((props) => {

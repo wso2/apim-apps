@@ -51,7 +51,7 @@ const getAvatarSx = (theme, char, width, height, bgColor) => {
         colorMap, offset, width: defaultWidth, textShadow,
     } = theme.custom.thumbnail;
     const [light, dark] = getColorFromLetter(bgColor === false ? '' : char, colorMap, offset);
-    const fontSize = Math.ceil((width * 70) / defaultWidth);
+    const fontSize = Math.ceil((width * 40) / defaultWidth);
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     const background = light && `linear-gradient(to right, ${light}, ${dark})`;
     return {
@@ -73,7 +73,7 @@ const getAvatarSx = (theme, char, width, height, bgColor) => {
 
 export default (props) => {
     const {
-        artifact, width, height, charLength = 2, ThumbIcon, bgColor, avatarVariant = 'square',
+        artifact, width, height, charLength = 2, ThumbIcon, bgColor, avatarVariant = 'rounded',
     } = props;
     const name = artifact.name.substring(0, charLength);
     const theme = useTheme();
