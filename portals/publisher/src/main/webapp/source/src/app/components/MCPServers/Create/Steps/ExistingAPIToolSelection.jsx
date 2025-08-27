@@ -25,6 +25,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
+import queryString from 'query-string';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import { useToolSelection } from './hooks/useToolSelection';
@@ -52,11 +53,12 @@ const ExistingAPIToolSelection = ({
     inputsDispatcher, 
     selectedAPI = null,
 }) => {
-    // API selection state
+    const isPreSelected = selectedAPI && selectedAPI.id;
     const [apiList, setApiList] = useState([]);
     const [loadingAPIs, setLoadingAPIs] = useState(false);
     const [loadingOperations, setLoadingOperations] = useState(false);
     const [selectedAPIOption, setSelectedAPIOption] = useState(selectedAPI);
+    const [searchInput, setSearchInput] = useState('');
     const processedSelectedAPIRef = useRef(null);
 
     // Operation cleaner function to remove display properties before dispatching
@@ -81,11 +83,25 @@ const ExistingAPIToolSelection = ({
     } = useToolSelection([], onValidate, inputsDispatcher, 
         (obj) => `${obj.verb}-${obj.target}`, operationCleaner);
 
-    const fetchAvailableAPIs = async () => {
+    const fetchAvailableAPIs = async (searchTerm = '') => {
         setLoadingAPIs(true);
         try {
-            const response = await API.all({});
-            const apis = response.body.list || [];
+            // Use search query to get only REST APIs (excluding MCP Servers and API Products)
+            // This ensures we only show APIs that can be used to create MCP Servers
+            let composeQuery = '?query=type:http';
+            
+            // Append name search if search term is provided
+            if (searchTerm && searchTerm.trim()) {
+                composeQuery += ` name:${searchTerm.trim()}`;
+            }
+            
+            const composeQueryJSON = queryString.parse(composeQuery);
+            composeQueryJSON.limit = 100; // Set a reasonable limit for the dropdown
+            composeQueryJSON.offset = 0;
+            
+            const response = await API.search(composeQueryJSON);
+            const data = JSON.parse(response.data);
+            const apis = data.list || [];
             setApiList(apis);
         } catch (error) {
             console.error('Error fetching APIs:', error);
@@ -133,7 +149,29 @@ const ExistingAPIToolSelection = ({
         }
     };
 
+    // Debounced search function to avoid too many API calls
+    const debouncedSearch = useRef(null);
+
+    const handleSearchInputChange = (event, newInputValue) => {
+        setSearchInput(newInputValue);
+        
+        // Clear previous timeout
+        if (debouncedSearch.current) {
+            clearTimeout(debouncedSearch.current);
+        }
+        
+        // Set new timeout for search
+        debouncedSearch.current = setTimeout(() => {
+            fetchAvailableAPIs(newInputValue);
+        }, 300);
+    };
+
     const handleAPISelection = (event, newValue) => {
+        // Prevent changes when API is pre-selected (read-only mode)
+        if (isPreSelected) {
+            return;
+        }
+        
         setSelectedAPIOption(newValue);
         updateAvailableOperations([]);
         
@@ -150,6 +188,10 @@ const ExistingAPIToolSelection = ({
         // Cleanup function to reset state when component unmounts
         return () => {
             processedSelectedAPIRef.current = null;
+            // Clear any pending search timeout
+            if (debouncedSearch.current) {
+                clearTimeout(debouncedSearch.current);
+            }
         };
     }, []);
 
@@ -198,20 +240,33 @@ const ExistingAPIToolSelection = ({
                     options={apiList}
                     getOptionLabel={(option) => `${option.name} (${option.version})`}
                     value={selectedAPIOption}
+                    inputValue={searchInput}
+                    onInputChange={handleSearchInputChange}
                     onChange={handleAPISelection}
                     loading={loadingAPIs}
+                    disabled={isPreSelected}
+                    readOnly={isPreSelected}
+                    freeSolo={false}
                     renderInput={(params) => (
                         <TextField
                             {...params}
                             label={
                                 <Typography variant='subtitle1' gutterBottom>
-                                    <FormattedMessage
-                                        id='MCPServers.Create.Steps.ExistingAPIToolSelection.api.selection.label'
-                                        defaultMessage='Select an API to create MCP Server from'
-                                    />
+                                    {isPreSelected ? (
+                                        <FormattedMessage
+                                            id='MCPServers.Create.Steps.ExistingAPIToolSelection.api.selection.label'
+                                            defaultMessage='Selected API'
+                                        />
+                                    ) : (
+                                        <FormattedMessage
+                                            id='MCPServers.Create.Steps.ExistingAPIToolSelection.api.selection.label'
+                                            defaultMessage='Select an API to create MCP Server from'
+                                        />
+                                    )}
                                 </Typography>
                             }
                             variant='outlined'
+                            disabled={isPreSelected}
                             InputProps={{
                                 ...params.InputProps,
                                 endAdornment: (
