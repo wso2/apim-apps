@@ -248,7 +248,7 @@ class APICardView extends React.Component {
                 },
             },
             {
-                name: 'name',
+                name: 'displayName',
                 label: intl.formatMessage({
                     id: isMCPServersRoute ? 'Apis.Listing.MCPServerList.name' : 'Apis.Listing.APIList.name',
                     defaultMessage: 'Name',
