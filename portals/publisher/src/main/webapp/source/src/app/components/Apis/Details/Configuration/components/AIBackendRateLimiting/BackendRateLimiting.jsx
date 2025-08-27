@@ -25,11 +25,11 @@ import { isRestricted } from 'AppData/AuthManager';
 import BackendRateLimitingForm from './BackendRateLimitingForm';
 
 /**
- * Backend Rate Limiting for AI/LLM APIs
+ * Backend Rate Limiting for AI APIs
  *
- * @export
- * @param {*} props
- * @returns
+ * @export BackendRateLimiting
+ * @param {*} props - The component props
+ * @returns {JSX.Element} The BackendRateLimiting component
  */
 export default function BackendRateLimiting(props) {
     const { api, configDispatcher } = props;

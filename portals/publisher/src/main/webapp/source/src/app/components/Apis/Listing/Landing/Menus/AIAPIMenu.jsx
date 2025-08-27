@@ -29,29 +29,29 @@ const AIAPIMenu = (props) => {
 
     return (
         <Component
-            id='itest-rest-api-create-menu'
+            id='itest-ai-api-create-title'
             title={(
                 <FormattedMessage
                     id='Apis.Listing.AIAPI.ai.api'
-                    defaultMessage='AI/LLM API'
+                    defaultMessage='AI API'
                 />
             )}
             icon={icon}
         >
             <LandingMenuItem
                 dense={dense}
-                id='itest-id-landing-create-ai-api'
+                id='itest-ai-api-create-description'
                 linkTo='/apis/create/ai-api'
                 helperText={(
                     <FormattedMessage
                         id='Apis.Listing.SampleAPI.SampleAPI.ai.api.import.content'
-                        defaultMessage='Create AI/LLM APIs by importing service provider APIs'
+                        defaultMessage='Create AI APIs by importing service provider APIs'
                     />
                 )}
             >
                 <FormattedMessage
                     id='Apis.Listing.SampleAPI.SampleAPI.ai.api.create.title'
-                    defaultMessage='Create AI/LLM API'
+                    defaultMessage='Create AI API'
                 />
             </LandingMenuItem>
         </Component>
