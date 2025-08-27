@@ -158,7 +158,7 @@ function Configuration(props) {
                         <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                             <FormattedMessage
                                 id='Apis.Details.NewOverview.MetaData.securityScheme'
-                                defaultMessage='API Security'
+                                defaultMessage='Security'
                             />
                             <Tooltip
                                 interactive

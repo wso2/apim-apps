@@ -239,7 +239,10 @@ export default function DevelopSectionMenu(props) {
                         data-testid='itest-api-config'>
                         <FormattedMessage
                             id='Apis.Details.index.design.api.configs.title'
-                            defaultMessage='API Configurations'
+                            defaultMessage='{type} Configurations'
+                            values={{
+                                type: api.isMCPServer() ? 'MCP' : 'API'
+                            }}
                         />
                     </Typography>
                     <Tooltip

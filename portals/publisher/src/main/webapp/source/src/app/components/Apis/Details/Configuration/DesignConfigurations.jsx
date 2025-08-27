@@ -230,6 +230,7 @@ function copyAPIConfig(api) {
             accessControlAllowMethods: [...api.corsConfiguration.accessControlAllowMethods],
         },
         type: api.type,
+        apiType: api.apiType,
         policies: [...api.policies],
         endpointConfig: api.endpointConfig,
     };
@@ -587,13 +588,14 @@ export default function DesignConfigurations() {
     async function handleSave() {
         setIsUpdating(true);
         let updatePayload = { ...apiConfig };
+        
+        // Exclude apiType field from the payload
+        const { apiType, ...payloadWithoutApiType } = updatePayload;
+        updatePayload = payloadWithoutApiType;
 
         if (isMCPServer) {
             // For MCP servers, ensure we're using additionalPropertiesMap and exclude forbidden fields
             const { responseCachingEnabled, cacheTimeout, wsdlUrl, additionalProperties, ...mcpConfig } = updatePayload;
-            
-            console.log(`[DEBUG] Save - Original additionalProperties:`, additionalProperties);
-            console.log(`[DEBUG] Save - Original additionalPropertiesMap:`, mcpConfig.additionalPropertiesMap);
             
             // Ensure additionalPropertiesMap is present and up-to-date
             if (!mcpConfig.additionalPropertiesMap) {
@@ -606,8 +608,6 @@ export default function DesignConfigurations() {
                     mcpConfig.additionalPropertiesMap[property.name] = property;
                 });
             }
-            
-            console.log(`[DEBUG] Save - Final additionalPropertiesMap:`, mcpConfig.additionalPropertiesMap);
             updatePayload = mcpConfig;
         }
         

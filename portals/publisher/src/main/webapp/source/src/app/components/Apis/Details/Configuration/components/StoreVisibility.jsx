@@ -37,6 +37,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import CONSTS from 'AppData/Constants';
 import API from 'AppData/api';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'StoreVisibility';
 
@@ -60,9 +61,9 @@ const Root = styled('div')((
 /**
  *
  * api.accessControl possible values are `NONE` and `RESTRICTED`
- * @export
- * @param {*} props
- * @returns
+ * @export StoreVisibility
+ * @param {*} props - The component props
+ * @returns {JSX.Element} The StoreVisibility component
  */
 export default function StoreVisibility(props) {
     const [roleValidity, setRoleValidity] = useState(true);
@@ -172,7 +173,10 @@ export default function StoreVisibility(props) {
                     helperText={(
                         <FormattedMessage
                             id='Apis.Details.Configuration.components.storeVisibility.form.helper.text'
-                            defaultMessage='By default API is visible to all developer portal users'
+                            defaultMessage='By default {type} is visible to all developer portal users'
+                            values={{
+                                type: getTypeToDisplay(api.apiType)
+                            }}
                         />
                     )}
                     margin='normal'

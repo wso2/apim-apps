@@ -59,10 +59,7 @@ class MCPServer extends Resource {
                 this[key] = properties[key];
             }
         }
-        // Default the type to 'MCP' if not provided by backend response
-        if (!this.type) {
-            this.type = MCPServer.CONSTS.MCP;
-        }
+        this.type = MCPServer.CONSTS.MCP;
         this.apiType = MCPServer.CONSTS.MCP;
     }
 
@@ -108,14 +105,6 @@ class MCPServer extends Resource {
         }
 
         return copy;
-    }
-
-    /**
-     * Get the type of the MCP Server.
-     * @returns {string} The type of the MCP Server.
-     */
-    getType() {
-        return this.type;
     }
 
     /**
