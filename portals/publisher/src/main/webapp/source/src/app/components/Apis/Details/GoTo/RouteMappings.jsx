@@ -200,7 +200,7 @@ const suggestions = {
     ],
     apiOnly: [
         {
-            label: 'API Gateways',
+            label: 'Gateways',
             route: 'deployments',
         },
         {
@@ -520,7 +520,7 @@ const suggestions = {
             route: 'deployments',
         },
         {
-            label: 'API Gateways',
+            label: 'Gateways',
             route: 'deployments',
         },
         {

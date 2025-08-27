@@ -525,7 +525,11 @@ export default function RuntimeConfiguration() {
             });
     }
 
-    const getValidationError = () => {
+    /**
+     * Get the validation error for the key managers
+     * @returns {void} @inheritdoc
+     */
+    function getValidationError() {
         // Validate the key managers
         const isMCPAPI = api.apiType === MCPServer.CONSTS.MCP;
         const filteredKeyManagers = apiConfig.keyManagers ? apiConfig.keyManagers.filter(km => km !== 'all') : [];
@@ -573,7 +577,6 @@ export default function RuntimeConfiguration() {
             && apiConfig.keyManagers && !apiConfig.keyManagers.includes('all')
         ) {
             getValidationError();
-            return;
         }
         setIsUpdating(true);
         updateAPI(apiConfig)
@@ -604,7 +607,6 @@ export default function RuntimeConfiguration() {
             && apiConfig.keyManagers && !apiConfig.keyManagers.includes('all')
         ) {
             getValidationError();
-            return;
         }
         setIsUpdating(true);
         updateAPI(apiConfig)

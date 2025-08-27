@@ -58,7 +58,7 @@ import API from 'AppData/api.js';
 import MCPServer from 'AppData/MCPServer';
 import APIProduct from 'AppData/APIProduct';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
-import { getBasePath } from 'AppComponents/Shared/Utils';
+import { getBasePath, getTypeToDisplay } from 'AppComponents/Shared/Utils';
 import DefaultVersion from './components/DefaultVersion';
 import DescriptionEditor from './components/DescriptionEditor';
 import AccessControl from './components/AccessControl';
@@ -201,9 +201,8 @@ function copyAPIConfig(api) {
     if (api.apiType === API.CONSTS.APIProduct && api.isDefaultVersion == null) {
         isDefaultVersion = true;
     }
-    
     const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
-    
+
     const copiedConfig = {
         id: api.id,
         name: api.name,
@@ -231,6 +230,7 @@ function copyAPIConfig(api) {
             accessControlAllowMethods: [...api.corsConfiguration.accessControlAllowMethods],
         },
         type: api.type,
+        apiType: api.apiType,
         policies: [...api.policies],
         endpointConfig: api.endpointConfig,
     };
@@ -420,10 +420,8 @@ export default function DesignConfigurations() {
     const [overview, setOverview] = useState('');
     const [overviewDocument, setOverviewDocument] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
+    const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
     const [slackURLProperty, githubURLProperty] = useMemo(() => {
-        // For MCP servers, get the latest values from additionalPropertiesMap if available
-        const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
-        
         let slackProp;
         let githubProp;
         
@@ -589,17 +587,15 @@ export default function DesignConfigurations() {
      */
     async function handleSave() {
         setIsUpdating(true);
-        
-        // Prepare the update payload based on the API type
-        const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
         let updatePayload = { ...apiConfig };
         
+        // Exclude apiType field from the payload
+        const { apiType, ...payloadWithoutApiType } = updatePayload;
+        updatePayload = payloadWithoutApiType;
+
         if (isMCPServer) {
             // For MCP servers, ensure we're using additionalPropertiesMap and exclude forbidden fields
             const { responseCachingEnabled, cacheTimeout, wsdlUrl, additionalProperties, ...mcpConfig } = updatePayload;
-            
-            console.log(`[DEBUG] Save - Original additionalProperties:`, additionalProperties);
-            console.log(`[DEBUG] Save - Original additionalPropertiesMap:`, mcpConfig.additionalPropertiesMap);
             
             // Ensure additionalPropertiesMap is present and up-to-date
             if (!mcpConfig.additionalPropertiesMap) {
@@ -612,8 +608,6 @@ export default function DesignConfigurations() {
                     mcpConfig.additionalPropertiesMap[property.name] = property;
                 });
             }
-            
-            console.log(`[DEBUG] Save - Final additionalPropertiesMap:`, mcpConfig.additionalPropertiesMap);
             updatePayload = mcpConfig;
         }
         
@@ -863,24 +857,15 @@ export default function DesignConfigurations() {
                     />
                 </Typography>
                 <Box color='text.secondary'>
-                    {api.apiType === API.CONSTS.APIProduct
-                        ? (
-                            <Typography variant='caption'>
-                                <FormattedMessage
-                                    id='Apis.Details.Configuration
-                                        .Configuration.Design.APIProduct.sub.heading'
-                                    defaultMessage='Configure basic API Product meta information'
-                                />
-                            </Typography>
-                        )
-                        : (
-                            <Typography variant='caption'>
-                                <FormattedMessage
-                                    id='Apis.Details.Configuration.Configuration.Design.sub.heading'
-                                    defaultMessage='Configure basic API meta information'
-                                />
-                            </Typography>
-                        )}
+                    <Typography variant='caption'>
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.Configuration.Design.sub.heading'
+                            defaultMessage='Configure basic {type} meta information'
+                            values={{
+                                type: getTypeToDisplay(api.apiType)
+                            }}
+                        />
+                    </Typography>
                 </Box>
             </Grid>
             <Grid container direction='row' justifyContent='space-around' alignItems='stretch'
@@ -1009,54 +994,57 @@ export default function DesignConfigurations() {
                         </Paper>
                     </Grid>
                 </Grid>
-                <Grid item xs={12} md={3}>
-                    <Paper elevation={0}>
-                        <Box p={2}>
-                            <Grid item xs={12} container direction='row'
-                                justifyContent='space-between' >
-                                <Grid item md={6}>
-                                    <Typography
-                                        id='itest-label-head' variant='h5' component='h5'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Configuration.Configuration.Design.topic.label'
-                                            defaultMessage='Labels'
-                                        />
-                                    </Typography>
-                                </Grid>
-                                <Grid item md={6} align='right'>
-                                    {!api.isRevision && (
-                                        <Tooltip title='Attach Labels'>
-                                            <IconButton onClick={handleOpenList}>
-                                                <AddIcon />
-                                            </IconButton>
-                                        </Tooltip>
-                                    )}
-                                </Grid>
-                            </Grid>
-                            <Box>
-                                {loading ? (
-                                    <CircularProgress size='30px'/>
-                                ) : (
-                                    <Stack direction='row' spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
-                                        {updatedLabels.length !== 0 ? (
-                                            updatedLabels.map((label) => (
-                                                <Chip key={label} label={label}
-                                                    onDelete={!api.isRevision ? () => detachLabel(label) : undefined}/>
-                                            ))
-                                        ) : (
-                                            <Typography variant='body2' color='textSecondary'>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Configuration.Configuration.Design.no.labels'
-                                                    defaultMessage='No Labels Attached'
-                                                />
-                                            </Typography>
+                {!isMCPServer && (
+                    <Grid item xs={12} md={3}>
+                        <Paper elevation={0}>
+                            <Box p={2}>
+                                <Grid item xs={12} container direction='row'
+                                    justifyContent='space-between' >
+                                    <Grid item md={6}>
+                                        <Typography
+                                            id='itest-label-head' variant='h5' component='h5'>
+                                            <FormattedMessage
+                                                id='Apis.Details.Configuration.Configuration.Design.topic.label'
+                                                defaultMessage='Labels'
+                                            />
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item md={6} align='right'>
+                                        {!api.isRevision && (
+                                            <Tooltip title='Attach Labels'>
+                                                <IconButton onClick={handleOpenList}>
+                                                    <AddIcon />
+                                                </IconButton>
+                                            </Tooltip>
                                         )}
-                                    </Stack>
-                                )}
+                                    </Grid>
+                                </Grid>
+                                <Box>
+                                    {loading ? (
+                                        <CircularProgress size='30px'/>
+                                    ) : (
+                                        <Stack direction='row' spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
+                                            {updatedLabels.length !== 0 ? (
+                                                updatedLabels.map((label) => (
+                                                    <Chip key={label} label={label}
+                                                        onDelete={!api.isRevision
+                                                            ? () => detachLabel(label) : undefined}/>
+                                                ))
+                                            ) : (
+                                                <Typography variant='body2' color='textSecondary'>
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Configuration.Configuration.Design.no.labels'
+                                                        defaultMessage='No Labels Attached'
+                                                    />
+                                                </Typography>
+                                            )}
+                                        </Stack>
+                                    )}
+                                </Box>
                             </Box>
-                        </Box>
-                    </Paper>
-                </Grid>
+                        </Paper>
+                    </Grid>
+                )}
             </Grid>
             <UpdateWithoutDetails
                 classes={classes}

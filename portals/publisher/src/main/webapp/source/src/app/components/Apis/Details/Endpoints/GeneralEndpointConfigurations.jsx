@@ -19,8 +19,8 @@
 import React, { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import {
-    Accordion, 
-    AccordionSummary, 
+    Accordion,
+    AccordionSummary,
     AccordionDetails,
     Grid,
     Typography,
@@ -31,7 +31,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import { FormattedMessage, useIntl } from 'react-intl';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
-import Certificates from '../GeneralConfiguration/Certificates';
+import Certificates from './GeneralConfiguration/Certificates';
 
 const PREFIX = 'GeneralConfiguration';
 
@@ -228,7 +228,7 @@ const GeneralEndpointConfigurations = ({
                                     <FormattedMessage
                                         id='Apis.Details.Endpoints.GeneralConfiguration.not.allowed'
                                         defaultMessage={'*You are not authorized to view certificates'
-                                    + ' due to insufficient permissions'}
+                                            + ' due to insufficient permissions'}
                                     />
                                 </Typography>
                             </Box>

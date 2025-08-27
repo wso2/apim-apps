@@ -21,13 +21,14 @@ import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import { isRestricted } from 'AppData/AuthManager';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 /**
- *
- *
- * @export
- * @param {*} props
- * @returns
+ * DisplayName component
+ * @param {Object} props - The props for the component
+ * @param {Object} props.api - The api object
+ * @param {Function} props.configDispatcher - The config dispatcher function
+ * @returns {React.Component} @inheritdoc
  */
 function DisplayName(props) {
     const { api, configDispatcher } = props;
@@ -50,7 +51,10 @@ function DisplayName(props) {
             helperText={(
                 <FormattedMessage
                     id='Apis.Details.Configuration.components.DisplayName.help'
-                    defaultMessage='This will be the display name of the API'
+                    defaultMessage='This will be the display name of the {type}'
+                    values={{
+                        type: getTypeToDisplay(api.apiType)
+                    }}
                 />
             )}
             style={{ marginTop: 0 }}

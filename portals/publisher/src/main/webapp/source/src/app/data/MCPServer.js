@@ -59,10 +59,7 @@ class MCPServer extends Resource {
                 this[key] = properties[key];
             }
         }
-        // Default the type to 'MCP' if not provided by backend response
-        if (!this.type) {
-            this.type = MCPServer.CONSTS.MCP;
-        }
+        this.type = MCPServer.CONSTS.MCP;
         this.apiType = MCPServer.CONSTS.MCP;
     }
 
@@ -108,14 +105,6 @@ class MCPServer extends Resource {
         }
 
         return copy;
-    }
-
-    /**
-     * Get the type of the MCP Server.
-     * @returns {string} The type of the MCP Server.
-     */
-    getType() {
-        return this.type;
     }
 
     /**
@@ -647,13 +636,13 @@ class MCPServer extends Resource {
     }
 
     /**
-     * Update an endpoint of the MCP Server
+     * Update an backend of the MCP Server
      * @param {String} id UUID of the MCP Server
      * @param {String} endpointId UUID of the endpoint
-     * @param {Object} endpointBody Updated endpoint object
-     * @returns {Promise} Promise containing the updated endpoint
+     * @param {Object} backendBody Updated backend object
+     * @returns {Promise} Promise containing the updated backend
      */
-    static updateMCPServerEndpoint(id, endpointId, endpointBody) {
+    static updateMCPServerBackend(id, endpointId, backendBody) {
         const restApiClient = new APIClientFactory()
             .getAPIClient(
                 Utils.getCurrentEnvironment(),
@@ -666,30 +655,7 @@ class MCPServer extends Resource {
                     backendId: endpointId,
                 },
                 {
-                    requestBody: endpointBody,
-                },
-                this._requestMetaData(),
-            );
-        });
-    }
-
-    /**
-     * Delete an endpoint of the MCP Server
-     * @param {string} id UUID of the MCP Server
-     * @param {string} endpointId UUID of the endpoint
-     * @returns {Promise} A promise that resolves to the response of the delete operation.
-     */
-    static deleteMCPServerEndpoint(id, endpointId) {
-        const restApiClient = new APIClientFactory()
-            .getAPIClient(
-                Utils.getCurrentEnvironment(),
-                Utils.CONST.API_CLIENT
-            ).client;
-        return restApiClient.then(client => {
-            return client.apis['MCP Server Endpoints'].deleteMCPServerEndpoint( // TODO: not implemented yet
-                {
-                    mcpServerId: id,
-                    endpointId,
+                    requestBody: backendBody,
                 },
                 this._requestMetaData(),
             );

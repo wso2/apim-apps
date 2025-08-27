@@ -23,12 +23,15 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import { isRestricted } from 'AppData/AuthManager';
 import { getBasePath } from 'AppComponents/Shared/Utils';
+import MCPServer from 'AppData/MCPServer';
+import AddEditEndpoint from 'AppComponents/MCPServers/Details/Endpoints/AddEditEndpoint';
 import Endpoints from './Endpoints';
 import AddEditAIEndpoint from './AIEndpoints/AddEditAIEndpoint';
 
 const Endpoint = () => {
     const [api] = useAPI();
     const urlPrefix = getBasePath(api.apiType);
+    const isMCPServer = api.type === MCPServer.CONSTS.MCP;
     
     return (
         <Switch>
@@ -37,20 +40,43 @@ const Endpoint = () => {
                 path={ urlPrefix + ':api_uuid/endpoints/'}
                 render={(props) => <Endpoints {...props} api={api} />}
             />
-            {!isRestricted(['apim:api_create']) && (
+            {!isRestricted(['apim:api_create']) && !isMCPServer && (
                 <Route
                     exact
                     path={urlPrefix + ':api_uuid/endpoints/create'}
                     render={(props) => <AddEditAIEndpoint apiObject={api} {...props} />}
                 />
             )}
-            {!isRestricted(['apim:api_view', 'apim:api_create']) && (
+            {!isRestricted(['apim:api_view', 'apim:api_create']) && !isMCPServer && (
                 <Route
                     exact
                     path={urlPrefix + ':api_uuid/endpoints/:id'}
                     render={(props) => <AddEditAIEndpoint apiObject={api} {...props} />}
                 />
             )}
+
+            {/* MCP Server Endpoints */}
+            {!isRestricted([
+                'apim:mcp_server_view', 'apim:mcp_server_create', 'apim:mcp_server_manage',
+                'apim:mcp_server_publish', 'apim:mcp_server_import_export',
+            ]) && isMCPServer && (
+                <Route
+                    exact
+                    path={urlPrefix + ':mcpserver_uuid/endpoints/create/:id/:endpointType'}
+                    render={(props) => <AddEditEndpoint apiObject={api} {...props} />}
+                />
+            )}
+
+            {!isRestricted(['apim:mcp_server_view', 'apim:mcp_server_create', 'apim:mcp_server_manage',
+                'apim:mcp_server_publish', 'apim:mcp_server_import_export',
+            ]) && isMCPServer && (
+                <Route
+                    exact
+                    path={urlPrefix + ':mcpserver_uuid/endpoints/:id/:endpointType'}
+                    render={(props) => <AddEditEndpoint {...props} apiObject={api} />}
+                />
+            )}
+
             <Route component={ResourceNotFound} />
         </Switch>
     );

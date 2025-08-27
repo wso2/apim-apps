@@ -22,6 +22,7 @@ import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import TextField from '@mui/material/TextField';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 /**
  *
@@ -52,7 +53,11 @@ const Social = (props) => {
                 helperText={(
                     <FormattedMessage
                         id='Apis.Details.Configuration.components.Social.giturl.help'
-                        defaultMessage='This GitHub URL will be available in the API overview page in developer portal'
+                        defaultMessage={'This GitHub URL will be available in the {type} overview ' +
+                            'page in developer portal'}
+                        values={{
+                            type: getTypeToDisplay(apiFromContext.apiType)
+                        }}
                     />
                 )}
                 style={{ marginTop: 0 }}
@@ -75,7 +80,10 @@ const Social = (props) => {
                     <FormattedMessage
                         id='Apis.Details.Configuration.components.Social.slack_url.help'
                         defaultMessage={'This Slack Channel URL will be available in the'
-                        + ' API overview page in developer portal'}
+                        + ' {type} overview page in developer portal'}
+                        values={{
+                            type: getTypeToDisplay(apiFromContext.apiType)
+                        }}
                     />
                 )}
                 style={{ marginTop: 0 }}
