@@ -364,7 +364,7 @@ const APIDetailsTopMenu = (props) => {
                     >
                         <FormattedMessage
                             id='Apis.Details.components.APIDetailsTopMenu.ai.api.label'
-                            defaultMessage='AI/LLM API'
+                            defaultMessage='AI API'
                         />
                     </MUIAlert>
                 )}
