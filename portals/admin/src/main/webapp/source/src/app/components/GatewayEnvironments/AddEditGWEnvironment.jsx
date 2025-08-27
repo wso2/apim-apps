@@ -174,7 +174,7 @@ function AddEditGWEnvironment(props) {
                     description: body.description || '',
                     gatewayType: body.gatewayType || '',
                     gatewayMode: body.mode || '',
-                    scheduledInterval: body.apiDiscoveryScheduledWindow || 60,
+                    scheduledInterval: body.apiDiscoveryScheduledWindow ?? 60,
                     type: body.type || '',
                     vhosts: body.vhosts || [],
                     permissions: body.permissions || initialPermissions,
