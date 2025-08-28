@@ -156,7 +156,7 @@ function APIThumbPlain(props) {
     const theme = useTheme();
 
     const {
-        api, showInfo, isAPIProduct, updateData,
+        api, showInfo, isAPIProduct, isMCPServer, updateData,
     } = props;
     const { custom: { thumbnail } } = theme;
     const {
@@ -245,7 +245,7 @@ function APIThumbPlain(props) {
     };
 
     const isAccessRestricted = () => {
-        if (api.isMCPServer) {
+        if (isMCPServer) {
             return isRestricted(
                 ['apim:mcp_server_delete', 'apim:mcp_server_manage', 'apim:mcp_server_import_export'],
                 api
