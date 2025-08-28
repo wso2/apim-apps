@@ -32,6 +32,7 @@ import { FormattedMessage } from 'react-intl';
 import LetterGenerator from 'AppComponents/Apis/Listing/components/ImageGenerator/LetterGenerator';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import Utils from 'AppData/Utils';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'DefThumbClassic';
 
@@ -122,10 +123,7 @@ const DefThumbClassic = (props) => {
         setIsHover(event.type === 'mouseover');
     };
 
-    const linkTo =
-        def.associatedType === 'API'
-            ? `/apis/${def.apiUUID}/api-definition`
-            : `/api-products/${def.apiUUID}/api-definition`;
+    const linkTo = getBasePath(def.associatedType) + def.apiUUID + '/api-definition';
 
     return (
         <StyledCard
