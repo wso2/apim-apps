@@ -345,7 +345,6 @@ class CommonListingLegacy extends React.Component {
         } else if (isSearchRoute) {
             title = 'Unified Search';
             titleId = 'Apis.Listing.Listing.search.main';
-            iconType = 'api';
         } else {
             title = 'APIs';
             titleId = 'Apis.Listing.Listing.apis.main';
@@ -417,10 +416,16 @@ class CommonListingLegacy extends React.Component {
                     id='commonListing'
                 >
                     <div className={classes.appBar} id='commonListingAppBar'>
-                        <div className={classNames(classes.mainIconWrapper, 'main-icon-wrapper')}>
-                            <CustomIcon strokeColor={strokeColorMain} width={42} height={42} icon={iconType} />
-                        </div>
-                        <div className={classes.mainTitleWrapper} id='mainTitleWrapper'>
+                        {!isSearchRoute && (
+                            <div className={classNames(classes.mainIconWrapper, 'main-icon-wrapper')}>
+                                <CustomIcon strokeColor={strokeColorMain} width={42} height={42} icon={iconType} />
+                            </div>
+                        )}
+                        <div
+                            className={classNames(classes.mainTitleWrapper, 'main-title-wrapper')}
+                            id='mainTitleWrapper'
+                            style={isSearchRoute ? { paddingLeft: '32px' } : {}}
+                        >
                             <Typography variant='h4' component='h1' className={classes.mainTitle}>
                                 <FormattedMessage defaultMessage={title} id={titleId} />
                             </Typography>
