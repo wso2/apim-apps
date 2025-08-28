@@ -25,6 +25,7 @@ import Grid from '@mui/material/Grid';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import CommentsAPI from 'AppData/Comments';
+import MCPServer from 'AppData/MCPServer';
 import { isRestricted } from 'AppData/AuthManager';
 
 const PREFIX = 'CommentAdd';
@@ -137,16 +138,22 @@ class CommentAdd extends React.Component {
      * * */
     handleClickAddComment() {
         const {
-            api: { id: apiId }, replyTo, handleShowReply, addComment, addReply, intl
+            api: { id: apiId, type: apiType }, replyTo, handleShowReply, addComment, addReply, intl
         } = this.props;
         const { content } = this.state;
         const comment = {
             content: content.trim(), category: 'general',
         };
-
+        const isMCPServer = apiType === MCPServer.CONSTS.MCP;
         // to check whether a string does not contain only white spaces
         if (comment.content.replace(/\s/g, '').length) {
-            CommentsAPI.add(apiId, comment, replyTo)
+            let addCommentPromise;
+            if (isMCPServer) {
+                addCommentPromise = CommentsAPI.addCommentToMCPServer(apiId, comment, replyTo);
+            } else {
+                addCommentPromise = CommentsAPI.add(apiId, comment, replyTo);
+            }
+            addCommentPromise
                 .then((newComment) => {
                     this.setState({ content: '' });
                     if (replyTo === null) {

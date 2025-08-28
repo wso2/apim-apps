@@ -23,10 +23,11 @@ import AccountBox from '@mui/icons-material/AccountBox';
 import Grid from '@mui/material/Grid';
 import Alert from 'AppComponents/Shared/Alert';
 import ConfirmDialog from 'AppComponents/Shared/ConfirmDialog';
-import API from 'AppData/api';
+import CommentsAPI from 'AppData/Comments';
+import MCPServer from 'AppData/MCPServer';
+import { injectIntl } from 'react-intl';
 import CommentEdit from './CommentEdit';
 import CommentOptions from './CommentOptions';
-import { injectIntl } from 'react-intl';
 
 const PREFIX = 'CommentReply';
 
@@ -158,15 +159,22 @@ class CommentReply extends React.Component {
      * @memberof CommentReply
      */
     handleClickDeleteComment() {
-        const Api = new API();
         const { deleteComment } = this.state;
-        const { api, allComments, commentsUpdate } = this.props;
+        const { api, allComments, commentsUpdate, intl } = this.props;
         const commentIdOfCommentToDelete = deleteComment.commentId;
         const parentCommentIdOfCommentToDelete = deleteComment.parentCommentId;
         const apiId = api.id;
+        const isMCPServer = api.type === MCPServer.CONSTS.MCP;
         this.handleClose();
 
-        Api.deleteComment(apiId, commentIdOfCommentToDelete)
+        const apiClient = new CommentsAPI();
+        let deleteCommentPromise;
+        if (isMCPServer) {
+            deleteCommentPromise = apiClient.deleteCommentOfMCPServer(apiId, commentIdOfCommentToDelete);
+        } else {
+            deleteCommentPromise = apiClient.deleteComment(apiId, commentIdOfCommentToDelete);
+        }
+        deleteCommentPromise
             .then(() => {
                 if (parentCommentIdOfCommentToDelete === undefined) {
                     const remainingComments = allComments.filter(this.filterRemainingComments);
