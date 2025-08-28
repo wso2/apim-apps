@@ -1876,6 +1876,8 @@
   "Apis.Listing.ApiThumb.owners": "Owners",
   "Apis.Listing.ApiThumb.owners.business": "Business",
   "Apis.Listing.ApiThumb.owners.technical": "Technical",
+  "Apis.Listing.ApiThumb.ribbon.ai": "AI",
+  "Apis.Listing.ApiThumb.ribbon.thirdParty": "THIRD PARTY",
   "Apis.Listing.ApiThumb.version": "Version",
   "Apis.Listing.SampleAPI.SampleAPI.ai.api.create.title": "Create AI API",
   "Apis.Listing.SampleAPI.SampleAPI.ai.api.import.content": "Create AI APIs by importing service provider APIs",

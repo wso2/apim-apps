@@ -440,7 +440,10 @@ class APIThumb extends Component {
                         data-testid='ai-api-card-label'
                         style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
                     >
-                        AI
+                        <FormattedMessage
+                            id="Apis.Listing.ApiThumb.ribbon.ai"
+                            defaultMessage="AI"
+                        />
                         <CustomIcon icon='ai' width={12} height={12} />
                     </div>
                 );
@@ -449,7 +452,10 @@ class APIThumb extends Component {
             if (api.advertiseOnly) {
                 return (
                     <div className={classes.ribbon} data-testid='third-party-api-card-label'>
-                        THIRD PARTY
+                        <FormattedMessage
+                            id="Apis.Listing.ApiThumb.ribbon.thirdParty"
+                            defaultMessage="THIRD PARTY"
+                        />
                     </div>
                 );
             }
