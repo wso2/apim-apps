@@ -17,166 +17,228 @@
  */
 import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
-import { Link as RouterLink } from 'react-router-dom';
-import Link from '@mui/material/Link';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
+import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
+import Tooltip from '@mui/material/Tooltip';
+import { Box, Divider } from '@mui/material';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { FormattedMessage } from 'react-intl';
 import LetterGenerator from 'AppComponents/Apis/Listing/components/ImageGenerator/LetterGenerator';
-import Configurations from 'Config';
-import DescriptionTwoToneIcon from '@mui/icons-material/DescriptionTwoTone';
-import LinkIcon from '@mui/icons-material/Link';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { getBasePath } from 'AppComponents/Shared/Utils';
+import CustomIcon from 'AppComponents/Shared/CustomIcon';
+import Utils from 'AppData/Utils';
 
-const PREFIX = 'DocThumb';
+const PREFIX = 'DocThumbClassic';
 
 const classes = {
     card: `${PREFIX}-card`,
-    thumbHeader: `${PREFIX}-thumbHeader`
+    apiDetails: `${PREFIX}-apiDetails`,
+    apiActions: `${PREFIX}-apiActions`,
+    thumbHeader: `${PREFIX}-thumbHeader`,
+    textTruncate: `${PREFIX}-textTruncate`,
+    row: `${PREFIX}-row`,
+    textWrapper: `${PREFIX}-textWrapper`,
+    chip: `${PREFIX}-chip`,
+    suppressLinkStyles: `${PREFIX}-suppressLinkStyles`,
 };
 
-const StyledLink = styled(Link)((
-    {
-        theme
-    }
-) => ({
-    [`& .${classes.card}`]: {
-        margin: theme.spacing(3 / 2),
-        maxWidth: theme.spacing(32),
+const StyledCard = styled(Card)(({ theme }) => ({
+    [`&.${classes.card}`]: {
+        width: '300px',
+        height: 'fit-content',
+        margin: theme.spacing(1),
+        borderRadius: theme.spacing(1),
         transition: 'box-shadow 0.3s ease-in-out',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+
+    [`& .${classes.apiDetails}`]: {
+        padding: theme.spacing(1.5),
+        paddingBottom: 0,
+        gap: theme.spacing(2),
+        display: 'flex',
+        flex: 1,
+    },
+
+    [`& .${classes.apiActions}`]: {
+        justifyContent: 'space-between',
+        padding: `8px 12px ${theme.spacing(1)} 12px`,
     },
 
     [`& .${classes.thumbHeader}`]: {
-        maxWidth: theme.spacing(16),
+        color: theme.palette.text.primary,
+        cursor: 'pointer',
+        fontWeight: 600,
+        lineHeight: '1.3',
+    },
+
+    [`& .${classes.textTruncate}`]: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
-    
-    [`& .${classes.defaultCardContent}`]: {
-        height: '111px',
+
+    [`& .${classes.row}`]: {
+        display: 'flex',
+        gap: '8px',
     },
 
-    [`& .${classes.maxCardContent}`]: {
-        height: '208px',
+    [`& .${classes.textWrapper}`]: {
+        color: theme.palette.text.secondary,
+        textDecoration: 'none',
     },
-    
-    [`& .${classes.minCardContent}`]: {
-        height: '187px',
+
+    [`& .${classes.chip}`]: {
+        height: 20,
+        borderRadius: 4,
+        backgroundColor: '#eef3f9ff',
+        overflow: 'hidden',
+    },
+
+    [`& .${classes.suppressLinkStyles}`]: {
+        textDecoration: 'none',
+        color: 'inherit',
     },
 }));
 
-
-const DocThumb = (props) => {
+const DocThumbClassic = (props) => {
     const { doc } = props;
     const [isHover, setIsHover] = useState(false);
-    const toggleMouseOver = () => setIsHover(!isHover);
 
-    let thumbIcon;
-    let PrefixIcon = TextFieldsIcon;
-    if (doc.sourceType === 'FILE') {
-        PrefixIcon = PictureAsPdfIcon;
-        thumbIcon = DescriptionTwoToneIcon;
-    } else if (doc.sourceType === 'URL') {
-        PrefixIcon = LinkIcon;
+    let apiNameLabel = 'API Name';
+    if (doc.associatedType === 'APIProduct') {
+        apiNameLabel = 'API Product Name';
+    } else if (doc.associatedType === 'MCP') {
+        apiNameLabel = 'MCP Server Name';
     }
-    let configValue;
-    const { tileDisplayInfo } = Configurations.apis;
-    if (tileDisplayInfo.showBusinessDetails === true && tileDisplayInfo.showTechnicalDetails === true) {
-        configValue = 2;
-    } else if (tileDisplayInfo.showBusinessDetails === true || tileDisplayInfo.showTechnicalDetails === true) {
-        configValue = 1;
-    }
-    let cardContentClassName;
-    if (configValue === 1) {
-        cardContentClassName = classes.minCardContent;
-    } else if (configValue === 2) {
-        cardContentClassName = classes.maxCardContent;
-    } else {
-        cardContentClassName = classes.defaultCardContent;
-    }
+
+    const toggleMouseOver = (event) => {
+        setIsHover(event.type === 'mouseover');
+    };
+
+    const linkTo = getBasePath(doc.associatedType) + doc.apiUUID + '/documents/' + doc.id + '/details';
+
     return (
-        <StyledLink
-            underline='none'
-            component={RouterLink}
-            to={getBasePath(doc.associatedType) + doc.apiUUID + '/documents/' + doc.id + '/details'}
-            aria-hidden='true'
+        <StyledCard
+            onMouseOver={toggleMouseOver}
+            onFocus={toggleMouseOver}
+            onMouseOut={toggleMouseOver}
+            onBlur={toggleMouseOver}
+            elevation={isHover ? 4 : 1}
+            className={classes.card}
+            data-testid={'doc-card-' + doc.name}
         >
-            <Card
-                onMouseOver={toggleMouseOver}
-                onFocus={toggleMouseOver}
-                onMouseOut={toggleMouseOver}
-                onBlur={toggleMouseOver}
-                elevation={isHover ? 4 : 1}
-                className={classes.card}
-            >
-                <CardMedia
-                    width={240}
-                    component={LetterGenerator}
-                    height={140}
-                    title='Thumbnail'
-                    artifact={{ name: 'Doc' }}
-                    charLength={3}
-                    ThumbIcon={thumbIcon}
-                    bgColor={false}
-                />
-                <CardContent className={cardContentClassName}>
-                    <Grid
-                        container
-                        direction='column'
-                        justifyContent='space-evenly'
-                        alignItems='flex-start'
+            <Link to={linkTo} className={classes.suppressLinkStyles}>
+                <CardContent className={classes.apiDetails} style={{ padding: '12px' }}>
+                    <div
+                        style={{
+                            position: 'relative',
+                            width: 100,
+                            height: 100,
+                        }}
                     >
-                        <Grid item>
-                            <Box display='flex' alignItems='center' flexDirection='row' fontFamily='fontFamily'>
-                                <Box display='flex'>
-                                    <PrefixIcon color='primary' />
-                                </Box>
-                                <Box
-                                    className={classes.thumbHeader}
-                                    color='text.primary'
-                                    fontSize='h4.fontSize'
-                                    ml={1}
-                                >
+                        <CardMedia
+                            width={100}
+                            component={LetterGenerator}
+                            height={100}
+                            title='Thumbnail'
+                            artifact={{ name: 'Doc' }}
+                            charLength={3}
+                            customLightColor='#366FB1'
+                            customDarkColor='#032E61'
+                            ThumbIcon={(iconProps) => (
+                                <CustomIcon icon='documentation' width={40} height={40} {...iconProps} />
+                            )}
+                        />
+                    </div>
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                        <div className={classes.textWrapper}>
+                            <Tooltip title={doc.name} arrow>
+                                <Typography variant='h6' className={classes.thumbHeader} id={doc.name} noWrap>
                                     {doc.name}
-                                </Box>
-                            </Box>
-                        </Grid>
-                        <Grid item>
-                            <Box mt={3} fontFamily='fontFamily'>
-                                <Box color='primary.main'>
-                                    {doc.associatedType}
-                                </Box>
-                                <Box color='text.primary' fontSize='h6.fontSize'>
-                                    {doc.apiName}
-                                </Box>
-                                <Box color='text.secondary' fontSize='body1.fontSize'>
-                                    Version:
-                                    {' '}
-                                    {doc.apiVersion}
-                                </Box>
-                            </Box>
-                        </Grid>
+                                </Typography>
+                            </Tooltip>
+                        </div>
+                        <div className={classes.row}>
+                            <Typography variant='caption' gutterBottom align='left' noWrap>
+                                <FormattedMessage id='by' defaultMessage='By' />
+                                &nbsp;
+                                <Tooltip title={doc.apiProvider} arrow>
+                                    <span>{doc.apiProvider}</span>
+                                </Tooltip>
+                            </Typography>
+                        </div>
+                        <div className={classes.row}>
+                            <div style={{ display: 'flex', flexDirection: 'column', flex: 0.65, overflow: 'hidden' }}>
+                                <Tooltip title={doc.apiName} arrow>
+                                    <Typography variant='body1' noWrap>
+                                        {doc.apiName}
+                                    </Typography>
+                                </Tooltip>
+                                <Typography variant='caption' component='p' color='text.disabled' lineHeight={1}>
+                                    {apiNameLabel}
+                                </Typography>
+                            </div>
 
-                    </Grid>
+                            <div style={{ display: 'flex', flexDirection: 'column', flex: 0.35, overflow: 'hidden' }}>
+                                <Tooltip title={doc.apiVersion} arrow>
+                                    <Typography variant='body1' noWrap>
+                                        {doc.apiVersion}
+                                    </Typography>
+                                </Tooltip>
+                                <Typography variant='caption' component='p' color='text.disabled' lineHeight={1}>
+                                    Version
+                                </Typography>
+                            </div>
+                        </div>
+                        <div className={classes.row} style={{ marginTop: '8px' }}>
+                            <Chip
+                                size='small'
+                                classes={{ root: classes.chip }}
+                                label='DOCUMENTATION'
+                                color='primary'
+                                variant='outlined'
+                            />
+                        </div>
+                    </div>
                 </CardContent>
-            </Card>
-        </StyledLink>
+            </Link>
+            <Divider sx={{ marginLeft: 1.5, marginRight: 1.5 }} />
+            <CardActions className={classes.apiActions}>
+                <Box
+                    display='flex'
+                    alignItems='center'
+                    gap={0.5}
+                    sx={{ marginTop: '8px', marginBottom: '8px' }}
+                >
+                    <AccessTimeIcon fontSize='small' sx={{ color: 'text.disabled' }} />
+                    <Typography variant='caption' color='textSecondary'>
+                        {Utils.formatUpdatedTime(doc.updatedTime)}
+                    </Typography>
+                </Box>
+            </CardActions>
+        </StyledCard>
     );
 };
 
-DocThumb.propTypes = {
+DocThumbClassic.propTypes = {
     doc: PropTypes.shape({
         id: PropTypes.string,
         name: PropTypes.string,
         sourceType: PropTypes.string.isRequired,
         apiName: PropTypes.string.isRequired,
         apiVersion: PropTypes.string.isRequired,
+        apiUUID: PropTypes.string.isRequired,
+        associatedType: PropTypes.string.isRequired,
+        provider: PropTypes.string,
     }).isRequired,
 };
-export default DocThumb;
+
+export default DocThumbClassic;

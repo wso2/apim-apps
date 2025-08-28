@@ -265,9 +265,18 @@ export default {
                 mcpServerFromExistingApiIcon: '/site/public/images/landing-icons/mcp-server-from-existing-api.svg',
                 mcpServerProxyIcon: '/site/public/images/landing-icons/mcp-server-proxy.svg',
                 noDataIcon: '/site/public/images/landing-icons/no-data.svg',
+                documentationIcon: '/site/public/images/landing-icons/documentation.svg',
+                apiDefinitionIcon: '/site/public/images/landing-icons/api-definition.svg',
             },
             menu: {
                 primary: '#34679D',
+            },
+            summarySection: {
+                bgImages: {
+                    apis: '/site/public/images/landing-icons/apis-bg.svg',
+                    apiProducts: '/site/public/images/landing-icons/api-products-bg.svg',
+                    mcps: '/site/public/images/landing-icons/mcps-bg.svg',
+                },
             },
         },
         title: {

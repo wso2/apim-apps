@@ -18,6 +18,7 @@
 
 import CONSTS from 'AppData/Constants';
 import Configurations from 'Config';
+import moment from 'moment';
 /**
  * Utility class for Publisher application
  */
@@ -757,6 +758,11 @@ class Utils {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
     }
+
+    static formatUpdatedTime = (updatedTime) => {
+        if (!updatedTime) return 'N/A';
+        return moment(parseInt(updatedTime, 10)).fromNow();
+    };
 }
 
 Utils.CONST = {

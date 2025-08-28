@@ -17,6 +17,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import APILanding from 'AppComponents/Apis/Listing/Landing';
 import MCPServerLanding from 'AppComponents/MCPServers/Landing';
@@ -82,20 +83,18 @@ const Root = styled('div')(({ theme }) => ({
         backgroundColor: theme.palette.action.hover,
     },
     [`& .${classes.summaryCount}`]: {
-        fontSize: '2rem',
+        fontSize: '2.25rem',
         fontWeight: 'bold',
         lineHeight: 1,
     },
     [`& .${classes.summaryTitle}`]: {
         color: theme.palette.text.secondary,
         fontSize: '0.875rem',
-        marginTop: theme.spacing(0.5),
+        alignSelf: 'end',
     },
     [`& .${classes.summaryArrow}`]: {
         color: theme.palette.action.active,
-        backgroundColor: theme.palette.background.paper,
         border: `1px solid ${theme.palette.divider}`,
-        marginLeft: theme.spacing(2),
         width: 28,
         height: 28,
         cursor: 'pointer',
@@ -105,30 +104,27 @@ const Root = styled('div')(({ theme }) => ({
         '& .MuiSvgIcon-root': {
             fontSize: '0.875rem',
         },
-        alignSelf: 'end',
     },
     [`& .${classes.summarySection}`]: {
         marginBottom: theme.spacing(4),
     },
     [`& .${classes.summaryContainer}`]: {
         borderRadius: theme.spacing(1),
-        border: `1px solid ${theme.palette.divider}`,
-        backgroundColor: theme.palette.background.paper,
-        padding: theme.spacing(2),
+        backgroundColor: '#F7F8FB',
         display: 'flex',
+        boxShadow: '0 2px 12px 0 rgba(0,0,0,0.08)',
     },
     [`& .${classes.summaryItem}`]: {
         display: 'flex',
         alignItems: 'center',
         flex: 1,
-        padding: theme.spacing(1, 2),
+        padding: theme.spacing(3),
         position: 'relative',
     },
     [`& .${classes.verticalDivider}`]: {
         width: '1px',
         backgroundColor: theme.palette.divider,
-        margin: theme.spacing(1, 0),
-        minHeight: '60px',
+        margin: theme.spacing(2, 0),
     },
 }));
 
@@ -148,29 +144,44 @@ const PublisherLanding = () => {
     const [error, setError] = useState(null);
     const theme = useTheme();
     const { noDataIcon } = theme.custom.landingPage.icons;
+    const { bgImages } = theme.custom.landingPage.summarySection;
     const { data: settings } = usePublisherSettings();
     const isMCPSupportEnabled = settings && settings.isMCPSupportEnabled;
 
     // Fixed page size for displaying first 5 entries
     const pageSize = 5;
 
-    // Summary Item Component
-    const SummaryItem = ({ icon, title, count, onClick }) => (
-        <Box className={classes.summaryItem}>
-            <Box className={classes.summaryIcon}>
-                <CustomIcon width={24} height={24} icon={icon} strokeColor={theme.palette.primary.main} />
+    // Summary Item Component (uses background images instead of CustomIcon)
+    const SummaryItem = ({ imageSrc, title, count, linkTo, backgroundPosition = 'left bottom' }) => {
+        return (
+            <Box
+                className={classes.summaryItem}
+                sx={{
+                    justifyContent: 'center',
+                    ...(imageSrc
+                        ? {
+                            backgroundImage: `url(${imageSrc})`,
+                            backgroundRepeat: 'no-repeat',
+                            backgroundPosition,
+                            backgroundSize: 'auto 95%',
+                        }
+                        : {}),
+                }}
+            >
+                <Box display='flex' flexDirection='row' justifyContent='center' gap={1}>
+                    <Typography variant='h4' className={classes.summaryCount}>
+                        {count}
+                    </Typography>
+                    <Typography className={classes.summaryTitle}>{title}</Typography>
+                    <Link to={linkTo} style={{ textDecoration: 'none', alignSelf: 'end' }} tabIndex={-1}>
+                        <IconButton className={classes.summaryArrow} size='small'>
+                            <ArrowForwardIosIcon />
+                        </IconButton>
+                    </Link>
+                </Box>
             </Box>
-            <Box>
-                <Typography variant='h4' className={classes.summaryCount}>
-                    {count}
-                </Typography>
-                <Typography className={classes.summaryTitle}>{title}</Typography>
-            </Box>
-            <IconButton className={classes.summaryArrow} size='small' onClick={onClick}>
-                <ArrowForwardIosIcon />
-            </IconButton>
-        </Box>
-    );
+        );
+    };
 
     // Fetch APIs data
     const fetchApis = useCallback(async () => {
@@ -231,12 +242,7 @@ const PublisherLanding = () => {
                 setError(null);
 
                 // Fetch APIs, API Products, and MCP Servers concurrently
-                await Promise.allSettled([
-                    fetchApis(),
-                    fetchApiProducts(),
-                    fetchMcpServers()
-                ]);
-
+                await Promise.allSettled([fetchApis(), fetchApiProducts(), fetchMcpServers()]);
             } catch (err) {
                 // eslint-disable-next-line no-console
                 console.error('Error fetching data:', err);
@@ -285,10 +291,7 @@ const PublisherLanding = () => {
             <Root>
                 <Box textAlign='center' p={4}>
                     <Typography variant='h6' color='error' gutterBottom>
-                        <FormattedMessage
-                            id='Publisher.Landing.error.title'
-                            defaultMessage='Error Loading Data'
-                        />
+                        <FormattedMessage id='Publisher.Landing.error.title' defaultMessage='Error Loading Data' />
                     </Typography>
                     <Typography variant='body2' color='textSecondary'>
                         {error}
@@ -305,12 +308,16 @@ const PublisherLanding = () => {
             description: 'Expose your APIs',
             icon: 'apis',
         },
-        ...(isMCPSupportEnabled ? [{
-            value: 'MCP Server',
-            name: 'MCP Server',
-            description: 'Expose your APIs as MCP Servers or manage external MCP Servers',
-            icon: 'mcp-servers',
-        }] : []),
+        ...(isMCPSupportEnabled
+            ? [
+                {
+                    value: 'MCP Server',
+                    name: 'MCP Server',
+                    description: 'Expose your APIs as MCP Servers or manage external MCP Servers',
+                    icon: 'mcp-servers',
+                },
+            ]
+            : []),
     ];
 
     return (
@@ -345,16 +352,16 @@ const PublisherLanding = () => {
                     <Grid item xs={12} className={classes.summarySection}>
                         <Box className={classes.summaryContainer}>
                             <SummaryItem
-                                icon='apis'
+                                imageSrc={bgImages.apis}
                                 title={<FormattedMessage id='Publisher.Landing.summary.apis' defaultMessage='APIs' />}
                                 count={apisTotalCount}
-                                onClick={() => {}}
+                                linkTo='/apis'
                             />
                             {isMCPSupportEnabled > 0 && <Box className={classes.verticalDivider} />}
                             {isMCPSupportEnabled && (
                                 <>
                                     <SummaryItem
-                                        icon='mcp-servers'
+                                        imageSrc={bgImages.mcps}
                                         title={
                                             <FormattedMessage
                                                 id='Publisher.Landing.summary.mcpServers'
@@ -362,13 +369,14 @@ const PublisherLanding = () => {
                                             />
                                         }
                                         count={mcpServersTotalCount}
-                                        onClick={() => {}}
+                                        linkTo='/mcp-servers'
+                                        backgroundPosition='32px bottom'
                                     />
                                     <Box className={classes.verticalDivider} />
                                 </>
                             )}
                             <SummaryItem
-                                icon='api-product'
+                                imageSrc={bgImages.apiProducts}
                                 title={
                                     <FormattedMessage
                                         id='Publisher.Landing.summary.apiProducts'
@@ -376,7 +384,8 @@ const PublisherLanding = () => {
                                     />
                                 }
                                 count={apiProductsTotalCount}
-                                onClick={() => {}}
+                                linkTo='/api-products'
+                                backgroundPosition='32px bottom'
                             />
                         </Box>
                     </Grid>

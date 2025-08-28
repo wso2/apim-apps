@@ -33,7 +33,7 @@ import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
 import { isRestricted } from 'AppData/AuthManager';
 import Alert from 'AppComponents/Shared/Alert';
-import { ENTITY_TYPES } from './utils';
+import CONSTS from 'AppData/Constants';
 
 /**
  * Delete Button Component for card actions
@@ -59,9 +59,9 @@ const DeleteButton = ({ item, type, onDelete }) => {
         setLoading(true);
         try {
             let response;
-            const isAPI = type === ENTITY_TYPES.APIS;
-            const isAPIProduct = type === ENTITY_TYPES.API_PRODUCTS;
-            const isMCPServer = type === ENTITY_TYPES.MCP_SERVERS;
+            const isAPI = type === CONSTS.ENTITY_TYPES.APIS;
+            const isAPIProduct = type === CONSTS.ENTITY_TYPES.API_PRODUCTS;
+            const isMCPServer = type === CONSTS.ENTITY_TYPES.MCP_SERVERS;
 
             if (isAPI) {
                 if (item.apiType === API.CONSTS.APIProduct) {
@@ -86,9 +86,9 @@ const DeleteButton = ({ item, type, onDelete }) => {
             }
         } catch (error) {
             let entityType;
-            if (type === ENTITY_TYPES.APIS) {
+            if (type === CONSTS.ENTITY_TYPES.APIS) {
                 entityType = 'API';
-            } else if (type === ENTITY_TYPES.API_PRODUCTS) {
+            } else if (type === CONSTS.ENTITY_TYPES.API_PRODUCTS) {
                 entityType = 'API Product';
             } else {
                 entityType = 'MCP Server';
@@ -111,9 +111,9 @@ const DeleteButton = ({ item, type, onDelete }) => {
     };
 
     let entityType = 'MCP Server';
-    if (type === ENTITY_TYPES.APIS) {
+    if (type === CONSTS.ENTITY_TYPES.APIS) {
         entityType = 'API';
-    } else if (type === ENTITY_TYPES.API_PRODUCTS) {
+    } else if (type === CONSTS.ENTITY_TYPES.API_PRODUCTS) {
         entityType = 'API Product';
     }
 

@@ -25,8 +25,8 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Configurations from 'Config';
 import { isRestricted } from 'AppData/AuthManager';
+import CONSTS from 'AppData/Constants';
 import DataTable from './DataTable';
-import { ENTITY_TYPES } from './utils';
 
 const PREFIX = 'McpServersSection';
 
@@ -45,7 +45,7 @@ const classes = {
 
 const Root = styled('div')(({ theme }) => ({
     [`& .${classes.root}`]: {
-        marginBottom: theme.spacing(3),
+        marginBottom: theme.spacing(4),
     },
 
     [`& .${classes.header}`]: {
@@ -134,7 +134,8 @@ const McpServersSection = ({ data, totalCount, onDelete }) => {
                         flexDirection='column'
                         alignItems='center'
                         justifyContent='center'
-                        marginTop={2}
+                        marginTop={4}
+                        marginBottom={4}
                     >
                         <img src={Configurations.app.context + noDataIcon} alt='No MCP Servers available' />
                         <Typography variant='body1' color='textSecondary' mt={2} textAlign='center'>
@@ -153,7 +154,7 @@ const McpServersSection = ({ data, totalCount, onDelete }) => {
                 ) : (
                     <DataTable
                         data={data}
-                        type={ENTITY_TYPES.MCP_SERVERS}
+                        type={CONSTS.ENTITY_TYPES.MCP_SERVERS}
                         totalCount={totalCount}
                         onDelete={onDelete}
                         isAPIProduct={false}

@@ -38,9 +38,10 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { Box, Divider } from '@mui/material';
 
 import { green } from '@mui/material/colors';
+import CustomIcon from 'AppComponents/Shared/CustomIcon';
+import Utils from 'AppData/Utils';
 import DeleteButton from './DeleteButton';
 import BaseThumbnail from '../BaseThumbnail';
-import { formatUpdatedTime } from './utils';
 
 const PREFIX = 'ApiThumbClassic';
 
@@ -63,6 +64,7 @@ const StyledCard = styled(Card)(({ theme, useFlexibleWidth }) => ({
         ...(useFlexibleWidth ? {} : { width: '300px', margin: theme.spacing(1) }),
         borderRadius: theme.spacing(1),
         transition: 'box-shadow 0.3s ease-in-out',
+        height: 'fit-content',
     },
 
     [`& .${classes.apiDetails}`]: {
@@ -97,7 +99,7 @@ const StyledCard = styled(Card)(({ theme, useFlexibleWidth }) => ({
 
     [`& .${classes.row}`]: {
         display: 'flex',
-        gap: '8px',
+        gap: '6px',
     },
 
     [`& .${classes.textWrapper}`]: {
@@ -110,26 +112,25 @@ const StyledCard = styled(Card)(({ theme, useFlexibleWidth }) => ({
         borderRadius: 4,
         backgroundColor: '#eef3f9ff',
         overflow: 'hidden',
-        '& .MuiChip-icon': {
-            fontSize: '12px',
-            width: '12px',
-            height: '12px',
-            marginLeft: '4px',
+        '& svg': {
+            marginLeft: '5px',
+            marginRight: '-4px',
         },
     },
 
     [`& .${classes.ribbon}`]: {
         fontFamily: theme.typography.fontFamily,
-        fontSize: '12px',
         fontWeight: 800,
-        backgroundColor: theme.palette.primary.main,
-        color: 'white',
-        position: 'absolute',
-        padding: '5px',
-        width: '80px',
-        zIndex: 3,
-        textAlign: 'center',
+        backgroundColor: '#F2F8FF',
         textTransform: 'uppercase',
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        zIndex: 3,
+        borderTopRightRadius: theme.spacing(0.5),
+        borderBottomLeftRadius: theme.spacing(0.5),
+        fontSize: '10px',
+        padding: '3px 5px',
     },
 
     [`& .${classes.suppressLinkStyles}`]: {
@@ -157,80 +158,27 @@ const getTypeChipLabel = (apiType) => {
 // Get icon component for API type
 const getTypeIcon = (apiType) => {
     const iconProps = {
-        style: {
-            width: '12px',
-            height: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
+        width: '12px',
+        height: '12px',
     };
 
     switch (apiType?.toUpperCase()) {
         case 'HTTP':
-            return (
-                <img
-                    src={Configurations.app.context + '/site/public/images/custom-icons/rest.svg'}
-                    alt='REST'
-                    {...iconProps}
-                />
-            );
+            return <CustomIcon icon='rest' {...iconProps} />;
         case 'SOAP':
-            return (
-                <img
-                    src={Configurations.app.context + '/site/public/images/custom-icons/soap.svg'}
-                    alt='SOAP'
-                    {...iconProps}
-                />
-            );
+            return <CustomIcon icon='soap' {...iconProps} />;
         case 'WS':
-            return (
-                <img
-                    src={Configurations.app.context + '/site/public/images/custom-icons/ws.svg'}
-                    alt='WebSocket'
-                    {...iconProps}
-                />
-            );
+            return <CustomIcon icon='ws' {...iconProps} />;
         case 'SSE':
-            return (
-                <img
-                    src={Configurations.app.context + '/site/public/images/custom-icons/sse.svg'}
-                    alt='SSE'
-                    {...iconProps}
-                />
-            );
+            return <CustomIcon icon='sse' {...iconProps} />;
         case 'WEBHOOK':
-            return (
-                <img
-                    src={Configurations.app.context + '/site/public/images/custom-icons/webhook.svg'}
-                    alt='Webhook'
-                    {...iconProps}
-                />
-            );
+            return <CustomIcon icon='webhook' {...iconProps} />;
         case 'WEBSUB':
-            return (
-                <img
-                    src={Configurations.app.context + '/site/public/images/custom-icons/websub.svg'}
-                    alt='WebSub'
-                    {...iconProps}
-                />
-            );
+            return <CustomIcon icon='websub' {...iconProps} />;
         case 'GRAPHQL':
-            return (
-                <img
-                    src={Configurations.app.context + '/site/public/images/custom-icons/graphql.svg'}
-                    alt='GraphQL'
-                    {...iconProps}
-                />
-            );
+            return <CustomIcon icon='graphql' {...iconProps} />;
         case 'ASYNC':
-            return (
-                <img
-                    src={Configurations.app.context + '/site/public/images/custom-icons/async.svg'}
-                    alt='Async'
-                    {...iconProps}
-                />
-            );
+            return <CustomIcon icon='async' {...iconProps} />;
         default:
             return null; // No icon for unknown types
     }
@@ -299,6 +247,157 @@ class APIThumb extends Component {
     };
 
     /**
+     * Render API type chip based on API type and vendor
+     * @param {Object} api - The API object containing type and vendor information
+     * @returns {JSX.Element|null} Single chip component or null if no matching type
+     */
+    renderApiTypeChip = (api) => {
+        // GraphQL chip
+        if (api.type === 'GRAPHQL' || api.transportType === 'GRAPHQL') {
+            return (
+                <Chip
+                    size='small'
+                    classes={{ root: classes.chip }}
+                    icon={getTypeIcon('GRAPHQL')}
+                    label={getTypeChipLabel(
+                        api.transportType === undefined ? api.type : api.transportType
+                    )}
+                    color='primary'
+                    variant='outlined'
+                />
+            );
+        }
+
+        // WebSocket chip
+        if (api.type === 'WS') {
+            return (
+                <Chip
+                    size='small'
+                    classes={{ root: classes.chip }}
+                    icon={getTypeIcon('WS')}
+                    label={getTypeChipLabel('WS')}
+                    color='primary'
+                    variant='outlined'
+                />
+            );
+        }
+
+        // WebSub chips (different styling based on vendor)
+        if (api.type === 'WEBSUB') {
+            if (api.gatewayVendor === 'solace') {
+                return (
+                    <Chip
+                        size='small'
+                        classes={{ root: classes.chip }}
+                        icon={getTypeIcon('WEBSUB')}
+                        label='SOLACE API'
+                        style={{ backgroundColor: '#00c995' }}
+                        variant='outlined'
+                    />
+                );
+            } else if (api.gatewayVendor === 'wso2') {
+                return (
+                    <Chip
+                        size='small'
+                        classes={{ root: classes.chip }}
+                        icon={getTypeIcon('WEBSUB')}
+                        label={getTypeChipLabel('WEBSUB')}
+                        color='primary'
+                        variant='outlined'
+                    />
+                );
+            }
+        }
+
+        // HTTP/REST chip (only for default subtype or no subtype)
+        if (api.type === 'HTTP' && (!api.subtype || api.subtype === 'DEFAULT')) {
+            return (
+                <Chip
+                    size='small'
+                    classes={{ root: classes.chip }}
+                    icon={getTypeIcon('HTTP')}
+                    label={getTypeChipLabel('HTTP')}
+                    color='primary'
+                    variant='outlined'
+                />
+            );
+        }
+
+        // SOAP chip
+        if (api.type === 'SOAP') {
+            return (
+                <Chip
+                    size='small'
+                    classes={{ root: classes.chip }}
+                    icon={getTypeIcon('SOAP')}
+                    label={getTypeChipLabel('SOAP')}
+                    color='primary'
+                    variant='outlined'
+                />
+            );
+        }
+
+        // SOAP to REST chip
+        if (api.type === 'SOAPTOREST') {
+            return (
+                <Chip
+                    size='small'
+                    classes={{ root: classes.chip }}
+                    icon={getTypeIcon('SOAP')}
+                    label={getTypeChipLabel('SOAPTOREST')}
+                    color='primary'
+                    variant='outlined'
+                />
+            );
+        }
+
+        // SSE chip
+        if (api.type === 'SSE') {
+            return (
+                <Chip
+                    size='small'
+                    classes={{ root: classes.chip }}
+                    icon={getTypeIcon('SSE')}
+                    label={getTypeChipLabel('SSE')}
+                    color='primary'
+                    variant='outlined'
+                />
+            );
+        }
+
+        // Webhook chip
+        if (api.type === 'WEBHOOK') {
+            return (
+                <Chip
+                    size='small'
+                    classes={{ root: classes.chip }}
+                    icon={getTypeIcon('WEBHOOK')}
+                    label={getTypeChipLabel('WEBHOOK')}
+                    color='primary'
+                    variant='outlined'
+                />
+            );
+        }
+
+        // Async chip
+        if (api.type === 'ASYNC') {
+            return (
+                <Chip
+                    size='small'
+                    classes={{ root: classes.chip }}
+                    icon={getTypeIcon('ASYNC')}
+                    label={getTypeChipLabel('ASYNC')}
+                    color='primary'
+                    variant='outlined'
+                />
+            );
+        }
+
+        // Return null if no matching type found
+        return null;
+    };
+
+    /**
      * @inheritdoc
      * @returns {React.Component} @inheritdoc
      * @memberof APIThumb
@@ -332,6 +431,32 @@ class APIThumb extends Component {
             api.lifeCycleStatus = api.status;
         }
 
+        // Helper function to render ribbon content
+        const renderRibbon = () => {
+            if (api.subtype === 'AIAPI') {
+                return (
+                    <div
+                        className={classes.ribbon}
+                        data-testid='ai-api-card-label'
+                        style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                    >
+                        AI
+                        <CustomIcon icon='ai' width={12} height={12} />
+                    </div>
+                );
+            }
+
+            if (api.advertiseOnly) {
+                return (
+                    <div className={classes.ribbon} data-testid='third-party-api-card-label'>
+                        THIRD PARTY
+                    </div>
+                );
+            }
+
+            return null;
+        };
+
         return (
             <StyledCard
                 onMouseOver={this.toggleMouseOver}
@@ -344,11 +469,6 @@ class APIThumb extends Component {
                 useFlexibleWidth={this.props.useFlexibleWidth}
                 style={{ display: 'flex', flexDirection: 'column' }}
             >
-                {api.advertiseOnly && (
-                    <div className={classes.ribbon} data-testid='third-party-api-card-label'>
-                        third party
-                    </div>
-                )}
                 <Link to={overviewPath} className={classes.suppressLinkStyles}>
                     <CardContent className={classes.apiDetails} style={{ display: 'flex', flex: 1, padding: '12px' }}>
                         <div
@@ -358,6 +478,9 @@ class APIThumb extends Component {
                                 height: theme.custom.thumbnail.height,
                             }}
                         >
+                            {/* Display the AI API or Third Party API Tag if applicable */}
+                            {renderRibbon()}
+
                             <CardMedia
                                 src='None'
                                 component={BaseThumbnail}
@@ -377,15 +500,11 @@ class APIThumb extends Component {
                         </div>
                         <div style={{ flex: 1, overflow: 'hidden' }}>
                             <div className={classes.textWrapper}>
-                                <Typography
-                                    variant='h6'
-                                    className={classes.thumbHeader}
-                                    title={api.name}
-                                    id={api.name}
-                                    noWrap
-                                >
-                                    {api.displayName || api.name}
-                                </Typography>
+                                <Tooltip title={api.displayName || api.name} arrow>
+                                    <Typography variant='h6' className={classes.thumbHeader} id={api.name} noWrap>
+                                        {api.displayName || api.name}
+                                    </Typography>
+                                </Tooltip>
                             </div>
                             <div className={classes.row}>
                                 <Typography variant='caption' gutterBottom align='left' noWrap>
@@ -394,7 +513,7 @@ class APIThumb extends Component {
                                     <Tooltip title={api.provider} arrow>
                                         <span>{api.provider}</span>
                                     </Tooltip>
-                                    {!isAPIProduct && !isMCPServer && (
+                                    {!isAPIProduct && !isMCPServer && (api.gatewayVendor || api.gatewayType) && (
                                         <>
                                             &nbsp;
                                             <FormattedMessage id='on' defaultMessage='on' />
@@ -407,19 +526,27 @@ class APIThumb extends Component {
                                 </Typography>
                             </div>
                             <div className={classes.row}>
-                                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
-                                    <Typography variant='body1' noWrap>
-                                        {api.version}
-                                    </Typography>
+                                <div
+                                    style={{ display: 'flex', flexDirection: 'column', flex: 0.35, overflow: 'hidden' }}
+                                >
+                                    <Tooltip title={api.version} arrow>
+                                        <Typography variant='body1' noWrap>
+                                            {api.version}
+                                        </Typography>
+                                    </Tooltip>
                                     <Typography variant='caption' component='p' color='text.disabled' lineHeight={1}>
                                         <FormattedMessage defaultMessage='Version' id='Apis.Listing.ApiThumb.version' />
                                     </Typography>
                                 </div>
 
-                                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
-                                    <Typography variant='body1' noWrap>
-                                        {api.context}
-                                    </Typography>
+                                <div
+                                    style={{ display: 'flex', flexDirection: 'column', flex: 0.65, overflow: 'hidden' }}
+                                >
+                                    <Tooltip title={api.context} arrow>
+                                        <Typography variant='body1' noWrap>
+                                            {api.context}
+                                        </Typography>
+                                    </Tooltip>
                                     <Typography variant='caption' component='p' color='text.disabled' lineHeight={1}>
                                         {api.type === 'WS' ? (
                                             <FormattedMessage
@@ -435,9 +562,29 @@ class APIThumb extends Component {
                                     </Typography>
                                 </div>
                             </div>
-                            {(tileDisplayInfo.showBusinessDetails || tileDisplayInfo.showTechnicalDetails) && (
-                                <>
-                                    <hr />
+                            <div className={classes.row} style={{ marginTop: '8px' }}>
+                                <Chip
+                                    size='small'
+                                    classes={{ root: classes.chip }}
+                                    label={lifecycleState}
+                                    color='default'
+                                    data-testid='itest-api-lifecycleState'
+                                />
+
+                                {/* Display the API type */}
+                                {this.renderApiTypeChip(api)}
+                            </div>
+                        </div>
+                    </CardContent>
+
+                    {(tileDisplayInfo.showBusinessDetails || tileDisplayInfo.showTechnicalDetails) && (
+                        <>
+                            <Divider sx={{ marginLeft: 1.5, marginRight: 1.5 }} />
+                            <CardContent
+                                className={classes.apiDetails}
+                                style={{ display: 'flex', flex: 1, padding: '12px' }}
+                            >
+                                <div style={{ flex: 1, overflow: 'hidden' }}>
                                     <div className={classes.row}>
                                         <Typography variant='body2' gutterBottom align='left'>
                                             <FormattedMessage
@@ -560,133 +707,29 @@ class APIThumb extends Component {
                                             )}
                                         </div>
                                     )}
-                                    <hr />
-                                </>
-                            )}
-                            <div className={classes.row} style={{ marginTop: '8px' }}>
-                                <Chip
-                                    size='small'
-                                    classes={{ root: classes.chip }}
-                                    label={lifecycleState}
-                                    color='default'
-                                    data-testid='itest-api-lifecycleState'
-                                />
-                                {(api.type === 'GRAPHQL' || api.transportType === 'GRAPHQL') && (
-                                    <Chip
-                                        size='small'
-                                        classes={{ root: classes.chip }}
-                                        icon={getTypeIcon('GRAPHQL')}
-                                        label={getTypeChipLabel(
-                                            api.transportType === undefined ? api.type : api.transportType
-                                        )}
-                                        color='primary'
-                                        variant='outlined'
-                                    />
-                                )}
-                                {api.type === 'WS' && (
-                                    <Chip
-                                        size='small'
-                                        classes={{ root: classes.chip }}
-                                        icon={getTypeIcon('WS')}
-                                        label={getTypeChipLabel('WS')}
-                                        color='primary'
-                                        variant='outlined'
-                                    />
-                                )}
-                                {api.type === 'WEBSUB' && api.gatewayVendor === 'wso2' && (
-                                    <Chip
-                                        size='small'
-                                        classes={{ root: classes.chip }}
-                                        icon={getTypeIcon('WEBSUB')}
-                                        label={getTypeChipLabel('WEBSUB')}
-                                        color='primary'
-                                        variant='outlined'
-                                    />
-                                )}
-                                {api.type === 'WEBSUB' && api.gatewayVendor === 'solace' && (
-                                    <Chip
-                                        size='small'
-                                        classes={{ root: classes.chip }}
-                                        icon={getTypeIcon('WEBSUB')}
-                                        label='SOLACE API'
-                                        style={{ backgroundColor: '#00c995' }}
-                                        variant='outlined'
-                                    />
-                                )}
-                                {api.type === 'HTTP' && (!api.subtype || api.subtype === 'DEFAULT') && (
-                                    <Chip
-                                        size='small'
-                                        classes={{ root: classes.chip }}
-                                        icon={getTypeIcon('HTTP')}
-                                        label={getTypeChipLabel('HTTP')}
-                                        color='primary'
-                                        variant='outlined'
-                                    />
-                                )}
-                                {api.type === 'SOAP' && (
-                                    <Chip
-                                        size='small'
-                                        classes={{ root: classes.chip }}
-                                        icon={getTypeIcon('SOAP')}
-                                        label={getTypeChipLabel('SOAP')}
-                                        color='primary'
-                                        variant='outlined'
-                                    />
-                                )}
-                                {api.type === 'SOAPTOREST' && (
-                                    <Chip
-                                        size='small'
-                                        classes={{ root: classes.chip }}
-                                        icon={getTypeIcon('SOAP')}
-                                        label={getTypeChipLabel('SOAPTOREST')}
-                                        color='primary'
-                                        variant='outlined'
-                                    />
-                                )}
-                                {api.type === 'SSE' && (
-                                    <Chip
-                                        size='small'
-                                        classes={{ root: classes.chip }}
-                                        icon={getTypeIcon('SSE')}
-                                        label={getTypeChipLabel('SSE')}
-                                        color='primary'
-                                        variant='outlined'
-                                    />
-                                )}
-                                {api.type === 'WEBHOOK' && (
-                                    <Chip
-                                        size='small'
-                                        classes={{ root: classes.chip }}
-                                        icon={getTypeIcon('WEBHOOK')}
-                                        label={getTypeChipLabel('WEBHOOK')}
-                                        color='primary'
-                                        variant='outlined'
-                                    />
-                                )}
-                                {api.type === 'ASYNC' && (
-                                    <Chip
-                                        size='small'
-                                        classes={{ root: classes.chip }}
-                                        icon={getTypeIcon('ASYNC')}
-                                        label={getTypeChipLabel('ASYNC')}
-                                        color='primary'
-                                        variant='outlined'
-                                    />
-                                )}
-                            </div>
-                        </div>
-                    </CardContent>
+                                </div>
+                            </CardContent>
+                        </>
+                    )}
                 </Link>
+
                 <Divider sx={{ marginLeft: 1.5, marginRight: 1.5 }} />
                 <CardActions className={classes.apiActions} data-testid={'card-action-' + api.name + api.version}>
-                    <Box display='flex' alignItems='center' gap={0.5}>
-                        <AccessTimeIcon fontSize='small' sx={{ color: 'text.disabled' }} />
-                        <Typography variant='caption' color='textSecondary'>
-                            {formatUpdatedTime(api.updatedTime)}
-                        </Typography>
-                    </Box>
+                    {api.updatedTime && (
+                        <Box
+                            display='flex'
+                            alignItems='center'
+                            gap={0.5}
+                            sx={{ marginTop: '8px', marginBottom: '8px', marginRight: 'auto' }}
+                        >
+                            <AccessTimeIcon fontSize='small' sx={{ color: 'text.disabled' }} />
+                            <Typography variant='caption' color='textSecondary'>
+                                {Utils.formatUpdatedTime(api.updatedTime)}
+                            </Typography>
+                        </Box>
+                    )}
                     {!isRestricted(['apim:api_create'], api) && (
-                        <>
+                        <div style={{ marginLeft: 'auto' }}>
                             <DeleteButton
                                 setLoading={this.setLoading}
                                 api={api}
@@ -694,7 +737,7 @@ class APIThumb extends Component {
                                 isAPIProduct={isAPIProduct}
                             />
                             {loading && <CircularProgress className={classes.deleteProgress} />}
-                        </>
+                        </div>
                     )}
                 </CardActions>
             </StyledCard>

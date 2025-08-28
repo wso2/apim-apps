@@ -22,7 +22,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import ApiThumb from 'AppComponents/Apis/Listing/components/ImageGenerator/ApiThumb';
-import { ENTITY_TYPES } from './utils';
+import CONSTS from 'AppData/Constants';
 
 /**
  * Reusable DataTable Component for APIs, API Products, and MCP Servers
@@ -37,11 +37,11 @@ const DataTable = ({ data, type, totalCount, onDelete, isAPIProduct, isMCPServer
     // Get "View All" path based on entity type
     const getViewAllPath = () => {
         switch (type) {
-            case ENTITY_TYPES.APIS:
+            case CONSTS.ENTITY_TYPES.APIS:
                 return '/apis';
-            case ENTITY_TYPES.API_PRODUCTS:
+            case CONSTS.ENTITY_TYPES.API_PRODUCTS:
                 return '/api-products';
-            case ENTITY_TYPES.MCP_SERVERS:
+            case CONSTS.ENTITY_TYPES.MCP_SERVERS:
                 return '/mcp-servers';
             default:
                 return '/apis';
@@ -51,11 +51,11 @@ const DataTable = ({ data, type, totalCount, onDelete, isAPIProduct, isMCPServer
     // Get entity type label for "View All" button
     const getEntityLabel = () => {
         switch (type) {
-            case ENTITY_TYPES.APIS:
+            case CONSTS.ENTITY_TYPES.APIS:
                 return 'APIs';
-            case ENTITY_TYPES.API_PRODUCTS:
+            case CONSTS.ENTITY_TYPES.API_PRODUCTS:
                 return 'API Products';
-            case ENTITY_TYPES.MCP_SERVERS:
+            case CONSTS.ENTITY_TYPES.MCP_SERVERS:
                 return 'MCP Servers';
             default:
                 return 'Items';
