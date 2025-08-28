@@ -715,19 +715,17 @@ class APIThumb extends Component {
 
                 <Divider sx={{ marginLeft: 1.5, marginRight: 1.5 }} />
                 <CardActions className={classes.apiActions} data-testid={'card-action-' + api.name + api.version}>
-                    {api.updatedTime && (
-                        <Box
-                            display='flex'
-                            alignItems='center'
-                            gap={0.5}
-                            sx={{ marginTop: '8px', marginBottom: '8px', marginRight: 'auto' }}
-                        >
-                            <AccessTimeIcon fontSize='small' sx={{ color: 'text.disabled' }} />
-                            <Typography variant='caption' color='textSecondary'>
-                                {Utils.formatUpdatedTime(api.updatedTime)}
-                            </Typography>
-                        </Box>
-                    )}
+                    <Box
+                        display='flex'
+                        alignItems='center'
+                        gap={0.5}
+                        sx={{ marginTop: '8px', marginBottom: '8px', marginRight: 'auto' }}
+                    >
+                        <AccessTimeIcon fontSize='small' sx={{ color: 'text.disabled' }} />
+                        <Typography variant='caption' color='textSecondary'>
+                            {Utils.formatUpdatedTime(api.updatedTime)}
+                        </Typography>
+                    </Box>
                     {!isRestricted(['apim:api_create'], api) && (
                         <div style={{ marginLeft: 'auto' }}>
                             <DeleteButton
