@@ -162,6 +162,14 @@ function AppRouts(props) {
                         }
                     }}
                 />
+                <Route
+                    path='/search'
+                    render={(routeProps) => (
+                        <PortalModeRouteGuard>
+                            <Apis {...routeProps} />
+                        </PortalModeRouteGuard>
+                    )}
+                />
                 <Route component={PageNotFound} />
             </Switch>
         </Suspense>

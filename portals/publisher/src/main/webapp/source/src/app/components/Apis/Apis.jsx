@@ -79,7 +79,12 @@ const Apis = () => {
                     </MCPRouteGuard>
                 )}
             />
-            <Route path='/apis/search' render={(props) => <Listing {...props} isAPIProduct={false} />} />
+            <Route
+                exact
+                path='/search'
+                key={Date.now()}
+                render={(props) => <Listing {...props} isAPIProduct={false} />}
+            />
             <Route path='/apis/create' component={DeferredAPICreateRoutes} />
             <Route path='/apis/design-assistant' component={DefferedAIApiCreateRoutes} />
             <Route

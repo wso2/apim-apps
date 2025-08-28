@@ -334,9 +334,23 @@ class CommonListingLegacy extends React.Component {
 
         // Detect if we're on MCP servers route or APIs route
         const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
-        const title = isMCPServersRoute ? 'MCP Servers' : 'APIs';
-        const titleId = isMCPServersRoute ? 'MCPServers.Listing.Listing.mcpservers.main' : 'Apis.Listing.Listing.apis.main';
-        const iconType = isMCPServersRoute ? 'mcp-server' : 'api';
+        const isSearchRoute = window.location.pathname.includes('/search');
+        let title;
+        let titleId;
+        let iconType;
+        if (isMCPServersRoute) {
+            title = 'MCP Servers';
+            titleId = 'MCPServers.Listing.Listing.mcpservers.main';
+            iconType = 'mcp-server';
+        } else if (isSearchRoute) {
+            title = 'Unified Search';
+            titleId = 'Apis.Listing.Listing.search.main';
+            iconType = 'api';
+        } else {
+            title = 'APIs';
+            titleId = 'Apis.Listing.Listing.apis.main';
+            iconType = 'api';
+        }
 
         if (search && searchQuery !== null) {
             // For the tagWise search
