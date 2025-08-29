@@ -241,6 +241,13 @@ class APIProduct extends Resource {
             });
         return promisedProducts.then(response => {
             response.obj.apiType = API.CONSTS.APIProduct;
+
+            // for each API Product, set the apiType attribute
+            response.body.list = response.body.list.map(apiProduct => ({
+                ...apiProduct,
+                apiType: API.CONSTS.APIProduct,
+            }));
+
             return response;
         });
     }

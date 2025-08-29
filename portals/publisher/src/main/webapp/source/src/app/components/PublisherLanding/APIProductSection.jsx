@@ -25,8 +25,8 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Configurations from 'Config';
 import { isRestricted } from 'AppData/AuthManager';
+import CONSTS from 'AppData/Constants';
 import DataTable from './DataTable';
-import { ENTITY_TYPES } from './utils';
 
 const PREFIX = 'APIProductSection';
 
@@ -43,28 +43,16 @@ const classes = {
     emptyStateButton: `${PREFIX}-emptyStateButton`,
 };
 
-const Root = styled('div')((
-    {
-        theme
-    }
-) => ({
+const Root = styled('div')(({ theme }) => ({
     [`& .${classes.root}`]: {
         marginBottom: theme.spacing(4),
-        marginLeft: theme.spacing(4),
-        marginRight: theme.spacing(4),
-    },
-
-    [`& .${classes.section}`]: {
-        marginBottom: theme.spacing(4),
-        marginLeft: theme.spacing(4),
-        marginRight: theme.spacing(4),
     },
 
     [`& .${classes.header}`]: {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: theme.spacing(2),
+        marginBottom: theme.spacing(2.5),
     },
 
     [`& .${classes.headerContent}`]: {
@@ -85,13 +73,13 @@ const Root = styled('div')((
     [`& .${classes.emptyStateContent}`]: {
         display: 'flex',
         gap: theme.spacing(3),
-        minWidth: '600px',
+        minWidth: '550px',
+        marginTop: theme.spacing(3),
     },
 
     [`& .${classes.emptyStateImage}`]: {
-        height: '100px',
+        height: '80px',
         width: 'auto',
-        verticalAlign: 'middle',
     },
 
     [`& .${classes.emptyStateText}`]: {
@@ -116,7 +104,7 @@ const Root = styled('div')((
  */
 const APIProductSection = ({ data, totalCount, onDelete }) => {
     const theme = useTheme();
-    const { createFirstApiProductIcon } = theme.custom.landingPage.icons;
+    const { noDataIcon } = theme.custom.landingPage.icons;
     return (
         <Root>
             <div className={classes.root}>
@@ -129,68 +117,51 @@ const APIProductSection = ({ data, totalCount, onDelete }) => {
                             />
                         </Typography>
                     </div>
-                    {data.length > 0 && (
-                        <Button
-                            variant='contained'
-                            color='primary'
-                            component={Link}
-                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                            to='/api-products/create'
-                            startIcon={<AddIcon />}
-                        >
-                            <FormattedMessage
-                                id='Publisher.Landing.create.api.product.button'
-                                defaultMessage='Create API Product'
-                            />
-                        </Button>
-                    )}
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        component={Link}
+                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                        to='/api-products/create'
+                        startIcon={<AddIcon />}
+                    >
+                        <FormattedMessage
+                            id='Publisher.Landing.create.api.product.button'
+                            defaultMessage='Create API Product'
+                        />
+                    </Button>
                 </div>
                 {data.length === 0 ? (
-                    <div className={classes.emptyState}>
-                        <div className={classes.emptyStateContent}>
-                            <Box>
-                                <img
-                                    src={Configurations.app.context + createFirstApiProductIcon}
-                                    alt='Create your first API Product'
-                                    className={classes.emptyStateImage}
-                                />
-                            </Box>
-                            <div className={classes.emptyStateText}>
-                                <Typography variant='h4'>
-                                    <FormattedMessage
-                                        id='Publisher.Landing.create.first.api.product.title'
-                                        defaultMessage='Create your first API Product'
-                                    />
-                                </Typography>
-                                <Typography variant='body1' color='textSecondary' style={{ marginBottom: '4px' }}>
-                                    <FormattedMessage
-                                        id='Publisher.Landing.api.product.description'
-                                        defaultMessage='Combine multiple API resources in to a single API'
-                                    />
-                                </Typography>
-                                <Button
-                                    variant='contained'
-                                    color='primary'
-                                    component={Link}
-                                    disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                                    to='/api-products/create'
-                                    startIcon={<AddIcon />}
-                                    className={classes.emptyStateButton}
-                                >
-                                    <FormattedMessage
-                                        id='Publisher.Landing.create.api.product.button'
-                                        defaultMessage='Create'
-                                    />
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
+                    <Box
+                        display='flex'
+                        flexDirection='column'
+                        alignItems='center'
+                        justifyContent='center'
+                        marginTop={4}
+                        marginBottom={4}
+                    >
+                        <img src={Configurations.app.context + noDataIcon} alt='No API Products available' />
+                        <Typography variant='body1' color='textSecondary' mt={2} textAlign='center'>
+                            <FormattedMessage
+                                id='Publisher.Landing.no.api.products.message.line1'
+                                defaultMessage='No API Products found.'
+                            />
+                        </Typography>
+                        <Typography variant='body1' color='textSecondary' textAlign='center'>
+                            <FormattedMessage
+                                id='Publisher.Landing.no.api.products.message.line2'
+                                defaultMessage='Create your first API Product to get started.'
+                            />
+                        </Typography>
+                    </Box>
                 ) : (
-                    <DataTable 
-                        data={data} 
-                        type={ENTITY_TYPES.API_PRODUCTS} 
+                    <DataTable
+                        data={data}
+                        type={CONSTS.ENTITY_TYPES.API_PRODUCTS}
                         totalCount={totalCount}
                         onDelete={onDelete}
+                        isAPIProduct
+                        isMCPServer={false}
                     />
                 )}
             </div>
@@ -199,14 +170,16 @@ const APIProductSection = ({ data, totalCount, onDelete }) => {
 };
 
 APIProductSection.propTypes = {
-    data: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        version: PropTypes.string,
-        description: PropTypes.string,
-        context: PropTypes.string,
-        updatedTime: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    })).isRequired,
+    data: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired,
+            version: PropTypes.string,
+            description: PropTypes.string,
+            context: PropTypes.string,
+            updatedTime: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        })
+    ).isRequired,
     totalCount: PropTypes.number.isRequired,
     onDelete: PropTypes.func,
 };

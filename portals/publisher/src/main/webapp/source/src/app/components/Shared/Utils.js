@@ -22,9 +22,10 @@
  * @returns {string} The base path for routing
  */
 export const getBasePath = (type = '') => {
-    if (type === 'APIPRODUCT') {
+    const upperCaseType = (type ?? '').toUpperCase();
+    if (upperCaseType === 'APIPRODUCT') {
         return '/api-products/';
-    } else if (type === 'MCP') {
+    } else if (upperCaseType === 'MCP') {
         return '/mcp-servers/';
     } else {
         return '/apis/';

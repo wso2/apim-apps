@@ -21,7 +21,20 @@ import Avatar from '@mui/material/Avatar';
 import { capitalizeFirstLetter } from 'AppData/stringFormatter';
 import Utils from 'AppData/Utils';
 
-const getColorFromLetter = (letter, colorMap, offset) => {
+const getColorFromLetter = (letter, colorMap, offset, customLightColor, customDarkColor) => {
+    // If custom colors are provided, use them directly
+    if (customLightColor && customDarkColor) {
+        return [customLightColor, customDarkColor];
+    }
+
+    // If only light color is provided, generate dark color
+    if (customLightColor) {
+        const { r, g, b } = Utils.hexToRGBHash(customLightColor);
+        const dark = Utils.rgbToHex(r - Math.ceil(r * offset), g - Math.ceil(offset * g), b - Math.ceil(offset * b));
+        return [customLightColor, dark];
+    }
+
+    // Fallback to original logic for backward compatibility
     let charLightColor = colorMap[letter.toLowerCase()];
 
     if (!charLightColor) {
@@ -33,8 +46,7 @@ const getColorFromLetter = (letter, colorMap, offset) => {
         }
     }
     const { r, g, b } = Utils.hexToRGBHash(charLightColor);
-    const dark = Utils.rgbToHex(r - Math.ceil(r * offset), g - Math.ceil(offset * g),
-        b - Math.ceil(offset * b));
+    const dark = Utils.rgbToHex(r - Math.ceil(r * offset), g - Math.ceil(offset * g), b - Math.ceil(offset * b));
     return [charLightColor, dark];
 };
 
@@ -46,22 +58,25 @@ const getThumbIconSx = (theme, width) => {
     };
 };
 
-const getAvatarSx = (theme, char, width, height, bgColor) => {
-    const {
-        colorMap, offset, width: defaultWidth, textShadow,
-    } = theme.custom.thumbnail;
-    const [light, dark] = getColorFromLetter(bgColor === false ? '' : char, colorMap, offset);
-    const fontSize = Math.ceil((width * 70) / defaultWidth);
+const getAvatarSx = (theme, char, width, height, bgColor, customLightColor, customDarkColor) => {
+    const { colorMap, offset, width: defaultWidth, textShadow } = theme.custom.thumbnail;
+    const [light, dark] = getColorFromLetter(
+        bgColor === false ? '' : char,
+        colorMap,
+        offset,
+        customLightColor,
+        customDarkColor
+    );
+    const fontSize = Math.ceil((width * 40) / defaultWidth);
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    const background = light && `linear-gradient(to right, ${light}, ${dark})`;
+    const background = light && `linear-gradient(to bottom, ${light}, ${dark})`;
     return {
         color: light && theme.palette.getContrastText(dark),
         background,
         fallbacks: [
-            { background: light }, /* fallback for old browsers */
+            { background: light } /* fallback for old browsers */,
             {
-                background:
-                `-webkit-linear-gradient(to right, ${light}, ${dark})`, /* Chrome 10-25, Safari 5.1-6 */
+                background: `-webkit-linear-gradient(to bottom, ${light}, ${dark})` /* Chrome 10-25, Safari 5.1-6 */,
             },
         ],
         height,
@@ -73,13 +88,24 @@ const getAvatarSx = (theme, char, width, height, bgColor) => {
 
 export default (props) => {
     const {
-        artifact, width, height, charLength = 2, ThumbIcon, bgColor, avatarVariant = 'square',
+        artifact,
+        width,
+        height,
+        charLength = 2,
+        ThumbIcon,
+        bgColor,
+        avatarVariant = 'rounded',
+        customLightColor,
+        customDarkColor,
     } = props;
     const name = artifact.name.substring(0, charLength);
     const theme = useTheme();
     return (
         <div style={{ display: 'flex' }}>
-            <Avatar variant={avatarVariant} sx={getAvatarSx(theme, name.substring(0, 1), width, height, bgColor)}>
+            <Avatar
+                variant={avatarVariant}
+                sx={getAvatarSx(theme, name.substring(0, 1), width, height, bgColor, customLightColor, customDarkColor)}
+            >
                 {ThumbIcon ? <ThumbIcon sx={getThumbIconSx(theme, width)} /> : capitalizeFirstLetter(name)}
             </Avatar>
         </div>

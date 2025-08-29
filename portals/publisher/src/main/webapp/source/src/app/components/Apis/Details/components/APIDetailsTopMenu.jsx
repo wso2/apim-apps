@@ -562,7 +562,7 @@ const APIDetailsTopMenu = (props) => {
                             <Link
                                 className={classes.viewInStoreLauncher}
                                 to={mcpServerUrl}
-                                style={{ minWidth: 90, marginTop: -8 }}
+                                style={{ minWidth: 90 }}
                             >
                                 <div>
                                     <CustomIcon

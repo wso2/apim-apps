@@ -2166,6 +2166,13 @@ class API extends Resource {
 
         return promisedAPIs.then(response => {
             response.obj.apiType = API.CONSTS.API;
+            
+            // for each API, set the apiType attribute
+            response.body.list = response.body.list.map(api => ({
+                ...api,
+                apiType: API.CONSTS.API
+            }));
+
             return response;
         });
     }

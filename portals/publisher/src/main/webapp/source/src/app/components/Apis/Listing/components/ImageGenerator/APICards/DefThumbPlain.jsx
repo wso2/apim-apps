@@ -24,6 +24,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'DefThumbPlain';
 
@@ -101,9 +102,7 @@ const StyledCard = styled(Card)((
 function DefThumbPlain(props) {
 
     const { def } = props;
-    const linkTo = def.associatedType === 'API'
-        ? `/apis/${def.apiUUID}/api-definition`
-        : `/api-products/${def.apiUUID}/api-definition`;
+    const linkTo = getBasePath(def.associatedType) + def.apiUUID + '/api-definition';
     return (
         <StyledCard className={classes.root} variant='outlined'>
             <CardContent>

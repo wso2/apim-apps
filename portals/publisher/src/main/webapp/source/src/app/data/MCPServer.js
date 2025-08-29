@@ -381,6 +381,13 @@ class MCPServer extends Resource {
 
         return promisedAPIs.then(response => {
             response.obj.apiType = MCPServer.CONSTS.MCP;
+
+            // for each MCP Server, set the apiType attribute
+            response.body.list = response.body.list.map(mcpServer => ({
+                ...mcpServer,
+                apiType: MCPServer.CONSTS.MCP,
+            }));
+
             return response;
         });
     }

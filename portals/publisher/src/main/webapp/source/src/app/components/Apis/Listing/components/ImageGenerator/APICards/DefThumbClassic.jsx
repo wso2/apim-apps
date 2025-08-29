@@ -17,153 +17,227 @@
  */
 import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
-import { Link as RouterLink } from 'react-router-dom';
-import Link from '@mui/material/Link';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
+import Tooltip from '@mui/material/Tooltip';
+import { Box, Divider } from '@mui/material';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { FormattedMessage } from 'react-intl';
 import LetterGenerator from 'AppComponents/Apis/Listing/components/ImageGenerator/LetterGenerator';
-import Configurations from 'Config';
+import CustomIcon from 'AppComponents/Shared/CustomIcon';
+import Utils from 'AppData/Utils';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
-const PREFIX = 'DefThumb';
+const PREFIX = 'DefThumbClassic';
 
 const classes = {
     card: `${PREFIX}-card`,
-    thumbHeader: `${PREFIX}-thumbHeader`
+    apiDetails: `${PREFIX}-apiDetails`,
+    apiActions: `${PREFIX}-apiActions`,
+    thumbHeader: `${PREFIX}-thumbHeader`,
+    textTruncate: `${PREFIX}-textTruncate`,
+    row: `${PREFIX}-row`,
+    textWrapper: `${PREFIX}-textWrapper`,
+    chip: `${PREFIX}-chip`,
+    suppressLinkStyles: `${PREFIX}-suppressLinkStyles`,
 };
 
-const StyledLink = styled(Link)((
-    {
-        theme
-    }
-) => ({
-    [`& .${classes.card}`]: {
-        margin: theme.spacing(3 / 2),
-        maxWidth: theme.spacing(32),
+const StyledCard = styled(Card)(({ theme }) => ({
+    [`&.${classes.card}`]: {
+        width: '300px',
+        height: 'fit-content',
+        margin: theme.spacing(1),
+        borderRadius: theme.spacing(1),
         transition: 'box-shadow 0.3s ease-in-out',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+
+    [`& .${classes.apiDetails}`]: {
+        padding: theme.spacing(1.5),
+        paddingBottom: 0,
+        gap: theme.spacing(2),
+        display: 'flex',
+        flex: 1,
+    },
+
+    [`& .${classes.apiActions}`]: {
+        justifyContent: 'space-between',
+        padding: `8px 12px ${theme.spacing(1)} 12px`,
     },
 
     [`& .${classes.thumbHeader}`]: {
-        maxWidth: theme.spacing(16),
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'normal',
-        wordBreak: 'break-word',
-        overflowWrap: 'break-word', 
-    },
-    
-    [`& .${classes.defaultCardContent}`]: {
-        height: '111px',
+        color: theme.palette.text.primary,
+        cursor: 'pointer',
+        fontWeight: 600,
+        lineHeight: '1.3',
     },
 
-    [`& .${classes.maxCardContent}`]: {
-        height: '208px',
+    [`& .${classes.textTruncate}`]: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
     },
-    
-    [`& .${classes.minCardContent}`]: {
-        height: '187px',
+
+    [`& .${classes.row}`]: {
+        display: 'flex',
+        gap: '8px',
+    },
+
+    [`& .${classes.textWrapper}`]: {
+        color: theme.palette.text.secondary,
+        textDecoration: 'none',
+    },
+
+    [`& .${classes.chip}`]: {
+        height: 20,
+        borderRadius: 4,
+        backgroundColor: '#eef3f9ff',
+        overflow: 'hidden',
+    },
+
+    [`& .${classes.suppressLinkStyles}`]: {
+        textDecoration: 'none',
+        color: 'inherit',
     },
 }));
 
-
-const DefThumb = (props) => {
+const DefThumbClassic = (props) => {
     const { def } = props;
     const [isHover, setIsHover] = useState(false);
-    const toggleMouseOver = () => setIsHover(!isHover);
-    const linkTo = def.associatedType === 'API'
-        ? `/apis/${def.apiUUID}/api-definition`
-        : `/api-products/${def.apiUUID}/api-definition`;
 
-    let thumbIcon;
-    let configValue;
-    const { tileDisplayInfo } = Configurations.apis;
-    if (tileDisplayInfo.showBusinessDetails === true && tileDisplayInfo.showTechnicalDetails === true) {
-        configValue = 2;
-    } else if (tileDisplayInfo.showBusinessDetails === true || tileDisplayInfo.showTechnicalDetails === true) {
-        configValue = 1;
+    let apiNameLabel = 'API Name';
+    if (def.associatedType === 'APIProduct') {
+        apiNameLabel = 'API Product Name';
+    } else if (def.associatedType === 'MCP') {
+        apiNameLabel = 'MCP Server Name';
     }
-    let cardContentClassName;
-    if (configValue === 1) {
-        cardContentClassName = classes.minCardContent;
-    } else if (configValue === 2) {
-        cardContentClassName = classes.maxCardContent;
-    } else {
-        cardContentClassName = classes.defaultCardContent;
-    }
+
+    const toggleMouseOver = (event) => {
+        setIsHover(event.type === 'mouseover');
+    };
+
+    const linkTo = getBasePath(def.associatedType) + def.apiUUID + '/api-definition';
+
     return (
-        <StyledLink
-            underline='none'
-            component={RouterLink}
-            to={linkTo}
-            aria-hidden='true'
+        <StyledCard
+            onMouseOver={toggleMouseOver}
+            onFocus={toggleMouseOver}
+            onMouseOut={toggleMouseOver}
+            onBlur={toggleMouseOver}
+            elevation={isHover ? 4 : 1}
+            className={classes.card}
+            data-testid={'def-card-' + def.name}
         >
-            <Card
-                onMouseOver={toggleMouseOver}
-                onFocus={toggleMouseOver}
-                onMouseOut={toggleMouseOver}
-                onBlur={toggleMouseOver}
-                elevation={isHover ? 4 : 1}
-                className={classes.card}
-            >
-                <CardMedia
-                    width={240}
-                    component={LetterGenerator}
-                    height={140}
-                    title='Thumbnail'
-                    artifact={{ name: 'Def' }}
-                    charLength={3}
-                    ThumbIcon={thumbIcon}
-                />
-                <CardContent className={cardContentClassName}>
-                    <Grid
-                        container
-                        direction='column'
-                        justifyContent='space-evenly'
-                        alignItems='flex-start'
+            <Link to={linkTo} className={classes.suppressLinkStyles}>
+                <CardContent className={classes.apiDetails} style={{ padding: '12px' }}>
+                    <div
+                        style={{
+                            position: 'relative',
+                            width: 100,
+                            height: 100,
+                        }}
                     >
-                        <Grid item>
-                            <Box display='flex' alignItems='center' flexDirection='row' fontFamily='fontFamily'>
-                                <Box
-                                    className={classes.thumbHeader}
-                                    color='text.primary'
-                                    fontSize='h4.fontSize'
-                                    ml={1}
-                                >
+                        <CardMedia
+                            width={100}
+                            component={LetterGenerator}
+                            height={100}
+                            title='Thumbnail'
+                            artifact={{ name: 'Def' }}
+                            charLength={3}
+                            customLightColor='#366FB1'
+                            customDarkColor='#032E61'
+                            ThumbIcon={(iconProps) => (
+                                <CustomIcon icon='api-definition' width={40} height={40} {...iconProps} />
+                            )}
+                        />
+                    </div>
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                        <div className={classes.textWrapper}>
+                            <Tooltip title={def.name} arrow>
+                                <Typography variant='h6' className={classes.thumbHeader} id={def.name} noWrap>
                                     {def.name}
-                                </Box>
-                            </Box>
-                        </Grid>
-                        <Grid item>
-                            <Box mt={3} fontFamily='fontFamily'>
-                                <Box color='primary.main'>
-                                    {def.associatedType}
-                                </Box>
-                                <Box color='text.primary' fontSize='h6.fontSize'>
-                                    {def.apiName}
-                                </Box>
-                                <Box color='text.secondary' fontSize='body1.fontSize'>
-                                    Version:
-                                    {' '}
-                                    {def.apiVersion}
-                                </Box>
-                            </Box>
-                        </Grid>
-                    </Grid>
+                                </Typography>
+                            </Tooltip>
+                        </div>
+                        <div className={classes.row}>
+                            <Typography variant='caption' gutterBottom align='left' noWrap>
+                                <FormattedMessage id='by' defaultMessage='By' />
+                                &nbsp;
+                                <Tooltip title={def.apiProvider} arrow>
+                                    <span>{def.apiProvider}</span>
+                                </Tooltip>
+                            </Typography>
+                        </div>
+                        <div className={classes.row}>
+                            <div style={{ display: 'flex', flexDirection: 'column', flex: 0.65, overflow: 'hidden' }}>
+                                <Tooltip title={def.apiName} arrow>
+                                    <Typography variant='body1' noWrap>
+                                        {def.apiName}
+                                    </Typography>
+                                </Tooltip>
+                                <Typography variant='caption' component='p' color='text.disabled' lineHeight={1}>
+                                    {apiNameLabel}
+                                </Typography>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', flex: 0.35, overflow: 'hidden' }}>
+                                <Tooltip title={def.apiVersion} arrow>
+                                    <Typography variant='body1' noWrap>
+                                        {def.apiVersion}
+                                    </Typography>
+                                </Tooltip>
+                                <Typography variant='caption' component='p' color='text.disabled' lineHeight={1}>
+                                    Version
+                                </Typography>
+                            </div>
+                        </div>
+                        <div className={classes.row} style={{ marginTop: '8px' }}>
+                            <Chip
+                                size='small'
+                                classes={{ root: classes.chip }}
+                                label='DEFINITION'
+                                color='primary'
+                                variant='outlined'
+                            />
+                        </div>
+                    </div>
                 </CardContent>
-            </Card>
-        </StyledLink>
+            </Link>
+            <Divider sx={{ marginLeft: 1.5, marginRight: 1.5 }} />
+            <CardActions className={classes.apiActions}>
+                <Box
+                    display='flex'
+                    alignItems='center'
+                    gap={0.5}
+                    sx={{ marginTop: '8px', marginBottom: '8px' }}
+                >
+                    <AccessTimeIcon fontSize='small' sx={{ color: 'text.disabled' }} />
+                    <Typography variant='caption' color='textSecondary'>
+                        {Utils.formatUpdatedTime(def.updatedTime)}
+                    </Typography>
+                </Box>
+            </CardActions>
+        </StyledCard>
     );
 };
 
-DefThumb.propTypes = {
+DefThumbClassic.propTypes = {
     def: PropTypes.shape({
         id: PropTypes.string,
         name: PropTypes.string,
         apiName: PropTypes.string.isRequired,
         apiVersion: PropTypes.string.isRequired,
+        apiUUID: PropTypes.string.isRequired,
+        associatedType: PropTypes.string.isRequired,
+        provider: PropTypes.string,
     }).isRequired,
 };
-export default DefThumb;
+
+export default DefThumbClassic;

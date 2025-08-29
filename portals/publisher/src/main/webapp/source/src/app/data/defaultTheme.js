@@ -192,8 +192,8 @@ export default {
             },
         },
         thumbnail: {
-            width: 240,
-            height: 140,
+            width: 100,
+            height: 100,
             textShadow: '0 1px 0 #ccc,0 1px 3px rgba(0,0,0,.1), 0 10px 10px rgba(0,0,0,.1), 0 20px 20px rgba(0,0,0,.1)',
             offset: 0.4, // Ratio between dark and light gradient, don't want a gradient make it 0
             colorMap: { // Any hashed color code or if you remove a mapping will fallback to default
@@ -265,11 +265,18 @@ export default {
                 mcpServerFromExistingApiIcon: '/site/public/images/landing-icons/mcp-server-from-existing-api.svg',
                 mcpServerProxyIcon: '/site/public/images/landing-icons/mcp-server-proxy.svg',
                 noDataIcon: '/site/public/images/landing-icons/no-data.svg',
-                createFirstApiProductIcon: '/site/public/images/landing-icons/create-first-api-product.svg',
-                createFirstMcpIcon: '/site/public/images/landing-icons/create-first-mcp.svg',
+                documentationIcon: '/site/public/images/landing-icons/documentation.svg',
+                apiDefinitionIcon: '/site/public/images/landing-icons/api-definition.svg',
             },
             menu: {
                 primary: '#34679D',
+            },
+            summarySection: {
+                bgImages: {
+                    apis: '/site/public/images/landing-icons/apis-bg.svg',
+                    apiProducts: '/site/public/images/landing-icons/api-products-bg.svg',
+                    mcps: '/site/public/images/landing-icons/mcps-bg.svg',
+                },
             },
         },
         title: {
