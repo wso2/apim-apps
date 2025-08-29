@@ -40,6 +40,8 @@ import { Box, Divider } from '@mui/material';
 import { green } from '@mui/material/colors';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import Utils from 'AppData/Utils';
+import { getBasePath } from 'AppComponents/Shared/Utils';
+import MCPServer from 'AppData/MCPServer';
 import DeleteButton from './DeleteButton';
 import BaseThumbnail from '../BaseThumbnail';
 
@@ -140,7 +142,7 @@ const StyledCard = styled(Card)(({ theme, useFlexibleWidth }) => ({
 }));
 
 // Get type chip label for APIs
-const getTypeChipLabel = (apiType) => {
+const getTypeChipLabel = (type) => {
     const typeMapping = {
         HTTP: 'REST',
         WS: 'WS',
@@ -152,17 +154,17 @@ const getTypeChipLabel = (apiType) => {
         WEBHOOK: 'Webhook',
         ASYNC: 'ASYNC',
     };
-    return typeMapping[apiType?.toUpperCase()] || apiType;
+    return typeMapping[type?.toUpperCase()] || type;
 };
 
 // Get icon component for API type
-const getTypeIcon = (apiType) => {
+const getTypeIcon = (type) => {
     const iconProps = {
         width: '12px',
         height: '12px',
     };
 
-    switch (apiType?.toUpperCase()) {
+    switch (type?.toUpperCase()) {
         case 'HTTP':
             return <CustomIcon icon='rest' {...iconProps} />;
         case 'SOAP':
@@ -407,23 +409,23 @@ class APIThumb extends Component {
         const { isHover, loading } = this.state;
         let overviewPath = '';
         const { tileDisplayInfo } = Configurations.apis;
-        if (api.apiType) {
-            if (isAPIProduct) {
-                overviewPath = `/api-products/${api.id}/overview`;
-            } else if (isMCPServer) {
-                overviewPath = `/mcp-servers/${api.id}/overview`;
-            } else {
-                overviewPath = `/apis/${api.id}/overview`;
-            }
-        } else {
-            overviewPath = `/apis/${api.apiUUID}/documents/${api.id}/details`;
+
+        // If the the data is coming throught the API/APIProduct/MCP Listing path, 
+        // the apiType attribute will be automatically added before coming here.
+        // If apiType is missing, that means the data is coming from the search path
+        // There we can take the api.type as the apiType
+        if (!api.apiType) {
+            api.apiType = api.type;
         }
+
+        overviewPath = getBasePath(api.apiType) + api.id + '/overview';
+
         let lifecycleState;
-        if (isAPIProduct) {
-            api.apiType = API.CONSTS.APIProduct;
+        if (api.apiType === API.CONSTS.APIProduct) {
             lifecycleState = api.state === 'PROTOTYPED' ? 'PRE-RELEASED' : api.state;
+        } else if (api.apiType === MCPServer.CONSTS.MCP) {
+            lifecycleState = api.lifeCycleStatus === 'PROTOTYPED' ? 'PRE-RELEASED' : api.lifeCycleStatus;
         } else {
-            api.apiType = API.CONSTS.API;
             lifecycleState = api.lifeCycleStatus === 'PROTOTYPED' ? 'PRE-RELEASED' : api.lifeCycleStatus;
         }
 
@@ -440,10 +442,7 @@ class APIThumb extends Component {
                         data-testid='ai-api-card-label'
                         style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
                     >
-                        <FormattedMessage
-                            id="Apis.Listing.ApiThumb.ribbon.ai"
-                            defaultMessage="AI"
-                        />
+                        <FormattedMessage id='Apis.Listing.ApiThumb.ribbon.ai' defaultMessage='AI' />
                         <CustomIcon icon='ai' width={12} height={12} />
                     </div>
                 );
@@ -452,10 +451,7 @@ class APIThumb extends Component {
             if (api.advertiseOnly) {
                 return (
                     <div className={classes.ribbon} data-testid='third-party-api-card-label'>
-                        <FormattedMessage
-                            id="Apis.Listing.ApiThumb.ribbon.thirdParty"
-                            defaultMessage="THIRD PARTY"
-                        />
+                        <FormattedMessage id='Apis.Listing.ApiThumb.ribbon.thirdParty' defaultMessage='THIRD PARTY' />
                     </div>
                 );
             }
