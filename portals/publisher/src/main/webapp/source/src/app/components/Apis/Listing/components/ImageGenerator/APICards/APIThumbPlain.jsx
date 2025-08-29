@@ -35,7 +35,8 @@ const classes = {
     imageDisplay: `${PREFIX}-imageDisplay`,
     truncateProvider: `${PREFIX}-truncateProvider`,
     thumbRightBy: `${PREFIX}-thumbRightBy`,
-    thumbRightByLabel: `${PREFIX}-thumbRightByLabel`
+    thumbRightByLabel: `${PREFIX}-thumbRightByLabel`,
+    ribbon: `${PREFIX}-ribbon`,
 };
 
 const StyledCard = styled(Card)((
@@ -139,9 +140,8 @@ const StyledCard = styled(Card)((
         color: '#616161',
         position: 'absolute',
         padding: '5px',
-        width: '80px',
         zIndex: 3,
-        textAlign: 'center',
+        textAlign: 'left',
         textTransform: 'uppercase',
     },
 }));
@@ -289,8 +289,11 @@ function APIThumbPlain(props) {
                 {api.advertiseOnly && (
                     <div className={classes.ribbon}>third party</div>
                 )}
+                {api.subtype === 'AIAPI' && (
+                    <div className={classes.ribbon}>AI API</div>
+                )}
             </Box>
-            <CardContent>
+            <CardContent style={{ padding: '16px' }}>
                 <Box id={api.name}>
                     <Link to={urlPrefix + api.id + '/overview'} aria-hidden='true'>
                         <Box display='flex'>
@@ -359,21 +362,20 @@ function APIThumbPlain(props) {
                         }
                     </Box>
                 </Box>
-                <Box display='flex' mt={2}>
+                <Box display='flex' mt={2} gap={2}>
                     <Box flex={1}>
                         <Typography variant='subtitle1'>{version}</Typography>
-                        <Typography variant='caption' gutterBottom align='left' className={classes.caption}>
+                        <Typography variant='caption' gutterBottom className={classes.caption}>
                             <FormattedMessage defaultMessage='Version' id='Apis.Listing.ApiThumb.version' />
                         </Typography>
                     </Box>
-                    <Box>
-                        <Typography variant='subtitle1' align='right' className={classes.contextBox}>
+                    <Box flex={1}>
+                        <Typography variant='subtitle1' className={classes.contextBox}>
                             {context}
                         </Typography>
                         <Typography
                             variant='caption'
                             gutterBottom
-                            align='right'
                             className={classes.caption}
                             Component='div'
                         >
@@ -541,7 +543,7 @@ function APIThumbPlain(props) {
                         <hr />
                     </>
                 )}
-                <Box display='flex' mt={2}>
+                <Box display='flex' mt={2} alignItems='center'>
                     <Box flex={1}>
                         {!isAPIProduct && (
                             <Chip
