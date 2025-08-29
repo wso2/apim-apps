@@ -489,7 +489,7 @@ class EditScope extends React.Component {
                                         />
                                     </Button>
                                     <Link to={url}>
-                                        <Button variant='contained'>
+                                        <Button>
                                             <FormattedMessage
                                                 id='Apis.Details.Scopes.EditScope.cancel'
                                                 defaultMessage='Cancel'
