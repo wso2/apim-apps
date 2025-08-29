@@ -19,8 +19,8 @@ import Configurations from 'Config';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import EmailIcon from '@mui/icons-material/Email';
 import { getBasePath } from 'AppComponents/Shared/Utils';
-import getIcon from './ImageUtils';
 import MCPServer from 'AppData/MCPServer';
+import getIcon from './ImageUtils';
 
 const PREFIX = 'APIThumbPlain';
 
@@ -157,7 +157,7 @@ function APIThumbPlain(props) {
     const theme = useTheme();
 
     const {
-        api, showInfo, isAPIProduct, isMCPServer, updateData,
+        api, showInfo, isAPIProduct, updateData,
     } = props;
     const { custom: { thumbnail } } = theme;
     const {
