@@ -1130,7 +1130,6 @@ export default function Environments() {
      */
     function cancelRevisionDeploymentWorkflow(revisionId, envName) {
         if (api.apiType !== API.CONSTS.APIProduct) {
-            // TODO(Ashera): Handle for MCP servers
             restApi.cancelRevisionDeploymentWorkflow(api.id, revisionId, envName)
                 .then(() => {
                     Alert.info(intl.formatMessage({
