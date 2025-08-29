@@ -747,7 +747,7 @@ class Details extends Component {
                         defaultMessage: '{updatedAPIName} API Product updated successfully',
                     },
                     {
-                        updatedAPIName: updatedAPI.name,
+                        updatedAPIName: updatedAPI.displayName || updatedAPI.name,
                     }));
                     this.setState({ api: updatedAPI });
                     return updatedAPI;
@@ -757,7 +757,7 @@ class Details extends Component {
                         defaultMessage: '{updatedAPIName} MCP Server updated successfully',
                     },
                     {
-                        updatedAPIName: updatedAPI.name,
+                        updatedAPIName: updatedAPI.displayName || updatedAPI.name,
                     }));
                     this.setState({ api: updatedAPI });
                     return updatedAPI;
@@ -767,7 +767,7 @@ class Details extends Component {
                         defaultMessage: '{updatedAPIName} API updated successfully',
                     },
                     {
-                        updatedAPIName: updatedAPI.name,
+                        updatedAPIName: updatedAPI.displayName || updatedAPI.name,
                     }));
                     this.setState({ api: updatedAPI });
                     return updatedAPI;
@@ -781,7 +781,7 @@ class Details extends Component {
                     defaultMessage: 'Something went wrong while updating the {apiName} API!!',
                 },
                 {
-                    apiName: api.name,
+                    apiName: api.displayName || api.name,
                 }));
                 // Kinda force render,Resting API object to old one
                 this.setState({ api });

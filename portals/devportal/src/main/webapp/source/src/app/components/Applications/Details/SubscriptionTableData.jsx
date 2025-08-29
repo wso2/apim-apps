@@ -270,7 +270,7 @@ class SubscriptionTableData extends React.Component {
                 style={{ cursor: tiers.length === 0 ? 'default' : '' }}
                 external
             >
-                {apiInfo.name + ' - ' + apiInfo.version + ' '}
+                {(apiInfo.displayName || apiInfo.name) + ' - ' + apiInfo.version + ' '}
                 <MDIcon path={mdiOpenInNew} size='12px' />
             </Link>
         );

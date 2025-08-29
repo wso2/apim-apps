@@ -59,6 +59,36 @@ function MetaData(props) {
             <Box p={1}>
                 <Grid container spacing={1}>
                     <Grid item xs={12} md={6} lg={4}>
+                        {/* Name */}
+                        <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
+                            <FormattedMessage
+                                id='Apis.Details.NewOverview.MetaData.name'
+                                defaultMessage='Name'
+                            />
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={8}>
+                        <Typography component='p' variant='body1'>
+                            {api.name && <>{api.name}</>}
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={4}>
+                        {/* Display Name */}
+                        <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
+                            <FormattedMessage
+                                id='Apis.Details.NewOverview.MetaData.displayName'
+                                defaultMessage='Display Name'
+                            />
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={8}>
+                        <Box display='flex' alignItems='center'>
+                            <Typography component='p' variant='body1'>
+                                {(api.displayName || api.name) && <>{api.displayName || api.name}</>}
+                            </Typography>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={4}>
                         <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                             <FormattedMessage
                                 id='Apis.Details.NewOverview.MetaData.description'

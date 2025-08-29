@@ -330,10 +330,22 @@ const APIDetailsTopMenu = (props) => {
                             <Typography variant='caption' gutterBottom align='left'>
                                 <FormattedMessage
                                     id='Apis.Details.components.APIDetailsTopMenu.created.by'
-                                    defaultMessage='Created by:'
+                                    defaultMessage='Created by '
                                 />
                                 {' '}
                                 {api.provider}
+                                {!isAPIProduct && !api.isMCPServer() && (
+                                    <>
+                                        &nbsp;
+                                        <FormattedMessage 
+                                            id='Apis.Details.components.APIDetailsTopMenu.created.on' 
+                                            defaultMessage='on' />
+                                        &nbsp;
+                                        {api.gatewayVendor === 'wso2' || api.gatewayVendor === 'solace'
+                                            ? api.gatewayVendor.toUpperCase()
+                                            : api.gatewayType}
+                                    </>
+                                )}
                             </Typography>
                         </Link>
                     </div>
@@ -351,7 +363,24 @@ const APIDetailsTopMenu = (props) => {
                         />
                     </Typography>
                 </div>
-
+                {api.initiatedFromGateway && (
+                    <>
+                        <VerticalDivider height={70} />
+                        <div className={classes.infoItem}>
+                            <MUIAlert
+                                variant='outlined'
+                                severity='info'
+                                icon={false}
+                                className={classes.alertMargin}
+                            >
+                                <FormattedMessage
+                                    id='Apis.Details.components.APIDetailsTopMenu.discovered.api.label'
+                                    defaultMessage='This is a discovered API'
+                                />
+                            </MUIAlert>
+                        </div>
+                    </>
+                )}
                 <div className={classes.dateWrapper} />
                 {api.isRevision && (
                     <MUIAlert
