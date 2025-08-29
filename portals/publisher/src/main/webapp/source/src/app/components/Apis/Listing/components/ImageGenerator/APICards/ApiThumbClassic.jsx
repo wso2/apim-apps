@@ -248,6 +248,18 @@ class APIThumb extends Component {
         this.setState({ technicalAnchorEl: null, technicalOpenPopover: false });
     };
 
+    // Check if access is restricted for delete button
+    isAccessRestricted = () => {
+        if (this.props.api.apiType === MCPServer.CONSTS.MCP) {
+            return isRestricted(
+                ['apim:mcp_server_delete', 'apim:mcp_server_manage', 'apim:mcp_server_import_export'],
+                this.props.api
+            );
+        } else {
+            return isRestricted(['apim:api_create'], this.props.api);
+        }
+    };
+
     /**
      * Render API type chip based on API type and vendor
      * @param {Object} api - The API object containing type and vendor information
@@ -728,7 +740,7 @@ class APIThumb extends Component {
                             {Utils.formatUpdatedTime(api.updatedTime)}
                         </Typography>
                     </Box>
-                    {!isRestricted(['apim:api_create'], api) && (
+                    {!this.isAccessRestricted() && (
                         <div style={{ marginLeft: 'auto' }}>
                             <DeleteButton
                                 setLoading={this.setLoading}

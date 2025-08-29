@@ -146,144 +146,74 @@ class DeleteApiButton extends React.Component {
             api: { id, name, type },
             setLoading,
             updateData,
-            isAPIProduct,
             history,
             intl,
         } = this.props;
-        const isMCPServer = type === MCPServer.CONSTS.MCP;
-        if (isAPIProduct) {
-            const promisedDelete = API.deleteProduct(id);
-            promisedDelete
-                .then((response) => {
-                    if (response.status !== 200) {
-                        Alert.info(
-                            intl.formatMessage({
-                                id: 'Apis.Details.components.api.product.delete.error',
-                                defaultMessage: 'Something went wrong while deleting the API Product!',
-                            })
-                        );
-                        return;
-                    }
-                    Alert.info(
-                        intl.formatMessage(
-                            {
-                                id: 'Apis.Details.components.api.product.delete.success',
-                                defaultMessage: 'API Product {name} deleted Successfully',
-                            },
-                            {
-                                name,
-                            }
-                        )
-                    );
-                    if (updateData) {
-                        updateData(id);
-                        setLoading(false);
-                    } else {
-                        history.push('/api-products');
-                    }
-                })
-                .catch((error) => {
-                    if (error.status === 409) {
-                        Alert.error('[ ' + name + ' ] : ' + error.response.body.description);
-                    } else {
-                        Alert.error(
-                            intl.formatMessage({
-                                id: 'Apis.Details.components.api.product.delete.error',
-                                defaultMessage: 'Something went wrong while deleting the API Product!',
-                            })
-                        );
-                    }
-                    setLoading(false);
-                });
-        } else if (isMCPServer) {
-            const promisedDelete = MCPServer.deleteMCPServer(id);
-            promisedDelete
-                .then((response) => {
-                    if (response.status !== 200) {
-                        Alert.info(
-                            intl.formatMessage({
-                                id: 'Apis.Details.components.api.mcp.delete.error',
-                                defaultMessage: 'Something went wrong while deleting the MCP Server!',
-                            })
-                        );
-                        return;
-                    }
-                    Alert.info(
-                        intl.formatMessage(
-                            {
-                                id: 'Apis.Details.components.api.mcp.delete.success',
-                                defaultMessage: 'MCP Server {name} deleted Successfully',
-                            },
-                            {
-                                name,
-                            }
-                        )
-                    );
-                    if (updateData) {
-                        updateData(id);
-                        setLoading(false);
-                    } else {
-                        history.push('/mcp-servers');
-                    }
-                })
-                .catch((error) => {
-                    if (error.status === 409) {
-                        Alert.error('[ ' + name + ' ] : ' + error.response.body.description);
-                    } else {
-                        Alert.error(
-                            intl.formatMessage({
-                                id: 'Apis.Details.components.api.mcp.delete.error',
-                                defaultMessage: 'Something went wrong while deleting the MCP Server!',
-                            })
-                        );
-                    }
-                    setLoading(false);
-                });
+
+        let promisedDelete;
+        let typeName;
+        let redirectPath;
+
+        if (type === API.CONSTS.APIProduct) {
+            promisedDelete = API.deleteProduct(id);
+            typeName = 'API Product';
+            redirectPath = '/api-products';
+        } else if (type === MCPServer.CONSTS.MCP) {
+            promisedDelete = MCPServer.deleteMCPServer(id);
+            typeName = 'MCP Server';
+            redirectPath = '/mcp-servers';
         } else {
-            const promisedDelete = API.delete(id);
-            promisedDelete
-                .then((response) => {
-                    if (response.status !== 200) {
-                        Alert.info(
-                            intl.formatMessage({
-                                id: 'Apis.Details.components.api.delete.error',
-                                defaultMessage: 'Something went wrong while deleting the API!',
-                            })
-                        );
-                        return;
-                    }
+            promisedDelete = API.delete(id);
+            typeName = 'API';
+            redirectPath = '/apis';
+        }
+
+        promisedDelete
+            .then((response) => {
+                if (response.status !== 200) {
                     Alert.info(
                         intl.formatMessage(
                             {
-                                id: 'Apis.Details.components.api.delete.success',
-                                defaultMessage: 'API {name} deleted Successfully',
+                                id: 'Apis.Details.components.delete.error',
+                                defaultMessage: 'Something went wrong while deleting the {typeName}!',
                             },
-                            {
-                                name,
-                            }
+                            { typeName }
                         )
                     );
-                    if (updateData) {
-                        updateData(id);
-                        setLoading(false);
-                    } else {
-                        history.push('/apis');
-                    }
-                })
-                .catch((error) => {
-                    if (error.status === 409) {
-                        Alert.error('[ ' + name + ' ] : ' + error.response.body.description);
-                    } else {
-                        Alert.error(
-                            intl.formatMessage({
-                                id: 'Apis.Details.components.api.delete.error',
-                                defaultMessage: 'Something went wrong while deleting the API!',
-                            })
-                        );
-                    }
+                    return;
+                }
+                Alert.info(
+                    intl.formatMessage(
+                        {
+                            id: 'Apis.Details.components.delete.success',
+                            defaultMessage: '{typeName} {name} deleted Successfully',
+                        },
+                        { typeName, name }
+                    )
+                );
+                if (updateData) {
+                    updateData(id);
                     setLoading(false);
-                });
-        }
+                } else {
+                    history.push(redirectPath);
+                }
+            })
+            .catch((error) => {
+                if (error.status === 409) {
+                    Alert.error('[ ' + name + ' ] : ' + error.response.body.description);
+                } else {
+                    Alert.error(
+                        intl.formatMessage(
+                            {
+                                id: 'Apis.Details.components.delete.error',
+                                defaultMessage: 'Something went wrong while deleting the {typeName}!',
+                            },
+                            { typeName }
+                        )
+                    );
+                }
+                setLoading(false);
+            });
     }
 
     /**
