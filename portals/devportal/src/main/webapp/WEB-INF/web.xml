@@ -111,6 +111,7 @@
         <url-pattern>/settings/*</url-pattern>
         <url-pattern>/applications/*</url-pattern>
         <url-pattern>/logout/*</url-pattern>
+        <url-pattern>/search</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>logout</servlet-name>

@@ -156,7 +156,7 @@ class HeaderSearch extends React.Component {
     onKeyDown(event) {
         if (event.key === 'Enter' && !this.suggestionSelected) {
             const { history } = this.props;
-            history.push('/apis/search?query=' + buildSearchQuery(event.target.value));
+            history.push('/search?query=' + buildSearchQuery(event.target.value));
         }
         this.suggestionSelected = false;
     }

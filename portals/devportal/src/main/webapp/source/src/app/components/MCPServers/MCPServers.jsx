@@ -32,11 +32,6 @@ const MCPServers = () => {
                     <CommonListing {...props} />)}
             />
             <Route
-                path='/mcp-servers/search'
-                render={(props) => (
-                    <CommonListing {...props} />)}
-            />
-            <Route
                 path='/mcp-servers/:serverUuid/'
                 render={(props) => (
                     <Details {...props} />)}

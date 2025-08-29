@@ -160,7 +160,7 @@ class HeaderSearch extends React.Component {
          if (event.key === 'Enter' && !this.suggestionSelected) {
              const { history } = this.props;
              const { lcstate } = this.state;
-             history.push('/apis/search?query=' + buildSearchQuery(event.target.value, lcstate));
+             history.push('/search?query=' + buildSearchQuery(event.target.value, lcstate));
          }
          this.suggestionSelected = false;
      }
@@ -217,7 +217,7 @@ class HeaderSearch extends React.Component {
          });
          const { history } = this.props;
          if (event.target.value) {
-             history.push('/apis/search?query=' + buildSearchQuery(searchText, event.target.value));
+             history.push('/search?query=' + buildSearchQuery(searchText, event.target.value));
          } else {
              history.push('/apis/');
          }

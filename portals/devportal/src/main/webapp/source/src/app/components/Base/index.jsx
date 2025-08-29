@@ -322,7 +322,10 @@ class LayoutLegacy extends React.Component {
 
     detectCurrentMenu = (location) => {
         const { pathname } = location;
-        if (/\/apis$/g.test(pathname) || /\/apis\//g.test(pathname)) {
+        if (/\/search$/g.test(pathname) || /\/search\//g.test(pathname)) {
+            // For search results, don't select any tab to show it's a separate search view
+            this.setState({ selected: null });
+        } else if (/\/apis$/g.test(pathname) || /\/apis\//g.test(pathname)) {
             this.setState({ selected: 'apis' });
         } else if (/\/mcp-servers$/g.test(pathname) || /\/mcp-servers\//g.test(pathname)) {
             this.setState({ selected: 'mcp-servers' });
