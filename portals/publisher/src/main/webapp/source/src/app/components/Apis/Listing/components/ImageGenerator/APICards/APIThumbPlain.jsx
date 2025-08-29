@@ -20,6 +20,7 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import EmailIcon from '@mui/icons-material/Email';
 import { getBasePath } from 'AppComponents/Shared/Utils';
 import getIcon from './ImageUtils';
+import MCPServer from 'AppData/MCPServer';
 
 const PREFIX = 'APIThumbPlain';
 
@@ -176,6 +177,14 @@ function APIThumbPlain(props) {
     const [technicalAnchorEl, setTechnicalAnchorEl] = useState(null);
     const [businessOpenPopover, setBusinessOpenPopover] = useState(false);
     const [technicalOpenPopover, setTechnicalOpenPopover] = useState(false);
+
+    // If the the data is coming throught the API/APIProduct/MCP Listing path, 
+    // the apiType attribute will be automatically added before coming here.
+    // If apiType is missing, that means the data is coming from the search path
+    // There we can take the api.type as the apiType
+    if (!api.apiType) {
+        api.apiType = api.type;
+    }
     const urlPrefix = getBasePath(api.apiType);
 
     useEffect(() => {
@@ -245,7 +254,7 @@ function APIThumbPlain(props) {
     };
 
     const isAccessRestricted = () => {
-        if (isMCPServer) {
+        if (api.apiType === MCPServer.CONSTS.MCP) {
             return isRestricted(
                 ['apim:mcp_server_delete', 'apim:mcp_server_manage', 'apim:mcp_server_import_export'],
                 api
