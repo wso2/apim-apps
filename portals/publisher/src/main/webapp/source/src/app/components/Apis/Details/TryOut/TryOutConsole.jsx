@@ -165,7 +165,13 @@ const TryOutConsole = () => {
 
     const generateInternalKey = useCallback(() => {
         tasksStatusDispatcher({ type: 'GENERATE_KEY_START' });
-        Api.generateInternalKey(api.id)
+        let generateInternalKeyPromise;
+        if (isMCPServer) {
+            generateInternalKeyPromise = MCPServer.generateInternalKey(api.id)
+        } else {
+            generateInternalKeyPromise = Api.generateInternalKey(api.id)
+        }
+        generateInternalKeyPromise
             .then((keyResponse) => {
                 const { apikey } = keyResponse.body;
                 setAPIKey(apikey);
@@ -178,26 +184,35 @@ const TryOutConsole = () => {
     useEffect(() => {
         tasksStatusDispatcher({ type: 'GET_DEPLOYMENTS_START' });
         if (publisherSettings) {
-            api.getDeployedRevisions(api.id).then((deploymentsResponse) => {
-                tasksStatusDispatcher({ type: 'GET_DEPLOYMENTS_SUCCESS' });
-                const currentDeployments = deploymentsResponse.body;
-                const currentDeploymentsWithDisplayName = currentDeployments
-                    .filter(deploy => deploy.status !== 'CREATED').map((deploy) => {
-                        const gwEnvironment = publisherSettings.environment.find((e) => e.name === deploy.name);
-                        const displayName = (gwEnvironment ? gwEnvironment.displayName : deploy.name);
-                        return { ...deploy, displayName };
-                    });
-                setDeployments(currentDeploymentsWithDisplayName);
-                if (currentDeploymentsWithDisplayName && currentDeploymentsWithDisplayName.length > 0) {
-                    const [initialDeploymentSelection] = currentDeploymentsWithDisplayName;
-                    setSelectedDeployment(initialDeploymentSelection);
+            let getDeploymentsPromise;
+            if (isMCPServer) {
+                if (api.isRevision) {
+                    getDeploymentsPromise = MCPServer.getDeployedRevisions(api.revisionedApiId)
+                } else {
+                    getDeploymentsPromise = MCPServer.getDeployedRevisions(api.id)
                 }
-            }).catch(
-                (error) => tasksStatusDispatcher({ type: 'GET_DEPLOYMENTS_ERROR', error }),
-            );
-            if (!isMCPServer) {
+            } else {
+                getDeploymentsPromise = api.getDeployedRevisions(api.id)
                 api.getSwagger().then((swaggerResponse) => setOasDefinition(swaggerResponse.body));
             }
+            getDeploymentsPromise
+                .then((deploymentsResponse) => {
+                    tasksStatusDispatcher({ type: 'GET_DEPLOYMENTS_SUCCESS' });
+                    const currentDeployments = deploymentsResponse.body;
+                    const currentDeploymentsWithDisplayName = currentDeployments
+                        .filter(deploy => deploy.status !== 'CREATED').map((deploy) => {
+                            const gwEnvironment = publisherSettings.environment.find((e) => e.name === deploy.name);
+                            const displayName = (gwEnvironment ? gwEnvironment.displayName : deploy.name);
+                            return { ...deploy, displayName };
+                        });
+                    setDeployments(currentDeploymentsWithDisplayName);
+                    if (currentDeploymentsWithDisplayName && currentDeploymentsWithDisplayName.length > 0) {
+                        const [initialDeploymentSelection] = currentDeploymentsWithDisplayName;
+                        setSelectedDeployment(initialDeploymentSelection);
+                    }
+                }).catch(
+                    (error) => tasksStatusDispatcher({ type: 'GET_DEPLOYMENTS_ERROR', error }),
+                );
         }
     }, [publisherSettings]);
 

@@ -1033,26 +1033,48 @@ class MCPServer extends Resource {
     }
 
     /**
-     * Return the deployed revisions of this API
-     * @returns
+     * Return the deployed revisions of an MCP Server
+     * @param {string} id - The ID of the MCP Server to get the deployed revisions for.
+     * @returns {Promise} A promise that resolves to the deployed revisions of the MCP Server.
      */
-    getDeployedRevisions() {  // TODO: Change to MCP
-        if (this.isRevision) {
-            return this.client.then(client => {
-                return client.apis['API Revisions'].getAPIRevisionDeployments({
-                    apiId: this.revisionedApiId,
-                },
-                ).then(res => {
-                    return { body: res.body.filter(a => a.revisionUuid === this.id) }
-                });
-            });
-        }
-        return this.client.then(client => {
-            return client.apis['API Revisions'].getAPIRevisionDeployments({
-                apiId: this.id,
+    static getDeployedRevisions(id) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Revisions'].getMCPServerRevisionDeployments({
+                mcpServerId: id,
             },
+            this._requestMetaData(),
             );
         });
+    }
+
+    /**
+     * Generate an internal key for an MCP Server
+     * @param {*} id MCP Server ID
+     * @param {*} callback Callback function to handle the response
+     * @returns {Promise} With given callback attached to the success chain else API invoke promise.
+     */
+    static generateInternalKey(id, callback = null) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        const promiseKey = apiClient.then((client) => {
+            return client.apis['MCP Servers'].generateInternalAPIKeyMCPServer(
+                { mcpServerId: id },
+                this._requestMetaData()
+            );
+        });
+        if (callback) {
+            return promiseKey.then(callback);
+        } else {
+            return promiseKey;
+        }
     }
 }
 
