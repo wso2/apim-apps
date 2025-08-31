@@ -20,7 +20,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
 import { ResourceNotFound } from 'AppComponents/Base/Errors';
-import { usePortalMode, PORTAL_MODES } from '../../utils/PortalModeUtils';
+import { usePortalMode, PORTAL_MODES } from 'AppUtils/PortalModeUtils';
 
 /**
  * Route guard component that blocks access based on portal mode

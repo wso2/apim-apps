@@ -23,6 +23,7 @@
       "paths": {
         "AppComponents/*": ["source/src/app/components/*"],
         "AppData/*": ["source/src/app/data/*"],
+        "AppUtils/*": ["source/src/app/utils/*"],
         "AppTests/*": ["source/Tests/*"]
       }
     },

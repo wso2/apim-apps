@@ -57,6 +57,7 @@ module.exports = function (env, argv) {
                 OverrideComponents: path.resolve(__dirname, 'override/src/app/components/'),
                 AppData: path.resolve(__dirname, 'source/src/app/data/'),
                 AppComponents: path.resolve(__dirname, 'source/src/app/components/'),
+                AppUtils: path.resolve(__dirname, 'source/src/app/utils/'),
                 AppTests: path.resolve(__dirname, 'source/Tests/'),
             },
             extensions: ['.mjs', '.js', '.jsx', '.ts', '.tsx'],

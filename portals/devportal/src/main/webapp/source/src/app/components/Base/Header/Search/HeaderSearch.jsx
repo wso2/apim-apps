@@ -28,10 +28,10 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import { FormattedMessage, injectIntl } from 'react-intl';
+import { usePortalMode, PORTAL_MODES } from 'AppUtils/PortalModeUtils';
 import {
     renderInput, renderSuggestion, getSuggestions, getSuggestionValue, buildSearchQuery,
 } from './SearchUtils';
-import { usePortalMode, PORTAL_MODES } from '../../../../utils/PortalModeUtils';
 
 const PREFIX = 'HeaderSearch';
 

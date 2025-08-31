@@ -25,8 +25,8 @@ import {
     ListItemIcon, List, ListItem, ListItemText, useTheme,
 } from '@mui/material';
 import AuthManager from 'AppData/AuthManager';
+import { useAreApisAccessible, useAreMcpServersAccessible } from 'AppUtils/PortalModeUtils';
 import CustomIcon from '../../Shared/CustomIcon';
-import { useAreApisAccessible, useAreMcpServersAccessible } from '../../../utils/PortalModeUtils';
 
 /**
  * GlobalNavBar
