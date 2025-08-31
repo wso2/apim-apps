@@ -43,6 +43,7 @@ import KeyManager from 'AppComponents/Apis/Details/Configuration/components/KeyM
 import Audience from 'AppComponents/Apis/Details/Configuration/components/Audience';
 import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 import {
     DEFAULT_API_SECURITY_OAUTH2,
@@ -176,11 +177,14 @@ export default function ApplicationLevel(props) {
                                         id='Apis.Details.Configuration.components.APISecurity.tooltip'
                                         defaultMessage={
                                             'This option determines the type of security'
-                                            + ' that will be used to secure this API. An API can be secured '
+                                            + ' that will be used to secure this {type}. An {type} can be secured '
                                             + 'with either OAuth2/Basic/ApiKey or it can be secured with all of them. '
-                                            + 'If OAuth2 option is selected, relevant API will require a valid '
+                                            + 'If OAuth2 option is selected, relevant {type} will require a valid '
                                             + 'OAuth2 token for successful invocation.'
                                         }
+                                        values={{
+                                            type: getTypeToDisplay(api.apiType)
+                                        }}
                                     />
                                 )}
                                 aria-label='API Security helper text'
@@ -356,8 +360,11 @@ export default function ApplicationLevel(props) {
                                 <FormHelperText>
                                     <FormattedMessage
                                         id='Apis.Details.Configuration.components.APISecurity.api.unsecured'
-                                        defaultMessage='Application level security is not required since API
+                                        defaultMessage='Application level security is not required since {type}
                                         has no secured resources'
+                                        values={{
+                                            type: getTypeToDisplay(api.apiType)
+                                        }}
                                     />
                                 </FormHelperText>
                             )}
@@ -373,5 +380,7 @@ ApplicationLevel.propTypes = {
     configDispatcher: PropTypes.func.isRequired,
     haveMultiLevelSecurity: PropTypes.bool.isRequired,
     securityScheme: PropTypes.arrayOf(PropTypes.string).isRequired,
-    api: PropTypes.shape({}).isRequired,
+    api: PropTypes.shape({
+        apiType: PropTypes.string.isRequired,
+    }).isRequired,
 };

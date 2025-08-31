@@ -28,6 +28,7 @@ import Box from '@mui/material/Box';
 import API from 'AppData/api';
 import CONSTS from 'AppData/Constants';
 import { capitalizeFirstLetter, upperCaseString, lowerCaseString } from 'AppData/stringFormatter';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 import APIContext from '../components/ApiContext';
 import Policies from './Policies';
 
@@ -86,8 +87,11 @@ function Configuration(props) {
                                                     id='Apis.Details.NewOverview.MetaData.transport.tooltip'
                                                     defaultMessage={
                                                         'HTTP is less secure than HTTPS and '
-                                                        + 'makes your API vulnerable to security threats.'
+                                                        + 'makes your {type} vulnerable to security threats.'
                                                     }
+                                                    values={{
+                                                        type: getTypeToDisplay(api.apiType)
+                                                    }}
                                                 />
                                             </>
                                         )}
@@ -163,7 +167,7 @@ function Configuration(props) {
                             <Tooltip
                                 interactive
                                 placement='top'
-                                aria-label='helper text for API Security'
+                                aria-label='helper text for Security scheme'
                                 classes={{
                                     tooltip: parentClasses.htmlTooltip,
                                 }}
@@ -223,18 +227,24 @@ function Configuration(props) {
                                         <FormattedMessage
                                             id='Apis.Details.NewOverview.MetaData.access.control.all.tooltip'
                                             defaultMessage={
-                                                'All : The API is viewable, '
+                                                'All : The {type} is viewable, '
                                                 + 'modifiable by all the publishers and creators.'
                                             }
+                                            values={{
+                                                type: getTypeToDisplay(api.apiType)
+                                            }}
                                         />
                                         <br />
                                         <FormattedMessage
                                             id='Apis.Details.NewOverview.MetaData.access.control.tooltip'
                                             defaultMessage={
-                                                'Restricted by roles : The API can be viewable and'
+                                                'Restricted by roles : The {type} can be viewable and'
                                                 + ' modifiable by only specific publishers and creators '
                                                 + 'with the roles that you specify'
                                             }
+                                            values={{
+                                                type: getTypeToDisplay(api.apiType)
+                                            }}
                                         />
                                     </>
                                 )}
@@ -304,18 +314,24 @@ function Configuration(props) {
                                         <FormattedMessage
                                             id='Apis.Details.NewOverview.MetaData.visibility.store.all.tooltip'
                                             defaultMessage={
-                                                'Public: The API is accessible to everyone and can be advertised '
+                                                'Public: The {type} is accessible to everyone and can be advertised '
                                                 + 'in multiple developer portals - a central developer portal '
                                                 + 'and/or non-WSO2 developer portals.'
                                             }
+                                            values={{
+                                                type: getTypeToDisplay(api.apiType)
+                                            }}
                                         />
                                         <br />
                                         <FormattedMessage
                                             id='Apis.Details.NewOverview.MetaData.visibility.store.res.tooltip'
                                             defaultMessage={
-                                                'Restricted by roles: The API is visible only to '
+                                                'Restricted by roles: The {type} is visible only to '
                                                 + 'specific user roles in the tenant Developer Portal that you specify.'
                                             }
+                                            values={{
+                                                type: getTypeToDisplay(api.apiType)
+                                            }}
                                         />
                                     </>
                                 )}
@@ -403,9 +419,12 @@ function Configuration(props) {
                                         <FormattedMessage
                                             id='Apis.Details.NewOverview.MetaData.subscription.validation.tooltip'
                                             defaultMessage={
-                                                'If subscription validation is disabled, API consumption does not'
+                                                'If subscription validation is disabled, {type} consumption does not'
                                                 +' require subscriptions'
                                             }
+                                            values={{
+                                                type: getTypeToDisplay(api.apiType)
+                                            }}
                                         />
                                     </>
                                 )}

@@ -31,6 +31,7 @@ import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 import { API_SECURITY_MUTUAL_SSL } from './APISecurity/components/apiSecurityConstants';
 
 const PREFIX = 'Transports';
@@ -139,10 +140,13 @@ export default function Transports(props) {
                         <FormattedMessage
                             id='Apis.Details.Configuration.components.Transports.tooltip'
                             defaultMessage={
-                                'API will be exposed in selected transport(s) in the gateway(s)'
+                                '{type} will be exposed in selected transport(s) in the gateway(s).'
                                 + ' If Mutual SSL option is selected, a trusted client'
-                                + ' certificate should be presented to access the API'
+                                + ' certificate should be presented to access the {type}'
                             }
+                            values={{
+                                type: getTypeToDisplay(api.apiType)
+                            }}
                         />
                     )}
                     aria-label='Transports'

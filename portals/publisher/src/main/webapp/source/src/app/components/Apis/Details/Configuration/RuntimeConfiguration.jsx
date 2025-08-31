@@ -195,6 +195,7 @@ function copyAPIConfig(api) {
             accessControlAllowMethods: [...api.corsConfiguration.accessControlAllowMethods],
         },
         audiences: [...(api.audiences || [ALL_AUDIENCES_ALLOWED])],
+        apiType: api.apiType,
     };
     if (api.advertiseInfo) {
         apiConfigJson.advertiseInfo = {
