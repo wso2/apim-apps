@@ -42,9 +42,6 @@ const classes = {
     root: `${PREFIX}-root`,
     titleWrapper: `${PREFIX}-titleWrapper`,
     titleLink: `${PREFIX}-titleLink`,
-    contentWrapper: `${PREFIX}-contentWrapper`,
-    addNewWrapper: `${PREFIX}-addNewWrapper`,
-    addNewHeader: `${PREFIX}-addNewHeader`,
     addNewOther: `${PREFIX}-addNewOther`,
     button: `${PREFIX}-button`,
     mainTitle: `${PREFIX}-mainTitle`
@@ -69,27 +66,6 @@ const Root = styled('div')((
 
     [`& .${classes.titleLink}`]: {
         color: theme.palette.primary.main,
-    },
-
-    [`& .${classes.contentWrapper}`]: {
-        maxWidth: theme.custom.contentAreaWidth,
-    },
-
-    [`& .${classes.addNewWrapper}`]: {
-        backgroundColor: theme.palette.background.paper,
-        color: theme.palette.getContrastText(theme.palette.background.paper),
-        border: 'solid 1px ' + theme.palette.grey['300'],
-        borderRadius: theme.shape.borderRadius,
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(3),
-    },
-
-    [`& .${classes.addNewHeader}`]: {
-        padding: theme.spacing(2),
-        backgroundColor: theme.palette.grey['300'],
-        fontSize: theme.typography.h6.fontSize,
-        color: theme.typography.h6.color,
-        fontWeight: theme.typography.h6.fontWeight,
     },
 
     [`& .${classes.addNewOther}`]: {

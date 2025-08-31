@@ -49,13 +49,9 @@ const PREFIX = 'Listing';
 const classes = {
     root: `${PREFIX}-root`,
     contentWrapper: `${PREFIX}-contentWrapper`,
-    addNewWrapper: `${PREFIX}-addNewWrapper`,
-    addNewHeader: `${PREFIX}-addNewHeader`,
-    addNewOther: `${PREFIX}-addNewOther`,
     titleWrapper: `${PREFIX}-titleWrapper`,
     mainTitle: `${PREFIX}-mainTitle`,
     actionTable: `${PREFIX}-actionTable`,
-    messageBox: `${PREFIX}-messageBox`,
     actions: `${PREFIX}-actions`,
     head: `${PREFIX}-head`,
     genDocumentButton: `${PREFIX}-genDocumentButton`,
@@ -79,27 +75,6 @@ const Root = styled('div')((
         maxWidth: theme.custom.contentAreaWidth,
     },
 
-    [`& .${classes.addNewWrapper}`]: {
-        backgroundColor: theme.palette.background.paper,
-        color: theme.palette.getContrastText(theme.palette.background.paper),
-        border: 'solid 1px ' + theme.palette.grey['300'],
-        borderRadius: theme.shape.borderRadius,
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-    },
-
-    [`& .${classes.addNewHeader}`]: {
-        padding: theme.spacing(2),
-        backgroundColor: theme.palette.grey['300'],
-        fontSize: theme.typography.h6.fontSize,
-        color: theme.typography.h6.color,
-        fontWeight: theme.typography.h6.fontWeight,
-    },
-
-    [`& .${classes.addNewOther}`]: {
-        padding: theme.spacing(2),
-    },
-
     [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
@@ -118,10 +93,6 @@ const Root = styled('div')((
         '& td:first-child': {
             width: 130,
         },
-    },
-
-    [`& .${classes.messageBox}`]: {
-        marginTop: 20,
     },
 
     [`& .${classes.actions}`]: {
@@ -183,6 +154,11 @@ function LinkGenerator(props) {
  * @returns {JSX.Element} - Rendered component
  */
 class Listing extends React.Component {
+    /**
+     * Constructor for Listing component
+     * @param {Object} props - Props passed to the component
+     * @returns {void}
+     */
     constructor(props) {
         super(props);
         this.state = {

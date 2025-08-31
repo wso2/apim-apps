@@ -40,13 +40,13 @@ import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
  * @returns {JSX.Element} - The Delete document component
  */
 function Delete(props) {
-    const { intl } = props;
+    const { intl, apiType } = props;
     const [open, setOpen] = useState(false);
     const { api } = useContext(APIContext);
 
     const deleteDoc = () => {
         const {
-            apiId, docId, getDocumentsList, apiType,
+            apiId, docId, getDocumentsList,
         } = props;
         let restApi;
         if (apiType === API.CONSTS.APIProduct) {
@@ -87,11 +87,11 @@ function Delete(props) {
             setOpen(!open);
         }
     };
+
     const toggleOpen = () => {
         setOpen(!open);
     };
 
-    const { apiType } = props;
     return (
         <div>
             <Button

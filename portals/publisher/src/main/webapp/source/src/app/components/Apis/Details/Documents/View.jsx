@@ -48,8 +48,6 @@ const classes = {
     root: `${PREFIX}-root`,
     titleWrapper: `${PREFIX}-titleWrapper`,
     titleLink: `${PREFIX}-titleLink`,
-    docTitle: `${PREFIX}-docTitle`,
-    docBadge: `${PREFIX}-docBadge`,
     button: `${PREFIX}-button`,
     displayURL: `${PREFIX}-displayURL`,
     displayURLLink: `${PREFIX}-displayURLLink`,
@@ -77,21 +75,6 @@ const Root = styled('div')((
 
     [`& .${classes.titleLink}`]: {
         color: theme.palette.primary.main,
-    },
-
-    [`& .${classes.docTitle}`]: {
-        fontWeight: 100,
-        fontSize: 50,
-        color: theme.palette.grey[500],
-    },
-
-    [`& .${classes.docBadge}`]: {
-        padding: theme.spacing(1),
-        background: theme.palette.primary.main,
-        position: 'absolute',
-        top: 0,
-        marginTop: -22,
-        color: theme.palette.getContrastText(theme.palette.primary.main),
     },
 
     [`& .${classes.button}`]: {

@@ -26,6 +26,11 @@ import Api from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
 import Utils from 'AppData/Utils';
 
+/**
+ * Download component
+ * @param {*} props {any}
+ * @returns {JSX.Element} - The Download component
+ */
 function Download(props) {
     const { intl } = props;
 
@@ -40,17 +45,19 @@ function Download(props) {
         } else {
             api = new Api();
         }
-        const promised_get_content = api.getFileForDocument(apiId, docId);
-        promised_get_content
-            .then((done) => {
+        const promisedGetContent = api.getFileForDocument(apiId, docId);
+        promisedGetContent
+            .then(() => {
                 setIsSuccessful(true);
                 setIsFileAvailable(true);
             })
             .catch((error) => {
+                console.log(error);
                 setIsSuccessful(true);
                 setIsFileAvailable(false);
             });
     }, []);
+
     const handleDownload = () => {
         let api;
         if (apiType === MCPServer.CONSTS.MCP) {
@@ -58,8 +65,8 @@ function Download(props) {
         } else {
             api = new Api();
         }
-        const promised_get_content = api.getFileForDocument(apiId, docId);
-        promised_get_content
+        const promisedGetContent = api.getFileForDocument(apiId, docId);
+        promisedGetContent
             .then((response) => {
                 Utils.forceDownload(response);
             })
@@ -85,6 +92,7 @@ function Download(props) {
         </Button>
     );
 }
+
 Download.propTypes = {
     apiId: PropTypes.shape({}).isRequired,
     docId: PropTypes.shape({}).isRequired,

@@ -88,9 +88,11 @@ function DeleteMultiple(props) {
             setOpen(!open);
         }
     };
+
     const toggleOpen = () => {
         setOpen(!open);
     };
+
     useEffect(() => {
         setOpen(true);
     }, [docsToDelete]);

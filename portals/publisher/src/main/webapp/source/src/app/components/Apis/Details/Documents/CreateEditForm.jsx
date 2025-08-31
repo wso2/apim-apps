@@ -156,7 +156,16 @@ const Root = styled('div')((
     }
 }));
 
+/**
+ * CreateEditForm component
+ * @extends {React.Component} extends React.Component
+ */
 class CreateEditForm extends React.Component {
+
+    /**
+     * constructor component
+     * @param {*} props {intl, apiId, docId, apiType, saveDisabled, setSaveDisabled}
+     */
     constructor(props) {
         super(props);
         this.state = {
@@ -180,27 +189,23 @@ class CreateEditForm extends React.Component {
         };
     }
 
-    changeType = (e) => {
-        const { value } = e.target;
-        if (value === 'PUBLIC_FORUM' || value === 'SUPPORT_FORUM') {
-            this.setState({ sourceType: 'URL' });
+    /**
+     * componentDidMount component
+     * @returns {void} - The componentDidMount component
+     */
+    componentDidMount() {
+        this.getDocument();
+        const { apiId, docId } = this.props;
+        if (apiId && docId) {
+            this.setState({ disableName: true });
         }
-        this.setState({ type: value });
-    };
-    changeSource = (e) => {
-        const { value } = e.target;
-        this.validate();
-        this.setState({ sourceType: value });
-    };
-    setDisable = (item) => {
-        const { type } = this.state;
-        if (item === 'INLINE' || item === 'MARKDOWN' || item === 'FILE') {
-            if (type === 'PUBLIC_FORUM' || type === 'SUPPORT_FORUM') {
-                return true;
-            }
-        }
-    };
+    }
 
+    /**
+     * handleChange component
+     * @param {string} name - The name
+     * @returns {function} - The handleChange component
+     */
     handleChange = name => (e) => {
         const { value } = e.target;
         if (name === 'name') {
@@ -216,9 +221,13 @@ class CreateEditForm extends React.Component {
         }
     };
 
+    /**
+     * onDrop component
+     * @param {Array} acceptedFile - The accepted file
+     * @returns {void} - The onDrop component
+     */
     onDrop = (acceptedFile) => {
-        const { intl } = this.props;
-        var specialChars = /[`!@#%^*()+\={};'"\\|,<>\/~]/;
+        const specialChars = /[`!@#%^*()+\={};'"\\|,<>\/~]/;
         if (specialChars.test(acceptedFile[0].name)) {
             this.setState({ file: null });
             Alert.error('Document source file name cannot contain spaces or special characters');
@@ -227,59 +236,56 @@ class CreateEditForm extends React.Component {
         }
     };
 
-    addDocument = (apiId) => {
-        const { apiType } = this.props;
-        let restAPI;
-        if (apiType === Api.CONSTS.APIProduct) {
-            restAPI = new APIProduct();
-        } else if (apiType === MCPServer.CONSTS.MCP) {
-            restAPI = MCPServer;
-        } else {
-            restAPI = new Api();
+    /**
+     * setDisable component
+     * @param {string} item - The item
+     * @returns {boolean}  item is disabled
+     */
+    setDisable = (item) => {
+        const { type } = this.state;
+        if (item === 'INLINE' || item === 'MARKDOWN' || item === 'FILE') {
+            if (type === 'PUBLIC_FORUM' || type === 'SUPPORT_FORUM') {
+                return true;
+            }
         }
-        const {
-            name, type, summary, sourceType, sourceUrl, file, otherTypeName, visibility,
-        } = this.state;
-        const docPromise = restAPI.addDocument(apiId, {
-            name,
-            type,
-            summary,
-            sourceType,
-            visibility,
-            sourceUrl,
-            otherTypeName,
-            inlineContent: '',
-        });
-        return { docPromise, file };
+        return false;
     };
 
-    updateDocument = (apiId) => {
-        const { apiType } = this.props;
-        let restAPI;
-        if (apiType === Api.CONSTS.APIProduct) {
-            restAPI = new APIProduct();
-        } else if (apiType === MCPServer.CONSTS.MCP) {
-            restAPI = MCPServer;
-        } else {
-            restAPI = new Api();
-        }
-        const {
-            name, type, summary, sourceType, sourceUrl, file, otherTypeName, visibility,
-        } = this.state;
-        const { docId } = this.props;
-        const docPromise = restAPI.updateDocument(apiId, docId, {
-            name,
-            type,
-            summary,
-            sourceType,
-            visibility,
-            sourceUrl,
-            otherTypeName,
-            inlineContent: '',
-        });
-        return { docPromise, file };
-    };
+    /**
+     * getUrlHelperText component
+     * @returns {JSX.Element} - The getUrlHelperText component
+     */
+    getUrlHelperText() {
+        const { invalidUrl, urlEmpty} = this.state;
 
+        if (invalidUrl) {
+            return (
+                <FormattedMessage
+                    id='Apis.Details.Documents.CreateEditForm.source.url.helper.text.error.invalid'
+                    defaultMessage='Enter a valid URL to the source'
+                />
+            );
+        } else if (urlEmpty) {
+            return (
+                <FormattedMessage
+                    id='Apis.Details.Documents.CreateEditForm.source.url.helper.text.error.empty'
+                    defaultMessage='URL Field cannot be empty'
+                />
+            );
+        } else {
+            return (
+                <FormattedMessage
+                    id='Apis.Details.Documents.CreateEditForm.source.url.helper.text'
+                    defaultMessage='Provide the URL to the source'
+                />
+            );
+        }
+    }
+
+    /**
+     * getDocument component
+     * @returns {void} - The getDocument component
+     */
     getDocument() {
         const { apiId, docId, apiType } = this.props;
         let restAPI;
@@ -319,6 +325,95 @@ class CreateEditForm extends React.Component {
         }
     }
 
+    /**
+     * addDocument component
+     * @param {string} apiId - The ID of the API
+     * @returns {Object} - The addDocument component
+     */
+    addDocument = (apiId) => {
+        const { apiType } = this.props;
+        let restAPI;
+        if (apiType === Api.CONSTS.APIProduct) {
+            restAPI = new APIProduct();
+        } else if (apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
+        const {
+            name, type, summary, sourceType, sourceUrl, file, otherTypeName, visibility,
+        } = this.state;
+        const docPromise = restAPI.addDocument(apiId, {
+            name,
+            type,
+            summary,
+            sourceType,
+            visibility,
+            sourceUrl,
+            otherTypeName,
+            inlineContent: '',
+        });
+        return { docPromise, file };
+    };
+
+
+    /**
+     * updateDocument component
+     * @param {string} apiId - The ID of the API
+     * @returns {Object} - The updateDocument component
+     */
+    updateDocument = (apiId) => {
+        const { apiType } = this.props;
+        let restAPI;
+        if (apiType === Api.CONSTS.APIProduct) {
+            restAPI = new APIProduct();
+        } else if (apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
+        const {
+            name, type, summary, sourceType, sourceUrl, file, otherTypeName, visibility,
+        } = this.state;
+        const { docId } = this.props;
+        const docPromise = restAPI.updateDocument(apiId, docId, {
+            name,
+            type,
+            summary,
+            sourceType,
+            visibility,
+            sourceUrl,
+            otherTypeName,
+            inlineContent: '',
+        });
+        return { docPromise, file };
+    };
+
+    /**
+     * changeSource component
+     * @param {*} e {value: string}
+     * @returns {void} - The changeSource component
+     */
+    changeSource = (e) => {
+        const { value } = e.target;
+        this.validate();
+        this.setState({ sourceType: value });
+    };
+
+    changeType = (e) => {
+        const { value } = e.target;
+        if (value === 'PUBLIC_FORUM' || value === 'SUPPORT_FORUM') {
+            this.setState({ sourceType: 'URL' });
+        }
+        this.setState({ type: value });
+    };
+
+    /**
+     * validate component
+     * @param {*} field {string}
+     * @param {*} value {string}
+     * @returns {void} - The validate component
+     */
     validate(field=null, value=null) {
         let invalidUrl = false;
         const { intl } = this.props;
@@ -379,14 +474,10 @@ class CreateEditForm extends React.Component {
         }
     }
 
-    componentDidMount() {
-        this.getDocument();
-        const { apiId, docId } = this.props;
-        if (apiId && docId) {
-            this.setState({ disableName: true });
-        }
-    }
-
+    /**
+     * showNameHelper component
+     * @returns {JSX.Element} - The showNameHelper component
+     */
     showNameHelper() {
         const { nameEmpty, nameNotDuplicate, nameMaxLengthExceeds, invalidDocName } = this.state;
         if (nameMaxLengthExceeds) {
@@ -427,33 +518,10 @@ class CreateEditForm extends React.Component {
         }
     }
 
-    getUrlHelperText() {
-        const { invalidUrl, urlEmpty} = this.state;
-
-        if (invalidUrl) {
-            return (
-                <FormattedMessage
-                    id='Apis.Details.Documents.CreateEditForm.source.url.helper.text.error.invalid'
-                    defaultMessage='Enter a valid URL to the source'
-                />
-            );
-        } else if (urlEmpty) {
-            return (
-                <FormattedMessage
-                    id='Apis.Details.Documents.CreateEditForm.source.url.helper.text.error.empty'
-                    defaultMessage='URL Field cannot be empty'
-                />
-            );
-        } else {
-            return (
-                <FormattedMessage
-                    id='Apis.Details.Documents.CreateEditForm.source.url.helper.text'
-                    defaultMessage='Provide the URL to the source'
-                />
-            );
-        }
-    }
-
+    /**
+     * render component
+     * @returns {JSX.Element} - The render component
+     */
     render() {
         const {
             name,
@@ -576,48 +644,48 @@ class CreateEditForm extends React.Component {
                         select
                         variant='outlined'
                         label={
-                        <FormattedMessage
-                            id='Apis.Details.Documents.CreateEditForm.document.docVisibility'
-                            defaultMessage='Document Visibility'
-                        />
-                    }
+                            <FormattedMessage
+                                id='Apis.Details.Documents.CreateEditForm.document.docVisibility'
+                                defaultMessage='Document Visibility'
+                            />
+                        }
                         helperText={
-                        summeryEmpty ? (
-                            <FormattedMessage
-                                id='Apis.Details.Documents.CreateEditForm.document.summary.error.empty'
-                                defaultMessage='Document summary can not be empty'
-                            />
-                        ) : (
-                            <FormattedMessage
-                                id='Apis.Details.Documents.CreateEditForm.document.summary.helper.text'
-                                defaultMessage='Provide a brief description for the document'
-                            />
-                        )
-                    }
+                            summeryEmpty ? (
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.CreateEditForm.document.summary.error.empty'
+                                    defaultMessage='Document summary can not be empty'
+                                />
+                            ) : (
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.CreateEditForm.document.summary.helper.text'
+                                    defaultMessage='Provide a brief description for the document'
+                                />
+                            )
+                        }
                         type='text'
                         name='visibility'
                         margin='normal'
                         value={visibility}
                         onChange={this.handleChange('visibility')}
                         error={summeryEmpty}
-                >
+                    >
                         <MenuItem value='API_LEVEL'>
                             <FormattedMessage
                                 id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.public'
                                 defaultMessage='Same as API Visibility'
-                        />
+                            />
                         </MenuItem>
                         <MenuItem value='PRIVATE'>
                             <FormattedMessage
                                 id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.private'
                                 defaultMessage='Private'
-                        />
+                            />
                         </MenuItem>
                         <MenuItem value='OWNER_ONLY'>
                             <FormattedMessage
                                 id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.ownerOnly'
                                 defaultMessage='Owner Only'
-                        />
+                            />
                         </MenuItem>
                     </TextField>
                 </FormControl>}
@@ -745,16 +813,16 @@ class CreateEditForm extends React.Component {
                                 otherTypeEmpty ? (
                                     <FormattedMessage
                                         id={
-                                            'Apis.Details.Documents.CreateEditForm.document.create.type.other.error.document.' +
-                                            'category.helper.text'
+                                            'Apis.Details.Documents.CreateEditForm.document.create.type.other.error.' +
+                                            'document.category.helper.text'
                                         }
                                         defaultMessage='Document type cannot be empty'
                                     />
                                 ) : (
                                     <FormattedMessage
                                         id={
-                                            'Apis.Details.Documents.CreateEditForm.document.create.type.other.document.' +
-                                            'category.helper.text'
+                                            'Apis.Details.Documents.CreateEditForm.document.create.type.other.' +
+                                            'document.category.helper.text'
                                         }
                                         defaultMessage='Provide the document type'
                                     />
