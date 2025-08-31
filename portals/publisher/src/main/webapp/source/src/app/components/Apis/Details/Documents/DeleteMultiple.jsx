@@ -27,28 +27,32 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import API from 'AppData/api.js';
 import APIProduct from 'AppData/APIProduct';
+import MCPServer from 'AppData/MCPServer';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import Alert from 'AppComponents/Shared/Alert';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
+/**
+ * Delete multiple documents component
+ * @param {*} props {intl, docsToDelete, docs, getDocumentsList, apiType}
+ * @returns {JSX.Element} - The Delete multiple documents component
+ */
 function DeleteMultiple(props) {
     const {
         intl, docsToDelete, docs, getDocumentsList,
     } = props;
     const { api, isAPIProduct } = useContext(APIContext);
-    const restApi = isAPIProduct ? new APIProduct() : new API();
+    let restApi;
+    if (isAPIProduct) {
+        restApi = new APIProduct();
+    } else if (api.apiType === MCPServer.CONSTS.MCP) {
+        restApi = MCPServer;
+    } else {
+        restApi = new API();
+    }
 
     const [open, setOpen] = useState(true);
 
-    const runAction = (action) => {
-        if (action === 'yes') {
-            deleteDocs();
-        } else {
-            setOpen(!open);
-        }
-    };
-    const toggleOpen = () => {
-        setOpen(!open);
-    };
     const deleteDocs = () => {
         const docPromises = [];
 
@@ -61,7 +65,7 @@ function DeleteMultiple(props) {
                 console.log(values);
                 Alert.info(`${intl.formatMessage({
                     id: 'Apis.Details.Documents.Delete.document.delete.successfully',
-                    defaultMessage: 'deleted successfully.',
+                    defaultMessage: 'Document(s) deleted successfully',
                 })}`);
                 setOpen(!open);
                 getDocumentsList();
@@ -71,10 +75,21 @@ function DeleteMultiple(props) {
                     console.log(error);
                     Alert.error(`${intl.formatMessage({
                         id: 'Apis.Details.Documents.Delete.document.delete.error',
-                        defaultMessage: 'Error while deleting documents!',
+                        defaultMessage: 'Error while deleting documents',
                     })}`);
                 }
             });
+    };
+
+    const runAction = (action) => {
+        if (action === 'yes') {
+            deleteDocs();
+        } else {
+            setOpen(!open);
+        }
+    };
+    const toggleOpen = () => {
+        setOpen(!open);
     };
     useEffect(() => {
         setOpen(true);
@@ -95,13 +110,15 @@ function DeleteMultiple(props) {
             </DialogTitle>
             <DialogContent>
                 <DialogContentText id='alert-dialog-description'>
-                    <strong>{api.name}</strong>
                     <FormattedMessage
                         id='Apis.Details.Documents.Delete.selected.document.listing.delete.confirm.body'
                         defaultMessage={
-                            'Selected documents will be deleted from the API.' +
+                            'Selected documents will be deleted from the {type}.' +
                             ' You will not be able to undo this action.'
                         }
+                        values={{
+                            type: getTypeToDisplay(api.apiType),
+                        }}
                     />
                 </DialogContentText>
             </DialogContent>

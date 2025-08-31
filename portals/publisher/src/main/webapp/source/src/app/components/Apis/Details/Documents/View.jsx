@@ -141,27 +141,54 @@ function View(props) {
         },
     } = props;
     const { api, isAPIProduct } = useContext(APIContext);
-    const isMCPServer = api.isMCPServer();
+    const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
 
     const [code, setCode] = useState('');
     const [doc, setDoc] = useState(null);
     const [isFileAvailable, setIsFileAvailable] = useState(true);
-    const restAPI = isAPIProduct ? new APIProduct() : new API();
+    let restAPI;
+    if (isAPIProduct) {
+        restAPI = new APIProduct();
+    } else if (isMCPServer) {
+        restAPI = MCPServer;
+    } else {
+        restAPI = new API();
+    }
     
     const syntaxHighlighterDarkTheme = false;
+
+    const loadContentForDoc = () => {
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.getInlineContentOfDocument(api.id, documentId);
+        } else {
+            docPromise = restAPI.getInlineContentOfDocument(api.id, documentId);
+        }
+        docPromise
+            .then(contentDoc => {
+                setCode(contentDoc.text);
+            })
+            .catch(error => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+            });
+    };
 
     useEffect(() => {
         let docPromise;
         if (isMCPServer) {
-            docPromise = MCPServer.getDocuments(api.id, documentId);
+            docPromise = MCPServer.getDocument(api.id, documentId);
         } else {
             docPromise = restAPI.getDocument(api.id, documentId);
         }
         docPromise
-            .then(doc => {
-                const { body } = doc;
+            .then(docResponse => {
+                const { body } = docResponse;
                 setDoc(body);
-                if (body.sourceType === 'MARKDOWN' || body.sourceType === 'INLINE') loadContentForDoc();
+                if (body.sourceType === 'MARKDOWN' || body.sourceType === 'INLINE') {
+                    loadContentForDoc();
+                }
 
                 if (body.sourceType === 'FILE') {
                     let promisedGetContent;
@@ -171,7 +198,7 @@ function View(props) {
                         promisedGetContent = restAPI.getFileForDocument(api.id, documentId);
                     }
                     promisedGetContent
-                        .then((done) => {
+                        .then((fileResponse) => {
                             setIsFileAvailable(true);
                         })
                         .catch((error) => {
@@ -186,24 +213,6 @@ function View(props) {
                 }
             });
     }, [documentId]);
-
-    const loadContentForDoc = () => {
-        let docPromise;
-        if (isMCPServer) {
-            docPromise = MCPServer.getInlineContentOfDocument(api.id, documentId);
-        } else {
-            docPromise = restAPI.getInlineContentOfDocument(api.id, documentId);
-        }
-        docPromise
-            .then(doc => {
-                setCode(doc.text);
-            })
-            .catch(error => {
-                if (process.env.NODE_ENV !== 'production') {
-                    console.log(error);
-                }
-            });
-    };
 
     const handleDownload = () => {
         let promisedGetContent;

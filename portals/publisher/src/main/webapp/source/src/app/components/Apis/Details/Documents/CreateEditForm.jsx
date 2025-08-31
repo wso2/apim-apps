@@ -33,6 +33,7 @@ import Dropzone from 'react-dropzone';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import Api from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
+import MCPServer from 'AppData/MCPServer';
 import APIValidation from 'AppData/APIValidation';
 import AppContext from 'AppComponents/Shared/AppContext';
 import Alert from 'AppComponents/Shared/Alert';
@@ -228,7 +229,14 @@ class CreateEditForm extends React.Component {
 
     addDocument = (apiId) => {
         const { apiType } = this.props;
-        const restAPI = apiType === Api.CONSTS.APIProduct ? new APIProduct() : new Api();
+        let restAPI;
+        if (apiType === Api.CONSTS.APIProduct) {
+            restAPI = new APIProduct();
+        } else if (apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
         const {
             name, type, summary, sourceType, sourceUrl, file, otherTypeName, visibility,
         } = this.state;
@@ -247,7 +255,14 @@ class CreateEditForm extends React.Component {
 
     updateDocument = (apiId) => {
         const { apiType } = this.props;
-        const restAPI = apiType === Api.CONSTS.APIProduct ? new APIProduct() : new Api();
+        let restAPI;
+        if (apiType === Api.CONSTS.APIProduct) {
+            restAPI = new APIProduct();
+        } else if (apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
         const {
             name, type, summary, sourceType, sourceUrl, file, otherTypeName, visibility,
         } = this.state;
@@ -267,7 +282,14 @@ class CreateEditForm extends React.Component {
 
     getDocument() {
         const { apiId, docId, apiType } = this.props;
-        const restAPI = apiType === Api.CONSTS.APIProduct ? new APIProduct() : new Api();
+        let restAPI;
+        if (apiType === Api.CONSTS.APIProduct) {
+            restAPI = new APIProduct();
+        } else if (apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
         if (docId && apiId) {
             const docPromise = restAPI.getDocument(apiId, docId);
             docPromise

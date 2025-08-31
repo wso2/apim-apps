@@ -28,10 +28,11 @@ import Slide from '@mui/material/Slide';
 import Icon from '@mui/material/Icon';
 import Paper from '@mui/material/Paper';
 import Alert from 'AppComponents/Shared/Alert';
-import CreateEditForm from './CreateEditForm';
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import { isRestricted } from 'AppData/AuthManager';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
+import CreateEditForm from './CreateEditForm';
 
 const PREFIX = 'Edit';
 
@@ -75,9 +76,15 @@ function Transition(props) {
 }
 
 function Edit(props) {
-    const restAPI = new Api();
-
     const { intl, apiType } = props;
+    let restAPI;
+    if (apiType === Api.CONSTS.APIProduct) {
+        restAPI = new Api();
+    } else if (apiType === MCPServer.CONSTS.MCP) {
+        restAPI = MCPServer;
+    } else {
+        restAPI = new Api();
+    }
     const [open, setOpen] = useState(false);
     const [saveDisabled, setSaveDisabled] = useState(false);
     let createEditForm = useRef(null);
@@ -189,7 +196,7 @@ Edit.propTypes = {
     intl: PropTypes.shape({}).isRequired,
     api: PropTypes.shape({
         id: PropTypes.string,
-        apiType: PropTypes.oneOf([Api.CONSTS.API, Api.CONSTS.APIProduct]),
+        apiType: PropTypes.oneOf([Api.CONSTS.API, Api.CONSTS.APIProduct, MCPServer.CONSTS.MCP]),
     }).isRequired,
 };
 

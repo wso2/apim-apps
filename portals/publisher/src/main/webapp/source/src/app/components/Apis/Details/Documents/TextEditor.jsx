@@ -34,6 +34,7 @@ import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
 import Api from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
+import MCPServer from 'AppData/MCPServer';
 import Alert from 'AppComponents/Shared/Alert';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { isRestricted } from 'AppData/AuthManager';
@@ -83,7 +84,7 @@ function Transition(props) {
 
 function TextEditor(props) {
     const {
-        intl, apiType, showAtOnce, history, docId,
+        intl, showAtOnce, history, docId,
     } = props;
     const { api, isAPIProduct } = useContext(APIContext);
 
@@ -105,7 +106,14 @@ function TextEditor(props) {
         setOpen(!open);
     };
     const addContentToDoc = () => {
-        const restAPI = isAPIProduct ? new APIProduct() : new Api();
+        let restAPI;
+        if (isAPIProduct) {
+            restAPI = new APIProduct();
+        } else if (api.apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
         setIsUpdating(true);
         const contentToSave = draftToHtml(convertToRaw(editorState.getCurrentContent()));
         const docPromise = restAPI.addInlineContentToDocument(api.id, docId, 'INLINE', contentToSave);
@@ -130,7 +138,14 @@ function TextEditor(props) {
             });
     };
     const updateDoc = () => {
-        const restAPI = isAPIProduct ? new APIProduct() : new Api();
+        let restAPI;
+        if (isAPIProduct) {
+            restAPI = new APIProduct();
+        } else if (api.apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
 
         const docPromise = restAPI.getInlineContentOfDocument(api.id, docId);
         docPromise
@@ -206,12 +221,11 @@ function TextEditor(props) {
 TextEditor.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     docId: PropTypes.string.isRequired,
-    apiType: PropTypes.oneOf([Api.CONSTS.API, Api.CONSTS.APIProduct]).isRequired,
     intl: PropTypes.shape({}).isRequired,
     showAtOnce: PropTypes.bool.isRequired,
     api: PropTypes.shape({
         id: PropTypes.string,
-        apiType: PropTypes.oneOf([Api.CONSTS.API, Api.CONSTS.APIProduct]),
+        apiType: PropTypes.oneOf([Api.CONSTS.API, Api.CONSTS.APIProduct, MCPServer.CONSTS.MCP]),
     }).isRequired,
 };
 

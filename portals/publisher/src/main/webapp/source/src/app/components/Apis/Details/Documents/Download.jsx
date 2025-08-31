@@ -23,17 +23,23 @@ import Button from '@mui/material/Button';
 import Icon from '@mui/material/Icon';
 import Alert from 'AppComponents/Shared/Alert';
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import Utils from 'AppData/Utils';
 
 function Download(props) {
     const { intl } = props;
 
-    const { docId, apiId, docName } = props;
+    const { docId, apiId, docName, apiType } = props;
     const [isFileAvailable, setIsFileAvailable] = useState(false);
     const [isSuccessful, setIsSuccessful] = useState(false);
 
     useEffect(() => {
-        const api = new Api();
+        let api;
+        if (apiType === MCPServer.CONSTS.MCP) {
+            api = MCPServer;
+        } else {
+            api = new Api();
+        }
         const promised_get_content = api.getFileForDocument(apiId, docId);
         promised_get_content
             .then((done) => {
@@ -46,7 +52,12 @@ function Download(props) {
             });
     }, []);
     const handleDownload = () => {
-        const api = new Api();
+        let api;
+        if (apiType === MCPServer.CONSTS.MCP) {
+            api = MCPServer;
+        } else {
+            api = new Api();
+        }
         const promised_get_content = api.getFileForDocument(apiId, docId);
         promised_get_content
             .then((response) => {
@@ -78,6 +89,7 @@ Download.propTypes = {
     apiId: PropTypes.shape({}).isRequired,
     docId: PropTypes.shape({}).isRequired,
     intl: PropTypes.shape({}).isRequired,
+    apiType: PropTypes.string.isRequired,
 };
 
 export default injectIntl(Download);

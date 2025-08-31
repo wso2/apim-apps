@@ -520,7 +520,12 @@ class Listing extends React.Component {
                                     <table className={classes.actionTable}>
                                         <tr>
                                             <td>
-                                                <Download docId={docId} apiId={this.apiId} docName={docName} />
+                                                <Download 
+                                                    docId={docId} 
+                                                    apiId={this.apiId} 
+                                                    docName={docName} 
+                                                    apiType={api.apiType} 
+                                                />
                                             </td>
                                             <td>
                                                 <Edit
@@ -701,7 +706,7 @@ Listing.propTypes = {
     intl: PropTypes.shape({}).isRequired,
     api: PropTypes.shape({
         id: PropTypes.string,
-        apiType: PropTypes.oneOf([API.CONSTS.API, API.CONSTS.APIProduct]),
+        apiType: PropTypes.oneOf([API.CONSTS.API, API.CONSTS.APIProduct, MCPServer.CONSTS.MCP]),
     }).isRequired,
 };
 

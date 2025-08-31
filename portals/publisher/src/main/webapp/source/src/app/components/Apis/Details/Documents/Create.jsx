@@ -30,6 +30,7 @@ import Paper from '@mui/material/Paper';
 import Alert from 'AppComponents/Shared/Alert';
 import Api from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
+import MCPServer from 'AppData/MCPServer';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { getBasePath } from 'AppComponents/Shared/Utils';
 import CreateEditForm from './CreateEditForm';
@@ -117,7 +118,14 @@ function Create(props) {
     const [saveDisabled, setSaveDisabled] = useState(true);
     const {  intl, history } = props;
     const listingPath = getBasePath(api.apiType) + api.id + '/documents';
-    const restAPI = api.apiType === Api.CONSTS.APIProduct ? new APIProduct() : new Api();
+    let restAPI;
+    if (api.apiType === Api.CONSTS.APIProduct) {
+        restAPI = new APIProduct();
+    } else if (api.apiType === MCPServer.CONSTS.MCP) {
+        restAPI = MCPServer;
+    } else {
+        restAPI = new Api();
+    }
     const createEditForm = useRef(null);
 
     const addDocument = (apiId) => {
@@ -128,14 +136,14 @@ function Create(props) {
                 if (promiseWrapper.file && documentId) {
                     const filePromise = restAPI.addFileToDocument(apiId, documentId, promiseWrapper.file[0]);
                     filePromise
-                        .then((doc) => {
+                        .then(() => {
                             Alert.info(`${name} ${intl.formatMessage({
                                 id: 'Apis.Details.Documents.Create.successful.file.upload.message',
-                                defaultMessage: 'File uploaded successfully.',
+                                defaultMessage: 'File uploaded successfully',
                             })}`);
                             history.push(listingPath);
                         })
-                        .catch((error) => {
+                        .catch(() => {
                             Alert.error(intl.formatMessage({
                                 id: 'Apis.Details.Documents.Create.markdown.editor.upload.error',
                                 defaultMessage: 'Error uploading the file',
@@ -144,12 +152,13 @@ function Create(props) {
                 } else {
                     Alert.info(`${doc.body.name} ${intl.formatMessage({
                         id: 'Apis.Details.Documents.Create.markdown.editor.success',
-                        defaultMessage: ' added successfully.',
+                        defaultMessage: 'Document added successfully',
                     })}`);
                     setNewDoc(doc);
                 }
             })
             .catch((error) => {
+                console.error(error);
                 Alert.error(intl.formatMessage({
                     id: 'Apis.Details.Documents.Create.markdown.editor.add.error',
                     defaultMessage: 'Error adding the document',
@@ -213,7 +222,8 @@ function Create(props) {
                                     </Button>
                                     <Button className={classes.button} onClick={() => history.push(listingPath)}>
                                         <FormattedMessage
-                                            id='Apis.Details.Documents.Create.markdown.editor.add.document.cancel.button'
+                                            id={'Apis.Details.Documents.Create.markdown.editor.add.document.'
+                                                + 'cancel.button'}
                                             defaultMessage='Cancel'
                                         />
                                     </Button>
@@ -231,7 +241,6 @@ function Create(props) {
 Create.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     intl: PropTypes.func.isRequired,
-    apiType: PropTypes.oneOf([Api.CONSTS.API, Api.CONSTS.APIProduct]).isRequired,
 };
 
 export default injectIntl(withRouter((Create)));

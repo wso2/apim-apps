@@ -31,6 +31,7 @@ import Icon from '@mui/material/Icon';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import Alert from 'AppComponents/Shared/Alert';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -151,7 +152,12 @@ function MarkdownEditor(props) {
         editor.focus();
     };
     const addContentToDoc = () => {
-        const restAPI = new Api();
+        let restAPI;
+        if (api.apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
         setIsUpdating(true);
         const docPromise = restAPI.addInlineContentToDocument(api.id, props.docId, 'MARKDOWN', docContent);
         docPromise
@@ -177,7 +183,12 @@ function MarkdownEditor(props) {
             });
     };
     const updateDoc = () => {
-        const restAPI = new Api();
+        let restAPI;
+        if (api.apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
 
         const docPromise = restAPI.getInlineContentOfDocument(api.id, props.docId);
         docPromise
