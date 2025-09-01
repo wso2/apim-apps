@@ -28,16 +28,18 @@ import Typography from '@mui/material/Typography';
 import Slide from '@mui/material/Slide';
 import Icon from '@mui/material/Icon';
 import Paper from '@mui/material/Paper';
-import { EditorState, convertToRaw, ContentState, convertFromHTML } from 'draft-js';
+import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
 import Api from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
+import MCPServer from 'AppData/MCPServer';
 import Alert from 'AppComponents/Shared/Alert';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { isRestricted } from 'AppData/AuthManager';
 import CircularProgress from '@mui/material/CircularProgress';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'TextEditor';
 
@@ -77,24 +79,64 @@ const StyledDialog = styled(Dialog)({
     },
 });
 
+/**
+ * Transition component
+ * @param {Object} props - Props passed to the component
+ * @returns {JSX.Element} - The Transition component
+ */
 function Transition(props) {
     return <Slide direction='up' {...props} />;
 }
 
+/**
+ * TextEditor component
+ * @param {Object} props - Props passed to the component
+ * @returns {JSX.Element} - The TextEditor component
+ */
 function TextEditor(props) {
     const {
-        intl, apiType, showAtOnce, history, docId,
+        intl, showAtOnce, history, docId, docName,
     } = props;
     const { api, isAPIProduct } = useContext(APIContext);
-
     const [open, setOpen] = useState(showAtOnce);
-
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
     const [isUpdating, setIsUpdating] = useState(false);
 
     const onEditorStateChange = (newEditorState) => {
         setEditorState(newEditorState);
     };
+
+    const updateDoc = () => {
+        let restAPI;
+        if (isAPIProduct) {
+            restAPI = new APIProduct();
+        } else if (api.apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
+
+        const docPromise = restAPI.getInlineContentOfDocument(api.id, docId);
+        docPromise
+            .then((doc) => {
+                const contentBlock = htmlToDraft(doc.text);
+                if (contentBlock) {
+                    const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
+                    const tempEditorState = EditorState.createWithContent(contentState);
+                    setEditorState(tempEditorState);
+                }
+            })
+            .catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+                const { status } = error;
+                if (status === 404) {
+                    this.setState({ apiNotFound: true });
+                }
+            });
+    };
+
     const toggleOpen = () => {
         if (!open) updateDoc();
 
@@ -104,8 +146,16 @@ function TextEditor(props) {
         }
         setOpen(!open);
     };
+
     const addContentToDoc = () => {
-        const restAPI = isAPIProduct ? new APIProduct() : new Api();
+        let restAPI;
+        if (isAPIProduct) {
+            restAPI = new APIProduct();
+        } else if (api.apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
         setIsUpdating(true);
         const contentToSave = draftToHtml(convertToRaw(editorState.getCurrentContent()));
         const docPromise = restAPI.addInlineContentToDocument(api.id, docId, 'INLINE', contentToSave);
@@ -129,36 +179,13 @@ function TextEditor(props) {
                 setIsUpdating(false);
             });
     };
-    const updateDoc = () => {
-        const restAPI = isAPIProduct ? new APIProduct() : new Api();
 
-        const docPromise = restAPI.getInlineContentOfDocument(api.id, docId);
-        docPromise
-            .then((doc) => {
-                const contentBlock = htmlToDraft(doc.text);
-                if (contentBlock) {
-                    const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
-                    const editorState = EditorState.createWithContent(contentState);
-                    setEditorState(editorState);
-                }
-            })
-            .catch((error) => {
-                if (process.env.NODE_ENV !== 'production') {
-                    console.log(error);
-                }
-                const { status } = error;
-                if (status === 404) {
-                    this.setState({ apiNotFound: true });
-                }
-            });
-    };
-
-    const {  docName } = props;
     return (
         <div>
             <Button
-                onClick={toggleOpen} disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}
-                aria-label={'Edit Content of ' + docName}
+                onClick={toggleOpen}
+                disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}
+                aria-label={`Edit Content of ${docName}`}
             >
                 <Icon>description</Icon>
                 <FormattedMessage id='Apis.Details.Documents.TextEditor.edit.content' defaultMessage='Edit Content' />
@@ -173,9 +200,15 @@ function TextEditor(props) {
                             id='Apis.Details.Documents.TextEditor.edit.content.of'
                             defaultMessage='Edit Content of'
                         />{' '}
-                        "{docName}"
+                        &quot;{docName}&quot;
                     </Typography>
-                    <Button className={classes.button} variant='contained' disabled={isUpdating} color='primary' onClick={addContentToDoc}>
+                    <Button
+                        className={classes.button}
+                        variant='contained'
+                        disabled={isUpdating}
+                        color='primary'
+                        onClick={addContentToDoc}
+                    >
                         <FormattedMessage
                             id='Apis.Details.Documents.TextEditor.update.content.button'
                             defaultMessage='Update Content'
@@ -206,13 +239,13 @@ function TextEditor(props) {
 TextEditor.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     docId: PropTypes.string.isRequired,
-    apiType: PropTypes.oneOf([Api.CONSTS.API, Api.CONSTS.APIProduct]).isRequired,
     intl: PropTypes.shape({}).isRequired,
     showAtOnce: PropTypes.bool.isRequired,
     api: PropTypes.shape({
         id: PropTypes.string,
-        apiType: PropTypes.oneOf([Api.CONSTS.API, Api.CONSTS.APIProduct]),
+        apiType: PropTypes.oneOf([Api.CONSTS.API, Api.CONSTS.APIProduct, MCPServer.CONSTS.MCP]),
     }).isRequired,
+    docName: PropTypes.string.isRequired,
 };
 
 export default injectIntl(withRouter((TextEditor)));

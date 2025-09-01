@@ -17,9 +17,8 @@
  */
 
 import React, { useState, useEffect, useContext, Suspense, lazy } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation , withRouter } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { withRouter } from 'react-router-dom';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
@@ -31,6 +30,7 @@ import Icon from '@mui/material/Icon';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import Alert from 'AppComponents/Shared/Alert';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -40,6 +40,7 @@ import { vscDarkPlus , vs } from 'react-syntax-highlighter/dist/esm/styles/prism
 import Configurations from 'Config';
 import * as monaco from 'monaco-editor'
 import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'MarkdownEditor';
 
@@ -87,24 +88,37 @@ const StyledDialog = styled(Dialog)({
 
 const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "MDReactMarkdown" */));
 
+/**
+ * Transition component
+ * @param {Object} props - Props passed to the component
+ * @returns {JSX.Element} - The Transition component
+ */
 function Transition(props) {
-    return <Slide direction="up" {...props} />;
+    return <Slide direction='up' {...props} />;
 }
 
+/**
+ * MarkdownEditor component
+ * @param {Object} props - Props passed to the component
+ * @returns {JSX.Element} - The MarkdownEditor component
+ */
 function MarkdownEditor(props) {
     const location = useLocation();
     const { doc } = location.state || {};
     const skipHtml = Configurations.app.markdown ? Configurations.app.markdown.skipHtml : true;
     const markdownSyntaxHighlighterProps = Configurations.app.markdown ?
         Configurations.app.markdown.syntaxHighlighterProps: {};
-    const syntaxHighlighterDarkTheme = Configurations.app.markdown ? 
-        Configurations.app.markdown.syntaxHighlighterDarkTheme: false;
-    const templateAvailble = Configurations.app.markdown && Configurations.app.markdown.template ? true : false
-    const howTotemplate = templateAvailble && Configurations.app.markdown.template.howTo ? Configurations.app.markdown.template.howTo : '';
-    const sampleTemplate = templateAvailble && Configurations.app.markdown.template.sample ? Configurations.app.markdown.template.sample : '';
-    const otherTemplate = templateAvailble && Configurations.app.markdown.template.other ? Configurations.app.markdown.template.other : '';
+    const syntaxHighlighterDarkTheme = Configurations.app.markdown
+        ? Configurations.app.markdown.syntaxHighlighterDarkTheme
+        : false;
+
+    const templateAvailable = Configurations.app.markdown?.template;
+    const howTotemplate = templateAvailable?.howTo || '';
+    const sampleTemplate = templateAvailable?.sample || '';
+    const otherTemplate = templateAvailable?.other || '';
+
     const { intl, showAtOnce, history, docType } = props;
-    const { api, isAPIProduct } = useContext(APIContext);
+    const { api } = useContext(APIContext);
     const [isUpdating, setIsUpdating] = useState(false);
     const [open, setOpen] = useState(showAtOnce);
     const [docContent, setDocContent] = useState();
@@ -113,7 +127,9 @@ function MarkdownEditor(props) {
         let templatePath = '';
         if (howTotemplate && howTotemplate !== '' && ((doc && doc.type === 'HOWTO') || docType === 'HOWTO')) {
             templatePath = `${Configurations.app.context}/site/public/templates/${howTotemplate}`;
-        } else if (sampleTemplate && sampleTemplate !== '' && ((doc && doc.type === 'SAMPLES') || docType === 'SAMPLES')) {
+        } else if (sampleTemplate && sampleTemplate !== '' && ((doc && doc.type === 'SAMPLES')
+            || docType === 'SAMPLES'
+        )) {
             templatePath = `${Configurations.app.context}/site/public/templates/${sampleTemplate}`;
         } else if (otherTemplate && otherTemplate !== '' && ((doc && doc.type === 'OTHER') || docType === 'OTHER')) {
             templatePath = `${Configurations.app.context}/site/public/templates/${otherTemplate}`;
@@ -139,6 +155,34 @@ function MarkdownEditor(props) {
         }
     }, [docType]);
 
+    const editorDidMount = (editor, monaco) => {
+        editor.focus();
+    };
+
+    const updateDoc = () => {
+        let restAPI;
+        if (api.apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
+
+        const docPromise = restAPI.getInlineContentOfDocument(api.id, props.docId);
+        docPromise
+            .then((docResponse) => {
+                setDocContent(docResponse.text);
+            })
+            .catch(error => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+                const { status } = error;
+                if (status === 404) {
+                    this.setState({ apiNotFound: true });
+                }
+            });
+    };
+
     const toggleOpen = () => {
         if (!open) updateDoc();
         if (open && showAtOnce) {
@@ -147,15 +191,18 @@ function MarkdownEditor(props) {
         }
         setOpen(!open);
     };
-    const editorDidMount = (editor, monaco) => {
-        editor.focus();
-    };
+
     const addContentToDoc = () => {
-        const restAPI = new Api();
+        let restAPI;
+        if (api.apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
         setIsUpdating(true);
         const docPromise = restAPI.addInlineContentToDocument(api.id, props.docId, 'MARKDOWN', docContent);
         docPromise
-            .then(doc => {
+            .then(() => {
                 Alert.info(
                     `${doc.obj.name} ${intl.formatMessage({
                         id: 'Apis.Details.Documents.MarkdownEditor.update.success.message',
@@ -176,24 +223,7 @@ function MarkdownEditor(props) {
                 setIsUpdating(false);
             });
     };
-    const updateDoc = () => {
-        const restAPI = new Api();
 
-        const docPromise = restAPI.getInlineContentOfDocument(api.id, props.docId);
-        docPromise
-            .then(doc => {
-                setDocContent(doc.text);
-            })
-            .catch(error => {
-                if (process.env.NODE_ENV !== 'production') {
-                    console.log(error);
-                }
-                const { status } = error;
-                if (status === 404) {
-                    this.setState({ apiNotFound: true });
-                }
-            });
-    };
     const addApiContent = (originalMarkdown) => {
         if(originalMarkdown) {
             let newMarkdown = originalMarkdown;
@@ -215,33 +245,39 @@ function MarkdownEditor(props) {
             <Button onClick={toggleOpen} disabled={api.isRevision}  aria-label={'Edit Content of ' + docName}>
                 <Icon>code</Icon>
                 <FormattedMessage
-                    id="Apis.Details.Documents.MarkdownEditor.edit.content"
-                    defaultMessage="Edit Content"
+                    id='Apis.Details.Documents.MarkdownEditor.edit.content'
+                    defaultMessage='Edit Content'
                 />
             </Button>
             <StyledDialog fullScreen open={open} onClose={toggleOpen} TransitionComponent={Transition}>
                 <Paper square className={classes.popupHeader}>
-                    <IconButton color="inherit" onClick={toggleOpen} aria-label="Close" size='large'>
+                    <IconButton color='inherit' onClick={toggleOpen} aria-label='Close' size='large'>
                         <Icon>close</Icon>
                     </IconButton>
-                    <Typography variant="h4" className={classes.docName}>
+                    <Typography variant='h4' className={classes.docName}>
                         <FormattedMessage
-                            id="Apis.Details.Documents.MarkdownEditor.edit.content.of"
-                            defaultMessage="Edit Content of"
+                            id='Apis.Details.Documents.MarkdownEditor.edit.content.of'
+                            defaultMessage='Edit Content of'
                         />{' '}
-                        "{docName}"
+                        &quot;{docName}&quot;
                     </Typography>
-                    <Button className={classes.button} variant="contained" disabled={isUpdating} color="primary" onClick={addContentToDoc}>
+                    <Button
+                        className={classes.button}
+                        variant='contained'
+                        disabled={isUpdating}
+                        color='primary'
+                        onClick={addContentToDoc}
+                    >
                         <FormattedMessage
-                            id="Apis.Details.Documents.MarkdownEditor.update.content.button"
-                            defaultMessage="Update Content"
+                            id='Apis.Details.Documents.MarkdownEditor.update.content.button'
+                            defaultMessage='Update Content'
                         />
                         {isUpdating && <CircularProgress size={24} />}
                     </Button>
                     <Button className={classes.button} onClick={toggleOpen}>
                         <FormattedMessage
-                            id="Apis.Details.Documents.MarkdownEditor.cancel.button"
-                            defaultMessage="Cancel"
+                            id='Apis.Details.Documents.MarkdownEditor.cancel.button'
+                            defaultMessage='Cancel'
                         />
                     </Button>
                 </Paper>
@@ -250,10 +286,10 @@ function MarkdownEditor(props) {
                         <Grid item xs={6} className='markdown-content-wrapper'>
                             <Suspense fallback={<CircularProgress />}>
                                 <MonacoEditor
-                                    width="100%"
-                                    height="100vh"
-                                    language="markdown"
-                                    theme="vs-dark"
+                                    width='100%'
+                                    height='100vh'
+                                    language='markdown'
+                                    theme='vs-dark'
                                     value={docContent}
                                     options={{ selectOnLineNumbers: true }}
                                     onChange={setDocContent}
@@ -276,7 +312,7 @@ function MarkdownEditor(props) {
                                                         children={String(children).replace(/\n$/, '')}
                                                         style={syntaxHighlighterDarkTheme ? vscDarkPlus : vs}
                                                         language={match[1]}
-                                                        PreTag="div"
+                                                        PreTag='div'
                                                         {...props}
                                                         {...markdownSyntaxHighlighterProps}
                                                     />

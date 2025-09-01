@@ -33,6 +33,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'CORSConfiguration';
 
@@ -114,7 +115,10 @@ export default function CORSConfiguration(props) {
                         title={(
                             <FormattedMessage
                                 id='Apis.Details.Configuration.components.CORSConfiguration.tooltip'
-                                defaultMessage='If enabled, the CORS configuration for the API will be enabled.'
+                                defaultMessage='If enabled, the CORS configuration for the {type} will be enabled.'
+                                values={{
+                                    type: getTypeToDisplay(apiFromContext.apiType)
+                                }}
                             />
                         )}
                         aria-label='CORS Configuration helper text'

@@ -43,6 +43,7 @@ import { PROPERTIES as UserProperties } from 'AppData/User';
 import { useUser } from 'AppComponents/Shared/AppContext';
 import { useIntl, FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'DevelopSectionMenu';
 
@@ -246,11 +247,19 @@ export default function DevelopSectionMenu(props) {
                         />
                     </Typography>
                     <Tooltip
-                        title={intl.formatMessage({
-                            id: 'Apis.Details.index.design.api.configs.title.tooltip',
-                            defaultMessage: 'If you make any changes to the API configuration, you need to redeploy'
-                                + ' the API to see updates in the API Gateway.',
-                        })}
+                        title={(
+                            <FormattedMessage
+                                id='Apis.Details.index.design.api.configs.title.tooltip'
+                                defaultMessage={
+                                    'If you make any changes to the {configType} Configurations, '
+                                    + 'you need to redeploy the {type} to see updates in the Gateway.'
+                                }
+                                values={{
+                                    configType: api.isMCPServer() ? 'MCP' : 'API',
+                                    type: getTypeToDisplay(api.apiType)
+                                }}
+                            />
+                        )}
                         placement='bottom'
                     >
                         <IconButton color='primary' size='small' aria-label='delete' sx={{ p: '3px' }}>

@@ -30,7 +30,7 @@ import API from 'AppData/api';
 import { withAPI, useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import CONSTS from 'AppData/Constants';
 import { isRestricted } from 'AppData/AuthManager';
-import { getBasePath } from 'AppComponents/Shared/Utils';
+import { getBasePath, getTypeToDisplay } from 'AppComponents/Shared/Utils';
 import OrganizationSubscriptionPoliciesManage from './OrganizationSubscriptionPoliciesManage';
 import SharedOrganizations from './SharedOrganizations';
 
@@ -95,7 +95,7 @@ function ShareAPI(props) {
     const [policies, setPolicies] = useState([]);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [confirmCallback, setConfirmCallback] = useState(null);
-
+    const typeToDisplay = getTypeToDisplay(api.apiType);
 
     /**
      * Save API sharing information (visible organizations and organization policies)
@@ -228,7 +228,10 @@ function ShareAPI(props) {
             <Typography variant='h4' component='h2' align='left' className={classes.mainTitle}>
                 <FormattedMessage
                     id='Apis.Details.ShareAPI.title'
-                    defaultMessage='Share API'
+                    defaultMessage='Share {type}'
+                    values={{
+                        type: typeToDisplay
+                    }}
                 />
             </Typography>
             {organizations?.list?.length === 0 ? (
@@ -238,7 +241,10 @@ function ShareAPI(props) {
                             <FormattedMessage
                                 id='Apis.Details.Configuration.components.Share.API.no.organizations'
                                 defaultMessage='No organizations are currently registered under 
-                                your current organization to share the API.'
+                                your current organization to share the {type}.'
+                                values={{
+                                    type: typeToDisplay
+                                }}
                             />
                         </FormLabel>
                     </Box>
@@ -335,9 +341,12 @@ function ShareAPI(props) {
                             {isSubValidationDisabled ? (
                                 <FormattedMessage
                                     id='Apis.Details.ShareAPI.subValidationDisabled.dialog.description'
-                                    defaultMessage={'Subscription validation is disabled for this API. This will allow '
-                                        + 'anyone with a valid token inside a shared organization to consume ' 
-                                        + 'the API without a subscription. Do you want to confirm?'}
+                                    defaultMessage={'Subscription validation is disabled for this {type}. '
+                                        + 'This will allow anyone with a valid token inside a shared organization ' 
+                                        + 'to consume the {type} without a subscription. Do you want to confirm?'}
+                                    values={{
+                                        type: typeToDisplay
+                                    }}
                                 />
                             ) : (
                                 <FormattedMessage

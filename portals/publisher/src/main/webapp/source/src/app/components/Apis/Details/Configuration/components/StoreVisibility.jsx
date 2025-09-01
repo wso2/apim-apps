@@ -219,10 +219,13 @@ export default function StoreVisibility(props) {
                                 <FormattedMessage
                                     id='Apis.Details.Configuration.components.storeVisibility.tooltip.public.desc'
                                     defaultMessage={
-                                        'The API is accessible to everyone and can be advertised '
+                                        'The {type} is accessible to everyone and can be advertised '
                                         + 'in multiple developer portals - a central developer portal '
                                         + 'and/or non-WSO2 developer portals.'
                                     }
+                                    values={{
+                                        type: getTypeToDisplay(api.apiType)
+                                    }}
                                 />
                                 <br />
                                 <br />
@@ -236,9 +239,12 @@ export default function StoreVisibility(props) {
                                 <FormattedMessage
                                     id='Apis.Details.Configuration.components.storeVisibility.tooltip.restrict.desc'
                                     defaultMessage={
-                                        'The API is visible only to specific user'
+                                        'The {type} is visible only to specific user'
                                         + ' roles in the tenant developer portal that you specify.'
                                     }
+                                    values={{
+                                        type: getTypeToDisplay(api.apiType)
+                                    }}
                                 />
                             </p>
                         </>

@@ -122,8 +122,10 @@ const documentSchema = Joi.extend((joi) => ({
         {
             name: 'isDocumentPresent',
             validate(params, value, state, options) { // eslint-disable-line no-unused-vars
-                const api = new API();
-                return api.validateDocumentExists(value.id, value.name);
+                const isMCPServer = window.location.pathname.includes('/mcp-servers');
+                return isMCPServer
+                    ? MCPServer.validateDocumentExists(value.id, value.name)
+                    : new API().validateDocumentExists(value.id, value.name);
             },
         },
     ],
