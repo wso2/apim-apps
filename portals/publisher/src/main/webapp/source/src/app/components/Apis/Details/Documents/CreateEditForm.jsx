@@ -181,7 +181,7 @@ class CreateEditForm extends React.Component {
             nameMaxLengthExceeds: false,
             invalidUrl: false,
             nameEmpty: false,
-            summeryEmpty: false,
+            summaryEmpty: false,
             otherTypeEmpty: false,
             urlEmpty: false,
             invalidDocName: false,
@@ -461,9 +461,9 @@ class CreateEditForm extends React.Component {
             }
         } else if (field === 'summary') {
             if (value === '') {
-                this.setState({ summeryEmpty: true });
+                this.setState({ summaryEmpty: true });
             } else {
-                this.setState({ summeryEmpty: false });
+                this.setState({ summaryEmpty: false });
             }
         } else if (field === 'otherTypeName') {
             if (value === '') {
@@ -537,7 +537,7 @@ class CreateEditForm extends React.Component {
             nameMaxLengthExceeds,
             nameEmpty,
             invalidDocName,
-            summeryEmpty,
+            summaryEmpty,
             otherTypeEmpty,
             urlEmpty,
             visibility
@@ -614,7 +614,7 @@ class CreateEditForm extends React.Component {
                             />
                         }
                         helperText={
-                            summeryEmpty ? (
+                            summaryEmpty ? (
                                 <FormattedMessage
                                     id='Apis.Details.Documents.CreateEditForm.document.summary.error.empty'
                                     defaultMessage='Document summary can not be empty'
@@ -633,7 +633,7 @@ class CreateEditForm extends React.Component {
                         InputLabelProps={{
                             shrink: true,
                         }}
-                        error={summeryEmpty}
+                        error={summaryEmpty}
                     />
                 </FormControl>
                 {settingsContext.docVisibilityEnabled && 
@@ -650,7 +650,7 @@ class CreateEditForm extends React.Component {
                             />
                         }
                         helperText={
-                            summeryEmpty ? (
+                            summaryEmpty ? (
                                 <FormattedMessage
                                     id='Apis.Details.Documents.CreateEditForm.document.summary.error.empty'
                                     defaultMessage='Document summary can not be empty'
@@ -667,7 +667,7 @@ class CreateEditForm extends React.Component {
                         margin='normal'
                         value={visibility}
                         onChange={this.handleChange('visibility')}
-                        error={summeryEmpty}
+                        error={summaryEmpty}
                     >
                         <MenuItem value='API_LEVEL'>
                             <FormattedMessage

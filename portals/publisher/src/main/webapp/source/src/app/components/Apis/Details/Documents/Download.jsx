@@ -51,8 +51,11 @@ function Download(props) {
                 setIsSuccessful(true);
                 setIsFileAvailable(true);
             })
-            .catch((error) => {
-                console.log(error);
+            .catch(() => {
+                Alert.error(intl.formatMessage({
+                    id:'Apis.Details.Documents.Download.documents.listing.download.error',
+                    defaultMessage: 'Error downloading the file',
+                }));
                 setIsSuccessful(true);
                 setIsFileAvailable(false);
             });

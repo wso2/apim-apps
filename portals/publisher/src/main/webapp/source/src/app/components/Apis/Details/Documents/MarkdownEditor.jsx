@@ -40,6 +40,7 @@ import { vscDarkPlus , vs } from 'react-syntax-highlighter/dist/esm/styles/prism
 import Configurations from 'Config';
 import * as monaco from 'monaco-editor'
 import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'MarkdownEditor';
 
@@ -154,6 +155,34 @@ function MarkdownEditor(props) {
         }
     }, [docType]);
 
+    const editorDidMount = (editor, monaco) => {
+        editor.focus();
+    };
+
+    const updateDoc = () => {
+        let restAPI;
+        if (api.apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
+
+        const docPromise = restAPI.getInlineContentOfDocument(api.id, props.docId);
+        docPromise
+            .then((docResponse) => {
+                setDocContent(docResponse.text);
+            })
+            .catch(error => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+                const { status } = error;
+                if (status === 404) {
+                    this.setState({ apiNotFound: true });
+                }
+            });
+    };
+
     const toggleOpen = () => {
         if (!open) updateDoc();
         if (open && showAtOnce) {
@@ -162,9 +191,7 @@ function MarkdownEditor(props) {
         }
         setOpen(!open);
     };
-    const editorDidMount = (editor, monaco) => {
-        editor.focus();
-    };
+
     const addContentToDoc = () => {
         let restAPI;
         if (api.apiType === MCPServer.CONSTS.MCP) {
@@ -196,29 +223,7 @@ function MarkdownEditor(props) {
                 setIsUpdating(false);
             });
     };
-    const updateDoc = () => {
-        let restAPI;
-        if (api.apiType === MCPServer.CONSTS.MCP) {
-            restAPI = MCPServer;
-        } else {
-            restAPI = new Api();
-        }
 
-        const docPromise = restAPI.getInlineContentOfDocument(api.id, props.docId);
-        docPromise
-            .then(doc => {
-                setDocContent(doc.text);
-            })
-            .catch(error => {
-                if (process.env.NODE_ENV !== 'production') {
-                    console.log(error);
-                }
-                const { status } = error;
-                if (status === 404) {
-                    this.setState({ apiNotFound: true });
-                }
-            });
-    };
     const addApiContent = (originalMarkdown) => {
         if(originalMarkdown) {
             let newMarkdown = originalMarkdown;
@@ -254,7 +259,7 @@ function MarkdownEditor(props) {
                             id='Apis.Details.Documents.MarkdownEditor.edit.content.of'
                             defaultMessage='Edit Content of'
                         />{' '}
-                        "{docName}"
+                        &quot;{docName}&quot;
                     </Typography>
                     <Button
                         className={classes.button}
