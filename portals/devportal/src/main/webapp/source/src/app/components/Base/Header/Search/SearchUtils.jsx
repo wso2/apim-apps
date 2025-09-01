@@ -33,6 +33,7 @@ import { Link } from 'react-router-dom';
 import APIsIcon from '@mui/icons-material/SettingsApplicationsOutlined';
 import DocumentsIcon from '@mui/icons-material/LibraryBooks';
 import CodeIcon from '@mui/icons-material/Code';
+import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import NativeSelect from '@mui/material/NativeSelect';
 import { FormattedMessage } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -200,6 +201,15 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
     const getIcon = (type) => {
         if (type === 'API') {
             return <APIsIcon />;
+        } else if (type === 'MCP') {
+            return (
+                <CustomIcon
+                    width={16}
+                    height={16}
+                    icon='mcp-server'
+                    strokeColor='black'
+                />
+            );
         } else if (type === 'DEFINITION') {
             return <CodeIcon />;
         } else {

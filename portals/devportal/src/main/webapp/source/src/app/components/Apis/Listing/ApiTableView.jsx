@@ -42,6 +42,7 @@ import Icon from '@mui/material/Icon';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import DefaultConfigurations from 'AppData/defaultTheme';
 import { useTheme } from '@mui/material';
+import { getBasePath } from 'AppUtils/utils';
 import ImageGenerator from './APICards/ImageGenerator';
 import ApiThumb from './ApiThumb';
 import DocThumb from './APICards/DocThumb';
@@ -369,12 +370,14 @@ class ApiTableViewLegacy extends React.Component {
                             const displayName = artifact?.displayName;
                             const apiName = tableMeta.rowData[2];
                             const apiId = tableMeta.rowData[0];
+                            const apiType = tableMeta.rowData[6];
+                            const basePath = getBasePath(apiType);
 
                             if (artifact) {
                                 if (artifact.type === 'DOC') {
                                     return (
                                         <Link
-                                            to={'/apis/' + artifact.apiUUID + '/documents'}
+                                            to={basePath + artifact.apiUUID + '/documents'}
                                             className={classes.apiNameLink}
                                         >
                                             <Icon>library_books</Icon>
@@ -393,7 +396,7 @@ class ApiTableViewLegacy extends React.Component {
                                 } else if (artifact.type === 'DEFINITION') {
                                     return (
                                         <Link
-                                            to={'/apis/' + apiId + '/overview'}
+                                            to={basePath + apiId + '/overview'}
                                             className={classes.apiNameLink}
                                         >
                                             <Icon>code</Icon>
@@ -413,12 +416,18 @@ class ApiTableViewLegacy extends React.Component {
                                 const strokeColor = theme.palette.getContrastText(theme.custom.listView.tableBodyEvenBackgrund);
                                 return (
                                     <Link
-                                        to={'/apis/' + apiId + '/overview'}
+                                        to={basePath + apiId + '/overview'}
                                         className={classes.apiNameLink}
                                     >
-                                        <CustomIcon width={16} height={16} icon='api' strokeColor={strokeColor} />
-
-                                        <span>{displayName || apiName}</span>
+                                        <CustomIcon
+                                            width={16}
+                                            height={16}
+                                            icon={apiType === 'MCP' ? 'mcp-server' : 'api'}
+                                            strokeColor={strokeColor}
+                                        />
+                                        <span style={{ marginLeft: 8 }}>
+                                            {displayName || apiName}
+                                        </span>
                                     </Link>
                                 );
                             }
