@@ -248,15 +248,22 @@ class APICardView extends React.Component {
                 },
             },
             {
-                name: 'displayName',
+                name: 'name',
                 label: intl.formatMessage({
                     id: isMCPServersRoute ? 'Apis.Listing.MCPServerList.name' : 'Apis.Listing.APIList.name',
                     defaultMessage: 'Name',
                 }),
+            },
+            {
+                name: 'displayName',
+                label: intl.formatMessage({
+                    id: isMCPServersRoute ? 'Apis.Listing.MCPServerList.display.name' : 'Apis.Listing.APIList.display.name',
+                    defaultMessage: 'Display Name',
+                }),
                 options: {
                     customBodyRender: (value) => {
                         return value || intl.formatMessage({
-                            id: 'Apis.Listing.APIList.name.not.available',
+                            id: 'Apis.Listing.APIList.display.name.not.available',
                             defaultMessage: '-',
                         });
                     },
