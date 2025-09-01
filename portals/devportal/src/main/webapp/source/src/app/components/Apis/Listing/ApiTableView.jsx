@@ -284,7 +284,7 @@ class ApiTableViewLegacy extends React.Component {
             const composeQuery = queryString.parse(query);
             composeQuery.limit = this.rowsPerPage;
             composeQuery.offset = page * rowsPerPage;
-            return api.search(composeQuery);
+            return new API().search(composeQuery);
         }
 
         if (selectedTag) {

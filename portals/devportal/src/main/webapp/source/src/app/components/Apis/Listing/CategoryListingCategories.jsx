@@ -90,7 +90,16 @@ function CategoryListingCategories(props) {
         },
     } = theme;
 
-    const tagWiseURL = '/apis?offset=0&query=api-category';
+    /**
+     * Get the tag wise URL based on the route
+     * @returns {string} The tag wise URL
+     */
+    const tagWiseURL = () => {
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        const url = isMCPServersRoute ? '/mcp-servers?offset=0&query=api-category' : '/apis?offset=0&query=api-category';
+        return url;
+    };
+
     const { allCategories } = props;
 
     /**
@@ -108,7 +117,7 @@ function CategoryListingCategories(props) {
                 </Typography>
                 <List component='nav' aria-label='main mailbox folders' className='category-listing-categories'>
                     {Object.keys(allCategories).map((key) => {
-                        return <APICategoryThumb key={key} category={allCategories[key]} path={tagWiseURL} style={style} />;
+                        return <APICategoryThumb key={key} category={allCategories[key]} path={tagWiseURL()} style={style} />;
                     })}
                 </List>
             </Root>
