@@ -47,6 +47,17 @@ export default function GatewayConfiguration(props) {
         && config.type === 'options');
     const hasDeploymentTypeConfig = isKongGateway && deploymentTypeConfig;
 
+    useEffect(() => {
+        if (hasDeploymentTypeConfig && !additionalProperties.deployment_type) {
+            const standaloneOption = deploymentTypeConfig.values.find(
+                (v) => v.toLowerCase().includes('standalone') || v === 'Standalone',
+            );
+            if (standaloneOption) {
+                setAdditionalProperties('deployment_type', standaloneOption);
+            }
+        }
+    }, [hasDeploymentTypeConfig, deploymentTypeConfig, additionalProperties.deployment_type]);
+
     const onChange = (e) => {
         const { name, value } = e.target;
         setAdditionalProperties(name, value);
