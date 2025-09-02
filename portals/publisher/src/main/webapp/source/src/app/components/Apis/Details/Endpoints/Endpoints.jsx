@@ -249,6 +249,18 @@ function Endpoints(props) {
                     serviceInfo: value
                 };
             }
+            case 'set_primary_production_endpoint': {
+                return {
+                    ...initState,
+                    primaryProductionEndpointId: value
+                };
+            }
+            case 'set_primary_sandbox_endpoint': {
+                return {
+                    ...initState,
+                    primarySandboxEndpointId: value
+                };
+            }
             default: {
                 return initState;
             }
