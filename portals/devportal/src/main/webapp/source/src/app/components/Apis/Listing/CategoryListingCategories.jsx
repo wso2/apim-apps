@@ -96,8 +96,11 @@ function CategoryListingCategories(props) {
      */
     const tagWiseURL = () => {
         const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
-        const url = isMCPServersRoute ? '/mcp-servers?offset=0&query=api-category' : '/apis?offset=0&query=api-category';
-        return url;
+        const basePath = isMCPServersRoute ? '/mcp-servers?offset=0&query=' : '/apis?offset=0&query=';
+        const type = isMCPServersRoute ? 'type:MCP' : 'type:HTTP type:WS type:SOAPTOREST type:GRAPHQL type:SOAP '
+            + 'type:SSE type:WEBSUB type:WEBHOOK type:ASYNC type:APIProduct';
+        const apiCategory = ' api-category';
+        return basePath + type + apiCategory;
     };
 
     const { allCategories } = props;
