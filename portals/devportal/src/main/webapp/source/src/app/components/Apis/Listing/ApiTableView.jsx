@@ -623,7 +623,7 @@ class ApiTableViewLegacy extends React.Component {
                         return <tr key={rowIndex}><td><DefinitionThumb def={artifact} /></td></tr>;
                     } else {
                         return (
-                            <tr key={rowIndex}>
+                            <tr key={rowIndex} style={{ margin: 0 }}>
                                 <td>
                                     <ApiThumb
                                         api={artifact}

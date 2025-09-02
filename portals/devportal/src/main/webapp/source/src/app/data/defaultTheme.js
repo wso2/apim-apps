@@ -125,8 +125,8 @@ const DefaultConfigurations = {
             variant: 'text', // default templates available templates 'text'. Accepted values 'plain', 'text'
         },
         thumbnail: {
-            width: 240,
-            height: 140,
+            width: 100,
+            height: 100,
             contentPictureOverlap: false,
             iconColor: 'rgba(0, 0, 0, 0.38)',
             listViewIconSize: 20,

@@ -22,7 +22,20 @@ import Utils from 'AppData/Utils';
 import { useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 
-const getColorFromLetter = (letter, colorMap, offset) => {
+const getColorFromLetter = (letter, colorMap, offset, customLightColor, customDarkColor) => {
+    // If custom colors are provided, use them directly
+    if (customLightColor && customDarkColor) {
+        return [customLightColor, customDarkColor];
+    }
+
+    // If only light color is provided, generate dark color
+    if (customLightColor) {
+        const { r, g, b } = Utils.hexToRGBHash(customLightColor);
+        const dark = Utils.rgbToHex(r - Math.ceil(r * offset), g - Math.ceil(offset * g), b - Math.ceil(offset * b));
+        return [customLightColor, dark];
+    }
+
+    // Fallback to original logic for backward compatibility
     let charLightColor = colorMap[letter.toLowerCase()];
 
     if (!charLightColor) {
@@ -42,6 +55,9 @@ const getColorFromLetter = (letter, colorMap, offset) => {
 export default (props) => {
     const {
         artifact, width, height, charLength = 2, ThumbIcon, bgColor,
+        avatarVariant = 'rounded',
+        customLightColor,
+        customDarkColor,
     } = props;
     const theme = useTheme();
     const name = artifact.name.substring(0, charLength);
@@ -52,12 +68,13 @@ export default (props) => {
     return (
         <Box sx={{ display: 'flex' }}>
             <Avatar
-                variant='square'
+                variant={avatarVariant}
                 sx={() => {
-                    const [light, dark] = getColorFromLetter(bgColor === false ? '' : name.substring(0, 1), colorMap, offset);
-                    const fontSize = Math.ceil((width * 70) / defaultWidth);
+                    const [light, dark] = getColorFromLetter(bgColor === false ? '' : name.substring(0, 1), colorMap, offset,
+                        customLightColor, customDarkColor);
+                    const fontSize = Math.ceil((width * 40) / defaultWidth);
                     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-                    const background = light && `linear-gradient(to right, ${light}, ${dark})`;
+                    const background = light && `linear-gradient(to bottom, ${light}, ${dark})`;
                     return {
                         color: light && theme.palette.getContrastText(dark),
                         background,
@@ -65,7 +82,7 @@ export default (props) => {
                             { background: light }, /* fallback for old browsers */
                             {
                                 background:
-                                `-webkit-linear-gradient(to right, ${light}, ${dark})`, /* Chrome 10-25, Safari 5.1-6 */
+                                `-webkit-linear-gradient(to bottom, ${light}, ${dark})`, /* Chrome 10-25, Safari 5.1-6 */
                             },
                         ],
                         height,
