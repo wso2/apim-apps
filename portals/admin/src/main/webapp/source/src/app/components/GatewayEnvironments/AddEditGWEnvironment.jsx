@@ -920,6 +920,7 @@ function AddEditGWEnvironment(props) {
                                         setAdditionalProperties={setAdditionalProperties}
                                         hasErrors={hasErrors}
                                         validating={validating}
+                                        gatewayType={gatewayType}
                                     />
                                 </Box>
                             </Grid>

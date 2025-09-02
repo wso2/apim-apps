@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -39,12 +39,55 @@ const StyledFormControl = styled(FormControl)(({ theme }) => ({
  */
 export default function GatewayConfiguration(props) {
     const {
-        gatewayConfigurations, additionalProperties, setAdditionalProperties,
+        gatewayConfigurations, additionalProperties, setAdditionalProperties, gatewayType,
     } = props;
+
+    const isKongGateway = gatewayType === 'Kong';
+    const deploymentTypeConfig = gatewayConfigurations.find((config) => config.name === 'deployment_type'
+        && config.type === 'options');
+    const hasDeploymentTypeConfig = isKongGateway && deploymentTypeConfig;
 
     const onChange = (e) => {
         const { name, value } = e.target;
         setAdditionalProperties(name, value);
+    };
+
+    useEffect(() => {
+        if (hasDeploymentTypeConfig) {
+            const deploymentType = additionalProperties.deployment_type;
+
+            const isStandaloneDeployment = deploymentType
+                && (deploymentType.toLowerCase().includes('standalone')
+                    || deploymentType === 'Standalone');
+
+            if (!isStandaloneDeployment && deploymentType) {
+                const fieldsToHide = gatewayConfigurations
+                    .filter((config) => config.name !== 'deployment_type')
+                    .map((config) => config.name);
+
+                fieldsToHide.forEach((field) => {
+                    setAdditionalProperties(field, '');
+                });
+            }
+        }
+    }, [additionalProperties.deployment_type]);
+
+    const isFieldVisible = (gatewayConfiguration) => {
+        if (!hasDeploymentTypeConfig) {
+            return true;
+        }
+
+        if (gatewayConfiguration.name === 'deployment_type') {
+            return true;
+        }
+
+        const deploymentType = additionalProperties.deployment_type;
+
+        const isStandaloneDeployment = deploymentType
+            && (deploymentType.toLowerCase().includes('standalone')
+                || deploymentType === 'Standalone');
+
+        return isStandaloneDeployment;
     };
 
     const getComponent = (gatewayConfiguration) => {
@@ -73,7 +116,12 @@ export default function GatewayConfiguration(props) {
                             sx={{ width: '100%' }}
                         >
                             {gatewayConfiguration.values.map((selection) => (
-                                <FormControlLabel value={selection} control={<Radio />} label={selection} />
+                                <FormControlLabel
+                                    key={selection}
+                                    value={selection}
+                                    control={<Radio />}
+                                    label={selection}
+                                />
                             ))}
                         </RadioGroup>
                     </FormControl>
@@ -108,17 +156,20 @@ export default function GatewayConfiguration(props) {
                 variant='outlined'
                 sx={(theme) => ({ padding: theme.spacing(1), marginBottom: theme.spacing(1) })}
             >
-                {gatewayConfigurations.map((gatewayConfiguration) => (
-                    <Box mb={3}>
-                        {getComponent(gatewayConfiguration)}
-                    </Box>
-                ))}
+                {gatewayConfigurations
+                    .filter(isFieldVisible)
+                    .map((gatewayConfiguration) => (
+                        <Box mb={3} key={gatewayConfiguration.name}>
+                            {getComponent(gatewayConfiguration)}
+                        </Box>
+                    ))}
             </Paper>
         )
     );
 }
 GatewayConfiguration.defaultProps = {
     gatewayConfigurations: [],
+    gatewayType: '',
     required: false,
     helperText: <FormattedMessage
         id='Gateway.Configuration.Helper.text'
