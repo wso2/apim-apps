@@ -25,8 +25,8 @@ import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
+import { useAreApisAccessible, useAreMcpServersAccessible } from 'AppUtils/PortalModeUtils';
 import Image404 from './Custom404Image';
-import { useAreApisAccessible, useAreMcpServersAccessible } from '../../../utils/PortalModeUtils';
 
 const ResourceNotFound = ({ response, message }) => {
     const apisAccessible = useAreApisAccessible();

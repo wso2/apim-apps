@@ -39,6 +39,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
 const AIEndpoints = ({
     apiObject,
+    onChangeAPI,
     endpointConfiguration,
 }) => {
     const [productionEndpoints, setProductionEndpoints] = useState([]);
@@ -107,6 +108,7 @@ const AIEndpoints = ({
     useEffect(() => {
         fetchEndpoints();
     }, []);
+
     const handleDelete = (endpoint) => {
         // Check if endpoint is primary
         if (endpoint.id === apiObject.primaryProductionEndpointId ||
@@ -169,6 +171,21 @@ const AIEndpoints = ({
             });
     };
 
+    // Helper function to handle onChangeAPI calls
+    const handleAPIChange = (endpoint, updatedApi) => {
+        if (endpoint.deploymentStage === 'PRODUCTION') {
+            onChangeAPI({
+                action: 'set_primary_production_endpoint',
+                value: updatedApi.primaryProductionEndpointId
+            });
+        } else {
+            onChangeAPI({
+                action: 'set_primary_sandbox_endpoint',
+                value: updatedApi.primarySandboxEndpointId
+            });
+        }
+    };
+
     const handleSetAsPrimary = (endpoint) => {
         // Create a deep copy of the API object to avoid direct mutations
         const updatedApi = {
@@ -183,6 +200,7 @@ const AIEndpoints = ({
                     id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.primary.set.success',
                     defaultMessage: 'Primary endpoint updated successfully',
                 }));
+                handleAPIChange(endpoint, updatedApi);
             })
             .catch((error) => {
                 console.error(error);
@@ -214,6 +232,7 @@ const AIEndpoints = ({
                     id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.primary.update.success',
                     defaultMessage: 'Primary endpoint updated successfully',
                 }));
+                handleAPIChange(endpoint, updatedApi);
             })
             .catch((error) => {
                 console.error(error);
@@ -327,6 +346,7 @@ AIEndpoints.propTypes = {
             }),
         }),
     }).isRequired,
+    onChangeAPI: PropTypes.func.isRequired,
 }
 
 export default AIEndpoints;

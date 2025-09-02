@@ -37,8 +37,8 @@ import CONSTANTS from 'AppData/Constants';
 import Subscription from 'AppData/Subscription';
 import Api from 'AppData/api';
 import { app } from 'Settings';
+import { useAreApisAccessible, useAreMcpServersAccessible } from 'AppUtils/PortalModeUtils';
 import SubscriptionSection from './SubscriptionSection';
-import { useAreApisAccessible, useAreMcpServersAccessible } from '../../../utils/PortalModeUtils';
 
 const PREFIX = 'Subscriptions';
 

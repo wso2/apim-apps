@@ -36,6 +36,7 @@ import Application from 'AppData/Application';
 import AuthManager from 'AppData/AuthManager';
 import SubscribeToApi from 'AppComponents/Shared/AppsAndKeys/SubscribeToApi';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
+import { getTypeToDisplay, getBasePath } from 'AppUtils/utils';
 import OriginalDevportalDetails from './OriginalDevportalDetails';
 import { ApiContext } from '../ApiContext';
 import SubscriptionTableRow from './SubscriptionTableRow';
@@ -436,8 +437,9 @@ class Credentials extends React.Component {
                         <Typography component='p'>
                             <FormattedMessage
                                 id='Apis.Details.Creadentials.credetials.mutualssl'
-                                defaultMessage={'Subscription is not required for Mutual SSL APIs'
-                                        + ' or APIs with only Basic Authentication.'}
+                                defaultMessage={'Subscription is not required for Mutual SSL {type}s'
+                                        + ' or {type}s with only Basic Authentication.'}
+                                values={{ type: getTypeToDisplay(api.type) }}
                             />
                         </Typography>
                     </InlineMessage>
@@ -455,11 +457,13 @@ class Credentials extends React.Component {
                                 defaultMessage: 'Sign In to Subscribe',
                                 id: 'Apis.Details.Credentials.Credentials.subscribe.to.application.sign.in',
                             })}
-                        caption={intl.formatMessage({
-                            defaultMessage: 'You need to subscribe to an application to access this API',
-                            id:
-                            'Apis.Details.Credentials.Credentials.subscribe.to.application.msg',
-                        })}
+                        caption={(
+                            <FormattedMessage
+                                id='Apis.Details.Credentials.Credentials.subscribe.to.application.msg'
+                                defaultMessage='You need to subscribe to an application to access this {type}'
+                                values={{ type: getTypeToDisplay(api.type) }}
+                            />
+                        )}
                         buttonText={intl.formatMessage({
                             defaultMessage: 'Subscribe',
                             id: 'Apis.Details.Credentials.Credentials.generate',
@@ -492,8 +496,9 @@ class Credentials extends React.Component {
                                                         'Use the Subscription and Key Generation Wizard. '
                                                         + 'Create a new application -> '
                                                         + 'Subscribe -> Generate keys and '
-                                                        + 'Access Token to invoke this API.'
+                                                        + 'Access Token to invoke this {type}.'
                                                     }
+                                                    values={{ type: getTypeToDisplay(api.type) }}
                                                 />
                                             </Typography>
                                             <Button
@@ -502,7 +507,7 @@ class Credentials extends React.Component {
                                                 className={classes.buttonElm}
                                                 to={(isOnlyMutualSSL || isOnlyBasicAuth
                                                     || !isSetAllorResidentKeyManagers) ? null
-                                                    : `/apis/${api.id}/credentials/wizard`}
+                                                    : getBasePath(api.type) + api.id + '/credentials/wizard'}
                                                 component={RouterLink}
                                                 disabled={!api.isSubscriptionAvailable || isOnlyMutualSSL
                                                     || isOnlyBasicAuth || !isSetAllorResidentKeyManagers}
@@ -570,7 +575,8 @@ class Credentials extends React.Component {
                                     <FormattedMessage
                                         id={'Apis.Details.Credentials.Credentials.'
                                         + 'api.credentials.subscribed.apps.description'}
-                                        defaultMessage='( Applications Subscribed to this Api )'
+                                        defaultMessage='( Applications Subscribed to this {type} )'
+                                        values={{ type: getTypeToDisplay(api.type) }}
                                     />
                                 </Typography>
                                 <div className={classes.tableMain}>
@@ -652,7 +658,7 @@ class Credentials extends React.Component {
                                             <Link
                                                 to={(isOnlyMutualSSL || isOnlyBasicAuth
                                                     || !isSetAllorResidentKeyManagers) ? null
-                                                    : `/apis/${api.id}/credentials/wizard`}
+                                                    : getBasePath(api.type) + api.id + '/credentials/wizard'}
                                                 style={!api.isSubscriptionAvailable
                                                     ? { pointerEvents: 'none' } : null}
                                                 className={classes.addLinkWrapper}
@@ -682,9 +688,10 @@ class Credentials extends React.Component {
                                             <FormattedMessage
                                                 id='Apis.Details.Credentials.Credentials.'
                                                 defaultMessage={`An application is primarily used to decouple the 
-                                                consumer from the APIs. It allows you to generate and use a single 
-                                                key for multiple APIs and subscribe multiple times to a single API 
+                                                consumer from the {type}s. It allows you to generate and use a single 
+                                                key for multiple {type}s and subscribe multiple times to a single {type} 
                                                 with different SLA levels.`}
+                                                values={{ type: getTypeToDisplay(api.type) }}
                                             />
                                         </Typography>
                                         {renderCredentialInfo()}
@@ -696,7 +703,8 @@ class Credentials extends React.Component {
                                         <Typography component='p' data-testid='itest-no-tier-dialog'>
                                             <FormattedMessage
                                                 id='Apis.Details.Creadentials.credetials.no.tiers'
-                                                defaultMessage='No tiers are available for the API.'
+                                                defaultMessage='No tiers are available for the {type}.'
+                                                values={{ type: getTypeToDisplay(api.type) }}
                                             />
                                         </Typography>
                                     </InlineMessage>
