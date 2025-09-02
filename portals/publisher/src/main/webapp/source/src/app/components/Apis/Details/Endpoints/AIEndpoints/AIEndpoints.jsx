@@ -171,6 +171,21 @@ const AIEndpoints = ({
             });
     };
 
+    // Helper function to handle onChangeAPI calls
+    const handleAPIChange = (endpoint, updatedApi) => {
+        if (endpoint.deploymentStage === 'PRODUCTION') {
+            onChangeAPI({
+                action: 'set_primary_production_endpoint',
+                value: updatedApi.primaryProductionEndpointId
+            });
+        } else {
+            onChangeAPI({
+                action: 'set_primary_sandbox_endpoint',
+                value: updatedApi.primarySandboxEndpointId
+            });
+        }
+    };
+
     const handleSetAsPrimary = (endpoint) => {
         // Create a deep copy of the API object to avoid direct mutations
         const updatedApi = {
@@ -185,17 +200,7 @@ const AIEndpoints = ({
                     id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.primary.set.success',
                     defaultMessage: 'Primary endpoint updated successfully',
                 }));
-                if (endpoint.deploymentStage === 'PRODUCTION') {
-                    onChangeAPI({
-                        action: 'set_primary_production_endpoint',
-                        value: updatedApi.primaryProductionEndpointId
-                    });
-                } else {
-                    onChangeAPI({
-                        action: 'set_primary_sandbox_endpoint',
-                        value: updatedApi.primarySandboxEndpointId
-                    });
-                }
+                handleAPIChange(endpoint, updatedApi);
             })
             .catch((error) => {
                 console.error(error);
@@ -227,17 +232,7 @@ const AIEndpoints = ({
                     id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.primary.update.success',
                     defaultMessage: 'Primary endpoint updated successfully',
                 }));
-                if (endpoint.deploymentStage === 'PRODUCTION') {
-                    onChangeAPI({
-                        action: 'set_primary_production_endpoint',
-                        value: updatedApi.primaryProductionEndpointId
-                    });
-                } else {
-                    onChangeAPI({
-                        action: 'set_primary_sandbox_endpoint',
-                        value: updatedApi.primarySandboxEndpointId
-                    });
-                }
+                handleAPIChange(endpoint, updatedApi);
             })
             .catch((error) => {
                 console.error(error);
