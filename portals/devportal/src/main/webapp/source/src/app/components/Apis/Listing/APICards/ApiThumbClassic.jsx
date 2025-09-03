@@ -313,7 +313,7 @@ class ApiThumbClassicLegacy extends React.Component {
             <Chip
                 size='small'
                 classes={{ root: classes.chip }}
-                icon={getTypeIcon(api.transportType === undefined ? api.type : api.transportType)}
+                icon={getTypeIcon(api.transportType ? api.transportType : api.type)}
                 label={label}
                 color='primary'
                 variant='outlined'
