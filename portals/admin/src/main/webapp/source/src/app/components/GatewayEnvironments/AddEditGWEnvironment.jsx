@@ -458,29 +458,26 @@ function AddEditGWEnvironment(props) {
         if (scheduledIntervalErrors) {
             errorText += scheduledIntervalErrors + '\n';
         }
-        let connectorConfigHasErrors = false;
+        let gatewayConnectorConfigHasErrors = false;
 
-        // Recursive function to check for errors in nested configurations
-        const checkConfigErrors = (configurations) => {
-            for (const config of configurations) {
-                if (config.required && (!additionalProperties[config.name]
-                    || additionalProperties[config.name] === '')) {
+        const checkGatewayConnectorConfigErrors = (connectorConfigurations) => {
+            for (const connectorConfig of connectorConfigurations) {
+                if (connectorConfig.required && (!additionalProperties[connectorConfig.name]
+                    || additionalProperties[connectorConfig.name] === '')) {
                     return true;
                 }
 
-                // Check nested configurations if they exist and are visible
-                if (config.values && config.values.length > 0 && additionalProperties[config.name]) {
-                    // Find the selected option
-                    const selectedOption = config.values.find((option) => {
+                if (connectorConfig.values && connectorConfig.values.length > 0
+                        && additionalProperties[connectorConfig.name]) {
+                    const selectedOption = connectorConfig.values.find((option) => {
                         if (typeof option === 'string') {
-                            return option === additionalProperties[config.name];
+                            return option === additionalProperties[connectorConfig.name];
                         }
-                        return option.name === additionalProperties[config.name];
+                        return option.name === additionalProperties[connectorConfig.name];
                     });
 
-                    // If selected option has nested values, check them recursively
                     if (selectedOption && typeof selectedOption === 'object' && selectedOption.values) {
-                        if (checkConfigErrors(selectedOption.values)) {
+                        if (checkGatewayConnectorConfigErrors(selectedOption.values)) {
                             return true;
                         }
                     }
@@ -489,9 +486,9 @@ function AddEditGWEnvironment(props) {
             return false;
         };
 
-        connectorConfigHasErrors = checkConfigErrors(gatewayConfigurations);
+        gatewayConnectorConfigHasErrors = checkGatewayConnectorConfigErrors(gatewayConfigurations);
 
-        if (connectorConfigHasErrors) {
+        if (gatewayConnectorConfigHasErrors) {
             const errorConfig = intl.formatMessage({
                 id: 'GatewayEnvironments.AddEditGWEnvironment.form.gateway.config.has.errors',
                 defaultMessage: 'Connector configuration has errors',

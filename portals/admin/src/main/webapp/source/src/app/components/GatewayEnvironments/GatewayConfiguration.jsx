@@ -10,7 +10,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import { FormattedMessage } from 'react-intl';
 import InputLabel from '@mui/material/InputLabel';
 import FormHelperText from '@mui/material/FormHelperText';
-import CustomInputField from 'AppComponents/GatewayEnvironments/CustomInputField';
+import CustomGatewayInputField from 'AppComponents/GatewayEnvironments/CustomGatewayInputField';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
@@ -45,70 +45,65 @@ export default function GatewayConfiguration(props) {
         hasErrors, validating,
     } = props;
 
-    const getAllNestedPropertyNames = (configurations, parentKey = '') => {
-        const propertyNames = [];
+    const getAllNestedGatewayConfigPropertyNames = (connectorConfigurations, parentKey = '') => {
+        const gatewayConfigPropertyNames = [];
 
-        configurations.forEach((config) => {
-            // configKey will have the full path of the property (Ex: "parent.child.property")
-            const configKey = parentKey ? `${parentKey}.${config.name}` : config.name;
-            propertyNames.push(config.name);
+        connectorConfigurations.forEach((connectorConfig) => {
+            const connectorConfigKey = parentKey ? `${parentKey}.${connectorConfig.name}` : connectorConfig.name;
+            gatewayConfigPropertyNames.push(connectorConfig.name);
 
-            // If the configuration has nested values, recursively get their property names
-            if (config.values && config.values.length > 0) {
-                config.values.forEach((value) => {
+            if (connectorConfig.values && connectorConfig.values.length > 0) {
+                connectorConfig.values.forEach((value) => {
                     if (typeof value === 'object' && value.values) {
-                        propertyNames.push(...getAllNestedPropertyNames(value.values, configKey));
+                        gatewayConfigPropertyNames.push(...getAllNestedGatewayConfigPropertyNames(
+                            value.values, connectorConfigKey,
+                        ));
                     }
                 });
             }
         });
 
-        return propertyNames;
+        return gatewayConfigPropertyNames;
     };
 
-    // Function to get nested configurations based on selected dropdown/options value
-    const getNestedConfigurations = (parentConfig, selectedValue) => {
-        if (!parentConfig.values || !selectedValue) return [];
+    const getNestedConnectorConfigurations = (parentConnectorConfig, selectedConfigValue) => {
+        if (!parentConnectorConfig.values || !selectedConfigValue) return [];
 
-        // Values can be either strings or objects
-        const selectedOption = parentConfig.values.find((option) => {
+        const selectedConfigOption = parentConnectorConfig.values.find((option) => {
             if (typeof option === 'string') {
-                return option === selectedValue;
+                return option === selectedConfigValue;
             }
-            return option.name === selectedValue;
+            return option.name === selectedConfigValue;
         });
 
-        if (!selectedOption || !selectedOption.values) return [];
+        if (!selectedConfigOption || !selectedConfigOption.values) return [];
 
-        return selectedOption.values;
+        return selectedConfigOption.values;
     };
 
-    // Function to clear unused nested properties when parent value changes
-    const clearUnusedProperties = (parentConfig, newValue) => {
-        if (!parentConfig.values || !parentConfig.values.length) return;
+    const clearUnusedGatewayConfigProperties = (parentConnectorConfig, newConfigValue) => {
+        if (!parentConnectorConfig.values || !parentConnectorConfig.values.length) return;
 
-        // Get all possible nested property names from all options
-        const allPossibleProperties = [];
-        parentConfig.values.forEach((option) => {
+        const allPossibleConfigProperties = [];
+        parentConnectorConfig.values.forEach((option) => {
             if (typeof option === 'object' && option.values) {
-                allPossibleProperties.push(...getAllNestedPropertyNames(option.values));
+                allPossibleConfigProperties.push(...getAllNestedGatewayConfigPropertyNames(option.values));
             }
         });
 
-        // Get currently visible property names
-        const currentlyVisibleProperties = [];
-        const currentNestedConfigs = getNestedConfigurations(parentConfig, newValue);
-        if (currentNestedConfigs.length > 0) {
-            currentlyVisibleProperties.push(...getAllNestedPropertyNames(currentNestedConfigs));
+        const currentlyVisibleConfigProperties = [];
+        const currentNestedGatewayConfigs = getNestedConnectorConfigurations(parentConnectorConfig, newConfigValue);
+        if (currentNestedGatewayConfigs.length > 0) {
+            currentlyVisibleConfigProperties.push(...getAllNestedGatewayConfigPropertyNames(
+                currentNestedGatewayConfigs,
+            ));
         }
 
-        // Clear properties that are no longer visible
-        const propertiesToClear = allPossibleProperties.filter(
-            (prop) => !currentlyVisibleProperties.includes(prop),
+        const configPropertiesToClear = allPossibleConfigProperties.filter(
+            (prop) => !currentlyVisibleConfigProperties.includes(prop),
         );
 
-        // Remove properties that are no longer relevant
-        propertiesToClear.forEach((propName) => {
+        configPropertiesToClear.forEach((propName) => {
             if (additionalProperties[propName] !== undefined) {
                 setAdditionalProperties(propName, undefined);
             }
@@ -116,32 +111,31 @@ export default function GatewayConfiguration(props) {
     };
 
     const onChange = (e) => {
-        let finalValue;
+        let finalConfigValue;
         const { name, value, type } = e.target;
         if (type === 'checkbox') {
             if (additionalProperties[name]) {
-                finalValue = additionalProperties[name];
+                finalConfigValue = additionalProperties[name];
             } else {
-                finalValue = [];
+                finalConfigValue = [];
             }
             if (e.target.checked) {
-                finalValue.push(value);
+                finalConfigValue.push(value);
             } else {
-                const newValue = finalValue.filter((v) => v !== e.target.value);
-                finalValue = newValue;
+                const newValue = finalConfigValue.filter((v) => v !== e.target.value);
+                finalConfigValue = newValue;
             }
         } else {
-            finalValue = value;
+            finalConfigValue = value;
         }
 
-        // Find the configuration for this field to check if it has nested configs
-        const findConfigRecursively = (configs) => {
-            for (const config of configs) {
-                if (config.name === name) return config;
-                if (config.values && config.values.length > 0) {
-                    for (const val of config.values) {
+        const findConnectorConfigRecursively = (connectorConfigs) => {
+            for (const connectorConfig of connectorConfigs) {
+                if (connectorConfig.name === name) return connectorConfig;
+                if (connectorConfig.values && connectorConfig.values.length > 0) {
+                    for (const val of connectorConfig.values) {
                         if (typeof val === 'object' && val.values) {
-                            const found = findConfigRecursively(val.values);
+                            const found = findConnectorConfigRecursively(val.values);
                             if (found) return found;
                         }
                     }
@@ -150,17 +144,16 @@ export default function GatewayConfiguration(props) {
             return null;
         };
 
-        const currentConfig = findConfigRecursively(gatewayConfigurations);
+        const currentConnectorConfig = findConnectorConfigRecursively(gatewayConfigurations);
 
-        // Clear unused nested properties if this is a dropdown/options/select field
-        if (currentConfig && (
-            currentConfig.type === 'dropdown'
-            || currentConfig.type === 'options'
-            || currentConfig.type === 'select')) {
-            clearUnusedProperties(currentConfig, finalValue);
+        if (currentConnectorConfig && (
+            currentConnectorConfig.type === 'dropdown'
+            || currentConnectorConfig.type === 'options'
+            || currentConnectorConfig.type === 'select')) {
+            clearUnusedGatewayConfigProperties(currentConnectorConfig, finalConfigValue);
         }
 
-        setAdditionalProperties(name, finalValue);
+        setAdditionalProperties(name, finalConfigValue);
     };
 
     // Clear properties that are no longer valid when configuration structure changes
@@ -170,7 +163,7 @@ export default function GatewayConfiguration(props) {
         }
 
         // Get all valid property names from current configuration structure
-        const currentValidProperties = getAllNestedPropertyNames(gatewayConfigurations);
+        const currentValidProperties = getAllNestedGatewayConfigPropertyNames(gatewayConfigurations);
 
         // Clear any properties in additionalProperties that are not in the current valid set
         Object.keys(additionalProperties).forEach((propName) => {
@@ -187,7 +180,7 @@ export default function GatewayConfiguration(props) {
                 const currentValue = additionalProperties[config.name];
                 if (currentValue) {
                     // Clear properties from non-selected nested configurations
-                    clearUnusedProperties(config, currentValue);
+                    clearUnusedGatewayConfigProperties(config, currentValue);
                 }
             }
         });
@@ -222,7 +215,7 @@ export default function GatewayConfiguration(props) {
                             {gatewayConfiguration.label}
                             {gatewayConfiguration.required && (<StyledSpan>*</StyledSpan>)}
                         </InputLabel>
-                        <CustomInputField
+                        <CustomGatewayInputField
                             value={value}
                             onChange={onChange}
                             name={gatewayConfiguration.name}
@@ -314,23 +307,24 @@ export default function GatewayConfiguration(props) {
         }
     };
 
-    // Recursive function to render configurations with nested approach
-    const renderConfigurations = (configurations, parentKey = '') => {
-        return configurations.map((config) => {
-            const configKey = parentKey ? `${parentKey}.${config.name}` : config.name;
+    const renderConnectorConfigurations = (connectorConfigurations, parentKey = '') => {
+        return connectorConfigurations.map((connectorConfig) => {
+            const connectorConfigKey = parentKey ? `${parentKey}.${connectorConfig.name}` : connectorConfig.name;
 
-            // Check if this config has nested configurations
-            const hasNestedConfigurations = config.values && config.values.length > 0
-                && config.values.some((value) => typeof value === 'object' && value.values);
+            const hasNestedConnectorConfigurations = connectorConfig.values && connectorConfig.values.length > 0
+                && connectorConfig.values.some((value) => typeof value === 'object' && value.values);
 
             return (
-                <Box key={`${configKey}`} mb={3}>
-                    {getComponent(config)}
-                    {hasNestedConfigurations && additionalProperties[config.name] && (
+                <Box key={`${connectorConfigKey}`} mb={3}>
+                    {getComponent(connectorConfig)}
+                    {hasNestedConnectorConfigurations && additionalProperties[connectorConfig.name] && (
                         <Box ml={2} mt={2}>
-                            {renderConfigurations(
-                                getNestedConfigurations(config, additionalProperties[config.name]),
-                                configKey,
+                            {renderConnectorConfigurations(
+                                getNestedConnectorConfigurations(
+                                    connectorConfig,
+                                    additionalProperties[connectorConfig.name],
+                                ),
+                                connectorConfigKey,
                             )}
                         </Box>
                     )}
@@ -341,7 +335,7 @@ export default function GatewayConfiguration(props) {
 
     return (
         <div>
-            {renderConfigurations(gatewayConfigurations)}
+            {renderConnectorConfigurations(gatewayConfigurations)}
         </div>
     );
 }

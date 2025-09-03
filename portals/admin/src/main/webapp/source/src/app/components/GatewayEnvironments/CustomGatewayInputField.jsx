@@ -15,33 +15,33 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
  * @param {JSON} props props passed from parents.
  * @returns {JSX} gateway connector form.
 */
-export default function CustomInputField(props) {
+export default function CustomGatewayInputField(props) {
     const {
         value, onChange, name, required, validating, hasErrors,
     } = props;
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordField, setShowPasswordField] = useState(false);
     return (
         <OutlinedInput
-            type={showPassword ? 'text' : 'password'}
+            name={name}
             value={value}
+            type={showPasswordField ? 'text' : 'password'}
             onChange={onChange}
+            labelWidth={70}
+            margin='dense'
+            error={required && hasErrors('gatewayConfig', value, validating)}
             endAdornment={(
                 <InputAdornment position='end'>
                     <IconButton
                         aria-label='toggle password visibility'
-                        onClick={() => setShowPassword(!showPassword)}
-                        onMouseDown={() => setShowPassword(!showPassword)}
+                        onClick={() => setShowPasswordField(!showPasswordField)}
+                        onMouseDown={() => setShowPasswordField(!showPasswordField)}
                         edge='end'
                         size='large'
                     >
-                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                        {showPasswordField ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
                 </InputAdornment>
             )}
-            name={name}
-            error={required && hasErrors('gatewayConfig', value, validating)}
-            labelWidth={70}
-            margin='dense'
         />
     );
 }
