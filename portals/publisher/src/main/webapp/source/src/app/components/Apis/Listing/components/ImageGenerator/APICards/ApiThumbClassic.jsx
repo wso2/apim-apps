@@ -142,14 +142,14 @@ const StyledCard = styled(Card)(({ theme, useFlexibleWidth }) => ({
 }));
 
 // Get type chip label for APIs
-const getTypeChipLabel = (type) => {
+const getTypeChipLabel = (type, gatewayVendor) => {
     const typeMapping = {
         HTTP: 'REST',
         WS: 'WS',
         SOAPTOREST: 'SOAPTOREST',
         SOAP: 'SOAP',
         GRAPHQL: 'GraphQL',
-        WEBSUB: 'WebSub',
+        WEBSUB: gatewayVendor === 'solace' ? 'SOLACE API' : 'WebSub',
         SSE: 'SSE',
         WEBHOOK: 'Webhook',
         ASYNC: 'ASYNC',
@@ -271,163 +271,28 @@ class APIThumb extends Component {
      * @returns {JSX.Element|null} Single chip component or null if no matching type
      */
     renderApiTypeChip = (api) => {
-        // GraphQL chip
-        if (api.type === 'GRAPHQL' || api.transportType === 'GRAPHQL') {
-            return (
-                <Chip
-                    size='small'
-                    classes={{ root: classes.chip }}
-                    icon={getTypeIcon('GRAPHQL')}
-                    label={getTypeChipLabel(
-                        api.transportType === undefined ? api.type : api.transportType
-                    )}
-                    color='primary'
-                    variant='outlined'
-                />
-            );
+        const label = getTypeChipLabel(api.transportType ? api.transportType : api.type, api.gatewayVendor);
+
+        // No REST chip for AI APIs
+        if (api.subtype && api.subtype === 'AIAPI') {
+            return null;
         }
 
-        // WebSocket chip
-        if (api.type === 'WS' || api.transportType === 'WS') {
-            return (
-                <Chip
-                    size='small'
-                    classes={{ root: classes.chip }}
-                    icon={getTypeIcon('WS')}
-                    label={getTypeChipLabel('WS')}
-                    color='primary'
-                    variant='outlined'
-                />
-            );
+        // No MCP chip for non-search routes
+        if (!this.isSearchRoute && (api.type === 'MCP' || api.transportType === 'MCP')) {
+            return null;
         }
 
-        // WebSub chips (different styling based on vendor)
-        if (api.type === 'WEBSUB' || api.transportType === 'WEBSUB') {
-            if (api.gatewayVendor === 'solace') {
-                return (
-                    <Chip
-                        size='small'
-                        classes={{ root: classes.chip }}
-                        icon={getTypeIcon('WEBSUB')}
-                        label='SOLACE API'
-                        style={{ backgroundColor: '#00c995' }}
-                        variant='outlined'
-                    />
-                );
-            } else if (api.gatewayVendor === 'wso2') {
-                return (
-                    <Chip
-                        size='small'
-                        classes={{ root: classes.chip }}
-                        icon={getTypeIcon('WEBSUB')}
-                        label={getTypeChipLabel('WEBSUB')}
-                        color='primary'
-                        variant='outlined'
-                    />
-                );
-            }
-        }
-
-        // HTTP/REST chip (only for default subtype or no subtype)
-        if ((api.type === 'HTTP' || api.transportType === 'HTTP') && (!api.subtype || api.subtype === 'DEFAULT')) {
-            return (
-                <Chip
-                    size='small'
-                    classes={{ root: classes.chip }}
-                    icon={getTypeIcon('HTTP')}
-                    label={getTypeChipLabel('HTTP')}
-                    color='primary'
-                    variant='outlined'
-                />
-            );
-        }
-
-        // SOAP chip
-        if (api.type === 'SOAP' || api.transportType === 'SOAP') {
-            return (
-                <Chip
-                    size='small'
-                    classes={{ root: classes.chip }}
-                    icon={getTypeIcon('SOAP')}
-                    label={getTypeChipLabel('SOAP')}
-                    color='primary'
-                    variant='outlined'
-                />
-            );
-        }
-
-        // SOAP to REST chip
-        if (api.type === 'SOAPTOREST' || api.transportType === 'SOAPTOREST') {
-            return (
-                <Chip
-                    size='small'
-                    classes={{ root: classes.chip }}
-                    icon={getTypeIcon('SOAP')}
-                    label={getTypeChipLabel('SOAPTOREST')}
-                    color='primary'
-                    variant='outlined'
-                />
-            );
-        }
-
-        // SSE chip
-        if (api.type === 'SSE' || api.transportType === 'SSE') {
-            return (
-                <Chip
-                    size='small'
-                    classes={{ root: classes.chip }}
-                    icon={getTypeIcon('SSE')}
-                    label={getTypeChipLabel('SSE')}
-                    color='primary'
-                    variant='outlined'
-                />
-            );
-        }
-
-        // Webhook chip
-        if (api.type === 'WEBHOOK' || api.transportType === 'WEBHOOK') {
-            return (
-                <Chip
-                    size='small'
-                    classes={{ root: classes.chip }}
-                    icon={getTypeIcon('WEBHOOK')}
-                    label={getTypeChipLabel('WEBHOOK')}
-                    color='primary'
-                    variant='outlined'
-                />
-            );
-        }
-
-        // Async chip
-        if (api.type === 'ASYNC' || api.transportType === 'ASYNC') {
-            return (
-                <Chip
-                    size='small'
-                    classes={{ root: classes.chip }}
-                    icon={getTypeIcon('ASYNC')}
-                    label={getTypeChipLabel('ASYNC')}
-                    color='primary'
-                    variant='outlined'
-                />
-            );
-        }
-
-        // MCP chip
-        if (this.isSearchRoute && (api.type === 'MCP' || api.transportType === 'MCP')) {
-            return (
-                <Chip
-                    size='small'
-                    classes={{ root: classes.chip }}
-                    icon={getTypeIcon('MCP')}
-                    label={getTypeChipLabel('MCP')}
-                    color='primary'
-                    variant='outlined'
-                />
-            );
-        }
-
-        // Return null if no matching type found
-        return null;
+        return (
+            <Chip
+                size='small'
+                classes={{ root: classes.chip }}
+                icon={getTypeIcon(api.transportType ? api.transportType : api.type)}
+                label={label}
+                color='primary'
+                variant='outlined'
+            />
+        );
     };
 
     /**

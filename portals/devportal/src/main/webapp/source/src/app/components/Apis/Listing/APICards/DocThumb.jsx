@@ -196,8 +196,8 @@ const DocThumb = ({ doc }) => {
                                 <Typography variant='caption' component='p' lineHeight={1}>
                                     { associatedType === 'MCP' ? (
                                         <FormattedMessage
-                                            defaultMessage='MCP Server Name'
-                                            id='Apis.Listing.DocThumb.mcpServerName'
+                                            defaultMessage='MCP Name'
+                                            id='Apis.Listing.DocThumb.mcpName'
                                         />
                                     ) : (
                                         <FormattedMessage

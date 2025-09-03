@@ -196,8 +196,8 @@ const DefinitionThumb = ({ def }) => {
                                 <Typography variant='caption' component='p' lineHeight={1}>
                                     { associatedType === 'MCP' ? (
                                         <FormattedMessage
-                                            defaultMessage='MCP Server Name'
-                                            id='Apis.Listing.DefThumb.mcpServerName'
+                                            defaultMessage='MCP Name'
+                                            id='Apis.Listing.DefThumb.mcpName'
                                         />
                                     ) : (
                                         <FormattedMessage
