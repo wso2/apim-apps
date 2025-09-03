@@ -202,7 +202,7 @@ const DocThumbClassic = (props) => {
                             <Chip
                                 size='small'
                                 classes={{ root: classes.chip }}
-                                label='DOCUMENTATION'
+                                label='DOCUMENT'
                                 color='primary'
                                 variant='outlined'
                             />
