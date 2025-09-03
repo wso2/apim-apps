@@ -154,6 +154,7 @@ const getTypeChipLabel = (type) => {
         SSE: 'SSE',
         WEBHOOK: 'Webhook',
         ASYNC: 'ASYNC',
+        MCP: 'MCP',
     };
     return typeMapping[type?.toUpperCase()] || type;
 };
@@ -182,6 +183,8 @@ const getTypeIcon = (type) => {
             return <CustomIcon icon='graphql' {...iconProps} />;
         case 'ASYNC':
             return <CustomIcon icon='async' {...iconProps} />;
+        case 'MCP':
+            return <CustomIcon icon='mcp-server' {...iconProps} />;
         default:
             return null; // No icon for unknown types
     }
@@ -286,6 +289,8 @@ class ApiThumbClassicLegacy extends React.Component {
         this.setState({ technicalAnchorEl: null, technicalOpenPopover: false });
     };
 
+    isSearchRoute = window.location.pathname.includes('/search');
+
     /**
      * Render API type chip based on API type and vendor
      * @param {Object} api - The API object containing type and vendor information
@@ -307,7 +312,7 @@ class ApiThumbClassicLegacy extends React.Component {
         }
 
         // WebSocket chip
-        if (api.type === 'WS') {
+        if (api.type === 'WS' || api.transportType === 'WS') {
             return (
                 <Chip
                     size='small'
@@ -321,7 +326,7 @@ class ApiThumbClassicLegacy extends React.Component {
         }
 
         // WebSub chips (different styling based on vendor)
-        if (api.type === 'WEBSUB') {
+        if (api.type === 'WEBSUB' || api.transportType === 'WEBSUB') {
             if (api.gatewayVendor === 'solace') {
                 return (
                     <Chip
@@ -348,7 +353,7 @@ class ApiThumbClassicLegacy extends React.Component {
         }
 
         // HTTP/REST chip (only for default subtype or no subtype)
-        if (api.type === 'HTTP' && (!api.subtype || api.subtype === 'DEFAULT')) {
+        if ((api.type === 'HTTP' || api.transportType === 'HTTP') && (!api.subtype || api.subtype === 'DEFAULT')) {
             return (
                 <Chip
                     size='small'
@@ -362,7 +367,7 @@ class ApiThumbClassicLegacy extends React.Component {
         }
 
         // SOAP chip
-        if (api.type === 'SOAP') {
+        if (api.type === 'SOAP' || api.transportType === 'SOAP') {
             return (
                 <Chip
                     size='small'
@@ -376,7 +381,7 @@ class ApiThumbClassicLegacy extends React.Component {
         }
 
         // SOAP to REST chip
-        if (api.type === 'SOAPTOREST') {
+        if (api.type === 'SOAPTOREST' || api.transportType === 'SOAPTOREST') {
             return (
                 <Chip
                     size='small'
@@ -390,7 +395,7 @@ class ApiThumbClassicLegacy extends React.Component {
         }
 
         // SSE chip
-        if (api.type === 'SSE') {
+        if (api.type === 'SSE' || api.transportType === 'SSE') {
             return (
                 <Chip
                     size='small'
@@ -404,7 +409,7 @@ class ApiThumbClassicLegacy extends React.Component {
         }
 
         // Webhook chip
-        if (api.type === 'WEBHOOK') {
+        if (api.type === 'WEBHOOK' || api.transportType === 'WEBHOOK') {
             return (
                 <Chip
                     size='small'
@@ -418,13 +423,27 @@ class ApiThumbClassicLegacy extends React.Component {
         }
 
         // Async chip
-        if (api.type === 'ASYNC') {
+        if (api.type === 'ASYNC' || api.transportType === 'ASYNC') {
             return (
                 <Chip
                     size='small'
                     classes={{ root: classes.chip }}
                     icon={getTypeIcon('ASYNC')}
                     label={getTypeChipLabel('ASYNC')}
+                    color='primary'
+                    variant='outlined'
+                />
+            );
+        }
+
+        // MCP chip
+        if (this.isSearchRoute && (api.type === 'MCP' || api.transportType === 'MCP')) {
+            return (
+                <Chip
+                    size='small'
+                    classes={{ root: classes.chip }}
+                    icon={getTypeIcon('MCP')}
+                    label={getTypeChipLabel('MCP')}
                     color='primary'
                     variant='outlined'
                 />

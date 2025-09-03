@@ -128,7 +128,7 @@ const DocThumb = ({ doc }) => {
     const theme = useTheme();
     const detailsLink = `/apis/${doc.apiUUID}/documents/${doc.id}/details`;
     const {
-        name, sourceType, apiName, apiVersion, apiProvider,
+        name, apiName, apiVersion, apiProvider, associatedType,
     } = doc;
 
     useEffect(() => {
@@ -194,7 +194,17 @@ const DocThumb = ({ doc }) => {
                                     </Typography>
                                 </Tooltip>
                                 <Typography variant='caption' component='p' lineHeight={1}>
-                                    <FormattedMessage defaultMessage='API Name' id='Apis.Listing.DocThumb.apiName' />
+                                    { associatedType === 'MCP' ? (
+                                        <FormattedMessage
+                                            defaultMessage='MCP Server Name'
+                                            id='Apis.Listing.DocThumb.mcpServerName'
+                                        />
+                                    ) : (
+                                        <FormattedMessage
+                                            defaultMessage='API Name'
+                                            id='Apis.Listing.DocThumb.apiName'
+                                        />
+                                    ) }
                                 </Typography>
                             </div>
                             <div
@@ -226,13 +236,6 @@ const DocThumb = ({ doc }) => {
                                 color='primary'
                                 variant='outlined'
                             />
-                            <Chip
-                                size='small'
-                                classes={{ root: classes.chip }}
-                                label={sourceType.toUpperCase()}
-                                color='primary'
-                                variant='outlined'
-                            />
                         </div>
                     </div>
                 </CardContent>
@@ -247,7 +250,6 @@ DocThumb.propTypes = {
     doc: PropTypes.shape({
         id: PropTypes.string,
         name: PropTypes.string,
-        sourceType: PropTypes.string,
         apiName: PropTypes.string,
         apiVersion: PropTypes.string,
         apiUUID: PropTypes.string,

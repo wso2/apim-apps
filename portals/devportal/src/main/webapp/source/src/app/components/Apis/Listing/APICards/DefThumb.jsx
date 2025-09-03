@@ -128,7 +128,7 @@ const DefinitionThumb = ({ def }) => {
     const theme = useTheme();
     const detailsLink = `/apis/${def.apiUUID}/overview`;
     const {
-        name, apiName, apiVersion, apiProvider,
+        name, apiName, apiVersion, apiProvider, associatedType,
     } = def;
 
     useEffect(() => {
@@ -194,7 +194,17 @@ const DefinitionThumb = ({ def }) => {
                                     </Typography>
                                 </Tooltip>
                                 <Typography variant='caption' component='p' lineHeight={1}>
-                                    <FormattedMessage defaultMessage='API Name' id='Apis.Listing.DefThumb.apiName' />
+                                    { associatedType === 'MCP' ? (
+                                        <FormattedMessage
+                                            defaultMessage='MCP Server Name'
+                                            id='Apis.Listing.DefThumb.mcpServerName'
+                                        />
+                                    ) : (
+                                        <FormattedMessage
+                                            defaultMessage='API Name'
+                                            id='Apis.Listing.DefThumb.apiName'
+                                        />
+                                    ) }
                                 </Typography>
                             </div>
                             <div

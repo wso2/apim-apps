@@ -618,9 +618,9 @@ class ApiTableViewLegacy extends React.Component {
                 const artifact = tableViewObj.state.data[dataIndex];
                 if (artifact) {
                     if (artifact.type === 'DOC') {
-                        return <tr key={rowIndex}><td><DocThumb doc={artifact} /></td></tr>;
+                        return <tr key={rowIndex} style={{ margin: 0 }}><td><DocThumb doc={artifact} /></td></tr>;
                     } else if (artifact.type === 'DEFINITION') {
-                        return <tr key={rowIndex}><td><DefinitionThumb def={artifact} /></td></tr>;
+                        return <tr key={rowIndex} style={{ margin: 0 }}><td><DefinitionThumb def={artifact} /></td></tr>;
                     } else {
                         return (
                             <tr key={rowIndex} style={{ margin: 0 }}>
