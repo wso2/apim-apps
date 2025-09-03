@@ -331,11 +331,6 @@ function configReducer(state, configAction) {
                 display: true,
             };
             
-            // Debug logging
-            console.log(`[DEBUG] Updating ${action} with value: "${value}" for MCP server: ${isMCPServer}`);
-            console.log(`[DEBUG] nextState.type:`, nextState.type);
-            console.log(`[DEBUG] MCPServer.CONSTS.MCP:`, MCPServer.CONSTS.MCP);
-            
             if (isMCPServer) {
                 // Handle additionalPropertiesMap for MCP servers
                 if (!nextState.additionalPropertiesMap) {
@@ -350,9 +345,6 @@ function configReducer(state, configAction) {
                 
                 // Update the virtual additionalProperties array for UI compatibility (clean rebuild)
                 nextState.additionalProperties = Object.values(nextState.additionalPropertiesMap);
-                
-                console.log(`[DEBUG] Updated additionalPropertiesMap:`, nextState.additionalPropertiesMap);
-                console.log(`[DEBUG] Updated additionalProperties:`, nextState.additionalProperties);
             } else {
                 // Handle additionalProperties for regular APIs
                 const targetProperty = nextState.additionalProperties.find((property) => property.name === action);
@@ -440,13 +432,7 @@ export default function DesignConfigurations() {
             const githubProps = apiConfig.additionalProperties.filter((prop) => prop.name === 'github_repo');
             githubProp = githubProps.find(prop => prop.display === true) || githubProps[githubProps.length - 1];
         }
-        
-        console.log(`[DEBUG] useMemo - isMCPServer:`, isMCPServer);
-        console.log(`[DEBUG] useMemo - additionalProperties:`, apiConfig.additionalProperties);
-        console.log(`[DEBUG] useMemo - additionalPropertiesMap:`, apiConfig.additionalPropertiesMap);
-        console.log(`[DEBUG] useMemo - slackURLProperty:`, slackProp);
-        console.log(`[DEBUG] useMemo - githubURLProperty:`, githubProp);
-        
+
         return [slackProp, githubProp];
     }, [apiConfig.additionalProperties, apiConfig.additionalPropertiesMap, api.apiType]);
     const invalidTagsExist = apiConfig.tags.find((tag) => {

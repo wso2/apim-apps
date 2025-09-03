@@ -617,9 +617,12 @@ export default function DefaultAPIForm(props) {
                                             <FormattedMessage
                                                 id={'Apis.Create.Components.DefaultAPIForm.api.product.'
                                                     + 'actual.context.helper'}
-                                                defaultMessage={'API Product will be exposed in {actualContext}'
-                                                    + 'context at the gateway'}
-                                                values={{ actualContext: actualContext(api) }}
+                                                defaultMessage={'{type} will be exposed via {actualContext}'
+                                                    + ' at the gateway'}
+                                                values={{
+                                                    actualContext: actualContext(api),
+                                                    type: isAPIProduct ? 'API Product' : 'MCP Server'
+                                                }}
                                             />
                                         )
                                     }
