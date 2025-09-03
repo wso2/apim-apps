@@ -441,10 +441,14 @@ class ApiThumbClassicLegacy extends React.Component {
      * @memberof APIThumb
      */
     render() {
-        const { imageObj, selectedIcon, color, backgroundIndex, category, imageLoaded } = this.state;
+        const {
+            imageObj, selectedIcon, color, backgroundIndex, category, imageLoaded,
+        } = this.state;
         const { isMonetizationEnabled } = this.context;
 
-        const { api, theme, customWidth, customHeight, showInfo } = this.props;
+        const {
+            api, theme, customWidth, customHeight, showInfo,
+        } = this.props;
         const path = api.type === 'MCP' ? '/mcp-servers/' : '/apis/';
         const detailsLink = path + api.id;
         const {
@@ -454,13 +458,15 @@ class ApiThumbClassicLegacy extends React.Component {
                 thumbnailTemplates: { variant, active },
             },
         } = theme;
-        const { name, version, context, displayName } = api;
+        const {
+            name, version, context, displayName,
+        } = api;
 
         let { provider } = api;
         if (
-            api.businessInformation &&
-            api.businessInformation.businessOwner &&
-            api.businessInformation.businessOwner.trim() !== ''
+            api.businessInformation
+            && api.businessInformation.businessOwner
+            && api.businessInformation.businessOwner.trim() !== ''
         ) {
             provider = api.businessInformation.businessOwner;
         }
@@ -491,23 +497,22 @@ class ApiThumbClassicLegacy extends React.Component {
                 />
             );
         } else {
-            ImageView =
-                variant === 'text' && active ? (
-                    <LetterGenerator width={imageWidth} height={imageHeight} artifact={api} />
-                ) : (
-                    <ImageGenerator
-                        width={imageWidth}
-                        height={imageHeight}
-                        api={api}
-                        fixedIcon={{
-                            key: selectedIcon,
-                            color: color || thumbnail.iconColor,
-                            backgroundIndex,
-                            category,
-                            api,
-                        }}
-                    />
-                );
+            ImageView = variant === 'text' && active ? (
+                <LetterGenerator width={imageWidth} height={imageHeight} artifact={api} />
+            ) : (
+                <ImageGenerator
+                    width={imageWidth}
+                    height={imageHeight}
+                    api={api}
+                    fixedIcon={{
+                        key: selectedIcon,
+                        color: color || thumbnail.iconColor,
+                        backgroundIndex,
+                        category,
+                        api,
+                    }}
+                />
+            );
         }
         if (!showInfo) {
             return (
