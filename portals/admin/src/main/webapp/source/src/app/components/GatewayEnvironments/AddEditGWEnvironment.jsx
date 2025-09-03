@@ -140,6 +140,7 @@ function AddEditGWEnvironment(props) {
     const initialGatewayType = gatewayTypes && gatewayTypes.length > 1 && gatewayTypes.includes('Regular') ? 'Regular'
         : gatewayTypes[0];
     const [initialState, setInitialState] = useState({
+        name: '',
         displayName: '',
         description: '',
         gatewayType: initialGatewayType,
@@ -185,6 +186,7 @@ function AddEditGWEnvironment(props) {
             setIsEditMode(true);
         } else {
             setInitialState({
+                name: '',
                 displayName: '',
                 description: '',
                 gatewayType: '',
@@ -269,7 +271,11 @@ function AddEditGWEnvironment(props) {
 
     const setAdditionalProperties = (key, value) => {
         const clonedAdditionalProperties = cloneDeep(additionalProperties);
-        clonedAdditionalProperties[key] = value;
+        if (value === undefined) {
+            delete clonedAdditionalProperties[key];
+        } else {
+            clonedAdditionalProperties[key] = value;
+        }
         dispatch({ field: 'additionalProperties', value: clonedAdditionalProperties });
     };
 
@@ -329,8 +335,11 @@ function AddEditGWEnvironment(props) {
         return false;
     };
 
-    const hasErrors = (fieldName, value) => {
+    const hasErrors = (fieldName, value, validatingActive) => {
         let error;
+        if (!validatingActive) {
+            return false;
+        }
         switch (fieldName) {
             case 'name':
                 if (value === undefined) {
@@ -353,6 +362,20 @@ function AddEditGWEnvironment(props) {
                     );
                 } else {
                     error = false;
+                }
+                break;
+            case 'displayName':
+                if (value === undefined) {
+                    error = false;
+                    break;
+                }
+                if (value === '') {
+                    error = (
+                        intl.formatMessage({
+                            id: 'GatewayEnvironments.AddEditGWEnvironment.form.environment.displayName.empty',
+                            defaultMessage: 'Display Name is Empty',
+                        })
+                    );
                 }
                 break;
             case 'vhosts': {
@@ -404,6 +427,14 @@ function AddEditGWEnvironment(props) {
                     error = '';
                 }
                 break;
+            case 'gatewayConfig':
+                if (value === '') {
+                    error = intl.formatMessage({
+                        id: 'GatewayEnvironments.AddEditGWEnvironment.form.gateway.config.empty',
+                        defaultMessage: 'Required field is empty',
+                    });
+                }
+                break;
             default:
                 break;
         }
@@ -411,13 +442,10 @@ function AddEditGWEnvironment(props) {
     };
     const getAllFormErrors = () => {
         let errorText = '';
-        if (name === undefined) {
-            dispatch({ field: 'name', value: '' });
-        }
-        const nameErrors = hasErrors('name', name);
-        const displayNameErrors = hasErrors('displayName', displayName);
-        const vhostErrors = hasErrors('vhosts', vhosts);
-        const scheduledIntervalErrors = hasErrors('scheduledInterval', scheduledInterval);
+        const nameErrors = hasErrors('name', name, true);
+        const displayNameErrors = hasErrors('displayName', displayName, true);
+        const vhostErrors = hasErrors('vhosts', vhosts, true);
+        const scheduledIntervalErrors = hasErrors('scheduledInterval', scheduledInterval, true);
         if (nameErrors) {
             errorText += nameErrors + '\n';
         }
@@ -430,13 +458,53 @@ function AddEditGWEnvironment(props) {
         if (scheduledIntervalErrors) {
             errorText += scheduledIntervalErrors + '\n';
         }
+        let gatewayConnectorConfigHasErrors = false;
+
+        const checkGatewayConnectorConfigErrors = (connectorConfigurations) => {
+            for (const connectorConfig of connectorConfigurations) {
+                if (connectorConfig.required && (!additionalProperties[connectorConfig.name]
+                    || additionalProperties[connectorConfig.name] === '')) {
+                    return true;
+                }
+
+                if (connectorConfig.values && connectorConfig.values.length > 0
+                        && additionalProperties[connectorConfig.name]) {
+                    const selectedOption = connectorConfig.values.find((option) => {
+                        if (typeof option === 'string') {
+                            return option === additionalProperties[connectorConfig.name];
+                        }
+                        return option.name === additionalProperties[connectorConfig.name];
+                    });
+
+                    if (selectedOption && typeof selectedOption === 'object' && selectedOption.values) {
+                        if (checkGatewayConnectorConfigErrors(selectedOption.values)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        };
+
+        gatewayConnectorConfigHasErrors = checkGatewayConnectorConfigErrors(gatewayConfigurations);
+
+        if (gatewayConnectorConfigHasErrors) {
+            const errorConfig = intl.formatMessage({
+                id: 'GatewayEnvironments.AddEditGWEnvironment.form.gateway.config.has.errors',
+                defaultMessage: 'Connector configuration has errors',
+            });
+            errorText += errorConfig + '\n';
+        }
         return errorText;
     };
     const formSaveCallback = () => {
         setValidating(true);
         const formErrors = getAllFormErrors();
         if (formErrors !== '') {
-            Alert.error(formErrors);
+            Alert.error(intl.formatMessage({
+                id: 'GatewayEnvironments.AddEditGWEnvironment.form.has.errors',
+                defaultMessage: 'One or more fields contain errors',
+            }));
             return false;
         }
 
@@ -623,14 +691,11 @@ function AddEditGWEnvironment(props) {
                                             field: 'name',
                                             value: e.target.value,
                                         })}
-                                        error={hasErrors('name', state.name, true)}
-                                        helperText={hasErrors('name', state.name, true) || intl.formatMessage({
+                                        error={hasErrors('name', state.name, validating)}
+                                        helperText={hasErrors('name', state.name, validating) || intl.formatMessage({
                                             id: 'GatewayEnvironments.AddEditGWEnvironment.form.name.help',
                                             defaultMessage: 'Name of the Gateway Environment.',
                                         })}
-                                        InputLabelProps={{
-                                            shrink: true,
-                                        }}
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
@@ -653,11 +718,11 @@ function AddEditGWEnvironment(props) {
                                                         id='GatewayEnvironments.AddEditGWEnvironment.form.displayName'
                                                         defaultMessage='Display Name'
                                                     />
-                                                    {/* <StyledSpan>*</StyledSpan> */}
+                                                    <StyledSpan>*</StyledSpan>
                                                 </span>
                                             )}
-                                            error={hasErrors('displayName', state.displayName, true)}
-                                            helperText={hasErrors('displayName', state.displayName, true)
+                                            error={hasErrors('displayName', state.displayName, validating)}
+                                            helperText={hasErrors('displayName', state.displayName, validating)
                                                 || intl.formatMessage({
                                                     id: 'GatewayEnvironments.AddEditGWEnvironment.form.name.'
                                                         + 'form.displayName.help',
@@ -864,8 +929,8 @@ function AddEditGWEnvironment(props) {
                                             />
                                         )}
                                         required
-                                        error={hasErrors('scheduledInterval', state.scheduledInterval)}
-                                        helperText={hasErrors('scheduledInterval', state.scheduledInterval)
+                                        error={hasErrors('scheduledInterval', state.scheduledInterval, validating)}
+                                        helperText={hasErrors('scheduledInterval', state.scheduledInterval, validating)
                                             || intl.formatMessage({
                                                 id: 'GatewayEnvironments.AddEditGWEnvironment.form.mode.'
                                                     + 'scheduledInterval.help',
@@ -920,6 +985,7 @@ function AddEditGWEnvironment(props) {
                                         setAdditionalProperties={setAdditionalProperties}
                                         hasErrors={hasErrors}
                                         validating={validating}
+                                        gatewayId={cloneDeep(id)}
                                     />
                                 </Box>
                             </Grid>
