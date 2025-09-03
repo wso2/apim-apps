@@ -35,9 +35,7 @@ import Popover from '@mui/material/Popover';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import EmailIcon from '@mui/icons-material/Email';
 import Divider from '@mui/material/Divider';
-import {
-    CardActions, Tooltip, useTheme,
-} from '@mui/material';
+import { CardActions, Tooltip, useTheme } from '@mui/material';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import ImageGenerator from './ImageGenerator';
 import Api from '../../../../data/api';
@@ -60,11 +58,7 @@ const classes = {
     suppressLinkStyles: `${PREFIX}-suppressLinkStyles`,
 };
 
-const StyledCard = styled(Card)((
-    {
-        theme,
-    },
-) => ({
+const StyledCard = styled(Card)(({ theme }) => ({
     [`&.${classes.card}`]: {
         width: '300px',
         margin: theme.spacing(1),
@@ -209,7 +203,13 @@ class ApiThumbClassicLegacy extends React.Component {
      */
     constructor(props) {
         super(props);
-        const { theme: { custom: { thumbnail: { defaultApiImage } } } } = props;
+        const {
+            theme: {
+                custom: {
+                    thumbnail: { defaultApiImage },
+                },
+            },
+        } = props;
         this.state = {
             category: MaterialIcons.categories[0].name,
             selectedIcon: null,
@@ -239,24 +239,26 @@ class ApiThumbClassicLegacy extends React.Component {
         } else {
             promisedThumbnail = new Api().getAPIThumbnail(api.id);
         }
-        promisedThumbnail.then((response) => {
-            if (response && response.data) {
-                if (response.headers['content-type'] === 'application/json') {
-                    const iconJson = JSON.parse(response.data);
-                    this.setState({
-                        selectedIcon: iconJson.key,
-                        category: iconJson.category,
-                        color: iconJson.color,
-                        backgroundIndex: iconJson.backgroundIndex,
-                    });
-                } else if (response && response.data.size > 0) {
-                    const url = windowURL.createObjectURL(response.data);
-                    this.setState({ imageObj: url });
+        promisedThumbnail
+            .then((response) => {
+                if (response && response.data) {
+                    if (response.headers['content-type'] === 'application/json') {
+                        const iconJson = JSON.parse(response.data);
+                        this.setState({
+                            selectedIcon: iconJson.key,
+                            category: iconJson.category,
+                            color: iconJson.color,
+                            backgroundIndex: iconJson.backgroundIndex,
+                        });
+                    } else if (response && response.data.size > 0) {
+                        const url = windowURL.createObjectURL(response.data);
+                        this.setState({ imageObj: url });
+                    }
                 }
-            }
-        }).finally(() => {
-            this.setState({ imageLoaded: true });
-        });
+            })
+            .finally(() => {
+                this.setState({ imageLoaded: true });
+            });
     }
 
     /**
@@ -297,9 +299,7 @@ class ApiThumbClassicLegacy extends React.Component {
                     size='small'
                     classes={{ root: classes.chip }}
                     icon={getTypeIcon('GRAPHQL')}
-                    label={getTypeChipLabel(
-                        api.transportType === undefined ? api.type : api.transportType,
-                    )}
+                    label={getTypeChipLabel(api.transportType === undefined ? api.type : api.transportType)}
                     color='primary'
                     variant='outlined'
                 />
@@ -441,26 +441,26 @@ class ApiThumbClassicLegacy extends React.Component {
      * @memberof APIThumb
      */
     render() {
-        const {
-            imageObj, selectedIcon, color, backgroundIndex, category, imageLoaded,
-        } = this.state;
+        const { imageObj, selectedIcon, color, backgroundIndex, category, imageLoaded } = this.state;
         const { isMonetizationEnabled } = this.context;
 
-        const {
-            api, theme, customWidth, customHeight, showInfo,
-        } = this.props;
+        const { api, theme, customWidth, customHeight, showInfo } = this.props;
         const path = api.type === 'MCP' ? '/mcp-servers/' : '/apis/';
         const detailsLink = path + api.id;
-        const { custom: { thumbnail, social: { showRating }, thumbnailTemplates: { variant, active } } } = theme;
         const {
-            name, version, context, displayName,
-        } = api;
+            custom: {
+                thumbnail,
+                social: { showRating },
+                thumbnailTemplates: { variant, active },
+            },
+        } = theme;
+        const { name, version, context, displayName } = api;
 
         let { provider } = api;
         if (
-            api.businessInformation
-            && api.businessInformation.businessOwner
-            && api.businessInformation.businessOwner.trim() !== ''
+            api.businessInformation &&
+            api.businessInformation.businessOwner &&
+            api.businessInformation.businessOwner.trim() !== ''
         ) {
             provider = api.businessInformation.businessOwner;
         }
@@ -491,26 +491,23 @@ class ApiThumbClassicLegacy extends React.Component {
                 />
             );
         } else {
-            ImageView = (variant === 'text' && active) ? (
-                <LetterGenerator
-                    width={imageWidth}
-                    height={imageHeight}
-                    artifact={api}
-                />
-            ) : (
-                <ImageGenerator
-                    width={imageWidth}
-                    height={imageHeight}
-                    api={api}
-                    fixedIcon={{
-                        key: selectedIcon,
-                        color: color || thumbnail.iconColor,
-                        backgroundIndex,
-                        category,
-                        api,
-                    }}
-                />
-            );
+            ImageView =
+                variant === 'text' && active ? (
+                    <LetterGenerator width={imageWidth} height={imageHeight} artifact={api} />
+                ) : (
+                    <ImageGenerator
+                        width={imageWidth}
+                        height={imageHeight}
+                        api={api}
+                        fixedIcon={{
+                            key: selectedIcon,
+                            color: color || thumbnail.iconColor,
+                            backgroundIndex,
+                            category,
+                            api,
+                        }}
+                    />
+                );
         }
         if (!showInfo) {
             return (
@@ -554,7 +551,10 @@ class ApiThumbClassicLegacy extends React.Component {
                     to={detailsLink}
                     area-label={'Go to ' + name}
                 >
-                    <CardContent classes={{ root: classNames(classes.apiDetails, 'image-thumb-card-content') }}>
+                    <CardContent
+                        classes={{ root: classNames(classes.apiDetails, 'image-thumb-card-content') }}
+                        style={{ minHeight: '105px' }}
+                    >
                         <div style={{ position: 'relative', height: 'fit-content' }}>
                             {/* Display the AI API or Third Party API Tag if applicable */}
                             {renderRibbon()}
@@ -888,12 +888,7 @@ ApiThumbClassicLegacy.contextType = ApiContext;
 
 function ApiThumbClassic(props) {
     const theme = useTheme();
-    return (
-        <ApiThumbClassicLegacy
-            {...props}
-            theme={theme}
-        />
-    );
+    return <ApiThumbClassicLegacy {...props} theme={theme} />;
 }
 
-export default (ApiThumbClassic);
+export default ApiThumbClassic;
