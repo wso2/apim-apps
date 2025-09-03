@@ -1822,6 +1822,8 @@
   "Apis.Details.components.api.mcp.delete.success": "MCP Server {name} deleted Successfully",
   "Apis.Details.components.api.product.delete.error": "Something went wrong while deleting the API Product!",
   "Apis.Details.components.api.product.delete.success": "API Product {name} deleted Successfully",
+  "Apis.Details.components.delete.error": "Something went wrong while deleting the {typeName}!",
+  "Apis.Details.components.delete.success": "{typeName} {name} deleted Successfully",
   "Apis.Details.environments.deploymentOnBoarding.formattedMessage.description": "It is not possible to deploy new revisions for retired APIs.",
   "Apis.Details.environments.deploymentOnBoarding.formattedMessage.head": "Deployments",
   "Apis.Details.environments.deploymentOnBoarding.formattedMessage.warningTitle": "Can not deploy retired APIs",
