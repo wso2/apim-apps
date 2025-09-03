@@ -30,6 +30,7 @@ import APIProduct from 'AppData/APIProduct';
 import MCPServer from 'AppData/MCPServer';
 import { Progress } from 'AppComponents/Shared';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import { app } from 'Settings';
 import ApisSection from './ApisSection';
 import APIProductSection from './APIProductSection';
 import McpServersSection from './McpServersSection';
@@ -160,7 +161,7 @@ const PublisherLanding = () => {
                     justifyContent: 'center',
                     ...(imageSrc
                         ? {
-                            backgroundImage: `url(${imageSrc})`,
+                            backgroundImage: `url(${app.context}${imageSrc})`,
                             backgroundRepeat: 'no-repeat',
                             backgroundPosition,
                             backgroundSize: 'auto 95%',

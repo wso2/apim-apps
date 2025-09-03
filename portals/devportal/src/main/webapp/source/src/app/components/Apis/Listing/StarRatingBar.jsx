@@ -324,7 +324,7 @@ class StarRatingBarLegacy extends React.Component {
                                 )}
                             </Box>
                         ) : (
-                            <>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <Rating
                                     name='half-rating'
                                     value={apiRatingNumber}
@@ -332,7 +332,7 @@ class StarRatingBarLegacy extends React.Component {
                                     readOnly
                                     classes={{ iconEmpty: classes.iconEmpty, iconFilled: classes.iconFilled }}
                                 />
-                                <Typography variant='caption' gutterBottom align='left' component='div'>
+                                <Typography variant='caption' component='div'>
                                     {`${apiRating}/5.0`}
                                     {total > 0 && (
                                         <>
@@ -347,7 +347,7 @@ class StarRatingBarLegacy extends React.Component {
                                     )}
 
                                 </Typography>
-                            </>
+                            </div>
                         )}
                     </>
                 )}

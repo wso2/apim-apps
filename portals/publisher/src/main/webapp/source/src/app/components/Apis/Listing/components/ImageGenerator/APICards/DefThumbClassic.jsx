@@ -116,7 +116,7 @@ const DefThumbClassic = (props) => {
     if (def.associatedType === 'APIProduct') {
         apiNameLabel = 'API Product Name';
     } else if (def.associatedType === 'MCP') {
-        apiNameLabel = 'MCP Server Name';
+        apiNameLabel = 'MCP Name';
     }
 
     const toggleMouseOver = (event) => {
