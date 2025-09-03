@@ -17,18 +17,21 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { useTheme } from '@mui/material';
+import {
+    CardActions, Chip, Divider, Tooltip, useTheme,
+} from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { FormattedMessage } from 'react-intl';
-import ImageGenerator from './ImageGenerator';
+import CustomIcon from 'AppComponents/Shared/CustomIcon';
+import LetterGenerator from './LetterGenerator';
 
-const PREFIX = 'DocThumbLegacy';
+const PREFIX = 'DocThumb';
 
 const classes = {
     root: `${PREFIX}-root`,
@@ -40,25 +43,36 @@ const classes = {
     apiName: `${PREFIX}-apiName`,
     version: `${PREFIX}-version`,
     subtitle: `${PREFIX}-subtitle`,
+    row: `${PREFIX}-row`,
+    chip: `${PREFIX}-chip`,
+    suppressLinkStyles: `${PREFIX}-suppressLinkStyles`,
 };
 
 const StyledCard = styled(Card)(({ theme }) => ({
     [`&.${classes.root}`]: {
-        width: theme.custom.thumbnail.width,
-        backgroundColor: '#f5f5f5',
-        minHeight: 330,
-        margin: theme.spacing(2),
-        cursor: 'pointer',
-        transition: 'background-color 0.3s ease',
+        width: '300px',
+        margin: theme.spacing(1),
+        borderRadius: theme.spacing(1),
+        transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out',
+        height: 'fit-content',
+        display: 'flex',
+        flexDirection: 'column',
+        background: theme.custom.thumbnail.contentBackgroundColor,
+        border: `0.5px solid ${theme.palette.divider}`,
         '&:hover': {
-            backgroundColor: theme.palette.grey[300],
+            boxShadow: theme.shadows[3],
         },
     },
-    [`& .${classes.media}`]: {
-        height: 200,
-    },
     [`& .${classes.content}`]: {
-        paddingBottom: theme.spacing(1),
+        padding: `${theme.spacing(1.5)}`,
+        color: theme.palette.getContrastText(theme.custom.thumbnail.contentBackgroundColor),
+        '& a': {
+            color: theme.palette.getContrastText(theme.custom.thumbnail.contentBackgroundColor),
+        },
+        position: theme.custom.thumbnail.contentPictureOverlap ? 'absolute' : 'relative',
+        gap: theme.spacing(2),
+        display: 'flex',
+        flex: 1,
     },
     [`& .${classes.actions}`]: {
         display: 'flex',
@@ -66,9 +80,9 @@ const StyledCard = styled(Card)(({ theme }) => ({
         padding: theme.spacing(1),
     },
     [`& .${classes.header}`]: {
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
+        cursor: 'pointer',
+        fontWeight: 600,
+        lineHeight: '1.3',
     },
     [`& .${classes.info}`]: {
         display: 'flex',
@@ -85,9 +99,24 @@ const StyledCard = styled(Card)(({ theme }) => ({
         color: theme.palette.grey[600],
         fontSize: '0.75rem',
     },
+    [`& .${classes.row}`]: {
+        display: 'flex',
+        gap: theme.spacing(0.75),
+    },
+    [`& .${classes.chip}`]: {
+        height: 20,
+        borderRadius: 4,
+        backgroundColor: '#eef3f9ff',
+        overflow: 'hidden',
+    },
+    [`& .${classes.suppressLinkStyles}`]: {
+        textDecoration: 'none',
+        color: 'inherit',
+        display: 'block',
+    },
 }));
 
-const DocThumbLegacy = ({ doc }) => {
+const DocThumb = ({ doc }) => {
     const [state] = useState({
         category: null,
         selectedIcon: null,
@@ -97,13 +126,9 @@ const DocThumbLegacy = ({ doc }) => {
     });
 
     const theme = useTheme();
-    const history = useHistory();
     const detailsLink = `/apis/${doc.apiUUID}/documents/${doc.id}/details`;
     const {
-        category, selectedIcon, color, backgroundIndex,
-    } = state;
-    const {
-        name, sourceType, apiName, apiVersion,
+        name, sourceType, apiName, apiVersion, apiProvider,
     } = doc;
 
     useEffect(() => {
@@ -114,75 +139,120 @@ const DocThumbLegacy = ({ doc }) => {
         };
     }, [state.imageObj]);
 
-    const handleCardClick = () => {
-        history.push(detailsLink);
-    };
-
     return (
-        <StyledCard className={classes.root} onClick={handleCardClick}>
-            {theme.custom.thumbnail.defaultApiImage ? (
-                <CardMedia
-                    className={classes.media}
-                    image={theme.custom.thumbnail.defaultApiImage}
-                    title='Document Image'
-                />
-            ) : (
-                <ImageGenerator
-                    width={theme.custom.thumbnail.width}
-                    height={140}
-                    api={doc}
-                    fixedIcon={{
-                        key: selectedIcon,
-                        color,
-                        backgroundIndex,
-                        category,
-                        doc,
-                    }}
-                />
-            )}
-            <CardContent className={classes.content}>
-                <Typography
-                    variant='h5'
-                    component='div'
-                    className={classes.header}
-                    title={name}
-                >
-                    {name}
-                </Typography>
-                <Typography variant='caption'>
-                    <FormattedMessage defaultMessage='Source Type: ' id='Apis.Listing.DocThumb.sourceType' />
-                    {sourceType}
-                </Typography>
-                <div className={classes.info}>
-                    <Typography variant='subtitle1' className={classes.apiName}>
-                        {apiName}
-                    </Typography>
-                    <Typography variant='subtitle1' className={classes.version}>
-                        {apiVersion}
-                    </Typography>
-                </div>
-                <div className={classes.info}>
-                    <Typography className={classes.subtitle}>
-                        <FormattedMessage defaultMessage='API Name' id='Apis.Listing.DocThumb.apiName' />
-                    </Typography>
-                    <Typography className={classes.subtitle} style={{ textAlign: 'right' }}>
-                        <FormattedMessage defaultMessage='API Version' id='Apis.Listing.DocThumb.apiVersion' />
-                    </Typography>
-                </div>
-            </CardContent>
+        <StyledCard className={classes.root}>
+            <Link className={classes.suppressLinkStyles} to={detailsLink} area-label={'Go to ' + name}>
+                <CardContent className={classes.content}>
+                    <div style={{ position: 'relative', height: 'fit-content' }}>
+                        {theme.custom.thumbnail.defaultApiImage ? (
+                            <CardMedia image={theme.custom.thumbnail.defaultApiImage} title='Document Image' />
+                        ) : (
+                            <CardMedia
+                                width={theme.custom.thumbnail.width}
+                                component={LetterGenerator}
+                                height={100}
+                                title='Document Thumbnail'
+                                artifact={{ name: 'Doc' }}
+                                charLength={3}
+                                customLightColor='#366FB1'
+                                customDarkColor='#032E61'
+                                ThumbIcon={(iconProps) => (
+                                    <CustomIcon icon='documentation' width={40} height={40} {...iconProps} />
+                                )}
+                            />
+                        )}
+                    </div>
+
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                        <Tooltip title={name} arrow>
+                            <Typography className={classes.header} variant='h6' component='h2' noWrap>
+                                {name}
+                            </Typography>
+                        </Tooltip>
+                        <div className={classes.row}>
+                            <Typography variant='caption' align='left' gutterBottom noWrap>
+                                <FormattedMessage defaultMessage='By' id='Apis.Listing.DocThumb.by' />
+                                <FormattedMessage defaultMessage=':' id='Apis.Listing.DocThumb.by.colon' />
+                                &nbsp;
+                                <Tooltip title={apiProvider} arrow>
+                                    {apiProvider}
+                                </Tooltip>
+                            </Typography>
+                        </div>
+                        <div className={classes.row}>
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    flex: 0.6,
+                                    overflow: 'hidden',
+                                }}
+                            >
+                                <Tooltip title={apiName} arrow>
+                                    <Typography variant='body1' noWrap>
+                                        {apiName}
+                                    </Typography>
+                                </Tooltip>
+                                <Typography variant='caption' component='p' lineHeight={1}>
+                                    <FormattedMessage defaultMessage='API Name' id='Apis.Listing.DocThumb.apiName' />
+                                </Typography>
+                            </div>
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    flex: 0.4,
+                                    overflow: 'hidden',
+                                }}
+                            >
+                                <Tooltip title={apiVersion} arrow>
+                                    <Typography variant='body1' noWrap>
+                                        {apiVersion}
+                                    </Typography>
+                                </Tooltip>
+                                <Typography variant='caption' lineHeight={1} component='p'>
+                                    <FormattedMessage
+                                        defaultMessage='API Version'
+                                        id='Apis.Listing.DocThumb.apiVersion'
+                                    />
+                                </Typography>
+                            </div>
+                        </div>
+                        <div className={classes.row} style={{ marginTop: '8px' }}>
+                            <Chip
+                                size='small'
+                                classes={{ root: classes.chip }}
+                                label='DOCUMENT'
+                                color='primary'
+                                variant='outlined'
+                            />
+                            <Chip
+                                size='small'
+                                classes={{ root: classes.chip }}
+                                label={sourceType.toUpperCase()}
+                                color='primary'
+                                variant='outlined'
+                            />
+                        </div>
+                    </div>
+                </CardContent>
+                <Divider sx={{ marginLeft: 1.5, marginRight: 1.5 }} />
+                <CardActions style={{ padding: '18px 12px' }} />
+            </Link>
         </StyledCard>
     );
 };
 
-DocThumbLegacy.propTypes = {
+DocThumb.propTypes = {
     doc: PropTypes.shape({
+        id: PropTypes.string,
         name: PropTypes.string,
         sourceType: PropTypes.string,
         apiName: PropTypes.string,
         apiVersion: PropTypes.string,
-        id: PropTypes.string,
         apiUUID: PropTypes.string,
+        apiProvider: PropTypes.string,
     }).isRequired,
 };
 
-export default DocThumbLegacy;
+export default DocThumb;
