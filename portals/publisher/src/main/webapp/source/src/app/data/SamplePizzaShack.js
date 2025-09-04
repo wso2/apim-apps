@@ -128,7 +128,9 @@ const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
     },
     servers: [
         {
-            url: 'https://localhost:9443/am/sample/pizzashack/v1/api'
+            url: 'https://localhost:9443/am/sample/pizzashack/v1/api',
+            description: "Production API server",
+            "x-internal": false
         }
     ],
     security: [{ default: [] }],
