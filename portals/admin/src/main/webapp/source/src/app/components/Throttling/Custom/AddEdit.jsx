@@ -214,12 +214,12 @@ function AddEdit(props) {
         }
 
         let promisedAddCustomPolicy;
-        if (state.siddhiQuery.indexOf('\n') !== -1) {
-            const siddhiQueryValue = state.siddhiQuery.split('\n').join(' ');
-            delete (state.siddhiQuery);
-            state.siddhiQuery = siddhiQueryValue;
-        }
-        const customPolicy = state;
+
+        // Create a copy of state with normalized siddhiQuery (remove newlines)
+        const customPolicy = {
+            ...state,
+            siddhiQuery: state.siddhiQuery.replace(/\n/g, ' '),
+        };
 
         if (editMode) {
             promisedAddCustomPolicy = restApi.updateCustomPolicy(policyId,
