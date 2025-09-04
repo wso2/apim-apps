@@ -153,7 +153,6 @@ const getTypeChipLabel = (type, gatewayVendor) => {
         SSE: 'SSE',
         WEBHOOK: 'Webhook',
         ASYNC: 'ASYNC',
-        MCP: 'MCP',
     };
     return typeMapping[type?.toUpperCase()] || type;
 };
@@ -183,7 +182,7 @@ const getTypeIcon = (type) => {
         case 'ASYNC':
             return <CustomIcon icon='async' {...iconProps} />;
         case 'MCP':
-            return <CustomIcon icon='mcp-server' {...iconProps} />;
+            return <CustomIcon icon='mcp-servers' strokeColor='#000000' {...iconProps} />;
         default:
             return null; // No icon for unknown types
     }
@@ -271,23 +270,35 @@ class APIThumb extends Component {
      * @returns {JSX.Element|null} Single chip component or null if no matching type
      */
     renderApiTypeChip = (api) => {
-        const label = getTypeChipLabel(api.transportType ? api.transportType : api.type, api.gatewayVendor);
-
         // No REST chip for AI APIs
         if (api.subtype && api.subtype === 'AIAPI') {
             return null;
         }
 
-        // No MCP chip for non-search routes
-        if (!this.isSearchRoute && (api.type === 'MCP' || api.transportType === 'MCP')) {
-            return null;
+        // If API type is MCP, always show label as 'MCP'
+        let label;
+        let icon;
+        if (api.type === 'MCP') {
+            if (!this.isSearchRoute) {
+                // No MCP chip for listing mode (non-search routes)
+                return null;
+            } else {
+                label = 'MCP';
+                icon = getTypeIcon('MCP');
+            }
+        } else {
+            // In search route, the apiType comes as `transportType`
+            // In non-search (listing) route, the apiType comes as `type`
+            // Giving precedence to transportType since there is a different attribute called `type` in search mode
+            label = getTypeChipLabel(api.transportType ? api.transportType : api.type, api.gatewayVendor);
+            icon = getTypeIcon(api.transportType ? api.transportType : api.type);
         }
 
         return (
             <Chip
                 size='small'
                 classes={{ root: classes.chip }}
-                icon={getTypeIcon(api.transportType ? api.transportType : api.type)}
+                icon={icon}
                 label={label}
                 color='primary'
                 variant='outlined'
