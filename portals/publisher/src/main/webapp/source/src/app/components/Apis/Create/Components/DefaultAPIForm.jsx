@@ -450,69 +450,83 @@ export default function DefaultAPIForm(props) {
             });
     }
 
+    let displayNameHelperText;
+
+    if (isAPIProduct) {
+        displayNameHelperText = (
+            <FormattedMessage
+                id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.product'
+                defaultMessage='Display name for the API Product (optional)'
+            />
+        );
+    } else if (isMCPServer) {
+        displayNameHelperText = (
+            <FormattedMessage
+                id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.mcp'
+                defaultMessage='Display name for the MCP Server (optional)'
+            />
+        );
+    } else {
+        displayNameHelperText = (
+            <FormattedMessage
+                id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.api'
+                defaultMessage='Display name for the API (optional)'
+            />
+        );
+    }
+
     return (
         <StyledGrid item md={12}>
             <form noValidate autoComplete='off'>
-                <Grid container spacing={2}>
-                    <Grid item md={6} xs={6}>
-                        <TextField
-                            autoFocus
-                            fullWidth
-                            id='api-name'
-                            error={Boolean(validity.name)}
-                            label={(
-                                <>
-                                    <FormattedMessage id='Apis.Create.Components.DefaultAPIForm.name'
-                                        defaultMessage='Name' />
-                                    <sup className={classes.mandatoryStar}>*</sup>
-                                </>
-                            )}
-                            helperText={
-                                validity.name
-                                && validity.name.details.map((detail, index) => {
-                                    return <div style={{ marginTop: index !== 0 && '10px' }}>{detail.message}</div>;
-                                })
-                            }
-                            value={api.name}
-                            name='name'
-                            onChange={onChange}
-                            InputProps={{
-                                id: 'itest-id-apiname-input',
-                                onBlur: ({ target: { value } }) => {
-                                    validate('name', value);
-                                },
-                            }}
-                            InputLabelProps={{
-                                for: 'itest-id-apiname-input',
-                            }}
-                            margin='normal'
-                            variant='outlined'
-                        />
-                    </Grid>
-                    <Grid item md={6} xs={6}>
-                        <TextField
-                            fullWidth
-                            id='api-display-name'
-                            label={(
-                                <>
-                                    <FormattedMessage id='Apis.Create.Components.DefaultAPIForm.display.name'
-                                        defaultMessage='Display Name' />
-                                </>
-                            )}
-                            helperText={
-                                <FormattedMessage
-                                    id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text'
-                                    defaultMessage='Provide a display name for the API (optional)'
-                                />
-                            }
-                            value={api.displayName}
-                            name='displayName'
-                            onChange={onChange}
-                            margin='normal'
-                            variant='outlined'
-                        />
-                    </Grid>
-                </Grid>
+                <TextField
+                    autoFocus
+                    fullWidth
+                    id='api-name'
+                    error={Boolean(validity.name)}
+                    label={(
+                        <>
+                            <FormattedMessage id='Apis.Create.Components.DefaultAPIForm.name'
+                                defaultMessage='Name' />
+                            <sup className={classes.mandatoryStar}>*</sup>
+                        </>
+                    )}
+                    helperText={
+                        validity.name
+                        && validity.name.details.map((detail, index) => {
+                            return <div style={{ marginTop: index !== 0 && '10px' }}>{detail.message}</div>;
+                        })
+                    }
+                    value={api.name}
+                    name='name'
+                    onChange={onChange}
+                    InputProps={{
+                        id: 'itest-id-apiname-input',
+                        onBlur: ({ target: { value } }) => {
+                            validate('name', value);
+                        },
+                    }}
+                    InputLabelProps={{
+                        for: 'itest-id-apiname-input',
+                    }}
+                    margin='normal'
+                    variant='outlined'
+                />
+                <TextField
+                    fullWidth
+                    id='api-display-name'
+                    label={(
+                        <>
+                            <FormattedMessage id='Apis.Create.Components.DefaultAPIForm.display.name'
+                                defaultMessage='Display Name' />
+                        </>
+                    )}
+                    helperText={displayNameHelperText}
+                    value={api.displayName}
+                    name='displayName'
+                    onChange={onChange}
+                    margin='normal'
+                    variant='outlined'
+                />
                 <Grid container spacing={2}>
                     {!isAPIProduct && !isMCPServer ? (
                         <>
