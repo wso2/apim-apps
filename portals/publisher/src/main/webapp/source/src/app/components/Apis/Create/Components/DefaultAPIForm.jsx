@@ -450,6 +450,31 @@ export default function DefaultAPIForm(props) {
             });
     }
 
+    let displayNameHelperText;
+
+    if (isAPIProduct) {
+        displayNameHelperText = (
+            <FormattedMessage
+                id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.product'
+                defaultMessage='Display name for the API Product (optional)'
+            />
+        );
+    } else if (isMCPServer) {
+        displayNameHelperText = (
+            <FormattedMessage
+                id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.mcp'
+                defaultMessage='Display name for the MCP Server (optional)'
+            />
+        );
+    } else {
+        displayNameHelperText = (
+            <FormattedMessage
+                id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.api'
+                defaultMessage='Display name for the API (optional)'
+            />
+        );
+    }
+
     return (
         <StyledGrid item md={12}>
             <form noValidate autoComplete='off'>
@@ -460,7 +485,8 @@ export default function DefaultAPIForm(props) {
                     error={Boolean(validity.name)}
                     label={(
                         <>
-                            <FormattedMessage id='Apis.Create.Components.DefaultAPIForm.name' defaultMessage='Name' />
+                            <FormattedMessage id='Apis.Create.Components.DefaultAPIForm.name'
+                                defaultMessage='Name' />
                             <sup className={classes.mandatoryStar}>*</sup>
                         </>
                     )}
@@ -482,6 +508,22 @@ export default function DefaultAPIForm(props) {
                     InputLabelProps={{
                         for: 'itest-id-apiname-input',
                     }}
+                    margin='normal'
+                    variant='outlined'
+                />
+                <TextField
+                    fullWidth
+                    id='api-display-name'
+                    label={(
+                        <>
+                            <FormattedMessage id='Apis.Create.Components.DefaultAPIForm.display.name'
+                                defaultMessage='Display Name' />
+                        </>
+                    )}
+                    helperText={displayNameHelperText}
+                    value={api.displayName}
+                    name='displayName'
+                    onChange={onChange}
                     margin='normal'
                     variant='outlined'
                 />

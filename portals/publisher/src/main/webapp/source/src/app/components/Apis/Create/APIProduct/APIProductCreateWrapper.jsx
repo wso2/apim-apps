@@ -139,6 +139,7 @@ export default function ApiProductCreateWrapper(props) {
         switch (action) {
             case 'type':
             case 'name':
+            case 'displayName':
             case 'context':
             case 'version':
             case 'isFormValid':
@@ -205,10 +206,11 @@ export default function ApiProductCreateWrapper(props) {
     const createAPIProduct = () => {
         setCreating(true);
         const {
-            name, context, version,
+            name, context, version, displayName,
         } = apiInputs;
         const apiData = {
             name,
+            displayName,
             context,
             version,
             policies,

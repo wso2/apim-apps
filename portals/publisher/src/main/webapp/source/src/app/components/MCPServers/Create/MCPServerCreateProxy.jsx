@@ -106,6 +106,7 @@ const MCPServerCreateProxy = (props) => {
         switch (action) {
             case 'type':
             case 'name':
+            case 'displayName':
             case 'context':
             case 'version':
             case 'mcpServerUrl':
@@ -151,6 +152,7 @@ const MCPServerCreateProxy = (props) => {
         setCreating(true);
         const {
             name,
+            displayName,
             version,
             context,
             mcpServerUrl,
@@ -170,6 +172,7 @@ const MCPServerCreateProxy = (props) => {
 
         const additionalProperties = {
             name,
+            displayName,
             version,
             context,
             gatewayType: defaultGatewayType === 'default' ? gatewayType : defaultGatewayType,

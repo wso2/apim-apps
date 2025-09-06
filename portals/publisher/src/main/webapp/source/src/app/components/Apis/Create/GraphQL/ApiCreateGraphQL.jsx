@@ -89,6 +89,7 @@ export default function ApiCreateGraphQL(props) {
             case 'type':
             case 'inputValue':
             case 'name':
+            case 'displayName':
             case 'version':
             case 'gatewayType':
             case 'endpoint':
@@ -175,6 +176,7 @@ export default function ApiCreateGraphQL(props) {
         setCreating(true);
         const {
             name,
+            displayName,
             version,
             context,
             endpoint,
@@ -187,6 +189,7 @@ export default function ApiCreateGraphQL(props) {
 
         const additionalProperties = {
             name,
+            displayName,
             version,
             context,
             gatewayType,

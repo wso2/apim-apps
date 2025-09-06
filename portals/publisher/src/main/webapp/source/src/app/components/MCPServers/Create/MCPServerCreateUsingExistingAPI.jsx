@@ -139,6 +139,7 @@ const MCPServerCreateUsingExistingAPI = (props) => {
         switch (action) {
             case 'type':
             case 'name':
+            case 'displayName':
             case 'context':
             case 'version':
             case 'isFormValid':
@@ -182,10 +183,11 @@ const MCPServerCreateUsingExistingAPI = (props) => {
     const createMCPServer = () => {
         setCreating(true);
         const {
-            name, context, version, operations = [],
+            name, context, version, displayName, operations = [],
         } = mcpServerInputs;
         const mcpServerData = {
             name,
+            displayName,
             context,
             version,
             policies,

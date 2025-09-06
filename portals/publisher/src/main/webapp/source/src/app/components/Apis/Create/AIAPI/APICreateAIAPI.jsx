@@ -50,6 +50,7 @@ function apiInputsReducer(currentState, inputAction) {
         case 'type':
         case 'inputValue':
         case 'name':
+        case 'displayName':
         case 'version':
         case 'endpoint':
         case 'gatewayType':
@@ -124,11 +125,13 @@ export default function ApiCreateAIAPI(props) {
     function createAPI() {
         setCreating(true);
         const {
-            name, version, context, endpoint, gatewayType, policies = ["Unlimited"], inputValue, llmProviderId,
+            name, version, context, endpoint, gatewayType, displayName, policies = ["Unlimited"],
+            inputValue, llmProviderId,
         } = apiInputs;
 
         const additionalProperties = {
             name,
+            displayName,
             version,
             context,
             gatewayType,
