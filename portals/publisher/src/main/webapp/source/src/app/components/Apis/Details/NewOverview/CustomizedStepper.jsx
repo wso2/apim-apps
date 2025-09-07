@@ -155,8 +155,7 @@ export default function CustomizedStepper() {
     const [isMandatoryPropertiesAvailable, setIsMandatoryPropertiesAvailable] = useState(false);
     const [deploymentsAvailable, setDeploymentsAvailable] = useState(false);
     const [endpointStatus, setEndpointStatus] = useState({
-        isAvailable: false,
-        isSecurityConfigured: false,
+        isEndpointReady: false,
         isLoading: true
     });
     const [isMCPEndpointAvailable, setMCPEndpointAvailable] = useState(false);
@@ -166,43 +165,65 @@ export default function CustomizedStepper() {
         && api.endpointConfig !== null
         && api.endpointConfig.implementation_status === 'prototyped';
 
-    // Helper function to check endpoint security for AI APIs
-    const checkEndpointSecurity = async () => {
+    // Function to check both URL availability and security configuration
+    const checkEndpointConfiguration = async (config = null) => {
         try {
             const hasProductionEndpoint = !!api.primaryProductionEndpointId;
             const hasSandboxEndpoint = !!api.primarySandboxEndpointId;
+            
+            let isProductionUrlPresent = false;
+            let isSandboxUrlPresent = false;
             let isProductionSecure = false;
             let isSandboxSecure = false;
 
+            // Check production endpoint
             if (hasProductionEndpoint) {
                 if (api.primaryProductionEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION) {
-                    isProductionSecure = !!api.endpointConfig?.endpoint_security?.production;
+                    isProductionUrlPresent = !!api.endpointConfig?.production_endpoints?.url;
+                    isProductionSecure = config.enabled 
+                        ? !!api.endpointConfig?.endpoint_security?.production 
+                        : true;
                 } else {
                     const endpoint = await API.getApiEndpoint(api.id, api.primaryProductionEndpointId);
-                    isProductionSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.production;
+                    isProductionUrlPresent = !!endpoint?.body?.endpointConfig?.production_endpoints?.url;
+                    isProductionSecure = config.enabled 
+                        ? !!endpoint?.body?.endpointConfig?.endpoint_security?.production 
+                        : true;
                 }
             }
 
+            // Check sandbox endpoint
             if (hasSandboxEndpoint) {
                 if (api.primarySandboxEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX) {
-                    isSandboxSecure = !!api.endpointConfig?.endpoint_security?.sandbox;
+                    isSandboxUrlPresent = !!api.endpointConfig?.sandbox_endpoints?.url;
+                    isSandboxSecure = config.enabled 
+                        ? !!api.endpointConfig?.endpoint_security?.sandbox 
+                        : true;
                 } else {
                     const endpoint = await API.getApiEndpoint(api.id, api.primarySandboxEndpointId);
-                    isSandboxSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.sandbox;
+                    isSandboxUrlPresent = !!endpoint?.body?.endpointConfig?.sandbox_endpoints?.url;
+                    isSandboxSecure = config.enabled 
+                        ? !!endpoint?.body?.endpointConfig?.endpoint_security?.sandbox 
+                        : true;
                 }
             }
 
+            let isAvailable = false; // URL availability
+            let isSecurityConfigured = false; // Security configuration
             if (hasProductionEndpoint && hasSandboxEndpoint) {
-                return isProductionSecure && isSandboxSecure;
+                isAvailable = isProductionUrlPresent && isSandboxUrlPresent;
+                isSecurityConfigured = isProductionSecure && isSandboxSecure;
             } else if (hasProductionEndpoint) {
-                return isProductionSecure;
+                isAvailable = isProductionUrlPresent;
+                isSecurityConfigured = isProductionSecure;
             } else if (hasSandboxEndpoint) {
-                return isSandboxSecure;
-            } else {
-                return false;
+                isAvailable = isSandboxUrlPresent;
+                isSecurityConfigured = isSandboxSecure;
             }
+
+            return isAvailable && isSecurityConfigured;
         } catch (error) {
-            console.error('Error checking endpoint security:', error);
+            console.error('Error checking endpoint configuration:', error);
             return false;
         }
     };
@@ -212,52 +233,38 @@ export default function CustomizedStepper() {
         setEndpointStatus(prev => ({ ...prev, isLoading: true }));
 
         try {
-            let isAvailable = false;
-            let isSecurityConfigured = false;
+            let isEndpointReady = false;
 
             if (isMCPServer) {
                 // For MCP servers, just check if endpoints are available
-                isAvailable = isMCPEndpointAvailable;
-                isSecurityConfigured = true; // MCP servers don't need endpoint security
+                isEndpointReady = isMCPEndpointAvailable;
             } else if (api.subtypeConfiguration?.subtype === 'AIAPI') {
-                // For AI APIs, check if primary endpoints exist
+                // For AI APIs, both URL availability and security must be ready
                 const hasPrimaryEndpoints = api.primaryProductionEndpointId !== null || 
                     api.primarySandboxEndpointId !== null;
                 
                 if (hasPrimaryEndpoints) {
-                    // Check AI API authentication configuration
                     const response = await API.getLLMProviderEndpointConfiguration(
                         JSON.parse(api.subtypeConfiguration.configuration).llmProviderId
                     );
+                    const config = response.body?.authenticationConfiguration;
                     
-                    if (response.body) {
-                        const config = response.body.authenticationConfiguration;
-                        isAvailable = config?.enabled && (config.type === 'apikey' || config.type === 'aws');
-                        
-                        // If AI API has authentication, check endpoint security
-                        if (isAvailable) {
-                            isSecurityConfigured = await checkEndpointSecurity();
-                        } else {
-                            isSecurityConfigured = true; // No auth needed
-                        }
-                    }
+                    // Check both URL availability and security
+                    isEndpointReady = await checkEndpointConfiguration(config);
                 }
             } else {
-                // For regular APIs
-                isAvailable = api.endpointConfig !== null;
-                isSecurityConfigured = true; // No auth needed
+                // For regular APIs, endpoint configuration presence is sufficient
+                isEndpointReady = api.endpointConfig !== null;
             }
 
             setEndpointStatus({
-                isAvailable,
-                isSecurityConfigured,
+                isEndpointReady,
                 isLoading: false
             });
         } catch (error) {
             console.error('Error checking endpoint status:', error);
             setEndpointStatus({
-                isAvailable: false,
-                isSecurityConfigured: false,
+                isEndpointReady: false,
                 isLoading: false
             });
         }
@@ -350,17 +357,17 @@ export default function CustomizedStepper() {
         forceComplete.push(steps.indexOf('Publish') + 1);
     }
     let activeStep = 0;
-    if (api && (api.type === 'WEBSUB' || endpointStatus.isAvailable)
+    if (api && (api.type === 'WEBSUB' || endpointStatus.isEndpointReady)
         && !deploymentsAvailable) {
         activeStep = 1;
-    } else if ((api && !endpointStatus.isAvailable && api.type !== 'WEBSUB')
+    } else if ((api && !endpointStatus.isEndpointReady && api.type !== 'WEBSUB')
         || (api && !isMutualSslOnly && !isTierAvailable)) {
         activeStep = 0;
-    } else if (api && (endpointStatus.isAvailable || api.type === 'WEBSUB') && (isTierAvailable || isMutualSslOnly)
+    } else if (api && (endpointStatus.isEndpointReady || api.type === 'WEBSUB') && (isTierAvailable || isMutualSslOnly)
         && deploymentsAvailable && (!isPublished && lifecycleState !== 'PROTOTYPED')) {
         activeStep = steps.length - 1;
     } else if ((isPublished || lifecycleState === 'PROTOTYPED') && api
-        && (endpointStatus.isAvailable || api.type === 'WEBSUB' || isPrototypedAvailable)
+        && (endpointStatus.isEndpointReady || api.type === 'WEBSUB' || isPrototypedAvailable)
         && (isTierAvailable || isMutualSslOnly) && deploymentsAvailable) {
         activeStep = steps.length;
     }
@@ -655,7 +662,7 @@ export default function CustomizedStepper() {
                                     color='primary'
                                     data-testid='publish-state-button'
                                     onClick={() => updateLCStateOfAPI(api.id, 'Publish')}
-                                    disabled={((api.type !== 'WEBSUB' && !endpointStatus.isAvailable)
+                                    disabled={((api.type !== 'WEBSUB' && !endpointStatus.isEndpointReady)
                                         || (!isMutualSslOnly && !isTierAvailable))
                                         || !deploymentsAvailable
                                         || api.isRevision || AuthManager.isNotPublisher()
@@ -693,17 +700,11 @@ export default function CustomizedStepper() {
         }
     }
     const isTestLinkDisabled = lifecycleState === 'RETIRED' || !deploymentsAvailable
-    || (!api.isAPIProduct() && !endpointStatus.isAvailable)
+    || (!api.isAPIProduct() && !endpointStatus.isEndpointReady)
     || (!isMutualSslOnly && !isTierAvailable)
     || (api.type !== 'HTTP' && api.type !== 'SOAP' && api.type !== 'APIPRODUCT' && api.type !== 'MCP');
     const isDeployLinkDisabled =
-        (api.type !== 'WEBSUB' &&
-            !(
-                endpointStatus.isAvailable &&
-                (api.subtypeConfiguration?.subtype === 'AIAPI'
-                    ? endpointStatus.isSecurityConfigured
-                    : true)
-            )) ||
+        (api.type !== 'WEBSUB' && !endpointStatus.isEndpointReady) ||
         api.workflowStatus === 'CREATED' ||
         lifecycleState === 'RETIRED';
     let deployLinkToolTipTitle = '';
@@ -784,7 +785,7 @@ export default function CustomizedStepper() {
                                                     style={{ marginLeft: '2px' }}
                                                 >
                                                     <Grid item>
-                                                        {endpointStatus.isAvailable
+                                                        {endpointStatus.isEndpointReady
                                                             ? (
                                                                 <CheckIcon className={classes.iconTrue} />
                                                             ) 

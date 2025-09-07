@@ -156,11 +156,13 @@ export default function DeploymentOnboarding(props) {
     const [internalGateways, setInternalGateways] = useState([]);
     const [externalGateways, setExternalGateways] = useState([]);
     const [selectedExternalGateway, setSelectedExternalGateway] = useState([]);
-    const [isEndpointSecurityConfigured, setIsEndpointSecurityConfigured] = useState(false);
     const [descriptionOpen, setDescriptionOpen] = useState(false);
     const [selectedEnvironment, setSelectedEnvironment] = useState([]);
     const [selectedVhostDeploy, setVhostsDeploy] = useState(null);
-    const [isEndpointAvailable, setEndpointAvailable] = useState(false);
+    const [endpointStatus, setEndpointStatus] = useState({
+        isEndpointReady: false,
+        isLoading: true
+    });
 
     useEffect(() => {
         let gatewayType;
@@ -225,84 +227,123 @@ export default function DeploymentOnboarding(props) {
         }
     }, []);
 
-    useEffect(() => {
-        const checkEndpointSecurity = async () => {
-            try {
-                const hasProductionEndpoint = !!api.primaryProductionEndpointId;
-                const hasSandboxEndpoint = !!api.primarySandboxEndpointId;
-                let isProductionSecure = false;
-                let isSandboxSecure = false;
+    // Function to check both URL availability and security configuration
+    const checkEndpointConfiguration = async (config = null) => {
+        try {
+            const hasProductionEndpoint = !!api.primaryProductionEndpointId;
+            const hasSandboxEndpoint = !!api.primarySandboxEndpointId;
+            
+            let isProductionUrlPresent = false;
+            let isSandboxUrlPresent = false;
+            let isProductionSecure = false;
+            let isSandboxSecure = false;
 
-                if (hasProductionEndpoint) {
-                    if (api.primaryProductionEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION) {
-                        isProductionSecure = !!api.endpointConfig?.endpoint_security?.production;
-                    } else {
-                        const endpoint = await API.getApiEndpoint(api.id, api.primaryProductionEndpointId);
-                        isProductionSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.production;
-                    }
-                }
-
-                if (hasSandboxEndpoint) {
-                    if (api.primarySandboxEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX) {
-                        isSandboxSecure = !!api.endpointConfig?.endpoint_security?.sandbox;
-                    } else {
-                        const endpoint = await API.getApiEndpoint(api.id, api.primarySandboxEndpointId);
-                        isSandboxSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.sandbox;
-                    }
-                }
-
-                if (hasProductionEndpoint && hasSandboxEndpoint) {
-                    setIsEndpointSecurityConfigured(isProductionSecure && isSandboxSecure);
-                } else if (hasProductionEndpoint) {
-                    setIsEndpointSecurityConfigured(isProductionSecure);
-                } else if (hasSandboxEndpoint) {
-                    setIsEndpointSecurityConfigured(isSandboxSecure);
+            // Check production endpoint
+            if (hasProductionEndpoint) {
+                if (api.primaryProductionEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION) {
+                    isProductionUrlPresent = !!api.endpointConfig?.production_endpoints?.url;
+                    isProductionSecure = config?.enabled 
+                        ? !!api.endpointConfig?.endpoint_security?.production 
+                        : true;
                 } else {
-                    setIsEndpointSecurityConfigured(false);
+                    const endpoint = await API.getApiEndpoint(api.id, api.primaryProductionEndpointId);
+                    isProductionUrlPresent = !!endpoint?.body?.endpointConfig?.production_endpoints?.url;
+                    isProductionSecure = config?.enabled 
+                        ? !!endpoint?.body?.endpointConfig?.endpoint_security?.production 
+                        : true;
                 }
-            } catch (error) {
-                console.error('Error checking endpoint security:', error);
-                setIsEndpointSecurityConfigured(false);
             }
-        };
-        checkEndpointSecurity();
 
-        if (isMCPServer) {
-            if (api.isMCPServerFromExistingAPI()) {
-                setEndpointAvailable(true); // TODO: Check the endpoint availability for MCP Server from existing API
-                // API.getAPIById(underlyingApi.id)
-                //     .then((response) => {
-                //         const apiObject = response.body;
-                //         setEndpointAvailable(apiObject.subtypeConfiguration?.subtype === 'AIAPI'
-                //             ? (apiObject.primaryProductionEndpointId !== null
-                //                 || apiObject.primarySandboxEndpointId !== null)
-                //             : apiObject.endpointConfig !== null);
-                //     });
-            } else {
-                MCPServer.getMCPServerEndpoints(api.id)
-                    .then((response) => {
-                        const fetchedEndpoints = response.body;
-                        if (fetchedEndpoints && fetchedEndpoints.length > 0) {
-                            setEndpointAvailable(true);
-                        } else {
-                            setEndpointAvailable(false);
-                        }
-                    });
+            // Check sandbox endpoint
+            if (hasSandboxEndpoint) {
+                if (api.primarySandboxEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX) {
+                    isSandboxUrlPresent = !!api.endpointConfig?.sandbox_endpoints?.url;
+                    isSandboxSecure = config?.enabled 
+                        ? !!api.endpointConfig?.endpoint_security?.sandbox 
+                        : true;
+                } else {
+                    const endpoint = await API.getApiEndpoint(api.id, api.primarySandboxEndpointId);
+                    isSandboxUrlPresent = !!endpoint?.body?.endpointConfig?.sandbox_endpoints?.url;
+                    isSandboxSecure = config?.enabled 
+                        ? !!endpoint?.body?.endpointConfig?.endpoint_security?.sandbox 
+                        : true;
+                }
             }
-        } else {
-            setEndpointAvailable(api.subtypeConfiguration?.subtype === 'AIAPI'
-                ? (api.primaryProductionEndpointId !== null || api.primarySandboxEndpointId !== null)
-                : api.endpointConfig !== null);
+
+            let isAvailable = false; // URL availability
+            let isSecurityConfigured = false; // Security configuration
+            if (hasProductionEndpoint && hasSandboxEndpoint) {
+                isAvailable = isProductionUrlPresent && isSandboxUrlPresent;
+                isSecurityConfigured = isProductionSecure && isSandboxSecure;
+            } else if (hasProductionEndpoint) {
+                isAvailable = isProductionUrlPresent;
+                isSecurityConfigured = isProductionSecure;
+            } else if (hasSandboxEndpoint) {
+                isAvailable = isSandboxUrlPresent;
+                isSecurityConfigured = isSandboxSecure;
+            }
+
+            return isAvailable && isSecurityConfigured;
+        } catch (error) {
+            console.error('Error checking endpoint configuration:', error);
+            return false;
         }
+    };
+
+    // Unified function to check endpoint availability and security
+    const checkEndpointStatus = async () => {
+        setEndpointStatus(prev => ({ ...prev, isLoading: true }));
+
+        try {
+            let isEndpointReady = false;
+
+            if (isMCPServer) {
+                // For MCP servers, check if endpoints are available
+                if (api.isMCPServerFromExistingAPI()) {
+                    isEndpointReady = true; // TODO: Check the endpoint availability for MCP Server from existing API
+                } else {
+                    const response = await MCPServer.getMCPServerEndpoints(api.id);
+                    const fetchedEndpoints = response.body;
+                    isEndpointReady = fetchedEndpoints && fetchedEndpoints.length > 0;
+                }
+            } else if (api.subtypeConfiguration?.subtype === 'AIAPI') {
+                // For AI APIs, both URL availability and security must be ready
+                const hasPrimaryEndpoints = api.primaryProductionEndpointId !== null || 
+                    api.primarySandboxEndpointId !== null;
+                
+                if (hasPrimaryEndpoints) {
+                    const response = await API.getLLMProviderEndpointConfiguration(
+                        JSON.parse(api.subtypeConfiguration.configuration).llmProviderId
+                    );
+                    const config = response.body?.authenticationConfiguration;
+                    
+                    // Use optimized function to check both URL availability and security
+                    isEndpointReady = await checkEndpointConfiguration(config);
+                }
+            } else {
+                // For regular APIs, endpoint configuration presence is sufficient
+                isEndpointReady = api.endpointConfig !== null;
+            }
+
+            setEndpointStatus({
+                isEndpointReady,
+                isLoading: false
+            });
+        } catch (error) {
+            console.error('Error checking endpoint status:', error);
+            setEndpointStatus({
+                isEndpointReady: false,
+                isLoading: false
+            });
+        }
+    };
+
+    useEffect(() => {
+        checkEndpointStatus();
     }, [api]);
 
-    const isDeployButtonDisabled = ((api.type !== 'WEBSUB' && !(
-        isEndpointAvailable &&
-        (api.subtypeConfiguration?.subtype === 'AIAPI'
-            ? isEndpointSecurityConfigured
-            : true
-        )
-    )) || api.workflowStatus === 'CREATED' || api.initiatedFromGateway);
+    const isDeployButtonDisabled = ((api.type !== 'WEBSUB' && !endpointStatus.isEndpointReady) 
+        || api.workflowStatus === 'CREATED' || api.initiatedFromGateway);
 
     /**
      * Handle Description
