@@ -227,60 +227,70 @@ export default function DeploymentOnboarding(props) {
         }
     }, []);
 
+    // Helper function to check endpoint status (production or sandbox)
+    const verifyEndpointUrlAndSecurity = async (endpointId, endpointType, config) => {
+        const isDefaultEndpoint = endpointId === CONSTS.DEFAULT_ENDPOINT_ID[endpointType];
+        
+        if (isDefaultEndpoint) {
+            return {
+                isUrlPresent: !!api.endpointConfig?.[endpointType.toLowerCase() + '_endpoints']?.url,
+                isSecure: config?.enabled 
+                    ? !!api.endpointConfig?.endpoint_security?.[endpointType.toLowerCase()] 
+                    : true
+            };
+        } else {
+            const endpoint = await API.getApiEndpoint(api.id, endpointId);
+            const endpointConfig = endpoint?.body?.endpointConfig;
+            
+            return {
+                isUrlPresent: !!endpointConfig?.[endpointType.toLowerCase() + '_endpoints']?.url,
+                isSecure: config?.enabled 
+                    ? !!endpointConfig?.endpoint_security?.[endpointType.toLowerCase()] 
+                    : true
+            };
+        }
+    };
+
     // Function to check both URL availability and security configuration
     const checkEndpointConfiguration = async (config = null) => {
         try {
             const hasProductionEndpoint = !!api.primaryProductionEndpointId;
             const hasSandboxEndpoint = !!api.primarySandboxEndpointId;
             
-            let isProductionUrlPresent = false;
-            let isSandboxUrlPresent = false;
-            let isProductionSecure = false;
-            let isSandboxSecure = false;
+            let productionResult = null;
+            let sandboxResult = null;
 
-            // Check production endpoint
+            // Check production endpoint if it exists
             if (hasProductionEndpoint) {
-                if (api.primaryProductionEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION) {
-                    isProductionUrlPresent = !!api.endpointConfig?.production_endpoints?.url;
-                    isProductionSecure = config?.enabled 
-                        ? !!api.endpointConfig?.endpoint_security?.production 
-                        : true;
-                } else {
-                    const endpoint = await API.getApiEndpoint(api.id, api.primaryProductionEndpointId);
-                    isProductionUrlPresent = !!endpoint?.body?.endpointConfig?.production_endpoints?.url;
-                    isProductionSecure = config?.enabled 
-                        ? !!endpoint?.body?.endpointConfig?.endpoint_security?.production 
-                        : true;
-                }
+                productionResult = await verifyEndpointUrlAndSecurity(
+                    api.primaryProductionEndpointId, 
+                    CONSTS.DEPLOYMENT_STAGE.production, 
+                    config
+                );
             }
 
-            // Check sandbox endpoint
+            // Check sandbox endpoint if it exists
             if (hasSandboxEndpoint) {
-                if (api.primarySandboxEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX) {
-                    isSandboxUrlPresent = !!api.endpointConfig?.sandbox_endpoints?.url;
-                    isSandboxSecure = config?.enabled 
-                        ? !!api.endpointConfig?.endpoint_security?.sandbox 
-                        : true;
-                } else {
-                    const endpoint = await API.getApiEndpoint(api.id, api.primarySandboxEndpointId);
-                    isSandboxUrlPresent = !!endpoint?.body?.endpointConfig?.sandbox_endpoints?.url;
-                    isSandboxSecure = config?.enabled 
-                        ? !!endpoint?.body?.endpointConfig?.endpoint_security?.sandbox 
-                        : true;
-                }
+                sandboxResult = await verifyEndpointUrlAndSecurity(
+                    api.primarySandboxEndpointId, 
+                    CONSTS.DEPLOYMENT_STAGE.sandbox, 
+                    config
+                );
             }
 
-            let isAvailable = false; // URL availability
-            let isSecurityConfigured = false; // Security configuration
+            // Determine overall availability and security
+            let isAvailable = false;
+            let isSecurityConfigured = false;
+
             if (hasProductionEndpoint && hasSandboxEndpoint) {
-                isAvailable = isProductionUrlPresent && isSandboxUrlPresent;
-                isSecurityConfigured = isProductionSecure && isSandboxSecure;
+                isAvailable = productionResult.isUrlPresent && sandboxResult.isUrlPresent;
+                isSecurityConfigured = productionResult.isSecure && sandboxResult.isSecure;
             } else if (hasProductionEndpoint) {
-                isAvailable = isProductionUrlPresent;
-                isSecurityConfigured = isProductionSecure;
+                isAvailable = productionResult.isUrlPresent;
+                isSecurityConfigured = productionResult.isSecure;
             } else if (hasSandboxEndpoint) {
-                isAvailable = isSandboxUrlPresent;
-                isSecurityConfigured = isSandboxSecure;
+                isAvailable = sandboxResult.isUrlPresent;
+                isSecurityConfigured = sandboxResult.isSecure;
             }
 
             return isAvailable && isSecurityConfigured;
