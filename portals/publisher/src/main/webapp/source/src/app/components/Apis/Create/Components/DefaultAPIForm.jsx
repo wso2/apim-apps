@@ -450,30 +450,34 @@ export default function DefaultAPIForm(props) {
             });
     }
 
-    let displayNameHelperText;
-
-    if (isAPIProduct) {
-        displayNameHelperText = (
+    const displayNameHelperMessages = {
+        product: (
             <FormattedMessage
                 id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.product'
                 defaultMessage='Display name for the API Product (optional)'
             />
-        );
-    } else if (isMCPServer) {
-        displayNameHelperText = (
+        ),
+        mcp: (
             <FormattedMessage
                 id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.mcp'
                 defaultMessage='Display name for the MCP Server (optional)'
             />
-        );
-    } else {
-        displayNameHelperText = (
+        ),
+        default: (
             <FormattedMessage
                 id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.api'
                 defaultMessage='Display name for the API (optional)'
             />
-        );
-    }
+        ),
+    };
+
+    const getDisplayNameHelperKey = () => {
+        if (isAPIProduct) return 'product';
+        if (isMCPServer) return 'mcp';
+        return 'default';
+    };
+
+    const displayNameHelperText = displayNameHelperMessages[getDisplayNameHelperKey()];
 
     return (
         <StyledGrid item md={12}>
