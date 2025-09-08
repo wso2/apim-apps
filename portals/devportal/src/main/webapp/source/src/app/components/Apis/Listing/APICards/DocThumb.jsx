@@ -29,6 +29,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { FormattedMessage } from 'react-intl';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
+import { getBasePath } from 'AppUtils/utils';
 import LetterGenerator from './LetterGenerator';
 
 const PREFIX = 'DocThumb';
@@ -126,10 +127,10 @@ const DocThumb = ({ doc }) => {
     });
 
     const theme = useTheme();
-    const detailsLink = `/apis/${doc.apiUUID}/documents/${doc.id}/details`;
     const {
-        name, apiName, apiVersion, apiProvider, associatedType,
+        id, name, apiUUID, apiName, apiVersion, apiProvider, associatedType,
     } = doc;
+    const detailsLink = getBasePath(associatedType) + apiUUID + '/documents/' + id + '/details';
 
     useEffect(() => {
         return () => {
