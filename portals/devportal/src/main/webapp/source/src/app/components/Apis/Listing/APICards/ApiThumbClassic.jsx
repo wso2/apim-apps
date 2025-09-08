@@ -312,6 +312,9 @@ class ApiThumbClassicLegacy extends React.Component {
                 label = 'MCP';
                 icon = getTypeIcon('MCP');
             }
+        } else if (api.type === 'APIPRODUCT') {
+            // No API Product chip in devportal
+            return null;
         } else {
             // In search route, the apiType comes as `transportType`
             // In non-search (listing) route, the apiType comes as `type`

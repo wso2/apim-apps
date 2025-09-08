@@ -286,6 +286,14 @@ class APIThumb extends Component {
                 label = 'MCP';
                 icon = getTypeIcon('MCP');
             }
+        } else if (api.apiType === 'APIPRODUCT') {
+            if (!this.isSearchRoute) {
+                // No API Product chip for listing mode (non-search routes)
+                return null;
+            } else {
+                label = 'API PRODUCT';
+                icon = getTypeIcon('APIProduct');
+            }
         } else {
             // In search route, the apiType comes as `transportType`
             // In non-search (listing) route, the apiType comes as `type`
