@@ -518,12 +518,12 @@ export default function DefaultAPIForm(props) {
                 <TextField
                     fullWidth
                     id='api-display-name'
-                    label={(
-                        <>
-                            <FormattedMessage id='Apis.Create.Components.DefaultAPIForm.display.name'
-                                defaultMessage='Display Name' />
-                        </>
-                    )}
+                    label={
+                        <FormattedMessage
+                            id='Apis.Create.Components.DefaultAPIForm.display.name'
+                            defaultMessage='Display Name'
+                        />
+                    }
                     helperText={displayNameHelperText}
                     value={api.displayName}
                     name='displayName'

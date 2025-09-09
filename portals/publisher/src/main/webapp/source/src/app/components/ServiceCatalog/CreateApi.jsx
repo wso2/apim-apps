@@ -570,14 +570,12 @@ function CreateApi(props) {
                             <TextField
                                 autoFocus
                                 name='displayName'
-                                label={(
-                                    <>
-                                        <FormattedMessage
-                                            id='ServiceCatalog.CreateApi.api.display.name.label'
-                                            defaultMessage='Display Name'
-                                        />
-                                    </>
-                                )}
+                                label={
+                                    <FormattedMessage
+                                        id='ServiceCatalog.CreateApi.api.display.name.label'
+                                        defaultMessage='Display Name'
+                                    />
+                                }
                                 value={displayName}
                                 variant='outlined'
                                 fullWidth
