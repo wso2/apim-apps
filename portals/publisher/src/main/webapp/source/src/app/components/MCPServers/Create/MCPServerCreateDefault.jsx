@@ -48,6 +48,7 @@ function mcpServerInputsReducer(currentState, inputAction) {
         case 'type':
         case 'inputValue':
         case 'name':
+        case 'displayName':
         case 'version':
         case 'endpoint':
         case 'gatewayType':
@@ -130,6 +131,7 @@ const MCPServerCreateDefault = (props) => {
         setCreating(true);
         const {
             name,
+            displayName,
             version,
             context,
             endpoint,
@@ -162,6 +164,7 @@ const MCPServerCreateDefault = (props) => {
 
         const additionalProperties = {
             name,
+            displayName,
             version,
             context,
             gatewayType: defaultGatewayType === 'default' ? gatewayType : defaultGatewayType,

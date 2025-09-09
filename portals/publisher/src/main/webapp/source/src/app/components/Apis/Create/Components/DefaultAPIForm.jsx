@@ -450,6 +450,35 @@ export default function DefaultAPIForm(props) {
             });
     }
 
+    const displayNameHelperMessages = {
+        product: (
+            <FormattedMessage
+                id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.product'
+                defaultMessage='Display name for the API Product (optional)'
+            />
+        ),
+        mcp: (
+            <FormattedMessage
+                id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.mcp'
+                defaultMessage='Display name for the MCP Server (optional)'
+            />
+        ),
+        default: (
+            <FormattedMessage
+                id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.api'
+                defaultMessage='Display name for the API (optional)'
+            />
+        ),
+    };
+
+    const getDisplayNameHelperKey = () => {
+        if (isAPIProduct) return 'product';
+        if (isMCPServer) return 'mcp';
+        return 'default';
+    };
+
+    const displayNameHelperText = displayNameHelperMessages[getDisplayNameHelperKey()];
+
     return (
         <StyledGrid item md={12}>
             <form noValidate autoComplete='off'>
@@ -460,7 +489,8 @@ export default function DefaultAPIForm(props) {
                     error={Boolean(validity.name)}
                     label={(
                         <>
-                            <FormattedMessage id='Apis.Create.Components.DefaultAPIForm.name' defaultMessage='Name' />
+                            <FormattedMessage id='Apis.Create.Components.DefaultAPIForm.name'
+                                defaultMessage='Name' />
                             <sup className={classes.mandatoryStar}>*</sup>
                         </>
                     )}
@@ -482,6 +512,22 @@ export default function DefaultAPIForm(props) {
                     InputLabelProps={{
                         for: 'itest-id-apiname-input',
                     }}
+                    margin='normal'
+                    variant='outlined'
+                />
+                <TextField
+                    fullWidth
+                    id='api-display-name'
+                    label={
+                        <FormattedMessage
+                            id='Apis.Create.Components.DefaultAPIForm.display.name'
+                            defaultMessage='Display Name'
+                        />
+                    }
+                    helperText={displayNameHelperText}
+                    value={api.displayName}
+                    name='displayName'
+                    onChange={onChange}
                     margin='normal'
                     variant='outlined'
                 />

@@ -77,6 +77,7 @@ export default function ApiCreateWSDL(props) {
             case 'type':
             case 'inputValue':
             case 'name':
+            case 'displayName':
             case 'version':
             case 'endpoint':
             case 'context':
@@ -131,10 +132,11 @@ export default function ApiCreateWSDL(props) {
     function createAPI() {
         setCreating(true);
         const {
-            name, version, context, endpoint, type,
+            name, version, context, endpoint, type, displayName,
         } = apiInputs;
         const additionalProperties = {
             name,
+            displayName,
             version,
             context,
             policies,

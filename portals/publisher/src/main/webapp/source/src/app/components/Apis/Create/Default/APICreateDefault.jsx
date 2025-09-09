@@ -77,6 +77,7 @@ function APICreateDefault(props) {
         const { action, value } = inputAction;
         switch (action) {
             case 'name':
+            case 'displayName':
             case 'version':
             case 'endpoint':
             case 'context':
@@ -188,7 +189,7 @@ function APICreateDefault(props) {
     async function createAPI() {
         setIsCreating(true);
         const {
-            name, version, context, endpoint, gatewayType
+            name, version, context, endpoint, gatewayType, displayName,
         } = apiInputs;
         let promisedCreatedAPI;
         let policies;
@@ -206,6 +207,7 @@ function APICreateDefault(props) {
 
         const apiData = {
             name,
+            displayName,
             version,
             context,
             gatewayType,
@@ -580,8 +582,8 @@ function APICreateDefault(props) {
                 <FormattedMessage
                     id='Apis.Create.Default.APICreateDefault.api.sub.heading'
                     defaultMessage={
-                        'Create an API by providing a Name, a Version, a Context and'
-                        + ' Backend Endpoint (optional)'
+                        'Create an API by providing a Name, a Display Name (optional), a Version,'
+                        + ' a Context and Backend Endpoint (optional)'
                     }
                 />
             </Typography>
@@ -600,7 +602,7 @@ function APICreateDefault(props) {
                     <FormattedMessage
                         id='Apis.Create.Default.APICreateDefault.apiProduct.sub.heading'
                         defaultMessage={
-                            'Create an API Product by providing a Name, a Context,'
+                            'Create an API Product by providing a Name, a Display Name (optional), a Context,'
                             + ' and Business Plans (optional).'
                         }
                     />

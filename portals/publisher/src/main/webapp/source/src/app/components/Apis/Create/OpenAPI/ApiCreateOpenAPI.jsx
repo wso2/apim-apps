@@ -48,6 +48,7 @@ function apiInputsReducer(currentState, inputAction) {
         case 'type':
         case 'inputValue':
         case 'name':
+        case 'displayName':
         case 'version':
         case 'endpoint':
         case 'gatewayType':
@@ -155,7 +156,7 @@ export default function ApiCreateOpenAPI(props) {
     function createAPI() {
         setCreating(true);
         const {
-            name, version, context, endpoint, gatewayType, policies = ["Unlimited"], inputValue, inputType,
+            name, version, context, endpoint, gatewayType, displayName, policies = ["Unlimited"], inputValue, inputType,
         } = apiInputs;
         let defaultGatewayType;
         if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
@@ -168,6 +169,7 @@ export default function ApiCreateOpenAPI(props) {
 
         const additionalProperties = {
             name,
+            displayName,
             version,
             context,
             gatewayType: defaultGatewayType === 'default' ? gatewayType : defaultGatewayType,
