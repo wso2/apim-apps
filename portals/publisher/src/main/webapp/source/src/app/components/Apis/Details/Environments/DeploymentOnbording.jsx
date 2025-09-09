@@ -35,14 +35,12 @@ import PropTypes from 'prop-types';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { CircularProgress, useTheme } from '@mui/material';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import API from 'AppData/api';
-import MCPServer from 'AppData/MCPServer';
 import Checkbox from '@mui/material/Checkbox';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { isRestricted } from 'AppData/AuthManager';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
-import CONSTS from 'AppData/Constants';
+import { checkEndpointStatus } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'DeploymentOnbording';
 
@@ -227,120 +225,15 @@ export default function DeploymentOnboarding(props) {
         }
     }, []);
 
-    // Helper function to check endpoint status (production or sandbox)
-    const verifyEndpointUrlAndSecurity = async (endpointId, endpointType, config) => {
-        const isDefaultEndpoint = endpointId === CONSTS.DEFAULT_ENDPOINT_ID[endpointType];
-        
-        if (isDefaultEndpoint) {
-            return {
-                isUrlPresent: !!api.endpointConfig?.[endpointType.toLowerCase() + '_endpoints']?.url,
-                isSecure: config?.enabled 
-                    ? !!api.endpointConfig?.endpoint_security?.[endpointType.toLowerCase()] 
-                    : true
-            };
-        } else {
-            const endpoint = await API.getApiEndpoint(api.id, endpointId);
-            const endpointConfig = endpoint?.body?.endpointConfig;
-            
-            return {
-                isUrlPresent: !!endpointConfig?.[endpointType.toLowerCase() + '_endpoints']?.url,
-                isSecure: config?.enabled 
-                    ? !!endpointConfig?.endpoint_security?.[endpointType.toLowerCase()] 
-                    : true
-            };
-        }
-    };
-
-    // Function to check both URL availability and security configuration
-    const checkEndpointConfiguration = async (config = null) => {
-        try {
-            const hasProductionEndpoint = !!api.primaryProductionEndpointId;
-            const hasSandboxEndpoint = !!api.primarySandboxEndpointId;
-            
-            let productionResult = null;
-            let sandboxResult = null;
-
-            // Check production endpoint if it exists
-            if (hasProductionEndpoint) {
-                productionResult = await verifyEndpointUrlAndSecurity(
-                    api.primaryProductionEndpointId, 
-                    CONSTS.DEPLOYMENT_STAGE.production, 
-                    config
-                );
-            }
-
-            // Check sandbox endpoint if it exists
-            if (hasSandboxEndpoint) {
-                sandboxResult = await verifyEndpointUrlAndSecurity(
-                    api.primarySandboxEndpointId, 
-                    CONSTS.DEPLOYMENT_STAGE.sandbox, 
-                    config
-                );
-            }
-
-            // Determine overall availability and security
-            let isAvailable = false;
-            let isSecurityConfigured = false;
-
-            if (hasProductionEndpoint && hasSandboxEndpoint) {
-                isAvailable = productionResult.isUrlPresent && sandboxResult.isUrlPresent;
-                isSecurityConfigured = productionResult.isSecure && sandboxResult.isSecure;
-            } else if (hasProductionEndpoint) {
-                isAvailable = productionResult.isUrlPresent;
-                isSecurityConfigured = productionResult.isSecure;
-            } else if (hasSandboxEndpoint) {
-                isAvailable = sandboxResult.isUrlPresent;
-                isSecurityConfigured = sandboxResult.isSecure;
-            }
-
-            return isAvailable && isSecurityConfigured;
-        } catch (error) {
-            console.error('Error checking endpoint configuration:', error);
-            return false;
-        }
-    };
-
-    // Unified function to check endpoint availability and security
-    const checkEndpointStatus = async () => {
+    const handleEndpointStatusCheck = async () => {
         setEndpointStatus(prev => ({ ...prev, isLoading: true }));
-
         try {
-            let isEndpointReady = false;
-
-            if (isMCPServer) {
-                // For MCP servers, check if endpoints are available
-                if (api.isMCPServerFromExistingAPI()) {
-                    isEndpointReady = true; // TODO: Check the endpoint availability for MCP Server from existing API
-                } else {
-                    const response = await MCPServer.getMCPServerEndpoints(api.id);
-                    const fetchedEndpoints = response.body;
-                    isEndpointReady = fetchedEndpoints && fetchedEndpoints.length > 0;
-                }
-            } else if (api.subtypeConfiguration?.subtype === 'AIAPI') {
-                // For AI APIs, both URL availability and security must be ready
-                const hasPrimaryEndpoints = api.primaryProductionEndpointId !== null || 
-                    api.primarySandboxEndpointId !== null;
-                
-                if (hasPrimaryEndpoints) {
-                    const response = await API.getLLMProviderEndpointConfiguration(
-                        JSON.parse(api.subtypeConfiguration.configuration).llmProviderId
-                    );
-                    const config = response.body?.authenticationConfiguration;
-                    
-                    // Use optimized function to check both URL availability and security
-                    isEndpointReady = await checkEndpointConfiguration(config);
-                }
-            } else {
-                // For regular APIs, endpoint configuration presence is sufficient
-                isEndpointReady = api.endpointConfig !== null;
-            }
-
+            const isEndpointReady = await checkEndpointStatus(api);
             setEndpointStatus({
                 isEndpointReady,
                 isLoading: false
             });
         } catch (error) {
-            console.error('Error checking endpoint status:', error);
             setEndpointStatus({
                 isEndpointReady: false,
                 isLoading: false
@@ -349,7 +242,7 @@ export default function DeploymentOnboarding(props) {
     };
 
     useEffect(() => {
-        checkEndpointStatus();
+        handleEndpointStatusCheck();
     }, [api]);
 
     const isDeployButtonDisabled = ((api.type !== 'WEBSUB' && !endpointStatus.isEndpointReady) 

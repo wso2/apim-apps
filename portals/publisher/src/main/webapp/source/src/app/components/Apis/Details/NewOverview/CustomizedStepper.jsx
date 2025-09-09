@@ -28,7 +28,7 @@ import styled from '@emotion/styled';
 import IconButton from '@mui/material/IconButton';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import MCPServer from 'AppData/MCPServer';
-import { getBasePath } from 'AppComponents/Shared/Utils';
+import { getBasePath, checkEndpointStatus } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'CustomizedStepper';
 
@@ -165,105 +165,18 @@ export default function CustomizedStepper() {
         && api.endpointConfig !== null
         && api.endpointConfig.implementation_status === 'prototyped';
 
-    // Helper function to check endpoint status (production or sandbox)
-    const verifyEndpointUrlAndSecurity = async (endpointId, endpointType, config) => {
-        const isDefaultEndpoint = endpointId === CONSTS.DEFAULT_ENDPOINT_ID[endpointType];
-        
-        if (isDefaultEndpoint) {
-            return {
-                isUrlPresent: !!api.endpointConfig?.[endpointType.toLowerCase() + '_endpoints']?.url,
-                isSecure: config?.enabled 
-                    ? !!api.endpointConfig?.endpoint_security?.[endpointType.toLowerCase()] 
-                    : true
-            };
-        } else {
-            const endpoint = await API.getApiEndpoint(api.id, endpointId);
-            const endpointConfig = endpoint?.body?.endpointConfig;
-            
-            return {
-                isUrlPresent: !!endpointConfig?.[endpointType.toLowerCase() + '_endpoints']?.url,
-                isSecure: config?.enabled 
-                    ? !!endpointConfig?.endpoint_security?.[endpointType.toLowerCase()] 
-                    : true
-            };
-        }
-    };
-
-    const checkEndpointConfiguration = async (config = null) => {
-        try {
-            const hasProductionEndpoint = !!api.primaryProductionEndpointId;
-            const hasSandboxEndpoint = !!api.primarySandboxEndpointId;
-            
-            let productionResult = null;
-            let sandboxResult = null;
-
-            // Check production endpoint if it exists
-            if (hasProductionEndpoint) {
-                productionResult = await verifyEndpointUrlAndSecurity(
-                    api.primaryProductionEndpointId, 
-                    CONSTS.DEPLOYMENT_STAGE.production, 
-                    config
-                );
-            }
-
-            // Check sandbox endpoint if it exists
-            if (hasSandboxEndpoint) {
-                sandboxResult = await verifyEndpointUrlAndSecurity(
-                    api.primarySandboxEndpointId, 
-                    CONSTS.DEPLOYMENT_STAGE.sandbox, 
-                    config
-                );
-            }
-
-            // Determine overall availability and security
-            let isAvailable = false;
-            let isSecurityConfigured = false;
-
-            if (hasProductionEndpoint && hasSandboxEndpoint) {
-                isAvailable = productionResult.isUrlPresent && sandboxResult.isUrlPresent;
-                isSecurityConfigured = productionResult.isSecure && sandboxResult.isSecure;
-            } else if (hasProductionEndpoint) {
-                isAvailable = productionResult.isUrlPresent;
-                isSecurityConfigured = productionResult.isSecure;
-            } else if (hasSandboxEndpoint) {
-                isAvailable = sandboxResult.isUrlPresent;
-                isSecurityConfigured = sandboxResult.isSecure;
-            }
-
-            return isAvailable && isSecurityConfigured;
-        } catch (error) {
-            console.error('Error checking endpoint configuration:', error);
-            return false;
-        }
-    };
-
-    // Unified function to check endpoint availability and security
-    const checkEndpointStatus = async () => {
+    const handleEndpointStatusCheck = async () => {
         setEndpointStatus(prev => ({ ...prev, isLoading: true }));
-
+        
         try {
             let isEndpointReady = false;
 
             if (isMCPServer) {
                 // For MCP servers, just check if endpoints are available
                 isEndpointReady = isMCPEndpointAvailable;
-            } else if (api.subtypeConfiguration?.subtype === 'AIAPI') {
-                // For AI APIs, both URL availability and security must be ready
-                const hasPrimaryEndpoints = api.primaryProductionEndpointId !== null || 
-                    api.primarySandboxEndpointId !== null;
-                
-                if (hasPrimaryEndpoints) {
-                    const response = await API.getLLMProviderEndpointConfiguration(
-                        JSON.parse(api.subtypeConfiguration.configuration).llmProviderId
-                    );
-                    const config = response.body?.authenticationConfiguration;
-                    
-                    // Check both URL availability and security
-                    isEndpointReady = await checkEndpointConfiguration(config);
-                }
             } else {
-                // For regular APIs, endpoint configuration presence is sufficient
-                isEndpointReady = api.endpointConfig !== null;
+                // Use the shared utility function for all other API types
+                isEndpointReady = await checkEndpointStatus(api);
             }
 
             setEndpointStatus({
@@ -271,7 +184,6 @@ export default function CustomizedStepper() {
                 isLoading: false
             });
         } catch (error) {
-            console.error('Error checking endpoint status:', error);
             setEndpointStatus({
                 isEndpointReady: false,
                 isLoading: false
@@ -280,7 +192,7 @@ export default function CustomizedStepper() {
     };
 
     useEffect(() => {
-        checkEndpointStatus();
+        handleEndpointStatusCheck();
     }, [api, isMCPEndpointAvailable]);
 
     useEffect(() => {
