@@ -499,7 +499,7 @@ function TryOutController(props) {
         switch (name) {
             case 'selectedEnvironment':
                 setSelectedEnvironment(value, true);
-                if (api.type !== 'GRAPHQL') {
+                if (api.type !== 'GRAPHQL' && api.type !== 'WS' && api.type !== 'SSE' && api.type !== 'WEBSUB') {
                     updateSwagger(value);
                 }
                 if (environmentObject) {
