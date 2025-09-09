@@ -22,6 +22,7 @@ import classNames from 'classnames';
 import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import { FormattedMessage } from 'react-intl';
+import CategoryIcon from '@mui/icons-material/Category';
 import APICategoryThumb from './APICategoryThumb';
 
 const PREFIX = 'CategoryListingCategories';
@@ -33,6 +34,8 @@ const classes = {
     textWrapper: `${PREFIX}-textWrapper`,
     tagWiseThumbWrapper: `${PREFIX}-tagWiseThumbWrapper`,
     filterTitle: `${PREFIX}-filterTitle`,
+    scrollableList: `${PREFIX}-scrollableList`,
+    CategoryTitleIcon: `${PREFIX}-CategoryTitleIcon`,
 };
 
 const Root = styled('div')((
@@ -42,6 +45,11 @@ const Root = styled('div')((
 ) => ({
     [`&.${classes.mainTitle}`]: {
         paddingTop: 0,
+        flex: '0 1 auto',
+        maxHeight: '50%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
     },
 
     [`& .${classes.mainTitleWrapper}`]: {
@@ -71,6 +79,33 @@ const Root = styled('div')((
         height: theme.custom.infoBar.height,
         alignItems: 'center',
         display: 'flex',
+        flex: '0 0 auto',
+    },
+
+    [`& .${classes.scrollableList}`]: {
+        minHeight: 0,
+        overflowY: 'auto',
+        '&::-webkit-scrollbar': {
+            background: 'transparent',
+            width: '6px',
+        },
+        '&::-webkit-scrollbar-track': {
+            background: 'transparent',
+            borderRadius: theme.custom.tagCloud.scrollBar.thumbBorderRadius,
+        },
+        '&::-webkit-scrollbar-thumb': {
+            background: theme.custom.tagCloud.scrollBar.thumbBackground,
+            borderRadius: theme.custom.tagCloud.scrollBar.thumbBorderRadius,
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+            background: theme.custom.tagCloud.scrollBar.thumbBackgroundHover,
+        },
+    },
+
+    [`& .${classes.CategoryTitleIcon}`]: {
+        marginRight: theme.spacing(1),
+        verticalAlign: 'middle',
+        fontSize: '1.2rem',
     },
 }));
 
@@ -103,7 +138,7 @@ function CategoryListingCategories(props) {
         return basePath + type + apiCategory;
     };
 
-    const { allCategories } = props;
+    const { allCategories, selectedCategory, onCategorySelect } = props;
 
     /**
      *
@@ -116,11 +151,26 @@ function CategoryListingCategories(props) {
         (
             <Root className={classNames(classes.mainTitle, 'category-listing-categories-empty')}>
                 <Typography variant='h6' gutterBottom className={classNames(classes.filterTitle, 'api-cat-title')}>
+                    <CategoryIcon className={classes.CategoryTitleIcon} />
                     <FormattedMessage defaultMessage='API Categories' id='Apis.Listing.CategoryListingCategories.title' />
                 </Typography>
-                <List component='nav' aria-label='main mailbox folders' className='category-listing-categories'>
+                <List
+                    component='nav'
+                    aria-label='main mailbox folders'
+                    className={classNames('category-listing-categories', classes.scrollableList)}
+                >
                     {Object.keys(allCategories).map((key) => {
-                        return <APICategoryThumb key={key} category={allCategories[key]} path={tagWiseURL()} style={style} />;
+                        const category = allCategories[key];
+                        return (
+                            <APICategoryThumb
+                                key={key}
+                                category={category}
+                                path={tagWiseURL()}
+                                style={style}
+                                onClick={() => onCategorySelect(category.id)}
+                                selected={selectedCategory === category.id}
+                            />
+                        );
                     })}
                 </List>
             </Root>
@@ -142,6 +192,7 @@ CategoryListingCategories.propTypes = {
     theme: PropTypes.shape({}).isRequired,
     allTags: PropTypes.shape({}).isRequired,
     allCategories: PropTypes.shape({}).isRequired,
+    onCategorySelect: PropTypes.func.isRequired,
 };
 
 export default CategoryListingCategories;

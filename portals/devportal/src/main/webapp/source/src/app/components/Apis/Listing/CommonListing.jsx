@@ -157,7 +157,10 @@ const Root = styled('div')((
         width: theme.custom.tagCloud.leftMenu.width,
         top: 0,
         left: 0,
-        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        overflow: 'hidden',
     },
 
     [`& .${classes.LeftMenuForSlider}`]: {
@@ -238,10 +241,13 @@ class CommonListingLegacy extends React.Component {
         }
         this.state = {
             listType: defaultApiView,
-            allTags: null,
             showLeftMenu: false,
             isMonetizationEnabled: false,
             isRecommendationEnabled: false,
+            allTags: [],
+            allCategories: [],
+            selectedCategory: null,
+            selectedTag: null,
         };
     }
 
@@ -305,6 +311,24 @@ class CommonListingLegacy extends React.Component {
         const enabled = settingsContext.settings.recommendationEnabled;
         this.setState({ isRecommendationEnabled: enabled });
     }
+
+    /**
+     * Handle selected category or tag, one at a time
+     */
+
+    handleCategorySelect = (category) => {
+        this.setState({
+            selectedCategory: category,
+            selectedTag: null,
+        });
+    };
+
+    handleTagSelect = (tag) => {
+        this.setState({
+            selectedTag: tag,
+            selectedCategory: null,
+        });
+    };
 
     /**
      *
@@ -378,9 +402,21 @@ class CommonListingLegacy extends React.Component {
                         >
                             <Icon>keyboard_arrow_left</Icon>
                         </div>
-                        {categoryPaneVisible && <CategoryListingCategories allCategories={allCategories} />}
+                        {categoryPaneVisible && (
+                            <CategoryListingCategories
+                                allCategories={allCategories}
+                                selectedCategory={this.state.selectedCategory}
+                                onCategorySelect={this.handleCategorySelect}
+                            />
+                        )}
                         {tagPaneVisible && active && <TagCloudListingTags allTags={allTags} />}
-                        {tagPaneVisible && tagCloudActive && <ApiTagCloud allTags={allTags} />}
+                        {tagPaneVisible && tagCloudActive && (
+                            <ApiTagCloud
+                                allTags={allTags}
+                                selectedTag={this.state.selectedTag}
+                                onTagSelect={this.handleTagSelect}
+                            />
+                        )}
                     </div>
                 )}
                 {(categoryPaneVisible || tagPaneVisible) && !showLeftMenu && (

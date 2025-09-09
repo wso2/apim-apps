@@ -19,7 +19,7 @@
 import React from 'react';
 import { styled } from '@mui/material/styles';
 import classNames from 'classnames';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Icon from '@mui/material/Icon';
@@ -32,6 +32,8 @@ const PREFIX = 'APICategoryThumb';
 const classes = {
     textWrapper: `${PREFIX}-textWrapper`,
     listItemText: `${PREFIX}-listItemText`,
+    selectedCategory: `${PREFIX}-selectedCategory`,
+    listItemButton: `${PREFIX}-listItemButton`,
 };
 
 const StyledLink = styled(Link)((
@@ -51,6 +53,19 @@ const StyledLink = styled(Link)((
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
+
+    [`& .${classes.selectedCategory}`]: {
+        backgroundColor: theme.palette.primary.main,
+        borderRadius: theme.shape.borderRadius,
+        '&:hover': {
+            backgroundColor: theme.palette.primary.dark,
+        },
+    },
+
+    '& .category-listing-icon .MuiSvgIcon-root, & .category-listing-icon .material-icons': {
+        fontSize: '16px',
+    },
+
 }));
 
 /**
@@ -60,7 +75,7 @@ const StyledLink = styled(Link)((
  */
 function APICategoryThumb(props) {
     const {
-        category, path,
+        category, path, selected,
     } = props;
     const categoryLink = path + ':' + category.name;
     let categoryDesc = category.description;
@@ -69,20 +84,23 @@ function APICategoryThumb(props) {
     }
     return (
         <StyledLink to={categoryLink} className={classes.textWrapper}>
-            <Tooltip placement='right' title={category.description.length <= 50 ? '' : category.description}>
-                <ListItem button alignItems='flex-start'>
+            <Tooltip placement='top' title={category.description}>
+                <ListItemButton
+                    className={classNames(classes.listItemButton, { [classes.selectedCategory]: selected })}
+                    onClick={props.onClick}
+                >
                     <ListItemIcon className='category-listing-icon'>
                         <Icon>label</Icon>
                     </ListItemIcon>
                     <ListItemText
                         primary={category.name}
-                        secondary={categoryDesc}
+                        // secondary={categoryDesc}
                         classes={{
                             primary: classNames(classes.listItemText, 'category-listing-primary'),
                             secondary: 'category-listing-secondary',
                         }}
                     />
-                </ListItem>
+                </ListItemButton>
             </Tooltip>
         </StyledLink>
     );
@@ -92,6 +110,11 @@ APICategoryThumb.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     category: PropTypes.shape({}).isRequired,
     path: PropTypes.shape({}).isRequired,
+    selected: PropTypes.bool,
+};
+
+APICategoryThumb.defaultProps = {
+    selected: false,
 };
 
 export default (APICategoryThumb);
