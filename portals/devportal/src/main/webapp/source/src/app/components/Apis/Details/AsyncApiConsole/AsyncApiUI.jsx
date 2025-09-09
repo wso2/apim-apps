@@ -84,6 +84,14 @@ export default function AsyncApiUI(props) {
     const [endPoint, setEndpoint] = useState(initialEndpoint);
 
     useEffect(() => {
+      let newInitialEndpoint = URLs && URLs.http;
+      if (api.type === CONSTANTS.API_TYPES.WS) {
+        newInitialEndpoint = URLs && URLs.ws;
+      }
+      setEndpoint(newInitialEndpoint);
+    }, [URLs, api.type]);
+
+    useEffect(() => {
         const apiID = api.id;
         const apiClient = new Api();
         const promisedTopics = apiClient.getAllTopics(apiID);
@@ -116,13 +124,14 @@ export default function AsyncApiUI(props) {
         return token;
     }
 
-    function generateGenericWHSubscriptionCurl(subscription) {
+    function generateGenericWHSubscriptionCurl(subscription, customEndpoint) {
         const {
             topic, callback, secret, mode, lease,
         } = subscription;
         const token = generateAccessToken();
+        const endpoint = customEndpoint || endPoint;
         if (mode === 'subscribe') {
-            let curl = `curl -X POST '${endPoint}' -H 'Content-Type: application/x-www-form-urlencoded' -d 'hub.topic=${encodeURIComponent(topic)}' -d 'hub.callback=${encodeURIComponent(callback)}' -d 'hub.mode=${mode}'`;
+            let curl = `curl -X POST '${endpoint}' -H 'Content-Type: application/x-www-form-urlencoded' -d 'hub.topic=${encodeURIComponent(topic)}' -d 'hub.callback=${encodeURIComponent(callback)}' -d 'hub.mode=${mode}'`;
             if (secret) {
                 curl += ` -d 'hub.secret=${secret}'`;
             }
@@ -136,9 +145,9 @@ export default function AsyncApiUI(props) {
             }
             return curl;
         } else {
-            let curl = `curl -X POST '${endPoint}' -H 'Content-Type: application/x-www-form-urlencoded' -d 'hub.topic=${encodeURIComponent(topic)}' -d 'hub.callback=${encodeURIComponent(callback)}' -d 'hub.mode=${mode}' -H 'Authorization: ${token}'`;
+            let curl = `curl -X POST '${endpoint}' -H 'Content-Type: application/x-www-form-urlencoded' -d 'hub.topic=${encodeURIComponent(topic)}' -d 'hub.callback=${encodeURIComponent(callback)}' -d 'hub.mode=${mode}' -H 'Authorization: ${token}'`;
             if (isAdvertised && authorizationHeader !== '') {
-                curl = `curl -X POST '${endPoint}' -H 'Content-Type: application/x-www-form-urlencoded' -d 'hub.topic=${encodeURIComponent(topic)}' -d 'hub.callback=${encodeURIComponent(callback)}' -d 'hub.mode=${mode}' -H '${authorizationHeader}: ${token}'`;
+                curl = `curl -X POST '${endpoint}' -H 'Content-Type: application/x-www-form-urlencoded' -d 'hub.topic=${encodeURIComponent(topic)}' -d 'hub.callback=${encodeURIComponent(callback)}' -d 'hub.mode=${mode}' -H '${authorizationHeader}: ${token}'`;
             }
             return curl;
         }
@@ -153,52 +162,55 @@ export default function AsyncApiUI(props) {
         return topicName;
     }
 
-    function generateWSSubscriptionCommand(topic) {
+    function generateWSSubscriptionCommand(topic, customEndpoint) {
         const token = generateAccessToken();
+        const endpoint = customEndpoint || endPoint;
         if (topic.name.includes('*')) {
-            let wscat = `wscat -c '${endPoint}' -H '${securitySchemeType === 'API-KEY' ? 'apikey' : 'Authorization'}: ${token}'`;
+            let wscat = `wscat -c '${endpoint}' -H '${securitySchemeType === 'API-KEY' ? 'apikey' : 'Authorization'}: ${token}'`;
             if (isAdvertised && authorizationHeader !== '') {
-                wscat = `wscat -c '${endPoint}' -H '${authorizationHeader}: ${token}'`;
+                wscat = `wscat -c '${endpoint}' -H '${authorizationHeader}: ${token}'`;
             }
             return wscat;
         } else {
-            let wscat = `wscat -c '${endPoint}/${getTopicName(topic)}' -H '${securitySchemeType === 'API-KEY' ? 'apikey': 'Authorization'}: ${token}'`;
+            let wscat = `wscat -c '${endpoint}/${getTopicName(topic)}' -H '${securitySchemeType === 'API-KEY' ? 'apikey': 'Authorization'}: ${token}'`;
             if (isAdvertised && authorizationHeader !== '') {
-                wscat = `wscat -c '${endPoint}/${getTopicName(topic)}' -H '${authorizationHeader}: ${token}'`;
+                wscat = `wscat -c '${endpoint}/${getTopicName(topic)}' -H '${authorizationHeader}: ${token}'`;
             }
             return wscat;
         }
     }
 
-    function generateSSESubscriptionCommand(topic) {
+    function generateSSESubscriptionCommand(topic, customEndpoint) {
         const token = generateAccessToken();
+        const endpoint = customEndpoint || endPoint;
         if (topic.name.includes('*')) {
-            let curl = `curl -X GET '${endPoint}' -H 'Authorization: ${token}'`;
+            let curl = `curl -X GET '${endpoint}' -H 'Authorization: ${token}'`;
             if (isAdvertised && authorizationHeader !== '') {
-                curl = `curl -X GET '${endPoint}' -H '${authorizationHeader}: ${token}'`;
+                curl = `curl -X GET '${endpoint}' -H '${authorizationHeader}: ${token}'`;
             }
             return curl;
         } else {
-            let curl = `curl -X GET '${endPoint}/${getTopicName(topic)}' -H 'Authorization: ${token}'`;
+            let curl = `curl -X GET '${endpoint}/${getTopicName(topic)}' -H 'Authorization: ${token}'`;
             if (isAdvertised && authorizationHeader !== '') {
-                curl = `curl -X GET '${endPoint}/${getTopicName(topic)}' -H '${authorizationHeader}: ${token}'`;
+                curl = `curl -X GET '${endpoint}/${getTopicName(topic)}' -H '${authorizationHeader}: ${token}'`;
             }
             return curl;
         }
     }
 
-    function generateASYNCSubscriptionCommand(topic) {
+    function generateASYNCSubscriptionCommand(topic, customEndpoint) {
         const token = generateAccessToken();
+        const endpoint = customEndpoint || endPoint;
         if (topic.name.includes('*')) {
-            let curl = `curl -X GET '${endPoint}' -H 'Authorization: ${token}'`;
+            let curl = `curl -X GET '${endpoint}' -H 'Authorization: ${token}'`;
             if (authorizationHeader !== '') {
-                curl = `curl -X GET '${endPoint}' -H '${authorizationHeader}: ${token}'`;
+                curl = `curl -X GET '${endpoint}' -H '${authorizationHeader}: ${token}'`;
             }
             return curl;
         } else {
-            let curl = `curl -X GET '${endPoint}/${getTopicName(topic)}' -H 'Authorization: ${token}'`;
+            let curl = `curl -X GET '${endpoint}/${getTopicName(topic)}' -H 'Authorization: ${token}'`;
             if (authorizationHeader !== '') {
-                curl = `curl -X GET '${endPoint}/${getTopicName(topic)}' -H '${authorizationHeader}: ${token}'`;
+                curl = `curl -X GET '${endpoint}/${getTopicName(topic)}' -H '${authorizationHeader}: ${token}'`;
             }
             return curl;
         }
@@ -230,12 +242,14 @@ export default function AsyncApiUI(props) {
                     <WebhookSubscriptionUI
                         topic={topic}
                         generateGenericWHSubscriptionCurl={generateGenericWHSubscriptionCurl}
+                        endPoint={endPoint}
                         expandable
                     />
                 ))}
                 {api.type === CONSTANTS.API_TYPES.SSE && allTopics.list.map((topic, index) => (
                     <GenericSubscriptionUI
                         generateGenericSubscriptionCommand={generateSSESubscriptionCommand}
+                        endPoint={endPoint}
                         topic={topic}
                         expandable
                     />
@@ -243,6 +257,7 @@ export default function AsyncApiUI(props) {
                 {api.type === CONSTANTS.API_TYPES.WS && allTopics.list.map((topic, index) => (
                     <GenericSubscriptionUI
                         generateGenericSubscriptionCommand={generateWSSubscriptionCommand}
+                        endPoint={endPoint}
                         topic={topic}
                         expandable
                     />
@@ -250,6 +265,7 @@ export default function AsyncApiUI(props) {
                 {api.type === CONSTANTS.API_TYPES.ASYNC && allTopics.list.map((topic, index) => (
                     <GenericSubscriptionUI
                         generateGenericSubscriptionCommand={generateASYNCSubscriptionCommand}
+                        endPoint={endPoint}
                         topic={topic}
                         expandable={expandable}
                     />

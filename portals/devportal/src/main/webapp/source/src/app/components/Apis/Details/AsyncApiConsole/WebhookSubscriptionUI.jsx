@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState, useReducer } from 'react';
+import React, { useState, useReducer, useEffect } from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -44,7 +44,7 @@ function WebhookSubscriptionUI(props) {
     const trimmedVerb = verb === 'publish' || verb === 'subscribe' ? verb.substr(0, 3) : verb;
     const theme = useTheme();
     const backgroundColor = theme.custom.resourceChipColors[trimmedVerb];
-    const { generateGenericWHSubscriptionCurl, topic } = props;
+    const { generateGenericWHSubscriptionCurl, topic, endPoint } = props;
     const initialSubscriptionState = {
         topic: topic.name,
         secret: null,
@@ -56,6 +56,9 @@ function WebhookSubscriptionUI(props) {
     const [formError, setFormError] = useState(false);
     const [state, dispatch] = useReducer(reducer, initialSubscriptionState);
 
+    useEffect(() => {
+        setCurl(generateGenericWHSubscriptionCurl(topic, endPoint));
+    }, [endPoint, topic, generateGenericWHSubscriptionCurl]);
     const handleClick = () => {
         if (!state.callback || state.callback.length < 1) {
             setFormError(true);

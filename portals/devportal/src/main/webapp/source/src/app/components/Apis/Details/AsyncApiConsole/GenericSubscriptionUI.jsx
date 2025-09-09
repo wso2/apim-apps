@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -37,9 +37,15 @@ export default function GenericSubscriptionUI(props) {
     const trimmedVerb = verb === 'publish' || verb === 'subscribe' ? verb.substr(0, 3) : verb;
     const theme = useTheme();
     const backgroundColor = theme.custom.resourceChipColors[trimmedVerb];
-    const { generateGenericSubscriptionCommand, topic, expandable } = props;
-    const [command, setCommand] = useState(generateGenericSubscriptionCommand(topic));
+    // eslint-disable-next-line react/prop-types
+    const {
+        generateGenericSubscriptionCommand, topic, expandable, endPoint,
+    } = props;
+    const [command, setCommand] = useState(generateGenericSubscriptionCommand(topic, endPoint));
 
+    useEffect(() => {
+        setCommand(generateGenericSubscriptionCommand(topic, endPoint));
+    }, [endPoint, topic, generateGenericSubscriptionCommand]);
     const handleClick = () => {
         setCommand(generateGenericSubscriptionCommand(topic));
     };
