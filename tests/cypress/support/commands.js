@@ -1000,8 +1000,8 @@ Cypress.Commands.add('updateTenantConfig', (username, password, tenant, config) 
 
     cy.loginToAdmin(username, password)
     cy.get('[data-testid="Advanced-child-link"]').click();
-    cy.wait(2000);
-    cy.get('[data-testid="monaco-editor-save"]').click();
+    cy.wait(3000);
+    cy.get('[data-testid="monaco-editor-save"]').should('not.be.disabled').click();
     cy.contains('Advanced Configuration saved successfully').should('exist');
     cy.logoutFromAdminPortal();
 })
