@@ -315,7 +315,6 @@ class CommonListingLegacy extends React.Component {
     /**
      * Handle selected category or tag, one at a time
      */
-
     handleCategorySelect = (category) => {
         this.setState({
             selectedCategory: category,
@@ -323,6 +322,9 @@ class CommonListingLegacy extends React.Component {
         });
     };
 
+    /**
+     * Handle selected tag, one at a time
+     */
     handleTagSelect = (tag) => {
         this.setState({
             selectedTag: tag,

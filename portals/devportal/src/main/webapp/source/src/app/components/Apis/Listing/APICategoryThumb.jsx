@@ -75,7 +75,7 @@ const StyledLink = styled(Link)((
  */
 function APICategoryThumb(props) {
     const {
-        category, path, selected,
+        category, path, selected, onClick,
     } = props;
     const categoryLink = path + ':' + category.name;
     let categoryDesc = category.description;
@@ -87,14 +87,13 @@ function APICategoryThumb(props) {
             <Tooltip placement='top' title={category.description}>
                 <ListItemButton
                     className={classNames(classes.listItemButton, { [classes.selectedCategory]: selected })}
-                    onClick={props.onClick}
+                    onClick={onClick}
                 >
                     <ListItemIcon className='category-listing-icon'>
                         <Icon>label</Icon>
                     </ListItemIcon>
                     <ListItemText
                         primary={category.name}
-                        // secondary={categoryDesc}
                         classes={{
                             primary: classNames(classes.listItemText, 'category-listing-primary'),
                             secondary: 'category-listing-secondary',
@@ -111,10 +110,12 @@ APICategoryThumb.propTypes = {
     category: PropTypes.shape({}).isRequired,
     path: PropTypes.shape({}).isRequired,
     selected: PropTypes.bool,
+    onClick: PropTypes.func,
 };
 
 APICategoryThumb.defaultProps = {
     selected: false,
+    onClick: undefined,
 };
 
 export default (APICategoryThumb);
