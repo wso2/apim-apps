@@ -52,13 +52,13 @@ function WebhookSubscriptionUI(props) {
         mode: 'subscribe',
         callback: null,
     };
-    const [curl, setCurl] = useState(generateGenericWHSubscriptionCurl(initialSubscriptionState));
+    const [curl, setCurl] = useState(generateGenericWHSubscriptionCurl(initialSubscriptionState, endPoint));
     const [formError, setFormError] = useState(false);
     const [state, dispatch] = useReducer(reducer, initialSubscriptionState);
 
     useEffect(() => {
-        setCurl(generateGenericWHSubscriptionCurl(topic, endPoint));
-    }, [endPoint, topic, generateGenericWHSubscriptionCurl]);
+        setCurl(generateGenericWHSubscriptionCurl(initialSubscriptionState, endPoint));
+    }, [endPoint, initialSubscriptionState, generateGenericWHSubscriptionCurl]);
     const handleClick = () => {
         if (!state.callback || state.callback.length < 1) {
             setFormError(true);

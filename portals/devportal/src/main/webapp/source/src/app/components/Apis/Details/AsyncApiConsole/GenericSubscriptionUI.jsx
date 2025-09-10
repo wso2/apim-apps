@@ -47,7 +47,7 @@ export default function GenericSubscriptionUI(props) {
         setCommand(generateGenericSubscriptionCommand(topic, endPoint));
     }, [endPoint, topic, generateGenericSubscriptionCommand]);
     const handleClick = () => {
-        setCommand(generateGenericSubscriptionCommand(topic));
+        setCommand(generateGenericSubscriptionCommand(topic, endPoint));
     };
 
     return (
