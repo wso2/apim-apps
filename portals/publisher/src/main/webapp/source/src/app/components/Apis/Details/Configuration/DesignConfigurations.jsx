@@ -863,7 +863,7 @@ export default function DesignConfigurations() {
                                 <Box px={8} py={5}>
                                     <Box py={1}>
                                         <Grid container spacing={0}>
-                                            <Grid item xs={12} md={2} id='edit-api-thumbnail-btn'>
+                                            <Grid item xs={12} md={2.5} id='edit-api-thumbnail-btn'>
                                                 <ThumbnailView
                                                     api={api}
                                                     width={100}
@@ -873,7 +873,7 @@ export default function DesignConfigurations() {
                                                         'apim:api_create'], api)}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12} md={10}>
+                                            <Grid item xs={12} md={9.5}>
                                                 <DescriptionEditor
                                                     api={apiConfig}
                                                     updateContent={updateContent}
