@@ -84,11 +84,11 @@ export const verifyEndpointUrlAndSecurity = async (endpointId, endpointType, con
 
 /**
  * Function to check both URL availability and security configuration
- * @param {Object} config - The configuration object (optional)
  * @param {Object} api - The API object
+ * @param {Object} config - The configuration object
  * @returns {Promise<boolean>} True if endpoint configuration is valid
  */
-export const checkEndpointConfiguration = async (config = null, api) => {
+export const checkEndpointConfiguration = async (api, config) => {
     try {
         const hasProductionEndpoint = !!api.primaryProductionEndpointId;
         const hasSandboxEndpoint = !!api.primarySandboxEndpointId;
@@ -168,7 +168,7 @@ export const checkEndpointStatus = async (api) => {
                 const config = response.body?.authenticationConfiguration;
                 
                 // Use optimized function to check both URL availability and security
-                isEndpointReady = await checkEndpointConfiguration(config, api);
+                isEndpointReady = await checkEndpointConfiguration(api, config);
             }
         } else {
             // For regular APIs, endpoint configuration presence is sufficient
