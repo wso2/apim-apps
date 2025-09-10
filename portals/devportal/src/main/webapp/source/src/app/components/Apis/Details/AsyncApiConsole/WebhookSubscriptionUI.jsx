@@ -64,7 +64,7 @@ function WebhookSubscriptionUI(props) {
             setFormError(true);
         } else {
             setFormError(false);
-            setCurl(generateGenericWHSubscriptionCurl(state));
+            setCurl(generateGenericWHSubscriptionCurl(state, endPoint));
         }
     };
 
