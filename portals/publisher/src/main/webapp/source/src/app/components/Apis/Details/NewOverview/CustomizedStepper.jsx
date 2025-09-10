@@ -184,6 +184,7 @@ export default function CustomizedStepper() {
                 isLoading: false
             });
         } catch (error) {
+            console.error('Error checking endpoint status:', error);
             setEndpointStatus({
                 isEndpointReady: false,
                 isLoading: false

@@ -234,6 +234,7 @@ export default function DeploymentOnboarding(props) {
                 isLoading: false
             });
         } catch (error) {
+            console.error('Error checking endpoint status:', error);
             setEndpointStatus({
                 isEndpointReady: false,
                 isLoading: false

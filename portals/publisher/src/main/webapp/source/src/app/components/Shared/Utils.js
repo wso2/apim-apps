@@ -133,6 +133,7 @@ export const checkEndpointConfiguration = async (api, config) => {
 
         return isAvailable && isSecurityConfigured;
     } catch (error) {
+        console.error('Error checking endpoint configuration:', error);
         return false;
     }
 };
@@ -177,6 +178,7 @@ export const checkEndpointStatus = async (api) => {
 
         return isEndpointReady;
     } catch (error) {
+        console.error('Error checking endpoint status:', error);
         return false;
     }
 };
