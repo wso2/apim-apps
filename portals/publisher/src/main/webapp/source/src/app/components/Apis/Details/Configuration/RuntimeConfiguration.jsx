@@ -580,6 +580,7 @@ export default function RuntimeConfiguration() {
             getValidationError();
         }
         setIsUpdating(true);
+        delete apiConfig.apiType;
         updateAPI(apiConfig)
             .catch((error) => {
                 if (error.response) {
@@ -610,6 +611,7 @@ export default function RuntimeConfiguration() {
             getValidationError();
         }
         setIsUpdating(true);
+        delete apiConfig.apiType;
         updateAPI(apiConfig)
             .catch((error) => {
                 if (error.response) {
