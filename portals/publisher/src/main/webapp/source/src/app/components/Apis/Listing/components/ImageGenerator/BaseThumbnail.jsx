@@ -31,7 +31,6 @@ import APIProduct from 'AppData/APIProduct';
 import ImageGenerator from './ImageGenerator';
 import LetterGenerator from './LetterGenerator';
 
-
 const PREFIX = 'BaseThumbnail';
 
 const classes = {
@@ -260,7 +259,6 @@ BaseThumbnail.defaultProps = {
     imageUpdate: 0,
     isEditable: false,
     onDelete: () => {},
-
 };
 BaseThumbnail.propTypes = {
     api: PropTypes.shape({}).isRequired,

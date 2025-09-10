@@ -384,7 +384,6 @@ class ThumbnailView extends Component {
         this.uploadThumbnail('remove', api.id, fileObj, intl);
     };
 
-
     saveDisableEnable() {
         const {
             file, selectedTab, selectedIconUpdate, colorUpdate, backgroundIndexUpdate, uploading,
@@ -442,7 +441,6 @@ class ThumbnailView extends Component {
                     onClose={this.handleClose}
                     fullWidth
                     maxWidth='md'
-                    // fullScreen
                     sx={{ border: '1px solid green' }}
                 >
                     <div className={classes.popupHeader}>
@@ -474,7 +472,7 @@ class ThumbnailView extends Component {
                                 <div className={classes.dropzoneContainer}>
                                     <Dropzone
                                         multiple={false}
-                                        accept='image/*' 
+                                        accept='image/*'
                                         maxSize={maxSize}
                                         className={classes.dropzone}
                                         activeClassName={classes.acceptDrop}
