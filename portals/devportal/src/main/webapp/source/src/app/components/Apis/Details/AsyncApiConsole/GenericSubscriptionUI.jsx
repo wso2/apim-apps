@@ -45,7 +45,7 @@ export default function GenericSubscriptionUI(props) {
 
     useEffect(() => {
         setCommand(generateGenericSubscriptionCommand(topic, endPoint));
-    }, [endPoint, topic, generateGenericSubscriptionCommand]);
+    }, [endPoint]);
     const handleClick = () => {
         setCommand(generateGenericSubscriptionCommand(topic, endPoint));
     };

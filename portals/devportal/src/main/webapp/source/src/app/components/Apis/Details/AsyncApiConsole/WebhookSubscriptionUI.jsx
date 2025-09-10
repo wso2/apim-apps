@@ -58,7 +58,7 @@ function WebhookSubscriptionUI(props) {
 
     useEffect(() => {
         setCurl(generateGenericWHSubscriptionCurl(initialSubscriptionState, endPoint));
-    }, [endPoint, initialSubscriptionState, generateGenericWHSubscriptionCurl]);
+    }, [endPoint]);
     const handleClick = () => {
         if (!state.callback || state.callback.length < 1) {
             setFormError(true);
