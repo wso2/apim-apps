@@ -115,7 +115,7 @@ function TagWithTooltip({ tag, onClick, selected }) {
         if (textRef.current) {
             setIsTruncated(textRef.current.scrollWidth > textRef.current.clientWidth);
         }
-    });
+    }, [textRef.current]);
 
     const chipContent = (
         <Chip
