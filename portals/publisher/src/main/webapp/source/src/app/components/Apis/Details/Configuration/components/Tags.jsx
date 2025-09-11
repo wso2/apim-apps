@@ -110,6 +110,7 @@ export default function Tags(props) {
                                 setInvalidTags(currentInvalidTags);
                                 if (currentInvalidTags.length === 0) {
                                     setIsTagValid(true);
+                                    setIsTagWithinLimit(true);
                                 }
                             }
                             configDispatcher({ action: 'tags', value: api.tags.filter((oldTag) => oldTag !== value) });
