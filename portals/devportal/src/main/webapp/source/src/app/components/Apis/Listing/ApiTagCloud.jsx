@@ -74,7 +74,6 @@ const Root = styled('div')((
         display: 'inline-block',
         maxWidth: '-webkit-fill-available',
         color: theme.custom.tagCloud.leftMenu.color,
-
     },
 
     [`& .${classes.tagsWrapper}`]: {
@@ -104,6 +103,41 @@ const Root = styled('div')((
     },
 
 }));
+
+/**
+ * Support component used to handle API Tag Cloud
+*/
+function TagWithTooltip({ tag, onClick, selected }) {
+    const textRef = React.useRef(null);
+    const [isTruncated, setIsTruncated] = React.useState(false);
+
+    React.useEffect(() => {
+        if (textRef.current) {
+            setIsTruncated(textRef.current.scrollWidth > textRef.current.clientWidth);
+        }
+    });
+
+    const chipContent = (
+        <Chip
+            label={(
+                <span ref={textRef} className='tag-cloud-tag'>
+                    {tag.value}
+                </span>
+            )}
+            clickable
+            size='small'
+            variant={selected ? 'filled' : 'outlined'}
+            color={selected ? 'primary' : 'default'}
+            onClick={onClick}
+        />
+    );
+
+    return (
+        <Tooltip title={tag.value} arrow disableHoverListener={!isTruncated}>
+            {chipContent}
+        </Tooltip>
+    );
+}
 
 /**
  * Component used to handle API Tag Cloud
@@ -146,38 +180,6 @@ function ApiTagCloud(props) {
             + 'type:SSE type:WEBSUB type:WEBHOOK type:ASYNC type:APIProduct';
         history.push(baseURL + tagQuery + type);
     };
-
-    function TagWithTooltip({ tag, onClick, selected }) {
-        const textRef = React.useRef(null);
-        const [isTruncated, setIsTruncated] = React.useState(false);
-
-        React.useEffect(() => {
-            if (textRef.current) {
-                setIsTruncated(textRef.current.scrollWidth > textRef.current.clientWidth);
-            }
-        }, [tag.value]);
-
-        const chipContent = (
-            <Chip
-                label={(
-                    <span ref={textRef} className='tag-cloud-tag'>
-                        {tag.value}
-                    </span>
-                )}
-                clickable
-                size='small'
-                variant={selected ? 'filled' : 'outlined'}
-                color={selected ? 'primary' : 'default'}
-                onClick={onClick}
-            />
-        );
-
-        return (
-            <Tooltip title={tag.value} arrow disableHoverListener={!isTruncated}>
-                {chipContent}
-            </Tooltip>
-        );
-    }
 
     return (
         apisTagWithoutGroups && (

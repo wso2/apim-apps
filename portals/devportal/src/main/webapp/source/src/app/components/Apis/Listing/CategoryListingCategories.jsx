@@ -156,7 +156,7 @@ function CategoryListingCategories(props) {
                 </Typography>
                 <List
                     component='nav'
-                    aria-label='main mailbox folders'
+                    aria-label='API categories'
                     className={classNames('category-listing-categories', classes.scrollableList)}
                 >
                     {Object.keys(allCategories).map((key) => {

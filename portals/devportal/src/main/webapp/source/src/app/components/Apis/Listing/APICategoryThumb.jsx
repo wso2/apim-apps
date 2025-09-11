@@ -110,12 +110,11 @@ APICategoryThumb.propTypes = {
     category: PropTypes.shape({}).isRequired,
     path: PropTypes.shape({}).isRequired,
     selected: PropTypes.bool,
-    onClick: PropTypes.func,
+    onClick: PropTypes.func.isRequired,
 };
 
 APICategoryThumb.defaultProps = {
     selected: false,
-    onClick: undefined,
 };
 
 export default (APICategoryThumb);
