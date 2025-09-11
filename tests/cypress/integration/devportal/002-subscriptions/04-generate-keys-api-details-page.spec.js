@@ -39,8 +39,7 @@ describe("Generate keys from api details page", () => {
                 cy.createApp(appName, 'application description');
                 cy.visit(`/devportal/apis?tenant=carbon.super`);
                 cy.url().should('contain', '/apis?tenant=carbon.super');
-                cy.get(`[title="${apiName}"]`, { timeout: 30000 });
-                cy.get(`[title="${apiName}"]`).click();
+                cy.contains('a', apiName, { timeout: 30000 }).should('exist').click();
                 cy.get('#left-menu-credentials').click();
 
                 // Click and select the new application
