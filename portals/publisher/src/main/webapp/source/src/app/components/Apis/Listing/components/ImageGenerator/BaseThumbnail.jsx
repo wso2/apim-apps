@@ -23,6 +23,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import ButtonBase from '@mui/material/ButtonBase';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
+import IconButton from '@mui/material/IconButton';
+import Icon from '@mui/material/Icon';
 
 import Api from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
@@ -64,6 +66,11 @@ const Root = styled('div')(({ theme }) => ({
         opacity: 0.4,
     },
 
+    [`& .${classes.thumbWrapper}`]: {
+        position: 'relative',
+        display: 'inline-block',
+    },
+
     [`& .${classes.thumb}`]: {
         '&:hover': {
             zIndex: 1,
@@ -95,6 +102,7 @@ const BaseThumbnail = (props) => {
         isEditable,
         onClick,
         imageUpdate,
+        onDelete,
     } = props;
     const { apiType, id, type } = api;
 
@@ -113,9 +121,6 @@ const BaseThumbnail = (props) => {
         });
     }, [selectedIconProp, colorProp, backgroundIndexProp, categoryProp]);
 
-    useEffect(() => {
-        setThumbnail(thumbnailPop);
-    }, [thumbnailPop]);
     /**
      * Load the image from the backend and keeps in the component state
      */
@@ -158,6 +163,11 @@ const BaseThumbnail = (props) => {
             setImageLoaded(true);
         }
     }, [imageUpdate]);
+
+    useEffect(() => {
+        setThumbnail(thumbnailPop);
+    }, [thumbnailPop]);
+
     if (!imageLoaded) {
         return (
             <Root className='image-load-frame'>
@@ -188,31 +198,43 @@ const BaseThumbnail = (props) => {
     return (
         <Root>
             {isEditable ? (
-                <ButtonBase
-                    focusRipple
-                    className={classes.thumb}
-                    onClick={onClick}
-                    aria-label='edit api thumbnail'
-                    data-testid='edit-api-thumbnail-button'
-                >
-                    {thumbnail ? (
-                        <img
-                            height={height}
-                            width={width}
-                            src={thumbnail}
-                            alt='API Thumbnail'
-                            className={classes.media}
-                        />
-                    ) : (
-                        view
+                <div className={classes.thumbWrapper}>
+                    <ButtonBase
+                        focusRipple
+                        className={classes.thumb}
+                        onClick={onClick}
+                        aria-label='edit api thumbnail'
+                        data-testid='edit-api-thumbnail-button'
+                    >
+                        {thumbnail ? (
+                            <img
+                                height={height}
+                                width={width}
+                                src={thumbnail}
+                                alt='API Thumbnail'
+                                className={classes.media}
+                            />
+                        ) : (
+                            view
+                        )}
+                        <span className={classes.thumbBackdrop} />
+                        <span className={classes.thumbButton}>
+                            <Typography component='span' variant='subtitle1' color='inherit'>
+                                <EditIcon />
+                            </Typography>
+                        </span>
+                    </ButtonBase>
+                    {thumbnail && (
+                        <IconButton
+                            fontSize='small'
+                            onClick={onDelete} 
+                            aria-label='delete thumbnail'
+                            sx={{ mt: 9, p:0.5, position:'absolute'}}
+                        >
+                            <Icon color='primary'>delete_forever</Icon>
+                        </IconButton>
                     )}
-                    <span className={classes.thumbBackdrop} />
-                    <span className={classes.thumbButton}>
-                        <Typography component='span' variant='subtitle1' color='inherit'>
-                            <EditIcon />
-                        </Typography>
-                    </span>
-                </ButtonBase>
+                </div>
             ) : (
                 <>
                     {thumbnail ? (
@@ -236,6 +258,7 @@ BaseThumbnail.defaultProps = {
     width: 100,
     imageUpdate: 0,
     isEditable: false,
+    onDelete: () => {},
 };
 BaseThumbnail.propTypes = {
     api: PropTypes.shape({}).isRequired,
@@ -243,5 +266,6 @@ BaseThumbnail.propTypes = {
     width: PropTypes.number,
     isEditable: PropTypes.bool,
     imageUpdate: PropTypes.number,
+    onDelete: PropTypes.func,
 };
 export default BaseThumbnail;

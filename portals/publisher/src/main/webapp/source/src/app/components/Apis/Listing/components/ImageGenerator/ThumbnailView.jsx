@@ -5,11 +5,6 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import Grid from '@mui/material/Grid';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Paper from '@mui/material/Paper';
 import Slide from '@mui/material/Slide';
 import Typography from '@mui/material/Typography';
 import Icon from '@mui/material/Icon';
@@ -43,30 +38,50 @@ const classes = {
     imageGenWrapper: `${PREFIX}-imageGenWrapper`,
     backgroundSelection: `${PREFIX}-backgroundSelection`,
     actionBox: `${PREFIX}-actionBox`,
-    imageContainer: `${PREFIX}-imageContainer`
+    imageContainer: `${PREFIX}-imageContainer`,
+    dropzoneContainer: `${PREFIX}-dropzoneContainer`,
 };
 
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
+    '& .MuiDialog-paper': {
+        borderRadius: 12,
+        height: '60vh',
+        width: '60vh',
+        maxWidth: '90vw',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+
     [`& .${classes.acceptDrop}`]: {
         backgroundColor: green[50],
+    },
+
+    [`& .${classes.dropzoneContainer}`]: {
+        flex: 1,
+        height: '100%',
+        width: '100%',
     },
 
     [`& .${classes.dropzone}`]: {
         border: '1px dashed ' + theme.palette.primary.main,
         borderRadius: '5px',
         cursor: 'pointer',
-        height: 'calc(100vh - 10em)',
+        height: '100%',
         padding: `${theme.spacing(2)} 0px`,
         position: 'relative',
         textAlign: 'center',
         width: '100%',
-        margin: '10px 0',
+        margin: '0',
     },
 
     [`& .${classes.dropZoneWrapper}`]: {
-        height: '100%',
         display: 'flex',
+        flex: 1,
+        minHeight: 0,
+        width: '100%',
+        margin: 0,
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         '& span': {
@@ -92,6 +107,7 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     [`& .${classes.popupHeader}`]: {
         display: 'flex',
         flexDirection: 'row',
+        justifyContent: 'flex-end'
     },
 
     [`& .${classes.iconView}`]: {
@@ -139,7 +155,11 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 
     [`& .${classes.imageContainer}`]: {
         paddingTop: 10,
-    }
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
 }));
 
 const windowURL = window.URL || window.webkitURL;
@@ -147,12 +167,15 @@ const dropzoneStyles = {
     border: '1px dashed ',
     borderRadius: '5px',
     cursor: 'pointer',
-    height: 75,
+    flex: 1,
+    height: '80%',
+    width: '100%',        
+    display: 'flex',
+    flexDirection: 'column',
     padding: '8px 0px',
     position: 'relative',
     textAlign: 'center',
-    width: '100%',
-    margin: '10px 0',
+    margin: '5px 0',
 };
 
 /**
@@ -179,6 +202,7 @@ class ThumbnailView extends Component {
         this.state = {
             open: false,
             file: null,
+            hasDropped: false,
             thumbnail: null,
             selectedTab: 'upload',
             category: MaterialIcons.categories[0].name,
@@ -210,6 +234,7 @@ class ThumbnailView extends Component {
      */
     onDrop(acceptedFile) {
         this.setState({ file: acceptedFile });
+        this.setState({ hasDropped: true });
     }
 
     selectIcon = (selectedIconUpdate) => {
@@ -226,6 +251,7 @@ class ThumbnailView extends Component {
     handleClick = (action, intl) => () => {
         if (action === 'btnEditAPIThumb') {
             this.setState({ open: true });
+            this.setState({ hasDropped: false });
         } else if (action === 'btnUploadAPIThumb') {
             const { api } = this.props;
             const {
@@ -352,6 +378,12 @@ class ThumbnailView extends Component {
             });
     }
 
+    deleteThumbnail = (intl) => {
+        const { api } = this.props;
+        const fileObj = new File([], 'FileName.jpg', { type: 'application/json' });
+        this.uploadThumbnail('remove', api.id, fileObj, intl);
+    };
+
     saveDisableEnable() {
         const {
             file, selectedTab, selectedIconUpdate, colorUpdate, backgroundIndexUpdate, uploading,
@@ -400,6 +432,7 @@ class ThumbnailView extends Component {
                     width={width}
                     height={height}
                     imageUpdate={imageUpdate}
+                    onDelete={() => this.deleteThumbnail(intl)} 
                 />
                 <StyledDialog
                     TransitionComponent={Transition}
@@ -407,11 +440,10 @@ class ThumbnailView extends Component {
                     open={this.state.open}
                     onClose={this.handleClose}
                     fullWidth
-                    maxWidth='lg'
-                    fullScreen
+                    maxWidth='md'
                     sx={{ border: '1px solid green' }}
                 >
-                    <Paper square className={classes.popupHeader}>
+                    <div className={classes.popupHeader}>
                         <IconButton
                             color='inherit'
                             onClick={this.handleClose}
@@ -419,54 +451,25 @@ class ThumbnailView extends Component {
                             size='large'>
                             <Icon>close</Icon>
                         </IconButton>
-                        <RadioGroup
-                            aria-label='APIThumbnail'
-                            name='apiThumbnail'
-                            className={classes.group}
-                            value={this.state.selectedTab}
-                            onChange={this.handleChange}
-                        >
-                            <FormControlLabel
-                                value='upload'
-                                control={<Radio color='primary' />}
-                                label={(
-                                    <FormattedMessage
-                                        id='Apis.Listing.components.ImageGenerator.ThumbnailView.upload'
-                                        defaultMessage='Upload'
-                                    />
-                                )}
-                            />
-                            <FormControlLabel
-                                value='remove'
-                                control={<Radio color='primary' />}
-                                label={(
-                                    <FormattedMessage
-                                        id='Apis.Listing.components.ImageGenerator.ThumbnailView.remove'
-                                        defaultMessage='Remove'
-                                    />
-                                )}
-                            />
-                        </RadioGroup>
-                    </Paper>
+                    </div>
 
                     <DialogContent>
                         {selectedTab === 'upload' && (
-                            <Grid container spacing={4}>
-                                <Grid item xs={3}>
-                                    <div className={classes.imageContainer}>
-                                        <img
-                                            className={classes.preview}
-                                            src={
-                                                file && file.length > 0
-                                                    ? windowURL.createObjectURL(file[0])
-                                                    : Configurations.app.context
-                                                      + '/site/public/images/api/api-default.png'
-                                            }
-                                            alt='Thumbnail Preview'
-                                        />
-                                    </div>
-                                </Grid>
-                                <Grid item xs={9} id='edit-api-thumbnail-upload'>
+                            this.state.hasDropped ? (
+                                <div className={classes.imageContainer}>
+                                    <img
+                                        className={classes.preview}
+                                        src={
+                                            file && file.length > 0
+                                                ? windowURL.createObjectURL(file[0])
+                                                : Configurations.app.context 
+                                                + '/site/public/images/api/api-default.png'
+                                        }
+                                        alt='Thumbnail Preview'
+                                    />
+                                </div>
+                            ) : (
+                                <div className={classes.dropzoneContainer}>
                                     <Dropzone
                                         multiple={false}
                                         accept='image/*'
@@ -517,14 +520,14 @@ class ThumbnailView extends Component {
                                             );
                                         }}
                                     </Dropzone>
-                                    <Typography>
+                                    <Typography textAlign='center'>
                                         <FormattedMessage
                                             id='upload.image.size.info'
                                             defaultMessage='Maximum file size limit to 1MB'
                                         />
                                     </Typography>
-                                </Grid>
-                            </Grid>
+                                </div>
+                            )
                         )}
                     </DialogContent>
                     <DialogActions className={classes.actionBox}>
@@ -575,10 +578,13 @@ class ThumbnailView extends Component {
                             )}
                         </Button>
 
-                        <Button variant='contained' size='small' onClick={this.handleClose}>
+                        <Button className={classes.cancelButton}
+                            variant={this.state.hasDropped ? 'outlined' : 'contained'}
+                            size='small' 
+                            onClick={this.handleClose}>
                             <FormattedMessage
                                 id='Apis.Listing.components.ImageGenerator.ThumbnailView.cancel.btn'
-                                defaultMessage='CANCEL'
+                                defaultMessage='Cancel'
                             />
                         </Button>
                     </DialogActions>
