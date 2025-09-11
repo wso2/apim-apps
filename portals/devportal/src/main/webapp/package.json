@@ -90,7 +90,7 @@
         "remark-gfm": "^3.0.1",
         "stream-browserify": "^3.0.0",
         "swagger-client": "^3.35.6",
-        "swagger-ui-react": "^5.27.1",
+        "swagger-ui-react": "^5.29.0",
         "url": "^0.11.3",
         "xml-formatter": "^3.6.2"
     },

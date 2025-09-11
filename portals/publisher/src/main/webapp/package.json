@@ -97,7 +97,7 @@
         "rich-textarea": "^0.26.4",
         "sourcemapped-stacktrace": "^1.1.11",
         "swagger-client": "^3.35.6",
-        "swagger-ui-react": "^5.27.1",
+        "swagger-ui-react": "^5.29.0",
         "url": "^0.11.3",
         "url-loader": "^4.1.1",
         "xml-beautifier": "^0.5.0"
@@ -138,7 +138,7 @@
         "clean-webpack-plugin": "^4.0.0",
         "concurrently": "^6.4.0",
         "cross-env": "^7.0.0",
-        "crypto-browserify": "^3.12.0",
+        "crypto-browserify": "^3.12.1",
         "css-loader": "^7.1.2",
         "eslint": "^7.32.0",
         "eslint-config-airbnb": "^18.0.1",
