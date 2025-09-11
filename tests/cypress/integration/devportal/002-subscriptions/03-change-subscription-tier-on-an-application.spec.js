@@ -45,7 +45,9 @@ describe("Change subscription tier of an application", () => {
 
                 // Go to application subscription page
                 cy.get('#left-menu-subscriptions').click();
-                cy.contains('Subscribe APIs').click();
+                cy.get('[data-testid="api-subscriptions-section"]').within(() => {
+                    cy.get('button').contains('Subscribe').click();
+                });
 
                 cy.get('[aria-labelledby="simple-dialog-title"]').find('input[placeholder="Search APIs"]').click().type(apiName + "{enter}");
                 cy.contains('1-1 of 1');
