@@ -170,9 +170,10 @@ const SubscriptionSection = ({
     noSubscriptionsMessage,
     noSubscriptionsContent,
     entityNameColumn,
+    ...otherProps
 }) => {
     return (
-        <Root>
+        <Root {...otherProps}>
             <Box className={classes.sectionContainer}>
                 <Box className={classes.titleWrapper}>
                     <Typography
