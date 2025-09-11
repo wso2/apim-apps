@@ -635,6 +635,7 @@ class SubscriptionsBase extends React.Component {
                                         defaultMessage='API'
                                     />
                                 )}
+                                data-testid='api-subscriptions-section'
                             />
                         )}
 
@@ -676,6 +677,7 @@ class SubscriptionsBase extends React.Component {
                                         defaultMessage='MCP Server'
                                     />
                                 )}
+                                data-testid='mcp-subscriptions-section'
                             />
                         )}
 

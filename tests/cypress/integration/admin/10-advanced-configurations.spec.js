@@ -44,7 +44,8 @@ describe("Advanced Configurations", () => {
         cy.get('[data-testid="Scope Assignments-child-link"]').click();
         cy.get('[data-testid="Advanced-child-link"]').click();
         cy.wait(3000);
-        cy.get('[data-testid="monaco-editor-save"]').click();
+        cy.get('[data-testid="monaco-editor-save"]').should('not.be.disabled').click();
+        cy.contains('Advanced Configuration saved successfully').should('exist');
 
         cy.intercept('GET', 'https://localhost:9443/api/am/admin/v4/tenant-config', {
             statusCode: 200,
@@ -53,7 +54,8 @@ describe("Advanced Configurations", () => {
         cy.get('[data-testid="Scope Assignments-child-link"]').click();
         cy.get('[data-testid="Advanced-child-link"]').click();
         cy.wait(2000);
-        cy.get('[data-testid="monaco-editor-save"]').click();
+        cy.get('[data-testid="monaco-editor-save"]').should('not.be.disabled').click();
+        cy.contains('Advanced Configuration saved successfully').should('exist');
 
     });
 
