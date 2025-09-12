@@ -273,7 +273,7 @@ class LifeCycleUpdate extends Component {
         this.setState({ isUpdating: action });
         let promisedUpdate;
         const complianceErrorCode = 903300;
-        const { intl } = this.props;
+        const { intl, handleUpdate } = this.props;
         const lifecycleChecklist = this.props.checkList.map((item) => item.value + ':' + item.checked);
         const { isAPIProduct } = this.props;
         const isMCPServer = type === MCPServer.CONSTS.MCP;
@@ -301,6 +301,7 @@ class LifeCycleUpdate extends Component {
                     this.setState({ message });
                 }
                 this.setState({ newState });
+                handleUpdate();
 
                 if (workflowStatus === this.WORKFLOW_STATUS.CREATED) {
                     Alert.info(intl.formatMessage({
@@ -729,6 +730,7 @@ LifeCycleUpdate.propTypes = {
     intl: PropTypes.shape({
         formatMessage: PropTypes.func,
     }).isRequired,
+    handleUpdate: PropTypes.func.isRequired,
 };
 
 LifeCycleUpdate.contextType = ApiContext;
