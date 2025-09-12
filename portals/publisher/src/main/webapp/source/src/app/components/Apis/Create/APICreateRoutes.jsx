@@ -66,7 +66,7 @@ let gatewayDetails = {
         value: 'AWS',
         name: 'AWS Gateway', 
         description: 'API gateway offered by AWS cloud.', 
-        isNew: true 
+        isNew: false 
     }
 };
 
