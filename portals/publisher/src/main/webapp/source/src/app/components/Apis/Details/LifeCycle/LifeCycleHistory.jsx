@@ -100,7 +100,7 @@ const LifeCycleHistory = (props) => {
                 </TableHead>
                 <TableBody>
                     {props.lcHistory.reverse().map((entry) => entry.previousState && (
-                        <TableRow key={entry.postState}>
+                        <TableRow key={`${entry.postState}-${entry.updatedTime}`}>
                             <TableCell component='th' scope='row'>
                                 <Avatar className={classes.avatar}>
                                     <Person className={classes.personIcon} />
