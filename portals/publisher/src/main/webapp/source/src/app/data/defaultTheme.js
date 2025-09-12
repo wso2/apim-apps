@@ -134,8 +134,8 @@ export default {
         leftMenuIconMainSize: 52,
         leftMenuTextStyle: 'capitalize',
         leftMenuAnalytics: {
-            enable: true, // If `false`, External link to choreo cloud analytics icon will be removed/hidden in nav bar
-            link: 'https://console.choreo.dev/insights',
+            enable: true, // If `false`, External link to Moesif Basic Analytics icon will be removed/hidden in nav bar
+            link: 'https://www.moesif.com/moesif-basic',
         },
         resourceChipColors: { // https://github.com/swagger-api/swagger-ui/blob/master/src/style/_variables.scss#L45-L52
             get: '#61affe',
