@@ -89,9 +89,22 @@ const Root = styled('div')(({ theme }) => {
             },
             transition: 'box-shadow 0.2s ease-in-out',
             overflow: 'hidden',
-            width: `calc(100% - ${theme.spacing(2)})`,
-            maxWidth: `calc(100% - ${theme.spacing(2)})`,
-            boxSizing: 'border-box'
+            width: `calc(100% - ${theme.spacing(2)}) !important`,
+            maxWidth: `calc(100% - ${theme.spacing(2)}) !important`,
+            minWidth: `calc(100% - ${theme.spacing(2)}) !important`,
+            boxSizing: 'border-box',
+            position: 'relative',
+            left: 0,
+            right: 0,
+            '&.Mui-expanded': {
+                margin: theme.spacing(1),
+                width: `calc(100% - ${theme.spacing(2)}) !important`,
+                maxWidth: `calc(100% - ${theme.spacing(2)}) !important`,
+                minWidth: `calc(100% - ${theme.spacing(2)}) !important`,
+                position: 'relative',
+                left: 0,
+                right: 0
+            }
         },
         [`& .${classes.accordionContainer}.markedForDelete`]: {
             opacity: 0.5,
