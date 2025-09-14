@@ -25,7 +25,7 @@ class ApisHomePage extends PublisherComonPage {
         cy.visit(`${Utils.getAppOrigin()}` + this.getUrl())
     }
     getCreateAPIButton(){
-        return cy.get('#itest-create-api-menu-button')
+        return cy.get('[data-testid="itest-create-api-button"]')
     }
     getCreateAPIDialog_StartFromScratchLink(){
         return cy.get('#itest-id-landing-rest-create-default')

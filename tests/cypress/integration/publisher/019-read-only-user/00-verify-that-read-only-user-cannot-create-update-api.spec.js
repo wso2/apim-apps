@@ -120,7 +120,8 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
     }, () => {
         initEnvironement();
         //1. should not be able to create APIS
-        cy.get('#itest-create-api-menu-button', { timeout: Cypress.config().largeTimeout }).should('not.exist');
+        cy.get('[data-testid="itest-create-api-button"]', { timeout: Cypress.config().largeTimeout }).should('not.exist');
+        cy.get('#itest-rest-api-create-menu').click();
 
         //2. click on API tile and select design config (basic info)
         cy.wait(2000);

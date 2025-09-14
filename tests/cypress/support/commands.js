@@ -513,8 +513,8 @@ Cypress.Commands.add('createAPIWithoutEndpoint', (name = null, version = null, t
         apiVersion = version;
     }
     cy.visit(`/publisher/apis`);
-    cy.get('#itest-create-api-menu-button', { timeout: Cypress.config().largeTimeout });
-    cy.get('#itest-create-api-menu-button').click();
+    cy.get('[data-testid="itest-create-api-button"]', { timeout: Cypress.config().largeTimeout });
+    cy.get('#itest-rest-api-create-menu').click();
     cy.get('#itest-id-landing-rest-create-default').click();
     cy.get('#itest-id-apiname-input').type(apiName);
     cy.get('#itest-id-apicontext-input').click();
@@ -663,15 +663,14 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
     cy.get("body").then($body => {
         if ($body.find("#itest-apis-welcome-msg").length > 0) {
             cy.log("Init page");
-            cy.get('#itest-rest-api-create-menu').click();
-            cy.get('#itest-streaming-api-create-menu').click();
         } else {
-            cy.log("API availble");
-            cy.get('#itest-create-api-menu-button').click();
+            cy.log("API available");
+            cy.get('[data-testid="itest-create-api-button"]').click();
         }
     });
-    //select streaming-api option from the menu item
 
+    // Select the streaming API import option
+    cy.get('#itest-streaming-api-create-menu').click();
     cy.get('#itest-id-create-streaming-api-import').click();
     cy.get('[data-testid="input-asyncapi-file"]').click();
 
