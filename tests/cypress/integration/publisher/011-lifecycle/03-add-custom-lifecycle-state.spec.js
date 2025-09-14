@@ -61,6 +61,7 @@ const apiVersion = '1.0.0';
             cy.get('#add-description').click();
             cy.get('#add-description').type('test');
             cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click();
+            cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
             cy.get('#undeploy-btn').should('not.have.class', 'Mui-disabled').should('exist');
 
             // Going to lifecycle page

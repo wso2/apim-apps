@@ -39,7 +39,7 @@ describe("Depricate old versions of api before publishing", () => {
     cy.get("#deploy-btn", { timeout: Cypress.config().largeTimeout })
       .should("not.have.class", "Mui-disabled")
       .click();
-    cy.wait(2000);
+    cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
     cy.get("#undeploy-btn")
       .should("not.have.class", "Mui-disabled")
       .should("exist");

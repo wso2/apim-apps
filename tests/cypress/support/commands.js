@@ -601,6 +601,7 @@ Cypress.Commands.add('createAndPublishApi', (apiName = null) => {
     cy.get('#left-menu-itemdeployments').then(() => {
         cy.wait(1000);
         cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click();
+        cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
         cy.get('#undeploy-btn').should('not.have.class', 'Mui-disabled').should('exist');
     })
 
@@ -722,6 +723,7 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
         cy.get('[data-testid="api-env-name"] input').should('have.value', 'apim-gw-dev');
         cy.get('[data-testid="api-org-name"] input').should('have.value', 'wso2dev');
         cy.get('#deploy-btn-solace').click({ force: true });
+        cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
         cy.intercept('**/deploy-revision**', { statusCode: 201, fixture: 'api_artifacts/solaceDeployedStatus.json' }).as('deployedStatus');
         cy.intercept('/api/am/publisher/v4/apis/*/revisions**', { statusCode: 200, fixture: 'api_artifacts/solaceDeployedQuery.json' }).as('deployedRevision');
         cy.wait('@deployedStatus');

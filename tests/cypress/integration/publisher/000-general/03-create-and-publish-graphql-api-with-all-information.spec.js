@@ -175,6 +175,9 @@ describe("Create GraphQl API from file", () => {
 
                 cy.get('#deploy-btn', { timeout: Cypress.config().largeTimeout })
                   .should('not.have.class', 'Mui-disabled').click({ force: true });
+                cy.contains('Revision Created Successfully');
+                cy.contains('Revision Deployed Successfully');
+                cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
 
                 //publish
                 cy.get("#left-menu-overview", { timeout: Cypress.config().largeTimeout }).click();
