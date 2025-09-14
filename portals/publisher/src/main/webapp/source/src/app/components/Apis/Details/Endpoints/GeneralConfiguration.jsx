@@ -179,41 +179,38 @@ function GeneralConfiguration(props) {
     // Get the certificates from backend.
     useEffect(() => {
         if (!isRestricted(['apim:ep_certificates_view', 'apim:api_view'])) {
-            const endpointCertificatesList = [];
-            const aliases = [];
-
             let endpoints = endpointsToList(epConfig);
             const filteredEndpoints = [];
             const epLookup = [];
             for (const ep of endpoints) {
-                if (ep) {
-                    if (!epLookup.includes(ep.url)) {
-                        filteredEndpoints.push(ep);
-                        epLookup.push(ep.url);
-                    }
+                if (ep && !epLookup.includes(ep.url)) {
+                    filteredEndpoints.push(ep);
+                    epLookup.push(ep.url);
                 }
             }
             endpoints = filteredEndpoints;
 
-            for (const ep of endpoints) {
+            // Collect all promises
+            const promises = endpoints.map((ep) => {
                 if (ep && ep.url) {
-                    const params = {};
-                    params.endpoint = ep.url;
-                    API.getEndpointCertificates(params)
-                        .then((response) => {
-                            const { certificates } = response.obj;
-                            for (const cert of certificates) {
-                                endpointCertificatesList.push(cert);
-                                aliases.push(cert.alias);
-                            }
-                        })
+                    const params = { endpoint: ep.url };
+                    return API.getEndpointCertificates(params)
+                        .then((response) => response.obj.certificates)
                         .catch((err) => {
                             console.error(err);
+                            return [];
                         });
                 }
-            }
-            setEndpointCertificates(endpointCertificatesList);
-            setAliasList(aliases);
+                return Promise.resolve([]);
+            });
+
+            Promise.all(promises).then((results) => {
+                // Flatten the array of arrays
+                const allCertificates = results.flat();
+                const aliases = allCertificates.map(cert => cert.alias);
+                setEndpointCertificates(allCertificates);
+                setAliasList(aliases);
+            });
         } else {
             setEndpointCertificates([]);
         }
