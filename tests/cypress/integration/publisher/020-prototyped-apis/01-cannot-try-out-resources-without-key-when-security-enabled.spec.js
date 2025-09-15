@@ -77,8 +77,8 @@ describe("prototype apis with security enabled", () => {
 
             //login to dev portal as Developer
             cy.loginToDevportal(userName, password);
-            cy.get('input[placeholder="Search APIs"]').click().type(apiName + "{enter}");
-            cy.get('table > tbody > tr',{timeout: Cypress.config().largeTimeout}).get(`[area-label="Go to ${apiName}"]`).contains('.api-thumb-chip-main','PRE-RELEASED').should('exist');
+            cy.get('input[placeholder="Search APIs & MCP Servers"]').click().type(apiName + "{enter}");
+            cy.get('table > tbody > tr', { timeout: Cypress.config().largeTimeout }).get(`[area-label="Go to ${apiName}"]`).should('contain.text', 'PRE-RELEASED');
             cy.get('table > tbody > tr',{timeout: Cypress.config().largeTimeout}).get(`[area-label="Go to ${apiName}"]`).click();
             cy.contains('button', "Try Out", { timeout: Cypress.config().largeTimeout }).click();
             cy.get('.opblock-summary-get > .opblock-summary-control', {timeout: Cypress.config().largeTimeout}).click();
