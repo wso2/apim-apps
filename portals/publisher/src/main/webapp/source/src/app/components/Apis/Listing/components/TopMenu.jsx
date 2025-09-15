@@ -195,6 +195,7 @@ function TopMenu(props) {
                             component={Link}
                             disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                             to='/api-products/create'
+                            data-testid='itest-create-api-product-button'
                             startIcon={<AddIcon />}
                         >
                             <FormattedMessage
@@ -210,6 +211,7 @@ function TopMenu(props) {
                             component={Link}
                             disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                             to='/mcp-servers/create'
+                            data-testid='itest-create-mcp-server-button'
                             startIcon={<AddIcon />}
                         >
                             <FormattedMessage
@@ -225,6 +227,7 @@ function TopMenu(props) {
                             component={Link}
                             disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                             to='/apis/create'
+                            data-testid='itest-create-api-button'
                             startIcon={<AddIcon />}
                         >
                             <FormattedMessage

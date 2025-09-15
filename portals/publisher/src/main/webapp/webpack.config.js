@@ -23,6 +23,7 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 const webpack = require('webpack');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const { clientRoutingBypass, devServerBefore } = require('./services/dev_proxy/auth_login.js');
 
 // When exporting a function, Current mode is received as the first arg to the function.
@@ -278,6 +279,7 @@ module.exports = (env, argv) => {
                     "source/src/app/data/ScopeValidation.jsx",
                 ],
             }),
+            new MonacoWebpackPlugin(),
         ],
         stats: {
             children: true, // Disable children information. Enable this to view detail info on webpack errors.

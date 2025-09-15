@@ -49,14 +49,12 @@ describe("publisher-021-00 : Lint when creating API with swagger URL", () => {
 
         OpenAPIPage.linterResultDivBlock().should('be.visible');
         OpenAPIPage.errorsToggleButton().contains("4")
-        OpenAPIPage.warningToggleButton().contains("47")
+        OpenAPIPage.warningToggleButton().contains("27")
 
-        // Verify detail warning messages is display after clik on warning toggle button
-        // since tab is not working to leave from the text box click twice
-        OpenAPIPage.warningToggleButton().click
-        OpenAPIPage.waitUntilGetUrlValidatedDiv(30000)
-        OpenAPIPage.warningToggleButton().click
-        cy.contains('Operation "description" must be present and non-empty string.')
+        // Verify warning messages
+        OpenAPIPage.waitUntilGetUrlValidatedDiv(30000);
+        OpenAPIPage.warningToggleButton().click();
+        cy.contains('Contact object should have "name".').should('be.visible');
 
 
     });

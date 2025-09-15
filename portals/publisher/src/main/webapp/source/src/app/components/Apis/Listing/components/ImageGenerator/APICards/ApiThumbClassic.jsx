@@ -386,7 +386,7 @@ class APIThumb extends Component {
                 useFlexibleWidth={this.props.useFlexibleWidth}
                 style={{ display: 'flex', flexDirection: 'column' }}
             >
-                <Link to={overviewPath} className={classes.suppressLinkStyles}>
+                <Link to={overviewPath} className={classes.suppressLinkStyles} aria-label={api.name + ' Thumbnail'}>
                     <CardContent className={classes.apiDetails} style={{ display: 'flex', flex: 1, padding: '12px' }}>
                         <div
                             style={{

@@ -90,6 +90,7 @@ describe("Mock the api response and test it", () => {
                     // Deploying
                     cy.wait(1000);
                     cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click({ force: true });
+                    cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
                     cy.get('#undeploy-btn').should('not.have.class', 'Mui-disabled').should('exist');
 
                     cy.get('#itest-api-details-portal-config-acc').click();
