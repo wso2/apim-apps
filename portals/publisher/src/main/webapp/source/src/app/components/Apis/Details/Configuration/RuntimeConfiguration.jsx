@@ -422,9 +422,8 @@ export default function RuntimeConfiguration() {
                 }
                 return nextState;
             }
-            case 'reset':{
+            case 'reset':
                 return value;
-            }
             default:
                 return state;
         }

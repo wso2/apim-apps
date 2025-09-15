@@ -261,9 +261,8 @@ function Endpoints(props) {
                     primarySandboxEndpointId: value
                 };
             }
-            case 'reset':{
+            case 'reset':
                 return value;
-            }
             default: {
                 return initState;
             }

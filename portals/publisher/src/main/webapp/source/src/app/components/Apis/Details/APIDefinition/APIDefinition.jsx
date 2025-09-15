@@ -207,7 +207,7 @@ class APIDefinition extends React.Component {
     }
 
     // Common function to retrive api components used by both componentDidMount & componentDidUpdate
-    loadData(){
+    loadData() {
         const { api } = this.props;
         const { settings } = this.context;
         let promisedApi;
