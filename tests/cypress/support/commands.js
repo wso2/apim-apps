@@ -638,15 +638,20 @@ Cypress.Commands.add('viewThirdPartyApi', (apiName = null) => {
     cy.get(`[area-label="Go to ${apiName}"]`, { timeout: Cypress.config().largeTimeout }).click();
 
     //Check if the subscriptions, tryout, comments and SDKs sections are present
-    cy.get('#left-menu-credentials').should('exist');
     cy.get('#left-menu-test').should('exist');
     cy.get('#left-menu-comments').should('exist');
     cy.get('#left-menu-sdk').should('exist');
 
     //Visit Original Developer Portal
-    cy.get('#left-menu-credentials').click();
-    cy.get('[data-testid="itest-original-devportal-link"]').should('exist');
-    cy.get('[data-testid="itest-no-tier-dialog"]').contains('No tiers are available for the API.').should('exist');
+    cy.contains('a', 'Visit Original Developer Portal')
+        .should('have.attr', 'href', 'http://www.mocky.io/v2/5ec501532f00009700dc2dc1')
+        .and('have.attr', 'target', '_blank')
+        .and('be.visible');
+
+    // Check for No subscription required message
+    cy.contains('div', 'No subscriptions required').should('be.visible');
+    cy.contains('p', 'Subscriptions are not required for this API. You can consume this without subscribing to it.')
+        .should('be.visible');
 
     //Check if authorization header and value can be customized
     cy.get('#left-menu-test').click();
