@@ -19,12 +19,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { PieChart } from '@mui/x-charts/PieChart';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, useTheme } from '@mui/material';
 
 const DonutChart = ({
     data, height, width, colors,
 }) => {
+    const theme = useTheme();
     const hasData = data.some((item) => item.value > 0);
+
+    // Use theme colors if colors prop is not provided
+    const chartColors = colors || [theme.palette.charts.success, theme.palette.charts.error, 'grey'];
 
     const renderEmptyChart = (message) => (
         <Box
@@ -49,7 +53,7 @@ const DonutChart = ({
     return (
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
             <PieChart
-                colors={colors}
+                colors={chartColors}
                 series={[{
                     data,
                     valueFormatter: () => '',
@@ -82,7 +86,7 @@ DonutChart.propTypes = {
 DonutChart.defaultProps = {
     height: 200,
     width: 400,
-    colors: ['#00B81D', '#FF5252', 'grey'],
+    colors: null,
 };
 
 export default DonutChart;
