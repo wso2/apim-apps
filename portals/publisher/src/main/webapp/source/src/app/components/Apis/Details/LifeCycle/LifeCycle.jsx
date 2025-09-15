@@ -96,6 +96,18 @@ class LifeCycle extends Component {
      * @memberof LifeCycle
      */
     componentDidMount() {
+        this.loadCertsAndData();
+    }
+
+    // Remounting components on the API id changes
+    componentDidUpdate(prevProps) {
+        if (prevProps.api.id !== this.props.api.id) {
+            this.loadCertsAndData();
+        }
+    }
+
+    // Common function to retrive api components used by both componentDidMount & componentDidUpdate
+    loadCertsAndData() {
         const { api: { id, type } } = this.props;
 
         if (type !== MCPServer.CONSTS.MCP) {

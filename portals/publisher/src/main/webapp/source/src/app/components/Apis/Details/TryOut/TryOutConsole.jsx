@@ -214,7 +214,7 @@ const TryOutConsole = () => {
                     (error) => tasksStatusDispatcher({ type: 'GET_DEPLOYMENTS_ERROR', error }),
                 );
         }
-    }, [publisherSettings]);
+    }, [publisherSettings, api.id]);
 
     const isAdvertised = api.advertiseInfo && api.advertiseInfo.advertised;
     const setServersSpec = (spec, serverUrl) => {

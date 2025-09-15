@@ -196,6 +196,18 @@ class APIDefinition extends React.Component {
      * @inheritdoc
      */
     componentDidMount() {
+        this.loadData();
+    }
+
+    // Remounting components on the API id changes
+    componentDidUpdate(prevProps) {
+        if (prevProps.api.id !== this.props.api.id) {
+            this.loadData();
+        }
+    }
+
+    // Common function to retrive api components used by both componentDidMount & componentDidUpdate
+    loadData(){
         const { api } = this.props;
         const { settings } = this.context;
         let promisedApi;
