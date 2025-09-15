@@ -19,7 +19,8 @@
       "reportPageTitle": "custom-title"
     }
   },
-  "video": false,
+  "video": true,
+  "videoUploadOnPasses": false,
   "scrollBehavior": "nearest",
   "e2e": {
     "excludeSpecPattern": "**/*.skip.js"
