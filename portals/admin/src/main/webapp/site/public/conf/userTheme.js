@@ -22,6 +22,12 @@ const AppThemes = {
                 paper: '#ffffff',
                 appBar: '#1d344f',
             },
+            charts: {
+                success: '#00B81D',
+                error: '#FF5252',
+                warn: '#FFC107',
+                info: '#2E96FF',
+            },
         },
         typography: {
             fontFamily: '"Open Sans", "Helvetica", "Arial", sans-serif',
