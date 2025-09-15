@@ -131,7 +131,7 @@ const Endpoints = ({
 
     useEffect(() => {
         fetchEndpoints();
-    }, []);
+    }, [apiObject.id]);
 
     const handleDelete = (endpointType, endpoint) => {
         // Show confirmation dialog first
