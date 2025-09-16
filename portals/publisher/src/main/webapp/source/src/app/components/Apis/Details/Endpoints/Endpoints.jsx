@@ -261,12 +261,18 @@ function Endpoints(props) {
                     primarySandboxEndpointId: value
                 };
             }
+            case 'reset':
+                return value;
             default: {
                 return initState;
             }
         }
     };
     const [apiObject, apiDispatcher] = useReducer(apiReducer, api.toJSON());
+
+    useEffect(() => {
+        apiDispatcher({ action: 'reset', value: api.toJSON() });
+    }, [api.id]);
 
     /**
      * Method to update the api.

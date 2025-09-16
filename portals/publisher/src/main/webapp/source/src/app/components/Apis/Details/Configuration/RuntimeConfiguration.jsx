@@ -422,6 +422,8 @@ export default function RuntimeConfiguration() {
                 }
                 return nextState;
             }
+            case 'reset':
+                return value;
             default:
                 return state;
         }
@@ -439,6 +441,10 @@ export default function RuntimeConfiguration() {
     const [endpointSecurity, setEndpointSecurity] = useState([]);
     const [endpointConfig, setEndpointConfig] = useState(null);
     const [loadingEndpointConfig, setLoadingEndpointConfig] = useState(true);
+
+    useEffect(() => {
+        configDispatcher({ action: 'reset', value: copyAPIConfig(api) });
+    }, [api]);
 
     useEffect(() => {
         if (api.type === MCPServer.CONSTS.MCP) {
