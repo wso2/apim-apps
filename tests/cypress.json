@@ -19,7 +19,7 @@
       "reportPageTitle": "custom-title"
     }
   },
-  "video": true,
+  "video": false,
   "scrollBehavior": "nearest",
   "e2e": {
     "excludeSpecPattern": "**/*.skip.js"
