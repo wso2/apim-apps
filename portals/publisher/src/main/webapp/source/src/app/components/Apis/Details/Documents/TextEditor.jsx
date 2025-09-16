@@ -180,6 +180,26 @@ function TextEditor(props) {
             });
     };
 
+    const embedCallback = (url) => {
+        try {
+            const parsedUrl = new URL(url);
+            if (['http:', 'https:'].includes(parsedUrl.protocol)) {
+                return url;
+            }
+        } catch (_) {
+            // ignored, will show the error below
+        }
+
+        Alert.error(
+            intl.formatMessage({
+                id: 'Apis.Details.Documents.TextEditor.edit.content.invalid.url',
+                defaultMessage:
+                    'Invalid URL. The URL must start with http:// or https://',
+            }),
+        );
+        return null;
+    };
+
     return (
         <div>
             <Button
@@ -229,6 +249,11 @@ function TextEditor(props) {
                         editorClassName='draftjs-editor'
                         editorStyle={{ height: 'calc(100vh - 128px)', overflowY: 'auto' }}
                         onEditorStateChange={onEditorStateChange}
+                        toolbar={{
+                            embedded: {
+                                embedCallback: embedCallback,
+                            },
+                        }}
                     />
                 </div>
             </StyledDialog>
