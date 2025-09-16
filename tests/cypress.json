@@ -20,7 +20,6 @@
     }
   },
   "video": true,
-  "videoUploadOnPasses": false,
   "scrollBehavior": "nearest",
   "e2e": {
     "excludeSpecPattern": "**/*.skip.js"

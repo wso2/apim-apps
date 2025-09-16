@@ -40,6 +40,7 @@ describe("Add API Categories and assign via publisher portal", () => {
         cy.get('input[name="name"]').type(category);
         cy.get('textarea[name="description"]').type(categoryDescription);
         cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Save').click();
+        cy.contains('API Category added successfully').should('be.visible');
 
         // Go to publisher
         cy.wait(500);
@@ -50,6 +51,7 @@ describe("Add API Categories and assign via publisher portal", () => {
             cy.get('#APICategories-autocomplete', { timeout: Cypress.config().largeTimeout }).click();
             cy.get('li').contains(category).click();
             cy.get('#design-config-save-btn').click();
+            cy.contains('API updated successfully').should('be.visible');
         })
     });
 
@@ -58,8 +60,13 @@ describe("Add API Categories and assign via publisher portal", () => {
             Utils.deleteAPI(testApiId).then(() => {
                 // Delete
                 cy.visit(`/admin/settings/api-categories`);
-                cy.get('[data-testid="MuiDataTableBodyCell-4-0"] > div > div > span:nth-child(2)', { timeout: Cypress.config().largeTimeout }).click();
-                cy.get('[data-testid="form-dialog-base-save-btn"]').contains("Delete").click();
+                cy.get('[data-testid="MuiDataTableBodyCell-4-0"] > div > div > span:nth-child(2)', { timeout: Cypress.config().largeTimeout })
+                    .should('be.visible')    
+                    .click();
+                cy.get('[data-testid="form-dialog-base-save-btn"]').contains("Delete")
+                    .should('be.visible')
+                    .click();
+                cy.contains('API Category deleted successfully').should('be.visible');
                 //cy.get('div[role="status"]', {timeout: Cypress.config().largeTimeout}).should('have.text', 'API Category deleted successfully');
             });
         }
