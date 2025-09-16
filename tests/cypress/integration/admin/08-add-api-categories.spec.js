@@ -60,6 +60,7 @@ describe("Add API Categories and assign via publisher portal", () => {
             Utils.deleteAPI(testApiId).then(() => {
                 // Delete
                 cy.visit(`/admin/settings/api-categories`);
+                cy.wait(7000);
                 cy.get('[data-testid="MuiDataTableBodyCell-4-0"] > div > div > span:nth-child(2)', { timeout: Cypress.config().largeTimeout })
                     .should('be.visible')    
                     .click();
