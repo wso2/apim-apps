@@ -109,13 +109,6 @@ function ViewCurl(props) {
                             <span className={classes.command}>curl -k -X POST </span> {tokenEndpoint}
                             <span className={classes.command}> -d </span>{' '}
                             {'"grant_type=password&username=Username&password=Password"'}
-                            {isAzureAD && (
-                              <>
-                                <span className={classes.command}> -d </span>
-                                {' '}
-                                {`"scope=api://${consumerKey}/.default"`}
-                              </>
-                            )}
                         </div>
                         <div>
                             <span className={classes.command}> -H </span>
@@ -146,9 +139,7 @@ function ViewCurl(props) {
                                 aria-label='Copy to clipboard'
                                 size="large"
                                 onClick={() => {navigator.clipboard.writeText(`curl -k -X POST ${tokenEndpoint} -d ` +
-                                    '"grant_type=password&username=Username&password=Password"' +
-                                    azureScope +
-                                    ' -H ' +
+                                    '"grant_type=password&username=Username&password=Password" -H ' +
                                     `"Authorization: Basic ${bas64Encoded}"`).then(onCopy())}}
                             >
                                 <FileCopy color='secondary'/>
