@@ -89,7 +89,6 @@ function ViewCurl(props) {
         setShowReal(!showReal);
     };
     // Check for additional properties for token endpoint and revoke endpoints.
-  // Determine if AzureAD scope should be added
     let { tokenEndpoint } = keyManagerConfig;
     const isAzureAD = keyManagerConfig.type === 'AzureAD';
     const azureScope = isAzureAD ? ` -d "scope=api://${consumerKey}/.default"` : '';
@@ -111,10 +110,11 @@ function ViewCurl(props) {
                             <span className={classes.command}> -d </span>{' '}
                             {'"grant_type=password&username=Username&password=Password"'}
                             {isAzureAD && (
-                              <span className={classes.command}> -d </span>
-                            )}
-                            {isAzureAD && (
-                              `"scope=api://${consumerKey}/.default"`
+                              <>
+                                <span className={classes.command}> -d </span>
+                                {' '}
+                                {`"scope=api://${consumerKey}/.default"`}
+                              </>
                             )}
                         </div>
                         <div>
@@ -170,10 +170,11 @@ function ViewCurl(props) {
                             <span className={classes.command}> -d </span>{' '}
                             {'"grant_type=client_credentials"'}
                             {isAzureAD && (
-                              <span className={classes.command}> -d </span>
-                            )}
-                            {isAzureAD && (
-                              `"scope=api://${consumerKey}/.default"`
+                              <>
+                                <span className={classes.command}> -d </span>
+                                {' '}
+                                {`"scope=api://${consumerKey}/.default"`}
+                              </>
                             )}
                         </div>
                         <div>
