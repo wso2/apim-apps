@@ -90,6 +90,8 @@ function ViewCurl(props) {
     };
     // Check for additional properties for token endpoint and revoke endpoints.
     let { tokenEndpoint } = keyManagerConfig;
+    const isAzureAD = keyManagerConfig.type === 'AzureAD';
+    const azureScope = isAzureAD ? ` -d "scope=api://${consumerKey}/.default"` : '';
     if (keyManagerConfig.alias === null ) {
         return (
             <Root>
@@ -158,6 +160,13 @@ function ViewCurl(props) {
                             <span className={classes.command}>curl -k -X POST </span> {tokenEndpoint}
                             <span className={classes.command}> -d </span>{' '}
                             {'"grant_type=client_credentials"'}
+                            {isAzureAD && (
+                              <>
+                                <span className={classes.command}> -d </span>
+                                {' '}
+                                {`"scope=api://${consumerKey}/.default"`}
+                              </>
+                            )}
                         </div>
                         <div>
                             <span className={classes.command}> -H </span>
@@ -188,7 +197,7 @@ function ViewCurl(props) {
                                 aria-label='Copy to clipboard'
                                 size="large"
                                 onClick={() => {navigator.clipboard.writeText(`curl -k -X POST ${tokenEndpoint} -d ` +
-                                    '"grant_type=client_credentials" -H ' +
+                                  '"grant_type=client_credentials"' + azureScope + ' -H ' +
                                     `"Authorization: Basic ${bas64Encoded}"`).then(onCopy())}}
                             >
                                 <FileCopy color='secondary'/>
