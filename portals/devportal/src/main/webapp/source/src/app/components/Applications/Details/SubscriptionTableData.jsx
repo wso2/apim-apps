@@ -45,6 +45,16 @@ import Popover from '@mui/material/Popover';
 import Invoice from './Invoice';
 import WebHookDetails from './WebHookDetails';
 
+// Subscription status constants
+const SUBSCRIPTION_STATUS = {
+    BLOCKED: 'BLOCKED',
+    PROD_ONLY_BLOCKED: 'PROD_ONLY_BLOCKED',
+    ON_HOLD: 'ON_HOLD',
+    REJECTED: 'REJECTED',
+    TIER_UPDATE_PENDING: 'TIER_UPDATE_PENDING',
+    DELETE_PENDING: 'DELETE_PENDING',
+};
+
 /**
  *
  *
@@ -368,7 +378,8 @@ class SubscriptionTableData extends React.Component {
                             color='grey'
                             onClick={this.handleRequestOpenEditMenu}
                             startIcon={<Icon>edit</Icon>}
-                            disabled={tiers.length === 0 || status === 'BLOCKED' || status === 'PROD_ONLY_BLOCKED'}
+                            disabled={tiers.length === 0 || status === SUBSCRIPTION_STATUS.BLOCKED
+                                || status === SUBSCRIPTION_STATUS.PROD_ONLY_BLOCKED}
                         >
                             <FormattedMessage
                                 id='Applications.Details.SubscriptionTableData.edit.text'
@@ -390,7 +401,7 @@ class SubscriptionTableData extends React.Component {
                                     />
                                     {throttlingPolicy}
                                     <div>
-                                        {(status === 'BLOCKED')
+                                        {(status === SUBSCRIPTION_STATUS.BLOCKED)
                                             ? (
                                                 <FormattedMessage
                                                     id={'Applications.Details.SubscriptionTableData.update.'
@@ -399,7 +410,7 @@ class SubscriptionTableData extends React.Component {
                                                         + 'You need to unblock the subscription in order to edit the tier'}
                                                 />
                                             )
-                                            : (status === 'ON_HOLD')
+                                            : (status === SUBSCRIPTION_STATUS.ON_HOLD)
                                                 ? (
                                                     <FormattedMessage
                                                         id={'Applications.Details.SubscriptionTableData.update.'
@@ -408,7 +419,7 @@ class SubscriptionTableData extends React.Component {
                                                             + ' You need to get approval to the subscription before editing the tier'}
                                                     />
                                                 )
-                                                : (status === 'REJECTED')
+                                                : (status === SUBSCRIPTION_STATUS.REJECTED)
                                                     ? (
                                                         <FormattedMessage
                                                             id={'Applications.Details.SubscriptionTableData.update.'
@@ -417,7 +428,7 @@ class SubscriptionTableData extends React.Component {
                                                                 + ' You need to get approval to the subscription before editing the tier'}
                                                         />
                                                     )
-                                                    : (status === 'TIER_UPDATE_PENDING')
+                                                    : (status === SUBSCRIPTION_STATUS.TIER_UPDATE_PENDING)
                                                         ? (
                                                             <FormattedMessage
                                                                 id={'Applications.Details.SubscriptionTableData.update.'
@@ -463,7 +474,7 @@ class SubscriptionTableData extends React.Component {
                                                                         />
                                                                     )}
                                                                 />
-                                                                {(status === 'TIER_UPDATE_PENDING')
+                                                                {(status === SUBSCRIPTION_STATUS.TIER_UPDATE_PENDING)
                                                                     && (
                                                                         <div>
                                                                             <FormattedMessage
@@ -488,8 +499,8 @@ class SubscriptionTableData extends React.Component {
                                 </Button>
                                 <Button
                                     variant='contained'
-                                    disabled={(status === 'BLOCKED' || status === 'ON_HOLD' || status === 'REJECTED'
-                                        || status === 'TIER_UPDATE_PENDING')}
+                                    disabled={(status === SUBSCRIPTION_STATUS.BLOCKED || status === SUBSCRIPTION_STATUS.ON_HOLD
+                                        || status === SUBSCRIPTION_STATUS.REJECTED || status === SUBSCRIPTION_STATUS.TIER_UPDATE_PENDING)}
                                     dense
                                     color='primary'
                                     onClick={() => this.handleSubscriptionTierUpdate(apiId,
@@ -512,7 +523,7 @@ class SubscriptionTableData extends React.Component {
                                 color='grey'
                                 onClick={this.handleRequestOpen}
                                 startIcon={<Icon>delete</Icon>}
-                                disabled={tiers.length === 0 || status === 'DELETE_PENDING'}
+                                disabled={tiers.length === 0 || status === SUBSCRIPTION_STATUS.DELETE_PENDING}
                             >
                                 <FormattedMessage
                                     id='Applications.Details.SubscriptionTableData.delete.text'
