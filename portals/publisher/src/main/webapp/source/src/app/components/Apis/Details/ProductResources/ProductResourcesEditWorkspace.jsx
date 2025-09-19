@@ -257,6 +257,7 @@ function ProductResourcesEdit(props) {
     const [selectedApiPaths, setSelectedApiPaths] = useState([]);
     const [selectedApi, setSelectedApi] = useState(null);
     const [fromSearch, setFromSearch] = useState(false);
+    const [isSwaggerLoading, setIsSwaggerLoading] = useState(false);
     // Initialize the rest api libraries
     const apiRestClient = new API();
     const intl = useIntl();
@@ -345,6 +346,7 @@ function ProductResourcesEdit(props) {
 
     // Get the api swagger after an api is selected
     const getApiSwagger = (apiSelected) => {
+        setIsSwaggerLoading(true);
         const { id } = apiSelected;
         const promisedAPI = apiRestClient.getSwagger(id);
         promisedAPI
@@ -362,6 +364,9 @@ function ProductResourcesEdit(props) {
                 } else if (status === 401) {
                     doRedirectToLogin();
                 }
+            })
+            .finally(() => {
+                setIsSwaggerLoading(false);
             });
     };
     const handleSearchTextChange = (event) => {
@@ -668,6 +673,7 @@ function ProductResourcesEdit(props) {
                                         onClick={() => addSelectedResourcesToTree()}
                                         onKeyDown={() => addSelectedResourcesToTree()}
                                         id='add-selected-resources'
+                                        disabled={isSwaggerLoading}
                                     >
                                         <Typography variant='body2'>
                                             <FormattedMessage
@@ -683,6 +689,7 @@ function ProductResourcesEdit(props) {
                                         onClick={() => addSelectedResourcesToTree(true)}
                                         onKeyDown={() => addSelectedResourcesToTree(true)}
                                         id='add-all-resources-btn'
+                                        disabled={isSwaggerLoading}
                                     >
                                         <Typography variant='body2'>
                                             <FormattedMessage

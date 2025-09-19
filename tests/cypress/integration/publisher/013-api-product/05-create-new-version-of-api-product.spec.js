@@ -89,7 +89,7 @@ describe("Create new API product version", () => {
                     cy.get('#resource-wrapper').children().should('have.length.gte', 1);
 
                     // add all resources
-                    cy.get('#add-all-resources-btn').click({ force: true });
+                    cy.get('#add-all-resources-btn').click();
                     cy.wait(5000);
                     cy.get('#create-api-product-btn').scrollIntoView().click({ force: true });
                     cy.url().should('contains', 'overview').then(urlProduct => {
