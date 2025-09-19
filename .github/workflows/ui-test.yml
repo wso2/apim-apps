@@ -13,6 +13,11 @@ concurrency:
 jobs:
   build-product:
     runs-on: ubuntu-latest
+    env:
+      APIM_VERSION: 4.6.0-SNAPSHOT
+      APIM_DIR: wso2am-4.6.0-SNAPSHOT
+      APIM_DOWNLOAD_URL: https://wso2.org/jenkins/job/products/job/product_apim/job/product-apim/lastStableBuild/org.wso2.am$wso2am/artifact/org.wso2.am/wso2am/4.6.0-SNAPSHOT/wso2am-4.6.0-SNAPSHOT.zip
+
     steps:
       - name: Run hostname
         run: hostname
@@ -39,29 +44,30 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2
           restore-keys: ${{ runner.os }}-m2
-      - name: Build apim-apps with Test.
+      - name: Build apim-apps with tests
         run: mvn clean install --file apim-apps/pom.xml
       - name: Get apim.apps.version
         run: mvn help:evaluate -Dexpression=project.version -q --file apim-apps/pom.xml -DforceStdout > ../APIM_APPS_VERSION_FILE
       - name: Print apim.apps.version
-        run: |
-          echo $(cat ../APIM_APPS_VERSION_FILE)
+        run: echo $(cat ../APIM_APPS_VERSION_FILE)
       - name: Download latest API Manager pack
-        run: |
-          wget 'https://wso2.org/jenkins/job/products/job/product_apim/job/product-apim/lastStableBuild/org.wso2.am$wso2am/artifact/org.wso2.am/wso2am/4.6.0-SNAPSHOT/wso2am-4.6.0-SNAPSHOT.zip'
+        run: wget '${{ env.APIM_DOWNLOAD_URL }}'
       - name: Prepare APIM pack with built portals and configurations
         run: |
-          unzip wso2am-4.6.0-SNAPSHOT.zip
-          rm -rf wso2am-4.6.0-SNAPSHOT/repository/deployment/server/webapps/publisher
-          rm -rf wso2am-4.6.0-SNAPSHOT/repository/deployment/server/webapps/devportal
-          rm -rf wso2am-4.6.0-SNAPSHOT/repository/deployment/server/webapps/admin
-          cp -r apim-apps/portals/publisher/target/publisher.war wso2am-4.6.0-SNAPSHOT/repository/deployment/server/webapps/
-          cp -r apim-apps/portals/devportal/target/devportal.war wso2am-4.6.0-SNAPSHOT/repository/deployment/server/webapps/
-          cp -r apim-apps/portals/admin/target/admin.war wso2am-4.6.0-SNAPSHOT/repository/deployment/server/webapps/
-          printf "\n[apim.devportal]\nenable_application_sharing = true\napplication_sharing_type = \"default\"\n" >> wso2am-4.6.0-SNAPSHOT/repository/conf/deployment.toml
-      - name: start APIM server
+          unzip ${{ env.APIM_DIR }}.zip
+
+          for portal in publisher devportal admin; do
+            echo "Replacing $portal portal..."
+            rm -rf "${{ env.APIM_DIR }}/repository/deployment/server/webapps/$portal"
+            cp -r "apim-apps/portals/$portal/target/$portal.war" "${{ env.APIM_DIR }}/repository/deployment/server/webapps/"
+          done
+
+          echo "Appending devportal config to deployment.toml"
+          printf "\n[apim.devportal]\nenable_application_sharing = true\napplication_sharing_type = \"default\"\n" >> ${{ env.APIM_DIR }}/repository/conf/deployment.toml
+
+      - name: Start APIM server
         run: |
-          sh wso2am-4.6.0-SNAPSHOT/bin/api-manager.sh start
+          sh ${{ env.APIM_DIR }}/bin/api-manager.sh start
           sleep 5m # sleep for 5 min to start the server
           nc -zv localhost 9443
       - uses: actions/setup-node@v4
@@ -73,13 +79,13 @@ jobs:
           record: false
           working-directory: 'apim-apps/tests'
           spec: '**/*.spec.js'
-      - name: Upload ScreenShots
+      - name: Upload Screenshots
         uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-screenshots
           path: apim-apps/tests/cypress/screenshots
-      - name: Upload videos
+      - name: Upload Videos
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -90,4 +96,4 @@ jobs:
         if: always()
         with:
           name: server-logs
-          path: wso2am-*/repository/logs
+          path: ${{ env.APIM_DIR }}/repository/logs
