@@ -26,6 +26,7 @@ import {
     ListItemIcon,
     Link,
     ListItemText,
+    useTheme,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Box } from '@mui/system';
@@ -71,6 +72,7 @@ function ComplianceHelp() {
 
 export default function Compliance(props) {
     const intl = useIntl();
+    const theme = useTheme();
     const { match: { params: { id: artifactId } } } = props;
     const [statusCounts, setStatusCounts] = useState({ passed: 0, failed: 0, unapplied: 0 });
     const [artifactName, setArtifactName] = useState('');
@@ -430,7 +432,12 @@ export default function Compliance(props) {
                                         />
                                     </Typography>
                                     <DonutChart
-                                        colors={['#00B81D', '#FF5252', '#FFC107', 'grey']}
+                                        colors={[
+                                            theme.palette.charts.success,
+                                            theme.palette.charts.error,
+                                            theme.palette.charts.warn,
+                                            'grey',
+                                        ]}
                                         data={[
                                             {
                                                 id: 0,
@@ -482,7 +489,11 @@ export default function Compliance(props) {
                                         />
                                     </Typography>
                                     <DonutChart
-                                        colors={['#00B81D', '#FF5252', 'grey']}
+                                        colors={[
+                                            theme.palette.charts.success,
+                                            theme.palette.charts.error,
+                                            'grey',
+                                        ]}
                                         data={[
                                             {
                                                 id: 0,
@@ -526,7 +537,12 @@ export default function Compliance(props) {
                                         />
                                     </Typography>
                                     <DonutChart
-                                        colors={['#FF5252', '#FFC107', '#2E96FF', '#00B81D']}
+                                        colors={[
+                                            theme.palette.charts.error,
+                                            theme.palette.charts.warn,
+                                            theme.palette.charts.info,
+                                            theme.palette.charts.success,
+                                        ]}
                                         data={[
                                             {
                                                 id: 0,

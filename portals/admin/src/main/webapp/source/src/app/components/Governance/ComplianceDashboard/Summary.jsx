@@ -20,7 +20,7 @@
 import React, { useState, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import { Grid, Card, CardContent, Typography, List, ListItemButton, ListItemIcon, Link, ListItemText } from '@mui/material';
+import { Grid, Card, CardContent, Typography, List, ListItemButton, ListItemIcon, Link, ListItemText, useTheme } from '@mui/material';
 import DonutChart from 'AppComponents/Shared/DonutChart';
 import DescriptionIcon from '@mui/icons-material/Description';
 import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
@@ -31,6 +31,7 @@ import GovernanceAPI from 'AppData/GovernanceAPI';
 
 export default function Summary() {
     const intl = useIntl();
+    const theme = useTheme();
     const [policyAdherence, setPolicyAdherence] = useState({
         followedPolicies: 0,
         violatedPolicies: 0,
@@ -196,7 +197,12 @@ export default function Summary() {
                                         }, { count: apiCompliance.notApplicableArtifacts })
                                     }
                                 ]}
-                                colors={['#00B81D', '#FF5252', '#FFC107', 'grey']}
+                                colors={[
+                                    theme.palette.charts.success,
+                                    theme.palette.charts.error,
+                                    theme.palette.charts.warn,
+                                    'grey'
+                                ]}
                             />
                         </CardContent>
                     </Card>

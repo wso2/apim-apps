@@ -18,7 +18,7 @@
  */
 
 import React from 'react';
-import { Box, Chip, Typography, Tooltip, LinearProgress } from '@mui/material';
+import { Box, Chip, Typography, Tooltip, LinearProgress, useTheme } from '@mui/material';
 import ListBaseWithPagination from 'AppComponents/AdminPages/Addons/ListBaseWithPagination';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Link as RouterLink } from 'react-router-dom';
@@ -51,6 +51,7 @@ function apiCall(params) {
 
 export default function ApiComplianceTable() {
     const intl = useIntl();
+    const theme = useTheme();
 
     const renderProgress = (followed, total, status) => {
         if (status === 'PENDING') {
@@ -95,7 +96,7 @@ export default function ApiComplianceTable() {
                         borderRadius: 1,
                         backgroundColor: '#e0e0e0',
                         '& .MuiLinearProgress-bar': {
-                            backgroundColor: '#00B81D',
+                            backgroundColor: theme.palette.charts.success,
                             borderRadius: 1,
                         },
                     }}
