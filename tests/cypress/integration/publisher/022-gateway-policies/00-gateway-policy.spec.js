@@ -97,12 +97,16 @@ describe("Gateway Policies", () => {
         cy.get(`#gateway-chip-${gateway} svg[class*=MuiChip-deleteIcon]`)
             .should('be.visible')
             .click();
-        cy.get('[data-testid=undeploy-from-gateway-button]', { timeout: Cypress.config().largeTimeout }).click();
+        cy.get('[data-testid=undeploy-from-gateway-button]', { timeout: Cypress.config().largeTimeout })
+            .should('be.visible')
+            .click();
+        cy.contains('Policy undeployed successfully').should('be.visible');
 
         //Successful deletion of policy mapping
         cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
         cy.get('[data-testid=policy-mapping-delete-button]').click();
         cy.get('[data-testid=policy-mapping-delete-confirmation-button]', { timeout: Cypress.config().largeTimeout }).click();
+        cy.contains('Policy deleted successfully').should('be.visible');
         cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
         cy.contains('Global policy mapping 1').should('not.exist');
 
