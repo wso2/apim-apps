@@ -237,23 +237,25 @@ function LoadBalanceConfig(props) {
                     margin='normal'
                     disabled={isRestricted(['apim:api_create'], api)}
                 />
-                <FormControlLabel
-                    control={(
-                        <Checkbox
-                            id='failOver'
-                            checked={lbConfig.failOver}
-                            onChange={(event) => handleFailoverFieldChange(event, 'failOver')}
-                            margin='normal'
-                            disabled={isRestricted(['apim:api_create'], api)}
-                        />
-                    )}
-                    label={(
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.LoadBalanceConfig.failover'
-                            defaultMessage='Enable Failover'
-                        />
-                    )}
-                />
+                {lbConfig.sessionManagement === 'none' && (
+                    <FormControlLabel
+                        control={(
+                            <Checkbox
+                                id='failOver'
+                                checked={lbConfig.failOver}
+                                onChange={(event) => handleFailoverFieldChange(event, 'failOver')}
+                                margin='normal'
+                                disabled={isRestricted(['apim:api_create'], api)}
+                            />
+                        )}
+                        label={(
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.LoadBalanceConfig.failover'
+                                defaultMessage='Enable Failover'
+                            />
+                        )}
+                    />
+                )}
             </Grid>
             <Grid className={classes.configButtonContainer}>
                 <Button
