@@ -107,7 +107,7 @@ const AIEndpoints = ({
 
     useEffect(() => {
         fetchEndpoints();
-    }, []);
+    }, [apiObject.id]);
 
     const handleDelete = (endpoint) => {
         // Check if endpoint is primary
