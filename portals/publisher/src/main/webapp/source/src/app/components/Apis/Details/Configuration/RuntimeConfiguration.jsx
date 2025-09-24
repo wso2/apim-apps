@@ -481,10 +481,18 @@ export default function RuntimeConfiguration() {
             setLoadingEndpointConfig(false);
         }
     }, [api]);
-    
+
+    const isAccessRestricted = () => {
+        if (api.apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
+            return isRestricted(['apim:mcp_server_create'], api);
+        } else {
+            return isRestricted(['apim:api_create'], api);
+        }
+    }
+
     const intl = useIntl();
     useEffect(() => {
-        if (!isRestricted(['apim:api_create'], api)) {
+        if (!isAccessRestricted()) {
             Api.keyManagers().then((response) => {
                 const kmNameList = [];
                 if (response.body.list) {
@@ -692,7 +700,7 @@ export default function RuntimeConfiguration() {
                                                 <QueryAnalysis
                                                     api={apiConfig}
                                                     setUpdateComplexityList={setUpdateComplexityList}
-                                                    isRestricted={isRestricted(['apim:api_create'], api)}
+                                                    isRestricted={isAccessRestricted()}
                                                 />
                                             </Box>
                                         )}
@@ -828,7 +836,7 @@ export default function RuntimeConfiguration() {
                         <Grid item id='save-runtime-configurations'>
                             {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
                                 || ((apiConfig.visibility === 'RESTRICTED' && apiConfig.visibleRoles.length === 0)
-                                || isRestricted(['apim:api_create'], api)) || saveButtonDisabled ? (
+                                || isAccessRestricted()) || saveButtonDisabled ? (
                                     <Button
                                         disabled
                                         type='submit'

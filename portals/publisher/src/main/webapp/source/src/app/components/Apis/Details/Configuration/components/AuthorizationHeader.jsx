@@ -28,19 +28,29 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import APIValidation from 'AppData/APIValidation';
 
 /**
- *
- *
- * @export
- * @param {*} props
- * @returns
+ * Component to configure Authorization header
+ * @param {*} props - Props containing api and configDispatcher
+ * @returns {JSX} Header configuration component
  */
-
 export default function AuthorizationHeader(props) {
     const { api, configDispatcher, oauth2Enabled} = props;
     const [apiFromContext] = useAPI();
     const [isHeaderNameValid, setIsHeaderNameValid] = useState(true);
     const authorizationHeaderValue = api.authorizationHeader;
 
+    const getCreateScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), apiFromContext);
+
+    /**
+     * Validate the Authorization header
+     * @param {*} value - The value of the Authorization header
+     */
     function validateHeader(value) {
         const headerValidity = APIValidation.authorizationHeader.required()
             .validate(value, { abortEarly: false }).error;
@@ -57,7 +67,7 @@ export default function AuthorizationHeader(props) {
         <Grid container spacing={1} alignItems='center'>
             <Grid item xs={11}>
                 <TextField
-                    disabled={isRestricted(['apim:api_create'], apiFromContext) || !oauth2Enabled}
+                    disabled={isCreateRestricted() || !oauth2Enabled}
                     id='outlined-name'
                     label={(
                         <FormattedMessage

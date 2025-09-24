@@ -122,6 +122,15 @@ export default function DescriptionEditor(props) {
     const [apiFromContext] = useAPI();
     const [isUpdating, setIsUpdating] = useState(false);
 
+    const getCreateScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), apiFromContext);
+
     const toggleOpen = () => {
         if (!open) {
             setContent(overview);
@@ -161,7 +170,7 @@ export default function DescriptionEditor(props) {
             <Button
                 variant='outlined'
                 color='primary'
-                disabled={api.isRevision || isRestricted(['apim:api_create'], apiFromContext)}
+                disabled={api.isRevision || isCreateRestricted()}
                 onClick={toggleOpen}
             >
                 <FormattedMessage

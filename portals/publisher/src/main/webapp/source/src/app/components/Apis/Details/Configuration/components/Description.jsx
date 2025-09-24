@@ -33,6 +33,15 @@ export default function Description(props) {
     const { api, configDispatcher } = props;
     const [apiFromContext] = useAPI();
 
+    const getCreateScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), apiFromContext);
+
     return (
         <TextField
             id='outlined-multiline-static'
@@ -44,7 +53,7 @@ export default function Description(props) {
             fullWidth
             variant='outlined'
             onChange={(e) => configDispatcher({ action: 'description', value: e.target.value })}
-            disabled={isRestricted(['apim:api_create'], apiFromContext)}
+            disabled={isCreateRestricted()}
         />
     );
 }
