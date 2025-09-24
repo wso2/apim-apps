@@ -177,6 +177,9 @@ export default function DeploymentOnboarding(props) {
                 case 'AWS':
                     gatewayType = 'AWS';
                     break;
+                case 'Azure':
+                    gatewayType = 'Azure';
+                    break;
                 default:
                     if (gatewayTypes.includes(api.gatewayType)) {
                         gatewayType = api.gatewayType;

@@ -83,6 +83,12 @@ const ApiCreateWithAI = () => {
             name: 'AWS Gateway',
             description: 'API gateway offered by AWS cloud.',
             isNew: false
+        },
+        'Azure': { 
+            value: 'Azure',
+            name: 'Azure Gateway', 
+            description: 'API gateway offered by Azure cloud.', 
+            isNew: false 
         }
     };
 
@@ -120,7 +126,7 @@ const ApiCreateWithAI = () => {
 
             const customGateways = {};
             gatewayTypes.forEach((gw) => {
-                if (!gatewayDetails[gw]) {
+                if (!gatewayDetails[gw] && gw !== 'Kong') {
                     const customGateway = {
                         value: gw,
                         name: gw + " Gateway",

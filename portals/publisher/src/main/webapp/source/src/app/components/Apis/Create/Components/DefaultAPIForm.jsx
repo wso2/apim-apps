@@ -39,6 +39,7 @@ const gatewayTypeMap = {
     'Regular': 'wso2/synapse',
     'APK': 'wso2/apk',
     'AWS': 'AWS',
+    'Azure' :'Azure'
 }
 
 const classes = {
@@ -172,6 +173,7 @@ export default function DefaultAPIForm(props) {
         'wso2/synapse': true,
         'wso2/apk': true,
         'AWS': true,
+        'Azure': true,
     });
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
 

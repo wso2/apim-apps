@@ -67,6 +67,12 @@ let gatewayDetails = {
         name: 'AWS Gateway', 
         description: 'API gateway offered by AWS cloud.', 
         isNew: false 
+    },
+    'Azure': { 
+        value: 'Azure',
+        name: 'Azure Gateway', 
+        description: 'API gateway offered by Azure cloud.', 
+        isNew: false 
     }
 };
 
@@ -99,7 +105,7 @@ function APICreateRoutes() {
 
             const customGateways = {};
             updatedData.forEach((gw) => {
-                if (!gatewayDetails[gw]) {
+                if (!gatewayDetails[gw] && gw !== 'Kong') {
                     const customGateway = {
                         value: gw,
                         name: gw + " Gateway",
@@ -128,7 +134,8 @@ function APICreateRoutes() {
                 />
                 <Route path='/apis/create/rest' component={WithSomeValue(APICreateDefault, 
                     { multiGateway: apiTypes?.rest
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type])
+                        .filter(item => item !== undefined) })}
                 />
                 <Route path='/api-products/create' component={APIProductCreateWrapper} />
                 <Route path='/apis/create/graphQL' component={WithSomeValue(ApiCreateGraphQL,
