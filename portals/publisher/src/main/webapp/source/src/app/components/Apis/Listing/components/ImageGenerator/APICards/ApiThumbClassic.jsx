@@ -335,6 +335,10 @@ class APIThumb extends Component {
 
         overviewPath = getBasePath(api.apiType) + api.id + '/overview';
 
+        if (!api.lifeCycleStatus) {
+            api.lifeCycleStatus = api.status;
+        }
+        
         let lifecycleState;
         if (api.apiType === API.CONSTS.APIProduct) {
             lifecycleState = api.state === 'PROTOTYPED' ? 'PRE-RELEASED' : api.state;
@@ -344,9 +348,6 @@ class APIThumb extends Component {
             lifecycleState = api.lifeCycleStatus === 'PROTOTYPED' ? 'PRE-RELEASED' : api.lifeCycleStatus;
         }
 
-        if (!api.lifeCycleStatus) {
-            api.lifeCycleStatus = api.status;
-        }
 
         // Helper function to render ribbon content
         const renderRibbon = () => {
