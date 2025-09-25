@@ -83,6 +83,12 @@ const ApiCreateWithAI = () => {
             name: 'AWS Gateway',
             description: 'API gateway offered by AWS cloud.',
             isNew: false
+        },
+        'Azure': {
+            value: 'Azure',
+            name: 'Azure Gateway',
+            description: 'API gateway offered by Azure cloud.',
+            isNew: false
         }
     };
 
@@ -112,10 +118,16 @@ const ApiCreateWithAI = () => {
         if (!isLoading) {
             const apiTypes = settings.gatewayFeatureCatalog.apiTypes;
             const data = settings.gatewayTypes;
+            const modes = settings.supportedGatewayModes;
             const gatewayTypes = data.map(item => {
                 if (item === "Regular") return "wso2/synapse";
                 if (item === "APK") return "wso2/apk";
                 return item;
+            })
+            .filter(item => {
+                const modeList = modes[item];
+                // Filter out any gateway which has only 'READ_ONLY' mode supported
+                return !(modeList?.length === 1 && modeList[0] === 'READ_ONLY');
             });
 
             const customGateways = {};
