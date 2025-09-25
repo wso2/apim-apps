@@ -555,6 +555,9 @@ export default function Environments() {
                     case 'AWS':
                         gatewayType = 'AWS';
                         break;
+                    case 'Azure':
+                        gatewayType = 'Azure';
+                        break;
                     default:
                         if (settings.gatewayTypes.includes(api.gatewayType)) {
                             gatewayType = api.gatewayType;

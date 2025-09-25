@@ -42,6 +42,7 @@ const gatewayTypeMap = {
     'Regular': 'wso2/synapse',
     'APK': 'wso2/apk',
     'AWS': 'AWS',
+    'Azure': 'Azure',
 };
 
 const getPolicies = async () => {
