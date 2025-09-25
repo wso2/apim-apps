@@ -550,7 +550,8 @@ class CreateEditForm extends React.Component {
             nameNotDuplicate &&
             !nameMaxLengthExceeds &&
             !invalidDocName &&
-            ((!invalidUrl && sourceUrl) || sourceType !== 'URL')
+            ((!invalidUrl && sourceUrl) || sourceType !== 'URL') &&
+            (sourceType !== 'FILE' || !!file)
         ) {
             setSaveDisabled(false);
         } else {
