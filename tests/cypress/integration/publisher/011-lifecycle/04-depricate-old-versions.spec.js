@@ -100,10 +100,6 @@ describe("Depricate old versions of api before publishing", () => {
           publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
           cy.get("#searchQuery").type(apiName).type("{enter}");
           cy.wait(10000);
-          cy.get(`div[data-testid="card-action-${apiName}1.0.0"]`, {
-            timeout: Cypress.config().largeTimeout,
-          }).click();
-          cy.wait(3000);
           cy.get(`div[data-testid="card-${apiName}1.0.0"]`, {
             timeout: Cypress.config().largeTimeout,
           })

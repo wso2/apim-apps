@@ -139,8 +139,6 @@ describe("Publish thirdparty api", () => {
             
 
                 cy.get(`div[data-testid="card-${apiName}1.0.0"]`, { timeout: Cypress.config().largeTimeout })
-                    .wait(2000)
-                    .trigger('mouseover')
                     .should('contain.text', 'PUBLISHED')
                     .click();
                     
