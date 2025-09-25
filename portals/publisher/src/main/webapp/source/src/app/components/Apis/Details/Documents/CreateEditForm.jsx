@@ -641,7 +641,7 @@ class CreateEditForm extends React.Component {
                         error={summaryEmpty}
                     />
                 </FormControl>
-                {settingsContext.docVisibilityEnabled && 
+                {settingsContext?.docVisibilityEnabled && 
                 <FormControl margin='normal' className={classes.FormControlOdd}>
                     <TextField
                         fullWidth
