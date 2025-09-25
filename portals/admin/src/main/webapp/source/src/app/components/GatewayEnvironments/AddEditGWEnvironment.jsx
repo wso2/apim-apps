@@ -287,6 +287,17 @@ function AddEditGWEnvironment(props) {
         dispatch({ field: e.target.name, value: e.target.value });
     };
 
+    useEffect(() => {
+        if (!supportedModes?.includes(gatewayMode) && supportedModes?.length > 0) {
+            onChange({
+                target: {
+                    name: 'gatewayMode',
+                    value: supportedModes[0],
+                },
+            });
+        }
+    }, [supportedModes, gatewayMode, onChange]);
+
     /* const getBorderColor = (gatewayTypeNew) => {
         return gatewayType === gatewayTypeNew
             ? '2px solid #1976D2'
