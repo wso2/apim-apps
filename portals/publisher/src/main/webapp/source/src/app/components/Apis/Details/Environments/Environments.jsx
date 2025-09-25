@@ -2119,12 +2119,12 @@ export default function Environments() {
      */
     function getDeployedRevisionStatusComponent(row, allEnvRevisionMapping) {
 
-        const deployingGateway = allEnvRevisionMapping.find(gateway => {
+        const deployingGateway = allEnvRevisionMapping?.find(gateway => {
             return gateway.name === row.name
         });
         const gatewayRevisions = deployingGateway?.revisions;
 
-        if (!gatewayRevisions.length) {
+        if (!gatewayRevisions || gatewayRevisions.length === 0) {
             // Content to display when there is no revision
             return (
                 <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -2423,7 +2423,7 @@ export default function Environments() {
      * @returns {JSX.Element} The JSX element representing the deployment component
      */
     function getDeployedRevisionComponent(row, allEnvRevisionMapping) {
-        const deployingGateway = allEnvRevisionMapping.find(gateway => {
+        const deployingGateway = allEnvRevisionMapping?.find(gateway => {
             return gateway.name === row.name
         });
         const gatewayRevisions = deployingGateway?.revisions;
@@ -3157,7 +3157,8 @@ export default function Environments() {
                     </DialogActions>
                 </StyledDialog>
             </Grid>
-            {allRevisions && allRevisions.length !== 0 && (
+            {allRevisions && allRevisions.length !== 0 
+            && !api.isRevision && (settings && !settings.portalConfigurationOnlyModeEnabled) && (
                 <>
                     <Grid
                         container
@@ -3443,7 +3444,7 @@ export default function Environments() {
                                         <TableCell component='th' scope='row'>
                                             {row.displayName}
                                         </TableCell>
-                                        {allEnvDeployments[row.name].revision != null ? (
+                                        {allEnvDeployments && allEnvDeployments[row.name]?.revision != null ? (
                                             <>
                                                 <TableCell align='left' id='gateway-access-url-cell'>
                                                     <div className={classes.primaryEndpoint}>
@@ -3667,7 +3668,7 @@ export default function Environments() {
                                         <TableCell component='th' scope='row'>
                                             {row.displayName}
                                         </TableCell>
-                                        {allEnvDeployments[row.name].revision != null ? (
+                                        {allEnvDeployments && allEnvDeployments[row.name]?.revision != null ? (
                                             <>
                                                 <TableCell align='left' id='gateway-access-url-cell'>
                                                     <div className={classes.primaryEndpoint}>
