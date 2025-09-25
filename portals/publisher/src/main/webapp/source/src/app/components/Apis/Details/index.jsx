@@ -1361,13 +1361,10 @@ class Details extends Component {
                                         path={Details.subPaths.COMMENTS}
                                         render={(props) => <Comments {...props} apiObj={api} />}
                                     />
-                                    {settings && settings.gatewayFeatureCatalog
-                                        .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
-                                        .policies.includes("policies") &&
-                                        <Route
-                                            path={Details.subPaths.POLICIES}
-                                            render={(props) => <Policies {...props} api={api} />}
-                                    />}
+                                    <Route
+                                        path={Details.subPaths.POLICIES}
+                                        render={(props) => <Policies {...props} api={api} />}
+                                    />
                                     <Route
                                         path={Details.subPaths.COMPLIANCE}
                                         render={(props) => {
