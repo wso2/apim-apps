@@ -9,7 +9,8 @@ on:
       - main
   workflow_dispatch:
 concurrency:
-  group: ${{ github.event.number }}
+  group: ${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
 jobs:
   build-product:
     runs-on: ubuntu-latest
