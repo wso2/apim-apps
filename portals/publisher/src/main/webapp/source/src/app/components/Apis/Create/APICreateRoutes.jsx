@@ -140,32 +140,39 @@ function APICreateRoutes() {
                 <Route path='/api-products/create' component={APIProductCreateWrapper} />
                 <Route path='/apis/create/graphQL' component={WithSomeValue(ApiCreateGraphQL,
                     { multiGateway: apiTypes?.graphql
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type])
+                        .filter(item => item !== undefined) })}
                 />
                 <Route path='/apis/create/openapi' component={WithSomeValue(ApiCreateSwagger,
                     { multiGateway: apiTypes?.rest
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type])
+                        .filter(item => item !== undefined) })}
                 />
                 <Route path='/apis/create/wsdl' component={WithSomeValue(ApiCreateWSDL,
                     { multiGateway: apiTypes?.soap
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type])
+                        .filter(item => item !== undefined) })}
                 />
                 {/* TODO: Remove ApiCreateWebSocket components and associated routes */}
                 <Route path='/apis/create/ws' component={WithSomeValue(ApiCreateWebSocket,
                     { multiGateway: apiTypes?.ws
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type])
+                        .filter(item => item !== undefined) })}
                 />
                 <Route path='/apis/create/streamingapi/:apiType' component={WithSomeValue(APICreateStreamingAPI,
                     { multiGateway: apiTypes?.ws
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type])
+                        .filter(item => item !== undefined) })}
                 />
                 <Route path='/apis/create/asyncapi' component={WithSomeValue(APICreateAsyncAPI,
                     { multiGateway: apiTypes?.ws
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type])
+                        .filter(item => item !== undefined) })}
                 />
                 <Route path='/apis/create/ai-api' component={WithSomeValue(ApiCreateAIAPI,
                     { multiGateway: apiTypes?.ai
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type])
+                        .filter(item => item !== undefined) })}
                 />
 
                 {/* Routes for MCP Server creation */}
@@ -183,7 +190,8 @@ function APICreateRoutes() {
                     render={(props) => (
                         <MCPRouteGuard>
                             {WithSomeValue(MCPServerCreateDefault, { multiGateway: apiTypes?.ws
-                                .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })(props)}
+                                .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type])
+                                .filter(item => item !== undefined) })(props)}
                         </MCPRouteGuard>
                     )}
                 />
@@ -192,7 +200,8 @@ function APICreateRoutes() {
                     render={(props) => (
                         <MCPRouteGuard>
                             {WithSomeValue(MCPServerCreateUsingExistingAPI, { multiGateway: apiTypes?.ws
-                                .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })(props)}
+                                .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type])
+                                .filter(item => item !== undefined) })(props)}
                         </MCPRouteGuard>
                     )}
                 />
@@ -201,7 +210,8 @@ function APICreateRoutes() {
                     render={(props) => (
                         <MCPRouteGuard>
                             {WithSomeValue(MCPServerCreateProxy, { multiGateway: apiTypes?.ws
-                                .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })(props)}
+                                .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type])
+                                .filter(item => item !== undefined) })(props)}
                         </MCPRouteGuard>
                     )}
                 />

@@ -138,7 +138,8 @@ const ApiCreateWithAI = () => {
             });
 
             gatewayDetails = {...gatewayDetails, ...customGateways};
-            setMultiGateway(apiTypes?.rest.filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]));
+            setMultiGateway(apiTypes?.rest.filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type])
+            .filter(item => item !== undefined));
 
         }
     }, [isLoading]);
