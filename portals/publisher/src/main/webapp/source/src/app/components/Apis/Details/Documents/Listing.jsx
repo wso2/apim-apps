@@ -268,7 +268,7 @@ class Listing extends React.Component {
      */
     isAccessRestricted() {
         const { api } = this.props;
-        return isRestricted(this.getCreateOrPublishScopes(), api);
+        return isRestricted(this.getAllowedScopes(), api);
     }
 
     /**
@@ -288,7 +288,7 @@ class Listing extends React.Component {
         const {  api, intl } = this.props;
         const { docs, showAddDocs, docsToDelete } = this.state;
         const url = getBasePath(api.apiType) + api.id + '/documents/create';
-        const showActionsColumn = this.isCreateOrPublishRestricted() ? 'excluded' : true;
+        const showActionsColumn = this.isAccessRestricted() ? 'excluded' : true;
         const options = {
             title: false,
             filter: false,
