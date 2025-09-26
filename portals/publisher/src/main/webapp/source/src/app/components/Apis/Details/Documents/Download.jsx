@@ -35,31 +35,6 @@ function Download(props) {
     const { intl } = props;
 
     const { docId, apiId, docName, apiType } = props;
-    const [isFileAvailable, setIsFileAvailable] = useState(false);
-    const [isSuccessful, setIsSuccessful] = useState(false);
-
-    useEffect(() => {
-        let api;
-        if (apiType === MCPServer.CONSTS.MCP) {
-            api = MCPServer;
-        } else {
-            api = new Api();
-        }
-        const promisedGetContent = api.getFileForDocument(apiId, docId);
-        promisedGetContent
-            .then(() => {
-                setIsSuccessful(true);
-                setIsFileAvailable(true);
-            })
-            .catch(() => {
-                Alert.error(intl.formatMessage({
-                    id:'Apis.Details.Documents.Download.documents.listing.download.error',
-                    defaultMessage: 'Error downloading the file',
-                }));
-                setIsSuccessful(true);
-                setIsFileAvailable(false);
-            });
-    }, []);
 
     const handleDownload = () => {
         let api;
@@ -85,8 +60,7 @@ function Download(props) {
     };
 
     return (
-        isSuccessful &&
-        <Button onClick={handleDownload} disabled={!isFileAvailable}  aria-label={'Download ' + docName}>
+        <Button onClick={handleDownload} aria-label={'Download ' + docName}>
             <Icon>arrow_downward</Icon>
             <FormattedMessage
                 id='Apis.Details.Documents.Download.documents.listing.download'

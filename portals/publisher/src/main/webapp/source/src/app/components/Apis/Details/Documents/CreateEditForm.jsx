@@ -27,6 +27,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import Icon from '@mui/material/Icon';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Dropzone from 'react-dropzone';
@@ -39,6 +40,7 @@ import AppContext from 'AppComponents/Shared/AppContext';
 import Alert from 'AppComponents/Shared/Alert';
 import Configurations from 'Config';
 import { green } from '@mui/material/colors';
+import { Box } from '@mui/material';
 
 const PREFIX = 'CreateEditForm';
 
@@ -142,7 +144,6 @@ const Root = styled('div')((
     [`& .${classes.dropZoneWrapper}`]: {
         height: '100%',
         display: 'flex',
-        cursor: 'pointer',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
@@ -542,24 +543,28 @@ class CreateEditForm extends React.Component {
             urlEmpty,
             visibility
         } = this.state;
-        const {  setSaveDisabled } = this.props;
+        const {  setSaveDisabled, docId } = this.props;
         const { settings: settingsContext } = this.context;
-        if (
+
+        const isEditing = !!docId;
+        let isFormValid =
             name !== '' &&
             summary !== '' &&
             nameNotDuplicate &&
             !nameMaxLengthExceeds &&
             !invalidDocName &&
-            ((!invalidUrl && sourceUrl) || sourceType !== 'URL')
-        ) {
-            setSaveDisabled(false);
-        } else {
-            setSaveDisabled(true);
+            (sourceType !== 'URL' || (sourceUrl && !invalidUrl));
+
+        if (sourceType === 'FILE' && !isEditing && !file) {
+            isFormValid = false;
         }
 
         if (type === 'OTHER' && !otherTypeName) {
-            setSaveDisabled(true);
+            isFormValid = false;
         }
+
+        setSaveDisabled(!isFormValid);
+
         return (
             <Root className={classes.addNewOther}>
                 <FormControl margin='normal' className={classes.FormControlOdd}>
@@ -636,7 +641,7 @@ class CreateEditForm extends React.Component {
                         error={summaryEmpty}
                     />
                 </FormControl>
-                {settingsContext.docVisibilityEnabled && 
+                {settingsContext?.docVisibilityEnabled && 
                 <FormControl margin='normal' className={classes.FormControlOdd}>
                     <TextField
                         fullWidth
@@ -936,7 +941,6 @@ class CreateEditForm extends React.Component {
                     <Dropzone
                         multiple={false}
                         accept={Configurations.app.supportedDocTypes}
-                        className={classes.dropzone}
                         activeClassName={classes.acceptDrop}
                         rejectClassName={classes.rejectDrop}
                         onDrop={(dropFile) => {
@@ -944,15 +948,44 @@ class CreateEditForm extends React.Component {
                         }}
                     >
                         {({ getRootProps, getInputProps }) => (
-                            <div {...getRootProps()}>
+                            <div {...getRootProps()} className={classes.dropzone} >
                                 <input {...getInputProps()} />
                                 <div className={classes.dropZoneWrapper}>
-                                    <Icon className={classes.dropIcon} style={{ fontSize: 56 }}>
-                                        cloud_upload
-                                    </Icon>
+                                    {!file && (
+                                        <div>
+                                            <Icon
+                                                className={classes.dropIcon}
+                                                style={{ fontSize: 56 }}
+                                            >
+                                                cloud_upload
+                                            </Icon>
+                                            <Typography
+                                                component="p"
+                                                className={classes.content}
+                                            >
+                                                {isEditing ? (
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Documents.CreateEditForm.document.drop.file.replace'
+                                                        defaultMessage={'Drag and drop a file here, or click to select a file ' +
+                                                            'to replace the existing document'}
+                                                    />
+                                                ) : (
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Documents.CreateEditForm.document.drop.file'
+                                                        defaultMessage='Drag and drop a file here, or click to select a file to upload'
+                                                    />
+                                                )}
+                                            </Typography>
+                                        </div>
+                                    )}
                                     {file && file.length > 0 && (
                                         <div className={classes.uploadedFile}>
-                                            <Icon>file</Icon> {file[0].name}
+                                            <InsertDriveFileIcon color='primary' fontSize='large' />
+                                            <Box fontSize='h6.fontSize' fontWeight='fontWeightLight'>
+                                                <Typography>
+                                                    {file[0].name}
+                                                </Typography>
+                                            </Box>
                                         </div>
                                     )}
                                 </div>
