@@ -102,20 +102,15 @@ export default function GraphQLQueryAnalysis(props) {
      * @param {Array} List - List of types with fields
      */
     function findSummation(List) {
-        const type = [...new Set(List.map((respond) => respond.type))];
-        const array = [];
-        type.map((respond) => {
-            const ob = {};
-            ob.type = respond;
-            ob.summation = 0;
-            List.map((obj) => {
-                if (obj.type === respond) {
-                    ob.summation += obj.complexityValue;
-                }
-                return obj;
-            });
-            array.push(ob);
-            return array;
+        const typeSet = [...new Set(List.map((respond) => respond.type))];
+        const array = typeSet.map((type) => {
+            const summation = List.reduce((sum, obj) => {
+                return obj.type === type ? sum + obj.complexityValue : sum;
+            }, 0);
+            return {
+                type,
+                summation
+            };
         });
         setTypeList(array);
     }
