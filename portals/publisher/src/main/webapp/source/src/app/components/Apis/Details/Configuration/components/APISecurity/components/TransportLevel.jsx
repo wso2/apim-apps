@@ -87,11 +87,9 @@ const Root = styled('div')((
 }));
 
 /**
- *
- *
- * @export
- * @param {*} props
- * @returns
+ * TransportLevel component
+ * @param {*} props - The component props
+ * @returns {JSX.Element} The rendered component
  */
 function TransportLevel(props) {
     const {
@@ -102,6 +100,14 @@ function TransportLevel(props) {
     const [productionClientCertificates, setProductionClientCertificates] = useState([]);
     const [sandboxClientCertificates, setSandboxClientCertificates] = useState([]);
 
+    const getCreateScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), apiFromContext);
 
     /**
      * Method to upload the certificate content by calling the rest api.
@@ -110,8 +116,8 @@ function TransportLevel(props) {
      * @param {string} keyType The key type of the certificate. (whether production or sandbox)
      * @param {string} policy The tier to be used for the certificate.
      * @param {string} alias The alias of the certificate to be deleted.
-     *
-     * */
+     * @return {Promise} Promise object containing the server response
+     */
     const saveClientCertificate = (certificate, keyType, policy, alias) => {
         return API.addClientCertificate(id, certificate, keyType, policy, alias).then((resp) => {
             if (resp.status === 201) {
@@ -155,6 +161,7 @@ function TransportLevel(props) {
      *
      * @param {string} keyType The key type of the certificate to be deleted.
      * @param {string} alias The alias of the certificate to be deleted.
+     * @return {Promise} Promise object containing the server response
      * */
     const deleteClientCertificate = (keyType, alias) => {
         return API.deleteClientCertificate(keyType, alias, id).then((resp) => {
@@ -281,7 +288,7 @@ function TransportLevel(props) {
                                 control={(
                                     <Checkbox
                                         disabled={
-                                            isRestricted(['apim:api_create'], apiFromContext) ||
+                                            isCreateRestricted() ||
                                             apiFromContext.apiType === MCPServer.CONSTS.MCP
                                         }
                                         checked={isMutualSSLEnabled}
@@ -312,8 +319,7 @@ function TransportLevel(props) {
                                         value={API_SECURITY_MUTUAL_SSL_MANDATORY}
                                         control={(
                                             <Radio
-                                                disabled={!haveMultiLevelSecurity
-                                                || isRestricted(['apim:api_create'], apiFromContext)}
+                                                disabled={!haveMultiLevelSecurity || isCreateRestricted()}
                                                 color='primary'
                                             />
                                         )}
@@ -328,8 +334,7 @@ function TransportLevel(props) {
                                         value={API_SECURITY_MUTUAL_SSL_OPTIONAL}
                                         control={(
                                             <Radio
-                                                disabled={!haveMultiLevelSecurity
-                                                || isRestricted(['apim:api_create'], apiFromContext)}
+                                                disabled={!haveMultiLevelSecurity || isCreateRestricted()}
                                                 color='primary'
                                             />
                                         )}

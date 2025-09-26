@@ -36,6 +36,15 @@ export default function BackendRateLimiting(props) {
 
     const intl = useIntl();
 
+    const getCreateScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), api);
+
     const stylesSx = {
         subHeading: {
             fontSize: '1rem',
@@ -71,7 +80,7 @@ export default function BackendRateLimiting(props) {
                         control={(
                             <Radio
                                 color='primary'
-                                disabled={isRestricted(['apim:api_create'], api)}
+                                disabled={isCreateRestricted()}
                             />
                         )}
                         label={intl.formatMessage({
@@ -80,14 +89,13 @@ export default function BackendRateLimiting(props) {
                             defaultMessage: 'Unlimited',
                         })}
                         labelPlacement='end'
-
                     />
                     <FormControlLabel
                         value='specify'
                         control={(
                             <Radio
                                 color='primary'
-                                disabled={isRestricted(['apim:api_create'], api)}
+                                disabled={isCreateRestricted()}
                             />
                         )}
                         label={intl.formatMessage({
@@ -96,7 +104,7 @@ export default function BackendRateLimiting(props) {
                             defaultMessage: 'Specify',
                         })}
                         labelPlacement='end'
-                        disabled={isRestricted(['apim:api_create'], api)}
+                        disabled={isCreateRestricted()}
                     />
                 </RadioGroup>
             </FormControl>

@@ -34,6 +34,15 @@ import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 const Social = (props) => {
     const { slackURL, githubURL, configDispatcher } = props;
     const [apiFromContext] = useAPI();
+
+    const getCreateOrPublishScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), apiFromContext);
     return (
         <>
             <TextField
@@ -49,7 +58,7 @@ const Social = (props) => {
                 fullWidth
                 margin='normal'
                 onChange={(e) => configDispatcher({ action: 'github_repo', value: e.target.value })}
-                disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
+                disabled={isCreateOrPublishRestricted()}
                 helperText={(
                     <FormattedMessage
                         id='Apis.Details.Configuration.components.Social.giturl.help'
@@ -75,7 +84,7 @@ const Social = (props) => {
                 fullWidth
                 margin='normal'
                 onChange={(e) => configDispatcher({ action: 'slack_url', value: e.target.value })}
-                disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
+                disabled={isCreateOrPublishRestricted()}
                 helperText={(
                     <FormattedMessage
                         id='Apis.Details.Configuration.components.Social.slack_url.help'

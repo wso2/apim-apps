@@ -39,52 +39,13 @@ import UpdateComplexity from '../../QueryAnalysis/UpdateComplexity';
 const PREFIX = 'QueryAnalysis';
 
 const classes = {
-    content: `${PREFIX}-content`,
-    itemWrapper: `${PREFIX}-itemWrapper`,
-    FormControl: `${PREFIX}-FormControl`,
-    subTitle: `${PREFIX}-subTitle`,
-    subTitleDescription: `${PREFIX}-subTitleDescription`,
-    flowWrapper: `${PREFIX}-flowWrapper`,
     subHeading: `${PREFIX}-subHeading`,
     heading: `${PREFIX}-heading`,
     paper: `${PREFIX}-paper`,
     editIcon: `${PREFIX}-editIcon`,
 };
 
-
 const Root = styled('div')(() => ({
-    [`& .${classes.content}`]: {
-        flexGrow: 1,
-    },
-
-    [`& .${classes.itemWrapper}`]: {
-        width: 'auto',
-        display: 'flex',
-    },
-
-    [`& .${classes.FormControl}`]: {
-        padding: 10,
-        width: '100%',
-        marginTop: 0,
-        display: 'flex',
-        flexDirection: 'row',
-    },
-
-    [`& .${classes.subTitle}`]: {
-        marginTop: 20,
-    },
-
-    [`& .${classes.subTitleDescription}`]: {
-        marginBottom: 10,
-    },
-
-    [`& .${classes.flowWrapper}`]: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-
     [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
@@ -137,8 +98,8 @@ export default function GraphQLQueryAnalysis(props) {
     const [typelist, setTypeList] = useState([]);
 
     /**
-     * Get Summation of field's complexity value of all types
-     * @param {Object of array} List
+     * Find the summation of complexity values for each type
+     * @param {Array} List - List of types with fields
      */
     function findSummation(List) {
         const type = [...new Set(List.map((respond) => respond.type))];
@@ -162,7 +123,6 @@ export default function GraphQLQueryAnalysis(props) {
     /**
      * Set the Initial Complexity Values to the field's
      */
-
     function setInitialComplexity() {
         const apiId = api.id;
         const apiClient = new Api();

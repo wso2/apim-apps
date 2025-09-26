@@ -56,11 +56,6 @@ const Root = styled('div')((
         width: '100%',
     },
 
-    [`& .${classes.input}`]: {
-        marginLeft: theme.spacing(1),
-        flex: 1,
-    },
-
     [`& .${classes.iconButton}`]: {
         padding: theme.spacing(1),
     }

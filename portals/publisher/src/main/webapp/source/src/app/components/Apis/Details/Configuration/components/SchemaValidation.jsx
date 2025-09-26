@@ -121,16 +121,34 @@ class SchemaValidation extends React.Component {
     }
 
     /**
-     *
-     * @inheritdoc
-     * @param {*} props
-     * @returns
-     * @memberof SchemaValidation
+     * Get the scopes required to create an API/MCP Server
+     * @returns {Array} The scopes required to create an API
+     */
+    getCreateScopes() {
+        const { api } = this.props;
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    }
+
+    /**
+     * Check if the user is restricted from creating an API/MCP Server
+     * @returns {boolean} whether the user is restricted to create an API/MCP Server
+     */
+    isCreateRestricted() {
+        const { api } = this.props;
+        return isRestricted(this.getCreateScopes(), api);
+    }
+
+    /**
+     * Render the SchemaValidation component
+     * @returns {JSX} HTML representation of the component
      */
     render() {
         const { api, configDispatcher, } = this.props;
         const { isOpen } = this.state;
-        const { api: apiFromContext } = this.context;
 
         return (
             <StyledPaper className={classes.paper}>
@@ -160,7 +178,7 @@ class SchemaValidation extends React.Component {
                             className={classes.actionSpace}
                             control={(
                                 <Switch
-                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                    disabled={this.isCreateRestricted()}
                                     checked={
                                         api.enableSchemaValidation === undefined ? false : api.enableSchemaValidation
                                     }
