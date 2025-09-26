@@ -118,16 +118,15 @@ const ApiCreateWithAI = () => {
         if (!isLoading) {
             const apiTypes = settings.gatewayFeatureCatalog.apiTypes;
             const data = settings.gatewayTypes;
-            const modes = settings.supportedGatewayModes;
-            const gatewayTypes = data.map(item => {
+            const settingsEnvList = settings.environment;
+            const filteredEnvironments = settingsEnvList ? settingsEnvList
+                .filter(env => env?.mode !== 'READ_ONLY') : [];
+            const distinctGatewayTypes = [...new Set(filteredEnvironments.map(env => env.gatewayType))];
+            const commonGatewayTypes = distinctGatewayTypes.filter(type => data.includes(type));
+            const gatewayTypes = commonGatewayTypes.map(item => {
                 if (item === "Regular") return "wso2/synapse";
                 if (item === "APK") return "wso2/apk";
                 return item;
-            })
-            .filter(item => {
-                const modeList = modes[item];
-                // Filter out any gateway which has only 'READ_ONLY' mode supported
-                return !(modeList?.length === 1 && modeList[0] === 'READ_ONLY');
             });
 
             const customGateways = {};

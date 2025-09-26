@@ -96,17 +96,16 @@ function APICreateRoutes() {
         if (!isLoading) {
             setApiTypes(publisherSettings.gatewayFeatureCatalog.apiTypes);
             const data = publisherSettings.gatewayTypes;
-            const modes = publisherSettings.supportedGatewayModes;
-            const updatedData = data.map(item => {
+            const settingsEnvList = publisherSettings.environment;
+            const filteredEnvironments = settingsEnvList ? settingsEnvList
+                .filter(env => env?.mode !== 'READ_ONLY') : [];
+            const distinctGatewayTypes = [...new Set(filteredEnvironments.map(env => env.gatewayType))];
+            const commonGatewayTypes = distinctGatewayTypes.filter(type => data.includes(type));
+            const updatedData = commonGatewayTypes.map(item => {
                 if (item === "Regular") return "wso2/synapse";
                 if (item === "APK") return "wso2/apk";
                 return item;
-            })
-                .filter(item => {
-                    const modeList = modes[item];
-                    // Filter out any gateway which has only 'READ_ONLY' mode supported
-                    return !(modeList?.length === 1 && modeList[0] === 'READ_ONLY');
-                });
+            });
             setGatewayTypes(updatedData);
 
             const customGateways = {};
