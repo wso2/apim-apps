@@ -142,14 +142,14 @@ const StyledCard = styled(Card)(({ theme, useFlexibleWidth }) => ({
 }));
 
 // Get type chip label for APIs
-const getTypeChipLabel = (type, gatewayVendor) => {
+const getTypeChipLabel = (type, gatewayType) => {
     const typeMapping = {
         HTTP: 'REST',
         WS: 'WS',
         SOAPTOREST: 'SOAPTOREST',
         SOAP: 'SOAP',
         GRAPHQL: 'GraphQL',
-        WEBSUB: gatewayVendor === 'solace' ? 'SOLACE API' : 'WebSub',
+        WEBSUB: gatewayType === 'solace' ? 'SOLACE API' : 'WebSub',
         SSE: 'SSE',
         WEBHOOK: 'Webhook',
         ASYNC: 'ASYNC',
@@ -298,7 +298,7 @@ class APIThumb extends Component {
             // In search route, the apiType comes as `transportType`
             // In non-search (listing) route, the apiType comes as `type`
             // Giving precedence to transportType since there is a different attribute called `type` in search mode
-            label = getTypeChipLabel(api.transportType ? api.transportType : api.type, api.gatewayVendor);
+            label = getTypeChipLabel(api.transportType ? api.transportType : api.type, api.gatewayType);
             icon = getTypeIcon(api.transportType ? api.transportType : api.type);
         }
 
@@ -325,7 +325,7 @@ class APIThumb extends Component {
         let overviewPath = '';
         const { tileDisplayInfo } = Configurations.apis;
 
-        // If the the data is coming throught the API/APIProduct/MCP Listing path, 
+        // If the the data is coming throught the API/APIProduct/MCP Listing path,
         // the apiType attribute will be automatically added before coming here.
         // If apiType is missing, that means the data is coming from the search path
         // There we can take the api.type as the apiType
@@ -436,7 +436,7 @@ class APIThumb extends Component {
                                             &nbsp;
                                             <FormattedMessage id='on' defaultMessage='on' />
                                             &nbsp;
-                                            {api.gatewayVendor === 'wso2' || api.gatewayVendor === 'solace'
+                                            {api.gatewayVendor === 'wso2' || api.gatewayType === 'solace'
                                                 ? api.gatewayVendor.toUpperCase()
                                                 : api.gatewayType}
                                         </>

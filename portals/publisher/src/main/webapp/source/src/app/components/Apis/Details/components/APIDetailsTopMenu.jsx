@@ -423,7 +423,20 @@ const APIDetailsTopMenu = (props) => {
                         />
                     </MUIAlert>
                 )}
-                {(!api.advertiseInfo || !api.advertiseInfo.advertised) && (
+                {api.gatewayType === 'solace' && (
+                    <MUIAlert
+                        data-testid='itest-third-party-api-label'
+                        variant='outlined'
+                        severity='warning'
+                        icon={false}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.components.APIDetailsTopMenu.solace.api.label'
+                            defaultMessage='Solace'
+                        />
+                    </MUIAlert>
+                )}
+                {(!api.advertiseInfo || !api.advertiseInfo.advertised) && (api.gatewayType !== 'solace') && (
                     <div className={classes.topRevisionStyle}>
                         <TextField
                             id='revision-selector'

@@ -162,15 +162,15 @@ function Subscriptions(props) {
     }
     return (
         (<Root>
-            {(api.gatewayVendor === 'wso2') &&
-            (   
-                <SubscriptionPoliciesManage
-                    api={api}
-                    policies={policies}
-                    setPolices={setPolices}
-                    subValidationDisablingAllowed={settings.allowSubscriptionValidationDisabling}
-                />
-            )}
+            {(api.gatewayVendor === 'wso2' || api.gatewayType === 'solace') &&
+                (
+                    <SubscriptionPoliciesManage
+                        api={api}
+                        policies={policies}
+                        setPolices={setPolices}
+                        subValidationDisablingAllowed={settings.allowSubscriptionValidationDisabling}
+                    />
+                )}
             {isSubValidationDisabled && (
                 <Box mb={2} mt={2}>
                     <MUIAlert severity='warning'>
@@ -196,7 +196,7 @@ function Subscriptions(props) {
                     setTenantList={setTenantList}
                 />
             )}
-            {(api.gatewayVendor === 'wso2') && (
+            {(api.gatewayVendor === 'wso2' || api.gatewayType === 'solace') && (
                 <Grid
                     container
                     direction='row'

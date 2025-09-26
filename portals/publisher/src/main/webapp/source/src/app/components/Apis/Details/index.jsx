@@ -377,7 +377,7 @@ class Details extends Component {
                 this.setState({
                     isMCPServer: true,
                     api: mcpServer,
-                    // isMCPServerLoading: false, 
+                    // isMCPServerLoading: false,
                 }, () => {
                     // This code will run after the state has been updated
                     this.getRevision();
@@ -868,7 +868,7 @@ class Details extends Component {
         }
 
         if (!api) {
-            if (isMCPServer) { // TODO check why loading api data is always getting showing 
+            if (isMCPServer) { // TODO check why loading api data is always getting showing
                 return <Progress per={70} message='Loading MCP Server data ...' />;
             } else if (isAPIProduct) {
                 return <Progress per={70} message='Loading API Product data ...' />;
@@ -1237,7 +1237,7 @@ class Details extends Component {
                                         key={Details.subPaths.TOOLS}
                                         component={APIOperations}
                                     />
-    
+
                                     {settings && settings.gatewayFeatureCatalog
                                         .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
                                         .localScopes.includes("operationScopes") &&

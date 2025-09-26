@@ -177,6 +177,9 @@ export default function DeploymentOnboarding(props) {
                 case 'AWS':
                     gatewayType = 'AWS';
                     break;
+                case 'solace':
+                    gatewayType = 'Solace';
+                    break;
                 default:
                     if (gatewayTypes.includes(api.gatewayType)) {
                         gatewayType = api.gatewayType;
@@ -594,6 +597,7 @@ export default function DeploymentOnboarding(props) {
                                             disabled={selectedEnvironment.length === 0
                                                 || isRestricted(['apim:api_create', 'apim:api_publish'], api)
                                                 || (advertiseInfo && advertiseInfo.advertised)
+                                                || api.gatewayType === 'solace'
                                                 || isDeployButtonDisabled}
                                         >
                                             <FormattedMessage

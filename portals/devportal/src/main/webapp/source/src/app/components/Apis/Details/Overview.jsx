@@ -515,9 +515,9 @@ function Overview() {
                                     </Box>
                                 </Box>
                             </Box>
-                            <Box display='flex' flexDirection='row' alignItems='center' mt={2} pr={6}>
+                            <Box alignItems='center' mt={2} pr={6}>
                                 {
-                                    (api.gatewayVendor === 'solace') ? (
+                                    (api.gatewayType === 'solace') ? (
                                         <SolaceEndpoints />
                                     ) : (
                                         <Environments updateSelectedEndpoint={updateSelectedEndpoint} selectedEndpoint={selectedEndpoint} />

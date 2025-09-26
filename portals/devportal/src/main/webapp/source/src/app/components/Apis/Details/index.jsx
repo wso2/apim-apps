@@ -545,7 +545,7 @@ class DetailsLegacy extends React.Component {
                     rootIconSize, rootIconTextVisible, rootIconVisible, position,
                 },
                 apiDetailPages: {
-                    showCredentials, showComments, showTryout, showDocuments, showSdks, showAsyncSpecification, showSolaceTopics,
+                    showCredentials, showComments, showTryout, showDocuments, showSdks, showAsyncSpecification,
                 },
                 title: {
                     prefix, sufix,
@@ -630,7 +630,7 @@ class DetailsLegacy extends React.Component {
                                 id='left-menu-overview'
                             />
                             {user && showCredentials && !isSubValidationDisabled
-                                && (api.gatewayVendor === 'wso2' || !api.gatewayVendor) && (
+                                && (api.gatewayVendor === 'wso2' || !api.gatewayVendor || api.gatewayType === 'solace') && (
                                 <>
 
                                     <LeftMenuItem
@@ -650,7 +650,7 @@ class DetailsLegacy extends React.Component {
                                 </>
                             )}
                             {showTryout && (api.gatewayType !== 'wso2/apk'
-                                || (api.type === 'APIPRODUCT' && !api.gatewayVendor)) && (
+                                || (api.type === 'APIPRODUCT' && !api.gatewayVendor)) && api.gatewayType !== 'solace' && (
                                 <>
                                     <Accordion
                                         id='left-menu-try-out'
@@ -745,21 +745,6 @@ class DetailsLegacy extends React.Component {
                                         </AccordionDetails>
                                     </Accordion>
                                 </>
-                            )}
-                            {(showSolaceTopics && !isMCPServer && api.gatewayVendor === 'solace') && (
-                                <LeftMenuItem
-                                    text={(
-                                        <FormattedMessage
-                                            id='Apis.Details.index.solaceTopicsInfo'
-                                            defaultMessage='Solace Info'
-                                        />
-                                    )}
-                                    route='solaceTopicsInfo'
-                                    iconText='test'
-                                    to={pathPrefix + 'solaceTopicsInfo'}
-                                    open={open}
-                                    id='left-menu-solace-info'
-                                />
                             )}
                             {isAsyncApi && showAsyncSpecification && !isMCPServer && (
                                 <LeftMenuItem

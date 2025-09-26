@@ -3083,6 +3083,20 @@ class API extends Resource {
         });
     }
 
+    static validateAsyncApiByContent(asyncAPIData) {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        let promisedValidate = apiClient.then(client => {
+            return client.apis.Validation.validateAsyncAPISpecification(
+                payload,
+                requestBody,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data'
+                }),
+            );
+        });
+        return promisedValidate;
+    }
+
     static validateAsyncAPIByFile(asyncAPIData) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         let payload, promisedValidate;
@@ -3176,6 +3190,76 @@ class API extends Resource {
             return promisedResponse.then(response => new API(response.body));
         });
         return promise_create;
+    }
+
+    importAsyncApiFromSolaceEventApi(solaceEventApiData) {
+
+        const [solaceEventApiProductId, solacePlanId, solaceEventApiId] = solaceEventApiData.split("/");
+
+        const fetchPromise = this.client.then(client => {
+            const params = {
+                eventApiProductId: solaceEventApiProductId,
+                planId: solacePlanId,
+                eventApiId: solaceEventApiId
+            };
+            const jsonString = JSON.stringify(params);
+            const urlEncodedString = encodeURIComponent(jsonString);
+            return client.apis['Integrated APIs'].getIntegratedApiDefinition({
+                vendor: 'solace',
+                params: {
+                    params: urlEncodedString
+                }
+            }).then(asyncApiDefinitionResponse => {
+                if (!asyncApiDefinitionResponse || asyncApiDefinitionResponse.status !== 200) {
+                    console.error("Error loading AsyncAPI of Event API Product");
+                }
+                return asyncApiDefinitionResponse.body;
+            }).catch((error) => {
+                console.error("Error loading AsyncAPI of Event API Product", error);
+            });
+        });
+
+        const promisedCreate = fetchPromise.then(asyncApiPayload => {
+            return this.client.then(client => {
+                const apiData = this.getDataFromSpecFields(client);
+
+                // Use File instead of Blob to include a filename
+                const asyncApiFile = new File(
+                    [JSON.stringify(asyncApiPayload)], // File content
+                    "blob.json", // File name
+                    { type: "application/json" } // MIME type
+                );
+
+                const payload = {
+                    requestBody: {
+                        file: asyncApiFile,
+                        additionalProperties: JSON.stringify(apiData),
+                    }
+                };
+
+                // Import the AsyncAPI definition
+                const promisedResponse = client.apis['APIs'].importAsyncAPISpecification(
+                    null,
+                    payload,
+                    this._requestMetaData({
+                        'Content-Type': 'multipart/form-data',
+                    }),
+                );
+
+                // Change the lifecycle state to "Publish" after importing
+                return promisedResponse.then(response => {
+                    return API.updateLcState(response.body.id, 'Publish').then(() => {
+                        return new API(response.body);
+                    });
+                });
+            });
+        });
+
+        // Return the combined promise
+        return promisedCreate.catch(err => {
+            console.error("Error loading or importing Event API AsyncAPI");
+            throw err;
+        });
     }
 
     /**
