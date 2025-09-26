@@ -41,38 +41,38 @@ const classes = {
 
 const StyledConfirmDialog
  = styled(ConfirmDialog
-)((
-    {
-        theme
-    }
-) => ({
-    [`& .${classes.link}`]: {
-        color: theme.palette.getContrastText(theme.palette.background.default),
-        cursor: 'pointer',
-    },
+ )((
+     {
+         theme
+     }
+ ) => ({
+     [`& .${classes.link}`]: {
+         color: theme.palette.getContrastText(theme.palette.background.default),
+         cursor: 'pointer',
+     },
 
-    [`& .${classes.commentIcon}`]: {
-        color: theme.palette.getContrastText(theme.palette.background.default),
-    },
+     [`& .${classes.commentIcon}`]: {
+         color: theme.palette.getContrastText(theme.palette.background.default),
+     },
 
-    [`& .${classes.commentText}`]: {
-        color: theme.palette.getContrastText(theme.palette.background.default),
-        marginTop: theme.spacing(1),
-        width: '100%',
-        whiteSpace: 'pre-wrap',
-        overflowWrap: 'break-word',
-    },
+     [`& .${classes.commentText}`]: {
+         color: theme.palette.getContrastText(theme.palette.background.default),
+         marginTop: theme.spacing(1),
+         width: '100%',
+         whiteSpace: 'pre-wrap',
+         overflowWrap: 'break-word',
+     },
 
-    [`& .${classes.root}`]: {
-        marginTop: theme.spacing(2.5),
-    },
+     [`& .${classes.root}`]: {
+         marginTop: theme.spacing(2.5),
+     },
 
-    [`& .${classes.contentWrapper}`]: {
-        maxWidth: theme.custom.contentAreaWidth,
-        paddingLeft: theme.spacing(2),
-        paddingTop: theme.spacing(1),
-    }
-}));
+     [`& .${classes.contentWrapper}`]: {
+         maxWidth: theme.custom.contentAreaWidth,
+         paddingLeft: theme.spacing(2),
+         paddingTop: theme.spacing(1),
+     }
+ }));
 
 /**
  * Display a particular comment and details

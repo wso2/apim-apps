@@ -95,6 +95,16 @@ function AdvanceEndpointConfig(props) {
         onSaveAdvanceConfig,
         onCancel,
     } = props;
+
+    const getCreateScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), api);
+
     const [advanceConfigObj, setAdvanceConfig] = useState(() => {
         const config = {};
         if (isSOAPEndpoint) {
@@ -274,7 +284,7 @@ function AdvanceEndpointConfig(props) {
 
     useEffect(() => {
         setAdvanceConfig(() => {
-            if (advanceConfig === {}) {
+            if (Object.keys(advanceConfig).length === 0) {
                 return { ...advanceConfigObj };
             }
             return { ...advanceConfigObj, ...advanceConfig };
@@ -562,7 +572,7 @@ function AdvanceEndpointConfig(props) {
                         onClick={() => onSaveAdvanceConfig(advanceConfigObj)}
                         color='primary'
                         autoFocus
-                        disabled={isRestricted(['apim:api_create'], api)}
+                        disabled={isCreateRestricted()}
                         variant='contained'
                         style={{ marginRight: '10px' }}
                         id='endpoint-configuration-submit-btn'

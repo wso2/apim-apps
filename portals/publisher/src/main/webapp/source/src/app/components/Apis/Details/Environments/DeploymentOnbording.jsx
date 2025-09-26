@@ -151,6 +151,16 @@ export default function DeploymentOnboarding(props) {
     const isMCPServer = api.isMCPServer();
     const { maxCommentLength } = theme.custom;
     const { settings: { environment: environments, gatewayTypes } } = useAppContext();
+
+    const getCreateOrPublishScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), api);
+
     const [internalGateways, setInternalGateways] = useState([]);
     const [externalGateways, setExternalGateways] = useState([]);
     const [selectedExternalGateway, setSelectedExternalGateway] = useState([]);
@@ -592,7 +602,7 @@ export default function DeploymentOnboarding(props) {
                                             }
                                             color='primary'
                                             disabled={selectedEnvironment.length === 0
-                                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                                                || isCreateOrPublishRestricted()
                                                 || (advertiseInfo && advertiseInfo.advertised)
                                                 || isDeployButtonDisabled}
                                         >
@@ -635,8 +645,7 @@ export default function DeploymentOnboarding(props) {
                                                                     value={row.name}
                                                                     checked=
                                                                         {selectedExternalGateway.includes(row.name)}
-                                                                    disabled={isRestricted(['apim:api_publish',
-                                                                        'apim:api_create'])}
+                                                                    disabled={isCreateOrPublishRestricted()}
                                                                     onChange={handleChange}
                                                                     color='primary'
                                                                     icon={<RadioButtonUncheckedIcon />}
@@ -738,7 +747,7 @@ export default function DeploymentOnboarding(props) {
                                                     name='description'
                                                     margin='dense'
                                                     variant='outlined'
-                                                    disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                                                    disabled={isCreateOrPublishRestricted()}
                                                     label='Description'
                                                     inputProps={{ maxLength: maxCommentLength }}
                                                     helperText={(
@@ -767,7 +776,7 @@ export default function DeploymentOnboarding(props) {
                                             }
                                             color='primary'
                                             disabled={selectedExternalGateway.length === 0
-                                                || isRestricted(['apim:api_publish', 'apim:api_create'])
+                                                || isCreateOrPublishRestricted()
                                                 || isDeployButtonDisabled || isDeploying}
                                         >
                                             <FormattedMessage

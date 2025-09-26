@@ -68,24 +68,6 @@ const StyledGrid = styled(Grid)((
         theme
     }
 ) => ({
-    [`& .${classes.fileinput}`]: {
-        display: 'none',
-    },
-
-    [`& .${classes.dropZoneWrapper}`]: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        '& span.material-icons': {
-            color: theme.palette.primary.main,
-        },
-    },
-
-    [`& .${classes.uploadedFile}`]: {
-        fontSize: 11,
-    },
 
     [`& .${classes.certificatesHeader}`]: {
         fontWeight: 600,

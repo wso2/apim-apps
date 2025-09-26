@@ -62,6 +62,15 @@ function EditableParameterRow(props) {
     const [editMode, setEditMode] = useState(false);
     const [showValue, setShowValue] = useState(false);
 
+    const getCreateOrPublishScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), api);
+
     /**
      * Set edit mode
      */
@@ -273,7 +282,7 @@ function EditableParameterRow(props) {
                             onClick={updateEditMode}
                             onKeyDown={() => {}}
                             color='inherit'
-                            disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            disabled={isCreateOrPublishRestricted()}
                             size='large'>
                             <EditIcon className={classes.buttonIcon} />
                         </IconButton>
@@ -283,7 +292,7 @@ function EditableParameterRow(props) {
                             onClick={deleteRow}
                             onKeyDown={() => {}}
                             color='inherit'
-                            disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            disabled={isCreateOrPublishRestricted()}
                             size='large'>
                             <DeleteForeverIcon className={classes.buttonIcon} />
                         </IconButton>
