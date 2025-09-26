@@ -37,6 +37,7 @@ import { FormattedMessage } from 'react-intl';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
 import PropTypes from 'prop-types';
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import CONSTANTS from 'AppData/Constants';
 import Subscription from 'AppData/Subscription';
 import { mdiOpenInNew } from '@mdi/js';
@@ -94,11 +95,17 @@ class SubscriptionTableData extends React.Component {
         this.handleCloseCallbackURLs = this.handleCloseCallbackURLs.bind(this);
     }
 
+    /**
+     * React lifecycle method called after the component is mounted.
+     * Initializes API and subscription related checks.
+     * @memberof SubscriptionTableData
+     */
     componentDidMount() {
-        this.checkIfMonetizedAPI(this.props.subscription.apiId);
-        this.checkIfDynamicUsagePolicy(this.props.subscription.subscriptionId);
-        this.populateSubscriptionTiers(this.props.subscription.apiId);
+        const { subscription } = this.props;
         this.checkIfWebhookAPI();
+        this.checkIfMonetizedAPI(subscription.apiId);
+        this.checkIfDynamicUsagePolicy(subscription.subscriptionId);
+        this.populateSubscriptionTiers(subscription.apiId);
     }
 
     /**
@@ -175,11 +182,17 @@ class SubscriptionTableData extends React.Component {
 
     /**
      * Getting the policies from api details
-     *
+     * @param {string} apiUUID API UUID
      */
     populateSubscriptionTiers(apiUUID) {
-        const apiClient = new Api();
-        const promisedApi = apiClient.getAPIById(apiUUID);
+        let promisedApi;
+        const { subscription } = this.props;
+        const isMCPServer = subscription.apiInfo.type === 'MCP';
+        if (isMCPServer) {
+            promisedApi = new MCPServer().getMCPServerById(apiUUID);
+        } else {
+            promisedApi = new Api().getAPIById(apiUUID);
+        }
         promisedApi.then((response) => {
             if (response && response.data) {
                 const api = JSON.parse(response.data);
@@ -196,11 +209,17 @@ class SubscriptionTableData extends React.Component {
 
     /**
      * Check if the API is monetized
-     * @param apiUUID API UUID
+     * @param {string} apiUUID API UUID
      */
     checkIfMonetizedAPI(apiUUID) {
-        const apiClient = new Api();
-        const promisedApi = apiClient.getAPIById(apiUUID);
+        let promisedApi;
+        const { subscription } = this.props;
+        const isMCPServer = subscription.apiInfo.type === 'MCP';
+        if (isMCPServer) {
+            promisedApi = new MCPServer().getMCPServerById(apiUUID);
+        } else {
+            promisedApi = new Api().getAPIById(apiUUID);
+        }
         promisedApi.then((response) => {
             if (response && response.data) {
                 const apiData = JSON.parse(response.data);
@@ -211,7 +230,7 @@ class SubscriptionTableData extends React.Component {
 
     /**
      * Check if the policy is dynamic usage type
-     * @param subscriptionUUID subscription UUID
+     * @param {string} subscriptionUUID subscription UUID
      */
     checkIfDynamicUsagePolicy(subscriptionUUID) {
         const client = new Subscription();
@@ -585,12 +604,15 @@ SubscriptionTableData.propTypes = {
     subscription: PropTypes.shape({
         apiInfo: PropTypes.shape({
             name: PropTypes.string.isRequired,
+            displayName: PropTypes.string,
             version: PropTypes.string.isRequired,
             lifeCycleStatus: PropTypes.string.isRequired,
+            type: PropTypes.string.isRequired,
         }).isRequired,
         throttlingPolicy: PropTypes.string.isRequired,
         subscriptionId: PropTypes.string.isRequired,
         apiId: PropTypes.string.isRequired,
+        applicationId: PropTypes.string.isRequired,
         status: PropTypes.string.isRequired,
         requestedThrottlingPolicy: PropTypes.string.isRequired,
     }).isRequired,
