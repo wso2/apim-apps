@@ -149,14 +149,14 @@ const AdvertiseInfo = (props) => {
     );
 
     const getCreateScopes = () => {
-        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === "MCP") {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
             return ['apim:mcp_server_create'];
         } else {
             return ['apim:api_create'];
         }
     };
     const getCreateOrPublishScopes = () => {
-        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === "MCP") {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
             return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
         } else {
             return ['apim:api_create', 'apim:api_publish'];

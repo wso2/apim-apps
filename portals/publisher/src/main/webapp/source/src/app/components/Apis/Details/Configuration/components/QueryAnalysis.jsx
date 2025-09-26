@@ -108,10 +108,11 @@ export default function GraphQLQueryAnalysis(props) {
             const ob = {};
             ob.type = respond;
             ob.summation = 0;
-            List.forEach((obj) => {
+            List.map((obj) => {
                 if (obj.type === respond) {
                     ob.summation += obj.complexityValue;
                 }
+                return obj;
             });
             array.push(ob);
             return array;

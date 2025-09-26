@@ -284,7 +284,7 @@ function AdvanceEndpointConfig(props) {
 
     useEffect(() => {
         setAdvanceConfig(() => {
-            if (Object.keys(advanceConfig).length === 0) {
+            if (!advanceConfig || Object.keys(advanceConfig).length === 0) {
                 return { ...advanceConfigObj };
             }
             return { ...advanceConfigObj, ...advanceConfig };

@@ -117,7 +117,7 @@ function Edit(props) {
                 if (promiseWrapper.file && documentId) {
                     const filePromise = restAPI.addFileToDocument(apiId, documentId, promiseWrapper.file[0]);
                     filePromise
-                        .then(() => {
+                        .then((doc) => {
                             Alert.info(`${name} ${intl.formatMessage({
                                 id: 'Apis.Details.Documents.Edit.markdown.editor.upload.success.message',
                                 defaultMessage: 'File uploaded successfully.',

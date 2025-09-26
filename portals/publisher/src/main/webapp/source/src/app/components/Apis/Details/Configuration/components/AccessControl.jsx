@@ -176,7 +176,7 @@ export default function AccessControl(props) {
     };
 
     const isAccessRestricted = () => {
-        if (apiFromContext.apiType.toUpperCase() === "MCP") {
+        if (apiFromContext.apiType.toUpperCase() === 'MCP') {
             return isRestricted(['apim:mcp_server_create'], apiFromContext);
         } else {
             return isRestricted(['apim:api_create'], apiFromContext);
