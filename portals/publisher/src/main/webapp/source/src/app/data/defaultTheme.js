@@ -100,6 +100,12 @@ export default {
             activeMenuItem: '#254061',
             divider: '#000000',
         },
+        charts: {
+            success: '#00B81D',
+            error: '#FF5252',
+            warn: '#FFC107',
+            info: '#2E96FF',
+        }
     },
     typography: {
         fontFamily: '"Open Sans", "Helvetica", "Arial", sans-serif',

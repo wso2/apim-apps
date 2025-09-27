@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import { Typography, Chip, Box, LinearProgress, TableRow, TableCell } from '@mui/material';
+import { Typography, Chip, Box, LinearProgress, TableRow, TableCell, useTheme } from '@mui/material';
 import ListBase from 'AppComponents/Addons/Addons/ListBase';
 import Stack from '@mui/material/Stack';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -30,6 +30,7 @@ import Utils from 'AppData/Utils';
 
 export default function PolicyAdherenceSummaryTable({ complianceData }) {
     const intl = useIntl();
+    const theme = useTheme();
 
     const renderProgress = (followed, total, status) => {
         if (status === 'PENDING') {
@@ -74,7 +75,7 @@ export default function PolicyAdherenceSummaryTable({ complianceData }) {
                         borderRadius: 1,
                         backgroundColor: '#e0e0e0',
                         '& .MuiLinearProgress-bar': {
-                            backgroundColor: '#00B81D',
+                            backgroundColor: theme.palette.charts.success,
                             borderRadius: 1,
                         },
                     }}

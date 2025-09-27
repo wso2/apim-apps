@@ -17,7 +17,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import { Grid, Card, CardContent, Typography } from '@mui/material';
 import DonutChart from 'AppComponents/Shared/DonutChart';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -44,6 +44,7 @@ const Root = styled('div')(({ theme }) => ({
 
 export default function Compliance() {
     const intl = useIntl();
+    const theme = useTheme();
     const [api] = useAPI();
     const artifactId = api.id;
     const [statusCounts, setStatusCounts] = useState({ passed: 0, failed: 0, unapplied: 0 });
@@ -316,7 +317,12 @@ export default function Compliance() {
                                         />
                                     </Typography>
                                     <DonutChart
-                                        colors={['#00B81D', '#FF5252', '#FFC107', 'grey']}
+                                        colors={[
+                                            theme.palette.charts.success,
+                                            theme.palette.charts.error,
+                                            theme.palette.charts.warn,
+                                            'grey',
+                                        ]}
                                         data={[
                                             {
                                                 id: 0,
@@ -368,7 +374,11 @@ export default function Compliance() {
                                         />
                                     </Typography>
                                     <DonutChart
-                                        colors={['#00B81D', '#FF5252', 'grey']}
+                                        colors={[
+                                            theme.palette.charts.success,
+                                            theme.palette.charts.error,
+                                            'grey',
+                                        ]}
                                         data={[
                                             {
                                                 id: 0,
@@ -412,7 +422,12 @@ export default function Compliance() {
                                         />
                                     </Typography>
                                     <DonutChart
-                                        colors={['#FF5252', '#FFC107', '#2E96FF', '#00B81D']}
+                                        colors={[
+                                            theme.palette.charts.error,
+                                            theme.palette.charts.warn,
+                                            theme.palette.charts.info,
+                                            theme.palette.charts.success,
+                                        ]}
                                         data={[
                                             {
                                                 id: 0,
