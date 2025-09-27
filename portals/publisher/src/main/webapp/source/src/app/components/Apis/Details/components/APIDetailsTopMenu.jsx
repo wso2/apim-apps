@@ -596,7 +596,8 @@ const APIDetailsTopMenu = (props) => {
                     </a>
                 )}
                 {(settings && settings.isMCPSupportEnabled) &&
-                api.type === 'HTTP' && api.subtypeConfiguration?.subtype !== 'AIAPI' && (() => {
+                api.type === 'HTTP' && api.gatewayType === 'wso2/synapse' &&
+                api.subtypeConfiguration?.subtype !== 'AIAPI' && (() => {
                     const mcpServerUrl = `/mcp-servers/create/mcp-from-existing-api?apiId=${api.id}`;
                     return (
                         <>

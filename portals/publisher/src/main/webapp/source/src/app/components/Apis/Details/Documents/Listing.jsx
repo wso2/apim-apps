@@ -250,6 +250,28 @@ class Listing extends React.Component {
     }
 
     /**
+     * Get the allowed scopes list
+     * @returns {string[]} The allowed scopes
+     */
+    getAllowedScopes() {
+        const { api } = this.props;
+        if (api.apiType && api.apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:document_manage'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    }
+
+    /**
+     * Check if the action is restricted
+     * @returns {boolean} True if the action is restricted, false otherwise
+     */
+    isAccessRestricted() {
+        const { api } = this.props;
+        return isRestricted(this.getAllowedScopes(), api);
+    }
+
+    /**
      * Toggles the visibility of the add document section
      */
     toggleAddDocs() {
@@ -266,7 +288,7 @@ class Listing extends React.Component {
         const {  api, intl } = this.props;
         const { docs, showAddDocs, docsToDelete } = this.state;
         const url = getBasePath(api.apiType) + api.id + '/documents/create';
-        const showActionsColumn = isRestricted(['apim:api_publish', 'apim:api_create'], api) ? 'excluded' : true;
+        const showActionsColumn = this.isAccessRestricted() ? 'excluded' : true;
         const options = {
             title: false,
             filter: false,
@@ -563,8 +585,8 @@ class Listing extends React.Component {
                             data-testid='add-document-btn'
                             className={classes.button}
                             component={Link}
-                            to={!isRestricted(['apim:api_create', 'apim:api_publish'], api) && !api.isRevision && url}
-                            disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}
+                            to={!this.isAccessRestricted() && !api.isRevision && url}
+                            disabled={this.isAccessRestricted() || api.isRevision}
                         >
                             <AddCircle className={classes.buttonIcon} />
                             <FormattedMessage
@@ -655,11 +677,9 @@ class Listing extends React.Component {
                                         variant='contained'
                                         color='primary'
                                         component={Link}
-                                        to={!isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                            && !api.isRevision && url}
+                                        to={!this.isAccessRestricted() && !api.isRevision && url}
                                         className={classes.button}
-                                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                            || api.isRevision}
+                                        disabled={this.isAccessRestricted() || api.isRevision}
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.Documents.Listing.add.new.msg.button'

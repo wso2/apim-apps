@@ -21,6 +21,7 @@ import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import { isRestricted } from 'AppData/AuthManager';
+import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 /**
@@ -32,6 +33,16 @@ import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
  */
 function DisplayName(props) {
     const { api, configDispatcher } = props;
+    const [apiFromContext] = useAPI();
+
+    const getCreateOrPublishScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), apiFromContext);
 
     return (
         <TextField
@@ -47,7 +58,7 @@ function DisplayName(props) {
             fullWidth
             margin='normal'
             onChange={(e) => configDispatcher({ action: 'displayName', value: e.target.value })}
-            disabled={isRestricted(['apim:api_create', 'apim:api_publish'])}
+            disabled={isCreateOrPublishRestricted()}
             helperText={(
                 <FormattedMessage
                     id='Apis.Details.Configuration.components.DisplayName.help'

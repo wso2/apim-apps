@@ -175,6 +175,14 @@ export default function AccessControl(props) {
         }
     };
 
+    const isAccessRestricted = () => {
+        if (apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return isRestricted(['apim:mcp_server_create'], apiFromContext);
+        } else {
+            return isRestricted(['apim:api_create'], apiFromContext);
+        }
+    }
+
     return (
         (<Root>
             <Box style={{ position: 'relative', marginBottom: -12 }}>
@@ -204,7 +212,7 @@ export default function AccessControl(props) {
                     )}
                     margin='normal'
                     variant='outlined'
-                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                    disabled={isAccessRestricted()}
                 >
                     <MenuItem value='NONE'>
                         <FormattedMessage
@@ -279,7 +287,7 @@ export default function AccessControl(props) {
                                 defaultMessage='Roles'
                             />
                         )}
-                        disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                        disabled={isAccessRestricted()}
                         value={api.accessControlRoles.concat(invalidRoles)}
                         alwaysShowPlaceholder={false}
                         placeholder='Enter roles and press Enter'
@@ -299,7 +307,7 @@ export default function AccessControl(props) {
                                 key={key}
                                 size='small'
                                 label={value}
-                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                disabled={isAccessRestricted()}
                                 onDelete={() => {
                                     handleRoleDeletion(value);
                                 }}

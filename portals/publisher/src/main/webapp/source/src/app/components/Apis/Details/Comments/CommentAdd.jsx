@@ -188,6 +188,19 @@ class CommentAdd extends React.Component {
     }
 
     /**
+     * Determines if the current user has restricted access based on context
+     * @returns {boolean} - True if access is restricted, false otherwise
+     */
+    isAccessRestricted() {
+        const { api } = this.props;
+        if (api.apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
+            return isRestricted(['apim:comment_write', 'apim:comment_manage'], api);
+        } else {
+            return isRestricted(['apim:api_create', 'apim:api_publish'], api);
+        }
+    }
+
+    /**
      * Render method of the component
      * @returns {React.Component} Comment html component
      * @memberof CommentAdd
@@ -212,8 +225,7 @@ class CommentAdd extends React.Component {
                             data-testid='new-comment-field'
                             autoFocus
                             multiline
-                            disabled={api.isRevision 
-                            || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            disabled={api.isRevision || this.isAccessRestricted()}
                             className={classes.textField}
                             margin='normal'
                             placeholder={intl.formatMessage({
@@ -234,9 +246,7 @@ class CommentAdd extends React.Component {
                             <Button
                                 variant='contained'
                                 color='primary'
-                                disabled={api.isRevision ||
-                                isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                || currentLength === 0}
+                                disabled={api.isRevision || this.isAccessRestricted() || currentLength === 0}
                                 onClick={() => this.handleClickAddComment()}
                                 className={classes.commentAddButton}
                                 id='add-comment-btn'

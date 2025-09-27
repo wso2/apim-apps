@@ -73,6 +73,15 @@ export default function StoreVisibility(props) {
     const isRestrictedByRoles = api.visibility === 'RESTRICTED';
     const [apiFromContext] = useAPI();
 
+    const getCreateOrPublishScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), apiFromContext);
+
     const restApi = new API();
     const intl = useIntl();
     const [tenants, setTenants] = useState([]);
@@ -181,7 +190,7 @@ export default function StoreVisibility(props) {
                     )}
                     margin='normal'
                     variant='outlined'
-                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
+                    disabled={isCreateOrPublishRestricted()}
                 >
                     <MenuItem value='PUBLIC'>
                         <FormattedMessage
@@ -269,7 +278,7 @@ export default function StoreVisibility(props) {
                                 defaultMessage='Roles'
                             />
                         )}
-                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
+                        disabled={isCreateOrPublishRestricted()}
                         value={api.visibleRoles.concat(invalidRoles)}
                         alwaysShowPlaceholder={false}
                         placeholder={intl.formatMessage({

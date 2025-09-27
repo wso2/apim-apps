@@ -105,6 +105,15 @@ export default function APILevelRateLimitingPolicies(props) {
         API.policies('api').then((response) => setApiRateLimits(response.body.list));
     }, []);
 
+    const getCreateScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), apiFromContext);
+
     return (
         <StyledAccordion className={classes.expansionPanel} defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -132,7 +141,7 @@ export default function APILevelRateLimitingPolicies(props) {
                     className={classes.actionSpace}
                     control={(
                         <Switch
-                            disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                            disabled={isCreateRestricted()}
                             checked={!(apiThrottlingPolicy === null)}
                             onChange={({ target: { checked } }) => configDispatcher({
                                 action: 'throttlingPoliciesEnabled',
@@ -148,7 +157,7 @@ export default function APILevelRateLimitingPolicies(props) {
                     <Grid item md={6} xs={12}>
                         {!(apiThrottlingPolicy === null) && (
                             <TextField
-                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                disabled={isCreateRestricted()}
                                 id='operation_throttling_policy'
                                 select
                                 value={apiThrottlingPolicy}

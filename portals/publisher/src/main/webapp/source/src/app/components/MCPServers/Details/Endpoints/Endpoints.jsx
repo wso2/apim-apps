@@ -258,7 +258,7 @@ const Endpoints = ({
                                 variant='outlined'
                                 color='primary'
                                 size='small'
-                                disabled={isRestricted(['apim:api_create'], apiObject)}
+                                disabled={isRestricted(['apim:mcp_server_create'], apiObject)}
                                 onClick={() => handleAddEndpoint('PRODUCTION')}
                                 sx={{ marginLeft: 1 }}
                             >
@@ -306,7 +306,7 @@ const Endpoints = ({
                                 variant='outlined'
                                 color='primary'
                                 size='small'
-                                disabled={isRestricted(['apim:api_create'], apiObject)}
+                                disabled={isRestricted(['apim:mcp_server_create'], apiObject)}
                                 onClick={() => handleAddEndpoint('SANDBOX')}
                                 sx={{ marginLeft: 1 }}
                             >

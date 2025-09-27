@@ -669,10 +669,17 @@ export default function DesignConfigurations() {
         configDispatcher({ action: 'advertised', value: api.advertiseInfo.advertised });
         setIsOpen(false);
     };
-    const restricted = isRestricted(['apim:api_publish', 'apim:api_create'], api
-        || isUpdating || api.isRevision || invalidTagsExist
-        || (apiConfig.visibility === 'RESTRICTED'
-            && apiConfig.visibleRoles.length === 0));
+
+    const isAccessRestricted = () => {
+        if (api.apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
+            return isRestricted(['apim:mcp_server_publish', 'apim:mcp_server_create'], api);
+        } else {
+            return isRestricted(['apim:api_publish', 'apim:api_create'], api);
+        }
+    }
+
+    const restricted = isAccessRestricted() || isUpdating || api.isRevision || invalidTagsExist
+        || (apiConfig.visibility === 'RESTRICTED' && apiConfig.visibleRoles.length === 0);
 
     const LabelMenu = () => {
         if (searchResult && searchResult.list && searchQuery !== '') {
@@ -869,8 +876,7 @@ export default function DesignConfigurations() {
                                                     width={100}
                                                     height={100}
                                                     updateAPI={updateAPI}
-                                                    isEditable={!isRestricted(['apim:api_publish',
-                                                        'apim:api_create'], api)}
+                                                    isEditable={!isAccessRestricted()}
                                                 />
                                             </Grid>
                                             <Grid item xs={12} md={9.5}>
