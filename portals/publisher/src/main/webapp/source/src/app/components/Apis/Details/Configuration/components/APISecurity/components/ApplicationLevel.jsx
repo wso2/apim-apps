@@ -208,7 +208,10 @@ export default function ApplicationLevel(props) {
                                 <FormControlLabel
                                     control={(
                                         <Checkbox
-                                            disabled={isCreateRestricted()}
+                                            disabled={
+                                                isCreateRestricted() ||
+                                                apiFromContext.apiType === MCPServer.CONSTS.MCP
+                                            }
                                             checked={securityScheme.includes(DEFAULT_API_SECURITY_OAUTH2)}
                                             onChange={({ target: { checked, value } }) => {
                                                 setOauth2Enabled(checked);
@@ -229,14 +232,12 @@ export default function ApplicationLevel(props) {
                                 />
                             }
                             {(componentValidator.includes('basicAuth') ||
-                                apiFromContext.apiType === API.CONSTS.APIProduct) && (
+                                apiFromContext.apiType === API.CONSTS.APIProduct) &&
+                                apiFromContext.apiType !== MCPServer.CONSTS.MCP && (
                                 <FormControlLabel
                                     control={(
                                         <Checkbox
-                                            disabled={
-                                                isCreateRestricted()
-                                                || apiFromContext.apiType === MCPServer.CONSTS.MCP
-                                            }
+                                            disabled={isCreateRestricted()}
                                             checked={securityScheme.includes(API_SECURITY_BASIC_AUTH)}
                                             onChange={({ target: { checked, value } }) => configDispatcher({
                                                 action: 'securityScheme',
@@ -254,7 +255,7 @@ export default function ApplicationLevel(props) {
                                     })}
                                 />
                             )}
-                            {componentValidator.includes('apikey') &&
+                            {componentValidator.includes('apikey') && apiFromContext.apiType !== MCPServer.CONSTS.MCP &&
                                 <FormControlLabel
                                     control={(
                                         <Checkbox
@@ -262,7 +263,6 @@ export default function ApplicationLevel(props) {
                                             disabled={
                                                 isCreateRestricted()
                                                 || isSubValidationDisabled
-                                                || apiFromContext.apiType === MCPServer.CONSTS.MCP
                                             }
                                             onChange={({ target: { checked, value } }) => {
                                                 setApiKeyEnabled(checked);

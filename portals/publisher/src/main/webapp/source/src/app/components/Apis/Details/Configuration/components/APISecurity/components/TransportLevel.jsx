@@ -283,14 +283,12 @@ function TransportLevel(props) {
                     <AccordionDetails className={classes.expansionPanelDetails}>
                         <Transports api={api} configDispatcher={configDispatcher} 
                             securityScheme={securityScheme} componentValidator={componentValidator} />
-                        {componentValidator.includes('transportsMutualSSL') && 
+                        {componentValidator.includes('transportsMutualSSL') &&
+                        apiFromContext.apiType !== MCPServer.CONSTS.MCP && 
                             <FormControlLabel
                                 control={(
                                     <Checkbox
-                                        disabled={
-                                            isCreateRestricted() ||
-                                            apiFromContext.apiType === MCPServer.CONSTS.MCP
-                                        }
+                                        disabled={isCreateRestricted()}
                                         checked={isMutualSSLEnabled}
                                         onChange={handleMutualSSLChange}
                                         color='primary'
