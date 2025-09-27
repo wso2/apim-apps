@@ -135,7 +135,7 @@ export default {
         leftMenuTextStyle: 'capitalize',
         leftMenuAnalytics: {
             enable: true, // If `false`, External link to Moesif Basic Analytics icon will be removed/hidden in nav bar
-            link: 'https://www.moesif.com/moesif-basic',
+            link: 'https://www.moesif.com/wrap/basic?onboard=true',
         },
         resourceChipColors: { // https://github.com/swagger-api/swagger-ui/blob/master/src/style/_variables.scss#L45-L52
             get: '#61affe',
