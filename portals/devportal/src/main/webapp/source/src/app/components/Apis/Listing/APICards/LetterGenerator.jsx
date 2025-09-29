@@ -60,7 +60,8 @@ export default (props) => {
         customDarkColor,
     } = props;
     const theme = useTheme();
-    const name = artifact.name.substring(0, charLength);
+    const name = artifact && (artifact.displayName || artifact.name);
+    const shortName = name.substring(0, charLength);
     const {
         colorMap, offset, width: defaultWidth, textShadow,
     } = theme.custom.thumbnail;
@@ -70,7 +71,7 @@ export default (props) => {
             <Avatar
                 variant={avatarVariant}
                 sx={() => {
-                    const [light, dark] = getColorFromLetter(bgColor === false ? '' : name.substring(0, 1), colorMap, offset,
+                    const [light, dark] = getColorFromLetter(bgColor === false ? '' : shortName.substring(0, 1), colorMap, offset,
                         customLightColor, customDarkColor);
                     const fontSize = Math.ceil((width * 40) / defaultWidth);
                     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
@@ -100,7 +101,7 @@ export default (props) => {
                         };
                     }}
                     />
-                ) : capitalizeFirstLetter(name)}
+                ) : capitalizeFirstLetter(shortName)}
             </Avatar>
         </Box>
     );

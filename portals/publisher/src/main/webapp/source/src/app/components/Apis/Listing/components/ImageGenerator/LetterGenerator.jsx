@@ -98,15 +98,26 @@ export default (props) => {
         customLightColor,
         customDarkColor,
     } = props;
-    const name = artifact.name.substring(0, charLength);
+    const name = artifact && (artifact.displayName || artifact.name);
+    const shortName = name.substring(0, charLength);
     const theme = useTheme();
     return (
         <div style={{ display: 'flex' }}>
             <Avatar
                 variant={avatarVariant}
-                sx={getAvatarSx(theme, name.substring(0, 1), width, height, bgColor, customLightColor, customDarkColor)}
+                sx={
+                    getAvatarSx(
+                        theme,
+                        shortName.substring(0, 1),
+                        width,
+                        height,
+                        bgColor,
+                        customLightColor,
+                        customDarkColor
+                    )
+                }
             >
-                {ThumbIcon ? <ThumbIcon sx={getThumbIconSx(theme, width)} /> : capitalizeFirstLetter(name)}
+                {ThumbIcon ? <ThumbIcon sx={getThumbIconSx(theme, width)} /> : capitalizeFirstLetter(shortName)}
             </Avatar>
         </div>
     );
