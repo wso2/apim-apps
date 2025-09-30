@@ -400,6 +400,7 @@ export default function DesignConfigurations() {
     const [errorInAccessRoles, setErrorInAccessRoles] = useState(false);
     const [errorInRoleVisibility, setErrorInRoleVisibility] = useState(false);
     const [errorInTags, setErrorInTags] = useState(false);
+    const [errorInDisplayName, setErrorInDisplayName] = useState(false);
     const [errorInExternalEndpoints, setErrorInExternalEndpoints] = useState(false);
     const [apiConfig, configDispatcher] = useReducer(configReducer, copyAPIConfig(api));
 
@@ -889,7 +890,8 @@ export default function DesignConfigurations() {
                                         </Grid>
                                     </Box>
                                     <Box py={1}>
-                                        <DisplayName api={apiConfig} configDispatcher={configDispatcher}/>
+                                        <DisplayName api={apiConfig} configDispatcher={configDispatcher}
+                                            setIsDisabled={setErrorInDisplayName}/>
                                     </Box>
                                     <Box py={1}>
                                         <APIDescription
@@ -956,6 +958,7 @@ export default function DesignConfigurations() {
                                                     === 'RESTRICTED' && errorInRoleVisibility) ||
                                                 restricted ||
                                                 errorInTags ||
+                                                errorInDisplayName ||
                                                 errorInExternalEndpoints}
                                             type='submit'
                                             variant='contained'
