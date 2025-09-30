@@ -686,8 +686,7 @@ class SubscriptionsBase extends React.Component {
                                 onClose={this.handleOpenDialog}
                                 aria-labelledby='simple-dialog-title'
                                 open={openDialog}
-                                fullWidth='true'
-                                maxWidth='sm'
+                                maxWidth='false'
                                 className={classes.subscribePop}
                             >
                                 <Box className={classes.dialogHeader}>
@@ -783,8 +782,7 @@ class SubscriptionsBase extends React.Component {
                                 onClose={this.handleOpenMcpDialog}
                                 aria-labelledby='mcp-dialog-title'
                                 open={openMcpDialog}
-                                fullWidth='true'
-                                maxWidth='sm'
+                                maxWidth='false'
                                 className={classes.subscribePop}
                             >
                                 <Box className={classes.dialogHeader}>
