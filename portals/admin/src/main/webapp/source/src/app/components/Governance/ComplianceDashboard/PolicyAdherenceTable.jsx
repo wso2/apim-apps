@@ -245,7 +245,7 @@ export default function PolicyAdherenceTable() {
                                         color: 'inherit'
                                     }}
                                 >
-                                    {artifact.info.name}
+                                    {artifact.info.name} {artifact.info.version}
                                     <OpenInNewIcon sx={{ ml: 0.5, fontSize: 16 }} />
                                 </RouterLink>
                             </Box>
