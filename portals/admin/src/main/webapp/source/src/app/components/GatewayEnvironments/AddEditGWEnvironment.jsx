@@ -296,7 +296,7 @@ function AddEditGWEnvironment(props) {
                 },
             });
         }
-    }, [supportedModes, gatewayMode, onChange]);
+    }, [supportedModes]);
 
     /* const getBorderColor = (gatewayTypeNew) => {
         return gatewayType === gatewayTypeNew
