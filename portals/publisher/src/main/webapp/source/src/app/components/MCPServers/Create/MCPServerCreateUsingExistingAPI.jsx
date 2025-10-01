@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useReducer, useState, useEffect } from 'react';
+import React, { useReducer, useState, useEffect, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
@@ -89,8 +89,10 @@ const MCPServerCreateUsingExistingAPI = (props) => {
     const urlParams = new URLSearchParams(location.search);
     const apiId = urlParams.get('apiId');
 
-    // Create selectedAPI object if API ID is present
-    const selectedAPI = apiId ? { id: apiId } : null;
+    // Create selectedAPI object if API ID is present - memoized to prevent unnecessary re-renders
+    const selectedAPI = useMemo(() => {
+        return apiId ? { id: apiId } : null;
+    }, [apiId]);
 
     useEffect(() => {
         API.policies('subscription').then((response) => {

@@ -939,6 +939,10 @@ const Tools = ({
                                     operationsDispatcher={operationsDispatcher}
                                     updateOpenAPI={apiUpdateCall}
                                     api={api}
+                                    disableSave={
+                                        Object.keys(operations).length > 0 &&
+                                        Object.keys(markedOperations).length === Object.keys(operations).length
+                                    }
                                 />
                             )}
                         </Grid>

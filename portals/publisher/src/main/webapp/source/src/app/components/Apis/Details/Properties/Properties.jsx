@@ -233,6 +233,15 @@ function Properties(props) {
     const [loading, setLoading] = useState(true);
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
 
+    const getCreateOrPublishScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), api);
+
     const keywords = ['provider', 'version', 'context', 'status', 'description',
         'subcontext', 'doc', 'lcstate', 'name', 'tags'];
 
@@ -679,7 +688,7 @@ function Properties(props) {
         || api.isRevision
         || (settings && settings.portalConfigurationOnlyModeEnabled)
         || (isEmpty(additionalProperties) && !isAdditionalPropertiesStale)
-        || isRestricted(['apim:api_create', 'apim:api_publish'], api)
+        || isCreateOrPublishRestricted()
     ) {
         renderSaveButton = (
             <Button
@@ -784,7 +793,7 @@ function Properties(props) {
                             size='small'
                             onClick={toggleAddProperty}
                             disabled={showAddProperty
-                                    || isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision
+                                    || isCreateOrPublishRestricted() || api.isRevision
                                     || (settings && settings.portalConfigurationOnlyModeEnabled)}
                         >
                             <AddCircle className={classes.buttonIcon} />
@@ -877,7 +886,7 @@ function Properties(props) {
                                     variant='outlined'
                                     color='primary'
                                     onClick={toggleAddProperty}
-                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                                    disabled={isCreateOrPublishRestricted()
                                             || api.isRevision
                                             || (settings && settings.portalConfigurationOnlyModeEnabled)}
                                 >
@@ -929,10 +938,7 @@ function Properties(props) {
                                             error={property.Required &&
                                                     validateEmpty(customPropertyValue.find((data) =>
                                                         data.name === property.Name)?.value)}
-                                            disabled={isRestricted(
-                                                ['apim:api_create', 'apim:api_publish'],
-                                                api,
-                                            )}
+                                            disabled={isCreateOrPublishRestricted()}
                                         />
                                     </Grid>
                                     <Grid item xs={6} alignItems='center'>
@@ -1023,10 +1029,7 @@ function Properties(props) {
                                                                 }), '')}
                                                             error={validateEmpty(propertyKey) || isKeyword(propertyKey)
                                                                     || hasWhiteSpace(propertyKey)}
-                                                            disabled={isRestricted(
-                                                                ['apim:api_create', 'apim:api_publish'],
-                                                                api,
-                                                            )}
+                                                            disabled={isCreateOrPublishRestricted()}
                                                         />
                                                     </TableCell>
                                                     <TableCell>
@@ -1045,10 +1048,7 @@ function Properties(props) {
                                                             onChange={handleChange('propertyValue')}
                                                             onKeyDown={handleKeyDown('propertyValue')}
                                                             error={validateEmpty(propertyValue)}
-                                                            disabled={isRestricted(
-                                                                ['apim:api_create', 'apim:api_publish'],
-                                                                api,
-                                                            )}
+                                                            disabled={isCreateOrPublishRestricted()}
                                                         />
                                                     </TableCell>
                                                     <TableCell>
@@ -1078,10 +1078,7 @@ function Properties(props) {
                                                                 disabled={
                                                                     !propertyValue
                                                                         || !propertyKey
-                                                                        || isRestricted(
-                                                                            ['apim:api_create', 'apim:api_publish'],
-                                                                            api,
-                                                                        )
+                                                                        || isCreateOrPublishRestricted()
                                                                 }
                                                                 onClick={handleAddToList}
                                                                 className={classes.marginRight}
@@ -1153,7 +1150,7 @@ function Properties(props) {
                                         />
                                     </Button>
                                 </Grid>
-                                {isRestricted(['apim:api_create', 'apim:api_publish'], api) && (
+                                {isCreateOrPublishRestricted() && (
                                     <Grid item xs={12}>
                                         <Typography variant='body2' color='primary'>
                                             <FormattedMessage

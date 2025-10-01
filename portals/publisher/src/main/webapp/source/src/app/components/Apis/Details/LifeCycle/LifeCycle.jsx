@@ -148,6 +148,28 @@ class LifeCycle extends Component {
     };
 
     /**
+     * Get the allowed scopes for publishing
+     * @returns {string[]} The allowed scopes
+     */
+    getPublishScopes() {
+        const { api } = this.props;
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_publish', 'apim:mcp_server_manage', 'apim:mcp_server_import_export'];
+        } else {
+            return ['apim:api_publish'];
+        }
+    }
+
+    /**
+     * Check if the action is restricted
+     * @returns {boolean} True if the action is restricted, false otherwise
+     */
+    isPublishRestricted() {
+        const apiFromContext = this.context.api;
+        return isRestricted(this.getPublishScopes(), apiFromContext);
+    }
+
+    /**
      *
      *
      * @memberof LifeCycle
@@ -232,7 +254,7 @@ class LifeCycle extends Component {
             api, lcState, checkList, lcHistory, certList,
         } = this.state;
         const apiFromContext = this.context.api;
-        if (apiFromContext && isRestricted(['apim:api_publish'], apiFromContext)) {
+        if (apiFromContext && this.isPublishRestricted()) {
             return (
                 <Grid container direction='row' alignItems='center' spacing={4} style={{ marginTop: 20 }}>
                     <Grid item>

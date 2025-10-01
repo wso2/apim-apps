@@ -22,7 +22,9 @@ import {
     Paper,
     Typography,
     styled,
+    Button,
 } from '@mui/material';
+import { useHistory } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { Progress } from 'AppComponents/Shared';
@@ -30,6 +32,8 @@ import API from 'AppData/api';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import Alert from 'AppComponents/Shared/Alert';
 import CONSTS from 'AppData/Constants';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { isRestricted } from 'AppData/AuthManager';
 import GeneralEndpointConfigurations from '../GeneralEndpointConfigurations';
 import EndpointCard from './EndpointCard';
 
@@ -49,6 +53,7 @@ const AIEndpoints = ({
     const [isDeleting, setIsDeleting] = useState(false);
 
     const intl = useIntl();
+    const history = useHistory();
     const { updateAPI } = useContext(APIContext);
 
     const fetchEndpoints = () => {
@@ -323,6 +328,26 @@ const AIEndpoints = ({
                     </Typography>
                     <GeneralEndpointConfigurations endpointList={endpointList} />
                 </StyledPaper>
+            </Grid>
+            <Grid item xs={12}>
+                <Button
+                    type='submit'
+                    variant='contained'
+                    color='primary'
+                    disabled={isRestricted(['apim:api_publish', 'apim:api_manage'], apiObject)}
+                    endIcon={<OpenInNewIcon />}
+                    onClick={() => {
+                        history.push({
+                            pathname: `/apis/${apiObject.id}/deployments`,
+                            state: 'deploy',
+                        })
+                    }}
+                >
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.deploy.redirect.btn'
+                        defaultMessage='Go to Deployments'
+                    />
+                </Button>
             </Grid>
         </Grid>
     );

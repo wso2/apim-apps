@@ -209,7 +209,7 @@ function TopMenu(props) {
                             variant='contained'
                             color='primary'
                             component={Link}
-                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                            disabled={isRestricted(['apim:mcp_server_create', 'apim:mcp_server_manage'])}
                             to='/mcp-servers/create'
                             data-testid='itest-create-mcp-server-button'
                             startIcon={<AddIcon />}

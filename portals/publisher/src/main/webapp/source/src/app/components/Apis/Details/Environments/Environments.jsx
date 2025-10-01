@@ -539,6 +539,15 @@ export default function Environments() {
     const pollingRef = useRef(null);
     const pollingStartTimeRef = useRef(null);
 
+    const getCreateOrPublishScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), api);
+
     useEffect(() => {
         if (settings) {
             let gatewayType;
@@ -722,7 +731,7 @@ export default function Environments() {
     };
 
     const handleClickOpen = () => {
-        if (!isRestricted(['apim:api_create', 'apim:api_publish'], api)) {
+        if (!isCreateOrPublishRestricted()) {
             setOpen(true);
         }
     };
@@ -1925,7 +1934,7 @@ export default function Environments() {
                                     )}
                                     size='small'
                                     type='submit'
-                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) 
+                                    disabled={isCreateOrPublishRestricted() 
                                         || api.initiatedFromGateway}
                                     startIcon={<RestoreIcon />}
                                 >
@@ -1941,7 +1950,7 @@ export default function Environments() {
                                     )}
                                     disabled={(allEnvRevision && allEnvRevision.filter(
                                         (o1) => o1.id === allRevisions[revision].id,
-                                    ).length !== 0) || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                                    ).length !== 0) || isCreateOrPublishRestricted()}
                                     size='small'
                                     sx={{ color: '#38536c' }}
                                     startIcon={<DeleteForeverIcon />}
@@ -1976,7 +1985,7 @@ export default function Environments() {
                                         allRevisions[revision].displayName, allRevisions[revision].id,
                                     )}
                                     size='small'
-                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) 
+                                    disabled={isCreateOrPublishRestricted() 
                                         || api.initiatedFromGateway}
                                     type='submit'
                                     startIcon={<RestoreIcon />}
@@ -1993,7 +2002,7 @@ export default function Environments() {
                                     )}
                                     disabled={(allEnvRevision && allEnvRevision.filter(
                                         (o1) => o1.id === allRevisions[revision].id,
-                                    ).length !== 0) || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                                    ).length !== 0) || isCreateOrPublishRestricted()}
                                     size='small'
                                     sx={{ color: '#38536c' }}
                                     startIcon={<DeleteForeverIcon />}
@@ -2150,7 +2159,7 @@ export default function Environments() {
                         margin='dense'
                         variant='outlined'
                         style={{ width: '50%' }}
-                        disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
+                        disabled={api.isRevision || isCreateOrPublishRestricted() ||
                             (settings && settings.portalConfigurationOnlyModeEnabled) ||
                             !allRevisions || allRevisions.length === 0}
                     >
@@ -2162,7 +2171,7 @@ export default function Environments() {
                         className={classes.button2}
                         disabled={
                             api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) ||
-                            isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
+                            isCreateOrPublishRestricted() ||
                             !selectedRevision.some((r) => r.env === row.name && r.revision) ||
                             !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
                             (api.advertiseInfo && api.advertiseInfo.advertised) ||
@@ -2229,7 +2238,7 @@ export default function Environments() {
                         variant='outlined'
                         disabled={api.isRevision ||
                             (settings && settings.portalConfigurationOnlyModeEnabled) ||
-                            isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            isCreateOrPublishRestricted()}
                         onClick={() => cancelRevisionDeploymentWorkflow(pendingDeployment.id, row.name)}
                         size='small'
                         id='cancel-btn'
@@ -2263,7 +2272,7 @@ export default function Environments() {
                     margin='dense'
                     variant='outlined'
                     style={{ width: '50%' }}
-                    disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
+                    disabled={api.isRevision || isCreateOrPublishRestricted() ||
                         (settings && settings.portalConfigurationOnlyModeEnabled) ||
                         !filteredRevisions || filteredRevisions.length === 0}
                 >
@@ -2275,7 +2284,7 @@ export default function Environments() {
                     className={classes.button2}
                     disabled={
                         api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) ||
-                        isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
+                        isCreateOrPublishRestricted() ||
                         !selectedRevision.some((r) => r.env === row.name && r.revision) ||
                         !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
                         (api.advertiseInfo && api.advertiseInfo.advertised) ||
@@ -2460,7 +2469,7 @@ export default function Environments() {
                         variant='outlined'
                         disabled={isUndeploying || api.isRevision || api.initiatedFromGateway ||
                             (settings && settings.portalConfigurationOnlyModeEnabled) ||
-                            isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            isCreateOrPublishRestricted()}
                         onClick={() => undeployRevision(approvedDeployment.id, row.name)}
                         size='small'
                         id='undeploy-btn'
@@ -2668,7 +2677,7 @@ export default function Environments() {
                             <span>
                                 <Button
                                     onClick={toggleDeployRevisionPopup}
-                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                                    disabled={isCreateOrPublishRestricted()
                                         || (api.advertiseInfo && api.advertiseInfo.advertised)
                                         || isDeployButtonDisabled
                                         || api.lifeCycleStatus === 'RETIRED'}
@@ -3150,7 +3159,7 @@ export default function Environments() {
                             color='primary'
                             disabled={SelectedEnvironment.length === 0
                                 || (allRevisions && allRevisions.length === revisionCount && !extraRevisionToDelete)
-                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                                || isCreateOrPublishRestricted()
                                 || (api.advertiseInfo && api.advertiseInfo.advertised)
                                 || (SelectedEnvironment.length === 1
                                     && allEnvRevision && allEnvRevision.some(revision => {
