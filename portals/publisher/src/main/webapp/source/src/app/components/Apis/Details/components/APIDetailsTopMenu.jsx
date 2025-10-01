@@ -38,10 +38,11 @@ import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import GoTo from 'AppComponents/Apis/Details/GoTo/GoTo';
 import Tooltip from '@mui/material/Tooltip';
+import Chip from '@mui/material/Chip';
 import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
-import MUIAlert from 'AppComponents/Shared/MuiAlert';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
+import clsx from 'clsx';
 import DeleteApiButton from './DeleteApiButton';
 import CreateNewVersionButton from './CreateNewVersionButton';
 import ShareButton from './ShareButton';
@@ -61,9 +62,9 @@ const classes = {
     downloadApiFlex: `${PREFIX}-downloadApiFlex`,
     revisionWrapper: `${PREFIX}-revisionWrapper`,
     topRevisionStyle: `${PREFIX}-topRevisionStyle`,
-    readOnlyStyle: `${PREFIX}-readOnlyStyle`,
     active: `${PREFIX}-active`,
-    alertMargin: `${PREFIX}-alertMargin`,
+    chip: `${PREFIX}-chip`,
+    chipSecondary: `${PREFIX}-chipSecondary`,
 };
 
 const Root = styled('div')(({ theme }) => ({
@@ -134,9 +135,6 @@ const Root = styled('div')(({ theme }) => ({
         marginLeft: theme.spacing(1),
         maxWidth: 500,
     },
-    [`.${classes.readOnlyStyle}`]: {
-        color: 'red',
-    },
     [`.${classes.active}`]: {
         background: theme.custom.revision.activeRevision.background,
         width: 8,
@@ -144,8 +142,20 @@ const Root = styled('div')(({ theme }) => ({
         borderRadius: '50%',
         alignItems: 'center',
     },
-    [`.${classes.alertMargin}`]: {
+    [`.${classes.chip}`]: {
+        height: 28,
+        borderRadius: 4,
+        backgroundColor: '#eef3f9ff',
+        color: theme.palette.text.primary,
+        overflow: 'hidden',
         marginLeft: theme.spacing(1),
+        '& svg': {
+            marginLeft: '8px',
+            marginRight: '-6px',
+        },
+    },
+    [`.${classes.chipSecondary}`]: {
+        backgroundColor: theme.palette.background.default,
     },
 }));
 
@@ -341,9 +351,9 @@ const APIDetailsTopMenu = (props) => {
                                             id='Apis.Details.components.APIDetailsTopMenu.created.on' 
                                             defaultMessage='on' />
                                         &nbsp;
-                                        {api.gatewayVendor === 'wso2' || api.gatewayVendor === 'solace'
+                                        {api.gatewayVendor === 'wso2'
                                             ? api.gatewayVendor.toUpperCase()
-                                            : api.gatewayType}
+                                            : Utils.capitalizeFirstLetter(api.gatewayType)}
                                     </>
                                 )}
                             </Typography>
@@ -351,7 +361,7 @@ const APIDetailsTopMenu = (props) => {
                     </div>
                 </Link>
                 <VerticalDivider height={70} />
-                <div className={classes.infoItem}>
+                <div>
                     <Typography data-testid='itest-api-state' component='div' variant='subtitle1'>
                         {lifecycleState in ApiLifeCycleStates
                             ? ApiLifeCycleStates[lifecycleState] : lifecycleState}
@@ -363,75 +373,72 @@ const APIDetailsTopMenu = (props) => {
                         />
                     </Typography>
                 </div>
-                <div className={classes.dateWrapper} />
-                {api.isRevision && (
-                    <MUIAlert
-                        variant='outlined'
-                        severity='warning'
-                        icon={false}
-                        className={classes.alertMargin}
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.components.APIDetailsTopMenu.read.only.label'
-                            defaultMessage='Read only'
-                        />
-                    </MUIAlert>
-                )}
+                <VerticalDivider height={70} />
                 {api.initiatedFromGateway && (
-                    <MUIAlert
-                        data-testid='itest-discovered-api-label'
+                    <Chip
                         variant='outlined'
-                        severity='info'
-                        icon={false}
-                        className={classes.alertMargin}
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.components.APIDetailsTopMenu.discovered.api.label'
-                            defaultMessage='Discovered API'
-                        />
-                    </MUIAlert>
+                        color='primary'
+                        icon={<CustomIcon icon='discovered-api' height={16} width={16} />}
+                        classes={{ root: classes.chip }}
+                        label={
+                            <>
+                                <FormattedMessage
+                                    id='Apis.Details.components.APIDetailsTopMenu.discovered.api.label'
+                                    defaultMessage='Discovered API -'
+                                />
+                                &nbsp;
+                                {api.gatewayVendor === 'wso2'
+                                    ? api.gatewayVendor.toUpperCase()
+                                    : Utils.capitalizeFirstLetter(api.gatewayType)}
+                            </>
+                        }
+                    />
+                )}
+                {api.isRevision && (
+                    <Chip
+                        variant='outlined'
+                        color='default'
+                        icon={<CustomIcon icon='read-only-api' height={16} width={16} />}
+                        classes={{ root: clsx(classes.chip, classes.chipSecondary) }}
+                        label={
+                            <FormattedMessage
+                                id='Apis.Details.components.APIDetailsTopMenu.read.only.label'
+                                defaultMessage='Read Only'
+                            />
+                        }
+                    />
                 )}
                 {(api.subtypeConfiguration?.subtype === 'AIAPI') && (
-                    <MUIAlert
+                    <Chip
                         data-testid='itest-ai-api-label'
                         variant='outlined'
-                        severity='info'
-                        icon={false}
-                        className={classes.alertMargin}
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.components.APIDetailsTopMenu.ai.api.label'
-                            defaultMessage='AI API'
-                        />
-                    </MUIAlert>
+                        color='primary'
+                        icon={<CustomIcon icon='ai-api' height={16} width={16} />}
+                        classes={{ root: classes.chip }}
+                        label={
+                            <FormattedMessage
+                                id='Apis.Details.components.APIDetailsTopMenu.ai.api.label'
+                                defaultMessage='AI API'
+                            />
+                        }
+                    />
                 )}
                 {(api.advertiseInfo && api.advertiseInfo.advertised) && (
-                    <MUIAlert
+                    <Chip
                         data-testid='itest-third-party-api-label'
                         variant='outlined'
-                        severity='warning'
-                        icon={false}
-                        className={classes.alertMargin}
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.components.APIDetailsTopMenu.advertise.only.label'
-                            defaultMessage='Third Party'
-                        />
-                    </MUIAlert>
+                        color='primary'
+                        icon={<CustomIcon icon='third-party-api' height={16} width={16} />}
+                        classes={{ root: classes.chip }}
+                        label={
+                            <FormattedMessage
+                                id='Apis.Details.components.APIDetailsTopMenu.advertise.only.label'
+                                defaultMessage='Third-party API'
+                            />
+                        }
+                    />
                 )}
-                {api.gatewayType === 'solace' && (
-                    <MUIAlert
-                        data-testid='itest-third-party-api-label'
-                        variant='outlined'
-                        severity='warning'
-                        icon={false}
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.components.APIDetailsTopMenu.solace.api.label'
-                            defaultMessage='Solace'
-                        />
-                    </MUIAlert>
-                )}
+                <div className={classes.dateWrapper} />
                 {(!api.advertiseInfo || !api.advertiseInfo.advertised) && (api.gatewayType !== 'solace') && (
                     <div className={classes.topRevisionStyle}>
                         <TextField

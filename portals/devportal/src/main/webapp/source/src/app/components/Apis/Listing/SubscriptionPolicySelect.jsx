@@ -105,7 +105,7 @@ class SubscriptionPolicySelectLegacy extends React.Component {
                         onChange={(e, value) => {
                             this.setState({ selectedPolicy: value });
                         }}
-                        style={{ width: 200 }}
+                        style={{ width: 150 }}
                         renderInput={(params) => (<TextField size='small' variant='standard' {...params} />)}
                         renderOption={(props, policy) => (
                             <MenuItem

@@ -137,7 +137,14 @@ function getArtifactMetaInfo(suggestion) {
 function getIcon(type) {
     switch (type) {
         case 'API':
-            return <Icon style={{ fontSize: 30 }}>settings_applications</Icon>;
+            return (
+                <CustomIcon
+                    width={16}
+                    height={16}
+                    icon='apis'
+                    strokeColor='#000000'
+                />
+            );
         case 'MCP':
             return (
                 <CustomIcon

@@ -30,7 +30,6 @@ import Divider from '@mui/material/Divider';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchOutlined from '@mui/icons-material/SearchOutlined';
 import { Link } from 'react-router-dom';
-import APIsIcon from '@mui/icons-material/SettingsApplicationsOutlined';
 import DocumentsIcon from '@mui/icons-material/LibraryBooks';
 import CodeIcon from '@mui/icons-material/Code';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
@@ -204,7 +203,14 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
         || suggestion.apiName) + ' ' + suggestion.apiVersion);
     const getIcon = (type) => {
         if (type === 'API') {
-            return <APIsIcon />;
+            return (
+                <CustomIcon
+                    icon='api'
+                    width={16}
+                    height={16}
+                    strokeColor='black'
+                />
+            );
         } else if (type === 'MCP') {
             return (
                 <CustomIcon

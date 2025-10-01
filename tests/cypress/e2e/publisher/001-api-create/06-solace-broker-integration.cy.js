@@ -28,7 +28,7 @@ describe("Publish solace api", () => {
             openMode: 0,
         },
     }, () => {
-        apiName = Utils.generateName().replace('-', '_');
+        apiName = Utils.generateName();
         cy.loginToPublisher(publisher, password);
         cy.publishSolaceApi(apiName);
         cy.logoutFromPublisher();

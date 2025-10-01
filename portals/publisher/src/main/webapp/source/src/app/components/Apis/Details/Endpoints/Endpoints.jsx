@@ -724,7 +724,7 @@ function Endpoints(props) {
     };
 
     useEffect(() => {
-        if (api.type !== 'WS' && !api.isMCPServer()) {
+        if (!['WS', 'SSE'].includes(api.type) && !api.isMCPServer()) {
             api.getSwagger(apiObject.id).then((resp) => {
                 setSwagger(resp.obj);
             }).catch((err) => {
