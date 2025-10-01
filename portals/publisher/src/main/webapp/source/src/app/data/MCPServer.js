@@ -1232,6 +1232,34 @@ class MCPServer extends Resource {
             return promiseKey;
         }
     }
+
+    /**
+     * Change displayInDevportal
+     *
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @param {string} deploymentId - The ID of the deployment.
+     * @param {Object} body - The request body containing the displayInDevportal information.
+     * @returns {Promise} A promise that resolves to the response of the displayInDevportal request.
+     */
+    static displayInDevportal(mcpServerId, deploymentId, body) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Revisions'].updateMCPServerDeployment(
+                {
+                    mcpServerId,
+                    deploymentId,
+                },
+                {
+                    requestBody: body,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
 }
 
 export default MCPServer;

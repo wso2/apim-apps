@@ -93,6 +93,15 @@ function EditableRow(props) {
     const [isVisibleInStore, setIsVisibleInStore] = useState(isDisplayInStore);
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
 
+    const getCreateOrPublishScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), api);
+
     const resetText = () => {
         setIsVisibleInStore(isDisplayInStore);
         setKey(oldKey);
@@ -271,7 +280,7 @@ function EditableRow(props) {
                         onClick={updateEditMode}
                         onKeyDown={() => { }}
                         color='inherit'
-                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                        disabled={isCreateOrPublishRestricted()}
                         size='large'>
                         <EditIcon className={classes.buttonIcon} />
                     </IconButton>
@@ -282,7 +291,7 @@ function EditableRow(props) {
                     onClick={deleteRow}
                     onKeyDown={() => { }}
                     color='inherit'
-                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                    disabled={isCreateOrPublishRestricted()}
                     size='large'>
                     <DeleteForeverIcon className={classes.buttonIcon} />
                 </IconButton>
