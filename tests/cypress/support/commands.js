@@ -1104,7 +1104,7 @@ Cypress.Commands.add('createAPIByRestAPIDesignAndSearch', (name = null, version 
     cy.wait(5000);
     cy.visit(`/publisher/apis/`)
     apisHomePage.waitUntillPublisherLoadingSpinnerExit();
-    apisHomePage.getSearchTestBox().clear().type(apiName).type("{enter}");
+    apisHomePage.getSearchTestBox().clear().type(`"${name}"`).type("{enter}");
     apisHomePage.waitUntillPublisherLoadingSpinnerExit();
     cy.wait(2000);
     // Assuming you have an anchor tag with id 'myLink'
@@ -1121,7 +1121,7 @@ Cypress.Commands.add('searchAndDeleteApi', (name, version) => {
     cy.intercept('**/apis*').as('getApis');
     cy.visit(`/publisher/apis`);
     apisHomePage.waitUntillPublisherLoadingSpinnerExit();
-    apisHomePage.getSearchTestBox().clear().type(name).type("{enter}");
+    apisHomePage.getSearchTestBox().clear().type(`"${name}"`).type("{enter}");
     apisHomePage.waitUntillPublisherLoadingSpinnerExit();
     cy.wait(2000);
     cy.wait('@getApis', { timeout: Cypress.config().largeTimeout }).then(() => {

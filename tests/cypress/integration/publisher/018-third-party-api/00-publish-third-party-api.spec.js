@@ -20,7 +20,7 @@ import Utils from "@support/utils";
 import PublisherComonPage from "../../../support/pages/publisher/PublisherComonPage";
 import DevportalComonPage from "../../../support/pages/devportal/DevportalComonPage";
 const publisherComonPage = new PublisherComonPage();
-const devportalComonPage = new PublisherComonPage();
+const devportalComonPage = new DevportalComonPage();
 
 let apiId ;
 let apiName;
@@ -55,7 +55,7 @@ describe("Publish thirdparty api", () => {
             // cy.get('#other').should('exist');
             cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/rest`);
             publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
-            apiName = Utils.generateName().replace('-', '_');
+            apiName = Utils.generateName();
             cy.get('#itest-id-apiname-input', {timeout: Cypress.config().largeTimeout}).type(apiName);
             cy.get('#itest-id-apicontext-input').type('/' + apiName);
             cy.get('#itest-id-apiversion-input').type('1.0.0');
@@ -134,7 +134,7 @@ describe("Publish thirdparty api", () => {
                 cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
                 cy.wait(10000)
                 publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
-                cy.get("#searchQuery").type(apiName).wait(2000).type('{enter}')
+                cy.get("#searchQuery").type(`"${apiName}"`).wait(2000).type('{enter}')
                 cy.wait(5000)
             
 
@@ -144,14 +144,15 @@ describe("Publish thirdparty api", () => {
                     
                 cy.logoutFromPublisher();
                 cy.loginToDevportal(developer, password);
-                devportalComonPage.waitUntillPublisherLoadingSpinnerExit();
+                devportalComonPage.waitUntillDevportalLoaderSpinnerExit();
                 cy.wait(3000);
-                cy.get("#searchQuery").type(apiName).wait(2000).type('{enter}')
+                cy.get("#searchQuery").type(`"${apiName}"`).wait(2000).type('{enter}')
                 cy.viewThirdPartyApi(apiName);
                 cy.logoutFromDevportal();
             });
     });
     afterEach(function () {
+        cy.logoutFromPublisher();
         cy.log("deleting api ", apiId);
         cy.loginToPublisher(publisher, password);
         publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
