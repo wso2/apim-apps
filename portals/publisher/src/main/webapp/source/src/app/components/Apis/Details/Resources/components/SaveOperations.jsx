@@ -42,7 +42,7 @@ import { getBasePath } from 'AppComponents/Shared/Utils';
  */
 export default function SaveOperations(props) {
     const {
-        updateOpenAPI, updateAsyncAPI, operationsDispatcher, api,
+        updateOpenAPI, updateAsyncAPI, operationsDispatcher, api, disableSave,
     } = props;
     const [isUpdating, setIsSaving] = useState(false);
     const history = useHistory();
@@ -88,7 +88,7 @@ export default function SaveOperations(props) {
             <Grid container direction='row' spacing={1} style={{ marginTop: 20 }}>
                 <Grid item>
                     {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
-                        || isRestricted(['apim:api_create'], api) ? (
+                        || isRestricted(['apim:api_create'], api) || disableSave ? (
                             <Button
                                 disabled
                                 type='submit'
@@ -167,9 +167,11 @@ SaveOperations.propTypes = {
     updateOpenAPI: PropTypes.func,
     updateAsyncAPI: PropTypes.func,
     operationsDispatcher: PropTypes.func.isRequired,
+    disableSave: PropTypes.bool,
 };
 
 SaveOperations.defaultProps = {
     updateOpenAPI: undefined,
     updateAsyncAPI: undefined,
+    disableSave: false,
 };
