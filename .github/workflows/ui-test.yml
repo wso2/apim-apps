@@ -79,7 +79,7 @@ jobs:
         with:
           record: false
           working-directory: 'apim-apps/tests'
-          spec: '**/*.spec.js'
+          spec: '**/*.cy.js'
       - name: Upload Screenshots
         uses: actions/upload-artifact@v4
         if: failure()
