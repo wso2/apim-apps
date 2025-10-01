@@ -763,6 +763,11 @@ class Utils {
         if (!updatedTime) return 'N/A';
         return moment(parseInt(updatedTime, 10)).fromNow();
     };
+
+    static capitalizeFirstLetter = (string) => {
+        if (!string) return '';
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    };
 }
 
 Utils.CONST = {
