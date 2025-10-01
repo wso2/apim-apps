@@ -144,7 +144,7 @@ describe("Publish thirdparty api", () => {
                     
                 cy.logoutFromPublisher();
                 cy.loginToDevportal(developer, password);
-                devportalComonPage.waitUntillPublisherLoadingSpinnerExit();
+                devportalComonPage.waitUntillDevportalLoaderSpinnerExit();
                 cy.wait(3000);
                 cy.get("#searchQuery").type(`"${apiName}"`).wait(2000).type('{enter}')
                 cy.viewThirdPartyApi(apiName);
