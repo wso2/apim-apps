@@ -93,7 +93,7 @@
   "Apis.Create.Components.DefaultAPIForm.display.name.helper.text.product": "Display name for the API Product (optional)",
   "Apis.Create.Components.DefaultAPIForm.mandatory.fields": "Mandatory fields",
   "Apis.Create.Components.DefaultAPIForm.name": "Name",
-  "Apis.Create.Components.DefaultAPIForm.select.gateway.type": "Select Gateway type",
+  "Apis.Create.Components.DefaultAPIForm.select.gateway.type": "Gateway type",
   "Apis.Create.Components.DefaultAPIForm.select.gateway.type.helper.text": "Select the gateway type where your API will run.",
   "Apis.Create.Components.DefaultAPIForm.validation.error.curly.braces.cannot.be.in.path.param": "{ or } cannot exist as a substring in a path param",
   "Apis.Create.Components.DefaultAPIForm.validation.error.name.exists": "Name {value} already exists",
