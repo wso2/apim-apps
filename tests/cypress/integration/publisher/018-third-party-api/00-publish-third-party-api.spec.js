@@ -94,7 +94,7 @@ describe("Publish thirdparty api", () => {
         
                 //check if the api is third-party and published
                 cy.get('[data-testid="itest-api-state"]').contains('PUBLISHED').should('exist');
-                cy.get('[data-testid="itest-third-party-api-label"]').contains('Third Party').should('exist');
+                cy.get('[data-testid="itest-third-party-api-label"]').contains('Third-party API').should('exist');
         
                 //Check if the subscriptions,runtime config, resources, scopes, monetization,
                 //and test console sections are present
