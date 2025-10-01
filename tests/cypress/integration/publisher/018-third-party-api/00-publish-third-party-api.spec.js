@@ -20,7 +20,7 @@ import Utils from "@support/utils";
 import PublisherComonPage from "../../../support/pages/publisher/PublisherComonPage";
 import DevportalComonPage from "../../../support/pages/devportal/DevportalComonPage";
 const publisherComonPage = new PublisherComonPage();
-const devportalComonPage = new PublisherComonPage();
+const devportalComonPage = new DevportalComonPage();
 
 let apiId ;
 let apiName;
@@ -152,6 +152,8 @@ describe("Publish thirdparty api", () => {
             });
     });
     afterEach(function () {
+        cy.logoutFromPublisher();
+        cy.logoutFromDevportal();
         cy.log("deleting api ", apiId);
         cy.loginToPublisher(publisher, password);
         publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
