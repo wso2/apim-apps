@@ -577,6 +577,7 @@
   "Apis.Details.Configuration.components.DescriptionEditor.markdown.help": "The option allows you to replace the content of the Overview page in devportal with the content given below. To reset to the default overview content, clear all the text below, click `Update Content,` and save your changes.",
   "Apis.Details.Configuration.components.DescriptionEditor.update.cont.button": "Update Content",
   "Apis.Details.Configuration.components.DisplayName": "Display Name",
+  "Apis.Details.Configuration.components.DisplayName.error": "Display name should not be empty",
   "Apis.Details.Configuration.components.DisplayName.help": "This will be the display name of the {type}",
   "Apis.Details.Configuration.components.Endpoints.dynamic": "Dynamic",
   "Apis.Details.Configuration.components.Endpoints.endpoints": "Endpoints",
