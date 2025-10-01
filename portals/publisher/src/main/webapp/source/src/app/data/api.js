@@ -1928,7 +1928,7 @@ class API extends Resource {
     }
 
     /**
-     * Get the thumnail of an API
+     * Get the thumbnail of an API
      *
      * @param id {string} UUID of the api
      */

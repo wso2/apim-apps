@@ -1260,6 +1260,57 @@ class MCPServer extends Resource {
             );
         });
     }
+
+    /**
+     * Add a thumbnail to an MCP Server.
+     * @param {String} mcpServerId - The ID of the MCP Server.
+     * @param {File} file - The file to be uploaded.
+     * @returns {Promise} A promise that resolves to the response of the thumbnail upload request.
+     */
+    static addThumbnail(mcpServerId, file) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Servers'].updateMCPServerThumbnail(
+                {
+                    mcpServerId,
+                    'Content-Type': file.type,
+                },
+                {
+                    requestBody: {
+                        file,
+                    },
+                },
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+    }
+
+    /**
+     * Get the thumbnail of an MCP Server.
+     * @param {String} mcpServerId - The ID of the MCP Server.
+     * @returns {Promise} A promise that resolves to the response of the thumbnail get request.
+     */
+    static getThumbnail(mcpServerId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Servers'].getMCPServerThumbnail(
+                {
+                    mcpServerId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
 }
 
 export default MCPServer;
