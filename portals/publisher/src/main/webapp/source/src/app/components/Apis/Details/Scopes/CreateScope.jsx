@@ -47,15 +47,7 @@ const classes = {
     root: `${PREFIX}-root`,
     titleWrapper: `${PREFIX}-titleWrapper`,
     titleLink: `${PREFIX}-titleLink`,
-    contentWrapper: `${PREFIX}-contentWrapper`,
-    mainTitle: `${PREFIX}-mainTitle`,
-    FormControl: `${PREFIX}-FormControl`,
-    FormControlOdd: `${PREFIX}-FormControlOdd`,
-    FormControlLabel: `${PREFIX}-FormControlLabel`,
-    buttonSection: `${PREFIX}-buttonSection`,
     saveButton: `${PREFIX}-saveButton`,
-    helpText: `${PREFIX}-helpText`,
-    extraPadding: `${PREFIX}-extraPadding`,
     addNewOther: `${PREFIX}-addNewOther`,
     titleGrid: `${PREFIX}-titleGrid`,
     descriptionForm: `${PREFIX}-descriptionForm`,
@@ -87,48 +79,8 @@ const StyledGrid = styled(Grid)((
         marginRight: theme.spacing(1),
     },
 
-    [`& .${classes.contentWrapper}`]: {
-        maxWidth: theme.custom.contentAreaWidth,
-    },
-
-    [`& .${classes.mainTitle}`]: {
-        paddingLeft: 0,
-    },
-
-    [`& .${classes.FormControl}`]: {
-        padding: `0 0 0 ${theme.spacing(1)}`,
-        width: '100%',
-        marginTop: 0,
-    },
-
-    [`& .${classes.FormControlOdd}`]: {
-        padding: `0 0 0 ${theme.spacing(1)}`,
-        backgroundColor: theme.palette.background.paper,
-        width: '100%',
-        marginTop: 0,
-    },
-
-    [`& .${classes.FormControlLabel}`]: {
-        marginBottom: theme.spacing(1),
-        marginTop: theme.spacing(1),
-        fontSize: theme.typography.caption.fontSize,
-    },
-
-    [`& .${classes.buttonSection}`]: {
-        paddingTop: theme.spacing(3),
-    },
-
     [`& .${classes.saveButton}`]: {
         marginRight: theme.spacing(1),
-    },
-
-    [`& .${classes.helpText}`]: {
-        color: theme.palette.text.hint,
-        marginTop: theme.spacing(1),
-    },
-
-    [`& .${classes.extraPadding}`]: {
-        paddingLeft: theme.spacing(2),
     },
 
     [`& .${classes.addNewOther}`]: {
@@ -195,6 +147,28 @@ class CreateScope extends React.Component {
         this.validateScopeDisplayName = this.validateScopeDisplayName.bind(this);
         this.handleRoleAddition = this.handleRoleAddition.bind(this);
         this.handleRoleDeletion = this.handleRoleDeletion.bind(this);
+    }
+
+    /**
+     * Get the allowed scopes
+     * @returns {string[]} The allowed scopes
+     */
+    getAllowedScopes() {
+        const { api } = this.props;
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create'];
+        }
+    }
+
+    /**
+     * Check if the action is restricted
+     * @returns {boolean} True if the action is restricted, false otherwise
+     */
+    isAccessRestricted() {
+        const { api } = this.props;
+        return isRestricted(this.getAllowedScopes(), api);
     }
 
     handleRoleDeletion = (role) => {
@@ -671,7 +645,7 @@ class CreateScope extends React.Component {
                                         color='primary'
                                         onClick={this.addScope}
                                         disabled={
-                                            isRestricted(['apim:api_create'], api)
+                                            this.isAccessRestricted()
                                             || this.state.valid.name.invalid
                                             || invalidRoles.length !== 0
                                             || scopeAddDisabled

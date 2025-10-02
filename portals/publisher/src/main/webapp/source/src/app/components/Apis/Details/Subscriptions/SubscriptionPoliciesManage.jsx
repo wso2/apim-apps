@@ -71,8 +71,15 @@ const Root = styled('div')((
 
 /**
  * Manage subscription policies of the API
+ * @param {object} props - Props passed to the component
+ * @returns {JSX.Element} The SubscriptionPoliciesManage component
  * */
 class SubscriptionPoliciesManage extends Component {
+
+    /**
+     * constructor
+     * @param {*} props 
+     */
     constructor(props) {
         super(props);
         this.state = {
@@ -141,6 +148,28 @@ class SubscriptionPoliciesManage extends Component {
             }
         }
         setPolices(newSelectedPolicies);
+    }
+
+    /**
+     * Get the allowed scopes
+     * @returns {string[]} The allowed scopes
+     */
+    getCreateOrPublishScopes() {
+        const { api } = this.props;
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_publish', 'apim:api_create'];
+        }
+    }
+
+    /**
+     * Check if the action is restricted
+     * @returns {boolean} True if the action is restricted, false otherwise
+     */
+    isCreateOrPublishRestricted() {
+        const { api } = this.props;
+        return isRestricted(this.getCreateOrPublishScopes(), api);
     }
 
     /**
@@ -232,7 +261,7 @@ class SubscriptionPoliciesManage extends Component {
                                         key={value[1].displayName}
                                         control={(
                                             <Checkbox
-                                                disabled={isRestricted(['apim:api_publish', 'apim:api_create'], api)}
+                                                disabled={this.isCreateOrPublishRestricted()}
                                                 color='primary'
                                                 checked={policies.includes(value[1].displayName)}
                                                 onChange={(e) => this.handleChange(e)}
@@ -271,9 +300,7 @@ class SubscriptionPoliciesManage extends Component {
                                             key={policy}
                                             control={(
                                                 <Checkbox
-                                                    disabled={
-                                                        isRestricted(['apim:api_publish', 'apim:api_create'], api)
-                                                    }
+                                                    disabled={this.isCreateOrPublishRestricted()}
                                                     color='primary'
                                                     checked={policies.includes(policy)}
                                                     onChange={(e) => this.handleChange(e)}

@@ -259,7 +259,10 @@ const Endpoints = ({
                                 variant='outlined'
                                 color='primary'
                                 size='small'
-                                disabled={isRestricted(['apim:mcp_server_create'], apiObject)}
+                                disabled={isRestricted(
+                                    ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'],
+                                    apiObject)
+                                }
                                 onClick={() => handleAddEndpoint('PRODUCTION')}
                                 sx={{ marginLeft: 1 }}
                             >
@@ -307,7 +310,10 @@ const Endpoints = ({
                                 variant='outlined'
                                 color='primary'
                                 size='small'
-                                disabled={isRestricted(['apim:mcp_server_create'], apiObject)}
+                                disabled={isRestricted(
+                                    ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'],
+                                    apiObject)
+                                }
                                 onClick={() => handleAddEndpoint('SANDBOX')}
                                 sx={{ marginLeft: 1 }}
                             >
@@ -357,7 +363,8 @@ const Endpoints = ({
                     type='submit'
                     variant='contained'
                     color='primary'
-                    disabled={isRestricted(['apim:mcp_server_publish', 'apim:mcp_server_manage'], apiObject)}
+                    disabled={isRestricted(
+                        ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'], apiObject)}
                     endIcon={<OpenInNewIcon />}
                     onClick={() => {
                         history.push({

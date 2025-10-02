@@ -134,6 +134,28 @@ class Scopes extends React.Component {
     }
 
     /**
+     * Get the allowed scopes
+     * @returns {string[]} The allowed scopes
+     */
+    getAllowedScopes() {
+        const { api } = this.props;
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create'];
+        }
+    }
+
+    /**
+     * Check if the action is restricted
+     * @returns {boolean} True if the action is restricted, false otherwise
+     */
+    isAccessRestricted() {
+        const { api } = this.props;
+        return isRestricted(this.getAllowedScopes(), api);
+    }
+
+    /**
      * Render Scopes section
      * @returns {React.Component} React Component
      * @memberof Scopes
@@ -210,12 +232,9 @@ class Scopes extends React.Component {
                                     <tr>
                                         <td>
                                             <Button
-                                                disabled={isRestricted(
-                                                    ['apim:api_create'],
-                                                    api,
-                                                ) || api.isRevision}
+                                                disabled={this.isAccessRestricted() || api.isRevision}
                                                 to={
-                                                    !isRestricted(['apim:api_create'], api) && !api.isRevision && {
+                                                    !this.isAccessRestricted() && !api.isRevision && {
                                                         pathname: editUrl,
                                                         state: {
                                                             scopeName,
@@ -354,10 +373,10 @@ class Scopes extends React.Component {
                                     variant='contained'
                                     color='primary'
                                     className={classes.button}
-                                    disabled={isRestricted(['apim:api_create'], api) || api.isRevision
+                                    disabled={this.isAccessRestricted() || api.isRevision
                                     || enableReadOnly}
                                     component={Link}
-                                    to={!isRestricted(['apim:api_create'], api) && !api.isRevision && url}
+                                    to={!this.isAccessRestricted() && !api.isRevision && url}
                                     id='create-scope-btn'
                                 >
                                     <FormattedMessage
@@ -401,9 +420,9 @@ class Scopes extends React.Component {
                         variant='outlined'
                         color='primary'
                         size='small'
-                        disabled={isRestricted(['apim:api_create'], api) || api.isRevision || enableReadOnly}
+                        disabled={this.isAccessRestricted() || api.isRevision || enableReadOnly}
                         component={Link}
-                        to={!isRestricted(['apim:api_create'], api) && !api.isRevision && url}
+                        to={!this.isAccessRestricted() && !api.isRevision && url}
                     >
                         <AddCircle className={classes.buttonIcon} />
                         <FormattedMessage
@@ -411,7 +430,7 @@ class Scopes extends React.Component {
                             defaultMessage='Add New Local Scope'
                         />
                     </Button>
-                    {isRestricted(['apim:api_create'], api) && (
+                    {this.isAccessRestricted() && (
                         <Grid item>
                             <Typography variant='body2' color='primary'>
                                 <FormattedMessage

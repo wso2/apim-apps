@@ -87,6 +87,15 @@ function Subscriptions(props) {
     && api.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
     const typeToDisplay = getTypeToDisplay(api.apiType);
 
+    const getAllowedScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isAccessRestricted = () => isRestricted(getAllowedScopes(), api);
+
     /**
      * Save subscription information (policies, subscriptionAvailability, subscriptionAvailableTenants)
      */
@@ -209,8 +218,7 @@ function Subscriptions(props) {
                             type='submit'
                             variant='contained'
                             color='primary'
-                            disabled={updateInProgress || api.isRevision 
-                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            disabled={updateInProgress || api.isRevision || isAccessRestricted()}
                             onClick={() => handleSubscriptionSave()}
                             id='subscriptions-save-btn'
                         >

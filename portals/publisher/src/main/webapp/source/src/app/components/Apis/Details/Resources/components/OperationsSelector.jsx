@@ -43,6 +43,16 @@ export default function OperationsSelector(props) {
     } = props;
     const [apiFromContext] = useAPI();
     const intl = useIntl();
+
+    const getAllowedScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isAccessRestricted = () => isRestricted(getAllowedScopes(), apiFromContext);
+
     // TODO: Following logic introduce a limitation in showing `indeterminate` icon state if user
     // select all -> unchecked one operation -> recheck same operation again ~tmkb
     const isIndeterminate = !isEmpty(selectedOperations);
@@ -87,7 +97,7 @@ export default function OperationsSelector(props) {
                         >
                             <div>
                                 <IconButton
-                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                    disabled={isAccessRestricted()}
                                     onClick={enableSecurity}
                                     aria-label='enable security for all'
                                     size='large'
@@ -108,7 +118,7 @@ export default function OperationsSelector(props) {
                         >
                             <div>
                                 <IconButton
-                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                    disabled={isAccessRestricted()}
                                     onClick={disableSecurity}
                                     aria-label='disable security for all'
                                     size='large'
@@ -129,7 +139,7 @@ export default function OperationsSelector(props) {
                         >
                             <div>
                                 <IconButton
-                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                    disabled={isAccessRestricted()}
                                     onClick={enableSecurity}
                                     aria-label='enable security for all'
                                     size='large'
@@ -151,7 +161,7 @@ export default function OperationsSelector(props) {
                     >
                         <div>
                             <IconButton
-                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                disabled={isAccessRestricted()}
                                 onClick={handleSelector}
                                 aria-label='Mark all for delete'
                                 size='large'
