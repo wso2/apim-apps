@@ -484,15 +484,20 @@ export default function RuntimeConfiguration() {
 
     const isAccessRestricted = () => {
         if (api.apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
-            return isRestricted(['apim:mcp_server_create'], api);
+            return isRestricted(['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'], api);
         } else {
             return isRestricted(['apim:api_create'], api);
         }
     }
 
+    const isKMAccessRestricted = () => {
+        return isRestricted(['apim:api_view', 'apim:api_create', 'apim:api_manage', 'apim:mcp_server_view',
+            'apim:mcp_server_create', 'apim:mcp_server_manage'], api);
+    }
+
     const intl = useIntl();
     useEffect(() => {
-        if (!isAccessRestricted()) {
+        if (!isKMAccessRestricted()) {
             Api.keyManagers().then((response) => {
                 const kmNameList = [];
                 if (response.body.list) {

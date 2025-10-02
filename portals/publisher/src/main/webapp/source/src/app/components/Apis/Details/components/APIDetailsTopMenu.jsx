@@ -197,18 +197,21 @@ const APIDetailsTopMenu = (props) => {
             id: 'Apis.Details.LifeCycle.State.Status.PRE-RELEASED', defaultMessage: 'PRE-RELEASED',
         }),
     };
+    const isMCPServer = api.isMCPServer();
 
     const [userOrg, setUserOrg] = useState(null);
 
     useEffect(() => {
-        new API()
-            .getUserOrganizationInfo()
-            .then((result) => {
-                setUserOrg(result.body.organizationId);
-            })
-            .catch((error) => {
-                throw error;
-            });
+        if (!isMCPServer) {
+            new API()
+                .getUserOrganizationInfo()
+                .then((result) => {
+                    setUserOrg(result.body.organizationId);
+                })
+                .catch((error) => {
+                    throw error;
+                });
+        }
     }, []);
 
     /**
@@ -460,7 +463,6 @@ const APIDetailsTopMenu = (props) => {
                             variant='outlined'
                         >
                             {(() => {
-                                const isMCPServer = api.isMCPServer();
                                 let menuItemProps = {};
                                 
                                 if (isMCPServer) {
@@ -506,7 +508,6 @@ const APIDetailsTopMenu = (props) => {
                                 return <MenuItem {...menuItemProps} />;
                             })()}
                             {allRevisions && !isAPIProduct && allRevisions.map((item) => {
-                                const isMCPServer = api.isMCPServer();
                                 const revisionUrl = isMCPServer 
                                     ? `/mcp-servers/${item.id}/${lastIndex}`
                                     : `/apis/${item.id}/${lastIndex}`;

@@ -1311,6 +1311,28 @@ class MCPServer extends Resource {
             );
         });
     }
+
+    /**
+     * Get the subscription policies of an MCP Server.
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @returns {Promise} A promise that resolves to the subscription policies of the MCP Server.
+     */
+    static getSubscriptionPolicies(mcpServerId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        const promisePolicies = apiClient.then(client => {
+            return client.apis['MCP Servers'].getMCPServerSubscriptionPolicies(
+                {
+                    mcpServerId,
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promisePolicies.then(response => response.body);
+    }
 }
 
 export default MCPServer;
