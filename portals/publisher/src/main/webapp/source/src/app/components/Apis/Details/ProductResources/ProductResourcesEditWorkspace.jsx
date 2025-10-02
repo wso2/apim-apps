@@ -406,7 +406,7 @@ function ProductResourcesEdit(props) {
             newApiResources = inputApiResources;
         }
         const {
-            target, verb, apiId, name, version,
+            target, verb, apiId, name, version, displayName,
         } = resourceToAdd;
         const newResource = {
             id: null,
@@ -454,6 +454,7 @@ function ProductResourcesEdit(props) {
         if (!apiFound) {
             // Add api object
             newApiResources.push({
+                displayName,
                 name,
                 apiId,
                 operations: [newResource],
@@ -496,6 +497,7 @@ function ProductResourcesEdit(props) {
                             target: key,
                             verb: innerKey,
                             apiId: selectedApi.id,
+                            displayName: selectedApi.displayName,
                             name: selectedApi.name,
                             version: selectedApi.version,
                         },
@@ -639,7 +641,7 @@ function ProductResourcesEdit(props) {
                                                 >
                                                     <ListItemText
                                                         id={labelId}
-                                                        primary={apiObj.name}
+                                                        primary={apiObj.displayName || apiObj.name}
                                                         secondary={`${apiObj.version} - ${apiObj.context}`}
                                                         onClick={() => getApiSwagger(apiObj)}
                                                     />
@@ -665,7 +667,7 @@ function ProductResourcesEdit(props) {
                                 </div>
                                 {selectedApi && (
                                     <Typography variant='h5' component='h2' className={classes.selectedTitle}>
-                                        {selectedApi.name}
+                                        {selectedApi.displayName || selectedApi.name}
                                     </Typography>
                                 )}
                                 <div className={classes.tootBar}>
@@ -754,6 +756,7 @@ function ProductResourcesEdit(props) {
                                                                         target: key,
                                                                         verb: innerKey,
                                                                         apiId: selectedApi.id,
+                                                                        displayName: selectedApi.displayName,
                                                                         name: selectedApi.name,
                                                                         version: selectedApi.version,
                                                                     },
@@ -776,6 +779,7 @@ function ProductResourcesEdit(props) {
                                                                                 target: key,
                                                                                 verb: innerKey,
                                                                                 apiId: selectedApi.id,
+                                                                                displayName: selectedApi.displayName,
                                                                                 name: selectedApi.name,
                                                                                 version: selectedApi.version,
                                                                             },
@@ -804,7 +808,7 @@ function ProductResourcesEdit(props) {
                                 {api.name && (
                                     <>
                                         <Typography variant='h5' component='h2' className={classes.selectedTitle}>
-                                            {api.name}
+                                            {api.displayName || api.name}
                                         </Typography>
                                     </>
                                 )}
@@ -829,7 +833,7 @@ function ProductResourcesEdit(props) {
                                                 <div key={apiResource.name}>
                                                     <div className={classes.treeItemMain}>
                                                         <Typography component='p'>
-                                                            {apiResource.name}
+                                                            {apiResource.displayName || apiResource.name}
                                                             {' - '}
                                                             {apiResource.version}
                                                         </Typography>
@@ -855,6 +859,7 @@ function ProductResourcesEdit(props) {
                                                                                 target,
                                                                                 verb,
                                                                                 apiId: apiResource.apiId,
+                                                                                displayName: apiResource.displayName,
                                                                                 name: apiResource.name,
                                                                                 version: apiResource.version,
                                                                             },
