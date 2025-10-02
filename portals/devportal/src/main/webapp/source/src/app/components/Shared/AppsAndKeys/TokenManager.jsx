@@ -290,7 +290,7 @@ class TokenManager extends React.Component {
     handleClickRemove = (keyMappingId) => {
         const {
             selectedTab, keyType, intl,
-        } = this.props; 
+        } = this.props;
         this.application
             .then((application) => {
                 return application.removeKeys(keyType, selectedTab, keyMappingId);
