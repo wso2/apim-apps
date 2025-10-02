@@ -291,6 +291,7 @@ class TokenManager extends React.Component {
         const {
             selectedTab, keyType, intl,
         } = this.props;
+        
         this.application
             .then((application) => {
                 return application.removeKeys(keyType, selectedTab, keyMappingId);
@@ -411,7 +412,10 @@ class TokenManager extends React.Component {
                     const keys = response[1];
                     const { keyRequest } = this.state;
 
-                    if (keys.size > 0 && keys.get(selectedTab) && keys.get(selectedTab).keyType === keyType) {
+                    // Check if keys actually exist for this tab and keyType
+                    const hasKeysForCurrentTab = keys.size > 0 && keys.get(selectedTab) && keys.get(selectedTab).keyType === keyType;
+
+                    if (hasKeysForCurrentTab) {
                         const {
                             callbackUrl, supportedGrantTypes, additionalProperties, mode,
                         } = keys.get(selectedTab);
@@ -447,6 +451,8 @@ class TokenManager extends React.Component {
                             },
                             keyManagers: responseKeyManagerList,
                             selectedTab,
+                            importDisabled: false, 
+                            mode: null,            
                         });
                     }
                 })
@@ -1403,3 +1409,4 @@ TokenManager.propTypes = {
 };
 
 export default injectIntl((TokenManager));
+cd C:\Users\User\Downloads\apim-apps
