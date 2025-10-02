@@ -201,7 +201,8 @@ export default function DeploymentOnboarding(props) {
                     }
             }
         }
-        const internalGatewaysFiltered = environments.filter((p) => p.provider.toLowerCase().includes('wso2'));
+        const internalGatewaysFiltered = environments.filter((p) => p.provider.toLowerCase().includes('wso2')
+        && p.mode !== 'READ_ONLY');
         const selectedInternalGateways = internalGatewaysFiltered.filter((p) => 
             p.gatewayType.toLowerCase() === gatewayType.toLowerCase())
         if (selectedInternalGateways.length > 0) {
@@ -219,7 +220,8 @@ export default function DeploymentOnboarding(props) {
             setVhostsDeploy(defaultVhosts);
             setSelectedEnvironment(selectedInternalGateways.length === 1 ? [selectedInternalGateways[0].name] : []);
         } else {
-            const external = environments.filter((p) => !p.provider.toLowerCase().includes('wso2'));
+            const external = environments.filter((p) => !p.provider.toLowerCase().includes('wso2')
+            && p.mode !== 'READ_ONLY');
             const selectedExternalGateways = external.filter((p) =>
                 p.gatewayType.toLowerCase() === gatewayType.toLowerCase());
             setExternalGateways(selectedExternalGateways);
