@@ -453,8 +453,13 @@ export default function DesignConfigurations() {
     };
     const loadContentForDoc = (documentId) => {
         const { apiType } = api.apiType;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const docPromise = restApi.getInlineContentOfDocument(api.id, documentId);
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.getInlineContentOfDocument(api.id, documentId);
+        } else {
+            const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+            docPromise = restApi.getInlineContentOfDocument(api.id, documentId);
+        }
         docPromise
             .then((doc) => {
                 const { text } = doc;
@@ -463,30 +468,55 @@ export default function DesignConfigurations() {
     };
     const addDocument = async () => {
         const { apiType } = api.apiType;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const docPromise = await restApi.addDocument(api.id, {
-            name: 'overview',
-            type: 'OTHER',
-            summary: 'overview',
-            sourceType: 'MARKDOWN',
-            visibility: 'API_LEVEL',
-            sourceUrl: '',
-            otherTypeName: CONSTS.DESCRIPTION_TYPES.OVERVIEW,
-            inlineContent: '',
-        }).then((response) => {
-            return response.body;
-        }).catch((error) => {
-            if (process.env.NODE_ENV !== 'production') {
-                console.log(error);
-            }
-        });
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.addDocument(api.id, {
+                name: 'overview',
+                type: 'OTHER',
+                summary: 'overview',
+                sourceType: 'MARKDOWN',
+                visibility: 'API_LEVEL',
+                sourceUrl: '',
+                otherTypeName: CONSTS.DESCRIPTION_TYPES.OVERVIEW,
+                inlineContent: '',
+            }).then((response) => {
+                return response.body;
+            }).catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+            });
+        } else {
+            const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+            docPromise = await restApi.addDocument(api.id, {
+                name: 'overview',
+                type: 'OTHER',
+                summary: 'overview',
+                sourceType: 'MARKDOWN',
+                visibility: 'API_LEVEL',
+                sourceUrl: '',
+                otherTypeName: CONSTS.DESCRIPTION_TYPES.OVERVIEW,
+                inlineContent: '',
+            }).then((response) => {
+                return response.body;
+            }).catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+            });
+        }
         return docPromise;
     };
 
     const addDocumentContent = (document) => {
         const { apiType } = api.apiType;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const docPromise = restApi.addInlineContentToDocument(api.id, document.documentId, 'MARKDOWN', overview);
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.addInlineContentToDocument(api.id, document.documentId, 'MARKDOWN', overview);
+        } else {
+            const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+            docPromise = restApi.addInlineContentToDocument(api.id, document.documentId, 'MARKDOWN', overview);
+        }
         docPromise
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
@@ -501,8 +531,13 @@ export default function DesignConfigurations() {
 
     const deleteOverviewDocument = () => {
         const { apiType } = api.apiType;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const docPromise = restApi.deleteDocument(api.id, overviewDocument.documentId);
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.deleteDocument(api.id, overviewDocument.documentId);
+        } else {
+            const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+            docPromise = restApi.deleteDocument(api.id, overviewDocument.documentId);
+        }
         docPromise
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
@@ -514,8 +549,13 @@ export default function DesignConfigurations() {
     useEffect(() => {
         const { apiType } = api.apiType;
         const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const promisedApi = restApi.getDocuments(api.id);
-        promisedApi
+        let promisedDocs;
+        if (isMCPServer) {
+            promisedDocs = MCPServer.getDocuments(api.id);
+        } else {
+            promisedDocs = restApi.getDocuments(api.id);
+        }
+        promisedDocs
             .then((response) => {
                 const overviewDoc = response.body.list.filter((item) => item.otherTypeName === '_overview');
                 if (overviewDoc.length > 0) {
@@ -536,13 +576,14 @@ export default function DesignConfigurations() {
                     }));
                 }
             });
-        // const apiClient = new API();
-        API.labels().then((response) => setLabels(response.body));
-        restApi.getAPILabels(api.id).then((response) => {
-            setUpdatedLabels(response.body.list.map((label) => label.name));
-        }).finally(() => {
-            setLoading(false);
-        });
+        if (!isMCPServer) {
+            API.labels().then((response) => setLabels(response.body));
+            restApi.getAPILabels(api.id).then((response) => {
+                setUpdatedLabels(response.body.list.map((label) => label.name));
+            }).finally(() => {
+                setLoading(false);
+            });
+        }
     }, []);
 
     useEffect(() => {

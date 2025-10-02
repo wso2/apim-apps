@@ -42,6 +42,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import UserIcon from '@mui/icons-material/Person';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 import { ScopeValidation, resourceMethod, resourcePath } from 'AppData/ScopeValidation';
 import AuthManager from 'AppData/AuthManager';
@@ -666,19 +667,29 @@ class SubscriptionsTable extends Component {
                     defaultMessage: 'Error while retrieving the subscriptions',
                 }));
             });
-        api.getMonetization(this.props.api.id).then((status) => {
-            this.setState({ monetizationStatus: status.enabled });
-        });
-        const isAiApi = this.api.subtypeConfiguration?.subtype?.toLowerCase().includes('aiapi') ?? false;
-        api.getSubscriptionPolicies(this.api.id, isAiApi).then((policies) => {
-            const filteredPolicies = policies ? policies.filter((policy) => policy.tierPlan === 'COMMERCIAL') : [];
-            this.setState({ policies: filteredPolicies });
-        });
+        let policyPromise;
+        if (!this.api.isMCPServer()) {
+            api.getMonetization(this.props.api.id).then((status) => {
+                this.setState({ monetizationStatus: status.enabled });
+            });
+            const isAiApi = this.api.subtypeConfiguration?.subtype?.toLowerCase().includes('aiapi') ?? false;
+            policyPromise = api.getSubscriptionPolicies(this.api.id, isAiApi);
+        } else {
+            policyPromise = MCPServer.getSubscriptionPolicies(this.api.id);
+        }
+        policyPromise
+            .then((policies) => {
+                const filteredPolicies = policies ? policies.filter((policy) => policy.tierPlan === 'COMMERCIAL') : [];
+                this.setState({ policies: filteredPolicies });
+            });
     }
 
     /**
      * Checks whether the policy is a usage based monetization plan
      *
+     * @param {string} policyName - The name of the policy
+     * @returns {boolean} True if the policy is a usage based monetization plan, false otherwise
+     * @memberof SubscriptionsTable
      * */
     isMonetizedPolicy(policyName) {
         const { policies, monetizationStatus } = this.state;
