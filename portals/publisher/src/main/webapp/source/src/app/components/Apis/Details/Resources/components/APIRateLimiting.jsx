@@ -84,6 +84,15 @@ function APIRateLimiting(props) {
     const [rateLimitingLevel, setRateLimitingLevel] = useState(RateLimitingLevels.RESOURCE);
     const [apiFromContext] = useAPI();
 
+    const getAllowedScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isAccessRestricted = () => isRestricted(getAllowedScopes(), apiFromContext);
+
     // Following effect is used to handle the controlled component case, If user provide onChange handler to
     // control this component, Then we accept the props as the valid input and update the current state value from props
     useEffect(() => {
@@ -230,7 +239,7 @@ function APIRateLimiting(props) {
                                         control={(
                                             <Radio
                                                 color='primary'
-                                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                                disabled={isAccessRestricted()}
                                             />
                                         )}
                                         label={intl.formatMessage({
@@ -247,7 +256,7 @@ function APIRateLimiting(props) {
                                         control={(
                                             <Radio
                                                 color='primary'
-                                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                                disabled={isAccessRestricted()}
                                             />
                                         )}
                                         className={focusOperationLevel && classes.focusLabel}
@@ -268,7 +277,7 @@ function APIRateLimiting(props) {
                                 operationRateLimitMessage
                             ) : (
                                 <TextField
-                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                    disabled={isAccessRestricted()}
                                     id='operation_throttling_policy'
                                     select
                                     label={intl.formatMessage({

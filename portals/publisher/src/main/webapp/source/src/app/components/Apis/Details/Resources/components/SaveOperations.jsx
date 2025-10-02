@@ -49,6 +49,15 @@ export default function SaveOperations(props) {
     const [isOpen, setIsOpen] = useState(false);
     const { settings } = useAppContext();
 
+    const getAllowedScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isAccessRestricted = () => isRestricted(getAllowedScopes(), api);
+
     /**
      * Handle save and deploy
      */
@@ -88,7 +97,7 @@ export default function SaveOperations(props) {
             <Grid container direction='row' spacing={1} style={{ marginTop: 20 }}>
                 <Grid item>
                     {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
-                        || isRestricted(['apim:api_create'], api) || disableSave ? (
+                        || isAccessRestricted() || disableSave ? (
                             <Button
                                 disabled
                                 type='submit'

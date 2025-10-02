@@ -134,6 +134,16 @@ function TopMenu(props) {
     const {
         data, setListType, count, isAPIProduct, isMCPServer, listType, showToggle, query,
     } = props;
+
+    const getCreateOrPublishScopes = () => {
+        return ['apim:api_create', 'apim:api_publish'];
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes());
+
+    const getMCPServerScopes = () => {
+        return ['apim:mcp_server_create', 'apim:mcp_server_manage'];
+    };
+    const isMCPServerRestricted = () => isRestricted(getMCPServerScopes());
       
     if (count > 0) {
         return (
@@ -193,7 +203,7 @@ function TopMenu(props) {
                             variant='contained'
                             color='primary'
                             component={Link}
-                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                            disabled={isCreateOrPublishRestricted()}
                             to='/api-products/create'
                             data-testid='itest-create-api-product-button'
                             startIcon={<AddIcon />}
@@ -209,7 +219,7 @@ function TopMenu(props) {
                             variant='contained'
                             color='primary'
                             component={Link}
-                            disabled={isRestricted(['apim:mcp_server_create', 'apim:mcp_server_manage'])}
+                            disabled={isMCPServerRestricted()}
                             to='/mcp-servers/create'
                             data-testid='itest-create-mcp-server-button'
                             startIcon={<AddIcon />}
@@ -225,7 +235,7 @@ function TopMenu(props) {
                             variant='contained'
                             color='primary'
                             component={Link}
-                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                            disabled={isCreateOrPublishRestricted()}
                             to='/apis/create'
                             data-testid='itest-create-api-button'
                             startIcon={<AddIcon />}
