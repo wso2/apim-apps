@@ -406,7 +406,7 @@ function ProductResourcesEdit(props) {
             newApiResources = inputApiResources;
         }
         const {
-            target, verb, apiId, name, version, displayName,
+            target, verb, apiId, name, version,
         } = resourceToAdd;
         const newResource = {
             id: null,
@@ -454,7 +454,6 @@ function ProductResourcesEdit(props) {
         if (!apiFound) {
             // Add api object
             newApiResources.push({
-                displayName,
                 name,
                 apiId,
                 operations: [newResource],
@@ -497,7 +496,6 @@ function ProductResourcesEdit(props) {
                             target: key,
                             verb: innerKey,
                             apiId: selectedApi.id,
-                            displayName: selectedApi.displayName,
                             name: selectedApi.name,
                             version: selectedApi.version,
                         },
@@ -756,7 +754,6 @@ function ProductResourcesEdit(props) {
                                                                         target: key,
                                                                         verb: innerKey,
                                                                         apiId: selectedApi.id,
-                                                                        displayName: selectedApi.displayName,
                                                                         name: selectedApi.name,
                                                                         version: selectedApi.version,
                                                                     },
@@ -779,7 +776,6 @@ function ProductResourcesEdit(props) {
                                                                                 target: key,
                                                                                 verb: innerKey,
                                                                                 apiId: selectedApi.id,
-                                                                                displayName: selectedApi.displayName,
                                                                                 name: selectedApi.name,
                                                                                 version: selectedApi.version,
                                                                             },
@@ -833,7 +829,7 @@ function ProductResourcesEdit(props) {
                                                 <div key={apiResource.name}>
                                                     <div className={classes.treeItemMain}>
                                                         <Typography component='p'>
-                                                            {apiResource.displayName || apiResource.name}
+                                                            {apiResource.name}
                                                             {' - '}
                                                             {apiResource.version}
                                                         </Typography>
@@ -859,7 +855,6 @@ function ProductResourcesEdit(props) {
                                                                                 target,
                                                                                 verb,
                                                                                 apiId: apiResource.apiId,
-                                                                                displayName: apiResource.displayName,
                                                                                 name: apiResource.name,
                                                                                 version: apiResource.version,
                                                                             },
