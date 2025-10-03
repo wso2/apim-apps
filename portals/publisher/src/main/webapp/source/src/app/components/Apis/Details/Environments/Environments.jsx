@@ -576,7 +576,7 @@ export default function Environments() {
                 }
             }
             const internalGatewaysFiltered = settings.environment.filter((p) =>
-                p.provider.toLowerCase().includes('wso2'));
+                p.provider.toLowerCase().includes('wso2') && p.mode !== 'READ_ONLY');
             const selectedInternalGateways = internalGatewaysFiltered.filter((p) =>
                 p.gatewayType.toLowerCase() === gatewayType.toLowerCase())
             if (selectedInternalGateways.length > 0) {
@@ -596,7 +596,8 @@ export default function Environments() {
                 setSelectedEnvironment(selectedInternalGateways.length === 1 ?
                     [selectedInternalGateways[0].name] : []);
             } else {
-                const external = settings.environment.filter((p) => !p.provider.toLowerCase().includes('wso2'));
+                const external = settings.environment.filter((p) => !p.provider.toLowerCase().includes('wso2')
+                && p.mode !== 'READ_ONLY');
                 const selectedExternalGateways = external.filter((p) =>
                     p.gatewayType.toLowerCase() === gatewayType.toLowerCase());
                 setExternalGateways(selectedExternalGateways);

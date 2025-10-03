@@ -639,7 +639,7 @@ function ProductResourcesEdit(props) {
                                                 >
                                                     <ListItemText
                                                         id={labelId}
-                                                        primary={apiObj.name}
+                                                        primary={apiObj.displayName || apiObj.name}
                                                         secondary={`${apiObj.version} - ${apiObj.context}`}
                                                         onClick={() => getApiSwagger(apiObj)}
                                                     />
@@ -665,7 +665,7 @@ function ProductResourcesEdit(props) {
                                 </div>
                                 {selectedApi && (
                                     <Typography variant='h5' component='h2' className={classes.selectedTitle}>
-                                        {selectedApi.name}
+                                        {selectedApi.displayName || selectedApi.name}
                                     </Typography>
                                 )}
                                 <div className={classes.tootBar}>
@@ -804,7 +804,7 @@ function ProductResourcesEdit(props) {
                                 {api.name && (
                                     <>
                                         <Typography variant='h5' component='h2' className={classes.selectedTitle}>
-                                            {api.name}
+                                            {api.displayName || api.name}
                                         </Typography>
                                     </>
                                 )}
