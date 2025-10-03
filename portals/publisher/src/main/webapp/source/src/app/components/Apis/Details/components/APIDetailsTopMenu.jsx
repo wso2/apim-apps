@@ -34,7 +34,8 @@ import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import ThumbnailView from 'AppComponents/Apis/Listing/components/ImageGenerator/ThumbnailView';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import GoTo from 'AppComponents/Apis/Details/GoTo/GoTo';
 import Tooltip from '@mui/material/Tooltip';
@@ -444,24 +445,13 @@ const APIDetailsTopMenu = (props) => {
                 <div className={classes.dateWrapper} />
                 {(!api.advertiseInfo || !api.advertiseInfo.advertised) && (api.gatewayType !== 'solace') && (
                     <div className={classes.topRevisionStyle}>
-                        <TextField
-                            id='revision-selector'
-                            value={revisionId}
-                            select
-                            SelectProps={{
-                                MenuProps: {
-                                    anchorOrigin: {
-                                        vertical: 'bottom',
-                                        horizontal: 'left',
-                                    },
-                                    getContentAnchorEl: null,
-                                },
-                            }}
-                            name='selectRevision'
-                            onChange={handleChange}
-                            margin='dense'
-                            variant='outlined'
-                        >
+                        <FormControl margin='dense' variant='outlined'>
+                            <Select
+                                id='revision-selector'
+                                value={revisionId}
+                                name='selectRevision'
+                                onChange={handleChange}
+                            >
                             {(() => {
                                 let menuItemProps = {};
                                 
@@ -568,7 +558,8 @@ const APIDetailsTopMenu = (props) => {
                                     </Grid>
                                 </MenuItem>
                             ))}
-                        </TextField>
+                            </Select>
+                        </FormControl>
                     </div>
                 )}
 
