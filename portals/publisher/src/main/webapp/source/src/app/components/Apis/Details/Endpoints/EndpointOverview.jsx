@@ -564,7 +564,7 @@ function EndpointOverview(props) {
         setIsCustomBackendSelected(false);
         const selectedKey = typeChangeConfirmation.type || value;
         if (selectedKey === 'INLINE' || selectedKey === 'MOCKED_OAS') {
-            const tmpConfig = createEndpointConfig('prototyped');
+            const tmpConfig = createEndpointConfig(selectedKey);
             endpointsDispatcher({
                 action: 'set_inline_or_mocked_oas',
                 value: {
