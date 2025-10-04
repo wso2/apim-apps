@@ -40,6 +40,21 @@ const DefaultConfigurations = {
             color: '#666',
         },
     },
+    overrides: {
+        MuiOutlinedInput: {
+            root: {
+                borderColor: '#444',
+            },
+            notchedOutline: {
+                borderColor: '#444',
+            },
+        },
+        MuiButton: {
+            root: {
+                textTransform: 'none',
+            },
+        },
+    },
     custom: {
         contentAreaWidth: 1240,
         backgroundImage: '', // Add a watermark background to the content area of the page. Example ( '/devportal/site/public/images/back-light.png')
@@ -395,16 +410,6 @@ const DefaultConfigurations = {
             backgroundColor: '#89b7d1',
         },
         showSwaggerDescriptionOnOverview: false,
-        overrides: {
-            MuiOutlinedInput: {
-                root: {
-                    borderColor: '#444',
-                },
-                notchedOutline: {
-                    borderColor: '#444',
-                },
-            },
-        },
     },
 };
 
