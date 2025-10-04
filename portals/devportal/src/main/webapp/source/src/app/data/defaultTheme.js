@@ -256,6 +256,9 @@ const DefaultConfigurations = {
             contact: {
                 active: true,
                 contactHTML: '<div><strong>Mailing Address</strong><p><div>787 Castro Street</div><div>Mountain View,</div><div>CA 94041</div></p><div>Tel: +1 650 745 4499 </div><div>Fax: +1 650 584 3894</div></div>',
+                style: {
+                    // Custom styles can be added here. Example: backgroundColor: '#f5f5f5', padding: '20px'
+                },
             },
         },
         tagWise: {
