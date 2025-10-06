@@ -650,8 +650,10 @@ export default function DesignConfigurations() {
                     }));
                 }
             });
-        if (overview.trim() === '' && overviewDocument) {
-            deleteOverviewDocument();
+        if (overview.trim() === '') {
+            if (overviewDocument) {
+                deleteOverviewDocument();
+            }
         } else {
             let document = overviewDocument;
             if (document === null) {
