@@ -202,7 +202,7 @@ const MCPServerCreateUsingExistingAPI = (props) => {
         mcpServerData.operations = operations;
 
         newMCPServer = new MCPServer(mcpServerData);
-        const promisedCreatedMCPServer = newMCPServer
+        return newMCPServer
             .createMCPServerUsingExistingAPI()
             .then((mcpServer) => {
                 Alert.info(intl.formatMessage({
@@ -210,6 +210,18 @@ const MCPServerCreateUsingExistingAPI = (props) => {
                     defaultMessage: 'MCP Server created successfully',
                 }));
                 return mcpServer;
+            })
+            .catch((error) => {
+                // Re-throw the error so it can be caught by the calling code
+                throw error;
+            })
+            .finally(() => setCreating(false));
+    }
+
+    const createMCPServerOnly = () => {
+        createMCPServer()
+            .then((mcpServer) => {
+                history.push(`/mcp-servers/${mcpServer.id}/overview`);
             })
             .catch((error) => {
                 if (error.response) {
@@ -220,15 +232,7 @@ const MCPServerCreateUsingExistingAPI = (props) => {
                         defaultMessage: 'Failed to create MCP Server',
                     }));
                 }
-            })
-            .finally(() => setCreating(false));
-        return promisedCreatedMCPServer.finally(() => setCreating(false));
-    }
-
-    const createMCPServerOnly = () => {
-        createMCPServer().then((mcpServer) => {
-            history.push(`/mcp-servers/${mcpServer.id}/overview`);
-        });
+            });
     }
 
     const createAndPublishMCPServer = () => {
