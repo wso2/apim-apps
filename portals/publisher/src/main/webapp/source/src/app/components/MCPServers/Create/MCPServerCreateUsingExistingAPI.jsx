@@ -212,11 +212,14 @@ const MCPServerCreateUsingExistingAPI = (props) => {
                 return mcpServer;
             })
             .catch((error) => {
-                console.error(error);
-                Alert.error(intl.formatMessage({
-                    id: 'MCPServers.Create.MCPServerCreateUsingExistingAPI.created.error',
-                    defaultMessage: 'Failed to create MCP Server',
-                }));
+                if (error.response) {
+                    Alert.error(error.response.body.description);
+                } else {
+                    Alert.error(intl.formatMessage({
+                        id: 'MCPServers.Create.MCPServerCreateUsingExistingAPI.created.error',
+                        defaultMessage: 'Failed to create MCP Server',
+                    }));
+                }
             })
             .finally(() => setCreating(false));
         return promisedCreatedMCPServer.finally(() => setCreating(false));
