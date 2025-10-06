@@ -152,6 +152,7 @@ function AddEditGWEnvironment(props) {
         additionalProperties: {},
     });
     const [editMode, setIsEditMode] = useState(false);
+    const [isReadOnly, setIsReadOnly] = useState(dataRow?.isReadOnly || false);
 
     const [state, dispatch] = useReducer(reducer, initialState);
     const {
@@ -181,6 +182,7 @@ function AddEditGWEnvironment(props) {
                     permissions: body.permissions || initialPermissions,
                     additionalProperties: tempAdditionalProperties || {},
                 };
+                setIsReadOnly(body.isReadOnly || false);
                 dispatch({ field: 'editDetails', value: newState });
             });
             setIsEditMode(true);
@@ -686,7 +688,7 @@ function AddEditGWEnvironment(props) {
                                         fullWidth
                                         variant='outlined'
                                         value={state.name}
-                                        disabled={!!id}
+                                        disabled={!!id || isReadOnly}
                                         onChange={(e) => dispatch({
                                             field: 'name',
                                             value: e.target.value,
@@ -707,7 +709,7 @@ function AddEditGWEnvironment(props) {
                                             fullWidth
                                             variant='outlined'
                                             value={state.displayName}
-                                            disabled={!!id}
+                                            disabled={!!id || isReadOnly}
                                             onChange={(e) => dispatch({
                                                 field: 'displayName',
                                                 value: e.target.value,
@@ -749,6 +751,7 @@ function AddEditGWEnvironment(props) {
                                 fullWidth
                                 variant='outlined'
                                 value={state.description}
+                                disabled={isReadOnly}
                                 onChange={(e) => dispatch({
                                     field: 'description',
                                     value: e.target.value,
@@ -810,7 +813,7 @@ function AddEditGWEnvironment(props) {
                                     id='Admin.GatewayEnvironment.form.type.select'
                                     name='gatewayType'
                                     value={gatewayType}
-                                    disabled={!!id}
+                                    disabled={!!id || isReadOnly}
                                     onChange={onChange}
                                     data-testid='gateway-environment-type-select'
                                 >
@@ -920,6 +923,7 @@ function AddEditGWEnvironment(props) {
                                         name='scheduledInterval'
                                         value={scheduledInterval}
                                         onChange={onChange}
+                                        disabled={isReadOnly}
                                         type='number'
                                         label={(
                                             <FormattedMessage
@@ -986,6 +990,7 @@ function AddEditGWEnvironment(props) {
                                         hasErrors={hasErrors}
                                         validating={validating}
                                         gatewayId={cloneDeep(id)}
+                                        isReadOnly={isReadOnly}
                                     />
                                 </Box>
                             </Grid>
@@ -1114,6 +1119,7 @@ function AddEditGWEnvironment(props) {
                                         />
                                     )}
                                     onChange={onChange}
+                                    disabled={isReadOnly}
                                 >
                                     <MenuItem key='PUBLIC' value='PUBLIC'>
                                         <FormattedMessage
@@ -1162,6 +1168,7 @@ function AddEditGWEnvironment(props) {
                                                     value={roles.concat(validRoles, invalidRoles)}
                                                     alwaysShowPlaceholder={false}
                                                     placeholder='Enter roles and press Enter'
+                                                    disabled={isReadOnly}
                                                     blurBehavior='clear'
                                                     data-testid='gateway-permission-roles'
                                                     InputProps={{
@@ -1265,6 +1272,7 @@ function AddEditGWEnvironment(props) {
                                 onVhostChange={onChange}
                                 gatewayType={gatewayType}
                                 isEditMode={editMode}
+                                isReadOnly={isReadOnly}
                             />
                         </Box>
                     </Grid>
@@ -1280,7 +1288,7 @@ function AddEditGWEnvironment(props) {
                                 variant='contained'
                                 color='primary'
                                 onClick={formSaveCallback}
-                                disabled={!roleValidity}
+                                disabled={!roleValidity || isReadOnly}
                                 data-testid='form-dialog-base-save-btn'
                             >
                                 {saving ? (<CircularProgress size={16} />) : (

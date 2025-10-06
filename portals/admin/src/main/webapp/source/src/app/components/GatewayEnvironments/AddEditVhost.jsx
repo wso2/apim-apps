@@ -43,7 +43,7 @@ const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.d
 function AddEditVhost(props) {
     const intl = useIntl();
     const {
-        onVhostChange, initialVhosts, gatewayType, isEditMode,
+        onVhostChange, initialVhosts, gatewayType, isEditMode, isReadOnly,
     } = props;
     const [userVhosts, setUserVhosts] = useState([]);
     const [id, setId] = useState(0);
@@ -220,7 +220,7 @@ function AddEditVhost(props) {
                                     <TextField
                                         margin='dense'
                                         name={vhost.key}
-                                        disabled={!vhost.isNew}
+                                        disabled={!vhost.isNew || isReadOnly}
                                         onChange={changeHandler('host')}
                                         label={(
                                             <span>
@@ -252,7 +252,7 @@ function AddEditVhost(props) {
                                             variant='outlined'
                                             color='primary'
                                             onClick={() => handleRemoveVhostConfirm(vhost.key, vhost.isNew)}
-                                            disabled={userVhosts.length === 1}
+                                            disabled={userVhosts.length === 1 || isReadOnly}
                                         >
                                             <FormattedMessage
                                                 id='GatewayEnvironments.AddEditVhost.host.remove.btn'
@@ -426,7 +426,7 @@ function AddEditVhost(props) {
                                                                         <TextField
                                                                             margin='dense'
                                                                             name={vhost.key}
-                                                                            disabled={!vhost.isNew}
+                                                                            disabled={!vhost.isNew || isReadOnly}
                                                                             onChange={changeHandler(field.name)}
                                                                             label={field.caption}
                                                                             value={vhost[field.name]}
@@ -456,6 +456,7 @@ function AddEditVhost(props) {
                                 variant='outlined'
                                 color='primary'
                                 onClick={handleNewVhost}
+                                disabled={isReadOnly}
                             >
                                 <FormattedMessage
                                     id='GatewayEnvironments.AddEditVhost.add.vhost.btn'
@@ -471,11 +472,15 @@ function AddEditVhost(props) {
 
 AddEditVhost.defaultProps = {
     initialVhosts: [],
+    isEditMode: false,
+    isReadOnly: false,
 };
 
 AddEditVhost.propTypes = {
     onVhostChange: PropTypes.func.isRequired,
     gatewayType: PropTypes.string.isRequired,
+    isEditMode: PropTypes.bool,
+    isReadOnly: PropTypes.bool,
     initialVhosts: PropTypes.arrayOf(PropTypes.shape({
         host: PropTypes.string.isRequired,
         httpContext: PropTypes.string,
