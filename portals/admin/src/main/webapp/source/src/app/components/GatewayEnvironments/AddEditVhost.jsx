@@ -344,7 +344,7 @@ function AddEditVhost(props) {
                                                             <TextField
                                                                 margin='dense'
                                                                 name={vhost.key}
-                                                                disabled={!vhost.isNew}
+                                                                disabled={!vhost.isNew || isReadOnly}
                                                                 onChange={changeHandler('httpContext')}
                                                                 label={(
                                                                     <FormattedMessage
@@ -377,7 +377,7 @@ function AddEditVhost(props) {
                                                                 <TextField
                                                                     margin='dense'
                                                                     name={vhost.key}
-                                                                    disabled={!vhost.isNew}
+                                                                    disabled={!vhost.isNew || isReadOnly}
                                                                     onChange={changeHandler(field.name)}
                                                                     label={field.caption}
                                                                     value={vhost[field.name]}
