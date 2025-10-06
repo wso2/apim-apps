@@ -164,18 +164,21 @@ function AddEditVhost(props) {
                     const defaultHostnameTemplate = config.defaultHostnameTemplate
                         ? config.defaultHostnameTemplate : '';
                     setUserVhosts(initialVhosts.map((vhost) => {
-                        const keyedVhost = vhost;
-                        keyedVhost.key = '' + i++;
-                        keyedVhost.host = defaultHostnameTemplate;
-                        if (defaultHostnameTemplate !== '') {
-                            keyedVhost.isNew = false;
-                        }
+                        const keyedVhost = {
+                            ...vhost,
+                            key: '' + i++,
+                            host: defaultHostnameTemplate,
+                            isNew: defaultHostnameTemplate === '' || !config.defaultHostnameTemplate,
+                        };
                         return keyedVhost;
                     }));
                 } else {
                     setUserVhosts(initialVhosts.map((vhost) => {
-                        const keyedVhost = vhost;
-                        keyedVhost.key = '' + i++;
+                        const keyedVhost = {
+                            ...vhost,
+                            key: '' + i++,
+                            isNew: isEditMode ? true : vhost.isNew,
+                        };
                         return keyedVhost;
                     }));
                 }
@@ -196,7 +199,7 @@ function AddEditVhost(props) {
         } else if (!isUserVhostsUpdated(userVhosts) && initialVhosts && initialVhosts.length > 0) {
             let i = 0;
             setUserVhosts(initialVhosts.map((vhost) => {
-                const keyedVhost = vhost;
+                const keyedVhost = { ...vhost };
                 keyedVhost.key = '' + i++;
                 return keyedVhost;
             }));
