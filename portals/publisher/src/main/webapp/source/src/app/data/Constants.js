@@ -114,6 +114,17 @@ const CONSTS = {
         API_PRODUCTS: 'api-products',
         MCP_SERVERS: 'mcp-servers'
     },
+    API_TYPES: {
+        HTTP: 'REST',
+        WS: 'WS',
+        SOAPTOREST: 'SOAPTOREST',
+        SOAP: 'SOAP',
+        GRAPHQL: 'GraphQL',
+        WEBSUB: 'WebSub',
+        SSE: 'SSE',
+        WEBHOOK: 'Webhook',
+        ASYNC: 'Async',
+    },
 };
 
 export default CONSTS;
