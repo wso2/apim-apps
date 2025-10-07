@@ -114,76 +114,91 @@ function Endpoints(props) {
         && api.lifeCycleStatus === 'PROTOTYPED';
 
     useEffect(() => {
-        const loadEndpoints = async () => {
-            if (isMCPServer) {
-                setLoading(true);
-                MCPServer.getMCPServerEndpoints(api.id)
-                    .then((response) => {
-                        const fetchedEndpoints = response.body;
+        if (isMCPServer) {
+            setLoading(true);
+            MCPServer.getMCPServerEndpoints(api.id)
+                .then((response) => {
+                    const fetchedEndpoints = response.body;
 
-                        if (fetchedEndpoints && fetchedEndpoints.length > 0) {
-                            const { endpointConfig: endpointConfiguration } = fetchedEndpoints[0];
-                            try {
-                                const parsedConfig = JSON.parse(endpointConfiguration);
-                                setEndpointConfig(parsedConfig);
-                            } catch (error) {
-                                console.error('Error parsing endpoint configuration:', error);
-                                setEndpointConfig(null);
+                    if (fetchedEndpoints && fetchedEndpoints.length > 0) {
+                        const { endpointConfig: endpointConfiguration } = fetchedEndpoints[0];
+                        try {
+                            const parsedConfig = JSON.parse(endpointConfiguration);
+                            setEndpointConfig(parsedConfig);
+                        } catch (error) {
+                            console.error('Error parsing endpoint configuration:', error);
+                            setEndpointConfig(null);
+                        }
+                        setProductionEndpointSecurity(getEndpointSecurity(endpointConfiguration, 'prod'));
+                        setSandboxEndpointSecurity(getEndpointSecurity(endpointConfiguration, 'sand'));
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching endpoints:', error);
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.NewOverview.Endpoints.fetch.error',
+                        defaultMessage: 'Something went wrong while fetching endpoints',
+                    }));
+                })
+                .finally(() => setLoading(false));
+        } else {
+            setLoading(true);
+            const endpointConfiguration = { ...api.endpointConfig };
+
+            const promises = [];
+
+            // Primary production endpoint
+            if (
+                api.primaryProductionEndpointId &&
+                api.primaryProductionEndpointId !== 'default_production_endpoint'
+            ) {
+                promises.push(
+                    API.getApiEndpoint(api.id, api.primaryProductionEndpointId)
+                        .then((prodEndpointResp) => {
+                            if (prodEndpointResp?.body?.endpointConfig) {
+                                endpointConfiguration.production_endpoints =
+                                    prodEndpointResp.body.endpointConfig.production_endpoints;
+                                setProductionEndpointSecurity(
+                                    getEndpointSecurity(prodEndpointResp.body.endpointConfig, 'prod')
+                                );
                             }
-                            setProductionEndpointSecurity(getEndpointSecurity(endpointConfiguration, 'prod'));
-                            setSandboxEndpointSecurity(getEndpointSecurity(endpointConfiguration, 'sand'));
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('Error fetching endpoints:', error);
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.NewOverview.Endpoints.fetch.error',
-                            defaultMessage: 'Something went wrong while fetching endpoints',
-                        }));
-                    })
-                    .finally(() => setLoading(false));
-            } else {
-                const endpointConfiguration = { ...api.endpointConfig };
-                
-                // Check for updated primary endpoint IDs
-                if (api.primaryProductionEndpointId && 
-                    api.primaryProductionEndpointId !== 'default_production_endpoint') {
-
-                    try {
-                        const prodEndpointResp = await API.getApiEndpoint(api.id, api.primaryProductionEndpointId);
-                        if (prodEndpointResp && prodEndpointResp.body && prodEndpointResp.body.endpointConfig) {
-                            endpointConfiguration.production_endpoints = 
-                            prodEndpointResp.body.endpointConfig.production_endpoints;
-                            setProductionEndpointSecurity(getEndpointSecurity(
-                                prodEndpointResp.body.endpointConfig, 'prod'
-                            ));
-                        }
-                    } catch (err) {
-                        console.error('Error fetching primary production endpoint:', err);
-                    }
-                }
-
-                if (api.primarySandboxEndpointId && api.primarySandboxEndpointId !== 'default_sandbox_endpoint') {
-                    try {
-                        const sandEndpointResp = await API.getApiEndpoint(api.id, api.primarySandboxEndpointId);
-                        if (sandEndpointResp && sandEndpointResp.body && sandEndpointResp.body.endpointConfig) {
-                            endpointConfiguration.sandbox_endpoints = 
-                            sandEndpointResp.body.endpointConfig.sandbox_endpoints;
-                            setSandboxEndpointSecurity(getEndpointSecurity(
-                                sandEndpointResp.body.endpointConfig, 'sand'
-                            ));
-                        }
-                    } catch (err) {
-                        console.error('Error fetching primary sandbox endpoint:', err);
-                    }
-                }
-
-                setEndpointConfig(endpointConfiguration);
-                setProductionEndpointSecurity(getEndpointSecurity(endpointConfiguration, 'prod'));
-                setSandboxEndpointSecurity(getEndpointSecurity(endpointConfiguration, 'sand'));
+                        })
+                        .catch((err) => {
+                            console.error('Error fetching primary production endpoint:', err);
+                        })
+                );
             }
-        };
-        loadEndpoints();
+
+            // Sandbox endpoint
+            if (
+                api.primarySandboxEndpointId &&
+                api.primarySandboxEndpointId !== 'default_sandbox_endpoint'
+            ) {
+                promises.push(
+                    API.getApiEndpoint(api.id, api.primarySandboxEndpointId)
+                        .then((sandEndpointResp) => {
+                            if (sandEndpointResp?.body?.endpointConfig) {
+                                endpointConfiguration.sandbox_endpoints =
+                                    sandEndpointResp.body.endpointConfig.sandbox_endpoints;
+                                setSandboxEndpointSecurity(
+                                    getEndpointSecurity(sandEndpointResp.body.endpointConfig, 'sand')
+                                );
+                            }
+                        })
+                        .catch((err) => {
+                            console.error('Error fetching primary sandbox endpoint:', err);
+                        })
+                );
+            }
+
+            Promise.all(promises)
+                .then(() => {
+                    setEndpointConfig(endpointConfiguration);
+                    setProductionEndpointSecurity(getEndpointSecurity(endpointConfiguration, 'prod'));
+                    setSandboxEndpointSecurity(getEndpointSecurity(endpointConfiguration, 'sand'));
+                })
+                .finally(() => setLoading(false));
+        }
     }, [api]);
 
     const showEndpoint = (endpointType) => {
