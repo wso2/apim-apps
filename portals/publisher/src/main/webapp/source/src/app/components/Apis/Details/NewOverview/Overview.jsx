@@ -36,7 +36,7 @@ import CustomizedStepper from './CustomizedStepper';
 import MetaData from './MetaData';
 import Endpoints from './Endpoints';
 import Topics from './Topics';
-import UnderlyingAPIs from './UnderlyingAPIs';
+import AssociatedAPI from './AssociatedAPI';
 
 const PREFIX = 'Overview';
 
@@ -223,7 +223,7 @@ function Overview(props) {
         && !api.isMCPServerFromExistingAPI())) {
         loadEndpoints = <Endpoints parentClasses={classes} api={api} />;
     } else if (api.type === MCPServer.CONSTS.MCP && api.isMCPServerFromExistingAPI()) {
-        loadEndpoints = <UnderlyingAPIs parentClasses={classes} api={api} />;
+        loadEndpoints = <AssociatedAPI parentClasses={classes} api={api} />;
     }
 
     /**

@@ -27,17 +27,16 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import { getBasePath } from 'AppComponents/Shared/Utils';
 import API from 'AppData/api';
 
-
 /**
- * UnderlyingAPIs component to display the underlying APIs from MCP Server operations
+ * AssociatedAPI component to display the associated APIs from MCP Server operations
  * @param {Object} props - Component props
  * @param {Object} props.api - The API object containing operations
  * @param {Object} props.parentClasses - Parent component classes
- * @returns {JSX.Element} - The UnderlyingAPIs component
+ * @returns {JSX.Element} - The AssociatedAPI component
  */
-function UnderlyingAPIs({ api, parentClasses }) {
+function AssociatedAPI({ api, parentClasses }) {
     // Extract unique API name and version combinations from operations
-    const getUnderlyingAPIs = () => {
+    const getAssociatedAPIs = () => {
         if (!api.operations || !Array.isArray(api.operations)) {
             return [];
         }
@@ -59,36 +58,36 @@ function UnderlyingAPIs({ api, parentClasses }) {
         return Array.from(apiMap.values());
     };
 
-    const underlyingAPIs = getUnderlyingAPIs();
+    const associatedAPIs = getAssociatedAPIs();
 
     return (
         <>
             <div>
                 <Typography variant='h5' component='h3' className={parentClasses.title}>
-                    {underlyingAPIs.length === 1 ? (
+                    {associatedAPIs.length === 1 ? (
                         <FormattedMessage
-                            id='Apis.Details.Overview.UnderlyingAPIs.title'
-                            defaultMessage='Underlying API'
+                            id='Apis.Details.Overview.AssociatedAPI.title'
+                            defaultMessage='Associated API'
                         />
                     ) : (
                         <FormattedMessage
-                            id='Apis.Details.Overview.UnderlyingAPIs.title'
-                            defaultMessage='Underlying APIs'
+                            id='Apis.Details.Overview.AssociatedAPI.title'
+                            defaultMessage='Associated APIs'
                         />
                     )}
                 </Typography>
             </div>
             <Box p={1}>
                 <Grid container spacing={1}>
-                    {underlyingAPIs.length > 0 ? (
-                        underlyingAPIs.map((apiInfo, index) => (
+                    {associatedAPIs.length > 0 ? (
+                        associatedAPIs.map((apiInfo, index) => (
                             <React.Fragment key={`${apiInfo.apiName}-${apiInfo.apiVersion}`}>
                                 <Grid item xs={12} md={6} lg={4}>
                                     <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                                         <FormattedMessage
-                                            id='Apis.Details.Overview.UnderlyingAPIs.api.name'
+                                            id='Apis.Details.Overview.AssociatedAPI.api.name'
                                             defaultMessage='API Name {number}'
-                                            values={{ number: underlyingAPIs.length === 1 ? '' : index + 1 }}
+                                            values={{ number: associatedAPIs.length === 1 ? '' : index + 1 }}
                                         />
                                     </Typography>
                                 </Grid>
@@ -117,9 +116,9 @@ function UnderlyingAPIs({ api, parentClasses }) {
                                 <Grid item xs={12} md={6} lg={4}>
                                     <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                                         <FormattedMessage
-                                            id='Apis.Details.Overview.UnderlyingAPIs.api.version'
+                                            id='Apis.Details.Overview.AssociatedAPI.api.version'
                                             defaultMessage='Version {number}'
-                                            values={{ number: underlyingAPIs.length === 1 ? '' : index + 1 }}
+                                            values={{ number: associatedAPIs.length === 1 ? '' : index + 1 }}
                                         />
                                     </Typography>
                                 </Grid>
@@ -134,8 +133,8 @@ function UnderlyingAPIs({ api, parentClasses }) {
                         <Grid item xs={12}>
                             <Typography component='p' variant='body1' className={parentClasses.notConfigured}>
                                 <FormattedMessage
-                                    id='Apis.Details.Overview.UnderlyingAPIs.no.apis'
-                                    defaultMessage='No underlying APIs found'
+                                    id='Apis.Details.Overview.AssociatedAPI.no.apis'
+                                    defaultMessage='No associated APIs found'
                                 />
                             </Typography>
                         </Grid>
@@ -146,7 +145,7 @@ function UnderlyingAPIs({ api, parentClasses }) {
     );
 }
 
-UnderlyingAPIs.propTypes = {
+AssociatedAPI.propTypes = {
     api: PropTypes.shape({
         operations: PropTypes.arrayOf(PropTypes.shape({
             apiOperationMapping: PropTypes.shape({
@@ -159,4 +158,4 @@ UnderlyingAPIs.propTypes = {
     parentClasses: PropTypes.shape({}).isRequired,
 };
 
-export default UnderlyingAPIs;
+export default AssociatedAPI;
