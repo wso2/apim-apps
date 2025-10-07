@@ -122,7 +122,7 @@ const APIProductSection = ({ data, totalCount, onDelete }) => {
                         color='primary'
                         component={Link}
                         disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                        to='/api-products/create'
+                        to='/api-products'
                         startIcon={<AddIcon />}
                     >
                         <FormattedMessage

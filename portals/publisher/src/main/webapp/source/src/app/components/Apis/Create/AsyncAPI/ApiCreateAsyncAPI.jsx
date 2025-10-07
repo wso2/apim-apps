@@ -308,8 +308,14 @@ export default function ApiCreateAsyncAPI(props) {
             };
         }
         const newAPI = new API(additionalProperties);
-        const promisedResponse = inputType === 'file'
-            ? newAPI.importAsyncAPIByFile(inputValue) : newAPI.importAsyncAPIByUrl(inputValue);
+        let promisedResponse;
+        if (inputType === 'file') {
+            promisedResponse = newAPI.importAsyncAPIByFile(inputValue);
+        } else if (inputType === 'solaceEventApiProductId') {
+            promisedResponse = newAPI.importAsyncApiFromSolaceEventApi(inputValue);
+        } else {
+            promisedResponse = newAPI.importAsyncAPIByUrl(inputValue);
+        }
         promisedResponse
             .then((api) => {
                 Alert.info(intl.formatMessage({
@@ -533,10 +539,17 @@ export default function ApiCreateAsyncAPI(props) {
                                     disabled={!apiInputs.isFormValid || isCreating || !isValidExternalEndpoint}
                                     onClick={createAPI}
                                 >
-                                    <FormattedMessage
-                                        id='Apis.Create.AsyncAPI.ApiCreateAsyncAPI.create'
-                                        defaultMessage='Create'
-                                    />
+                                    {apiInputs.gatewayVendor === 'solace' ? (
+                                        <FormattedMessage
+                                            id='Apis.Create.AsyncAPI.ApiCreateAsyncAPI.createAndPublish'
+                                            defaultMessage='Create & Publish'
+                                        />
+                                    ) : (
+                                        <FormattedMessage
+                                            id='Apis.Create.AsyncAPI.ApiCreateAsyncAPI.create'
+                                            defaultMessage='Create'
+                                        />
+                                    )}
                                     {' '}
                                     {isCreating && <CircularProgress size={24} />}
                                 </Button>

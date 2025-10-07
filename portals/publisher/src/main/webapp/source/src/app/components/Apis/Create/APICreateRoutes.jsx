@@ -67,6 +67,12 @@ let gatewayDetails = {
         name: 'AWS Gateway', 
         description: 'API gateway offered by AWS cloud.', 
         isNew: false 
+    },
+    'Azure': { 
+        value: 'Azure',
+        name: 'Azure Gateway', 
+        description: 'API gateway offered by Azure cloud.', 
+        isNew: false 
     }
 };
 
@@ -90,7 +96,12 @@ function APICreateRoutes() {
         if (!isLoading) {
             setApiTypes(publisherSettings.gatewayFeatureCatalog.apiTypes);
             const data = publisherSettings.gatewayTypes;
-            const updatedData = data.map(item => {
+            const settingsEnvList = publisherSettings.environment;
+            const filteredEnvironments = settingsEnvList ? settingsEnvList
+                .filter(env => env?.mode !== 'READ_ONLY') : [];
+            const distinctGatewayTypes = [...new Set(filteredEnvironments.map(env => env.gatewayType))];
+            const commonGatewayTypes = distinctGatewayTypes.filter(type => data.includes(type));
+            const updatedData = commonGatewayTypes.map(item => {
                 if (item === "Regular") return "wso2/synapse";
                 if (item === "APK") return "wso2/apk";
                 return item;

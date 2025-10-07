@@ -102,6 +102,15 @@ function TextEditor(props) {
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
     const [isUpdating, setIsUpdating] = useState(false);
 
+    const getAllowedScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:document_manage'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isAccessRestricted = () => isRestricted(getAllowedScopes(), api);
+
     const onEditorStateChange = (newEditorState) => {
         setEditorState(newEditorState);
     };
@@ -204,7 +213,7 @@ function TextEditor(props) {
         <div>
             <Button
                 onClick={toggleOpen}
-                disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}
+                disabled={isAccessRestricted() || api.isRevision}
                 aria-label={`Edit Content of ${docName}`}
             >
                 <Icon>description</Icon>

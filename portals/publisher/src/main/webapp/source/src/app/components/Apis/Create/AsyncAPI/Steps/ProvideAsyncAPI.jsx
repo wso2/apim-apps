@@ -47,6 +47,10 @@ import API from 'AppData/api';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
 import CheckCircleSharpIcon from '@mui/icons-material/CheckCircleSharp';
 import Chip from '@mui/material/Chip';
+import SolaceEventAPIProductFetcher from 'AppComponents/Apis/Create/AsyncAPI/SolaceEventAPIProductFetcher';
+import Alert from 'AppComponents/Shared/Alert';
+import APIClientFactory from "AppData/APIClientFactory";
+import Utils from 'AppData/Utils';
 
 const PREFIX = 'ProvideAsyncAPI';
 
@@ -140,6 +144,53 @@ export default function ProvideAsyncAPI(props) {
             });
     }
 
+    function handleSolaceEventApiSelect(solaceEventApiProductId, solacePlanId, solaceEventApiId) {
+        setIsValidating(true);
+        const apiClient =
+            new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        apiClient.then((client) => {
+            const params = {
+                eventApiProductId: solaceEventApiProductId,
+                planId: solacePlanId,
+                eventApiId: solaceEventApiId
+            };
+            const jsonString = JSON.stringify(params);
+            const urlEncodedString = encodeURIComponent(jsonString);
+            client.apis['Integrated APIs'].getIntegratedApiDefinition({
+                vendor: 'solace',
+                params: {
+                    params: urlEncodedString
+                }
+            })
+                .then((response) => {
+                    const asyncApiPayload = response.body;
+                    const asyncTransportProtocols = [];
+                    if (asyncApiPayload.servers) {
+                        Object.values(asyncApiPayload.servers).forEach((server) => {
+                            asyncTransportProtocols.push(server.protocol);
+                        });
+                    }
+
+                    const info = {
+                        asyncAPIVersion: asyncApiPayload.asyncapi,
+                        gatewayVendor: "solace",
+                        name: asyncApiPayload.info.title,
+                        version: asyncApiPayload.info.version,
+                        context: asyncApiPayload.info.title.replace(/[&/\\#,+()$~%.'":*?<>{}\s]/g, '').toLowerCase(),
+                        asyncTransportProtocols
+                    }
+                    inputsDispatcher({action: 'preSetAPI', value: info});
+                })
+                .catch((error) => {
+                    Alert.error("Error loading Event API Async API");
+                    console.error("Error loading Event API Async API", error);
+                })
+                .finally(() => {
+                    setIsValidating(false);
+                })
+        });
+    }
+
     /**
      * Trigger the provided onValidate call back on each input validation run
      * Do the validation state aggregation and call the onValidate method with aggregated value
@@ -223,6 +274,99 @@ export default function ProvideAsyncAPI(props) {
         }
     }
 
+    let asyncApiInput = null;
+    if (isFileInput) {
+        asyncApiInput = (
+            <>
+                {apiInputs.inputValue ? (
+                    <List>
+                        <ListItem key={apiInputs.inputValue.path}>
+                            <ListItemAvatar>
+                                <Avatar>
+                                    <InsertDriveFile/>
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={`${apiInputs.inputValue.path} -
+                                    ${humanFileSize(apiInputs.inputValue.size)}`}
+                            />
+                            <ListItemSecondaryAction>
+                                <IconButton
+                                    edge='end'
+                                    aria-label='delete'
+                                    onClick={() => {
+                                        inputsDispatcher({action: 'inputValue', value: null});
+                                        inputsDispatcher({action: 'isFormValid', value: false});
+                                    }}
+                                >
+                                    <DeleteIcon/>
+                                </IconButton>
+                            </ListItemSecondaryAction>
+                        </ListItem>
+                    </List>
+                ) : (
+                    <DropZoneLocal
+                        error={isValid.file}
+                        onDrop={onDrop}
+                        files={apiInputs.inputValue}
+                        accept='.bz,.bz2,.gz,.rar,.tar,.zip,.7z,.json,application/json,.yaml,.yml'
+                    >
+                        {/* eslint-disable */}
+                        {isValidating ? (<CircularProgress/>) :
+                            ([<FormattedMessage
+                                    id='Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.Input.file.dropzone'
+                                    defaultMessage='Drag & Drop AsyncAPI File here {break} or {break} Browse files'
+                                    values={{break: <br/>}}
+                                />,
+                                    <Button
+                                        color='primary'
+                                        variant='contained'
+                                    >
+                                        <FormattedMessage
+                                            id='Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.Input.file.upload'
+                                            defaultMessage='Browse File to Upload'
+                                        />
+                                    </Button>,]
+                            )}
+                        {/* eslint-enable */}
+                    </DropZoneLocal>
+                )}
+            </>
+        );
+    } else if (apiInputs.inputType === 'solaceEventApiProductId') {
+        asyncApiInput = <SolaceEventAPIProductFetcher
+            apiInputs={apiInputs}
+            inputsDispatcher={inputsDispatcher}
+            onSolaceEventApiSelect={handleSolaceEventApiSelect}
+        />;
+    } else {
+        asyncApiInput = (
+            <TextField
+                autoFocus
+                id='outlined-full-width'
+                label='AsyncAPI URL'
+                placeholder='Enter AsyncAPI URL'
+                fullWidth
+                margin='normal'
+                variant='outlined'
+                onChange={({target: {value}}) => inputsDispatcher({action: 'inputValue', value})}
+                value={apiInputs.inputValue}
+                InputLabelProps={{
+                    shrink: true,
+                }}
+                InputProps={{
+                    onBlur: ({target: {value}}) => {
+                        validateURL(value);
+                    },
+                    endAdornment: urlStateEndAdornment,
+                }}
+                // 'Give the URL of AsyncAPI endpoint'
+                helperText={(isValid.url && isValid.url.message) || 'Click away to validate the URL'}
+                error={isInvalidURL}
+            />
+        );
+    }
+
     return (
         <Root>
             <Grid container>
@@ -261,6 +405,15 @@ export default function ProvideAsyncAPI(props) {
                                     defaultMessage: 'AsyncAPI File',
                                 })}
                             />
+                            <FormControlLabel
+                                data-testid='input-asyncapi-solace'
+                                value={ProvideAsyncAPI.INPUT_TYPES.SOLACE_EVENT_API_PRODUCT_ID}
+                                control={<Radio color='primary' />}
+                                label={intl.formatMessage({
+                                    id: 'Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.solace.label',
+                                    defaultMessage: 'Solace Event API',
+                                })}
+                            />
                         </RadioGroup>
                     </FormControl>
                 </Grid>
@@ -279,102 +432,7 @@ export default function ProvideAsyncAPI(props) {
                     </Grid>
                 )}
                 <Grid item xs={12}>
-                    {isFileInput ? (
-                        <>
-                            {apiInputs.inputValue ? (
-                                <List>
-                                    <ListItem key={apiInputs.inputValue.path}>
-                                        <ListItemAvatar>
-                                            <Avatar>
-                                                <InsertDriveFile />
-                                            </Avatar>
-                                        </ListItemAvatar>
-                                        <ListItemText
-                                            primary={`${apiInputs.inputValue.path} -
-                                    ${humanFileSize(apiInputs.inputValue.size)}`}
-                                        />
-                                        <ListItemSecondaryAction>
-                                            <IconButton
-                                                edge='end'
-                                                aria-label='delete'
-                                                onClick={() => {
-                                                    inputsDispatcher({ action: 'inputValue', value: null });
-                                                    inputsDispatcher({ action: 'isFormValid', value: false });
-                                                }}
-                                                size='large'>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </ListItemSecondaryAction>
-                                    </ListItem>
-                                </List>
-                            ) : (
-                                <DropZoneLocal
-                                    error={isValid.file}
-                                    onDrop={onDrop}
-                                    files={apiInputs.inputValue}
-                                    accept='.bz,.bz2,.gz,.rar,.tar,.zip,.7z,.json,application/json,.yaml,.yml'
-                                >
-                                    {isValidating ? (<CircularProgress />)
-                                        : ([
-                                            <FormattedMessage
-                                                id='Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.Input.file.dropzone'
-                                                defaultMessage={'Drag & Drop AsyncAPI File '
-                                                + 'here {break} or {break} Browse files'}
-                                                values={{ break: <br /> }}
-                                            />,
-                                            <Button
-                                                data-testid='upload-api-file'
-                                                color='primary'
-                                                variant='contained'
-                                                sx={{ mt: 1 }}
-                                            >
-                                                <FormattedMessage
-                                                    id='Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.Input.file.upload'
-                                                    defaultMessage='Browse File to Upload'
-                                                />
-                                            </Button>,
-                                        ]
-                                        )}
-                                </DropZoneLocal>
-                            )}
-                        </>
-                    ) : (
-                        <TextField
-                            autoFocus
-                            id='outlined-full-width'
-                            label={intl.formatMessage({
-                                id: 'Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.url.label',
-                                defaultMessage: 'AsyncAPI URL',
-                            })}
-                            placeholder={intl.formatMessage({
-                                id: 'Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.Input.url.text.placeholder',
-                                defaultMessage: 'Enter AsyncAPI URL',
-                            })}
-                            fullWidth
-                            margin='normal'
-                            variant='outlined'
-                            onChange={({ target: { value } }) => inputsDispatcher({ action: 'inputValue', value })}
-                            value={apiInputs.inputValue}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            InputProps={{
-                                onBlur: ({ target: { value } }) => {
-                                    validateURL(value);
-                                },
-                                endAdornment: urlStateEndAdornment,
-                            }}
-                            // 'Give the URL of AsyncAPI endpoint'
-                            helperText={(isValid.url && isValid.url.message)
-                                || (
-                                    <FormattedMessage
-                                        id='Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.url.helper.text'
-                                        defaultMessage='Click away to validate the URL'
-                                    />
-                                )}
-                            error={isInvalidURL}
-                        />
-                    )}
+                    {asyncApiInput}
                 </Grid>
                 { gatewayVendor === 'solace' && (
                     <Grid item xs={10} md={11}>
@@ -402,6 +460,7 @@ ProvideAsyncAPI.defaultProps = {
 ProvideAsyncAPI.INPUT_TYPES = {
     URL: 'url',
     FILE: 'file',
+    SOLACE_EVENT_API_PRODUCT_ID: 'solaceEventApiProductId',
 };
 ProvideAsyncAPI.propTypes = {
     apiInputs: PropTypes.shape({

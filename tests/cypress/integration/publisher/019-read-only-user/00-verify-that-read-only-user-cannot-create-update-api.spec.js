@@ -125,7 +125,7 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
 
         //2. click on API tile and select design config (basic info)
         cy.wait(2000);
-        cy.get('#searchQuery').click().type(apiName + "{enter}");
+        cy.get('#searchQuery').click().type(`"${apiName}"` + "{enter}");
         cy.get('a').get(`[aria-label="${apiName} Thumbnail"]`, { timeout: Cypress.config().largeTimeout }).click();
         cy.get('#itest-api-details-portal-config-acc').click();
         cy.get('#left-menu-itemDesignConfigurations').click();
@@ -303,7 +303,7 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
     });
 
     afterEach(function () {
-        cy.get('#searchQuery').click().type(apiName + "{enter}");
+        cy.get('#searchQuery').click().type(`"${apiName}"` + "{enter}");
         cy.get("#itest-id-deleteapi-icon-button").click()
         cy.get('#itest-id-deleteconf').click()
         // delete observer user.

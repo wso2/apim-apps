@@ -73,15 +73,22 @@ function APICategories(props) {
         API.apiCategories().then((response) => setCategories(response.body));
     }, []);
 
+    const getCreateOrPublishScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), apiFromContext);
+
     if (!categories.list) {
         return null;
     } else {
         return (
             <StyledBox style={{ position: 'relative', marginTop: 10 }}>
                 <Autocomplete
-                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)
-                        || categories.list.length === 0
-                    }
+                    disabled={isCreateOrPublishRestricted() || categories.list.length === 0}
                     multiple
                     fullWidth
                     limitTags={5}
@@ -106,9 +113,7 @@ function APICategories(props) {
                     )}
                     renderInput={(params) => (
                         <TextField {...params}
-                            disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)
-                                || categories.list.length === 0
-                            }
+                            disabled={isCreateOrPublishRestricted() || categories.list.length === 0}
                             InputProps={{
                                 ...params.InputProps,
                                 endAdornment: null,

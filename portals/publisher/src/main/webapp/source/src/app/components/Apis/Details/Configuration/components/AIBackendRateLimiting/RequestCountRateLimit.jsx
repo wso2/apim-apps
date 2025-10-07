@@ -25,7 +25,11 @@ import { useIntl } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import APIValidation from 'AppData/APIValidation';
 
-
+/**
+ * RequestCountRateLimit component
+ * @param {*} props - The component props
+ * @returns {JSX.Element} The rendered component
+ */
 export default function RequestCountRateLimit(props) {
 
     const { api, configDispatcher, isProduction } = props;
@@ -40,6 +44,10 @@ export default function RequestCountRateLimit(props) {
     const [inputValue, setInputValue] = useState(maxTpsValue);
     const [isValueValid, setIsValueValid] = useState(true);
 
+    /**
+     * Validate the input value
+     * @param {*} value - The value of the input field
+     */
     function validateValue(value) {
         const validity = APIValidation.isNumber.validate(value, { abortEarly: false }).error;
         if (validity === null || !value) {

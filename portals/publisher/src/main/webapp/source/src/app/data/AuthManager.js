@@ -218,8 +218,9 @@ class AuthManager {
         if (AuthManager.getUser()
             && scopesAllowedToEdit.find((element) => AuthManager.getUser().scopes.includes(element))) {
             // if the user has publisher role, no need to consider the api LifeCycleStatus
-            if ((Object.keys(api).length === 0 && api.constructor === Object)
-            || AuthManager.getUser().scopes.includes('apim:api_publish')) {
+            const isPublisherOverride = AuthManager.getUser().scopes.includes('apim:api_publish')
+                || (api.apiType === 'MCP' && AuthManager.getUser().scopes.includes('apim:mcp_server_publish'));
+            if ((Object.keys(api).length === 0 && api.constructor === Object) || isPublisherOverride) {
                 return false;
             } else if (
                 // if the user has creator role, but not the publisher role

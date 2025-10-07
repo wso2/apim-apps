@@ -162,7 +162,6 @@ class BusinessInformation extends React.Component {
      */
     isAccessRestricted = (api) => {
         const isMCPServer = api.isMCPServer();
-        
         if (isMCPServer) {
             // For MCP servers, check MCP-specific permissions
             return isRestricted(['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'], api);

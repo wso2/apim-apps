@@ -100,6 +100,12 @@ export default {
             activeMenuItem: '#254061',
             divider: '#000000',
         },
+        charts: {
+            success: '#00B81D',
+            error: '#FF5252',
+            warn: '#FFC107',
+            info: '#2E96FF',
+        }
     },
     typography: {
         fontFamily: '"Open Sans", "Helvetica", "Arial", sans-serif',
@@ -135,7 +141,7 @@ export default {
         leftMenuTextStyle: 'capitalize',
         leftMenuAnalytics: {
             enable: true, // If `false`, External link to Moesif Basic Analytics icon will be removed/hidden in nav bar
-            link: 'https://www.moesif.com/moesif-basic',
+            link: 'https://www.moesif.com/wrap/basic?onboard=true',
         },
         resourceChipColors: { // https://github.com/swagger-api/swagger-ui/blob/master/src/style/_variables.scss#L45-L52
             get: '#61affe',
@@ -313,6 +319,15 @@ export default {
             activeRevision: {
                 background: 'radial-gradient(#29bb89, #f7ea00)',
             },
+        },
+        gatewayGradients: {
+            azure: 'linear-gradient(135deg, #0078d4 0%, #005a9f 100%)',
+            aws: 'linear-gradient(135deg, #ff9a00 0%, #ff6600 100%)',
+            kong: 'linear-gradient(135deg, #003459 0%, #007acc 100%)',
+            kubernetes: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            envoy: 'linear-gradient(135deg, #9333EA 0%, #4F46E5 100%)',
+            universal: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            default: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         },
     },
 };

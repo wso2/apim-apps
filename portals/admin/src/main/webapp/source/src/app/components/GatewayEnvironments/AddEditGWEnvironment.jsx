@@ -145,7 +145,7 @@ function AddEditGWEnvironment(props) {
         description: '',
         gatewayType: initialGatewayType,
         gatewayMode: 'WRITE_ONLY',
-        scheduledInterval: 60,
+        scheduledInterval: 0,
         type: 'hybrid',
         vhosts: [createDefaultVhost(initialGatewayType)],
         permissions: initialPermissions,
@@ -176,7 +176,7 @@ function AddEditGWEnvironment(props) {
                     description: body.description || '',
                     gatewayType: body.gatewayType || '',
                     gatewayMode: body.mode || '',
-                    scheduledInterval: body.apiDiscoveryScheduledWindow ?? 60,
+                    scheduledInterval: body.apiDiscoveryScheduledWindow ?? 0,
                     type: body.type || '',
                     vhosts: body.vhosts || [],
                     permissions: body.permissions || initialPermissions,
@@ -193,7 +193,7 @@ function AddEditGWEnvironment(props) {
                 description: '',
                 gatewayType: '',
                 gatewayMode: 'WRITE_ONLY',
-                scheduledInterval: 60,
+                scheduledInterval: 0,
                 type: 'hybrid',
                 vhosts: [createDefaultVhost('Regular')],
                 permissions: {
@@ -288,6 +288,17 @@ function AddEditGWEnvironment(props) {
         }
         dispatch({ field: e.target.name, value: e.target.value });
     };
+
+    useEffect(() => {
+        if (!supportedModes?.includes(gatewayMode) && supportedModes?.length > 0) {
+            onChange({
+                target: {
+                    name: 'gatewayMode',
+                    value: supportedModes[0],
+                },
+            });
+        }
+    }, [supportedModes]);
 
     /* const getBorderColor = (gatewayTypeNew) => {
         return gatewayType === gatewayTypeNew

@@ -42,12 +42,21 @@ import { getBasePath } from 'AppComponents/Shared/Utils';
  */
 export default function SaveOperations(props) {
     const {
-        updateOpenAPI, updateAsyncAPI, operationsDispatcher, api,
+        updateOpenAPI, updateAsyncAPI, operationsDispatcher, api, disableSave,
     } = props;
     const [isUpdating, setIsSaving] = useState(false);
     const history = useHistory();
     const [isOpen, setIsOpen] = useState(false);
     const { settings } = useAppContext();
+
+    const getAllowedScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isAccessRestricted = () => isRestricted(getAllowedScopes(), api);
 
     /**
      * Handle save and deploy
@@ -88,7 +97,7 @@ export default function SaveOperations(props) {
             <Grid container direction='row' spacing={1} style={{ marginTop: 20 }}>
                 <Grid item>
                     {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
-                        || isRestricted(['apim:api_create'], api) ? (
+                        || isAccessRestricted() || disableSave ? (
                             <Button
                                 disabled
                                 type='submit'
@@ -167,9 +176,11 @@ SaveOperations.propTypes = {
     updateOpenAPI: PropTypes.func,
     updateAsyncAPI: PropTypes.func,
     operationsDispatcher: PropTypes.func.isRequired,
+    disableSave: PropTypes.bool,
 };
 
 SaveOperations.defaultProps = {
     updateOpenAPI: undefined,
     updateAsyncAPI: undefined,
+    disableSave: false,
 };

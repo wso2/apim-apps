@@ -44,6 +44,15 @@ function Delete(props) {
     const [open, setOpen] = useState(false);
     const { api } = useContext(APIContext);
 
+    const getDeleteScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_publish', 'apim:mcp_server_manage'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isDeleteRestricted = () => isRestricted(getDeleteScopes(), api);
+
     const deleteDoc = () => {
         const {
             apiId, docId, getDocumentsList,
@@ -96,7 +105,7 @@ function Delete(props) {
         <div>
             <Button
                 onClick={toggleOpen}
-                disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}
+                disabled={isDeleteRestricted() || api.isRevision}
             >
                 <Icon>delete_forever</Icon>
                 <FormattedMessage id='Apis.Details.Documents.Delete.document.delete' defaultMessage='Delete' />

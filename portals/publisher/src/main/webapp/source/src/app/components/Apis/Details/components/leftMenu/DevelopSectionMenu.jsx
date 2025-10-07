@@ -133,6 +133,14 @@ export default function DevelopSectionMenu(props) {
         }
     };
 
+    const isAccessRestricted = () => {
+        if (api.apiType.toUpperCase() === 'MCP') {
+            return isRestricted(['apim:mcp_server_publish'], api);
+        } else {
+            return isRestricted(['apim:api_publish'], api);
+        }
+    }
+
     const intl = useIntl();
 
     return (
@@ -272,7 +280,7 @@ export default function DevelopSectionMenu(props) {
                         root: classes.root2
                     }}>
                     <div>
-                        {!isAPIProduct && !api.isWebSocket() && (
+                        {!isAPIProduct && !api.isWebSocket() && api.gatewayType !== 'solace' && (
                             <LeftMenuItem
                                 text={intl.formatMessage({
                                     id: 'Apis.Details.index.runtime.configs',
@@ -362,7 +370,7 @@ export default function DevelopSectionMenu(props) {
                         />
 
                         {(componentValidator.monetization.includes("monetization") && 
-                            (!api.isWebSocket() && !isRestricted(['apim:api_publish'], api))) && (
+                            (!api.isWebSocket() && !isAccessRestricted())) && (
                             <>
                                 {!isAPIProduct && !api.isMCPServer() && (
                                     <LeftMenuItem
@@ -377,8 +385,7 @@ export default function DevelopSectionMenu(props) {
                                 )}
                             </>
                         )}
-                        {isAPIProduct && !api.isWebSocket()
-                            && !isRestricted(['apim:api_publish'], api) && (
+                        {isAPIProduct && !api.isWebSocket() && !isAccessRestricted() && (
                             <LeftMenuItem
                                 text={intl.formatMessage({
                                     id: 'Apis.Details.index.monetization',

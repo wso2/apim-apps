@@ -16,7 +16,6 @@
  * under the License.
  */
 import React from 'react';
-import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { Typography } from '@mui/material';
 import AccountBox from '@mui/icons-material/AccountBox';
@@ -28,51 +27,6 @@ import MCPServer from 'AppData/MCPServer';
 import { injectIntl } from 'react-intl';
 import CommentEdit from './CommentEdit';
 import CommentOptions from './CommentOptions';
-
-const PREFIX = 'CommentReply';
-
-const classes = {
-    link: `${PREFIX}-link`,
-    commentIcon: `${PREFIX}-commentIcon`,
-    commentText: `${PREFIX}-commentText`,
-    root: `${PREFIX}-root`,
-    contentWrapper: `${PREFIX}-contentWrapper`
-};
-
-const StyledConfirmDialog
- = styled(ConfirmDialog
-)((
-    {
-        theme
-    }
-) => ({
-    [`& .${classes.link}`]: {
-        color: theme.palette.getContrastText(theme.palette.background.default),
-        cursor: 'pointer',
-    },
-
-    [`& .${classes.commentIcon}`]: {
-        color: theme.palette.getContrastText(theme.palette.background.default),
-    },
-
-    [`& .${classes.commentText}`]: {
-        color: theme.palette.getContrastText(theme.palette.background.default),
-        marginTop: theme.spacing(1),
-        width: '100%',
-        whiteSpace: 'pre-wrap',
-        overflowWrap: 'break-word',
-    },
-
-    [`& .${classes.root}`]: {
-        marginTop: theme.spacing(2.5),
-    },
-
-    [`& .${classes.contentWrapper}`]: {
-        maxWidth: theme.custom.contentAreaWidth,
-        paddingLeft: theme.spacing(2),
-        paddingTop: theme.spacing(1),
-    }
-}));
 
 /**
  * Display a particular comment and details

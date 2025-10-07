@@ -498,16 +498,29 @@ const AddEditEndpoint = ({
     };
 
     const saveEndpointSecurityConfig = (endpointSecurityObj) => {
-        setEndpointSecurityConfig(endpointSecurityObj);
+        const { type } = endpointSecurityObj;
+        let newEndpointSecurityObj = endpointSecurityObj;
+        const secretPlaceholder = '******';
+        newEndpointSecurityObj.clientSecret = newEndpointSecurityObj.clientSecret
+            === secretPlaceholder ? '' : newEndpointSecurityObj.clientSecret;
+        newEndpointSecurityObj.password = newEndpointSecurityObj.password
+            === secretPlaceholder ? '' : newEndpointSecurityObj.password;
+        if (type === 'NONE') {
+            newEndpointSecurityObj = { ...CONSTS.DEFAULT_ENDPOINT_SECURITY, type };
+        } else {
+            newEndpointSecurityObj.enabled = true;
+        }
+
+        setEndpointSecurityConfig(newEndpointSecurityObj);
         if (endpointType === CONSTS.DEPLOYMENT_STAGE.production) {
             dispatch({
                 field: 'updateProductionEndpointSecurity',
-                value: endpointSecurityObj,
+                value: newEndpointSecurityObj,
             });
         } else {
             dispatch({
                 field: 'updateSandboxEndpointSecurity',
-                value: endpointSecurityObj,
+                value: newEndpointSecurityObj,
             });
         }
         setEndpointSecurityConfigOpen(false);

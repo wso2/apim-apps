@@ -33,6 +33,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import PropTypes from 'prop-types';
 import { Progress } from 'AppComponents/Shared';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import MCPServer from 'AppData/MCPServer';
 import Alert from 'AppComponents/Shared/Alert';
 import AddCircle from '@mui/icons-material/AddCircle';
@@ -258,7 +259,10 @@ const Endpoints = ({
                                 variant='outlined'
                                 color='primary'
                                 size='small'
-                                disabled={isRestricted(['apim:api_create'], apiObject)}
+                                disabled={isRestricted(
+                                    ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'],
+                                    apiObject)
+                                }
                                 onClick={() => handleAddEndpoint('PRODUCTION')}
                                 sx={{ marginLeft: 1 }}
                             >
@@ -306,7 +310,10 @@ const Endpoints = ({
                                 variant='outlined'
                                 color='primary'
                                 size='small'
-                                disabled={isRestricted(['apim:api_create'], apiObject)}
+                                disabled={isRestricted(
+                                    ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'],
+                                    apiObject)
+                                }
                                 onClick={() => handleAddEndpoint('SANDBOX')}
                                 sx={{ marginLeft: 1 }}
                             >
@@ -350,6 +357,27 @@ const Endpoints = ({
                     </Typography>
                     <GeneralEndpointConfigurations endpointList={endpointList} />
                 </StyledPaper>
+            </Grid>
+            <Grid item xs={12}>
+                <Button
+                    type='submit'
+                    variant='contained'
+                    color='primary'
+                    disabled={isRestricted(
+                        ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'], apiObject)}
+                    endIcon={<OpenInNewIcon />}
+                    onClick={() => {
+                        history.push({
+                            pathname: `/mcp-servers/${apiObject.id}/deployments`,
+                            state: 'deploy',
+                        })
+                    }}
+                >
+                    <FormattedMessage
+                        id='MCPServers.Details.Endpoints.Endpoints.deploy.redirect.btn'
+                        defaultMessage='Go to Deployments'
+                    />
+                </Button>
             </Grid>
             
             {/* Delete Confirmation Dialog */}

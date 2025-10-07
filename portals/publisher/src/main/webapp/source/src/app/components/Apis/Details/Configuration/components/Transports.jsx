@@ -61,6 +61,15 @@ export default function Transports(props) {
     const { api, configDispatcher, securityScheme, componentValidator } = props;
     const [apiFromContext] = useAPI();
 
+    const getCreateScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), apiFromContext);
+
     const isMutualSSLEnabled = securityScheme.includes(API_SECURITY_MUTUAL_SSL);
     const Validate = () => {
         if (api.transport && api.transport.length === 0) {
@@ -97,7 +106,7 @@ export default function Transports(props) {
                             <FormControlLabel
                                 control={(
                                     <Checkbox
-                                        disabled={isRestricted(['apim:api_create'], apiFromContext) || 
+                                        disabled={isCreateRestricted() || 
                                             isMutualSSLEnabled}
                                         checked={api.transport
                                             ? api.transport.includes('http') && !isMutualSSLEnabled : null}
@@ -117,7 +126,7 @@ export default function Transports(props) {
                             <FormControlLabel
                                 control={(
                                     <Checkbox
-                                        disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                        disabled={isCreateRestricted()}
                                         checked={api.transport
                                             ? api.transport.includes('https') : null}
                                         onChange={({ target: { checked } }) => configDispatcher({

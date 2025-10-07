@@ -377,7 +377,7 @@ class Details extends Component {
                 this.setState({
                     isMCPServer: true,
                     api: mcpServer,
-                    // isMCPServerLoading: false, 
+                    // isMCPServerLoading: false,
                 }, () => {
                     // This code will run after the state has been updated
                     this.getRevision();
@@ -790,6 +790,19 @@ class Details extends Component {
     }
 
     /**
+     * Get allowed scopes based on the API type
+     * @param {boolean} apiType whether API or MCP Server
+     * @returns {string[]} allowed scopes
+     */
+    getAllowedScopes(apiType) {
+        if (apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
+            return ['apim:mcp_server_publish', 'apim:mcp_server_manage', 'apim:mcp_server_import_export'];
+        } else {
+            return ['apim:api_publish'];
+        }
+    }
+
+    /**
      * Renders Grid container layout with NavBar place static in LHS, Components which coming as children for
      * Details page
      * should wrap it's content with <Grid item > element
@@ -868,7 +881,7 @@ class Details extends Component {
         }
 
         if (!api) {
-            if (isMCPServer) { // TODO check why loading api data is always getting showing 
+            if (isMCPServer) { // TODO check why loading api data is always getting showing
                 return <Progress per={70} message='Loading MCP Server data ...' />;
             } else if (isAPIProduct) {
                 return <Progress per={70} message='Loading API Product data ...' />;
@@ -1026,7 +1039,7 @@ class Details extends Component {
                                     )}
                                 </div>
                             )}
-                            {!isRestricted(['apim:api_publish'], api) && (
+                            {!isRestricted(this.getAllowedScopes(api.apiType), api) && (
                                 <div>
                                     <Divider />
                                     <Typography className={classes.headingText}>
@@ -1237,7 +1250,7 @@ class Details extends Component {
                                         key={Details.subPaths.TOOLS}
                                         component={APIOperations}
                                     />
-    
+
                                     {settings && settings.gatewayFeatureCatalog
                                         .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
                                         .localScopes.includes("operationScopes") &&

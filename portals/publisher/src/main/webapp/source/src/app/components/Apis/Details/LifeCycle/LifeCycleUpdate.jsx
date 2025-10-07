@@ -514,15 +514,25 @@ class LifeCycleUpdate extends Component {
                 return {
                     ...lifecycleState,
                     disabled:
-                        (api.type !== 'WEBSUB' && !this.state.isEndpointAvailable && !isAPIProduct),
+                        (api.type !== 'WEBSUB' && !this.state.isEndpointAvailable && !isAPIProduct
+                            && !api.initiatedFromGateway),
                 };
             }
             if (lifecycleState.event === 'Publish') {
                 const buttonDisabled = (isMutualSSLEnabled && !isCertAvailable)
-                                    || (!isMutualSslOnly && deploymentsAvailable && !isBusinessPlanAvailable)
+                                    || (!isMutualSslOnly && deploymentsAvailable && !isBusinessPlanAvailable
+                                        && !api.initiatedFromGateway)
                                     || (isAPIProduct && !isBusinessPlanAvailable)
                                     || (deploymentsAvailable && !isMandatoryPropertiesAvailable);
                 // When business plans are not assigned and deployments available
+
+                return {
+                    ...lifecycleState,
+                    disabled: buttonDisabled,
+                };
+            }
+            if (lifecycleState.event === 'Retire') {
+                const buttonDisabled = api.initiatedFromGateway ?? false;
 
                 return {
                     ...lifecycleState,
@@ -560,7 +570,8 @@ class LifeCycleUpdate extends Component {
                                     <LifeCycleImage lifeCycleStatus={newState || lifeCycleStatus} />
                                 </Grid>
                                 {(lifeCycleStatus === 'CREATED' || lifeCycleStatus === 'PROTOTYPED')
-                                    && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
+                                    && (!api.advertiseInfo || !api.advertiseInfo.advertised)
+                                    && !api.initiatedFromGateway && (
                                     <Grid item xs={3}>
                                         <CheckboxLabels
                                             api={api}

@@ -729,6 +729,7 @@ export default function Resources(props) {
                                 operationsDispatcher={operationsDispatcher}
                                 updateOpenAPI={updateOpenAPI}
                                 api={api}
+                                disableSave={isSelectAll(markedOperations, operations)}
                             />
                         )}
                     </Grid>

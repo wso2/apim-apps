@@ -19,6 +19,7 @@
 import Switch from '@mui/material/Switch';
 import React, { useState, useEffect } from 'react';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import base64url from 'base64url';
 import { isRestricted } from 'AppData/AuthManager';
 import APIProduct from 'AppData/APIProduct';
@@ -38,6 +39,15 @@ export default function DisplayDevportal(props) {
     const restAPIProduct = new APIProduct();
     const [check, setCheck] = useState(EnvDeployments.disPlayDevportal);
 
+    const getAllowedScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getAllowedScopes(), api);
+
     useEffect(() => {
         setCheck(typeof EnvDeployments.disPlayDevportal === 'undefined' ? false : EnvDeployments.disPlayDevportal);
     },
@@ -54,6 +64,8 @@ export default function DisplayDevportal(props) {
             setCheck(event.target.checked);
             if (api.apiType === API.CONSTS.APIProduct) {
                 restAPIProduct.displayInDevportalProduct(api.id, base64url.encode(event.target.name), body);
+            } else if (api.apiType === MCPServer.CONSTS.MCP) {
+                MCPServer.displayInDevportal(api.id, base64url.encode(event.target.name), body);
             } else {
                 restApi.displayInDevportalAPI(api.id, base64url.encode(event.target.name), body);
             }
@@ -64,7 +76,7 @@ export default function DisplayDevportal(props) {
         <Switch
             checked={check}
             onChange={handleDisplayOnDevPortal}
-            disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+            disabled={api.isRevision || isCreateOrPublishRestricted()}
             name={name}
         />
     );

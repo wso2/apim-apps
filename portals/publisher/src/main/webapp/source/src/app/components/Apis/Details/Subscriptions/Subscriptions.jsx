@@ -87,6 +87,15 @@ function Subscriptions(props) {
     && api.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
     const typeToDisplay = getTypeToDisplay(api.apiType);
 
+    const getAllowedScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isAccessRestricted = () => isRestricted(getAllowedScopes(), api);
+
     /**
      * Save subscription information (policies, subscriptionAvailability, subscriptionAvailableTenants)
      */
@@ -162,15 +171,15 @@ function Subscriptions(props) {
     }
     return (
         (<Root>
-            {(api.gatewayVendor === 'wso2') &&
-            (   
-                <SubscriptionPoliciesManage
-                    api={api}
-                    policies={policies}
-                    setPolices={setPolices}
-                    subValidationDisablingAllowed={settings.allowSubscriptionValidationDisabling}
-                />
-            )}
+            {(api.gatewayVendor === 'wso2' || api.gatewayType === 'solace') &&
+                (
+                    <SubscriptionPoliciesManage
+                        api={api}
+                        policies={policies}
+                        setPolices={setPolices}
+                        subValidationDisablingAllowed={settings.allowSubscriptionValidationDisabling}
+                    />
+                )}
             {isSubValidationDisabled && (
                 <Box mb={2} mt={2}>
                     <MUIAlert severity='warning'>
@@ -196,7 +205,7 @@ function Subscriptions(props) {
                     setTenantList={setTenantList}
                 />
             )}
-            {(api.gatewayVendor === 'wso2') && (
+            {(api.gatewayVendor === 'wso2' || api.gatewayType === 'solace') && (
                 <Grid
                     container
                     direction='row'
@@ -209,8 +218,7 @@ function Subscriptions(props) {
                             type='submit'
                             variant='contained'
                             color='primary'
-                            disabled={updateInProgress || api.isRevision 
-                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            disabled={updateInProgress || api.isRevision || isAccessRestricted()}
                             onClick={() => handleSubscriptionSave()}
                             id='subscriptions-save-btn'
                         >

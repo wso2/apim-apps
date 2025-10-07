@@ -20,6 +20,7 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import EmailIcon from '@mui/icons-material/Email';
 import { getBasePath } from 'AppComponents/Shared/Utils';
 import MCPServer from 'AppData/MCPServer';
+import APIProduct from 'AppData/APIProduct';
 import getIcon from './ImageUtils';
 
 const PREFIX = 'APIThumbPlain';
@@ -188,9 +189,14 @@ function APIThumbPlain(props) {
     const urlPrefix = getBasePath(api.apiType);
 
     useEffect(() => {
-        const restApi = new Api();
-
-        const promisedThumbnail = restApi.getAPIThumbnail(api.id);
+        let promisedThumbnail;
+        if (api.apiType === Api.CONSTS.APIProduct) {
+            promisedThumbnail = new APIProduct().getAPIProductThumbnail(api.id);
+        } else if (api.apiType === MCPServer.CONSTS.MCP) {
+            promisedThumbnail = MCPServer.getThumbnail(api.id);
+        } else {
+            promisedThumbnail = new Api().getAPIThumbnail(api.id);
+        }
 
         promisedThumbnail.then((response) => {
             if (response && response.data) {
@@ -578,7 +584,7 @@ function APIThumbPlain(props) {
                                 color='primary'
                             />
                         )}
-                        {(api.type === 'WEBSUB') && (api.gatewayVendor === 'solace') && (
+                        {(api.type === 'WEBSUB') && (api.gatewayType === 'solace') && (
                             <Chip
                                 size='small'
                                 classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}

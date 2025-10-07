@@ -478,7 +478,10 @@ const TryOutConsole = () => {
                                 token={apiKey}
                                 headerName='internal-key'
                                 shouldSetHeaderNameExternally
-                                disableConnectionButton={apiKey === null || apiKey === ''}
+                                disableConnectionButton={
+                                    apiKey === null || apiKey === '' ||
+                                    (tasksStatus.getDeployments.completed && !deployments.length && !isAPIRetired)
+                                }
                             />
                         </div>
                     </>

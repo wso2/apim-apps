@@ -27,6 +27,7 @@ import IconButton from '@mui/material/IconButton';
 import Icon from '@mui/material/Icon';
 
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import APIProduct from 'AppData/APIProduct';
 import ImageGenerator from './ImageGenerator';
 import LetterGenerator from './LetterGenerator';
@@ -127,10 +128,14 @@ const BaseThumbnail = (props) => {
     useEffect(() => {
         if (type !== 'DOC') {
             if ((api.hasThumbnail !== null && api.hasThumbnail) || apiType === Api.CONSTS.APIProduct) {
-                const promisedThumbnail =
-                    apiType === Api.CONSTS.APIProduct
-                        ? new APIProduct().getAPIProductThumbnail(id)
-                        : new Api().getAPIThumbnail(id);
+                let promisedThumbnail;
+                if (apiType === Api.CONSTS.APIProduct) {
+                    promisedThumbnail = new APIProduct().getAPIProductThumbnail(id);
+                } else if (apiType === MCPServer.CONSTS.MCP) {
+                    promisedThumbnail = MCPServer.getThumbnail(id);
+                } else {
+                    promisedThumbnail = new Api().getAPIThumbnail(id);
+                }
 
                 promisedThumbnail
                     .then((response) => {

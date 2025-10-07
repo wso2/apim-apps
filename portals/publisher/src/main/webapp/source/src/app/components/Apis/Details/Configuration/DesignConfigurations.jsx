@@ -400,6 +400,7 @@ export default function DesignConfigurations() {
     const [errorInAccessRoles, setErrorInAccessRoles] = useState(false);
     const [errorInRoleVisibility, setErrorInRoleVisibility] = useState(false);
     const [errorInTags, setErrorInTags] = useState(false);
+    const [errorInDisplayName, setErrorInDisplayName] = useState(false);
     const [errorInExternalEndpoints, setErrorInExternalEndpoints] = useState(false);
     const [apiConfig, configDispatcher] = useReducer(configReducer, copyAPIConfig(api));
 
@@ -452,8 +453,13 @@ export default function DesignConfigurations() {
     };
     const loadContentForDoc = (documentId) => {
         const { apiType } = api.apiType;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const docPromise = restApi.getInlineContentOfDocument(api.id, documentId);
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.getInlineContentOfDocument(api.id, documentId);
+        } else {
+            const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+            docPromise = restApi.getInlineContentOfDocument(api.id, documentId);
+        }
         docPromise
             .then((doc) => {
                 const { text } = doc;
@@ -462,30 +468,55 @@ export default function DesignConfigurations() {
     };
     const addDocument = async () => {
         const { apiType } = api.apiType;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const docPromise = await restApi.addDocument(api.id, {
-            name: 'overview',
-            type: 'OTHER',
-            summary: 'overview',
-            sourceType: 'MARKDOWN',
-            visibility: 'API_LEVEL',
-            sourceUrl: '',
-            otherTypeName: CONSTS.DESCRIPTION_TYPES.OVERVIEW,
-            inlineContent: '',
-        }).then((response) => {
-            return response.body;
-        }).catch((error) => {
-            if (process.env.NODE_ENV !== 'production') {
-                console.log(error);
-            }
-        });
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.addDocument(api.id, {
+                name: 'overview',
+                type: 'OTHER',
+                summary: 'overview',
+                sourceType: 'MARKDOWN',
+                visibility: 'API_LEVEL',
+                sourceUrl: '',
+                otherTypeName: CONSTS.DESCRIPTION_TYPES.OVERVIEW,
+                inlineContent: '',
+            }).then((response) => {
+                return response.body;
+            }).catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+            });
+        } else {
+            const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+            docPromise = await restApi.addDocument(api.id, {
+                name: 'overview',
+                type: 'OTHER',
+                summary: 'overview',
+                sourceType: 'MARKDOWN',
+                visibility: 'API_LEVEL',
+                sourceUrl: '',
+                otherTypeName: CONSTS.DESCRIPTION_TYPES.OVERVIEW,
+                inlineContent: '',
+            }).then((response) => {
+                return response.body;
+            }).catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+            });
+        }
         return docPromise;
     };
 
     const addDocumentContent = (document) => {
         const { apiType } = api.apiType;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const docPromise = restApi.addInlineContentToDocument(api.id, document.documentId, 'MARKDOWN', overview);
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.addInlineContentToDocument(api.id, document.documentId, 'MARKDOWN', overview);
+        } else {
+            const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+            docPromise = restApi.addInlineContentToDocument(api.id, document.documentId, 'MARKDOWN', overview);
+        }
         docPromise
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
@@ -500,8 +531,13 @@ export default function DesignConfigurations() {
 
     const deleteOverviewDocument = () => {
         const { apiType } = api.apiType;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const docPromise = restApi.deleteDocument(api.id, overviewDocument.documentId);
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.deleteDocument(api.id, overviewDocument.documentId);
+        } else {
+            const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+            docPromise = restApi.deleteDocument(api.id, overviewDocument.documentId);
+        }
         docPromise
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
@@ -513,8 +549,13 @@ export default function DesignConfigurations() {
     useEffect(() => {
         const { apiType } = api.apiType;
         const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const promisedApi = restApi.getDocuments(api.id);
-        promisedApi
+        let promisedDocs;
+        if (isMCPServer) {
+            promisedDocs = MCPServer.getDocuments(api.id);
+        } else {
+            promisedDocs = restApi.getDocuments(api.id);
+        }
+        promisedDocs
             .then((response) => {
                 const overviewDoc = response.body.list.filter((item) => item.otherTypeName === '_overview');
                 if (overviewDoc.length > 0) {
@@ -535,13 +576,14 @@ export default function DesignConfigurations() {
                     }));
                 }
             });
-        // const apiClient = new API();
-        API.labels().then((response) => setLabels(response.body));
-        restApi.getAPILabels(api.id).then((response) => {
-            setUpdatedLabels(response.body.list.map((label) => label.name));
-        }).finally(() => {
-            setLoading(false);
-        });
+        if (!isMCPServer) {
+            API.labels().then((response) => setLabels(response.body));
+            restApi.getAPILabels(api.id).then((response) => {
+                setUpdatedLabels(response.body.list.map((label) => label.name));
+            }).finally(() => {
+                setLoading(false);
+            });
+        }
     }, []);
 
     useEffect(() => {
@@ -669,10 +711,17 @@ export default function DesignConfigurations() {
         configDispatcher({ action: 'advertised', value: api.advertiseInfo.advertised });
         setIsOpen(false);
     };
-    const restricted = isRestricted(['apim:api_publish', 'apim:api_create'], api
-        || isUpdating || api.isRevision || invalidTagsExist
-        || (apiConfig.visibility === 'RESTRICTED'
-            && apiConfig.visibleRoles.length === 0));
+
+    const isAccessRestricted = () => {
+        if (api.apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
+            return isRestricted(['apim:mcp_server_publish', 'apim:mcp_server_create'], api);
+        } else {
+            return isRestricted(['apim:api_publish', 'apim:api_create'], api);
+        }
+    }
+
+    const restricted = isAccessRestricted() || isUpdating || api.isRevision || invalidTagsExist
+        || (apiConfig.visibility === 'RESTRICTED' && apiConfig.visibleRoles.length === 0);
 
     const LabelMenu = () => {
         if (searchResult && searchResult.list && searchQuery !== '') {
@@ -869,8 +918,7 @@ export default function DesignConfigurations() {
                                                     width={100}
                                                     height={100}
                                                     updateAPI={updateAPI}
-                                                    isEditable={!isRestricted(['apim:api_publish',
-                                                        'apim:api_create'], api)}
+                                                    isEditable={!isAccessRestricted()}
                                                 />
                                             </Grid>
                                             <Grid item xs={12} md={9.5}>
@@ -883,7 +931,8 @@ export default function DesignConfigurations() {
                                         </Grid>
                                     </Box>
                                     <Box py={1}>
-                                        <DisplayName api={apiConfig} configDispatcher={configDispatcher}/>
+                                        <DisplayName api={apiConfig} configDispatcher={configDispatcher}
+                                            setIsDisabled={setErrorInDisplayName}/>
                                     </Box>
                                     <Box py={1}>
                                         <APIDescription
@@ -950,6 +999,7 @@ export default function DesignConfigurations() {
                                                     === 'RESTRICTED' && errorInRoleVisibility) ||
                                                 restricted ||
                                                 errorInTags ||
+                                                errorInDisplayName ||
                                                 errorInExternalEndpoints}
                                             type='submit'
                                             variant='contained'

@@ -217,6 +217,20 @@ class DeleteApiButton extends React.Component {
     }
 
     /**
+     * Determines if the current user has restricted access based on context
+     * @returns {boolean} - True if access is restricted, false otherwise
+     */
+    isDeleteRestricted() {
+        const { api } = this.props;
+        if (api.type === MCPServer.CONSTS.MCP) {
+            return isRestricted(
+                ['apim:mcp_server_delete', 'apim:mcp_server_manage', 'apim:mcp_server_import_export'], api);
+        } else {
+            return isRestricted(['apim:api_delete'], api);
+        }
+    }
+
+    /**
      *
      * @inheritDoc
      * @returns {React.Component} inherit docs
@@ -253,7 +267,7 @@ class DeleteApiButton extends React.Component {
                                 id='itest-id-deleteapi-icon-button'
                                 onClick={this.handleRequestOpen}
                                 className={classes.delete}
-                                disabled={isRestricted(['apim:api_delete'], api)}
+                                disabled={this.isDeleteRestricted()}
                                 aria-label='delete'
                                 disableFocusRipple
                                 disableRipple
