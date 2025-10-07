@@ -66,6 +66,7 @@ describe("prototype apis with security disabled", () => {
             cy.intercept('PUT', '**/swagger').as('swagger');
 
             cy.get("#split-button-menu").contains('li', 'Save and deploy').click();
+            cy.get('[data-testid="custom-select-save-button"]').scrollIntoView().click();
             cy.wait('@swagger', { timeout: 15000 }).its('response.statusCode').should('equal', 200)
 
             cy.wait(5000)

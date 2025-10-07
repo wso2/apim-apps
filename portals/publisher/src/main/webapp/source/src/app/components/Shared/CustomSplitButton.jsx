@@ -61,10 +61,13 @@ export default function CustomSplitButton(props) {
     || api.workflowStatus === 'CREATED'
     || api.initiatedFromGateway);
 
-    const handleClick = (event, index) => {
+    const handleOptionSelect = (event, index) => {
         setSelectedIndex(index);
         setOpen(false);
-        if (`${options[index].key}` === 'Save') {
+    };
+
+    const handleClick = () => {
+        if (`${options[selectedIndex].key}` === 'Save') {
             handleSave();
         } else {
             handleSaveAndDeploy();
@@ -104,14 +107,13 @@ export default function CustomSplitButton(props) {
                         aria-label='split button'
                         disabled={isUpdating || (!isValidSequenceBackend && isCustomBackendSelected)
                             || api.initiatedFromGateway}
-                        style={{ width: '200px' }}
                     >
                         <Button
-                            onClick={(event) => handleClick(event, selectedIndex)}
+                            onClick={handleClick}
                             disabled={isUpdating || (!isValidSequenceBackend && isCustomBackendSelected)
                                 || api.initiatedFromGateway}
                             data-testid = 'custom-select-save-button'
-                            style={{ width: '200px' }}
+                            style={{ minWidth: '120px' }}
                             id={id}
                         >
                             {options[selectedIndex].label}
@@ -144,7 +146,7 @@ export default function CustomSplitButton(props) {
                                                 <MenuItem
                                                     key={option.key}
                                                     selected={index === selectedIndex}
-                                                    onClick={(event) => handleClick(event, index)}
+                                                    onClick={(event) => handleOptionSelect(event, index)}
                                                     disabled={(option.key === 'Save and deploy'
                                                         && isDeployButtonDisabled)}
                                                 >
