@@ -24,11 +24,15 @@ import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 
 /**
- *
+ * APIDescription component renders a text field for editing API description.
+ * The description is displayed in the developer portal overview page.
  *
  * @export
- * @param {*} props
- * @returns
+ * @param {Object} props - Component props
+ * @param {Object} props.api - API object containing description and other properties
+ * @param {string} [props.api.description] - Current API description
+ * @param {Function} props.configDispatcher - Function to dispatch configuration changes
+ * @returns {JSX.Element} TextField component for API description input
  */
 function APIDescription(props) {
     const { api, configDispatcher } = props;

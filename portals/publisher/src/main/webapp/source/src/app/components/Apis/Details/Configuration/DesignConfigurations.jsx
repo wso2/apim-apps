@@ -654,9 +654,7 @@ export default function DesignConfigurations() {
             if (overviewDocument) {
                 deleteOverviewDocument();
             }
-        }
-
-        else {
+        } else {
             let document = overviewDocument;
             if (document === null) {
                 document = await addDocument();
