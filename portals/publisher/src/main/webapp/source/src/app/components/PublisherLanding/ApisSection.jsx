@@ -118,7 +118,7 @@ const ApisSection = ({ data, totalCount, onDelete }) => {
                         variant='contained'
                         color='primary'
                         component={Link}
-                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                        disabled={isRestricted(['apim:api_create', 'apim:api_manage'])}
                         to='/apis/create'
                         startIcon={<AddIcon />}
                     >
