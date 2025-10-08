@@ -125,6 +125,13 @@ const CONSTS = {
         WEBHOOK: 'Webhook',
         ASYNC: 'Async',
     },
+    ARTIFACT_TYPES: {
+        API: 'API',
+        APIProduct: 'APIPRODUCT',
+        MCP: 'MCP',
+        DEFINITION: 'DEFINITION',
+        DOCUMENT: 'DOC',
+    },
 };
 
 export default CONSTS;

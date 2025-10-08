@@ -288,7 +288,7 @@ class APIThumb extends Component {
             // In search route, the apiType comes as `transportType`
             // In non-search (listing) route, the apiType comes as `type`
             // Giving precedence to transportType since there is a different attribute called `type` in search mode
-            label = getTypeChipLabel(api.transportType ? api.transportType : api.type, api.gatewayType);
+            label = getTypeChipLabel(api.transportType ? api.transportType : api.type);
             icon = getTypeIcon(api.transportType ? api.transportType : api.type);
         }
 

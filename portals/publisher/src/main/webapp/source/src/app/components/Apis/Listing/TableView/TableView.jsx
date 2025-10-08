@@ -418,15 +418,30 @@ class TableView extends React.Component {
                         const apiData = tableViewObj.state.apisAndApiProducts?.[tableMeta.rowIndex];
                         if (apiData) {
                             if (apiData.subtype && apiData.subtype === 'AIAPI') {
-                                return 'AI API';
-                            } else if (apiData.type === 'MCP') {
-                                return 'MCP Server';
-                            } else if (apiData.type === 'APIPRODUCT') {
-                                return 'API Product';
-                            } else if (apiData.type === 'DEFINITION') {
-                                return 'Definition';
-                            } else if (apiData.type === 'DOC') {
-                                return 'Document';
+                                return intl.formatMessage({
+                                    id: 'Apis.Listing.TableView.TableView.ai.api',
+                                    defaultMessage: 'AI API',
+                                });
+                            } else if (apiData.type === CONSTS.ARTIFACT_TYPES.MCP) {
+                                return intl.formatMessage({
+                                    id: 'Apis.Listing.TableView.TableView.mcp.server',
+                                    defaultMessage: 'MCP Server',
+                                });
+                            } else if (apiData.type === CONSTS.ARTIFACT_TYPES.APIProduct) {
+                                return intl.formatMessage({
+                                    id: 'Apis.Listing.TableView.TableView.api.product',
+                                    defaultMessage: 'API Product',
+                                });
+                            } else if (apiData.type === CONSTS.ARTIFACT_TYPES.DEFINITION) {
+                                return intl.formatMessage({
+                                    id: 'Apis.Listing.TableView.TableView.definition',
+                                    defaultMessage: 'Definition',
+                                });
+                            } else if (apiData.type === CONSTS.ARTIFACT_TYPES.DOCUMENT) {
+                                return intl.formatMessage({
+                                    id: 'Apis.Listing.TableView.TableView.document',
+                                    defaultMessage: 'Document',
+                                });
                             }
 
                             // Get the type from transportType (search mode) or type (listing mode)
