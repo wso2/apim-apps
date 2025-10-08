@@ -99,7 +99,8 @@ function Endpoints(props) {
     
     const [productionEndpointSecurity, setProductionEndpointSecurity] = useState(null);
     const [sandboxEndpointSecurity, setSandboxEndpointSecurity] = useState(null);
-    const [endpointConfig, setEndpointConfig] = useState(null);
+    const [productionUrl, setProductionUrl] = useState(null);
+    const [sandboxUrl, setSandboxUrl] = useState(null);
     const [loading, setLoading] = useState(false);
     const intl = useIntl();
     const authTypes = {
@@ -124,13 +125,13 @@ function Endpoints(props) {
                         const { endpointConfig: endpointConfiguration } = fetchedEndpoints[0];
                         try {
                             const parsedConfig = JSON.parse(endpointConfiguration);
-                            setEndpointConfig(parsedConfig);
+                            setProductionUrl(getProductionEndpoint(parsedConfig));
+                            setSandboxUrl(getSandboxEndpoint(parsedConfig));
+                            setProductionEndpointSecurity(getEndpointSecurity(endpointConfiguration, 'prod'));
+                            setSandboxEndpointSecurity(getEndpointSecurity(endpointConfiguration, 'sand'));
                         } catch (error) {
                             console.error('Error parsing endpoint configuration:', error);
-                            setEndpointConfig(null);
                         }
-                        setProductionEndpointSecurity(getEndpointSecurity(endpointConfiguration, 'prod'));
-                        setSandboxEndpointSecurity(getEndpointSecurity(endpointConfiguration, 'sand'));
                     }
                 })
                 .catch((error) => {
@@ -141,63 +142,80 @@ function Endpoints(props) {
                     }));
                 })
                 .finally(() => setLoading(false));
-        } else {
-            setLoading(true);
-            const endpointConfiguration = { ...api.endpointConfig };
-
+        // AI endpoints
+        } else if(api.subtypeConfiguration?.subtype === 'AIAPI'){
             const promises = [];
 
+            setLoading(true);
             // Primary production endpoint
-            if (
-                api.primaryProductionEndpointId &&
-                api.primaryProductionEndpointId !== 'default_production_endpoint'
-            ) {
-                promises.push(
-                    API.getApiEndpoint(api.id, api.primaryProductionEndpointId)
-                        .then((prodEndpointResp) => {
-                            if (prodEndpointResp?.body?.endpointConfig) {
-                                endpointConfiguration.production_endpoints =
-                                    prodEndpointResp.body.endpointConfig.production_endpoints;
-                                setProductionEndpointSecurity(
-                                    getEndpointSecurity(prodEndpointResp.body.endpointConfig, 'prod')
-                                );
-                            }
-                        })
-                        .catch((err) => {
-                            console.error('Error fetching primary production endpoint:', err);
-                        })
-                );
-            }
+            if (api.primaryProductionEndpointId){
+                if(api.primaryProductionEndpointId !== 'default_production_endpoint'){
+                    promises.push(
+                        API.getApiEndpoint(api.id, api.primaryProductionEndpointId)
+                            .then((prodEndpointResp) => {
+                                if (prodEndpointResp?.body?.endpointConfig) {
+                                    try{
+                                        setProductionUrl(
+                                            getProductionEndpoint(prodEndpointResp.body.endpointConfig)
+                                        );
+                                        setProductionEndpointSecurity(
+                                            getEndpointSecurity(prodEndpointResp.body.endpointConfig, 'prod')
+                                        );
+                                    } catch (error){
+                                        console.error('Error parsing endpoint configuration:', error);
+                                    }
+                                }
+                            })
+                            .catch((err) => {
+                                console.error('Error fetching primary production endpoint:', err);
+                            })
+                    );
 
-            // Sandbox endpoint
-            if (
-                api.primarySandboxEndpointId &&
-                api.primarySandboxEndpointId !== 'default_sandbox_endpoint'
-            ) {
-                promises.push(
-                    API.getApiEndpoint(api.id, api.primarySandboxEndpointId)
-                        .then((sandEndpointResp) => {
-                            if (sandEndpointResp?.body?.endpointConfig) {
-                                endpointConfiguration.sandbox_endpoints =
-                                    sandEndpointResp.body.endpointConfig.sandbox_endpoints;
-                                setSandboxEndpointSecurity(
-                                    getEndpointSecurity(sandEndpointResp.body.endpointConfig, 'sand')
-                                );
-                            }
-                        })
-                        .catch((err) => {
-                            console.error('Error fetching primary sandbox endpoint:', err);
-                        })
-                );
+                } else { 
+                    setProductionUrl(getProductionEndpoint(api.endpointConfig));
+                    setProductionEndpointSecurity(getEndpointSecurity(api.endpointConfig, 'prod'));
+                }
             }
+                    
+            // Primary Sandbox endpoint
+            if (api.primarySandboxEndpointId){
+                if(api.primarySandboxEndpointId !== 'default_sandbox_endpoint'){
+                    promises.push(
+                        API.getApiEndpoint(api.id, api.primarySandboxEndpointId)
+                            .then((sandEndpointResp) => {
+                                if (sandEndpointResp?.body?.endpointConfig) {
+                                    try{
+                                        setSandboxUrl(
+                                            getSandboxEndpoint(sandEndpointResp.body.endpointConfig)
+                                        );
+                                        setSandboxEndpointSecurity(
+                                            getEndpointSecurity(sandEndpointResp.body.endpointConfig, 'sand')
+                                        );
+                                    } catch (error){
+                                        console.error('Error parsing endpoint configuration:', error);
+                                    }
+                                }
 
+                            })
+                            .catch((err) => {
+                                console.error('Error fetching primary sandbox endpoint:', err);
+                            })
+                    );
+
+                } else { 
+                    setSandboxUrl(getSandboxEndpoint(api.endpointConfig));
+                    setSandboxEndpointSecurity(getEndpointSecurity(api.endpointConfig, 'sand'));
+                }
+            }
             Promise.all(promises)
-                .then(() => {
-                    setEndpointConfig(endpointConfiguration);
-                    setProductionEndpointSecurity(getEndpointSecurity(endpointConfiguration, 'prod'));
-                    setSandboxEndpointSecurity(getEndpointSecurity(endpointConfiguration, 'sand'));
-                })
                 .finally(() => setLoading(false));
+        }
+        // Regular API endpoints
+        else {
+            setProductionUrl(getProductionEndpoint(api.endpointConfig));
+            setSandboxUrl(getSandboxEndpoint(api.endpointConfig));
+            setProductionEndpointSecurity(getEndpointSecurity(api.endpointConfig, 'prod'));
+            setSandboxEndpointSecurity(getEndpointSecurity(api.endpointConfig, 'sand'));
         }
     }, [api]);
 
@@ -209,19 +227,12 @@ function Endpoints(props) {
             if (endpointType === 'sand') {
                 return api.advertiseInfo.apiExternalSandboxEndpoint;
             }
-        } else if (api.type === MCPServer.CONSTS.MCP) {
+        } else {
             if (endpointType === 'prod') {
-                return getProductionEndpoint(endpointConfig);
+                return productionUrl;
             }
             if (endpointType === 'sand') {
-                return getSandboxEndpoint(endpointConfig);
-            }
-        } else if (endpointConfig) {
-            if (endpointType === 'prod') {
-                return getProductionEndpoint(endpointConfig);
-            }
-            if (endpointType === 'sand') {
-                return getSandboxEndpoint(endpointConfig);
+                return sandboxUrl;
             }
         }
         return null;
