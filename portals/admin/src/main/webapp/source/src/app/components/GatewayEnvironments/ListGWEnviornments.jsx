@@ -33,6 +33,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { styled } from '@mui/material/styles';
 import Permission from './Permission';
 import ListGatewayInstances from './ListGatewayInstances';
+import Utils from '../../data/Utils';
 
 const StyledTooltip = styled(({ className, ...props }) => (
     <Tooltip {...props} classes={{ popper: className }} />
@@ -56,7 +57,9 @@ function apiCall() {
     return restApi
         .getGatewayEnvironmentList()
         .then((result) => {
-            return result.body.list;
+            return result.body.list.map((item) => {
+                return { ...item, id: Utils.encodeEnvironmentId(item.id) };
+            });
         })
         .catch((error) => {
             throw error;
