@@ -50,7 +50,8 @@ const lifecyclePending = (props) => {
                     id: 'Apis.Details.LifeCycle.LifeCycleUpdate.LifecyclePending.error',
                     defaultMessage: 'Error while deleting task',
                 }));
-            });
+            })
+            .finally(() => { setOpen(false); });
     };
     return (
         <Paper>
