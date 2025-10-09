@@ -352,16 +352,22 @@ const MCPServerCreateUsingExistingAPI = (props) => {
 
     const getSteps = () => {
         return [
-            <FormattedMessage
-                variant='caption'
-                id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.one'
-                defaultMessage='Select API and Operations for Tool Generation'
-            />,
-            <FormattedMessage
-                variant='caption'
-                id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.two'
-                defaultMessage='Create MCP Server'
-            />,
+            {
+                id: 'step-1',
+                label: <FormattedMessage
+                    variant='caption'
+                    id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.one'
+                    defaultMessage='Select API and Operations for Tool Generation'
+                />
+            },
+            {
+                id: 'step-2',
+                label: <FormattedMessage
+                    variant='caption'
+                    id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.two'
+                    defaultMessage='Create MCP Server'
+                />
+            },
         ];
     }
 
@@ -371,9 +377,9 @@ const MCPServerCreateUsingExistingAPI = (props) => {
         >
             <Box sx={{ mb: 3 }}>
                 <Stepper alternativeLabel activeStep={wizardStep}>
-                    {getSteps().map((label) => (
-                        <Step key={label}>
-                            <StepLabel className={classes.alternativeLabel}>{label}</StepLabel>
+                    {getSteps().map((step) => (
+                        <Step key={step.id}>
+                            <StepLabel className={classes.alternativeLabel}>{step.label}</StepLabel>
                         </Step>
                     ))}
                 </Stepper>

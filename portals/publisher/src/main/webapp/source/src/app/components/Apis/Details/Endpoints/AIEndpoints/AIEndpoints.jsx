@@ -334,7 +334,7 @@ const AIEndpoints = ({
                     type='submit'
                     variant='contained'
                     color='primary'
-                    disabled={isRestricted(['apim:api_publish', 'apim:api_manage'], apiObject)}
+                    disabled={isRestricted(['apim:api_create', 'apim:api_publish', 'apim:api_manage'], apiObject)}
                     endIcon={<OpenInNewIcon />}
                     onClick={() => {
                         history.push({
