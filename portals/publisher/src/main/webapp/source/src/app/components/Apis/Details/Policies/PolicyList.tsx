@@ -223,6 +223,7 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
                                     index={0}
                                     selectedTab={selectedTab}
                                     fetchPolicies={fetchPolicies}
+                                    isReadOnly={isRestricted(['apim:api_create', 'apim:api_publish'])}
                                 />
                             </Box>
                         ) : (
@@ -249,6 +250,7 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
                                     index={0}
                                     selectedTab={selectedTab}
                                     fetchPolicies={fetchPolicies}
+                                    isReadOnly={isRestricted(['apim:api_create', 'apim:api_publish'])}
                                 />
                                 <TabPanel
                                     commonPolicyList={commonPolicyList.filter(
@@ -272,6 +274,7 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
                                     index={1}
                                     selectedTab={selectedTab}
                                     fetchPolicies={fetchPolicies}
+                                    isReadOnly={isRestricted(['apim:api_create', 'apim:api_publish'])}
                                 />
                                 {!isChoreoConnectEnabled && (
                                     <TabPanel
@@ -296,6 +299,7 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
                                         index={2}
                                         selectedTab={selectedTab}
                                         fetchPolicies={fetchPolicies}
+                                        isReadOnly={isRestricted(['apim:api_create', 'apim:api_publish'])}
                                     />
                                 )}
                             </Box>
