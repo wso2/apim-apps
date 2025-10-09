@@ -234,7 +234,7 @@ const BaseThumbnail = (props) => {
                             fontSize='small'
                             onClick={onDelete} 
                             aria-label='delete thumbnail'
-                            sx={{ mt: 9, p:0.5, position:'absolute'}}
+                            sx={{ p: 0.5, position: 'absolute', bottom: 0, left: 0 }}
                         >
                             <Icon color='primary'>delete_forever</Icon>
                         </IconButton>
