@@ -564,6 +564,7 @@
   "Base.Header.headersearch.HeaderSearch.tooltip.option4": "By Context [ Syntax - context:xxxx ]",
   "Base.Header.headersearch.HeaderSearch.tooltip.option5": "By Description [ Syntax - description:xxxx ]",
   "Base.Header.headersearch.HeaderSearch.tooltip.option6": "By Tags [ Syntax - tags:xxxx ]",
+  "Base.Header.headersearch.HeaderSearch.tooltip.option7": "Display Name [ Syntax - display-name:xxxx ]",
   "Base.Header.headersearch.HeaderSearch.tooltip.title": "Search Options",
   "Base.Header.headersearch.SearchUtils.lcState.all": "All",
   "Base.Header.headersearch.SearchUtils.lcState.prototyped": "Prototyped",
