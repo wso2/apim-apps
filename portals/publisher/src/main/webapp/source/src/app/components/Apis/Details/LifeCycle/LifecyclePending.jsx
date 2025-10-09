@@ -28,15 +28,23 @@ import {
     Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
 } from '@mui/material';
 import Slide from '@mui/material/Slide';
+import MCPServer from 'AppData/MCPServer';
 
 const lifecyclePending = (props) => {
     const { currentState } = props;
     const intl = useIntl();
     const [isOpen, setOpen] = useState(false);
     const [api, updateAPI] = useAPI();
+    const isMCPServer = api.apiType.toUpperCase() === MCPServer.CONSTS.MCP;
     const deleteTask = () => {
         const { id } = api;
-        api.cleanupPendingTask(id)
+        let deleteTaskPromise;
+        if (isMCPServer) {
+            deleteTaskPromise = MCPServer.cancelLifecyclePendingTask(id);
+        } else {
+            deleteTaskPromise = api.cleanupPendingTask(id);
+        }
+        deleteTaskPromise
             .then(() => {
                 Alert.info(intl.formatMessage({
                     id: 'Apis.Details.LifeCycle.LifeCycleUpdate.LifecyclePending.success',

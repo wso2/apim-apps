@@ -1142,30 +1142,34 @@ export default function Environments() {
      * @memberof Revisions
      */
     function cancelRevisionDeploymentWorkflow(revisionId, envName) {
-        if (api.apiType !== API.CONSTS.APIProduct) {
-            restApi.cancelRevisionDeploymentWorkflow(api.id, revisionId, envName)
-                .then(() => {
-                    Alert.info(intl.formatMessage({
-                        id: 'Apis.Details.Environments.Environments.revision.deploy.request.cancel',
-                        defaultMessage: 'Revision deployment request cancelled successfully',
-                    }));
-                })
-                .catch((error) => {
-                    if (error.response) {
-                        Alert.error(error.response.body.description);
-                    } else {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Environments.Environments.revision.deploy.request.cancel.error',
-                            defaultMessage: 'Something went wrong while cancelling the revision'
-                                + ' deployment request',
-                        }));
-                    }
-                    console.error(error);
-                }).finally(() => {
-                    getRevision();
-                    getDeployedEnv();
-                });
+        let cancelPromise;
+        if (api.apiType === MCPServer.CONSTS.MCP) {
+            cancelPromise = MCPServer.cancelRevisionDeploymentWorkflow(api.id, revisionId, envName)
+        } else if (api.apiType !== API.CONSTS.APIProduct) {
+            cancelPromise = restApi.cancelRevisionDeploymentWorkflow(api.id, revisionId, envName)
         }
+        cancelPromise
+            .then(() => {
+                Alert.info(intl.formatMessage({
+                    id: 'Apis.Details.Environments.Environments.revision.deploy.request.cancel',
+                    defaultMessage: 'Revision deployment request cancelled successfully',
+                }));
+            })
+            .catch((error) => {
+                if (error.response) {
+                    Alert.error(error.response.body.description);
+                } else {
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Environments.Environments.revision.deploy.request.cancel.error',
+                        defaultMessage: 'Something went wrong while cancelling the revision'
+                            + ' deployment request',
+                    }));
+                }
+                console.error(error);
+            }).finally(() => {
+                getRevision();
+                getDeployedEnv();
+            });
     }
 
     /**
