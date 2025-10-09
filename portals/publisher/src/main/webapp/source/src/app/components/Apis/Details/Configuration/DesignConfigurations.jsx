@@ -1046,7 +1046,7 @@ export default function DesignConfigurations() {
                                     <Grid item md={6} align='right'>
                                         {!api.isRevision && (
                                             <Tooltip title='Attach Labels'>
-                                                <IconButton onClick={handleOpenList}>
+                                                <IconButton onClick={handleOpenList} disabled={isAccessRestricted()}>
                                                     <AddIcon />
                                                 </IconButton>
                                             </Tooltip>
