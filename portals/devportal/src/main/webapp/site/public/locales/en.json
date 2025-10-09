@@ -329,7 +329,6 @@
   "Apis.Details.index.try.out.api.console": "API Console",
   "Apis.Details.index.try.out.mcp.playground": "MCP Playground",
   "Apis.Details.protocols.and.endpoints": "Protocols & Endpoints",
-  "Apis.Listing.APIList.display.name.not.available": "-",
   "Apis.Listing.ApiBreadcrumbs.apigroups.main": "API Groups",
   "Apis.Listing.ApiTableView.business.owner.caption": "(Business Owner)",
   "Apis.Listing.ApiTableView.context": "Context",

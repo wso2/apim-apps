@@ -253,6 +253,9 @@ class APICardView extends React.Component {
                     id: isMCPServersRoute ? 'Apis.Listing.MCPServerList.name' : 'Apis.Listing.APIList.name',
                     defaultMessage: 'Name',
                 }),
+                options: {
+                    display: 'excluded',
+                },
             },
             {
                 name: 'displayName',
@@ -261,11 +264,10 @@ class APICardView extends React.Component {
                     defaultMessage: 'Display Name',
                 }),
                 options: {
-                    customBodyRender: (value) => {
-                        return value || intl.formatMessage({
-                            id: 'Apis.Listing.APIList.display.name.not.available',
-                            defaultMessage: '-',
-                        });
+                    customBodyRender: (value, tableMeta) => {
+                        // Find the index of 'name' column from the table data
+                        const fallbackName = tableMeta.rowData?.[2]; // index of 'name' column in rowData
+                        return value || fallbackName;
                     },
                 },
             },
