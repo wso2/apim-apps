@@ -74,6 +74,7 @@ interface DraggablePolicyCardProps {
     showCopyIcon?: boolean;
     isLocalToAPI: boolean;
     fetchPolicies: () => void;
+    isReadOnly?: boolean;
 }
 
 /**
@@ -86,6 +87,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
     showCopyIcon,
     isLocalToAPI,
     fetchPolicies,
+    isReadOnly = false,
 }) => {
 
     const [hovered, setHovered] = useState(false);
@@ -95,6 +97,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
         () => ({
             type: `policyCard-${policyObj.id}`,
             item: { droppedPolicy: policyObj },
+            canDrag: !isReadOnly,
             options: {
                 dropEffect: showCopyIcon ? 'copy' : 'move',
             },
@@ -102,7 +105,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                 isDragging: monitor.isDragging(),
             }),
         }),
-        [showCopyIcon],
+        [showCopyIcon, isReadOnly],
     );
 
     const containerStyle = useMemo(
@@ -111,8 +114,9 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
             opacity: isDragging ? 0.4 : 1,
             borderColor: Utils.stringToColor(policyObj.displayName),
             width: '100%',
+            cursor: isReadOnly ? 'default' : 'move',
         }),
-        [isDragging],
+        [isDragging, isReadOnly],
     );
 
     const handleViewPolicy = () => {
@@ -126,7 +130,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
     return (
         <Root>
             <Box display='flex' flexDirection='row' alignItems='center'>
-                <div ref={drag} style={containerStyle}>
+                <div ref={isReadOnly ? null : drag} style={containerStyle}>
                     <ListItem
                         key={policyObj.id}
                         className={classes.listItem}
