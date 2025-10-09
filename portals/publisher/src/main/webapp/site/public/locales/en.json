@@ -2324,7 +2324,7 @@
   "Scopes.Create.Scope.displayName.length.exceeded": "Exceeds maximum length limit of 255 characters",
   "Scopes.Create.Scope.field.has.special.characters": "Field contains special characters",
   "Scopes.Create.Scope.name.already.exist": "Scope name already exists",
-  "Scopes.Create.Scope.name.already.used": "Scope name is already exist",
+  "Scopes.Create.Scope.name.already.used": "Scope name is already used by another API",
   "Scopes.Create.Scope.name.empty": "Scope name cannot be empty",
   "Scopes.Create.Scope.name.exists": "Scope name already exists",
   "Scopes.Create.Scope.name.has.spaces": "Scope name cannot have spaces",
