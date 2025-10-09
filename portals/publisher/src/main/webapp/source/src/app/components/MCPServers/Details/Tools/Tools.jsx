@@ -919,7 +919,7 @@ const Tools = ({
                                             resourcePolicy={{}}
                                             resolvedSpec={{}}
                                             highlight={false}
-                                            disableDelete={false}
+                                            disableDelete={disableUpdate}
                                             availableOperations={getFilteredAvailableOperations(target)}
                                         />
                                     </Grid>

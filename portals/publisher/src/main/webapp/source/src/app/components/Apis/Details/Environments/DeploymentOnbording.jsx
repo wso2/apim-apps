@@ -555,6 +555,7 @@ export default function DeploymentOnboarding(props) {
                                             startIcon={<AddIcon />}
                                             onClick={handleDescriptionOpen}
                                             id='add-description-btn'
+                                            disabled={isCreateOrPublishRestricted()}
                                         >
                                             <FormattedMessage
                                                 id='Apis.Details.Environments.Environments.revision.description.add'
@@ -742,6 +743,7 @@ export default function DeploymentOnboarding(props) {
                                             display='inline'
                                             startIcon={<AddIcon />}
                                             onClick={handleDescriptionOpen}
+                                            disabled={isCreateOrPublishRestricted()}
                                         >
                                             Add a description
                                         </Button>

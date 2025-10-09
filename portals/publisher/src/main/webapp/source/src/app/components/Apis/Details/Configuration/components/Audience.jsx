@@ -24,6 +24,7 @@ import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import { isRestricted } from 'AppData/AuthManager';
 import { ALL_AUDIENCES_ALLOWED } from './APISecurity/components/apiSecurityConstants';
 
 /**
@@ -37,11 +38,14 @@ export default function Audience(props) {
     const {
         configDispatcher,
         api: { audiences },
+        api,
     } = props;
     const [isAudValidationEnabled, setAudValidationEnabled] = useState(audiences !== null && audiences.length !== 0 &&
         !(audiences.includes(ALL_AUDIENCES_ALLOWED)));
     const [audienceValues, setAudienceValues] = useState(Array.isArray(audiences) ?
         audiences.filter(value => value !== ALL_AUDIENCES_ALLOWED) : []);
+    
+    const isAccessRestricted = () => isRestricted(['apim:api_publish', 'apim:api_create'], api);
     return (
         <>
             <Grid sx={() => ({ marginBottom: 2, })}>
@@ -86,6 +90,7 @@ export default function Audience(props) {
                                         }
                                     }}
                                     color='primary'
+                                    disabled={isAccessRestricted()}
                                     inputProps={{
                                         'aria-label': 'AudienceValidation',
                                     }}
@@ -110,6 +115,7 @@ export default function Audience(props) {
                                     <ChipInput
                                         style={{ marginBottom: 40, display: 'flex' }}
                                         value={audienceValues}
+                                        disabled={isAccessRestricted()}
                                         helperText={(
                                             <FormattedMessage
                                                 id={
