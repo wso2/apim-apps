@@ -73,7 +73,7 @@ jobs:
           nc -zv localhost 9443
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
       - name: Cypress run
         uses: cypress-io/github-action@v4
         with:
