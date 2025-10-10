@@ -99,7 +99,7 @@ const SolaceEventAPIProductFetcher = (props) => {
                 onBlur={({target: {value}}) => handleOnBlur(value)}
             >
                 <FormControl>
-                    <FormLabel>Select the Solace Event API</FormLabel>
+                    <FormLabel sx={{ mb: 2 }}>Select the Solace Event API</FormLabel>
                     <TableContainer component={Paper}>
                         <Table>
                             <TableHead>
@@ -147,8 +147,8 @@ const SolaceEventAPIProductFetcher = (props) => {
     }
 
     return (
-        <Grid container justifyContent='center'>
-            <Grid item>
+        <Grid container>
+            <Grid item xs={12}>
                 {loading ? <CircularProgress /> : returnEventApis()}
             </Grid>
         </Grid>
