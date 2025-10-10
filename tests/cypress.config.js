@@ -35,6 +35,7 @@ module.exports = defineConfig({
     excludeSpecPattern: [
       '**/externalDevPortals/**.spec.js',
       '**/06-solace-broker-integration.spec.js',
+      '**/*.cy.skip.js',
     ],
     baseUrl: 'https://localhost:9443',
   },
