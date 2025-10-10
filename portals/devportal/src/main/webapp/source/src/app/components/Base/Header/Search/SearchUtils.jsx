@@ -263,7 +263,7 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
  * @returns {String} API Name
  */
 function getSuggestionValue(suggestion) {
-    return suggestion.name;
+    return suggestion.displayName || suggestion.name;
 }
 
 /**

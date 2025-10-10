@@ -359,6 +359,12 @@ class HeaderSearch extends React.Component {
                                  </li>
                                  <li>
                                      <FormattedMessage
+                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option7'
+                                         defaultMessage='Display Name [ Syntax - display-name:xxxx ]'
+                                     />
+                                 </li>
+                                 <li>
+                                     <FormattedMessage
                                          id='Base.Header.headersearch.HeaderSearch.tooltip.option2'
                                          defaultMessage='By API Provider [ Syntax - provider:xxxx ]'
                                      />
