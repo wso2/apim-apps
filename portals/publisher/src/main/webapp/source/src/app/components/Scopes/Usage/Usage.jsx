@@ -89,8 +89,14 @@ function Usage(props) {
             // revision resources.
             const httpApisMap = new Map();
             const mcpServersMap = new Map();
-            const processedHttpList = [];
+            const processedApiList = [];
             const processedMCPList = [];
+            
+            // Define API types that should be processed as HTTP APIs
+            const apiTypeList = [
+                'HTTP', 'WS', 'SOAPTOREST', 'GRAPHQL', 'SOAP', 
+                'SSE', 'WEBSUB', 'WEBHOOK', 'ASYNC'
+            ];
             
             for (let i = 0; i < usagesList.length; i++) {
                 const usageItem = usagesList[i];
@@ -104,7 +110,7 @@ function Usage(props) {
                     usedResourceList: usageItem.usedResourceList || []
                 };
 
-                if (usageItem.type === 'HTTP') {
+                if (apiTypeList.includes(usageItem.type)) {
                     let apiData = null;
                     if (httpApisMap.has(key)) {
                         apiData = httpApisMap.get(key);
@@ -125,7 +131,7 @@ function Usage(props) {
                             usedResourceList: resourceList
                         };
                         httpApisMap.set(key, apiData);
-                        processedHttpList.push(apiData);
+                        processedApiList.push(apiData);
                     }
                 } else if (usageItem.type === 'MCP') {
                     let mcpData = null;
@@ -155,7 +161,7 @@ function Usage(props) {
             
             setUsage({
                 ...response.body,
-                usedApiList: processedHttpList,
+                usedApiList: processedApiList,
                 mcpServersList: processedMCPList
             });
         });
