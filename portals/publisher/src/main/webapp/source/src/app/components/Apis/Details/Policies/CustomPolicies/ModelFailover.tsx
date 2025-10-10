@@ -329,73 +329,76 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                         />
                     </StyledAccordionSummary>
                     <AccordionDetails>
-                        {modelList.length === 0 && (
+                        {modelList.length === 0 ? (
                             <Alert severity="warning" sx={{ mb: 2 }}>
                                 <FormattedMessage
                                     id='Apis.Details.Policies.CustomPolicies.ModelFailover.no.models'
                                     defaultMessage='No models available. Please configure models for the LLM provider.'
                                 />
                             </Alert>
-                        )}
-                        {productionEndpoints.length === 0 && (
-                            <Alert severity="warning" sx={{ mb: 2 }}>
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.CustomPolicies.ModelFailover.no.production.endpoints'
-                                    defaultMessage='No production endpoints available. Please {configureLink} first.'
-                                    values={{
-                                        configureLink: (
-                                            <Link to={getEndpointsUrl()}>
-                                                configure endpoints
-                                            </Link>
-                                        ),
-                                    }}
+                        ) : (
+                            <>
+                                {productionEndpoints.length === 0 && (
+                                    <Alert severity="warning" sx={{ mb: 2 }}>
+                                        <FormattedMessage
+                                            id='Apis.Details.Policies.CustomPolicies.ModelFailover.no.production.endpoints'
+                                            defaultMessage='No production endpoints available. Please {configureLink} first.'
+                                            values={{
+                                                configureLink: (
+                                                    <Link to={getEndpointsUrl()}>
+                                                        configure endpoints
+                                                    </Link>
+                                                ),
+                                            }}
+                                        />
+                                    </Alert>
+                                )}
+                                <Typography variant='subtitle2' sx={{ mb: 1 }}>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.CustomPolicies.ModelFailover.target.model'
+                                        defaultMessage='Target Model'
+                                    />
+                                </Typography>
+                                <ModelCard
+                                    modelData={config.production.targetModel}
+                                    modelList={modelList}
+                                    endpointList={productionEndpoints}
+                                    isWeightApplicable={false}
+                                    onUpdate={(updatedTargetModel) => handleTargetModelUpdate('production', 0, updatedTargetModel)}
                                 />
-                            </Alert>
+                                <Typography variant='subtitle2' sx={{ mt: 2, mb: 1 }}>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.CustomPolicies.ModelFailover.fallback.models'
+                                        defaultMessage='Fallback Models'
+                                    />
+                                </Typography>
+                                <Button
+                                    variant='outlined'
+                                    color='primary'
+                                    data-testid='add-production-model'
+                                    sx={{ ml: 1, mb: 2 }}
+                                    onClick={() => handleAddFallbackModel('production')}
+                                    disabled={isAddModelDisabled('production')}
+                                >
+                                    <AddCircle sx={{ mr: 1 }} />
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.Custom.Policies.model.add'
+                                        defaultMessage='Add Fallback Model'
+                                    />
+                                </Button>
+                                {config.production.fallbackModels.map((model, index) => (
+                                    <ModelCard
+                                        key={index}
+                                        modelData={model}
+                                        modelList={modelList}
+                                        endpointList={productionEndpoints}
+                                        isWeightApplicable={false}
+                                        onUpdate={(updatedModel) => handleFallbackModelUpdate('production', index, updatedModel)}
+                                        onDelete={() => handleFallbackModelDelete('production', index)}
+                                    />
+                                ))}
+                            </>
                         )}
-                        <Typography variant='subtitle2' sx={{ mb: 1 }}>
-                            <FormattedMessage
-                                id='Apis.Details.Policies.CustomPolicies.ModelFailover.target.model'
-                                defaultMessage='Target Model'
-                            />
-                        </Typography>
-                        <ModelCard
-                            modelData={config.production.targetModel}
-                            modelList={modelList}
-                            endpointList={productionEndpoints}
-                            isWeightApplicable={false}
-                            onUpdate={(updatedTargetModel) => handleTargetModelUpdate('production', 0, updatedTargetModel)}
-                        />
-                        <Typography variant='subtitle2' sx={{ mt: 2, mb: 1 }}>
-                            <FormattedMessage
-                                id='Apis.Details.Policies.CustomPolicies.ModelFailover.fallback.models'
-                                defaultMessage='Fallback Models'
-                            />
-                        </Typography>
-                        <Button
-                            variant='outlined'
-                            color='primary'
-                            data-testid='add-production-model'
-                            sx={{ ml: 1, mb: 2 }}
-                            onClick={() => handleAddFallbackModel('production')}
-                            disabled={isAddModelDisabled('production')}
-                        >
-                            <AddCircle sx={{ mr: 1 }} />
-                            <FormattedMessage
-                                id='Apis.Details.Policies.Custom.Policies.model.add'
-                                defaultMessage='Add Fallback Model'
-                            />
-                        </Button>
-                        {config.production.fallbackModels.map((model, index) => (
-                            <ModelCard
-                                key={index}
-                                modelData={model}
-                                modelList={modelList}
-                                endpointList={productionEndpoints}
-                                isWeightApplicable={false}
-                                onUpdate={(updatedModel) => handleFallbackModelUpdate('production', index, updatedModel)}
-                                onDelete={() => handleFallbackModelDelete('production', index)}
-                            />
-                        ))}
                     </AccordionDetails>
                 </Accordion>
                 <Accordion 
@@ -425,73 +428,76 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                         />
                     </StyledAccordionSummary>
                     <AccordionDetails>
-                        {modelList.length === 0 && (
+                        {modelList.length === 0 ? (
                             <Alert severity="warning" sx={{ mb: 2 }}>
                                 <FormattedMessage
                                     id='Apis.Details.Policies.CustomPolicies.ModelFailover.no.models'
                                     defaultMessage='No models available. Please configure models for the LLM provider.'
                                 />
                             </Alert>
-                        )}
-                        {sandboxEndpoints.length === 0 && (
-                            <Alert severity="warning" sx={{ mb: 2 }}>
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.CustomPolicies.ModelFailover.no.sandbox.endpoints'
-                                    defaultMessage='No sandbox endpoints available. Please {configureLink} first.'
-                                    values={{
-                                        configureLink: (
-                                            <Link to={getEndpointsUrl()}>
-                                                configure endpoints
-                                            </Link>
-                                        ),
-                                    }}
+                        ) : (
+                            <>
+                                {sandboxEndpoints.length === 0 && (
+                                    <Alert severity="warning" sx={{ mb: 2 }}>
+                                        <FormattedMessage
+                                            id='Apis.Details.Policies.CustomPolicies.ModelFailover.no.sandbox.endpoints'
+                                            defaultMessage='No sandbox endpoints available. Please {configureLink} first.'
+                                            values={{
+                                                configureLink: (
+                                                    <Link to={getEndpointsUrl()}>
+                                                        configure endpoints
+                                                    </Link>
+                                                ),
+                                            }}
+                                        />
+                                    </Alert>
+                                )}
+                                <Typography variant='subtitle2' sx={{ mb: 1 }}>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.CustomPolicies.ModelFailover.target.model'
+                                        defaultMessage='Target Model'
+                                    />
+                                </Typography>
+                                <ModelCard
+                                    modelData={config.sandbox.targetModel}
+                                    modelList={modelList}
+                                    endpointList={sandboxEndpoints}
+                                    isWeightApplicable={false}
+                                    onUpdate={(updatedTargetModel) => handleTargetModelUpdate('sandbox', 0, updatedTargetModel)}
                                 />
-                            </Alert>
+                                <Typography variant='subtitle2' sx={{ mt: 2, mb: 1 }}>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.CustomPolicies.ModelFailover.fallback.models'
+                                        defaultMessage='Fallback Models'
+                                    />
+                                </Typography>
+                                <Button
+                                    variant='outlined'
+                                    color='primary'
+                                    data-testid='add-sandbox-model'
+                                    sx={{ ml: 1, mb: 2 }}
+                                    onClick={() => handleAddFallbackModel('sandbox')}
+                                    disabled={isAddModelDisabled('sandbox')}
+                                >
+                                    <AddCircle sx={{ mr: 1 }} />
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.Custom.Policies.model.add'
+                                        defaultMessage='Add Fallback Model'
+                                    />
+                                </Button>
+                                {config.sandbox.fallbackModels.map((model, index) => (
+                                    <ModelCard
+                                        key={index}
+                                        modelData={model}
+                                        modelList={modelList}
+                                        endpointList={sandboxEndpoints}
+                                        isWeightApplicable={false}
+                                        onUpdate={(updatedModel) => handleFallbackModelUpdate('sandbox', index, updatedModel)}
+                                        onDelete={() => handleFallbackModelDelete('sandbox', index)}
+                                    />
+                                ))}
+                            </>
                         )}
-                        <Typography variant='subtitle2' sx={{ mb: 1 }}>
-                            <FormattedMessage
-                                id='Apis.Details.Policies.CustomPolicies.ModelFailover.target.model'
-                                defaultMessage='Target Model'
-                            />
-                        </Typography>
-                        <ModelCard
-                            modelData={config.sandbox.targetModel}
-                            modelList={modelList}
-                            endpointList={sandboxEndpoints}
-                            isWeightApplicable={false}
-                            onUpdate={(updatedTargetModel) => handleTargetModelUpdate('sandbox', 0, updatedTargetModel)}
-                        />
-                        <Typography variant='subtitle2' sx={{ mt: 2, mb: 1 }}>
-                            <FormattedMessage
-                                id='Apis.Details.Policies.CustomPolicies.ModelFailover.fallback.models'
-                                defaultMessage='Fallback Models'
-                            />
-                        </Typography>
-                        <Button
-                            variant='outlined'
-                            color='primary'
-                            data-testid='add-sandbox-model'
-                            sx={{ ml: 1, mb: 2 }}
-                            onClick={() => handleAddFallbackModel('sandbox')}
-                            disabled={isAddModelDisabled('sandbox')}
-                        >
-                            <AddCircle sx={{ mr: 1 }} />
-                            <FormattedMessage
-                                id='Apis.Details.Policies.Custom.Policies.model.add'
-                                defaultMessage='Add Fallback Model'
-                            />
-                        </Button>
-                        {config.sandbox.fallbackModels.map((model, index) => (
-                            <ModelCard
-                                key={index}
-                                modelData={model}
-                                modelList={modelList}
-                                endpointList={sandboxEndpoints}
-                                isWeightApplicable={false}
-                                onUpdate={(updatedModel) => handleFallbackModelUpdate('sandbox', index, updatedModel)}
-                                onDelete={() => handleFallbackModelDelete('sandbox', index)}
-                            />
-                        ))}
                     </AccordionDetails>
                 </Accordion>
                 <Grid container mt={2}>

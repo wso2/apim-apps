@@ -265,54 +265,57 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
                         />
                     </StyledAccordionSummary>
                     <AccordionDetails>
-                        {modelList.length === 0 && (
+                        {modelList.length === 0 ? (
                             <Alert severity="warning" sx={{ mb: 2 }}>
                                 <FormattedMessage
                                     id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.no.models'
                                     defaultMessage='No models available. Please configure models for the LLM provider.'
                                 />
                             </Alert>
+                        ) : (
+                            <>
+                                {productionEndpoints.length === 0 && (
+                                    <Alert severity="warning" sx={{ mb: 2 }}>
+                                        <FormattedMessage
+                                            id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.no.production.endpoints'
+                                            defaultMessage='No production endpoints available. Please {configureLink} first.'
+                                            values={{
+                                                configureLink: (
+                                                    <Link to={getEndpointsUrl()}>
+                                                        configure endpoints
+                                                    </Link>
+                                                ),
+                                            }}
+                                        />
+                                    </Alert>
+                                )}
+                                <Button
+                                    variant='outlined'
+                                    color='primary'
+                                    data-testid='add-production-model'
+                                    sx={{ ml: 1 }}
+                                    onClick={() => handleAddModel('production')}
+                                    disabled={isAddModelDisabled('production')}
+                                >
+                                    <AddCircle sx={{ mr: 1 }} />
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.Custom.Policies.model.add'
+                                        defaultMessage='Add Model'
+                                    />
+                                </Button>
+                                {config.production.map((model, index) => (
+                                    <ModelCard
+                                        key={index}
+                                        modelData={model}
+                                        modelList={modelList}
+                                        endpointList={productionEndpoints}
+                                        isWeightApplicable={false}
+                                        onUpdate={(updatedModel) => handleUpdate('production', index, updatedModel)}
+                                        onDelete={() => handleDelete('production', index)}
+                                    />
+                                ))}
+                            </>
                         )}
-                        {productionEndpoints.length === 0 && (
-                            <Alert severity="warning" sx={{ mb: 2 }}>
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.no.production.endpoints'
-                                    defaultMessage='No production endpoints available. Please {configureLink} first.'
-                                    values={{
-                                        configureLink: (
-                                            <Link to={getEndpointsUrl()}>
-                                                configure endpoints
-                                            </Link>
-                                        ),
-                                    }}
-                                />
-                            </Alert>
-                        )}
-                        <Button
-                            variant='outlined'
-                            color='primary'
-                            data-testid='add-production-model'
-                            sx={{ ml: 1 }}
-                            onClick={() => handleAddModel('production')}
-                            disabled={isAddModelDisabled('production')}
-                        >
-                            <AddCircle sx={{ mr: 1 }} />
-                            <FormattedMessage
-                                id='Apis.Details.Policies.Custom.Policies.model.add'
-                                defaultMessage='Add Model'
-                            />
-                        </Button>
-                        {config.production.map((model, index) => (
-                            <ModelCard
-                                key={index}
-                                modelData={model}
-                                modelList={modelList}
-                                endpointList={productionEndpoints}
-                                isWeightApplicable={false}
-                                onUpdate={(updatedModel) => handleUpdate('production', index, updatedModel)}
-                                onDelete={() => handleDelete('production', index)}
-                            />
-                        ))}
                     </AccordionDetails>
                 </Accordion>
                 <Accordion 
@@ -342,54 +345,57 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
                         />
                     </StyledAccordionSummary>
                     <AccordionDetails>
-                        {modelList.length === 0 && (
+                        {modelList.length === 0 ? (
                             <Alert severity="warning" sx={{ mb: 2 }}>
                                 <FormattedMessage
                                     id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.no.models'
                                     defaultMessage='No models available. Please configure models for the LLM provider.'
                                 />
                             </Alert>
+                        ) : (
+                            <>
+                                {sandboxEndpoints.length === 0 && (
+                                    <Alert severity="warning" sx={{ mb: 2 }}>
+                                        <FormattedMessage
+                                            id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.no.sandbox.endpoints'
+                                            defaultMessage='No sandbox endpoints available. Please {configureLink} first.'
+                                            values={{
+                                                configureLink: (
+                                                    <Link to={getEndpointsUrl()}>
+                                                        configure endpoints
+                                                    </Link>
+                                                ),
+                                            }}
+                                        />
+                                    </Alert>
+                                )}
+                                <Button
+                                    variant='outlined'
+                                    color='primary'
+                                    data-testid='add-sandbox-model'
+                                    sx={{ ml: 1 }}
+                                    onClick={() => handleAddModel('sandbox')}
+                                    disabled={isAddModelDisabled('sandbox')}
+                                >
+                                    <AddCircle sx={{ mr: 1 }} />
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.Custom.Policies.model.add'
+                                        defaultMessage='Add Model'
+                                    />
+                                </Button>
+                                {config.sandbox.map((model, index) => (
+                                    <ModelCard
+                                        key={index}
+                                        modelData={model}
+                                        modelList={modelList}
+                                        endpointList={sandboxEndpoints}
+                                        isWeightApplicable={false}
+                                        onUpdate={(updatedModel) => handleUpdate('sandbox', index, updatedModel)}
+                                        onDelete={() => handleDelete('sandbox', index)}
+                                    />
+                                ))}
+                            </>
                         )}
-                        {sandboxEndpoints.length === 0 && (
-                            <Alert severity="warning" sx={{ mb: 2 }}>
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.no.sandbox.endpoints'
-                                    defaultMessage='No sandbox endpoints available. Please {configureLink} first.'
-                                    values={{
-                                        configureLink: (
-                                            <Link to={getEndpointsUrl()}>
-                                                configure endpoints
-                                            </Link>
-                                        ),
-                                    }}
-                                />
-                            </Alert>
-                        )}
-                        <Button
-                            variant='outlined'
-                            color='primary'
-                            data-testid='add-sandbox-model'
-                            sx={{ ml: 1 }}
-                            onClick={() => handleAddModel('sandbox')}
-                            disabled={isAddModelDisabled('sandbox')}
-                        >
-                            <AddCircle sx={{ mr: 1 }} />
-                            <FormattedMessage
-                                id='Apis.Details.Policies.Custom.Policies.model.add'
-                                defaultMessage='Add Model'
-                            />
-                        </Button>
-                        {config.sandbox.map((model, index) => (
-                            <ModelCard
-                                key={index}
-                                modelData={model}
-                                modelList={modelList}
-                                endpointList={sandboxEndpoints}
-                                isWeightApplicable={false}
-                                onUpdate={(updatedModel) => handleUpdate('sandbox', index, updatedModel)}
-                                onDelete={() => handleDelete('sandbox', index)}
-                            />
-                        ))}
                     </AccordionDetails>
                 </Accordion>
                 <TextField
