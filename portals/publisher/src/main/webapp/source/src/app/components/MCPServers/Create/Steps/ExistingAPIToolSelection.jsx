@@ -88,13 +88,12 @@ const ExistingAPIToolSelection = ({
         try {
             // Use search query to get only REST APIs (excluding MCP Servers and API Products)
             // This ensures we only show APIs that can be used to create MCP Servers
-            let composeQuery = '?query=type:http';
-            
+            let composeQuery = '?query=type:http vendor:wso2';
             // Append name search if search term is provided
             if (searchTerm && searchTerm.trim()) {
                 composeQuery += ` name:${searchTerm.trim()}`;
             }
-            
+
             const composeQueryJSON = queryString.parse(composeQuery);
             composeQueryJSON.limit = 100; // Set a reasonable limit for the dropdown
             composeQueryJSON.offset = 0;
@@ -115,7 +114,7 @@ const ExistingAPIToolSelection = ({
         setLoadingOperations(true);
         try {
             const api = await API.get(apiId);
-            
+
             // Format operations in the correct structure from the beginning
             const apiOperations = [];
             if (api.operations && Array.isArray(api.operations)) {
@@ -139,7 +138,6 @@ const ExistingAPIToolSelection = ({
                     });
                 });
             }
-            
             updateAvailableOperations(apiOperations);
         } catch (error) {
             console.error('Error fetching API operations:', error);
@@ -154,12 +152,12 @@ const ExistingAPIToolSelection = ({
 
     const handleSearchInputChange = (event, newInputValue) => {
         setSearchInput(newInputValue);
-        
+
         // Clear previous timeout
         if (debouncedSearch.current) {
             clearTimeout(debouncedSearch.current);
         }
-        
+
         // Set new timeout for search
         debouncedSearch.current = setTimeout(() => {
             fetchAvailableAPIs(newInputValue);
@@ -171,7 +169,7 @@ const ExistingAPIToolSelection = ({
         if (isPreSelected) {
             return;
         }
-        
+
         setSelectedAPIOption(newValue);
         updateAvailableOperations([]);
         
@@ -184,7 +182,7 @@ const ExistingAPIToolSelection = ({
     // Fetch available APIs when component mounts
     useEffect(() => {
         fetchAvailableAPIs();
-        
+
         // Cleanup function to reset state when component unmounts
         return () => {
             processedSelectedAPIRef.current = null;

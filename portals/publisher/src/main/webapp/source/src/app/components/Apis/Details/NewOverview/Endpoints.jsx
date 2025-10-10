@@ -31,19 +31,31 @@ import API from 'AppData/api';
 
 /**
  * Get the endpoint security type based on the endpoint configuration and environment type.
- * @param {*} endpointConfig endpoint configuration
+ * @param {*} endpointConfig endpoint configuration (object or JSON string)
  * @param {*} type type of endpoint ('prod' or 'sand')
  * @returns {string|null} the endpoint security type or null if not available
  */
 const getEndpointSecurity = (endpointConfig, type) => {
+    let config = endpointConfig;
+
+    // Parse if endpointConfig is a JSON string
+    if (typeof endpointConfig === 'string') {
+        try {
+            config = JSON.parse(endpointConfig);
+        } catch (error) {
+            console.error('Error parsing endpoint configuration:', error);
+            return null;
+        }
+    }
+
     if (type === 'prod') {
-        return endpointConfig && endpointConfig.endpoint_security
-            && endpointConfig.endpoint_security.production
-            && endpointConfig.endpoint_security.production.type;
+        return config && config.endpoint_security
+            && config.endpoint_security.production
+            && config.endpoint_security.production.type;
     } else if (type === 'sand') {
-        return endpointConfig && endpointConfig.endpoint_security
-            && endpointConfig.endpoint_security.sandbox
-            && endpointConfig.endpoint_security.sandbox.type;
+        return config && config.endpoint_security
+            && config.endpoint_security.sandbox
+            && config.endpoint_security.sandbox.type;
     } else {
         return null;
     }
@@ -108,6 +120,7 @@ function Endpoints(props) {
         BASIC: 'Basic Auth',
         DIGEST: 'Digest Auth',
         OAUTH: 'OAuth2',
+        apikey: 'API Key',
     };
     const isMCPServer = api.type === MCPServer.CONSTS.MCP;
     const isPrototypedAvailable = !isMCPServer && api.endpointConfig !== null

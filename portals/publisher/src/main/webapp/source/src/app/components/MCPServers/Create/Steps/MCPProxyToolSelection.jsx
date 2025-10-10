@@ -50,6 +50,11 @@ const Root = styled('div')(({ theme }) => ({
 /**
  * MCP Proxy Tool Selection Component
  * Handles URL validation and tool selection for MCP Proxy servers
+ * @param {Object} props - Component props
+ * @param {Function} props.onValidate - Callback to inform parent about validation status
+ * @param {Object} props.apiInputs - Current API input values from parent
+ * @param {Function} props.inputsDispatcher - Dispatcher function to update API inputs in parent
+ * @returns {JSX.Element} - The MCPProxyToolSelection component
  */
 const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
     const [isValidating, setIsValidating] = useState(false);

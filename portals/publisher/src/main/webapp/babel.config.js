@@ -50,6 +50,7 @@ module.exports = {
                     },
                 ],
                 '@babel/preset-react',
+                '@babel/preset-typescript',
             ],
             plugins: [
                 '@babel/plugin-transform-class-properties',
@@ -68,6 +69,7 @@ module.exports = {
                     },
                 ],
                 '@babel/preset-react',
+                '@babel/preset-typescript',
             ],
             plugins: [
                 '@babel/plugin-transform-class-properties',

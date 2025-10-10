@@ -111,7 +111,6 @@ const MCPServerCreateDefault = (props) => {
         inputsDispatcher({ action, value });
     }
 
-
     /**
      * Set the validity of the MCP Server Inputs form
      * @param {*} isFormValid - The validity state of the form
@@ -228,7 +227,7 @@ const MCPServerCreateDefault = (props) => {
         >
             <Box sx={{ mb: 2 }}>
                 <Stepper alternativeLabel activeStep={wizardStep}>
-                    <Step>
+                    <Step key='MCPServers.Create.MCPServerCreateDefault.wizard.one'>
                         <StepLabel>
                             <FormattedMessage
                                 id='MCPServers.Create.MCPServerCreateDefault.wizard.one'
@@ -236,7 +235,7 @@ const MCPServerCreateDefault = (props) => {
                             />
                         </StepLabel>
                     </Step>
-                    <Step>
+                    <Step key='MCPServers.Create.MCPServerCreateDefault.wizard.two'>
                         <StepLabel>
                             <FormattedMessage
                                 id='MCPServers.Create.MCPServerCreateDefault.wizard.two'
@@ -244,7 +243,7 @@ const MCPServerCreateDefault = (props) => {
                             />
                         </StepLabel>
                     </Step>
-                    <Step>
+                    <Step key='MCPServers.Create.MCPServerCreateDefault.wizard.three'>
                         <StepLabel>
                             <FormattedMessage
                                 id='MCPServers.Create.MCPServerCreateDefault.wizard.three'
