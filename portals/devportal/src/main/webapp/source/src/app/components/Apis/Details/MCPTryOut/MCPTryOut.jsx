@@ -40,7 +40,7 @@ const Root = styled('div')(({ theme }) => ({
     [`& .${classes.mcpPlaygroundWrapper}`]: {
         // Apply the portal's font family to the MCP playground
         fontFamily: theme.typography.fontFamily,
-        marginTop: theme.spacing(2),
+        marginTop: theme.spacing(0),
         '& *': {
             fontFamily: theme.typography.fontFamily,
         },
