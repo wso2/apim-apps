@@ -261,6 +261,7 @@ const MCPServerCreateProxy = (props) => {
                             isMCPServer
                             mcpServerType='SERVER_PROXY'
                             settings={settings}
+                            readOnlyAPIEndpoint
                         />
                     )}
                 </Grid>
