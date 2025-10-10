@@ -70,8 +70,10 @@ export default function OperationGovernance(props) {
         document.querySelector('#react-root').scrollTop = 195;
     };
 
-    if (!componentValidator.includes('operationSecurity') && 
-        !componentValidator.includes('operationLevelRateLimiting')) {
+    const hasOperationSecurity = componentValidator.includes('operationSecurity');
+    const hasOperationRateLimiting = componentValidator.includes('operationLevelRateLimiting');
+    
+    if (!hasOperationSecurity && !hasOperationRateLimiting) {
         return null;
     }
 
@@ -93,7 +95,7 @@ export default function OperationGovernance(props) {
                 </Typography>
             </Grid>
             <Grid item xs={1} />
-            {componentValidator.includes('operationSecurity') &&
+            {hasOperationSecurity &&
                 <Grid item xs={11}>
                     <FormControl disabled={disableUpdate} component='fieldset'>
                         <FormControlLabel
@@ -139,7 +141,7 @@ export default function OperationGovernance(props) {
             }
             <Grid item md={1} />
             <Grid item md={5}>
-                {componentValidator.includes('operationLevelRateLimiting') &&
+                {hasOperationRateLimiting &&
                     <Box display='flex' flexDirection='row' alignItems='flex-start'>
                         <TextField
                             select
@@ -265,7 +267,7 @@ export default function OperationGovernance(props) {
             </Grid>
             <Grid item md={6} />
             <Grid item md={1} />
-            {componentValidator.includes('operationSecurity') &&
+            {hasOperationSecurity &&
                 <>
                     <Grid item md={7}>
                         {operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none' ? (
