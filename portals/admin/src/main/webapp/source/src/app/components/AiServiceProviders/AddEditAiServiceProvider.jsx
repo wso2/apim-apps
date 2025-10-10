@@ -754,6 +754,7 @@ export default function AddEditAiServiceProvider(props) {
                                             })}
                                             hasErrors={hasErrors}
                                             validating={validating}
+                                            providerName={state.name}
                                         />
                                     ) : (
                                         <MuiChipsInput

@@ -35,6 +35,7 @@ const ModelProviders = ({
     onModelsChange,
     hasErrors,
     validating,
+    providerName,
 }) => {
     const intl = useIntl();
 
@@ -43,7 +44,7 @@ const ModelProviders = ({
      * @param {string} providerName - The name of the AI service provider
      * @returns {object} Object with id and defaultMessage for intl.formatMessage
      */
-    const getModelPlaceholder = (providerName) => {
+    const getModelPlaceholder = () => {
         if (providerName === 'AWSBedrock') {
             return {
                 id: 'AiServiceProviders.ModelProviders.model.provider.models.placeholder.modelId',
@@ -161,7 +162,7 @@ const ModelProviders = ({
                                 });
                                 onModelsChange(updatedModels);
                             }}
-                            placeholder={intl.formatMessage(getModelPlaceholder(model.name))}
+                            placeholder={intl.formatMessage(getModelPlaceholder())}
                             data-testid={`ai-vendor-llm-models-${index}`}
                         />
                     </Grid>
@@ -200,6 +201,7 @@ ModelProviders.propTypes = {
     onModelsChange: PropTypes.func.isRequired,
     hasErrors: PropTypes.func.isRequired,
     validating: PropTypes.bool.isRequired,
+    providerName: PropTypes.string.isRequired,
 };
 
 export default ModelProviders;
