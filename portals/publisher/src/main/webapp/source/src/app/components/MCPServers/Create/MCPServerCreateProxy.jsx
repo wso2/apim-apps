@@ -216,16 +216,22 @@ const MCPServerCreateProxy = (props) => {
 
     const getSteps = () => {
         return [
-            <FormattedMessage
-                variant='caption'
-                id='MCPServers.Create.MCPServerCreateProxy.wizard.one'
-                defaultMessage='Provide MCP Server URL'
-            />,
-            <FormattedMessage
-                variant='caption'
-                id='MCPServers.Create.MCPServerCreateProxy.wizard.two'
-                defaultMessage='Create MCP Server'
-            />,
+            {
+                key: 'MCPServers.Create.MCPServerCreateProxy.wizard.one',
+                label: <FormattedMessage
+                    variant='caption'
+                    id='MCPServers.Create.MCPServerCreateProxy.wizard.one'
+                    defaultMessage='Provide MCP Server URL'
+                />
+            },
+            {
+                key: 'MCPServers.Create.MCPServerCreateProxy.wizard.two',
+                label: <FormattedMessage
+                    variant='caption'
+                    id='MCPServers.Create.MCPServerCreateProxy.wizard.two'
+                    defaultMessage='Create MCP Server'
+                />
+            },
         ];
     }
 
@@ -236,9 +242,9 @@ const MCPServerCreateProxy = (props) => {
         >
             <Box sx={{ mb: 2 }}>
                 <Stepper alternativeLabel activeStep={wizardStep}>
-                    {getSteps().map((label) => (
-                        <Step key={label}>
-                            <StepLabel className={classes.alternativeLabel}>{label}</StepLabel>
+                    {getSteps().map((step) => (
+                        <Step key={step.key}>
+                            <StepLabel className={classes.alternativeLabel}>{step.label}</StepLabel>
                         </Step>
                     ))}
                 </Stepper>
@@ -265,7 +271,7 @@ const MCPServerCreateProxy = (props) => {
                         />
                     )}
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{ mt: 3 }}>
                     <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                         <Grid item>
                             {wizardStep === 0 && (

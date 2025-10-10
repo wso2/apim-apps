@@ -204,6 +204,25 @@ function AddTool(props) {
                         value={newTool.selectedOperation}
                         onChange={(value) => {
                             newToolDispatcher({ type: 'selectedOperation', value: value || null });
+
+                            // Auto-fill name and description based on selected operation
+                            if (value) {
+                                // Use operationId if available, otherwise fall back to target
+                                let toolName = value.operationId || value.target;
+
+                                // Remove leading slash from target if present
+                                if (toolName && toolName.startsWith('/')) {
+                                    toolName = toolName.substring(1);
+                                }
+
+                                newToolDispatcher({ type: 'name', value: toolName });
+                                const description = value.description || value.summary || '';
+                                newToolDispatcher({ type: 'description', value: description });
+                            } else {
+                                // Clear name and description when operation is cleared
+                                newToolDispatcher({ type: 'name', value: '' });
+                                newToolDispatcher({ type: 'description', value: '' });
+                            }
                         }}
                         fullWidth
                         margin='dense'
@@ -216,7 +235,7 @@ function AddTool(props) {
                                 defaultMessage: 'Operation selection is required',
                             })
                         }
-                        label={isMCPServerProxy 
+                        label={isMCPServerProxy
                             ? intl.formatMessage({
                                 id: 'MCPServers.Details.Tools.AddTool.tool.label',
                                 defaultMessage: 'Tool',
@@ -226,7 +245,7 @@ function AddTool(props) {
                                 defaultMessage: 'Operation',
                             })
                         }
-                        placeholder={isMCPServerProxy 
+                        placeholder={isMCPServerProxy
                             ? intl.formatMessage({
                                 id: 'MCPServers.Details.Tools.AddTool.tool.placeholder',
                                 defaultMessage: 'Select a tool',

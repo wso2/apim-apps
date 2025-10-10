@@ -353,20 +353,24 @@ const MCPServerCreateUsingExistingAPI = (props) => {
     const getSteps = () => {
         return [
             {
-                id: 'step-1',
-                label: <FormattedMessage
-                    variant='caption'
-                    id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.one'
-                    defaultMessage='Select API and Operations for Tool Generation'
-                />
+                key: 'MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.one',
+                label: (
+                    <FormattedMessage
+                        variant='caption'
+                        id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.one'
+                        defaultMessage='Select API and Operations for Tool Generation'
+                    />
+                )
             },
             {
-                id: 'step-2',
-                label: <FormattedMessage
-                    variant='caption'
-                    id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.two'
-                    defaultMessage='Create MCP Server'
-                />
+                key: 'MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.two',
+                label: (
+                    <FormattedMessage
+                        variant='caption'
+                        id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.two'
+                        defaultMessage='Create MCP Server'
+                    />
+                )
             },
         ];
     }
@@ -378,7 +382,7 @@ const MCPServerCreateUsingExistingAPI = (props) => {
             <Box sx={{ mb: 3 }}>
                 <Stepper alternativeLabel activeStep={wizardStep}>
                     {getSteps().map((step) => (
-                        <Step key={step.id}>
+                        <Step key={step.key}>
                             <StepLabel className={classes.alternativeLabel}>{step.label}</StepLabel>
                         </Step>
                     ))}
@@ -405,7 +409,7 @@ const MCPServerCreateUsingExistingAPI = (props) => {
                         />
                     )}
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{ mt: 3 }}>
                     <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                         <Grid item>
                             {wizardStep === 0 && (
