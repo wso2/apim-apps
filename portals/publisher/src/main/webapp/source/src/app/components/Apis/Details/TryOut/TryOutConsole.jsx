@@ -91,6 +91,7 @@ const Root = styled('div')((
 
     [`& .${classes.mcpPlaygroundWrapper}`]: {
         fontFamily: theme.typography.fontFamily,
+        marginTop: theme.spacing(-2),
         '& *': {
             fontFamily: theme.typography.fontFamily,
         },
