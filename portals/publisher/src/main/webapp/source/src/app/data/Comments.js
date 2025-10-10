@@ -18,7 +18,6 @@
 import APIClientFactory from './APIClientFactory';
 import Utils from './Utils';
 import Resource from './Resource';
-import cloneDeep from 'lodash.clonedeep';
 
 /**
  * An abstract representation of an Comments
@@ -74,6 +73,23 @@ class Comments extends Resource {
     }
 
     /**
+     * Add new comment to an existing MCP Server
+     * @param mcpServerId mcpServerId of the mcp server to which the comment is added
+     * @param commentInfo comment text
+     * @param replyTo reply to comment id (optional)
+     */
+    static addCommentToMCPServer(mcpServerId, comment, replyTo) {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(),
+            Utils.CONST.API_CLIENT).client;
+        return apiClient.then(client => {
+            return client.apis.Comments.addCommentToMCPServer(
+                { mcpServerId, replyTo },
+                { requestBody: comment }, Resource._requestMetaData()
+            );
+        })
+    }
+
+    /**
      * Get all comments for a particular API
      * @param apiId api id of the api to which the comment is added
      * * TODO: remove
@@ -83,6 +99,20 @@ class Comments extends Resource {
             Utils.CONST.API_CLIENT).client;
         return apiClient.then(client => {
             return client.apis.Comments.getAllCommentsOfAPI({ apiId , limit, offset });
+        })
+    }
+
+    /**
+     * Get all comments for a particular MCP Server
+     * @param mcpServerId mcp server id of the mcp server to which the comment is added
+     * @param limit limit for pagination
+     * @param offset offset for pagination
+     */
+    static getAllCommentsOfMCPServer(mcpServerId, limit, offset) {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(),
+            Utils.CONST.API_CLIENT).client;
+        return apiClient.then(client => {
+            return client.apis.Comments.getAllCommentsOfMCPServer({ mcpServerId, limit, offset });
         })
     }
 
@@ -111,17 +141,16 @@ class Comments extends Resource {
     }
 
     /**
-     * Update a comment belongs to a particular API
-     * @param apiId apiId of the api to which the comment is added
-     * @param commentId comment id of the comment which has to be updated
-     * @param commentInfo comment text
-     * TODO: remove
+     * Delete a comment belongs to a particular MCP Server
+     * @param mcpServerId mcp server id of the mcp server to which the comment belongs to
+     * @param commentId comment id of the comment which has to be deleted
+     * @param callback callback function (optional)
      */
-    updateComment(apiId, commentId, commentInfo, callback = null) {
+    deleteCommentOfMCPServer(mcpServerId, commentId, callback = null) {
         let promise = this.client
             .then(client => {
-                return client.apis['Comment (Individual)'].put_apis__apiId__comments__commentId_(
-                    { apiId: apiId, commentId: commentId, body: commentInfo },
+                return client.apis.Comments.deleteCommentOfMCPServer(
+                    { mcpServerId: mcpServerId, commentId: commentId },
                     this._requestMetaData(),
                 );
             })
@@ -133,6 +162,22 @@ class Comments extends Resource {
         } else {
             return promise;
         }
+    }
+
+    /**
+     * Get all replies for a particular comment of a MCP Server
+     * @param {string} mcpServerId mcp server id of the mcp server to which the comment belongs to
+     * @param {string} commentId comment id of the comment for which the replies are to be fetched
+     * @param {string} limit limit for pagination
+     * @param {string} offset offset for pagination
+     * @returns {promise} promise
+     */
+    static getRepliesofCommentOfMCPServer(mcpServerId, commentId, limit, offset) {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(),
+            Utils.CONST.API_CLIENT).client;
+        return apiClient.then(client => {
+            return client.apis.Comments.getRepliesOfCommentOfMCPServer({ mcpServerId, commentId, limit, offset });
+        })
     }
 
 }

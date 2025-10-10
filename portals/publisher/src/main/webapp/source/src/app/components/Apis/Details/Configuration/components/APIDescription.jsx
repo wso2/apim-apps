@@ -24,15 +24,28 @@ import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 
 /**
- *
+ * APIDescription component renders a text field for editing API description.
+ * The description is displayed in the developer portal overview page.
  *
  * @export
- * @param {*} props
- * @returns
+ * @param {Object} props - Component props
+ * @param {Object} props.api - API object containing description and other properties
+ * @param {string} [props.api.description] - Current API description
+ * @param {Function} props.configDispatcher - Function to dispatch configuration changes
+ * @returns {JSX.Element} TextField component for API description input
  */
 function APIDescription(props) {
     const { api, configDispatcher } = props;
     const [apiFromContext] = useAPI();
+
+    const getCreateOrPublishScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), apiFromContext);
 
     return (
         <TextField
@@ -52,14 +65,11 @@ function APIDescription(props) {
             onChange={(e) => configDispatcher(
                 { action: 'description', value: e.target.value }
             )}
-            disabled={isRestricted(
-                ['apim:api_create', 'apim:api_publish'], apiFromContext
-            )}
+            disabled={isCreateOrPublishRestricted()}
             helperText={(
                 <FormattedMessage
                     id='Apis.Details.Configuration.components.Description.help'
-                    defaultMessage='This Description will be available in the 
-                    API overview page in developer portal'
+                    defaultMessage='This description will be available in the overview page in developer portal'
                 />
             )}
             style={{ marginTop: 0, paddingBottom: 0  }}

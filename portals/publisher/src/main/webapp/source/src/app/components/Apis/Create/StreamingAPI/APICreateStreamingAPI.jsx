@@ -131,6 +131,7 @@ const APICreateStreamingAPI = (props) => {
         const { action, value } = inputAction;
         switch (action) {
             case 'name':
+            case 'displayName':
             case 'version':
             case 'context':
             case 'endpoint':
@@ -183,10 +184,11 @@ const APICreateStreamingAPI = (props) => {
     function createAPI() {
         setIsCreating(true);
         const {
-            name, version, context, endpoint, protocol,
+            name, version, context, endpoint, protocol, displayName,
         } = apiInputs;
         const apiData = {
             name,
+            displayName,
             version,
             context,
             endpoint,

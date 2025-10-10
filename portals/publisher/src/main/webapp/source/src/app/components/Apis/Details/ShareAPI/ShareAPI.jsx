@@ -30,9 +30,9 @@ import API from 'AppData/api';
 import { withAPI, useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import CONSTS from 'AppData/Constants';
 import { isRestricted } from 'AppData/AuthManager';
+import { getBasePath, getTypeToDisplay } from 'AppComponents/Shared/Utils';
 import OrganizationSubscriptionPoliciesManage from './OrganizationSubscriptionPoliciesManage';
 import SharedOrganizations from './SharedOrganizations';
-
 
 const PREFIX = 'ShareAPI';
 
@@ -95,7 +95,7 @@ function ShareAPI(props) {
     const [policies, setPolicies] = useState([]);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [confirmCallback, setConfirmCallback] = useState(null);
-
+    const typeToDisplay = getTypeToDisplay(api.apiType);
 
     /**
      * Save API sharing information (visible organizations and organization policies)
@@ -206,7 +206,7 @@ function ShareAPI(props) {
             return orgPolicy;
         });
 
-        if (defaultSubscriptionPlansAdded) {
+        if (defaultSubscriptionPlansAdded && (api.gatewayVendor === 'wso2' || api.gatewayType === 'solace')) {
             setConfirmCallback(() => () => saveAPI(updatedVisibleOrganizations, updatedOrganizationPolicies));
             setOpenConfirmDialog(true);
         } else {
@@ -228,7 +228,10 @@ function ShareAPI(props) {
             <Typography variant='h4' component='h2' align='left' className={classes.mainTitle}>
                 <FormattedMessage
                     id='Apis.Details.ShareAPI.title'
-                    defaultMessage='Share API'
+                    defaultMessage='Share {type}'
+                    values={{
+                        type: typeToDisplay
+                    }}
                 />
             </Typography>
             {organizations?.list?.length === 0 ? (
@@ -238,7 +241,10 @@ function ShareAPI(props) {
                             <FormattedMessage
                                 id='Apis.Details.Configuration.components.Share.API.no.organizations'
                                 defaultMessage='No organizations are currently registered under 
-                                your current organization to share the API.'
+                                your current organization to share the {type}.'
+                                values={{
+                                    type: typeToDisplay
+                                }}
                             />
                         </FormLabel>
                     </Box>
@@ -253,7 +259,7 @@ function ShareAPI(props) {
                         selectionMode = {selectionMode}
                         setSelectionMode = {setSelectionMode}
                     />
-                    {(api.gatewayVendor === 'wso2') &&
+                    {(api.gatewayVendor === 'wso2' || api.gatewayType === 'solace') &&
                     (   
                         <>
                             {organizations?.list?.length > 0 && selectionMode !== "none" &&
@@ -271,105 +277,108 @@ function ShareAPI(props) {
                     )}
                 </div>
             )}
-            {(api.gatewayVendor === 'wso2') && (
-                <Grid
-                    container
-                    direction='row'
-                    alignItems='flex-start'
-                    spacing={1}
-                    className={classes.buttonSection}
-                >
-                    <Grid item>
-                        <Button
-                            type='submit'
-                            variant='contained'
-                            color='primary'
-                            disabled={organizations?.list?.length === 0  || updateInProgress || api.isRevision 
-                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                || (selectionMode === 'select' 
-                                    && (visibleOrganizations.length === 0 
-                                    || (visibleOrganizations.length === 1 && (visibleOrganizations[0].includes('all') 
-                                    || visibleOrganizations[0].includes('none')))))
-                            }
-                            onClick={() => handleShareAPISave()}
-                            id='share-api-save-btn'
-                        >
-                            {updateInProgress ? (
-                                <CircularProgress size={24} />
-                            ) : (
-                                <FormattedMessage
-                                    id='Apis.Details.ShareAPI.save'
-                                    defaultMessage='Save'
-                                />
-                            )}
-                        </Button>
-                    </Grid>
-                    <Grid item>
-                        <Button
-                            component={Link}
-                            to={'/apis/' + api.id + '/overview'}
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.ShareAPI.cancel'
-                                defaultMessage='Cancel'
-                            />
-                        </Button>
-                    </Grid>
-                </Grid>
-            )}
-            <Dialog
-                open={openConfirmDialog} 
-                onClose={() => setOpenConfirmDialog(false)}
-                aria-labelledby='alert-dialog-title'
-                aria-describedby='alert-dialog-description'
+            <Grid
+                container
+                direction='row'
+                alignItems='flex-start'
+                spacing={1}
+                className={classes.buttonSection}
             >
-                <DialogTitle id='alert-dialog-title'>
-                    <FormattedMessage
-                        id='Apis.Details.ShareAPI.subValidationDisabled.dialog.title'
-                        defaultMessage='Caution!'
-                    />
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText id='alert-dialog-description'>
-                        <Typography variant='subtitle1' display='block' gutterBottom>
-                            {isSubValidationDisabled ? (
-                                <FormattedMessage
-                                    id='Apis.Details.ShareAPI.subValidationDisabled.dialog.description'
-                                    defaultMessage={'Subscription validation is disabled for this API. This will allow '
-                                        + 'anyone with a valid token inside a shared organization to consume ' 
-                                        + 'the API without a subscription. Do you want to confirm?'}
-                                />
-                            ) : (
-                                <FormattedMessage
-                                    id='Apis.Details.ShareAPI.subValidationEnabled.dialog.description'
-                                    defaultMessage={'Subscription policies are not set for some of the organizations. '
-                                        + 'Root organization\'s subscription policies will be set to them. '
-                                        + 'Do you want to confirm?'}
-                                />
-                            )}
-                        </Typography>
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
+                <Grid item>
                     <Button
-                        color='primary'
+                        type='submit'
                         variant='contained'
-                        onClick={() => {
-                            setOpenConfirmDialog(false);
-                            confirmCallback();
-                        }}
-                        id='org-disable-sub-validation-yes-btn'
-                    >
-                        Yes
-                    </Button>
-                    <Button
-                        onClick={() => setOpenConfirmDialog(false)}
                         color='primary'
+                        disabled={organizations?.list?.length === 0  || updateInProgress || api.isRevision 
+                            || isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                            || (selectionMode === 'select' 
+                                && (visibleOrganizations.length === 0 
+                                || (visibleOrganizations.length === 1 && (visibleOrganizations[0].includes('all') 
+                                || visibleOrganizations[0].includes('none')))))
+                        }
+                        onClick={() => handleShareAPISave()}
+                        id='share-api-save-btn'
                     >
-                        No
+                        {updateInProgress ? (
+                            <CircularProgress size={24} />
+                        ) : (
+                            <FormattedMessage
+                                id='Apis.Details.ShareAPI.save'
+                                defaultMessage='Save'
+                            />
+                        )}
                     </Button>
-                </DialogActions>
-            </Dialog>  
+                </Grid>
+                <Grid item>
+                    <Button
+                        component={Link}
+                        to={getBasePath(api.apiType) + api.id + '/overview'}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.ShareAPI.cancel'
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
+                </Grid>
+            </Grid>
+            {(api.gatewayVendor === 'wso2' || api.gatewayType === 'solace') && (
+                <Dialog
+                    open={openConfirmDialog} 
+                    onClose={() => setOpenConfirmDialog(false)}
+                    aria-labelledby='alert-dialog-title'
+                    aria-describedby='alert-dialog-description'
+                >
+                    <DialogTitle id='alert-dialog-title'>
+                        <FormattedMessage
+                            id='Apis.Details.ShareAPI.subValidationDisabled.dialog.title'
+                            defaultMessage='Caution!'
+                        />
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id='alert-dialog-description'>
+                            <Typography variant='subtitle1' display='block' gutterBottom>
+                                {isSubValidationDisabled ? (
+                                    <FormattedMessage
+                                        id='Apis.Details.ShareAPI.subValidationDisabled.dialog.description'
+                                        defaultMessage={'Subscription validation is disabled for this {type}. '
+                                            + 'This will allow anyone with a valid token inside a shared organization ' 
+                                            + 'to consume the {type} without a subscription. Do you want to confirm?'}
+                                        values={{
+                                            type: typeToDisplay
+                                        }}
+                                    />
+                                ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.ShareAPI.subValidationEnabled.dialog.description'
+                                        defaultMessage={'Subscription policies are not set for some of the '
+                                            + 'organizations. Root organization\'s subscription policies '
+                                            + 'will be set to them. Do you want to confirm?'}
+                                    />
+                                )}
+                            </Typography>
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            color='primary'
+                            variant='contained'
+                            onClick={() => {
+                                setOpenConfirmDialog(false);
+                                confirmCallback();
+                            }}
+                            id='org-disable-sub-validation-yes-btn'
+                        >
+                            Yes
+                        </Button>
+                        <Button
+                            onClick={() => setOpenConfirmDialog(false)}
+                            color='primary'
+                        >
+                            No
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            )}  
         </Root>)
     );
 }

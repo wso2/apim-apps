@@ -37,12 +37,12 @@ describe("Deploy sample api", () => {
         cy.get("body").then($body => {
             if ($body.find("#itest-apis-welcome-msg").length > 0) {
                 cy.log("Init page");
-                cy.get('#itest-rest-api-create-menu').click();
             } else {
-                cy.log("API availble");
-                cy.get('#itest-create-api-menu-button').click();
+                cy.log("API available");
+                cy.get('[data-testid="itest-create-api-button"]').click();
             }
         });
+    cy.get('#itest-rest-api-create-menu').click();
     cy.get('#itest-id-deploy-sample').click();
     cy.get('#itest-api-name-version').should('be.visible');
     cy.url().should('contains', '/overview');

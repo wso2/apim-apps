@@ -122,6 +122,15 @@ export default function DescriptionEditor(props) {
     const [apiFromContext] = useAPI();
     const [isUpdating, setIsUpdating] = useState(false);
 
+    const getCreateScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), apiFromContext);
+
     const toggleOpen = () => {
         if (!open) {
             setContent(overview);
@@ -161,7 +170,7 @@ export default function DescriptionEditor(props) {
             <Button
                 variant='outlined'
                 color='primary'
-                disabled={api.isRevision || isRestricted(['apim:api_create'], apiFromContext)}
+                disabled={api.isRevision || isCreateRestricted()}
                 onClick={toggleOpen}
             >
                 <FormattedMessage
@@ -221,10 +230,10 @@ export default function DescriptionEditor(props) {
                                     <Box display='flex' alignItems='center' flexGrow={1} ml={1}>
                                         <Typography variant='body2' style={{ wordBreak: 'break-word' }}>
                                             <FormattedMessage
-                                                // eslint-disable-next-line max-len
-                                                id='Apis.Details.Configuration.components.DescriptionEditor.markdown.help'
-                                                // eslint-disable-next-line max-len
-                                                defaultMessage='The option allows you to replace the content of the Overview page in devportal with the content given below.
+                                                id={'Apis.Details.Configuration.components.DescriptionEditor.markdown.'
+                                                    + 'help'}
+                                                defaultMessage='The option allows you to replace the content of the 
+                                                Overview page in devportal with the content given below. 
                                                 To reset to the default overview content, clear all the text below, 
                                                 click `Update Content,` and save your changes.'
                                             />
@@ -271,23 +280,21 @@ export default function DescriptionEditor(props) {
                                     <Suspense fallback={<CircularProgress />}>
                                         <ReactMarkdown
                                             skipHtml={skipHtml}
-                                            // eslint-disable-next-line react/no-children-prop
-                                            children={markdownWithApiData}
                                             remarkPlugins={[remarkGfm]}
                                             components={{
                                                 code({ node, inline, className, children, ...propsInner }) {
                                                     const match = /language-(\w+)/.exec(className || '')
                                                     return !inline && match ? (
                                                         <SyntaxHighlighter
-                                                            // eslint-disable-next-line react/no-children-prop
-                                                            children={String(children).replace(/\n$/, '')}
                                                             style={syntaxHighlighterDarkTheme ? 
                                                                 vscDarkPlus : vs}
                                                             language={match[1]}
                                                             PreTag='div'
                                                             {...propsInner}
                                                             {...markdownSyntaxHighlighterProps}
-                                                        />
+                                                        >
+                                                            {String(children).replace(/\n$/, '')}
+                                                        </SyntaxHighlighter>
                                                     ) : (
                                                         <code className={className} {...propsInner}>
                                                             {children}
@@ -295,7 +302,9 @@ export default function DescriptionEditor(props) {
                                                     );
                                                 }
                                             }}
-                                        />                                                
+                                        >
+                                            {markdownWithApiData}
+                                        </ReactMarkdown>                                                  
                                     </Suspense>
                                 </div>
                             </Grid>

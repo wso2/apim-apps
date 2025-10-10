@@ -32,7 +32,7 @@ import LinkIcon from '@mui/icons-material/Link';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import Box from '@mui/material/Box';
-// import Link from '@mui/material/Link';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import Divider from '@mui/material/Divider';
 import { Link as RouterLink } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
@@ -224,9 +224,7 @@ export default function PublishWithoutDeploy(props) {
                             <DialogContentText id='itest-confirm-publish-text'>
                                 <Typography variant='body1' display='block' gutterBottom>
                                     <FormattedMessage
-                                        // eslint-disable-next-line max-len
                                         id='Apis.Details.LifeCycle.components.confirm.publish.message.advertise.only'
-                                        // eslint-disable-next-line max-len
                                         defaultMessage={'If you want to publish as a third party API, please provide '
                                         + 'the external endpoint and press "Publish".'}
                                     />
@@ -308,7 +306,7 @@ export default function PublishWithoutDeploy(props) {
                     variant='contained'
                     color='primary'
                     component={RouterLink}
-                    to={'/apis/' + api.id + '/deployments'}
+                    to={getBasePath(api.apiType) + api.id + '/deployments'}
                     id='deployments-btn'
                 >
                     <Box fontSize='button.fontSize' alignItems='center' display='flex' fontFamily='fontFamily'>

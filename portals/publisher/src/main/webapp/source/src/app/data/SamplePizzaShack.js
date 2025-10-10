@@ -3,6 +3,113 @@
  * if you are changing anything here!
  */
 
+// Business information
+const getBusinessInfo = () => ({
+    businessOwner: 'Jane Roe',
+    businessOwnerEmail: 'marketing@pizzashack.com',
+    technicalOwner: 'John Doe',
+    technicalOwnerEmail: 'architecture@pizzashack.com',
+});
+
+// Endpoint configuration
+const getEndpointConfig = () => ({
+    endpoint_type: 'http',
+    sandbox_endpoints: {
+        url: 'https://localhost:9443/am/sample/pizzashack/v1/api/',
+    },
+    production_endpoints: {
+        url: 'https://localhost:9443/am/sample/pizzashack/v1/api/',
+    },
+});
+
+// Operations for API
+const getAPIOperations = (defaultAdvancePolicy) => [
+    {
+        target: '/order/{orderId}',
+        verb: 'GET',
+        throttlingPolicy: defaultAdvancePolicy,
+        authType: 'Application & Application User',
+    },
+    {
+        target: '/order/{orderId}',
+        verb: 'DELETE',
+        throttlingPolicy: defaultAdvancePolicy,
+        authType: 'Application & Application User',
+    },
+    {
+        target: '/order/{orderId}',
+        verb: 'PUT',
+        throttlingPolicy: defaultAdvancePolicy,
+        authType: 'Application & Application User',
+    },
+    {
+        target: '/menu',
+        verb: 'GET',
+        throttlingPolicy: defaultAdvancePolicy,
+        authType: 'Application & Application User',
+    },
+    {
+        target: '/order',
+        verb: 'POST',
+        throttlingPolicy: defaultAdvancePolicy,
+        authType: 'Application & Application User',
+    },
+];
+
+// Operations for MCP Server
+const getMCPServerOperations = () => [
+    {
+        feature: 'TOOL',
+        backendOperationMapping: {
+            backendId: '',
+            backendOperation: {
+                target: '/order/{orderId}',
+                verb: 'GET',
+            },
+        },
+    },
+    {
+        feature: 'TOOL',
+        backendOperationMapping: {
+            backendId: '',
+            backendOperation: {
+                target: '/order/{orderId}',
+                verb: 'DELETE',
+            },
+        },
+    },
+    {
+        feature: 'TOOL',
+        backendOperationMapping: {
+            backendId: '',
+            backendOperation: {
+                target: '/order/{orderId}',
+                verb: 'PUT',
+            },
+        },
+    },
+    {
+        feature: 'TOOL',
+        backendOperationMapping: {
+            backendId: '',
+            backendOperation: {
+                target: '/menu',
+                verb: 'GET',
+            },
+        },
+    },
+    {
+        feature: 'TOOL',
+        backendOperationMapping: {
+            backendId: '',
+            backendOperation: {
+                target: '/order',
+                verb: 'POST',
+            },
+        },
+    },
+];
+
 const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
     openapi: '3.0.0',
     info: {
@@ -21,7 +128,9 @@ const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
     },
     servers: [
         {
-            url: 'https://localhost:9443/am/sample/pizzashack/v1/api'
+            url: 'https://localhost:9443/am/sample/pizzashack/v1/api',
+            description: "Production API server",
+            "x-internal": false
         }
     ],
     security: [{ default: [] }],
@@ -396,53 +505,26 @@ const getSampleAPIData = (defaultAdvancePolicy, defaultSubscriptionPolicy) => {
         policies: [defaultSubscriptionPolicy],
         securityScheme: ['oauth2'],
         visibility: 'PUBLIC',
-        businessInformation: {
-            businessOwner: 'Jane Roe',
-            businessOwnerEmail: 'marketing@pizzashack.com',
-            technicalOwner: 'John Doe',
-            technicalOwnerEmail: 'architecture@pizzashack.com',
-        },
-        endpointConfig: {
-            endpoint_type: 'http',
-            sandbox_endpoints: {
-                url: 'https://localhost:9443/am/sample/pizzashack/v1/api/',
-            },
-            production_endpoints: {
-                url: 'https://localhost:9443/am/sample/pizzashack/v1/api/',
-            },
-        },
-        operations: [
-            {
-                target: '/order/{orderId}',
-                verb: 'GET',
-                throttlingPolicy: defaultAdvancePolicy,
-                authType: 'Application & Application User',
-            },
-            {
-                target: '/order/{orderId}',
-                verb: 'DELETE',
-                throttlingPolicy: defaultAdvancePolicy,
-                authType: 'Application & Application User',
-            },
-            {
-                target: '/order/{orderId}',
-                verb: 'PUT',
-                throttlingPolicy: defaultAdvancePolicy,
-                authType: 'Application & Application User',
-            },
-            {
-                target: '/menu',
-                verb: 'GET',
-                throttlingPolicy: defaultAdvancePolicy,
-                authType: 'Application & Application User',
-            },
-            {
-                target: '/order',
-                verb: 'POST',
-                throttlingPolicy: defaultAdvancePolicy,
-                authType: 'Application & Application User',
-            },
-        ],
+        businessInformation: getBusinessInfo(),
+        endpointConfig: getEndpointConfig(),
+        operations: getAPIOperations(defaultAdvancePolicy),
+    };
+};
+
+const getSampleMCPServerData = (defaultAdvancePolicy, defaultSubscriptionPolicy) => {
+    return {
+        name: 'PizzaShackServer',
+        description: 'This is a simple MCP Server for Pizza Shack online pizza delivery store.',
+        context: '/pizzashackserver',
+        version: '1.0.0',
+        transport: ['http', 'https'],
+        tags: ['pizza'],
+        policies: [defaultSubscriptionPolicy],
+        securityScheme: ['oauth2'],
+        visibility: 'PUBLIC',
+        businessInformation: getBusinessInfo(),
+        endpointConfig: getEndpointConfig(),
+        operations: getMCPServerOperations(),
     };
 };
 
@@ -455,4 +537,4 @@ const getSampleServiceMeta = () => ({
     definitionType: 'OAS3',
 });
 
-export { getSampleOpenAPI, getSampleAPIData, getSampleServiceMeta };
+export { getSampleOpenAPI, getSampleAPIData, getSampleMCPServerData, getSampleServiceMeta };

@@ -23,6 +23,7 @@ import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import { Box } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useHistory } from 'react-router-dom';
+import { getBasePath } from 'AppUtils/utils';
 import ButtonPanel from './ButtonPanel';
 
 const PREFIX = 'copyAccessTokenStep';
@@ -50,7 +51,7 @@ const copyAccessTokenStep = (props) => {
     const history = useHistory();
     const { api, updateSubscriptionData } = useContext(ApiContext);
     const completeStep = () => {
-        updateSubscriptionData(history.push(`/apis/${api.id}/credentials`));
+        updateSubscriptionData(history.push(`${getBasePath(api.type)}${api.id}/credentials`));
     };
 
     return (

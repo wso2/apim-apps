@@ -23,32 +23,28 @@ import Button from '@mui/material/Button';
 import Icon from '@mui/material/Icon';
 import Alert from 'AppComponents/Shared/Alert';
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import Utils from 'AppData/Utils';
 
+/**
+ * Download component
+ * @param {*} props {any}
+ * @returns {JSX.Element} - The Download component
+ */
 function Download(props) {
     const { intl } = props;
 
-    const { docId, apiId, docName } = props;
-    const [isFileAvailable, setIsFileAvailable] = useState(false);
-    const [isSuccessful, setIsSuccessful] = useState(false);
+    const { docId, apiId, docName, apiType } = props;
 
-    useEffect(() => {
-        const api = new Api();
-        const promised_get_content = api.getFileForDocument(apiId, docId);
-        promised_get_content
-            .then((done) => {
-                setIsSuccessful(true);
-                setIsFileAvailable(true);
-            })
-            .catch((error) => {
-                setIsSuccessful(true);
-                setIsFileAvailable(false);
-            });
-    }, []);
     const handleDownload = () => {
-        const api = new Api();
-        const promised_get_content = api.getFileForDocument(apiId, docId);
-        promised_get_content
+        let api;
+        if (apiType === MCPServer.CONSTS.MCP) {
+            api = MCPServer;
+        } else {
+            api = new Api();
+        }
+        const promisedGetContent = api.getFileForDocument(apiId, docId);
+        promisedGetContent
             .then((response) => {
                 Utils.forceDownload(response);
             })
@@ -64,8 +60,7 @@ function Download(props) {
     };
 
     return (
-        isSuccessful &&
-        <Button onClick={handleDownload} disabled={!isFileAvailable}  aria-label={'Download ' + docName}>
+        <Button onClick={handleDownload} aria-label={'Download ' + docName}>
             <Icon>arrow_downward</Icon>
             <FormattedMessage
                 id='Apis.Details.Documents.Download.documents.listing.download'
@@ -74,10 +69,12 @@ function Download(props) {
         </Button>
     );
 }
+
 Download.propTypes = {
     apiId: PropTypes.shape({}).isRequired,
     docId: PropTypes.shape({}).isRequired,
     intl: PropTypes.shape({}).isRequired,
+    apiType: PropTypes.string.isRequired,
 };
 
 export default injectIntl(Download);

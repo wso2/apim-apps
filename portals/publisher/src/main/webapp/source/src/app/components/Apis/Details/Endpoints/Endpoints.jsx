@@ -33,6 +33,8 @@ import { isRestricted } from 'AppData/AuthManager';
 import { Alert, Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
 import AddCircle from '@mui/icons-material/AddCircle';
+import { getBasePath } from 'AppComponents/Shared/Utils';
+import MCPServerEndpoints from 'AppComponents/MCPServers/Details/Endpoints/Endpoints';
 import EndpointOverview from './EndpointOverview';
 import AIEndpoints from './AIEndpoints/AIEndpoints';
 import { createEndpointConfig, getEndpointTemplateByType } from './endpointUtils';
@@ -247,12 +249,30 @@ function Endpoints(props) {
                     serviceInfo: value
                 };
             }
+            case 'set_primary_production_endpoint': {
+                return {
+                    ...initState,
+                    primaryProductionEndpointId: value
+                };
+            }
+            case 'set_primary_sandbox_endpoint': {
+                return {
+                    ...initState,
+                    primarySandboxEndpointId: value
+                };
+            }
+            case 'reset':
+                return value;
             default: {
                 return initState;
             }
         }
     };
     const [apiObject, apiDispatcher] = useReducer(apiReducer, api.toJSON());
+
+    useEffect(() => {
+        apiDispatcher({ action: 'reset', value: api.toJSON() });
+    }, [api.id]);
 
     /**
      * Method to update the api.
@@ -704,7 +724,7 @@ function Endpoints(props) {
     };
 
     useEffect(() => {
-        if (api.type !== 'WS' && !api.isMCPServer()) {
+        if (!['WS', 'SSE'].includes(api.type) && !api.isMCPServer()) {
             api.getSwagger(apiObject.id).then((resp) => {
                 setSwagger(resp.obj);
             }).catch((err) => {
@@ -781,9 +801,7 @@ function Endpoints(props) {
                                     size='small'
                                     disabled={isRestricted(['apim:api_create'], api)}
                                     onClick={() => {
-                                        const urlPrefix 
-                                            = api.apiType === API.CONSTS.APIProduct ? 'api-products' : 'apis';
-                                        history.push(`/${urlPrefix}/${api.id}/endpoints/create`);
+                                        history.push(`${getBasePath(api.apiType)}${api.id}/endpoints/create`);
                                     }}
                                     style={{ marginLeft: '1em' }}
                                 >
@@ -795,7 +813,7 @@ function Endpoints(props) {
                                 </Button>
                             )}
                         </div>
-                        {((api.subtypeConfiguration?.subtype === 'AIAPI' || isMCPServer) && (
+                        {((api.subtypeConfiguration?.subtype === 'AIAPI') && (
                             <AIEndpoints
                                 swaggerDef={swagger}
                                 updateSwagger={changeSwagger}
@@ -806,6 +824,13 @@ function Endpoints(props) {
                                 endpointConfiguration={endpointConfiguration}
                             />
                         ))}
+                        {isMCPServer && (
+                            <MCPServerEndpoints
+                                apiObject={apiObject}
+                                endpointConfiguration={endpointConfiguration}
+                                history={history}
+                            />
+                        )}
                         {(api.subtypeConfiguration?.subtype !== 'AIAPI' && !isMCPServer) && (
                             <div>
                                 <Grid container>
@@ -880,7 +905,7 @@ function Endpoints(props) {
                                     <Grid item>
                                         <Button
                                             component={Link}
-                                            to={'/apis/' + api.id + '/overview'}
+                                            to={getBasePath(api.apiType) + api.id + '/overview'}
                                         >
                                             <FormattedMessage
                                                 id='Apis.Details.Endpoints.Endpoints.cancel'

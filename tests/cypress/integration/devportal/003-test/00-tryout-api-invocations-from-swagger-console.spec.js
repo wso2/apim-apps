@@ -43,8 +43,8 @@ describe("Tryout API invocations", () => {
                     cy.get('#left-menu-itemdeployments').should('be.visible').click();
                 });
                 cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click({force:true});
-                cy.wait(3000);
                 cy.contains('Deployments');
+                cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
                 cy.logoutFromPublisher();
                 cy.loginToDevportal(developer, password);
 

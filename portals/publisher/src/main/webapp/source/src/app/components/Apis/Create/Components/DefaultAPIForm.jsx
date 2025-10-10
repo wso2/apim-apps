@@ -16,11 +16,11 @@
  * under the License.
  */
 import React, { useState, useEffect } from 'react';
-import { styled } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
-import { InputAdornment, IconButton, Icon, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import { InputAdornment, IconButton, Icon, Select, MenuItem, InputLabel, Box } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
@@ -28,7 +28,6 @@ import { FormattedMessage } from 'react-intl';
 import APIValidation from 'AppData/APIValidation';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
-import FormLabel from '@mui/material/FormLabel';
 import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
 import { green } from '@mui/material/colors';
@@ -39,6 +38,7 @@ const gatewayTypeMap = {
     'Regular': 'wso2/synapse',
     'APK': 'wso2/apk',
     'AWS': 'AWS',
+    'Azure' :'Azure',
 }
 
 const classes = {
@@ -49,8 +49,6 @@ const classes = {
     endpointErrorChip: `${PREFIX}-endpointErrorChip`,
     iconButton: `${PREFIX}-iconButton`,
     iconButtonValid: `${PREFIX}-iconButtonValid`,
-    radioOutline: `${PREFIX}-radioOutline`,
-    newLabel: `${PREFIX}-newLabel`,
 };
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
@@ -91,32 +89,6 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
     [`& .${classes.iconButtonValid}`]: {
         padding: theme.spacing(1),
         color: green[500],
-    },
-
-    [`& .${classes.radioOutline}`]: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: '10px',
-        paddingRight: '15px',
-        marginTop: '8px',
-        marginLeft: 0,
-        marginRight: 0,
-        borderRadius: '8px',
-        transition: 'border 0.3s',
-        '&.Mui-checked': {
-            border: `2px solid ${theme.palette.primary.main}`, // Change to blue when selected
-        },
-    },
-
-    [`& .${classes.newLabel}`]: {
-        backgroundColor: 'green',
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: '0.6rem',
-        padding: '2px 4px',
-        borderRadius: '4px',
-        marginLeft: '10px',
-        display: 'inline-block',
     },
 
 }));
@@ -163,22 +135,34 @@ export default function DefaultAPIForm(props) {
         readOnlyAPIEndpoint, settings, mcpServerType,
     } = props;
 
+    const theme = useTheme();
     const [validity, setValidity] = useState({});
     const [isEndpointValid, setIsEndpointValid] = useState();
     const [statusCode, setStatusCode] = useState('');
     const [isUpdating, setUpdating] = useState(false);
     const [isErrorCode, setIsErrorCode] = useState(false);
-    const [gatewayToEnvMap, setGatewayToEnvMap] = useState({
-        'wso2/synapse': true,
-        'wso2/apk': true,
-        'AWS': true,
-    });
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
 
-    const getBorderColor = (gatewayType) => {
-        return api.gatewayType === gatewayType
-            ? '2px solid #006E9C'
-            : '2px solid gray';
+    /**
+     * Generate gradient background based on gateway name
+     * @param {string} gatewayName The name of the gateway
+     * @returns {string} CSS gradient string
+     */
+    const getGatewayIconGradient = (gatewayName) => {
+        if (!gatewayName) return theme.custom.gatewayGradients.default;
+        
+        const lowerName = gatewayName.toLowerCase();
+        const gradientMap = theme.custom.gatewayGradients;
+        
+        // Check for specific gateway names
+        for (const [name, gradient] of Object.entries(gradientMap)) {
+            if (name !== 'default' && lowerName.includes(name)) {
+                return gradient;
+            }
+        }
+        
+        // Default gradient
+        return gradientMap.default;
     };
 
     // Check the provided API validity on mount, TODO: Better to use Joi schema here ~tmkb
@@ -196,27 +180,6 @@ export default function DefaultAPIForm(props) {
                     }
                 });
             }
-
-            const settingsEnvList = settings?.environment;
-            multiGateway.forEach((gateway) => {
-                if (settings?.gatewayTypes.length >= 2 && Object
-                    .values(gatewayTypeMap).includes(gateway.value)) {
-                    for (const env of settingsEnvList) {
-                        const tmpEnv = gatewayTypeMap[env.gatewayType];
-                        if (tmpEnv === gateway.value) {
-                            setGatewayToEnvMap((prevMap) => ({
-                                ...prevMap,
-                                [gateway.value]: true,
-                            }));
-                            break;
-                        }
-                        setGatewayToEnvMap((prevMap) => ({
-                            ...prevMap,
-                            [gateway.value]: false,
-                        }));
-                    }
-                }
-            });
         }
 
     }, []);
@@ -450,6 +413,35 @@ export default function DefaultAPIForm(props) {
             });
     }
 
+    const displayNameHelperMessages = {
+        product: (
+            <FormattedMessage
+                id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.product'
+                defaultMessage='Display name for the API Product (optional)'
+            />
+        ),
+        mcp: (
+            <FormattedMessage
+                id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.mcp'
+                defaultMessage='Display name for the MCP Server (optional)'
+            />
+        ),
+        default: (
+            <FormattedMessage
+                id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.api'
+                defaultMessage='Display name for the API (optional)'
+            />
+        ),
+    };
+
+    const getDisplayNameHelperKey = () => {
+        if (isAPIProduct) return 'product';
+        if (isMCPServer) return 'mcp';
+        return 'default';
+    };
+
+    const displayNameHelperText = displayNameHelperMessages[getDisplayNameHelperKey()];
+
     return (
         <StyledGrid item md={12}>
             <form noValidate autoComplete='off'>
@@ -460,7 +452,8 @@ export default function DefaultAPIForm(props) {
                     error={Boolean(validity.name)}
                     label={(
                         <>
-                            <FormattedMessage id='Apis.Create.Components.DefaultAPIForm.name' defaultMessage='Name' />
+                            <FormattedMessage id='Apis.Create.Components.DefaultAPIForm.name'
+                                defaultMessage='Name' />
                             <sup className={classes.mandatoryStar}>*</sup>
                         </>
                     )}
@@ -482,6 +475,22 @@ export default function DefaultAPIForm(props) {
                     InputLabelProps={{
                         for: 'itest-id-apiname-input',
                     }}
+                    margin='normal'
+                    variant='outlined'
+                />
+                <TextField
+                    fullWidth
+                    id='api-display-name'
+                    label={
+                        <FormattedMessage
+                            id='Apis.Create.Components.DefaultAPIForm.display.name'
+                            defaultMessage='Display Name'
+                        />
+                    }
+                    helperText={displayNameHelperText}
+                    value={api.displayName}
+                    name='displayName'
+                    onChange={onChange}
                     margin='normal'
                     variant='outlined'
                 />
@@ -617,9 +626,12 @@ export default function DefaultAPIForm(props) {
                                             <FormattedMessage
                                                 id={'Apis.Create.Components.DefaultAPIForm.api.product.'
                                                     + 'actual.context.helper'}
-                                                defaultMessage={'API Product will be exposed in {actualContext}'
-                                                    + 'context at the gateway'}
-                                                values={{ actualContext: actualContext(api) }}
+                                                defaultMessage={'{type} will be exposed via {actualContext}'
+                                                    + ' at the gateway'}
+                                                values={{
+                                                    actualContext: actualContext(api),
+                                                    type: isAPIProduct ? 'API Product' : 'MCP Server'
+                                                }}
                                             />
                                         )
                                     }
@@ -727,81 +739,84 @@ export default function DefaultAPIForm(props) {
                     />
                 )}
                 {multiGateway && multiGateway.length > 1 &&
-                    <Grid container xs={12} ml={0} spacing={2}>
-                        <FormControl component='fieldset' fullWidth>
-                            <FormLabel sx={{ marginTop: '20px' }}>
-                                <FormattedMessage
-                                    id='Apis.Create.Components.DefaultAPIForm.select.gateway.type'
-                                    defaultMessage='Select Gateway type'
-                                />
-                            </FormLabel>
-                            <RadioGroup
-                                row
-                                aria-label='gateway-type'
-                                name='gatewayType'
-                                value={api.gatewayType}
-                                onChange={onChange}
-                            >
-                                {multiGateway.map((gateway, index) => {
-                                    const isStartOfNewRow = (index + 1) % 3 === 1;
-                                    const remainingElementCount = multiGateway.length - index;
-                                    const isLastElement = (index + 1) === multiGateway.length;
-                                    return (
-                                        <>
-                                            {
-                                                isStartOfNewRow &&
-                                                remainingElementCount === 1 &&
-                                                <Grid item xs={4} paddingRight={1} />
-                                            }
-                                            {
-                                                isStartOfNewRow &&
-                                                remainingElementCount === 2 &&
-                                                <Grid item xs={2} paddingRight={1} />
-                                            }
-                                            <Grid item xs={4}
-                                                key={gateway.value}
-                                                display='grid'
-                                                paddingRight={(index + 1) % 3 === 0 ? 0 : 1}
-                                                paddingLeft={
-                                                    (index + 1) % 3 === 1 && remainingElementCount >= 3 ? 0 : 1
-                                                }
-                                            >
-                                                <FormControlLabel
-                                                    value={gateway.value}
-                                                    className={classes.radioOutline}
-                                                    control={<Radio />}
-                                                    disabled={!gatewayToEnvMap[gateway.value]}
-                                                    label={(
-                                                        <div>
-                                                            <span>
-                                                                {gateway.name}
-                                                            </span>
-                                                            {gateway.isNew && (
-                                                                <span className={`${classes.newLabel}`}>New</span>
-                                                            )}
-                                                            <Typography variant='body2' color='textSecondary'>
-                                                                {gateway.description}
-                                                            </Typography>
-                                                        </div>
-                                                    )}
-                                                    sx={{ border: getBorderColor(gateway.value) }}
-                                                />
-                                            </Grid>
-                                            {isLastElement && ((index + 1) % 3  === 1) && <Grid item xs={4} />}
-                                            {isLastElement && ((index + 1) % 3  === 2) && <Grid item xs={2} />}
-                                        </>
-                                    );
-                                })}
-                            </RadioGroup>
-                            <FormHelperText sx={{ marginLeft: 0 }}>
-                                <FormattedMessage
-                                    id={'Apis.Create.Components.DefaultAPIForm.'
-                                        + 'select.gateway.type.helper.text'}
-                                    defaultMessage='Select the gateway type where your API will run.'
-                                />
-                            </FormHelperText>
-                        </FormControl>
-                    </Grid>
+                    <FormControl fullWidth margin='normal' variant='outlined'>
+                        <InputLabel id='gateway-type-select-label'>
+                            <FormattedMessage
+                                id='Apis.Create.Components.DefaultAPIForm.select.gateway.type'
+                                defaultMessage='Gateway type'
+                            />
+                        </InputLabel>
+                        <Select
+                            labelId='gateway-type-select-label'
+                            id='gateway-type-select'
+                            value={api.gatewayType || ''}
+                            label='Gateway type'
+                            MenuProps={{
+                                PaperProps: {
+                                    style: {
+                                        maxHeight: 300,
+                                    },
+                                },
+                            }}
+                            sx={{
+                                '& .MuiSelect-select': {
+                                    paddingTop: '12px',
+                                    paddingBottom: '12px'
+                                },
+                                '& .MuiSelect-icon': {
+                                    right: '18px'
+                                }
+                            }}
+                            onChange={(event) => onChange({
+                                target: {
+                                    name: 'gatewayType',
+                                    value: event.target.value
+                                }
+                            })}
+                        >
+                            {multiGateway.map((gateway) => (
+                                <MenuItem key={gateway.value} value={gateway.value}>
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        width: '100%',
+                                    }}>
+                                        <Box sx={{ 
+                                            width: 32,
+                                            height: 32,
+                                            borderRadius: 1.5,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            color: 'white',
+                                            fontWeight: 'bold',
+                                            marginRight: 1.5,
+                                            background: getGatewayIconGradient(gateway.name)
+                                        }}>
+                                            {gateway.name ? gateway.name.charAt(0).toUpperCase() : 'G'}
+                                        </Box>
+                                        <Box sx={{ flex: 1 }}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                <span>
+                                                    {gateway.name}
+                                                </span>
+                                            </Box>
+                                            <Typography variant='body2' color='textSecondary' component='div'>
+                                                {gateway.description}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        <FormHelperText>
+                            <FormattedMessage
+                                id={'Apis.Create.Components.DefaultAPIForm.'
+                                    + 'select.gateway.type.helper.text'}
+                                defaultMessage='Select the gateway type where your API will run.'
+                            />
+                        </FormHelperText>
+                    </FormControl>
                 }
                 {!appendChildrenBeforeEndpoint && !!children && children}
             </form>

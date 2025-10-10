@@ -27,13 +27,10 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import APIValidation from 'AppData/APIValidation';
 
 /**
- *
- *
- * @export
- * @param {*} props
- * @returns
+ * Component to configure common rate limiting configurations
+ * @param {*} props - Props containing api and configDispatcher
+ * @returns {JSX} Common rate limiting configuration component
  */
-
 export default function CommonRateLimitingForm(props) {
     const { api, configDispatcher, commonFormProps } = props;
     const [apiFromContext] = useAPI();
@@ -45,6 +42,10 @@ export default function CommonRateLimitingForm(props) {
             : ''
     );
 
+    /**
+     * Validate the input value
+     * @param {*} value - The value of the input field
+     */
     function validateValue(value) {
         const validity = commonFormProps.validator ?
             commonFormProps.validator.validate(value, { abortEarly: false }).error
@@ -58,6 +59,10 @@ export default function CommonRateLimitingForm(props) {
         }
     }
 
+    /**
+     * Handle the change event for the input field
+     * @param {*} param0 - The event object
+     */
     function handleOnChange({ target: { value } }) {
         validateValue(value);
         let tokenBasedThrottlingConfiguration = {};
@@ -90,7 +95,6 @@ export default function CommonRateLimitingForm(props) {
                     placeholder={commonFormProps.placeholder}
                     InputProps={{
                         id: `itest-id-rate-limit-label-${commonFormProps.key}`,
-                        // onBlur: handleOnChange,
                     }}
                     margin='normal'
                     variant='outlined'

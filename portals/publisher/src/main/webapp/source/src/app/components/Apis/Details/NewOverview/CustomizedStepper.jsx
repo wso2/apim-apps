@@ -28,13 +28,12 @@ import styled from '@emotion/styled';
 import IconButton from '@mui/material/IconButton';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import MCPServer from 'AppData/MCPServer';
+import { getBasePath, checkEndpointStatus } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'CustomizedStepper';
 
 const classes = {
     root: `${PREFIX}-root`,
-    button: `${PREFIX}-button`,
-    instructions: `${PREFIX}-instructions`,
     iconTrue: `${PREFIX}-iconTrue`,
     iconFalse: `${PREFIX}-iconFalse`,
     pageLinks: `${PREFIX}-pageLinks`,
@@ -72,13 +71,6 @@ const Root = styled('div')(({ theme }) => ({
                 ${theme.custom.apis.overview.stepper.completed || theme.palette.success.main}
             )`,
         },
-    },
-    [`& .${classes.button}`]: {
-        marginRight: theme.spacing(1),
-    },
-    [`& .${classes.instructions}`]: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
     },
     [`& .${classes.iconTrue}`]: {
         display: 'block',
@@ -154,21 +146,6 @@ function ColorlibStepIcon(props) {
 }
 
 /**
- * Gets the appropriate base path for API links based on API type
- * @param {Object} api - The API object
- * @returns {string} - The base path for links
- */
-function getBasePath(api) {
-    if (api.isAPIProduct()) {
-        return '/api-products/';
-    } else if (api.type === MCPServer.CONSTS.MCP) {
-        return '/mcp-servers/';
-    } else {
-        return '/apis/';
-    }
-}
-
-/**
  *
  * @returns
  */
@@ -177,44 +154,93 @@ export default function CustomizedStepper() {
     const [isUpdating, setUpdating] = useState(false);
     const [isMandatoryPropertiesAvailable, setIsMandatoryPropertiesAvailable] = useState(false);
     const [deploymentsAvailable, setDeploymentsAvailable] = useState(false);
-    const [isEndpointSecurityConfigured, setIsEndpointSecurityConfigured] = useState(false);
-    const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
+    const [endpointStatus, setEndpointStatus] = useState({
+        isEndpointReady: false,
+        isLoading: true
+    });
     const [isMCPEndpointAvailable, setMCPEndpointAvailable] = useState(false);
-    const [MCPEndpointLoading, setMCPEndpointLoading] = useState(true);
+    const [MCPEndpointLoading, setMCPEndpointLoading] = useState(false);
+    const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
     const isPrototypedAvailable = api.apiType !== API.CONSTS.APIProduct
         && api.endpointConfig !== null
         && api.endpointConfig.implementation_status === 'prototyped';
 
-    let isEndpointAvailable = false;
-    if (isMCPServer) {
-        isEndpointAvailable = isMCPEndpointAvailable;
-    } else if (api.subtypeConfiguration?.subtype === 'AIAPI') {
-        isEndpointAvailable = (api.primaryProductionEndpointId !== null || api.primarySandboxEndpointId !== null);
-    } else {
-        isEndpointAvailable = api.endpointConfig !== null;
-    }
+    const handleEndpointStatusCheck = async () => {
+        setEndpointStatus(prev => ({ ...prev, isLoading: true }));
+        
+        try {
+            let isEndpointReady = false;
+
+            if (isMCPServer) {
+                // For MCP servers, just check if endpoints are available
+                isEndpointReady = isMCPEndpointAvailable;
+            } else {
+                // Use the shared utility function for all other API types
+                isEndpointReady = await checkEndpointStatus(api);
+            }
+
+            setEndpointStatus({
+                isEndpointReady,
+                isLoading: false
+            });
+        } catch (error) {
+            console.error('Error checking endpoint status:', error);
+            setEndpointStatus({
+                isEndpointReady: false,
+                isLoading: false
+            });
+        }
+    };
+
+    useEffect(() => {
+        handleEndpointStatusCheck();
+    }, [api, isMCPEndpointAvailable]);
 
     useEffect(() => {
         if (isMCPServer) {
             setMCPEndpointLoading(true);
-            MCPServer.getMCPServerEndpoints(api.id)
-                .then((response) => {
-                    const fetchedEndpoints = response.body;
-                    if (fetchedEndpoints && fetchedEndpoints.length > 0) {
-                        setMCPEndpointAvailable(true);
-                    } else {
-                        setMCPEndpointAvailable(false);
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching MCP server endpoints:', error);
-                    setMCPEndpointAvailable(false);
-                })
-                .finally(() => {
+            if (api.isMCPServerFromExistingAPI()) {
+                // EXISTING_API subtype
+                const underlyingApiId = api.operations[0]?.apiOperationMapping?.apiId;
+                if (underlyingApiId) {
+                    const propmisedApi = API.get(underlyingApiId);
+                    propmisedApi
+                        .then((apiObj) => {
+                            if (apiObj.endpointConfig !== null) {
+                                setMCPEndpointAvailable(true);
+                            } else {
+                                setMCPEndpointAvailable(false);
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Error fetching underlying API:', error);
+                            setMCPEndpointAvailable(false);
+                        })
+                        .finally(() => {
+                            setMCPEndpointLoading(false);
+                        });
+                } else {
                     setMCPEndpointLoading(false);
-                });
-        } else {
-            setMCPEndpointLoading(false);
+                }
+            } else {
+                // DIRECT_BACKEND and SERVER_PROXY subtypes
+                MCPServer.getMCPServerEndpoints(api.id)
+                    .then((response) => {
+                        const fetchedEndpoints = response.body;
+                        if (fetchedEndpoints && fetchedEndpoints.length > 0) {
+                            setMCPEndpointAvailable(true);
+                        } else {
+                            setMCPEndpointAvailable(false);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching MCP server endpoints:', error);
+                        setMCPEndpointAvailable(false);
+                    })
+                    .finally(() => {
+                        setMCPEndpointLoading(false);
+                    });
+            }
         }
     }, [isMCPServer, api.id]);
 
@@ -253,17 +279,17 @@ export default function CustomizedStepper() {
         forceComplete.push(steps.indexOf('Publish') + 1);
     }
     let activeStep = 0;
-    if (api && (api.type === 'WEBSUB' || isEndpointAvailable)
+    if (api && (api.type === 'WEBSUB' || endpointStatus.isEndpointReady)
         && !deploymentsAvailable) {
         activeStep = 1;
-    } else if ((api && !isEndpointAvailable && api.type !== 'WEBSUB')
+    } else if ((api && !endpointStatus.isEndpointReady && api.type !== 'WEBSUB')
         || (api && !isMutualSslOnly && !isTierAvailable)) {
         activeStep = 0;
-    } else if (api && (isEndpointAvailable || api.type === 'WEBSUB') && (isTierAvailable || isMutualSslOnly)
+    } else if (api && (endpointStatus.isEndpointReady || api.type === 'WEBSUB') && (isTierAvailable || isMutualSslOnly)
         && deploymentsAvailable && (!isPublished && lifecycleState !== 'PROTOTYPED')) {
         activeStep = steps.length - 1;
     } else if ((isPublished || lifecycleState === 'PROTOTYPED') && api
-        && (isEndpointAvailable || api.type === 'WEBSUB' || isPrototypedAvailable)
+        && (endpointStatus.isEndpointReady || api.type === 'WEBSUB' || isPrototypedAvailable)
         && (isTierAvailable || isMutualSslOnly) && deploymentsAvailable) {
         activeStep = steps.length;
     }
@@ -272,23 +298,21 @@ export default function CustomizedStepper() {
         api.getSettings()
             .then((response) => {
                 const { customProperties } = response;
-                let mandatoryPropsAvailable;
                 if (customProperties && customProperties.length > 0) {
                     const requiredPropertyNames = customProperties
                         .filter(property => property.Required)
                         .map(property => property.Name);
                     if (requiredPropertyNames.length > 0) {
-                        mandatoryPropsAvailable = requiredPropertyNames.every(propertyName => {
+                        setIsMandatoryPropertiesAvailable(requiredPropertyNames.every(propertyName => {
                             const property = api.additionalProperties.find(prop => prop.name === propertyName);
                             return property && property.value !== '';
-                        });
+                        }));
                     } else {
-                        mandatoryPropsAvailable = true;
+                        setIsMandatoryPropertiesAvailable(true);
                     }
                 } else {
-                    mandatoryPropsAvailable = true;
+                    setIsMandatoryPropertiesAvailable(true);
                 }
-                setIsMandatoryPropertiesAvailable(mandatoryPropsAvailable);
             })
             .catch((error) => {
                 console.error('Error validating mandatory custom properties:', error);
@@ -305,7 +329,7 @@ export default function CustomizedStepper() {
                     result = await api.getRevisionsWithEnv(api.isRevision ? api.revisionedApiId : api.id);
                 }
 
-                if (api.apiType === API.CONSTS.APIProduct || isMCPServer) {
+                if (api.apiType === API.CONSTS.APIProduct) {
                     setDeploymentsAvailable(result.body.count > 0);
                 } else {
                     let hasApprovedDeployment = false;
@@ -331,53 +355,13 @@ export default function CustomizedStepper() {
         validateMandatoryCustomProperties();
     }, [isMCPServer]);
 
-    useEffect(() => {
-        const checkEndpointSecurity = async () => {
-            try {
-                const hasProductionEndpoint = !!api.primaryProductionEndpointId;
-                const hasSandboxEndpoint = !!api.primarySandboxEndpointId;
-                let isProductionSecure = false;
-                let isSandboxSecure = false;
-
-                if (hasProductionEndpoint) {
-                    if (api.primaryProductionEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION) {
-                        isProductionSecure = !!api.endpointConfig?.endpoint_security?.production;
-                    } else {
-                        const endpoint = await API.getApiEndpoint(api.id, api.primaryProductionEndpointId);
-                        isProductionSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.production;
-                    }
-                }
-
-                if (hasSandboxEndpoint) {
-                    if (api.primarySandboxEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX) {
-                        isSandboxSecure = !!api.endpointConfig?.endpoint_security?.sandbox;
-                    } else {
-                        const endpoint = await API.getApiEndpoint(api.id, api.primarySandboxEndpointId);
-                        isSandboxSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.sandbox;
-                    }
-                }
-
-                if (hasProductionEndpoint && hasSandboxEndpoint) {
-                    setIsEndpointSecurityConfigured(isProductionSecure && isSandboxSecure);
-                } else if (hasProductionEndpoint) {
-                    setIsEndpointSecurityConfigured(isProductionSecure);
-                } else if (hasSandboxEndpoint) {
-                    setIsEndpointSecurityConfigured(isSandboxSecure);
-                } else {
-                    setIsEndpointSecurityConfigured(false);
-                }
-            } catch (error) {
-                console.error('Error checking endpoint security:', error);
-                setIsEndpointSecurityConfigured(false);
-            }
-        };
-        checkEndpointSecurity();
-    }, [api]);
 
     /**
- * Update the LifeCycle state of the API
- *
- */
+     * Update the LifeCycle state of the API
+     *
+     * @param {string} apiId - The ID of the API
+     * @param {string} state - The new lifecycle state
+     */
     function updateLCStateOfAPI(apiId, state) {
         setUpdating(true);
         const promisedUpdate = isMCPServer ? MCPServer.updateLcState(apiId, state) : api.updateLcState(apiId, state);
@@ -600,7 +584,7 @@ export default function CustomizedStepper() {
                                     color='primary'
                                     data-testid='publish-state-button'
                                     onClick={() => updateLCStateOfAPI(api.id, 'Publish')}
-                                    disabled={((api.type !== 'WEBSUB' && !isEndpointAvailable)
+                                    disabled={((api.type !== 'WEBSUB' && !endpointStatus.isEndpointReady)
                                         || (!isMutualSslOnly && !isTierAvailable))
                                         || !deploymentsAvailable
                                         || api.isRevision || AuthManager.isNotPublisher()
@@ -638,17 +622,11 @@ export default function CustomizedStepper() {
         }
     }
     const isTestLinkDisabled = lifecycleState === 'RETIRED' || !deploymentsAvailable
-    || (!api.isAPIProduct() && !isEndpointAvailable)
+    || (!api.isAPIProduct() && !endpointStatus.isEndpointReady)
     || (!isMutualSslOnly && !isTierAvailable)
     || (api.type !== 'HTTP' && api.type !== 'SOAP' && api.type !== 'APIPRODUCT' && api.type !== 'MCP');
     const isDeployLinkDisabled =
-        (api.type !== 'WEBSUB' &&
-            !(
-                isEndpointAvailable &&
-                (api.subtypeConfiguration?.subtype === 'AIAPI'
-                    ? isEndpointSecurityConfigured
-                    : true)
-            )) ||
+        (api.type !== 'WEBSUB' && !endpointStatus.isEndpointReady) ||
         api.workflowStatus === 'CREATED' ||
         lifecycleState === 'RETIRED';
     let deployLinkToolTipTitle = '';
@@ -665,6 +643,14 @@ export default function CustomizedStepper() {
     }
 
     if (isMCPServer && MCPEndpointLoading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (endpointStatus.isLoading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                 <CircularProgress />
@@ -721,11 +707,7 @@ export default function CustomizedStepper() {
                                                     style={{ marginLeft: '2px' }}
                                                 >
                                                     <Grid item>
-                                                        {isEndpointAvailable && (
-                                                            api.subtypeConfiguration?.subtype === 'AIAPI'
-                                                                ? isEndpointSecurityConfigured
-                                                                : true
-                                                        )
+                                                        {endpointStatus.isEndpointReady
                                                             ? (
                                                                 <CheckIcon className={classes.iconTrue} />
                                                             ) 
@@ -740,7 +722,7 @@ export default function CustomizedStepper() {
                                                                 underline='none'
                                                                 className={classes.pageLinks}
                                                                 component={RouterLink}
-                                                                to={getBasePath(api) + api.id + '/endpoints'}
+                                                                to={getBasePath(api.apiType) + api.id + '/endpoints'}
                                                             >
                                                                 <Typography variant='h6'>
                                                                     <FormattedMessage
@@ -791,7 +773,7 @@ export default function CustomizedStepper() {
                                                             [classes.disabledLink]: isDeployLinkDisabled,
                                                         })}
                                                         component={RouterLink}
-                                                        to={getBasePath(api) + api.id + '/deployments'}
+                                                        to={getBasePath(api.apiType) + api.id + '/deployments'}
                                                     >
                                                         <Typography variant='h6'>
                                                             <FormattedMessage
@@ -835,8 +817,8 @@ export default function CustomizedStepper() {
                                                         component={RouterLink}
                                                         to={
                                                             isMCPServer
-                                                                ? getBasePath(api) + api.id + '/mcp-playground'
-                                                                : getBasePath(api) + api.id + '/test-console'
+                                                                ? getBasePath(api.apiType) + api.id + '/mcp-playground'
+                                                                : getBasePath(api.apiType) + api.id + '/test-console'
                                                         }
                                                     >
                                                         <Typography variant='h6'>
@@ -881,7 +863,9 @@ export default function CustomizedStepper() {
                                                                 underline='none'
                                                                 component={RouterLink}
                                                                 className={classes.pageLinks}
-                                                                to={getBasePath(api) + api.id + '/subscriptions'}
+                                                                to={
+                                                                    getBasePath(api.apiType) + api.id + '/subscriptions'
+                                                                }
                                                             >
                                                                 <Typography variant='h6'>
                                                                     <FormattedMessage

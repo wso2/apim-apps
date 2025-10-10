@@ -20,6 +20,8 @@ import APIClientFactory from './APIClientFactory';
 import Utils from './Utils';
 import Resource from './Resource';
 
+const Configurations = require('Config');
+
 /**
  * An abstract representation of an MCP Server.
  */
@@ -59,10 +61,7 @@ class MCPServer extends Resource {
                 this[key] = properties[key];
             }
         }
-        // Default the type to 'MCP' if not provided by backend response
-        if (!this.type) {
-            this.type = MCPServer.CONSTS.MCP;
-        }
+        this.type = MCPServer.CONSTS.MCP;
         this.apiType = MCPServer.CONSTS.MCP;
     }
 
@@ -108,14 +107,6 @@ class MCPServer extends Resource {
         }
 
         return copy;
-    }
-
-    /**
-     * Get the type of the MCP Server.
-     * @returns {string} The type of the MCP Server.
-     */
-    getType() {
-        return this.type;
     }
 
     /**
@@ -392,6 +383,13 @@ class MCPServer extends Resource {
 
         return promisedAPIs.then(response => {
             response.obj.apiType = MCPServer.CONSTS.MCP;
+
+            // for each MCP Server, set the apiType attribute
+            response.body.list = response.body.list.map(mcpServer => ({
+                ...mcpServer,
+                apiType: MCPServer.CONSTS.MCP,
+            }));
+
             return response;
         });
     }
@@ -647,13 +645,13 @@ class MCPServer extends Resource {
     }
 
     /**
-     * Update an endpoint of the MCP Server
+     * Update an backend of the MCP Server
      * @param {String} id UUID of the MCP Server
      * @param {String} endpointId UUID of the endpoint
-     * @param {Object} endpointBody Updated endpoint object
-     * @returns {Promise} Promise containing the updated endpoint
+     * @param {Object} backendBody Updated backend object
+     * @returns {Promise} Promise containing the updated backend
      */
-    static updateMCPServerEndpoint(id, endpointId, endpointBody) {
+    static updateMCPServerBackend(id, endpointId, backendBody) {
         const restApiClient = new APIClientFactory()
             .getAPIClient(
                 Utils.getCurrentEnvironment(),
@@ -666,30 +664,7 @@ class MCPServer extends Resource {
                     backendId: endpointId,
                 },
                 {
-                    requestBody: endpointBody,
-                },
-                this._requestMetaData(),
-            );
-        });
-    }
-
-    /**
-     * Delete an endpoint of the MCP Server
-     * @param {string} id UUID of the MCP Server
-     * @param {string} endpointId UUID of the endpoint
-     * @returns {Promise} A promise that resolves to the response of the delete operation.
-     */
-    static deleteMCPServerEndpoint(id, endpointId) {
-        const restApiClient = new APIClientFactory()
-            .getAPIClient(
-                Utils.getCurrentEnvironment(),
-                Utils.CONST.API_CLIENT
-            ).client;
-        return restApiClient.then(client => {
-            return client.apis['MCP Server Endpoints'].deleteMCPServerEndpoint( // TODO: not implemented yet
-                {
-                    mcpServerId: id,
-                    endpointId,
+                    requestBody: backendBody,
                 },
                 this._requestMetaData(),
             );
@@ -875,44 +850,75 @@ class MCPServer extends Resource {
     }
 
     /**
-     * Get the documents of an MCP Server.
-     * @param {string} mcpServerId - The ID of the MCP Server.
-     * @returns {Promise} A promise that resolves to the documents of the MCP Server.
+     * Validate if a document exists in an MCP Server
+     * @param {string} id - The ID of the MCP Server
+     * @param {string} name - The name of the document
+     * @returns {Promise} A promise that resolves to the validation result
      */
-    static getDocuments(mcpServerId) {
+    static validateDocumentExists(id, name) {
         const apiClient = new APIClientFactory()
             .getAPIClient(
                 Utils.getCurrentEnvironment(),
                 Utils.CONST.API_CLIENT
             ).client;
         return apiClient.then(client => {
-            return client.apis['MCP Server Documents'].getMCPServerDocuments(
-                {
-                    mcpServerId,
-                },
-                this._requestMetaData(),
+            return client.apis['MCP Server Documents'].validateMCPServerDocument({
+                mcpServerId: id,
+                name,
+            }, this._requestMetaData());
+        });
+    }
+
+    /**
+     * Add a document to an MCP Server
+     * @param {string} id - The ID of the MCP Server
+     * @param {string} name - The name of the document
+     * @param {Object} body - The request body containing the document data
+     * @returns {Promise} A promise that resolves to the added document
+     */
+    static addDocument(mcpServerId, body) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Documents'].addMCPServerDocument({
+                mcpServerId,
+                'Content-Type': 'application/json',
+            },
+            {
+                requestBody: body,
+            },
+            this._requestMetaData(),
             );
         });
     }
 
     /**
-     * Get the file for a document.
-     * @param {string} mcpServerId - The ID of the MCP Server.
-     * @param {string} documentId - The ID of the document.
-     * @returns {Promise} A promise that resolves to the file content of the document.
+     * Add a file to a document
+     * @param {string} mcpServerId - The ID of the MCP Server
+     * @param {string} documentId - The ID of the document
+     * @param {Object} fileToDocument - The file to add to the document
+     * @returns {Promise} A promise that resolves to the added file
      */
-    static getFileForDocument(mcpServerId, documentId) {
+    static addFileToDocument(mcpServerId, documentId, fileToDocument) {
         const apiClient = new APIClientFactory()
             .getAPIClient(
                 Utils.getCurrentEnvironment(),
                 Utils.CONST.API_CLIENT
             ).client;
         return apiClient.then(client => {
-            return client.apis['MCP Server Documents'].getMCPServerDocumentContent(
+            return client.apis['MCP Server Documents'].addMCPServerDocumentContent(
                 {
                     mcpServerId,
                     documentId,
-                    Accept: 'application/octet-stream',
+                    'Content-Type': 'application/json',
+                },
+                {
+                    requestBody: {
+                        file: fileToDocument,
+                    },
                 },
                 this._requestMetaData({
                     'Content-Type': 'multipart/form-data',
@@ -921,36 +927,14 @@ class MCPServer extends Resource {
         });
     }
 
-    /**
-     * Get the inline content of a document.
-     * @param {*} mcpServerId - The ID of the MCP Server.
-     * @param {*} documentId - The ID of the document.
-     * @returns {Promise} A promise that resolves to the inline content of the document.
-     */
-    static getInlineContentOfDocument(mcpServerId, documentId) {
-        const apiClient = new APIClientFactory()
-            .getAPIClient(
-                Utils.getCurrentEnvironment(),
-                Utils.CONST.API_CLIENT
-            ).client;
-        return apiClient.then(client => {
-            return client.apis['MCP Server Documents'].getMCPServerDocumentContent(
-                {
-                    mcpServerId,
-                    documentId,
-                },
-                this._requestMetaData(),
-            );
-        });
-    }
 
     /**
-     * Get the inline content of a document.
-     * @param {string} mcpServerId - The ID of the MCP Server.
-     * @param {string} documentId - The ID of the document.
-     * @param {string} sourceType - The source type of the document.
-     * @param {string} inlineContent - The inline content to add to the document.
-     * @returns {Promise} A promise that resolves to the inline content of the document.
+     * Add inline content to a document
+     * @param {string} mcpServerId - The ID of the MCP Server
+     * @param {string} documentId - The ID of the document
+     * @param {string} sourceType - The source type of the document
+     * @param {Object} inlineContent - The inline content to add to the document
+     * @returns {Promise} A promise that resolves to the added inline content
      */
     static addInlineContentToDocument(mcpServerId, documentId, sourceType, inlineContent) {
         const apiClient = new APIClientFactory()
@@ -974,6 +958,151 @@ class MCPServer extends Resource {
                 this._requestMetaData({
                     'Content-Type': 'multipart/form-data',
                 }),
+            );
+        });
+    }
+
+    /**
+     * Get the file for a document
+     * @param {string} mcpServerId - The ID of the MCP Server
+     * @param {string} documentId - The ID of the document
+     * @returns {Promise} A promise that resolves to the file content of the document
+     */
+    static getFileForDocument(mcpServerId, documentId,) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Documents'].getMCPServerDocumentContent(
+                {
+                    mcpServerId,
+                    documentId,
+                    Accept: 'application/octet-stream',
+                },
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+    }
+
+    /**
+     * Get the inline content of a document
+     * @param {string} mcpServerId - The ID of the MCP Server
+     * @param {string} documentId - The ID of the document
+     * @returns {Promise} A promise that resolves to the inline content of the document
+     */
+    static getInlineContentOfDocument(mcpServerId, documentId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Documents'].getMCPServerDocumentContent(
+                {
+                    mcpServerId,
+                    documentId,
+                },
+            );
+        });
+    }
+
+    /**
+     * Get the documents of an MCP Server.
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @returns {Promise} A promise that resolves to the documents of the MCP Server.
+     */
+    static getDocuments(mcpServerId) {
+        const limit = Configurations.app.documentCount || 80;
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Documents'].getMCPServerDocuments(
+                {
+                    mcpServerId,
+                    limit,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update a document
+     * @param {string} mcpServerId - The ID of the MCP Server
+     * @param {string} documentId - The ID of the document
+     * @param {Object} body - The request body containing the document data
+     * @returns {Promise} A promise that resolves to the updated document
+     */
+    static updateDocument(mcpServerId, documentId, body) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Documents'].updateMCPServerDocument(
+                {
+                    mcpServerId,
+                    documentId,
+                    'Content-Type': 'application/json',
+                },
+                {
+                    requestBody: body,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get a document
+     * @param {string} mcpServerId - The ID of the MCP Server
+     * @param {string} documentId - The ID of the document
+     * @returns {Promise} A promise that resolves to the document
+     */
+    static getDocument(mcpServerId, documentId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Documents'].getMCPServerDocument(
+                {
+                    mcpServerId,
+                    documentId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete a document
+     * @param {string} mcpServerId - The ID of the MCP Server
+     * @param {string} documentId - The ID of the document
+     * @returns {Promise} A promise that resolves to the deleted document
+     */
+    static deleteDocument(mcpServerId, documentId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Documents'].deleteMCPServerDocument(
+                {
+                    mcpServerId,
+                    documentId,
+                },
+                this._requestMetaData(),
             );
         });
     }
@@ -1060,26 +1189,149 @@ class MCPServer extends Resource {
     }
 
     /**
-     * Return the deployed revisions of this API
-     * @returns
+     * Return the deployed revisions of an MCP Server
+     * @param {string} id - The ID of the MCP Server to get the deployed revisions for.
+     * @returns {Promise} A promise that resolves to the deployed revisions of the MCP Server.
      */
-    getDeployedRevisions() {  // TODO: Change to MCP
-        if (this.isRevision) {
-            return this.client.then(client => {
-                return client.apis['API Revisions'].getAPIRevisionDeployments({
-                    apiId: this.revisionedApiId,
-                },
-                ).then(res => {
-                    return { body: res.body.filter(a => a.revisionUuid === this.id) }
-                });
-            });
-        }
-        return this.client.then(client => {
-            return client.apis['API Revisions'].getAPIRevisionDeployments({
-                apiId: this.id,
+    static getDeployedRevisions(id) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Revisions'].getMCPServerRevisionDeployments({
+                mcpServerId: id,
             },
+            this._requestMetaData(),
             );
         });
+    }
+
+    /**
+     * Generate an internal key for an MCP Server
+     * @param {*} id MCP Server ID
+     * @param {*} callback Callback function to handle the response
+     * @returns {Promise} With given callback attached to the success chain else API invoke promise.
+     */
+    static generateInternalKey(id, callback = null) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        const promiseKey = apiClient.then((client) => {
+            return client.apis['MCP Servers'].generateInternalAPIKeyMCPServer(
+                { mcpServerId: id },
+                this._requestMetaData()
+            );
+        });
+        if (callback) {
+            return promiseKey.then(callback);
+        } else {
+            return promiseKey;
+        }
+    }
+
+    /**
+     * Change displayInDevportal
+     *
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @param {string} deploymentId - The ID of the deployment.
+     * @param {Object} body - The request body containing the displayInDevportal information.
+     * @returns {Promise} A promise that resolves to the response of the displayInDevportal request.
+     */
+    static displayInDevportal(mcpServerId, deploymentId, body) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Revisions'].updateMCPServerDeployment(
+                {
+                    mcpServerId,
+                    deploymentId,
+                },
+                {
+                    requestBody: body,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add a thumbnail to an MCP Server.
+     * @param {String} mcpServerId - The ID of the MCP Server.
+     * @param {File} file - The file to be uploaded.
+     * @returns {Promise} A promise that resolves to the response of the thumbnail upload request.
+     */
+    static addThumbnail(mcpServerId, file) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Servers'].updateMCPServerThumbnail(
+                {
+                    mcpServerId,
+                    'Content-Type': file.type,
+                },
+                {
+                    requestBody: {
+                        file,
+                    },
+                },
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+    }
+
+    /**
+     * Get the thumbnail of an MCP Server.
+     * @param {String} mcpServerId - The ID of the MCP Server.
+     * @returns {Promise} A promise that resolves to the response of the thumbnail get request.
+     */
+    static getThumbnail(mcpServerId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Servers'].getMCPServerThumbnail(
+                {
+                    mcpServerId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get the subscription policies of an MCP Server.
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @returns {Promise} A promise that resolves to the subscription policies of the MCP Server.
+     */
+    static getSubscriptionPolicies(mcpServerId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        const promisePolicies = apiClient.then(client => {
+            return client.apis['MCP Servers'].getMCPServerSubscriptionPolicies(
+                {
+                    mcpServerId,
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promisePolicies.then(response => response.body);
     }
 }
 

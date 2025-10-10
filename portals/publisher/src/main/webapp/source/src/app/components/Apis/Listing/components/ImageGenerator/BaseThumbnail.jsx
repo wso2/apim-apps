@@ -21,11 +21,13 @@ import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ButtonBase from '@mui/material/ButtonBase';
-import { Link } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
+import IconButton from '@mui/material/IconButton';
+import Icon from '@mui/material/Icon';
 
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import APIProduct from 'AppData/APIProduct';
 import ImageGenerator from './ImageGenerator';
 import LetterGenerator from './LetterGenerator';
@@ -33,23 +35,13 @@ import LetterGenerator from './LetterGenerator';
 const PREFIX = 'BaseThumbnail';
 
 const classes = {
-    suppressLinkStyles: `${PREFIX}-suppressLinkStyles`,
     thumbButton: `${PREFIX}-thumbButton`,
     thumbBackdrop: `${PREFIX}-thumbBackdrop`,
     thumb: `${PREFIX}-thumb`,
-    media: `${PREFIX}-media`
+    media: `${PREFIX}-media`,
 };
 
-const Root = styled('div')((
-    {
-        theme
-    }
-) => ({
-    [`& .${classes.suppressLinkStyles}`]: {
-        textDecoration: 'none',
-        color: theme.palette.text.disabled,
-    },
-
+const Root = styled('div')(({ theme }) => ({
     [`& .${classes.thumbButton}`]: {
         position: 'absolute',
         left: 0,
@@ -75,6 +67,11 @@ const Root = styled('div')((
         opacity: 0.4,
     },
 
+    [`& .${classes.thumbWrapper}`]: {
+        position: 'relative',
+        display: 'inline-block',
+    },
+
     [`& .${classes.thumb}`]: {
         '&:hover': {
             zIndex: 1,
@@ -85,16 +82,20 @@ const Root = styled('div')((
     },
 
     [`& .${classes.media}`]: {
+        borderRadius: 5,
         // ⚠️ object-fit is not supported by IE11.
         objectFit: 'cover',
-    }
+    },
 }));
 
 const windowURL = window.URL || window.webkitURL;
 
 const BaseThumbnail = (props) => {
     const {
-        api, width, height, thumbnail: thumbnailPop,
+        api,
+        width,
+        height,
+        thumbnail: thumbnailPop,
         selectedIcon: selectedIconProp,
         color: colorProp,
         backgroundIndex: backgroundIndexProp,
@@ -102,18 +103,12 @@ const BaseThumbnail = (props) => {
         isEditable,
         onClick,
         imageUpdate,
+        onDelete,
     } = props;
-    const {
-        apiType, id, type,
-    } = api;
+    const { apiType, id, type } = api;
 
     const [iconJson, setIconJson] = useState({});
-    const {
-        key,
-        color,
-        backgroundIndex,
-        category,
-    } = iconJson;
+    const { key, color, backgroundIndex, category } = iconJson;
     const [thumbnail, setThumbnail] = useState(null);
     const [imageLoaded, setImageLoaded] = useState(false);
     const theme = useTheme();
@@ -127,40 +122,43 @@ const BaseThumbnail = (props) => {
         });
     }, [selectedIconProp, colorProp, backgroundIndexProp, categoryProp]);
 
-    useEffect(() => {
-        setThumbnail(thumbnailPop);
-    }, [thumbnailPop]);
     /**
      * Load the image from the backend and keeps in the component state
      */
     useEffect(() => {
         if (type !== 'DOC') {
-            if ((api.hasThumbnail !== null && api.hasThumbnail)
-                || (apiType === Api.CONSTS.APIProduct)) {
-                const promisedThumbnail = apiType === Api.CONSTS.APIProduct
-                    ? new APIProduct().getAPIProductThumbnail(id)
-                    : new Api().getAPIThumbnail(id);
+            if ((api.hasThumbnail !== null && api.hasThumbnail) || apiType === Api.CONSTS.APIProduct) {
+                let promisedThumbnail;
+                if (apiType === Api.CONSTS.APIProduct) {
+                    promisedThumbnail = new APIProduct().getAPIProductThumbnail(id);
+                } else if (apiType === MCPServer.CONSTS.MCP) {
+                    promisedThumbnail = MCPServer.getThumbnail(id);
+                } else {
+                    promisedThumbnail = new Api().getAPIThumbnail(id);
+                }
 
-                promisedThumbnail.then((response) => {
-                    if (response && response.data) {
-                        if (response.headers['content-type'] === 'application/json') {
+                promisedThumbnail
+                    .then((response) => {
+                        if (response && response.data) {
+                            if (response.headers['content-type'] === 'application/json') {
+                                setThumbnail(null);
+                                setIconJson(response.body);
+                            } else if (response.headers['content-type'] === 'image/svg+xml') {
+                                const blob = new Blob([response.data], { type: 'image/svg+xml' });
+                                const url = windowURL.createObjectURL(blob);
+                                setThumbnail(url);
+                            } else if (response && response.data.size > 0) {
+                                const url = windowURL.createObjectURL(response.data);
+                                setThumbnail(url);
+                            }
+                        } else if (response && response.data === '') {
                             setThumbnail(null);
-                            setIconJson(response.body);
-                        } else if (response.headers['content-type'] === 'image/svg+xml') {
-                            const blob = new Blob([response.data], { type: 'image/svg+xml' });
-                            const url = windowURL.createObjectURL(blob);
-                            setThumbnail(url);
-                        } else if (response && response.data.size > 0) {
-                            const url = windowURL.createObjectURL(response.data);
-                            setThumbnail(url);
+                            setIconJson({ key: null });
                         }
-                    } else if (response && response.data === '') {
-                        setThumbnail(null);
-                        setIconJson({ key: null });
-                    }
-                }).finally(() => {
-                    setImageLoaded(true);
-                });
+                    })
+                    .finally(() => {
+                        setImageLoaded(true);
+                    });
             } else {
                 setThumbnail(null);
                 setIconJson({ key: null });
@@ -170,6 +168,11 @@ const BaseThumbnail = (props) => {
             setImageLoaded(true);
         }
     }, [imageUpdate]);
+
+    useEffect(() => {
+        setThumbnail(thumbnailPop);
+    }, [thumbnailPop]);
+
     if (!imageLoaded) {
         return (
             <Root className='image-load-frame'>
@@ -178,25 +181,7 @@ const BaseThumbnail = (props) => {
             </Root>
         );
     }
-    let overviewPath = '';
-    if (apiType) {
-        if (apiType === Api.CONSTS.APIProduct) {
-            overviewPath = `/api-products/${api.id}/overview`;
-        } else if (type === 'MCP') { // change to constant from MCPServer.js
-            overviewPath = `/mcp-servers/${api.id}/overview`;
-        } else {
-            overviewPath = `/apis/${api.id}/overview`;
-        }
-    } else {
-        overviewPath = `/apis/${api.apiUUID}/documents/${api.id}/details`;
-    }
-    let view = (
-        <LetterGenerator
-            width={width}
-            height={height}
-            artifact={api}
-        />
-    );
+    let view = <LetterGenerator width={width} height={height} artifact={api} />;
     // If configured the thumbnail variant as `image` or migrated from old thumbnail
     if (variant === 'image' || key) {
         view = (
@@ -218,15 +203,15 @@ const BaseThumbnail = (props) => {
     return (
         <Root>
             {isEditable ? (
-                <ButtonBase
-                    focusRipple
-                    className={classes.thumb}
-                    onClick={onClick}
-                    aria-label='edit api thumbnail'
-                    data-testid='edit-api-thumbnail-button'
-                >
-                    {thumbnail
-                        ? (
+                <div className={classes.thumbWrapper}>
+                    <ButtonBase
+                        focusRipple
+                        className={classes.thumb}
+                        onClick={onClick}
+                        aria-label='edit api thumbnail'
+                        data-testid='edit-api-thumbnail-button'
+                    >
+                        {thumbnail ? (
                             <img
                                 height={height}
                                 width={width}
@@ -234,43 +219,58 @@ const BaseThumbnail = (props) => {
                                 alt='API Thumbnail'
                                 className={classes.media}
                             />
-                        )
-                        : view}
-                    <span className={classes.thumbBackdrop} />
-                    <span className={classes.thumbButton}>
-                        <Typography component='span' variant='subtitle1' color='inherit'>
-                            <EditIcon />
-                        </Typography>
-                    </span>
-                </ButtonBase>
+                        ) : (
+                            view
+                        )}
+                        <span className={classes.thumbBackdrop} />
+                        <span className={classes.thumbButton}>
+                            <Typography component='span' variant='subtitle1' color='inherit'>
+                                <EditIcon />
+                            </Typography>
+                        </span>
+                    </ButtonBase>
+                    {thumbnail && (
+                        <IconButton
+                            fontSize='small'
+                            onClick={onDelete} 
+                            aria-label='delete thumbnail'
+                            sx={{ mt: 9, p:0.5, position:'absolute'}}
+                        >
+                            <Icon color='primary'>delete_forever</Icon>
+                        </IconButton>
+                    )}
+                </div>
             ) : (
-                <Link className={classes.suppressLinkStyles} to={overviewPath} aria-label={api.name + ' Thumbnail'}>
-                    {thumbnail
-                        ? (
-                            <img
-                                height={height}
-                                width={width}
-                                src={thumbnail}
-                                alt='API Thumbnail'
-                                className={classes.media}
-                            />
-                        )
-                        : view}
-                </Link>
+                <>
+                    {thumbnail ? (
+                        <img
+                            height={height}
+                            width={width}
+                            src={thumbnail}
+                            alt='API Thumbnail'
+                            className={classes.media}
+                        />
+                    ) : (
+                        view
+                    )}
+                </>
             )}
         </Root>
     );
 };
 BaseThumbnail.defaultProps = {
-    height: 190,
-    width: 250,
+    height: 100,
+    width: 100,
+    imageUpdate: 0,
     isEditable: false,
+    onDelete: () => {},
 };
 BaseThumbnail.propTypes = {
     api: PropTypes.shape({}).isRequired,
     height: PropTypes.number,
     width: PropTypes.number,
     isEditable: PropTypes.bool,
-    imageUpdate: PropTypes.number.isRequired,
+    imageUpdate: PropTypes.number,
+    onDelete: PropTypes.func,
 };
 export default BaseThumbnail;

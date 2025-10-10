@@ -18,7 +18,9 @@ import DeleteApiButton from 'AppComponents/Apis/Details/components/DeleteApiButt
 import Configurations from 'Config';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import EmailIcon from '@mui/icons-material/Email';
-
+import { getBasePath } from 'AppComponents/Shared/Utils';
+import MCPServer from 'AppData/MCPServer';
+import APIProduct from 'AppData/APIProduct';
 import getIcon from './ImageUtils';
 
 const PREFIX = 'APIThumbPlain';
@@ -34,7 +36,8 @@ const classes = {
     imageDisplay: `${PREFIX}-imageDisplay`,
     truncateProvider: `${PREFIX}-truncateProvider`,
     thumbRightBy: `${PREFIX}-thumbRightBy`,
-    thumbRightByLabel: `${PREFIX}-thumbRightByLabel`
+    thumbRightByLabel: `${PREFIX}-thumbRightByLabel`,
+    ribbon: `${PREFIX}-ribbon`,
 };
 
 const StyledCard = styled(Card)((
@@ -138,9 +141,8 @@ const StyledCard = styled(Card)((
         color: '#616161',
         position: 'absolute',
         padding: '5px',
-        width: '80px',
         zIndex: 3,
-        textAlign: 'center',
+        textAlign: 'left',
         textTransform: 'uppercase',
     },
 }));
@@ -160,7 +162,7 @@ function APIThumbPlain(props) {
     } = props;
     const { custom: { thumbnail } } = theme;
     const {
-        name, version, context, provider, gatewayVendor, gatewayType
+        name, version, context, provider, gatewayVendor, gatewayType, displayName
     } = api;
 
     const [imageConf, setImageConf] = useState({
@@ -177,10 +179,24 @@ function APIThumbPlain(props) {
     const [businessOpenPopover, setBusinessOpenPopover] = useState(false);
     const [technicalOpenPopover, setTechnicalOpenPopover] = useState(false);
 
-    useEffect(() => {
-        const restApi = new Api();
+    // If the the data is coming throught the API/APIProduct/MCP Listing path, 
+    // the apiType attribute will be automatically added before coming here.
+    // If apiType is missing, that means the data is coming from the search path
+    // There we can take the api.type as the apiType
+    if (!api.apiType) {
+        api.apiType = api.type;
+    }
+    const urlPrefix = getBasePath(api.apiType);
 
-        const promisedThumbnail = restApi.getAPIThumbnail(api.id);
+    useEffect(() => {
+        let promisedThumbnail;
+        if (api.apiType === Api.CONSTS.APIProduct) {
+            promisedThumbnail = new APIProduct().getAPIProductThumbnail(api.id);
+        } else if (api.apiType === MCPServer.CONSTS.MCP) {
+            promisedThumbnail = MCPServer.getThumbnail(api.id);
+        } else {
+            promisedThumbnail = new Api().getAPIThumbnail(api.id);
+        }
 
         promisedThumbnail.then((response) => {
             if (response && response.data) {
@@ -244,7 +260,7 @@ function APIThumbPlain(props) {
     };
 
     const isAccessRestricted = () => {
-        if (api.isMCPServer()) {
+        if (api.apiType === MCPServer.CONSTS.MCP) {
             return isRestricted(
                 ['apim:mcp_server_delete', 'apim:mcp_server_manage', 'apim:mcp_server_import_export'],
                 api
@@ -256,7 +272,7 @@ function APIThumbPlain(props) {
 
     if (!showInfo) {
         return (
-            <Link to={'/apis/' + api.id} aria-hidden='true'>
+            <Link to={urlPrefix + api.id} aria-hidden='true'>
                 <Box display='flex'>
                     <Box>
                         {!thumbnail.defaultApiImage && ImageView}
@@ -279,10 +295,13 @@ function APIThumbPlain(props) {
                 {api.advertiseOnly && (
                     <div className={classes.ribbon}>third party</div>
                 )}
+                {api.subtype === 'AIAPI' && (
+                    <div className={classes.ribbon}>AI API</div>
+                )}
             </Box>
-            <CardContent>
+            <CardContent style={{ padding: '16px' }}>
                 <Box id={api.name}>
-                    <Link to={'/apis/' + api.id + '/overview'} aria-hidden='true'>
+                    <Link to={urlPrefix + api.id + '/overview'} aria-hidden='true'>
                         <Box display='flex'>
                             <Box>
                                 {!thumbnail.defaultApiImage && ImageView}
@@ -295,7 +314,7 @@ function APIThumbPlain(props) {
                                 title={name}
                                 className={classes.thumbHeader}
                             >
-                                {name}
+                                {displayName || name}
                             </Typography>
                         </Box>
 
@@ -349,21 +368,20 @@ function APIThumbPlain(props) {
                         }
                     </Box>
                 </Box>
-                <Box display='flex' mt={2}>
+                <Box display='flex' mt={2} gap={2}>
                     <Box flex={1}>
                         <Typography variant='subtitle1'>{version}</Typography>
-                        <Typography variant='caption' gutterBottom align='left' className={classes.caption}>
+                        <Typography variant='caption' gutterBottom className={classes.caption}>
                             <FormattedMessage defaultMessage='Version' id='Apis.Listing.ApiThumb.version' />
                         </Typography>
                     </Box>
-                    <Box>
-                        <Typography variant='subtitle1' align='right' className={classes.contextBox}>
+                    <Box flex={1}>
+                        <Typography variant='subtitle1' className={classes.contextBox}>
                             {context}
                         </Typography>
                         <Typography
                             variant='caption'
                             gutterBottom
-                            align='right'
                             className={classes.caption}
                             Component='div'
                         >
@@ -531,7 +549,7 @@ function APIThumbPlain(props) {
                         <hr />
                     </>
                 )}
-                <Box display='flex' mt={2}>
+                <Box display='flex' mt={2} alignItems='center'>
                     <Box flex={1}>
                         {!isAPIProduct && (
                             <Chip
@@ -566,7 +584,7 @@ function APIThumbPlain(props) {
                                 color='primary'
                             />
                         )}
-                        {(api.type === 'WEBSUB') && (api.gatewayVendor === 'solace') && (
+                        {(api.type === 'WEBSUB') && (api.gatewayType === 'solace') && (
                             <Chip
                                 size='small'
                                 classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}

@@ -148,6 +148,23 @@ const AdvertiseInfo = (props) => {
         validateUrl(advertiseInfo.originalDevPortalUrl)
     );
 
+    const getCreateScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const getCreateOrPublishScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), apiFromContext);
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), apiFromContext);
+
     const handleOnChange = (event) => {
         const { name, value } = event.target;
         switch (name) {
@@ -209,8 +226,7 @@ const AdvertiseInfo = (props) => {
                             style={{ display: 'flow-root' }}
                         >
                             <FormControlLabel
-                                disabled={isRestricted(['apim:api_create'], apiFromContext)
-                                    || type === 'ASYNC' || isDeployed}
+                                disabled={isCreateRestricted() || type === 'ASYNC' || isDeployed}
                                 value
                                 control={<Radio color='primary' />}
                                 label={(
@@ -221,8 +237,7 @@ const AdvertiseInfo = (props) => {
                                 )}
                             />
                             <FormControlLabel
-                                disabled={isRestricted(['apim:api_create'], apiFromContext)
-                                    || type === 'ASYNC' || isDeployed}
+                                disabled={isCreateRestricted() || type === 'ASYNC' || isDeployed}
                                 value={false}
                                 control={<Radio color='primary' />}
                                 label={(
@@ -308,7 +323,7 @@ const AdvertiseInfo = (props) => {
                             fullWidth
                             margin='normal'
                             onChange={handleOnChange}
-                            disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
+                            disabled={isCreateOrPublishRestricted()}
                             error={!isValidApiExternalProductionEndpoint}
                             helperText={isValidApiExternalProductionEndpoint ? (
                                 <FormattedMessage
@@ -340,7 +355,7 @@ const AdvertiseInfo = (props) => {
                             fullWidth
                             margin='normal'
                             onChange={handleOnChange}
-                            disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
+                            disabled={isCreateOrPublishRestricted()}
                             error={!isValidApiExternalSandboxEndpoint}
                             helperText={isValidApiExternalSandboxEndpoint ? (
                                 <FormattedMessage
@@ -370,7 +385,7 @@ const AdvertiseInfo = (props) => {
                             fullWidth
                             margin='normal'
                             onChange={handleOnChange}
-                            disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
+                            disabled={isCreateOrPublishRestricted()}
                             error={!isValidOriginalDevPortalUrl}
                             helperText={isValidOriginalDevPortalUrl ? (
                                 <FormattedMessage

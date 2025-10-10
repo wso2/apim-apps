@@ -35,6 +35,7 @@ import CONSTS from 'AppData/Constants';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { isRestricted } from 'AppData/AuthManager';
+import { getBasePath, getTypeToDisplay } from 'AppComponents/Shared/Utils';
 import SubscriptionsTable from './SubscriptionsTable';
 import SubscriptionPoliciesManage from './SubscriptionPoliciesManage';
 import SubscriptionAvailability from './SubscriptionAvailability';
@@ -84,6 +85,16 @@ function Subscriptions(props) {
     const { settings } = useAppContext();
     const isSubValidationDisabled = api.policies && api.policies.length === 1 
     && api.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
+    const typeToDisplay = getTypeToDisplay(api.apiType);
+
+    const getAllowedScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isAccessRestricted = () => isRestricted(getAllowedScopes(), api);
 
     /**
      * Save subscription information (policies, subscriptionAvailability, subscriptionAvailableTenants)
@@ -160,22 +171,25 @@ function Subscriptions(props) {
     }
     return (
         (<Root>
-            {(api.gatewayVendor === 'wso2') &&
-            (   
-                <SubscriptionPoliciesManage
-                    api={api}
-                    policies={policies}
-                    setPolices={setPolices}
-                    subValidationDisablingAllowed={settings.allowSubscriptionValidationDisabling}
-                />
-            )}
+            {(api.gatewayVendor === 'wso2' || api.gatewayType === 'solace') &&
+                (
+                    <SubscriptionPoliciesManage
+                        api={api}
+                        policies={policies}
+                        setPolices={setPolices}
+                        subValidationDisablingAllowed={settings.allowSubscriptionValidationDisabling}
+                    />
+                )}
             {isSubValidationDisabled && (
                 <Box mb={2} mt={2}>
                     <MUIAlert severity='warning'>
                         <AlertTitle>
                             <FormattedMessage
                                 id='Apis.Details.Subscriptions.Subscriptions.validation.disabled'
-                                defaultMessage='Subscription validation is disabled for this API'
+                                defaultMessage='Subscription validation is disabled for this {type}'
+                                values={{
+                                    type: typeToDisplay
+                                }}
                             />
                         </AlertTitle>
                     </MUIAlert>
@@ -191,7 +205,7 @@ function Subscriptions(props) {
                     setTenantList={setTenantList}
                 />
             )}
-            {(api.gatewayVendor === 'wso2') && (
+            {(api.gatewayVendor === 'wso2' || api.gatewayType === 'solace') && (
                 <Grid
                     container
                     direction='row'
@@ -204,8 +218,7 @@ function Subscriptions(props) {
                             type='submit'
                             variant='contained'
                             color='primary'
-                            disabled={updateInProgress || api.isRevision 
-                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            disabled={updateInProgress || api.isRevision || isAccessRestricted()}
                             onClick={() => handleSubscriptionSave()}
                             id='subscriptions-save-btn'
                         >
@@ -222,7 +235,7 @@ function Subscriptions(props) {
                     <Grid item>
                         <Button
                             component={Link}
-                            to={'/apis/' + api.id + '/overview'}
+                            to={getBasePath(api.apiType) + api.id + '/overview'}
                         >
                             <FormattedMessage
                                 id='Apis.Details.Subscriptions.Subscriptions.cancel'
@@ -252,9 +265,12 @@ function Subscriptions(props) {
                                 id='Apis.Details.Subscriptions.Subscriptions.subValidationDisabled.dialog.description'
                                 defaultMessage={
                                     'Deselcting all the subscription policies will disable subscription validation' 
-                                    + ' for this API. This will allow anyone with a valid token to consume the API' 
-                                    + ' without a subscription.'
+                                    + ' for this {type}. This will allow anyone with a valid token to consume' 
+                                    + ' the {type} without a subscription.'
                                 }
+                                values={{
+                                    type: typeToDisplay
+                                }}
                             />
                         </Typography>
                         <Typography variant='subtitle2' display='block' gutterBottom>

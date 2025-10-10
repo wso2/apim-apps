@@ -35,6 +35,7 @@ import Chip from '@mui/material/Chip';
 import { red } from '@mui/material/colors/';
 import Alert from 'AppComponents/Shared/Alert';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'AccessControl';
 
@@ -174,6 +175,14 @@ export default function AccessControl(props) {
         }
     };
 
+    const isAccessRestricted = () => {
+        if (apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return isRestricted(['apim:mcp_server_create'], apiFromContext);
+        } else {
+            return isRestricted(['apim:api_create'], apiFromContext);
+        }
+    }
+
     return (
         (<Root>
             <Box style={{ position: 'relative', marginBottom: -12 }}>
@@ -203,7 +212,7 @@ export default function AccessControl(props) {
                     )}
                     margin='normal'
                     variant='outlined'
-                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                    disabled={isAccessRestricted()}
                 >
                     <MenuItem value='NONE'>
                         <FormattedMessage
@@ -231,7 +240,11 @@ export default function AccessControl(props) {
                                 {'  '}
                                 <FormattedMessage
                                     id='Apis.Details.Configuration.components.AccessControl.tooltip.all.desc'
-                                    defaultMessage='The API is viewable, modifiable by all the publishers and creators.'
+                                    defaultMessage={'The {type} is viewable, modifiable by all the ' +
+                                        'publishers and creators.'}
+                                    values={{
+                                        type: getTypeToDisplay(api.apiType)
+                                    }}
                                 />
                                 <br />
                                 <br />
@@ -245,8 +258,11 @@ export default function AccessControl(props) {
                                 <FormattedMessage
                                     id={'Apis.Details.Configuration.components.AccessControl.tooltip.restrict'
                                         + '.desc'}
-                                    defaultMessage={'The API can be viewed and modified only by specific'
+                                    defaultMessage={'The {type} can be viewed and modified only by specific'
                                     + ' publishers and creators with the roles that you specify'}
+                                    values={{
+                                        type: getTypeToDisplay(api.apiType)
+                                    }}
                                 />
                             </p>
                         </>
@@ -271,7 +287,7 @@ export default function AccessControl(props) {
                                 defaultMessage='Roles'
                             />
                         )}
-                        disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                        disabled={isAccessRestricted()}
                         value={api.accessControlRoles.concat(invalidRoles)}
                         alwaysShowPlaceholder={false}
                         placeholder='Enter roles and press Enter'
@@ -291,7 +307,7 @@ export default function AccessControl(props) {
                                 key={key}
                                 size='small'
                                 label={value}
-                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                disabled={isAccessRestricted()}
                                 onDelete={() => {
                                     handleRoleDeletion(value);
                                 }}

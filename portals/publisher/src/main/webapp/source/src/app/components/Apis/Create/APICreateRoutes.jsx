@@ -21,6 +21,7 @@ import { Route, Switch } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { Progress } from 'AppComponents/Shared';
+import MCPRouteGuard from 'AppComponents/Shared/MCPRouteGuard';
 import APILanding from 'AppComponents/Apis/Listing/Landing';
 import MCPServerLanding from 'AppComponents/MCPServers/Landing';
 import MCPServerCreateDefault from 'AppComponents/MCPServers/Create/MCPServerCreateDefault';
@@ -65,7 +66,13 @@ let gatewayDetails = {
         value: 'AWS',
         name: 'AWS Gateway', 
         description: 'API gateway offered by AWS cloud.', 
-        isNew: true 
+        isNew: false 
+    },
+    'Azure': { 
+        value: 'Azure',
+        name: 'Azure Gateway', 
+        description: 'API gateway offered by Azure cloud.', 
+        isNew: false 
     }
 };
 
@@ -89,7 +96,12 @@ function APICreateRoutes() {
         if (!isLoading) {
             setApiTypes(publisherSettings.gatewayFeatureCatalog.apiTypes);
             const data = publisherSettings.gatewayTypes;
-            const updatedData = data.map(item => {
+            const settingsEnvList = publisherSettings.environment;
+            const filteredEnvironments = settingsEnvList ? settingsEnvList
+                .filter(env => env?.mode !== 'READ_ONLY') : [];
+            const distinctGatewayTypes = [...new Set(filteredEnvironments.map(env => env.gatewayType))];
+            const commonGatewayTypes = distinctGatewayTypes.filter(type => data.includes(type));
+            const updatedData = commonGatewayTypes.map(item => {
                 if (item === "Regular") return "wso2/synapse";
                 if (item === "APK") return "wso2/apk";
                 return item;
@@ -164,22 +176,38 @@ function APICreateRoutes() {
                 <Route
                     exact
                     path='/mcp-servers/create'
-                    component={MCPServerLanding}
+                    render={(props) => (
+                        <MCPRouteGuard>
+                            <MCPServerLanding {...props} />
+                        </MCPRouteGuard>
+                    )}
                 />
                 <Route
                     path='/mcp-servers/create/import-api-definition'
-                    component={WithSomeValue(MCPServerCreateDefault, { multiGateway: apiTypes?.ws
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                    render={(props) => (
+                        <MCPRouteGuard>
+                            {WithSomeValue(MCPServerCreateDefault, { multiGateway: apiTypes?.ws
+                                .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })(props)}
+                        </MCPRouteGuard>
+                    )}
                 />
                 <Route
                     path='/mcp-servers/create/mcp-from-existing-api'
-                    component={WithSomeValue(MCPServerCreateUsingExistingAPI, { multiGateway: apiTypes?.ws
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                    render={(props) => (
+                        <MCPRouteGuard>
+                            {WithSomeValue(MCPServerCreateUsingExistingAPI, { multiGateway: apiTypes?.ws
+                                .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })(props)}
+                        </MCPRouteGuard>
+                    )}
                 />
                 <Route
                     path='/mcp-servers/create/mcp-proxy-from-endpoint'
-                    component={WithSomeValue(MCPServerCreateProxy, { multiGateway: apiTypes?.ws
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                    render={(props) => (
+                        <MCPRouteGuard>
+                            {WithSomeValue(MCPServerCreateProxy, { multiGateway: apiTypes?.ws
+                                .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })(props)}
+                        </MCPRouteGuard>
+                    )}
                 />
                 <Route component={ResourceNotFound} />
             </Switch>

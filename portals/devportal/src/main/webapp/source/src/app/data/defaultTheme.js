@@ -125,8 +125,8 @@ const DefaultConfigurations = {
             variant: 'text', // default templates available templates 'text'. Accepted values 'plain', 'text'
         },
         thumbnail: {
-            width: 240,
-            height: 140,
+            width: 100,
+            height: 100,
             contentPictureOverlap: false,
             iconColor: 'rgba(0, 0, 0, 0.38)',
             listViewIconSize: 20,
@@ -270,19 +270,22 @@ const DefaultConfigurations = {
         },
         tagCloud: {
             active: true,
-            colorOptions: { // This is the Options object passed to TagCloud component of https://www.npmjs.com/package/react-tagcloud
-                luminosity: 'dark',
-                hue: 'blue',
-            },
             leftMenu: { // These params will be applyed only if the style is 'fixed-left'
                 width: 200,
                 height: 'calc(100vh - 222px)',
-                background: '#d8e4e9',
-                color: '#000',
-                titleBackground: '#222',
-                sliderBackground: '#222',
+                background: '#012534',
+                color: '#fff',
+                chipBackground: '#e8e5e5ff',
+                titleBackground: '#001c28ff',
+                sliderBackground: '#001c28ff',
                 sliderWidth: 25,
                 hasIcon: false,
+                leftMenuActive: '#00597f',
+            },
+            scrollBar: {
+                thumbBackground: 'rgba(255, 255, 255, 0.3)',
+                thumbBackgroundHover: 'rgba(255, 255, 255, 0.6)',
+                thumbBorderRadius: '4px',
             },
         },
         social: {

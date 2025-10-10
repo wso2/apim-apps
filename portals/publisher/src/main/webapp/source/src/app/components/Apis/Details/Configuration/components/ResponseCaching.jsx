@@ -92,6 +92,15 @@ export default function ResponseCaching(props) {
     const [apiFromContext] = useAPI();
     const isResponseCachingEnabled = api.responseCachingEnabled;
 
+    const getCreateScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), apiFromContext);
+
     const generateElement = (isEnabled) => {
         if (isEnabled) {
             return (
@@ -133,7 +142,7 @@ export default function ResponseCaching(props) {
                             <Switch
                                 id='response-caching-switch'
                                 disabled={
-                                    isRestricted(['apim:api_create'], apiFromContext) ||
+                                    isCreateRestricted() ||
                                     apiFromContext.subtypeConfiguration?.subtype.includes('AIAPI')
                                 }
                                 checked={api.responseCachingEnabled}

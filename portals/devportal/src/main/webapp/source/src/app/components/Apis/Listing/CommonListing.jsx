@@ -157,7 +157,10 @@ const Root = styled('div')((
         width: theme.custom.tagCloud.leftMenu.width,
         top: 0,
         left: 0,
-        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        overflow: 'hidden',
     },
 
     [`& .${classes.LeftMenuForSlider}`]: {
@@ -238,10 +241,13 @@ class CommonListingLegacy extends React.Component {
         }
         this.state = {
             listType: defaultApiView,
-            allTags: null,
             showLeftMenu: false,
             isMonetizationEnabled: false,
             isRecommendationEnabled: false,
+            allTags: [],
+            allCategories: [],
+            selectedCategory: null,
+            selectedTag: null,
         };
     }
 
@@ -307,6 +313,26 @@ class CommonListingLegacy extends React.Component {
     }
 
     /**
+     * Handle selected category or tag, one at a time
+     */
+    handleCategorySelect = (category) => {
+        this.setState({
+            selectedCategory: category,
+            selectedTag: null,
+        });
+    };
+
+    /**
+     * Handle selected tag, one at a time
+     */
+    handleTagSelect = (tag) => {
+        this.setState({
+            selectedTag: tag,
+            selectedCategory: null,
+        });
+    };
+
+    /**
      *
      * @inheritdoctheme
      * @returns {React.Component} @inheritdoc
@@ -334,9 +360,22 @@ class CommonListingLegacy extends React.Component {
 
         // Detect if we're on MCP servers route or APIs route
         const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
-        const title = isMCPServersRoute ? 'MCP Servers' : 'APIs';
-        const titleId = isMCPServersRoute ? 'MCPServers.Listing.Listing.mcpservers.main' : 'Apis.Listing.Listing.apis.main';
-        const iconType = isMCPServersRoute ? 'mcp-server' : 'api';
+        const isSearchRoute = window.location.pathname.includes('/search');
+        let title;
+        let titleId;
+        let iconType;
+        if (isMCPServersRoute) {
+            title = 'MCP Servers';
+            titleId = 'MCPServers.Listing.Listing.mcpservers.main';
+            iconType = 'mcp-server';
+        } else if (isSearchRoute) {
+            title = 'Unified Search';
+            titleId = 'Apis.Listing.Listing.search.main';
+        } else {
+            title = 'APIs';
+            titleId = 'Apis.Listing.Listing.apis.main';
+            iconType = 'api';
+        }
 
         if (search && searchQuery !== null) {
             // For the tagWise search
@@ -365,9 +404,21 @@ class CommonListingLegacy extends React.Component {
                         >
                             <Icon>keyboard_arrow_left</Icon>
                         </div>
-                        {categoryPaneVisible && <CategoryListingCategories allCategories={allCategories} />}
+                        {categoryPaneVisible && (
+                            <CategoryListingCategories
+                                allCategories={allCategories}
+                                selectedCategory={this.state.selectedCategory}
+                                onCategorySelect={this.handleCategorySelect}
+                            />
+                        )}
                         {tagPaneVisible && active && <TagCloudListingTags allTags={allTags} />}
-                        {tagPaneVisible && tagCloudActive && <ApiTagCloud allTags={allTags} />}
+                        {tagPaneVisible && tagCloudActive && (
+                            <ApiTagCloud
+                                allTags={allTags}
+                                selectedTag={this.state.selectedTag}
+                                onTagSelect={this.handleTagSelect}
+                            />
+                        )}
                     </div>
                 )}
                 {(categoryPaneVisible || tagPaneVisible) && !showLeftMenu && (
@@ -403,10 +454,16 @@ class CommonListingLegacy extends React.Component {
                     id='commonListing'
                 >
                     <div className={classes.appBar} id='commonListingAppBar'>
-                        <div className={classNames(classes.mainIconWrapper, 'main-icon-wrapper')}>
-                            <CustomIcon strokeColor={strokeColorMain} width={42} height={42} icon={iconType} />
-                        </div>
-                        <div className={classes.mainTitleWrapper} id='mainTitleWrapper'>
+                        {!isSearchRoute && (
+                            <div className={classNames(classes.mainIconWrapper, 'main-icon-wrapper')}>
+                                <CustomIcon strokeColor={strokeColorMain} width={42} height={42} icon={iconType} />
+                            </div>
+                        )}
+                        <div
+                            className={classNames(classes.mainTitleWrapper, 'main-title-wrapper')}
+                            id='mainTitleWrapper'
+                            style={isSearchRoute ? { paddingLeft: '32px' } : {}}
+                        >
                             <Typography variant='h4' component='h1' className={classes.mainTitle}>
                                 <FormattedMessage defaultMessage={title} id={titleId} />
                             </Typography>

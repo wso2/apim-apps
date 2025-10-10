@@ -220,6 +220,7 @@ export default class Protected extends Component {
                                 >
                                     <Switch>
                                         <Route path='/' exact component={PublisherLanding} />
+                                        <Route path='/search' component={DeferredAPIs} />
                                         <Route path='/apis' component={DeferredAPIs} />
                                         <Route path='/api-products' component={DeferredAPIs} />
                                         <Route path='/mcp-servers' component={DeferredAPIs} />

@@ -28,10 +28,11 @@ import Slide from '@mui/material/Slide';
 import Icon from '@mui/material/Icon';
 import Paper from '@mui/material/Paper';
 import Alert from 'AppComponents/Shared/Alert';
-import CreateEditForm from './CreateEditForm';
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import { isRestricted } from 'AppData/AuthManager';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
+import CreateEditForm from './CreateEditForm';
 
 const PREFIX = 'Edit';
 
@@ -74,14 +75,34 @@ function Transition(props) {
     return <Slide direction='up' {...props} />;
 }
 
+/**
+ * Edit document component
+ * @param {*} props {intl, apiType, apiId, docId, docName, getDocumentsList}
+ * @returns {JSX.Element} The Edit document component
+ */
 function Edit(props) {
-    const restAPI = new Api();
-
     const { intl, apiType } = props;
+    let restAPI;
+    if (apiType === Api.CONSTS.APIProduct) {
+        restAPI = new Api();
+    } else if (apiType === MCPServer.CONSTS.MCP) {
+        restAPI = MCPServer;
+    } else {
+        restAPI = new Api();
+    }
     const [open, setOpen] = useState(false);
     const [saveDisabled, setSaveDisabled] = useState(false);
-    let createEditForm = useRef(null);
+    const createEditForm = useRef(null);
     const { api } = useContext(APIContext);
+
+    const getAllowedScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
+            return ['apim:mcp_server_publish', 'apim:mcp_server_manage'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isAccessRestricted = () => isRestricted(getAllowedScopes(), api);
 
     const toggleOpen = () => {
         setOpen(!open);
@@ -132,7 +153,7 @@ function Edit(props) {
         <div>
             <Button
                 onClick={toggleOpen}
-                disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}
+                disabled={isAccessRestricted() || api.isRevision}
                 sx={{ whiteSpace: 'nowrap' }}
                 aria-label={'Edit Meta Data of ' + docName}
             >
@@ -154,7 +175,13 @@ function Edit(props) {
                         />
                         {` ${props.docName}`}
                     </Typography>
-                    <Button className={classes.button} variant='contained' color='primary' onClick={updateDoc} disabled={saveDisabled}>
+                    <Button
+                        className={classes.button}
+                        variant='contained'
+                        color='primary'
+                        onClick={updateDoc}
+                        disabled={saveDisabled}
+                    >
                         <FormattedMessage
                             id='Apis.Details.Documents.Edit.documents.text.editor.update.content'
                             defaultMessage='Save'
@@ -189,7 +216,7 @@ Edit.propTypes = {
     intl: PropTypes.shape({}).isRequired,
     api: PropTypes.shape({
         id: PropTypes.string,
-        apiType: PropTypes.oneOf([Api.CONSTS.API, Api.CONSTS.APIProduct]),
+        apiType: PropTypes.oneOf([Api.CONSTS.API, Api.CONSTS.APIProduct, MCPServer.CONSTS.MCP]),
     }).isRequired,
 };
 

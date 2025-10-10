@@ -25,6 +25,7 @@ import {
     ListItemIcon, List, ListItem, ListItemText, useTheme,
 } from '@mui/material';
 import AuthManager from 'AppData/AuthManager';
+import { useAreApisAccessible, useAreMcpServersAccessible } from 'AppUtils/PortalModeUtils';
 import CustomIcon from '../../Shared/CustomIcon';
 
 /**
@@ -39,7 +40,9 @@ function GlobalNavBar(props) {
     const theme = useTheme();
     const { custom: { landingPage: { active: landingPageActive, activeForAnonymous } } } = theme;
     const isUserFound = AuthManager.getUser();
-    React.useEffect(() => {}, [selected]);
+    const apisAccessible = useAreApisAccessible();
+    const mcpServersAccessible = useAreMcpServersAccessible();
+
     return (
         <List className={classes.listRootInline} component='nav' aria-label='primary navigation' role='navigation'>
             {landingPageActive && ((isUserFound && !activeForAnonymous) || activeForAnonymous)
@@ -87,86 +90,90 @@ function GlobalNavBar(props) {
                         {(selected === 'home' && !drawerView) && (<div className={classes.triangleDown} />)}
                     </Link>
                 ) }
-            <Link
-                data-testid='itest-link-to-apis'
-                to={(theme.custom.tagWise.active && theme.custom.tagWise.style === 'page') ? '/api-groups' : '/apis'}
-                className={classNames({
-                    [classes.selected]: selected === 'apis',
-                    // eslint-disable-next-line quote-props
-                    'selected': selected === 'apis',
-                    [classes.links]: true,
-                }, 'header-link')}
-            >
-                <ListItem component='div' classes={{ root: classes.listItemRoot }}>
-                    <ListItemIcon classes={{
-                        root: classNames({ [classes.smallIcon]: !drawerView },
-                            'heder-menu-icon-apis', 'header-menu-icon'),
-                    }}
-                    >
-                        <CustomIcon
-                            width={iconWidth}
-                            height={iconWidth}
-                            icon='api'
-                            className={classes.listText}
-                            strokeColor={selected === 'apis' ? strokeColorSelected : strokeColor}
-                        />
-                    </ListItemIcon>
-                    <ListItemText
-                        classes={{
-                            root: classes.listItemTextRoot,
-                            primary: classNames({
-                                [classes.selectedText]: selected === 'apis',
-                                [classes.listText]: selected !== 'apis',
-                            }),
+            {apisAccessible && (
+                <Link
+                    data-testid='itest-link-to-apis'
+                    to={(theme.custom.tagWise.active && theme.custom.tagWise.style === 'page') ? '/api-groups' : '/apis'}
+                    className={classNames({
+                        [classes.selected]: selected === 'apis',
+                        // eslint-disable-next-line quote-props
+                        'selected': selected === 'apis',
+                        [classes.links]: true,
+                    }, 'header-link')}
+                >
+                    <ListItem component='div' classes={{ root: classes.listItemRoot }}>
+                        <ListItemIcon classes={{
+                            root: classNames({ [classes.smallIcon]: !drawerView },
+                                'heder-menu-icon-apis', 'header-menu-icon'),
                         }}
-                        primary={intl.formatMessage({
-                            id: 'Base.Header.GlobalNavbar.menu.apis',
-                            defaultMessage: 'APIs',
-                        })}
-                    />
-                </ListItem>
-                {(selected === 'apis' && !drawerView) && (<div className={classes.triangleDown} />)}
-            </Link>
-            <Link
-                data-testid='itest-link-to-mcp-servers'
-                to={(theme.custom.tagWise.active && theme.custom.tagWise.style === 'page') ? '/api-groups' : '/mcp-servers'}
-                className={classNames({
-                    [classes.selected]: selected === 'mcp-servers',
-                    // eslint-disable-next-line quote-props
-                    'selected': selected === 'mcp-servers',
-                    [classes.links]: true,
-                }, 'header-link')}
-            >
-                <ListItem component='div' classes={{ root: classes.listItemRoot }}>
-                    <ListItemIcon classes={{
-                        root: classNames({ [classes.smallIcon]: !drawerView },
-                            'heder-menu-icon-mcp-servers', 'header-menu-icon'),
-                    }}
-                    >
-                        <CustomIcon
-                            width={iconWidth}
-                            height={iconWidth}
-                            icon='mcp-server'
-                            className={classes.listText}
-                            strokeColor={selected === 'mcp-servers' ? strokeColorSelected : strokeColor}
+                        >
+                            <CustomIcon
+                                width={iconWidth}
+                                height={iconWidth}
+                                icon='api'
+                                className={classes.listText}
+                                strokeColor={selected === 'apis' ? strokeColorSelected : strokeColor}
+                            />
+                        </ListItemIcon>
+                        <ListItemText
+                            classes={{
+                                root: classes.listItemTextRoot,
+                                primary: classNames({
+                                    [classes.selectedText]: selected === 'apis',
+                                    [classes.listText]: selected !== 'apis',
+                                }),
+                            }}
+                            primary={intl.formatMessage({
+                                id: 'Base.Header.GlobalNavbar.menu.apis',
+                                defaultMessage: 'APIs',
+                            })}
                         />
-                    </ListItemIcon>
-                    <ListItemText
-                        classes={{
-                            root: classes.listItemTextRoot,
-                            primary: classNames({
-                                [classes.selectedText]: selected === 'mcp-servers',
-                                [classes.listText]: selected !== 'mcp-servers',
-                            }),
+                    </ListItem>
+                    {(selected === 'apis' && !drawerView) && (<div className={classes.triangleDown} />)}
+                </Link>
+            )}
+            {mcpServersAccessible && (
+                <Link
+                    data-testid='itest-link-to-mcp-servers'
+                    to={(theme.custom.tagWise.active && theme.custom.tagWise.style === 'page') ? '/api-groups' : '/mcp-servers'}
+                    className={classNames({
+                        [classes.selected]: selected === 'mcp-servers',
+                        // eslint-disable-next-line quote-props
+                        'selected': selected === 'mcp-servers',
+                        [classes.links]: true,
+                    }, 'header-link')}
+                >
+                    <ListItem component='div' classes={{ root: classes.listItemRoot }}>
+                        <ListItemIcon classes={{
+                            root: classNames({ [classes.smallIcon]: !drawerView },
+                                'heder-menu-icon-mcp-servers', 'header-menu-icon'),
                         }}
-                        primary={intl.formatMessage({
-                            id: 'Base.Header.GlobalNavbar.menu.mcpServers',
-                            defaultMessage: 'MCP Servers',
-                        })}
-                    />
-                </ListItem>
-                {(selected === 'mcp-servers' && !drawerView) && (<div className={classes.triangleDown} />)}
-            </Link>
+                        >
+                            <CustomIcon
+                                width={iconWidth}
+                                height={iconWidth}
+                                icon='mcp-server'
+                                className={classes.listText}
+                                strokeColor={selected === 'mcp-servers' ? strokeColorSelected : strokeColor}
+                            />
+                        </ListItemIcon>
+                        <ListItemText
+                            classes={{
+                                root: classes.listItemTextRoot,
+                                primary: classNames({
+                                    [classes.selectedText]: selected === 'mcp-servers',
+                                    [classes.listText]: selected !== 'mcp-servers',
+                                }),
+                            }}
+                            primary={intl.formatMessage({
+                                id: 'Base.Header.GlobalNavbar.menu.mcpServers',
+                                defaultMessage: 'MCP Servers',
+                            })}
+                        />
+                    </ListItem>
+                    {(selected === 'mcp-servers' && !drawerView) && (<div className={classes.triangleDown} />)}
+                </Link>
+            )}
             <Link
                 id='itest-link-to-applications'
                 to='/applications'

@@ -16,188 +16,111 @@
  * under the License.
  */
 
-import React, { useCallback } from 'react';
-import {
-    Box,
-    Typography,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper
-} from '@mui/material';
-import Avatar from '@mui/material/Avatar';
-import { useHistory } from 'react-router-dom';
+import React from 'react';
+import { Box, Grid, Button } from '@mui/material';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import Utils from 'AppData/Utils';
-import DeleteButton from './DeleteButton';
-import { formatUpdatedTime, getDetailPath } from './utils';
-
-const PREFIX = 'DataTable';
-
-const classes = {
-    tableContainer: `${PREFIX}-tableContainer`,
-};
+import ApiThumb from 'AppComponents/Apis/Listing/components/ImageGenerator/ApiThumb';
+import CONSTS from 'AppData/Constants';
 
 /**
- * Reusable DataTable Component for APIs and MCP Servers
+ * Reusable DataTable Component for APIs, API Products, and MCP Servers
  * @param {Object} props - Component props
- * @param {Array} props.data - Array of items to display in the table
+ * @param {Array} props.data - Array of items to display in the cards
  * @param {string} props.type - Entity type (apis, api-products, or mcp-servers)
- * @param {Function} props.onRowClick - Optional callback for row clicks
+ * @param {number} props.totalCount - Total count of items for "View All" link
  * @param {Function} props.onDelete - Callback for item deletion
  * @returns {JSX.Element} DataTable component
  */
-const DataTable = ({ data, type, onRowClick, onDelete }) => {
-    const history = useHistory();
+const DataTable = ({ data, type, totalCount, onDelete, isAPIProduct, isMCPServer }) => {
+    // Get "View All" path based on entity type
+    const getViewAllPath = () => {
+        switch (type) {
+            case CONSTS.ENTITY_TYPES.APIS:
+                return '/apis';
+            case CONSTS.ENTITY_TYPES.API_PRODUCTS:
+                return '/api-products';
+            case CONSTS.ENTITY_TYPES.MCP_SERVERS:
+                return '/mcp-servers';
+            default:
+                return '/apis';
+        }
+    };
 
-    const handleRowClick = useCallback((item) => {
-        const path = getDetailPath(type, item.id);
-        history.push(path);
-        if (onRowClick) onRowClick(item);
-    }, [type, history, onRowClick]);
-
-
+    // Get entity type label for "View All" button
+    const getEntityLabel = () => {
+        switch (type) {
+            case CONSTS.ENTITY_TYPES.APIS:
+                return 'APIs';
+            case CONSTS.ENTITY_TYPES.API_PRODUCTS:
+                return 'API Products';
+            case CONSTS.ENTITY_TYPES.MCP_SERVERS:
+                return 'MCP Servers';
+            default:
+                return 'Items';
+        }
+    };
 
     return (
-        <Box>
-            <TableContainer component={Paper} className={classes.TableContainer}>
-                <Table stickyHeader>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell width='16%'>
-                                <FormattedMessage
-                                    id='Publisher.Landing.table.name'
-                                    defaultMessage='Name'
-                                />
-                            </TableCell>
-                            <TableCell width='12%'>
-                                <FormattedMessage
-                                    id='Publisher.Landing.table.context'
-                                    defaultMessage='Context'
-                                />
-                            </TableCell>
-                            <TableCell width='9%'>
-                                <FormattedMessage
-                                    id='Publisher.Landing.table.version'
-                                    defaultMessage='Version'
-                                />
-                            </TableCell>
-                            <TableCell width='31%'>
-                                <FormattedMessage
-                                    id='Publisher.Landing.table.description'
-                                    defaultMessage='Description'
-                                />
-                            </TableCell>
-                            <TableCell width='15%'>
-                                <FormattedMessage
-                                    id='Publisher.Landing.table.lastUpdated'
-                                    defaultMessage='Last Updated'
-                                />
-                            </TableCell>
-                            <TableCell width='12%' align='center'>
-                                <FormattedMessage
-                                    id='Publisher.Landing.table.actions'
-                                    defaultMessage='Actions'
-                                />
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {data.map((item) => (
-                            <TableRow
-                                key={item.id}
-                                onClick={() => handleRowClick(item)}
-                                style={{ cursor: 'pointer' }}
-                                hover
-                            >
-                                <TableCell>
-                                    <Box display='flex' alignItems='center'>
-                                        <Avatar
-                                            style={{
-                                                backgroundColor: Utils.stringToColor(item.name),
-                                            }}
-                                        >
-                                            {Utils.stringAvatar(item.name.toUpperCase())}
-                                        </Avatar>
-                                        <Typography variant='body2' fontWeight='medium' ml={1}>
-                                            {item.name}
-                                        </Typography>
-                                    </Box>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography 
-                                        variant='body2'
-                                        sx={{
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap'
-                                        }}
-                                        title={item.context || '/'}
-                                    >
-                                        {item.context || '/'}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant='body2'>
-                                        {item.version}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography 
-                                        variant='body2'
-                                        sx={{
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap',
-                                            maxWidth: '300px'
-                                        }}
-                                        title={item.description || 'No description available'}
-                                    >
-                                        {item.description || 'No description available'}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant='body2' color='textSecondary'>
-                                        {formatUpdatedTime(item.updatedTime)}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell align='center'>
-                                    <DeleteButton
-                                        item={item}
-                                        type={type}
-                                        onDelete={onDelete}
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+        <>
+            <Grid container spacing={2}>
+                {data.map((artifact) => {
+                    return (
+                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4} key={artifact.id}>
+                            <ApiThumb
+                                api={artifact}
+                                isAPIProduct={isAPIProduct}
+                                isMCPServer={isMCPServer}
+                                updateData={onDelete}
+                                useFlexibleWidth
+                            />
+                        </Grid>
+                    );
+                })}
+            </Grid>
 
-        </Box>
+            {/* View All section - only show if there are more items than displayed */}
+            {totalCount > data.length && (
+                <Box mt={2}>
+                    <Button variant='text' color='primary' component={Link} to={getViewAllPath()}>
+                        <FormattedMessage
+                            id='Publisher.Landing.view.all.button'
+                            defaultMessage='View All {entityType}'
+                            values={{
+                                entityType: getEntityLabel(),
+                            }}
+                        />
+                    </Button>
+                </Box>
+            )}
+        </>
     );
 };
 
 DataTable.propTypes = {
-    data: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        version: PropTypes.string,
-        description: PropTypes.string,
-        context: PropTypes.string,
-        updatedTime: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    })).isRequired,
+    data: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired,
+            displayName: PropTypes.string,
+            version: PropTypes.string,
+            description: PropTypes.string,
+            context: PropTypes.string,
+            provider: PropTypes.string,
+            lifeCycleStatus: PropTypes.string,
+            state: PropTypes.string, // For API Products
+            type: PropTypes.string,
+            updatedTime: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        })
+    ).isRequired,
     type: PropTypes.string.isRequired,
-    onRowClick: PropTypes.func,
+    totalCount: PropTypes.number,
     onDelete: PropTypes.func,
 };
 
 DataTable.defaultProps = {
-    onRowClick: null,
+    totalCount: 0,
     onDelete: null,
 };
 

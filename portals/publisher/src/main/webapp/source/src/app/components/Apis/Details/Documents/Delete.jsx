@@ -27,37 +27,50 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import API from 'AppData/api.js';
 import APIProduct from 'AppData/APIProduct';
+import MCPServer from 'AppData/MCPServer';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 import Icon from '@mui/material/Icon';
 import Alert from 'AppComponents/Shared/Alert';
 import { isRestricted } from 'AppData/AuthManager';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 
+/**
+ * Delete document component
+ * @param {*} props {intl, apiId, docId, getDocumentsList, apiType}
+ * @returns {JSX.Element} - The Delete document component
+ */
 function Delete(props) {
-    const { intl } = props;
+    const { intl, apiType } = props;
     const [open, setOpen] = useState(false);
     const { api } = useContext(APIContext);
 
-    const runAction = (action) => {
-        if (action === 'yes') {
-            deleteDoc();
+    const getDeleteScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_publish', 'apim:mcp_server_manage'];
         } else {
-            setOpen(!open);
+            return ['apim:api_create', 'apim:api_publish'];
         }
     };
-    const toggleOpen = () => {
-        setOpen(!open);
-    };
+    const isDeleteRestricted = () => isRestricted(getDeleteScopes(), api);
+
     const deleteDoc = () => {
         const {
-            apiId, docId, getDocumentsList, apiType,
+            apiId, docId, getDocumentsList,
         } = props;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+        let restApi;
+        if (apiType === API.CONSTS.APIProduct) {
+            restApi = new APIProduct();
+        } else if (apiType === MCPServer.CONSTS.MCP) {
+            restApi = MCPServer;
+        } else {
+            restApi = new API();
+        }
         const docPromise = restApi.deleteDocument(apiId, docId);
         docPromise
             .then(() => {
                 Alert.info(`${intl.formatMessage({
                     id: 'Apis.Details.Documents.Delete.document.delete.successfully',
-                    defaultMessage: 'deleted successfully.',
+                    defaultMessage: 'Deleted successfully.',
                 })}`);
                 setOpen(!open);
                 getDocumentsList();
@@ -68,15 +81,32 @@ function Delete(props) {
                 }
                 const { status } = error;
                 if (status === 404) {
-                    this.setState({ apiNotFound: true });
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Documents.Delete.document.delete.error',
+                        defaultMessage: 'Error while deleting the document.',
+                    }));
                 }
             });
     };
 
-    const { apiName } = props;
+    const runAction = (action) => {
+        if (action === 'yes') {
+            deleteDoc();
+        } else {
+            setOpen(!open);
+        }
+    };
+
+    const toggleOpen = () => {
+        setOpen(!open);
+    };
+
     return (
         <div>
-            <Button onClick={toggleOpen} disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}>
+            <Button
+                onClick={toggleOpen}
+                disabled={isDeleteRestricted() || api.isRevision}
+            >
                 <Icon>delete_forever</Icon>
                 <FormattedMessage id='Apis.Details.Documents.Delete.document.delete' defaultMessage='Delete' />
             </Button>
@@ -97,9 +127,12 @@ function Delete(props) {
                         <FormattedMessage
                             id='Apis.Details.Documents.Delete.document.listing.delete.confirm.body'
                             defaultMessage={
-                                'Selected document will be deleted from the API.' +
+                                'Selected document will be deleted from the {type}. ' +
                                 'You will not be able to undo this action.'
                             }
+                            values={{
+                                type: getTypeToDisplay(apiType),
+                            }}
                         />
                     </DialogContentText>
                 </DialogContent>
@@ -113,7 +146,7 @@ function Delete(props) {
                     <Button onClick={() => runAction('yes')} color='primary' autoFocus>
                         <FormattedMessage
                             id='Apis.Details.Documents.Delete.document.listing.delete'
-                            defaultMessage='Yes. Delete'
+                            defaultMessage='Delete'
                         />
                     </Button>
                 </DialogActions>
@@ -121,6 +154,7 @@ function Delete(props) {
         </div>
     );
 }
+
 Delete.propTypes = {
     apiId: PropTypes.shape({}).isRequired,
     apiType: PropTypes.string.isRequired,
@@ -129,7 +163,7 @@ Delete.propTypes = {
     intl: PropTypes.shape({}).isRequired,
     api: PropTypes.shape({
         id: PropTypes.string,
-        apiType: PropTypes.oneOf([API.CONSTS.API, API.CONSTS.APIProduct]),
+        apiType: PropTypes.oneOf([API.CONSTS.API, API.CONSTS.APIProduct, MCPServer.CONSTS.MCP]),
     }).isRequired,
 };
 

@@ -43,6 +43,7 @@ import KeyManager from 'AppComponents/Apis/Details/Configuration/components/KeyM
 import Audience from 'AppComponents/Apis/Details/Configuration/components/Audience';
 import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 import {
     DEFAULT_API_SECURITY_OAUTH2,
@@ -95,11 +96,9 @@ const Root = styled('div')((
 }));
 
 /**
- *
- *
- * @export
- * @param {*} props
- * @returns
+ * ApplicationLevel component
+ * @param {*} props - The component props
+ * @returns {JSX.Element} The rendered component
  */
 export default function ApplicationLevel(props) {
     const {
@@ -109,6 +108,15 @@ export default function ApplicationLevel(props) {
     const [oauth2Enabled, setOauth2Enabled] = useState(securityScheme.includes(DEFAULT_API_SECURITY_OAUTH2));
     const [apiKeyEnabled, setApiKeyEnabled] = useState(securityScheme.includes(API_SECURITY_API_KEY));
     const intl = useIntl();
+
+    const getCreateScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), apiFromContext);
     const isSubValidationDisabled = apiFromContext.policies && apiFromContext.policies.length === 1 
         && apiFromContext.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
     let mandatoryValue = null;
@@ -176,11 +184,14 @@ export default function ApplicationLevel(props) {
                                         id='Apis.Details.Configuration.components.APISecurity.tooltip'
                                         defaultMessage={
                                             'This option determines the type of security'
-                                            + ' that will be used to secure this API. An API can be secured '
+                                            + ' that will be used to secure this {type}. An {type} can be secured '
                                             + 'with either OAuth2/Basic/ApiKey or it can be secured with all of them. '
-                                            + 'If OAuth2 option is selected, relevant API will require a valid '
+                                            + 'If OAuth2 option is selected, relevant {type} will require a valid '
                                             + 'OAuth2 token for successful invocation.'
                                         }
+                                        values={{
+                                            type: getTypeToDisplay(api.apiType)
+                                        }}
                                     />
                                 )}
                                 aria-label='API Security helper text'
@@ -197,7 +208,10 @@ export default function ApplicationLevel(props) {
                                 <FormControlLabel
                                     control={(
                                         <Checkbox
-                                            disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                            disabled={
+                                                isCreateRestricted() ||
+                                                apiFromContext.apiType === MCPServer.CONSTS.MCP
+                                            }
                                             checked={securityScheme.includes(DEFAULT_API_SECURITY_OAUTH2)}
                                             onChange={({ target: { checked, value } }) => {
                                                 setOauth2Enabled(checked);
@@ -218,14 +232,12 @@ export default function ApplicationLevel(props) {
                                 />
                             }
                             {(componentValidator.includes('basicAuth') ||
-                                apiFromContext.apiType === API.CONSTS.APIProduct) && (
+                                apiFromContext.apiType === API.CONSTS.APIProduct) &&
+                                apiFromContext.apiType !== MCPServer.CONSTS.MCP && (
                                 <FormControlLabel
                                     control={(
                                         <Checkbox
-                                            disabled={
-                                                isRestricted(['apim:api_create'], apiFromContext)
-                                                || apiFromContext.apiType === MCPServer.CONSTS.MCP
-                                            }
+                                            disabled={isCreateRestricted()}
                                             checked={securityScheme.includes(API_SECURITY_BASIC_AUTH)}
                                             onChange={({ target: { checked, value } }) => configDispatcher({
                                                 action: 'securityScheme',
@@ -243,15 +255,14 @@ export default function ApplicationLevel(props) {
                                     })}
                                 />
                             )}
-                            {componentValidator.includes('apikey') &&
+                            {componentValidator.includes('apikey') && apiFromContext.apiType !== MCPServer.CONSTS.MCP &&
                                 <FormControlLabel
                                     control={(
                                         <Checkbox
                                             checked={securityScheme.includes(API_SECURITY_API_KEY)}
                                             disabled={
-                                                isRestricted(['apim:api_create'], apiFromContext)
+                                                isCreateRestricted()
                                                 || isSubValidationDisabled
-                                                || apiFromContext.apiType === MCPServer.CONSTS.MCP
                                             }
                                             onChange={({ target: { checked, value } }) => {
                                                 setApiKeyEnabled(checked);
@@ -291,8 +302,7 @@ export default function ApplicationLevel(props) {
                                     value={API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY}
                                     control={(
                                         <Radio
-                                            disabled={!haveMultiLevelSecurity
-                                                || isRestricted(['apim:api_create'], apiFromContext)}
+                                            disabled={!haveMultiLevelSecurity || isCreateRestricted()}
                                             color='primary'
                                         />
                                     )}
@@ -307,8 +317,7 @@ export default function ApplicationLevel(props) {
                                     value={API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_OPTIONAL}
                                     control={(
                                         <Radio
-                                            disabled={!haveMultiLevelSecurity
-                                                || isRestricted(['apim:api_create'], apiFromContext)}
+                                            disabled={!haveMultiLevelSecurity || isCreateRestricted()}
                                             color='primary'
                                         />
                                     )}
@@ -356,8 +365,11 @@ export default function ApplicationLevel(props) {
                                 <FormHelperText>
                                     <FormattedMessage
                                         id='Apis.Details.Configuration.components.APISecurity.api.unsecured'
-                                        defaultMessage='Application level security is not required since API
+                                        defaultMessage='Application level security is not required since {type}
                                         has no secured resources'
+                                        values={{
+                                            type: getTypeToDisplay(api.apiType)
+                                        }}
                                     />
                                 </FormHelperText>
                             )}
@@ -373,5 +385,7 @@ ApplicationLevel.propTypes = {
     configDispatcher: PropTypes.func.isRequired,
     haveMultiLevelSecurity: PropTypes.bool.isRequired,
     securityScheme: PropTypes.arrayOf(PropTypes.string).isRequired,
-    api: PropTypes.shape({}).isRequired,
+    api: PropTypes.shape({
+        apiType: PropTypes.string.isRequired,
+    }).isRequired,
 };

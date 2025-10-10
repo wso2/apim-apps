@@ -84,6 +84,15 @@ export default function MaxBackendTps(props) {
     const { api, configDispatcher } = props;
     const intl = useIntl();
 
+    const getCreateScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), api);
+
     return (
         (<Root>
             <Grid item xs={12}>
@@ -136,7 +145,7 @@ export default function MaxBackendTps(props) {
                                     control={(
                                         <Radio
                                             color='primary'
-                                            disabled={isRestricted(['apim:api_create'], api)}
+                                            disabled={isCreateRestricted()}
                                         />
                                     )}
                                     label={intl.formatMessage({
@@ -152,7 +161,7 @@ export default function MaxBackendTps(props) {
                                     control={(
                                         <Radio
                                             color='primary'
-                                            disabled={isRestricted(['apim:api_create'], api)}
+                                            disabled={isCreateRestricted()}
                                         />
                                     )}
                                     label={intl.formatMessage({
@@ -161,7 +170,7 @@ export default function MaxBackendTps(props) {
                                         defaultMessage: 'Specify',
                                     })}
                                     labelPlacement='end'
-                                    disabled={isRestricted(['apim:api_create'], api)}
+                                    disabled={isCreateRestricted()}
                                 />
                             </RadioGroup>
                         </FormControl>
@@ -182,7 +191,7 @@ export default function MaxBackendTps(props) {
                                         });
                                     }}
                                     value={api.maxTps ? api.maxTps.production : ''}
-                                    disabled={isRestricted(['apim:api_create'], api)}
+                                    disabled={isCreateRestricted()}
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>TPS</InputAdornment>,
                                     }}
@@ -204,7 +213,7 @@ export default function MaxBackendTps(props) {
                                         });
                                     }}
                                     value={api.maxTps ? api.maxTps.sandbox : ''}
-                                    disabled={isRestricted(['apim:api_create'], api)}
+                                    disabled={isCreateRestricted()}
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>TPS</InputAdornment>,
                                     }}

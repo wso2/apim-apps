@@ -32,6 +32,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import ConfirmDialog from 'AppComponents/Shared/ConfirmDialog';
 import CommentsAPI from 'AppData/Comments';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import CommentEdit from './CommentEdit';
 import CommentOptions from './CommentOptions';
 import CommentAdd from './CommentAdd';
@@ -250,12 +251,19 @@ class Comment extends React.Component {
      * @memberof Comments
      */
     handleLoadMoreReplies(comment) {
-        const { api: { id: apiId }, comments, updateComment } = this.props;
+        const { api: { id: apiId, type: apiType }, comments, updateComment } = this.props;
         const { id, replies: { count, list } } = comment;
-        const restApi = new API();
+        const isMCPServer = apiType === MCPServer.CONSTS.MCP;
 
-        restApi
-            .getAllCommentReplies(apiId, id, 3, count)
+        let repliesPromise;
+        if (isMCPServer) {
+            repliesPromise = CommentsAPI.getRepliesofCommentOfMCPServer(apiId, id, 3, count);
+        } else {
+            const restApi = new API();
+            repliesPromise = restApi.getAllCommentReplies(apiId, id, 3, count);
+        }
+
+        repliesPromise
             .then((result) => {
                 if (result.body) {
                     const { list: replyList, count: replyCount } = result.body;
@@ -290,19 +298,25 @@ class Comment extends React.Component {
      * @memberof Comment
      */
     handleClickDeleteComment() {
-        const apiClient = new CommentsAPI();
-
+        const { api: { id: apiId, type: apiType } } = this.props;
         const { deleteComment } = this.state;
         const {
-            api, onDeleteComment, intl,
+            onDeleteComment, intl,
         } = this.props;
-        const apiId = api.id;
         const commentIdOfCommentToDelete = deleteComment.id;
         const parentCommentIdOfCommentToDelete = deleteComment.parentCommentId;
         this.handleClose();
 
-        apiClient
-            .deleteComment(apiId, commentIdOfCommentToDelete)
+        const isMCPServer = apiType === MCPServer.CONSTS.MCP;
+        const apiClient = new CommentsAPI();
+        let deleteCommentPromise;
+        if (isMCPServer) {
+            deleteCommentPromise = apiClient.deleteCommentOfMCPServer(apiId, commentIdOfCommentToDelete);
+        } else {
+            deleteCommentPromise = apiClient.deleteComment(apiId, commentIdOfCommentToDelete);
+        }
+
+        deleteCommentPromise
             .then(() => {
                 if (parentCommentIdOfCommentToDelete === null) {
                     if (onDeleteComment) {
@@ -344,7 +358,7 @@ class Comment extends React.Component {
      * @memberof Comments
      */
     handleDeleteReply(parentCommentId, replyCommentId) {
-        const { comments, updateComment, api: { id: apiId } } = this.props;
+        const { comments, updateComment, api: { id: apiId, type: apiType } } = this.props;
         const existingComment = comments.find((item) => item.id === parentCommentId);
         const { replies } = existingComment;
         // updated values
@@ -352,11 +366,18 @@ class Comment extends React.Component {
         const newTotal = replies.pagination.total - 1;
         const newLimit = replies.pagination.limit > newTotal ? newTotal : replies.pagination.limit;
         const newCount = replies.count - 1;
+        const isMCPServer = apiType === MCPServer.CONSTS.MCP;
 
         if (newTotal > newCount) {
-            const restApi = new API();
-            restApi
-                .getAllCommentReplies(apiId, parentCommentId, 1, newLimit - 1)
+            let repliesPromise;
+            if (isMCPServer) {
+                repliesPromise = CommentsAPI.getRepliesofCommentOfMCPServer(apiId, parentCommentId, 1, newLimit - 1);
+            } else {
+                const restApi = new API();
+                repliesPromise = restApi.getAllCommentReplies(apiId, parentCommentId, 1, newLimit - 1);
+            }
+        
+            repliesPromise
                 .then((result) => {
                     if (result.body) {
                         const updatedComment = {

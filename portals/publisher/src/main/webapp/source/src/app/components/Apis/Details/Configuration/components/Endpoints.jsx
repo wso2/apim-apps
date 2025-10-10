@@ -30,6 +30,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import MCPServer from 'AppData/MCPServer';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'Endpoints';
 
@@ -106,21 +107,6 @@ function Endpoints(props) {
         }
         return null;
     };
-
-    /**
-     * Gets the appropriate base path for API links based on API type
-     * @param {Object} api - The API object
-     * @returns {string} - The base path for links
-     */
-    const getBasePath = () => {
-        if (api.isAPIProduct()) {
-            return '/api-products/';
-        } else if (api.type === MCPServer.CONSTS.MCP) {
-            return '/mcp-servers/';
-        } else {
-            return '/apis/';
-        }
-    }
 
     const isPrototypedAvailable = !api.isMCPServer() && api.endpointConfig !== null
         && api.endpointConfig.implementation_status === 'prototyped' && api.lifeCycleStatus === 'PROTOTYPED';
@@ -251,7 +237,7 @@ function Endpoints(props) {
                             </>
                         )}
                     <Box width='100%' textAlign='right' m={1}>
-                        <Link to={getBasePath() + api.id + '/endpoints'}>
+                        <Link to={getBasePath(api.apiType) + api.id + '/endpoints'}>
                             <Typography className={classes.externalLink} variant='caption'>
                                 <FormattedMessage
                                     id='Apis.Details.Configuration.Configuration.Endpoints.edit.api.endpoints'

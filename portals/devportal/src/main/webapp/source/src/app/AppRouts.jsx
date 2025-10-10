@@ -15,13 +15,18 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense } from 'react';
+import React, {
+    lazy, Suspense,
+} from 'react';
+import PropTypes from 'prop-types';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import ApplicationFormHandler from 'AppComponents/Applications/ApplicationFormHandler';
 import { PageNotFound, ScopeNotFound } from 'AppComponents/Base/Errors';
 import RedirectToLogin from 'AppComponents/Login/RedirectToLogin';
 import Progress from 'AppComponents/Shared/Progress';
+import PortalModeRouteGuard from 'AppComponents/Shared/PortalModeRouteGuard';
 import { useTheme } from '@mui/material';
+import { usePortalMode, PORTAL_MODES } from './utils/PortalModeUtils';
 
 const Apis = lazy(() => import('AppComponents/Apis/Apis' /* webpackChunkName: "Apis" */));
 const MCPServers = lazy(() => import('AppComponents/MCPServers/MCPServers' /* webpackChunkName: "MCPServers" */));
@@ -33,39 +38,59 @@ const Details = lazy(() => import('AppComponents/Applications/Details/index' /* 
 
 /**
  * Handle redirection
- * @param {*} theme configuration
- * @returns {*}
+ * @param {Object} theme configuration
+ * @param {string} portalMode current portal mode
+ * @returns {string} redirect path
  */
-function getRedirectingPath(theme) {
+function getRedirectingPath(theme, portalMode = PORTAL_MODES.HYBRID) {
     if (theme.custom.landingPage.active) {
         return '/home';
-    } else if (
+    } if (
         theme.custom.landingPage.active === false
         && theme.custom.tagWise.active
         && theme.custom.tagWise.style === 'page'
     ) {
         return '/api-groups';
-    } else {
-        return 'apis';
     }
+    // Default redirection based on portal mode
+    if (portalMode === PORTAL_MODES.MCP_ONLY) {
+        return '/mcp-servers';
+    }
+    return '/apis';
 }
 
 /**
  * Handle routes
- * @param {*} props properties
- * @returns {*}
+ * @param {Object} props properties
+ * @returns {React.ReactElement} routes component
  */
 function AppRouts(props) {
     const { isAuthenticated, isUserFound } = props;
     const theme = useTheme();
+    const portalMode = usePortalMode();
+
     return (
         <Suspense fallback={<Progress />}>
             <Switch>
-                <Redirect exact from='/' to={getRedirectingPath(theme)} />
+                <Redirect exact from='/' to={getRedirectingPath(theme, portalMode)} />
                 <Route path='/home' component={Landing} />
                 <Route path='/api-groups' component={TagCloudListing} />
-                <Route path='/(apis|api-products)' component={Apis} />
-                <Route path='/mcp-servers' component={MCPServers} />
+                <Route
+                    path='/(apis|api-products)'
+                    render={(routeProps) => (
+                        <PortalModeRouteGuard>
+                            <Apis {...routeProps} />
+                        </PortalModeRouteGuard>
+                    )}
+                />
+                <Route
+                    path='/mcp-servers'
+                    render={(routeProps) => (
+                        <PortalModeRouteGuard>
+                            <MCPServers {...routeProps} />
+                        </PortalModeRouteGuard>
+                    )}
+                />
                 <Route
                     path='/settings/change-password/'
                     render={(localProps) => {
@@ -137,10 +162,23 @@ function AppRouts(props) {
                         }
                     }}
                 />
+                <Route
+                    path='/search'
+                    render={(routeProps) => (
+                        <PortalModeRouteGuard>
+                            <Apis {...routeProps} />
+                        </PortalModeRouteGuard>
+                    )}
+                />
                 <Route component={PageNotFound} />
             </Switch>
         </Suspense>
     );
 }
+
+AppRouts.propTypes = {
+    isAuthenticated: PropTypes.bool.isRequired,
+    isUserFound: PropTypes.bool.isRequired,
+};
 
 export default AppRouts;

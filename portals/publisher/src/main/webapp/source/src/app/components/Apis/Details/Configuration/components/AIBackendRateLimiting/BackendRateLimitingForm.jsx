@@ -29,11 +29,11 @@ import RequestCountRateLimit from './RequestCountRateLimit';
 import RequestCountRateLimitUnit from './RequestCountRateLimitUnit';
 
 /**
- * Backend Rate Limiting for AI/LLM APIs
+ * Backend Rate Limiting for AI APIs
  *
- * @export
- * @param {*} props
- * @returns
+ * @export BackendRateLimitingForm
+ * @param {*} props - The component props
+ * @returns {JSX.Element} The BackendRateLimitingForm component
  */
 export default function BackendRateLimitingForm(props) {
     const { api, configDispatcher, isProduction } = props;

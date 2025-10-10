@@ -26,8 +26,8 @@ import Paper from '@mui/material/Paper';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
 import LaunchIcon from '@mui/icons-material/Launch';
-
 import { green, yellow } from '@mui/material/colors';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'CheckboxLabels';
 
@@ -106,6 +106,7 @@ export default function CheckboxLabels(props) {
         isMandatoryPropertiesAvailable, isMandatoryPropertiesConfigured, isEndpointAvailable
     } = props;
     const lcState = isAPIProduct ? api.state : api.lifeCycleStatus;
+    const urlPrefix = getBasePath(api.apiType);
 
     return (
         <StyledPaper className={classes.paperCenter}>
@@ -148,7 +149,10 @@ export default function CheckboxLabels(props) {
                                         defaultMessage='Endpoint provided'
                                     />
                                 </Typography>
-                                <Link to={'/apis/' + api.id + '/endpoints'} aria-label='Endpoint provided'>
+                                <Link
+                                    to={getBasePath(api.apiType) + api.id + '/endpoints'}
+                                    aria-label='Endpoint provided'
+                                >
                                     <LaunchIcon style={{ marginLeft: '2px' }} color='primary' fontSize='small' />
                                 </Link>
                             </Grid>
@@ -167,7 +171,10 @@ export default function CheckboxLabels(props) {
                                             defaultMessage='Business Plan(s) selected'
                                         />
                                     </Typography>
-                                    <Link to={'/apis/' + api.id + '/subscriptions'} aria-label='Business Plan(s)'>
+                                    <Link
+                                        to={urlPrefix + api.id + '/subscriptions'}
+                                        aria-label='Business Plan(s)'
+                                    >
                                         <LaunchIcon style={{ marginLeft: '2px' }} color='primary' fontSize='small' />
                                     </Link>
                                 </Grid>
@@ -186,7 +193,7 @@ export default function CheckboxLabels(props) {
                                         />
                                     </Typography>
                                     <Link
-                                        to={'/apis/' + api.id + '/runtime-configuration'}
+                                        to={urlPrefix + api.id + '/runtime-configuration'}
                                         aria-label='Certificate provided'
                                     >
                                         <LaunchIcon style={{ marginLeft: '2px' }} color='primary' fontSize='small' />
@@ -206,7 +213,7 @@ export default function CheckboxLabels(props) {
                                             defaultMessage='Mandatory Properties provided'
                                         />
                                     </Typography>
-                                    <Link to={'/apis/' + api.id + '/properties'} aria-label='Properties'>
+                                    <Link to={urlPrefix + api.id + '/properties'} aria-label='Properties'>
                                         <LaunchIcon style={{ marginLeft: '2px' }} color='primary' fontSize='small' />
                                     </Link>
                                 </Grid>

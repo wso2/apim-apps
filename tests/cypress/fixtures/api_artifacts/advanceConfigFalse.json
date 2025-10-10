@@ -43,7 +43,7 @@
 					"Title": "Version $2 of $1 Released",
 					"Class": "org.wso2.carbon.apimgt.impl.notification.NewAPIVersionEmailNotifier",
 					"ClaimsRetrieverImplClass": "org.wso2.carbon.apimgt.impl.token.DefaultClaimsRetriever",
-					"Template": " <html> <body> <h3 style=\"color:Black;\">We’re happy to announce the arrival of the next major version $2 of $1 API which is now available in Our API Store.</h3><a href=\"https://localhost:9443/store\">Click here to Visit WSO2 API Store</a></body></html>"
+					"Template": " <html> <body> <h3 style=\"color:Black;\">We’re happy to announce the arrival of the next major version $2 of $1 API which is now available in Our API Store.</h3><a href=\"https://localhost:9443/devportal\">Click here to Visit WSO2 API Store</a></body></html>"
 				}
 			]
 		}
@@ -428,11 +428,11 @@
 			  },
 			  {
 				"Name":"apim:gov_rule_read",
-				"Roles":"admin,Internal/publisher,Internal/creator"
+				"Roles":"admin,Internal/publisher,Internal/creator,Internal/observer"
 			  },
 			  {
 				"Name": "apim:gov_result_read",
-				"Roles": "admin,Internal/publisher,Internal/creator"
+				"Roles": "admin,Internal/publisher,Internal/creator,Internal/observer"
 			  },
 			  {
 				"Name": "apim:gov_policy_manage",
@@ -440,7 +440,39 @@
 			  },
 			  {
 				"Name": "apim:gov_policy_read",
-				"Roles": "admin,Internal/publisher,Internal/creator"
+				"Roles": "admin,Internal/publisher,Internal/creator,Internal/observer"
+			  },
+			  {
+				"Name": "apim:mcp_server_create",
+				"Roles": "admin,Internal/creator"
+			  },
+			  {
+				"Name": "apim:mcp_server_manage",
+				"Roles": "admin"
+			  },
+			  {
+				"Name": "apim:mcp_server_view",
+				"Roles": "admin,Internal/publisher,Internal/creator,Internal/analytics,Internal/observer"
+			  },
+			  {
+				"Name": "apim:mcp_server_list_view",
+				"Roles": "admin,Internal/integration_dev"
+			  },
+			  {
+				"Name": "apim:mcp_server_import_export",
+				"Roles": "admin,Internal/devops"
+			  },
+			  {
+				"Name": "apim:mcp_server_publish",
+				"Roles": "admin,Internal/publisher"
+			  },
+			  {
+				"Name": "apim:mcp_server_delete",
+				"Roles": "admin,Internal/creator"
+			  },
+			  {
+				"Name": "apim:mcp_server_generate_key",
+				"Roles": "admin,Internal/creator,Internal/publisher"
 			  }
 		]
 	},

@@ -37,6 +37,7 @@ import TableContainer from '@mui/material/TableContainer';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import WarningIcon from '@mui/icons-material/WarningAmber';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'OrganizationSubscriptionPoliciesManage';
 
@@ -328,7 +329,10 @@ function OrganizationSubscriptionPoliciesManage(props) {
                             <AlertTitle>
                                 <FormattedMessage
                                     id='Apis.Details.Subscriptions.Subscriptions.validation.disabled'
-                                    defaultMessage='Subscription validation is disabled for this API'
+                                    defaultMessage='Subscription validation is disabled for this {type}'
+                                    values={{
+                                        type: getTypeToDisplay(api.apiType)
+                                    }}
                                 />
                             </AlertTitle>
                         </MUIAlert>

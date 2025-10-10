@@ -5,6 +5,7 @@ import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import { Box } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { getBasePath } from 'AppUtils/utils';
 
 const styles = {
     button: {
@@ -28,7 +29,11 @@ const ButtonPanel = (props) => {
      * Redirect  to the API console page
      */
     const handleTest = () => {
-        history.push(`/apis/${api.id}/api-console`);
+        if (api.type === 'MCP') {
+            history.push(`${getBasePath(api.type)}${api.id}/mcp-playground`);
+        } else {
+            history.push(`${getBasePath(api.type)}${api.id}/api-console`);
+        }
     };
 
     /**

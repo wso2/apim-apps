@@ -26,6 +26,7 @@ import Box from '@mui/material/Box';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { getBasePath } from 'AppUtils/utils';
 
 const PREFIX = 'Breadcrumb';
 
@@ -120,6 +121,7 @@ export default function Breadcrumb(props) {
     ];
 
     const [selected, setSelected] = useState(pages[0]);
+    const basePath = getBasePath(api.type);
 
     const detectCurrentMenu = (location = null) => {
         let locationLocal = location;
@@ -152,11 +154,11 @@ export default function Breadcrumb(props) {
                 <Breadcrumbs separator={<NavigateNextIcon fontSize='small' />} aria-label='breadcrumb'>
                     <MUILink
                         color='textPrimary'
-                        to={'/apis/' + api.id + '/overview'}
+                        to={basePath + api.id + '/overview'}
                         component={Link}
                         underline='hover'
                     >
-                        {api.name}
+                        {api.displayName || api.name}
                     </MUILink>
                     {(selected.route === 'api-console' || selected.route === 'api-chat') && (
                         <Typography color='textPrimary'>
@@ -169,7 +171,7 @@ export default function Breadcrumb(props) {
                     { (selected.route === 'documents' && document) && (
                         <MUILink
                             color='textPrimary'
-                            to={'/apis/' + api.id + '/documents/default'}
+                            to={basePath + api.id + '/documents/default'}
                             component={Link}
                             underline='hover'
                         >

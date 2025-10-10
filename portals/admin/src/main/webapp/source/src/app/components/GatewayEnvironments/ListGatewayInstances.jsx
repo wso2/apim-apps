@@ -67,12 +67,19 @@ export default function ListGatewayInstances({
         EXPIRED: 'error',
     };
 
+    const needsEncoding = (str) => /[^A-Za-z0-9]/.test(str);
+
     const fetchData = () => {
         setLoading(true);
         setError(null);
         setGateways([]);
         const restApi = new API();
-        restApi.getEnvironmentGateways(environmentId)
+        // Encode the environment ID if it contains special characters
+        let encodedEnvId = environmentId;
+        if (needsEncoding(environmentId)) {
+            encodedEnvId = btoa(environmentId);
+        }
+        restApi.getEnvironmentGateways(encodedEnvId)
             .then((result) => {
                 if (result.body && Array.isArray(result.body.list)) {
                     setGateways(result.body.list);
@@ -140,6 +147,10 @@ export default function ListGatewayInstances({
         viewColumns: false,
         customToolbar: false,
         responsive: 'stacked',
+        sortOrder: {
+            name: 'lastActive',
+            direction: 'desc',
+        },
         textLabels: {
             body: {
                 noMatch: intl.formatMessage({

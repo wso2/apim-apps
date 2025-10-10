@@ -26,6 +26,7 @@ import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const SecurityDetailsPanel = ({
     apiKey,
@@ -42,6 +43,15 @@ const SecurityDetailsPanel = ({
     isSecurityPanelDrawer,
 }) => {
     const [api] = useAPI();
+
+    const getCreateOrPublishScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), api);
 
     const renderSecuritySection = () => {
         return (
@@ -99,8 +109,9 @@ const SecurityDetailsPanel = ({
                             onClick={generateInternalKey}
                             variant='contained'
                             color='primary'
-                            disabled={tasksStatus.generateKey.inProgress || isAPIRetired
-                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            disabled={
+                                tasksStatus.generateKey.inProgress || isAPIRetired || isCreateOrPublishRestricted()
+                            }
                         >
                             <FormattedMessage
                                 id='Apis.Details.ApiConsole.generate.test.key'
@@ -149,7 +160,7 @@ const SecurityDetailsPanel = ({
                                         artifactType: getArtifactType()
                                     }}
                                 />
-                                <Link to={'/apis/' + api.id + '/deployments'}>
+                                <Link to={getBasePath(api.apiType) + api.id + '/deployments'}>
                                     <LaunchIcon
                                         color='primary'
                                         fontSize='small'
@@ -175,7 +186,7 @@ const SecurityDetailsPanel = ({
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.ApiConsole.deployments.api.gateways'
-                                            defaultMessage='API Gateways'
+                                            defaultMessage='Gateways'
                                         />
                                     </Typography>
                                     <TextField

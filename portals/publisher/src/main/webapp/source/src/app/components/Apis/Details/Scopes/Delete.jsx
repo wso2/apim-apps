@@ -63,10 +63,25 @@ const Root = styled('div')({
     },
 });
 
+/**
+ * Delete scope component
+ * @param {*} props {intl, scopeName}
+ * @returns {JSX.Element} The Delete scope component
+ */
 function Delete(props) {
     const [api, updateAPI] = useAPI();
     const { intl } = props;
     const [open, setOpen] = useState(false);
+
+    const getAllowedScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isAccessRestricted = () => isRestricted(getAllowedScopes(), api);
+
     const toggleOpen = () => {
         setOpen(!open);
     };
@@ -90,7 +105,7 @@ function Delete(props) {
             .then(() => {
                 Alert.info(intl.formatMessage({
                     id: 'Apis.Details.Resources.Resources.api.scope.deleted.successfully',
-                    defaultMessage: 'API Scope deleted successfully!',
+                    defaultMessage: 'Scope deleted successfully!',
                 }));
                 setOpenLocal(!open);
             })
@@ -114,7 +129,7 @@ function Delete(props) {
 
     return (
         <Root>
-            <Button onClick={toggleOpen} disabled={isRestricted(['apim:api_create'], api) || api.isRevision}>
+            <Button onClick={toggleOpen} disabled={isAccessRestricted() || api.isRevision}>
                 <Icon>delete_forever</Icon>
                 <FormattedMessage
                     id='Apis.Details.Documents.Delete.document.delete'

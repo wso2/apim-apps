@@ -18,6 +18,7 @@ import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import { isRestricted } from 'AppData/AuthManager';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'DeleteApiButton';
 
@@ -258,6 +259,20 @@ class DeleteApiButton extends React.Component {
     }
 
     /**
+     * Determines if the current user has restricted access based on context
+     * @returns {boolean} - True if access is restricted, false otherwise
+     */
+    isDeleteRestricted() {
+        const { api } = this.props;
+        if (api.apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
+            return isRestricted(
+                ['apim:mcp_server_delete', 'apim:mcp_server_manage', 'apim:mcp_server_import_export'], api);
+        } else {
+            return isRestricted(['apim:api_delete'], api);
+        }
+    }
+
+    /**
      *
      * @inheritDoc
      * @returns {React.Component} inherit docs
@@ -267,16 +282,7 @@ class DeleteApiButton extends React.Component {
         const { api, onClick, updateData } = this.props;
         const version = api.apiType === API.CONSTS.APIProduct ? null : '-' + api.version;
         const deleteHandler = onClick || this.handleApiDelete;
-
-        let type;
-        if (api.apiType === API.CONSTS.APIProduct) {
-            type = 'API Product';
-        } else if (api.type === MCPServer.CONSTS.MCP) {
-            type = 'MCP Server';
-        } else {
-            type = 'API';
-        }
-
+        const type = getTypeToDisplay(api.apiType);
         let path = resourcePath.SINGLE_API;
 
         if (api.apiType === API.CONSTS.APIProduct) {
@@ -296,7 +302,7 @@ class DeleteApiButton extends React.Component {
                                 id='itest-id-deleteapi-icon-button'
                                 onClick={this.handleRequestOpen}
                                 className={classes.delete}
-                                disabled={isRestricted(['apim:api_delete'], api)}
+                                disabled={this.isDeleteRestricted()}
                                 aria-label='delete'
                                 disableFocusRipple
                                 disableRipple

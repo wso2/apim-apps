@@ -65,27 +65,26 @@ describe("Endpoint testing", () => {
 
             // Save the cert
             cy.get('#upload-cert-save-btn').type(filepath);
+            cy.contains('Certificate added successfully');
             cy.wait(1000);
 
             // Save the endpoint
             cy.get('#endpoint-save-btn').click();
-            cy.get('#endpoint-save-btn').then(function (el) {
-                cy.contains('API updated successfully');
-                // Need to wait until certificate added into the store
-                cy.reload();
-                // Check the values
-                cy.contains('Certificates: 1');
-                cy.get('#http-panel1bh-header').click({force:true});
-                cy.get('#endpoint-cert-list').contains(testAlias).scrollIntoView().should('be.visible');
-                cy.get('#http-panel1bh-header').click({ force: true });
-                cy.get('#delete-cert-btn').click({ force: true });
-                cy.get('#delete-cert-confirm-btn').click({ force: true });
-                cy.reload();
-                cy.contains('Certificates: 0');
+            cy.contains('API updated successfully');
+            cy.reload();
 
-                // Test is done. Now delete the api
-                Utils.deleteAPI(apiId);
-            });
+            // Check the values
+            cy.contains('Certificates: 1');
+            cy.get('#http-panel1bh-header').click({force:true});
+            cy.get('#endpoint-cert-list').contains(testAlias).scrollIntoView().should('be.visible');
+            cy.get('#http-panel1bh-header').click({ force: true });
+            cy.get('#delete-cert-btn').click({ force: true });
+            cy.get('#delete-cert-confirm-btn').click({ force: true });
+            cy.reload();
+            cy.contains('Certificates: 0');
+
+            // Test is done. Now delete the api
+            Utils.deleteAPI(apiId);
         });
     });
 });

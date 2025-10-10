@@ -166,11 +166,12 @@ describe("Introduction : Create API from scratch and publish", () => {
         documentsPage.getBackToListiningButton().click()
         documentsPage.getDocumentNameOfTableRow(0).contains(testData.PizzaShackApi.name)
 
-        // Deploye the API
+        // Deploy the API
         apiMenuPage.getDeploy_DeployementsMenu().click({ force: true })
         deploymentsPage.getDeployButton().click()
         cy.contains("Revision Created Successfully")
         cy.contains("Revision Deployed Successfully")
+        cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
         // TODO : do assertions for reveions number and gateway urls
 
         cy.wait(10000) // need to wait till all api cals complted before log out TODO : handle wait time

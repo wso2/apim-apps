@@ -38,7 +38,8 @@ import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
 import Alert from 'AppComponents/Shared/Alert';
 import Paper from '@mui/material/Paper';
-import API from '../../../../data/api';
+import { getBasePath } from 'AppComponents/Shared/Utils';
+import API from 'AppData/api';
 
 const PREFIX = 'ExternalStores';
 
@@ -275,7 +276,7 @@ export default function ExternalStores() {
                         </Button>
                     </Grid>
                     <Grid item>
-                        <Link to={'/apis/' + api.id + '/overview'}>
+                        <Link to={getBasePath(api.apiType) + api.id + '/overview'}>
                             <Button>
                                 <FormattedMessage
                                     id='Apis.Details.ExternalStores.ExternalStores.cancel'

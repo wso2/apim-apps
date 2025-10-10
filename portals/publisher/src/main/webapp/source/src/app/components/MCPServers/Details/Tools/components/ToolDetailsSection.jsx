@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
@@ -26,6 +26,7 @@ import Typography from '@mui/material/Typography';
 import * as monaco from 'monaco-editor'
 import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
 import { FormattedMessage } from 'react-intl';
+import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import OperationSelector from './OperationSelector';
 
 // load Monaco from node_modules instead of CDN
@@ -42,7 +43,37 @@ loader.config({ monaco });
  * @param {Array} props.availableOperations - Array of available operations
  * @returns {React.Component} Tool details section component
  */
-function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, target, feature, availableOperations }) {
+function ToolDetailsSection({
+    operation, operationsDispatcher, disableUpdate, target, feature, availableOperations
+}) {
+    const { api } = useContext(APIContext);
+
+    /**
+     * Format schema definition as JSON if it's not already formatted
+     * @param {string} schemaDefinition - The schema definition string
+     * @returns {string} - Formatted JSON string
+     */
+    const formatJsonSchema = (schemaDefinition) => {
+        if (!schemaDefinition) return '';
+        
+        try {
+            // If it's already a string, try to parse and format it
+            if (typeof schemaDefinition === 'string') {
+                const parsed = JSON.parse(schemaDefinition);
+                return JSON.stringify(parsed, null, 2);
+            }
+            // If it's already an object, stringify it with formatting
+            if (typeof schemaDefinition === 'object') {
+                return JSON.stringify(schemaDefinition, null, 2);
+            }
+            // Fallback to string representation
+            return String(schemaDefinition);
+        } catch (error) {
+            // If parsing fails, return the original string
+            console.warn('Failed to format schema definition as JSON:', error);
+            return String(schemaDefinition);
+        }
+    };
 
     // Get current selected operation for the OperationSelector component
     const getCurrentSelectedOperation = () => {
@@ -60,6 +91,13 @@ function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, ta
         }
         return null;
     };
+
+    // Determine if this is an MCP Server Proxy to show appropriate labels
+    const isMCPServerProxy = api && api.isMCPServerFromProxy();
+    
+    // Set appropriate labels based on MCP Server type
+    const selectorLabel = isMCPServerProxy ? 'Tool' : 'Operation';
+    const selectorPlaceholder = isMCPServerProxy ? 'Select a tool' : 'Select an operation';
 
     const editorOptions = {
         selectOnLineNumbers: true,
@@ -148,7 +186,8 @@ function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, ta
                                 fullWidth
                                 margin='dense'
                                 variant='outlined'
-                                label='Operation'
+                                label={selectorLabel}
+                                placeholder={selectorPlaceholder}
                             />
                         </Grid>
 
@@ -180,7 +219,7 @@ function ToolDetailsSection({ operation, operationsDispatcher, disableUpdate, ta
                                         width='100%'
                                         height='200px'
                                         theme='vs-light'
-                                        value={operation.schemaDefinition}
+                                        value={formatJsonSchema(operation.schemaDefinition)}
                                         options={editorOptions}
                                     />
                                 ) : (

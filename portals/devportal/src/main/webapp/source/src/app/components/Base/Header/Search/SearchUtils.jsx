@@ -30,9 +30,9 @@ import Divider from '@mui/material/Divider';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchOutlined from '@mui/icons-material/SearchOutlined';
 import { Link } from 'react-router-dom';
-import APIsIcon from '@mui/icons-material/SettingsApplicationsOutlined';
 import DocumentsIcon from '@mui/icons-material/LibraryBooks';
 import CodeIcon from '@mui/icons-material/Code';
+import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import NativeSelect from '@mui/material/NativeSelect';
 import { FormattedMessage } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -74,6 +74,11 @@ const Root = styled('div')((
         transition: 'all .35s ease-in-out',
         padding: '5px 5px 5px 5px',
         minHeight: '40px',
+        '&.Mui-focused': {
+            width: '400px !important',
+            background: theme.custom.appBar.searchInputActiveBackground,
+            color: theme.palette.getContrastText(theme.custom.appBar.searchInputActiveBackground),
+        },
     },
 
     [`& .${classes.inputFocused}`]: {
@@ -154,7 +159,6 @@ function renderInput(inputProps) {
                     InputProps={{
                         inputRef: ref,
                         className: classes.input,
-                        classes: { focused: classes.inputFocused },
                         startAdornment: (
                             <InputAdornment position='start'>
                                 <SearchOutlined />
@@ -191,14 +195,31 @@ function getPath(suggestion) {
  * @returns {React.Component} @inheritdoc
  */
 function renderSuggestion(suggestion, { query, isHighlighted }) {
-    const matches = match(suggestion.name, query);
-    const parts = parse(suggestion.name, matches);
+    const matches = match(suggestion.displayName || suggestion.name, query);
+    const parts = parse(suggestion.displayName || suggestion.name, matches);
     const path = getPath(suggestion);
     // TODO: Style the version ( and apiName if docs) apearing in the menu item
-    const suffix = suggestion.type === 'API' ? suggestion.version : (suggestion.apiName + ' ' + suggestion.apiVersion);
+    const suffix = suggestion.type === 'API' ? suggestion.version : ((suggestion.apiDisplayName
+        || suggestion.apiName) + ' ' + suggestion.apiVersion);
     const getIcon = (type) => {
         if (type === 'API') {
-            return <APIsIcon />;
+            return (
+                <CustomIcon
+                    icon='api'
+                    width={16}
+                    height={16}
+                    strokeColor='black'
+                />
+            );
+        } else if (type === 'MCP') {
+            return (
+                <CustomIcon
+                    width={16}
+                    height={16}
+                    icon='mcp-server'
+                    strokeColor='black'
+                />
+            );
         } else if (type === 'DEFINITION') {
             return <CodeIcon />;
         } else {
@@ -242,7 +263,7 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
  * @returns {String} API Name
  */
 function getSuggestionValue(suggestion) {
-    return suggestion.name;
+    return suggestion.displayName || suggestion.name;
 }
 
 /**

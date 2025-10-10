@@ -107,8 +107,9 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
         });
         cy.logoutFromPublisher();
 
-        //login to dev portal as Developer
+        //login to publisher
         cy.loginToPublisher(readOnlyUser, readOnlyUserPassword);
+        cy.visit(`/publisher/apis`);
     }
 
     //should only be able to view APIs
@@ -119,12 +120,12 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
         },
     }, () => {
         initEnvironement();
-        //1. should not be able to create APIS
-        cy.get('#itest-create-api-menu-button', { timeout: Cypress.config().largeTimeout }).should('not.exist');
+        //1. should not be able to create APIs
+        cy.get('[data-testid="itest-create-api-button"]').get('[aria-disabled="true"]').should('exist');
 
         //2. click on API tile and select design config (basic info)
         cy.wait(2000);
-        cy.get('#searchQuery').click().type(apiName + "{enter}");
+        cy.get('#searchQuery').click().type(`"${apiName}"` + "{enter}");
         cy.get('a').get(`[aria-label="${apiName} Thumbnail"]`, { timeout: Cypress.config().largeTimeout }).click();
         cy.get('#itest-api-details-portal-config-acc').click();
         cy.get('#left-menu-itemDesignConfigurations').click();
@@ -271,15 +272,7 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
         cy.reload();
         //12. Policies should be checked. (UI issue fixed by PR #11297 in carbon-apimgt)
         cy.get("#left-menu-policies").click();
-        cy.get('[data-testid="add-new-api-specific-policy"]', { timeout: Cypress.config().largeTimeout }).click();
-        cy.get('[data-testid="create-policy-form"]').get('[data-testid="displayname"]').type("test name");
-        cy.get('[data-testid="create-policy-form"]').get('[data-testid="gateway-details-panel"]')
-            .get('[data-testid="file-drop-zone"]').then(function () {
-                cy.get('input[type="file"]').attachFile('api_artifacts/samplePolicyTemplate.j2');
-            });
-        cy.get('[data-testid="create-policy-form"]').get('[data-testid="policy-add-btn-panel"]')
-            .get('[data-testid="policy-create-save-btn"]').should('be.disabled');
-        cy.get('[data-testid="create-policy-form"]').get('[aria-label="Close"]').click();
+        cy.get('[data-testid="add-new-api-specific-policy"]', { timeout: Cypress.config().largeTimeout }).should('be.disabled');
 
         //13. monetization ,lifecycle menus are not visible to observer
         cy.get('[data-testid="left-menu-itemlifecycle"]').should('not.exist');
@@ -310,7 +303,7 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
     });
 
     afterEach(function () {
-        cy.get('#searchQuery').click().type(apiName + "{enter}");
+        cy.get('#searchQuery').click().type(`"${apiName}"` + "{enter}");
         cy.get("#itest-id-deleteapi-icon-button").click()
         cy.get('#itest-id-deleteconf').click()
         // delete observer user.

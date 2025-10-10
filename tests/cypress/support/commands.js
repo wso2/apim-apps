@@ -59,7 +59,9 @@ Cypress.Commands.add('portalLogin', (username, password, portal, tenant = 'carbo
     if (portal === 'devportal') {
         cy.visit(`/devportal/apis?tenant=${tenant}`);
         cy.wait(3000)
-        cy.get('#itest-devportal-sign-in', { timeout: Cypress.config().largeTimeout }).wait(3000).click();
+        cy.get('#itest-devportal-sign-in', { timeout: Cypress.config().largeTimeout })
+          .wait(3000)
+          .click({ force: true });
     }
     cy.url().should('contains', `/authenticationendpoint/login.do`);
     cy.get('[data-testid=login-page-username-input]').click();
@@ -511,8 +513,8 @@ Cypress.Commands.add('createAPIWithoutEndpoint', (name = null, version = null, t
         apiVersion = version;
     }
     cy.visit(`/publisher/apis`);
-    cy.get('#itest-create-api-menu-button', { timeout: Cypress.config().largeTimeout });
-    cy.get('#itest-create-api-menu-button').click();
+    cy.get('[data-testid="itest-create-api-button"]', { timeout: Cypress.config().largeTimeout });
+    cy.get('#itest-rest-api-create-menu').click();
     cy.get('#itest-id-landing-rest-create-default').click();
     cy.get('#itest-id-apiname-input').type(apiName);
     cy.get('#itest-id-apicontext-input').click();
@@ -599,6 +601,7 @@ Cypress.Commands.add('createAndPublishApi', (apiName = null) => {
     cy.get('#left-menu-itemdeployments').then(() => {
         cy.wait(1000);
         cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click();
+        cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
         cy.get('#undeploy-btn').should('not.have.class', 'Mui-disabled').should('exist');
     })
 
@@ -612,7 +615,7 @@ Cypress.Commands.add('createAndPublishApi', (apiName = null) => {
 
 Cypress.Commands.add('logoutFromDevportal', (referer = '/devportal/apis') => {
 
-    cy.get('#userToggleButton').click();
+    cy.get('#userToggleButton').click({ force: true });
     cy.get("#userPopup").get("#menu-list-grow").get('ul').contains('li', 'Logout').click();
     cy.url().should('contain', '/devportal/logout');
     cy.url().should('contain', referer);
@@ -635,15 +638,20 @@ Cypress.Commands.add('viewThirdPartyApi', (apiName = null) => {
     cy.get(`[area-label="Go to ${apiName}"]`, { timeout: Cypress.config().largeTimeout }).click();
 
     //Check if the subscriptions, tryout, comments and SDKs sections are present
-    cy.get('#left-menu-credentials').should('exist');
     cy.get('#left-menu-test').should('exist');
     cy.get('#left-menu-comments').should('exist');
     cy.get('#left-menu-sdk').should('exist');
 
     //Visit Original Developer Portal
-    cy.get('#left-menu-credentials').click();
-    cy.get('[data-testid="itest-original-devportal-link"]').should('exist');
-    cy.get('[data-testid="itest-no-tier-dialog"]').contains('No tiers are available for the API.').should('exist');
+    cy.contains('a', 'Visit Original Developer Portal')
+        .should('have.attr', 'href', 'http://www.mocky.io/v2/5ec501532f00009700dc2dc1')
+        .and('have.attr', 'target', '_blank')
+        .and('be.visible');
+
+    // Check for No subscription required message
+    cy.contains('div', 'No subscriptions required').should('be.visible');
+    cy.contains('p', 'Subscriptions are not required for this API. You can consume this without subscribing to it.')
+        .should('be.visible');
 
     //Check if authorization header and value can be customized
     cy.get('#left-menu-test').click();
@@ -661,15 +669,14 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
     cy.get("body").then($body => {
         if ($body.find("#itest-apis-welcome-msg").length > 0) {
             cy.log("Init page");
-            cy.get('#itest-rest-api-create-menu').click();
-            cy.get('#itest-streaming-api-create-menu').click();
         } else {
-            cy.log("API availble");
-            cy.get('#itest-create-api-menu-button').click();
+            cy.log("API available");
+            cy.get('[data-testid="itest-create-api-button"]').click();
         }
     });
-    //select streaming-api option from the menu item
 
+    // Select the streaming API import option
+    cy.get('#itest-streaming-api-create-menu').click();
     cy.get('#itest-id-create-streaming-api-import').click();
     cy.get('[data-testid="input-asyncapi-file"]').click();
 
@@ -721,6 +728,7 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
         cy.get('[data-testid="api-env-name"] input').should('have.value', 'apim-gw-dev');
         cy.get('[data-testid="api-org-name"] input').should('have.value', 'wso2dev');
         cy.get('#deploy-btn-solace').click({ force: true });
+        cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
         cy.intercept('**/deploy-revision**', { statusCode: 201, fixture: 'api_artifacts/solaceDeployedStatus.json' }).as('deployedStatus');
         cy.intercept('/api/am/publisher/v4/apis/*/revisions**', { statusCode: 200, fixture: 'api_artifacts/solaceDeployedQuery.json' }).as('deployedRevision');
         cy.wait('@deployedStatus');
@@ -949,7 +957,7 @@ Cypress.Commands.add('addNewUserUsingSelfSignUp', (username, password, firstName
     })
 
     cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${tenant}`);
-    cy.get('#itest-devportal-sign-in').click();
+    cy.get('#itest-devportal-sign-in').click({ force: true });
     cy.get('#registerLink').click();
     cy.get('#username').type(username);
     cy.get('#registrationSubmit').click();
@@ -977,7 +985,7 @@ Cypress.Commands.add('addExistingUserUsingSelfSignUp', (username, tenant) => {
     })
 
     cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${tenant}`);
-    cy.get('#itest-devportal-sign-in').click();
+    cy.get('#itest-devportal-sign-in').click({ force: true });
     cy.get('#registerLink').click();
     cy.get('#username').type(username);
     cy.get('#registrationSubmit').click();
@@ -998,8 +1006,8 @@ Cypress.Commands.add('updateTenantConfig', (username, password, tenant, config) 
 
     cy.loginToAdmin(username, password)
     cy.get('[data-testid="Advanced-child-link"]').click();
-    cy.wait(2000);
-    cy.get('[data-testid="monaco-editor-save"]').click();
+    cy.wait(3000);
+    cy.get('[data-testid="monaco-editor-save"]').should('not.be.disabled').click();
     cy.contains('Advanced Configuration saved successfully').should('exist');
     cy.logoutFromAdminPortal();
 })
@@ -1013,7 +1021,7 @@ Cypress.Commands.add('portalLoginUsingIncorrectUserCredentials', (username, pass
     cy.visit(`${Utils.getAppOrigin()}/${portal}`);
     if (portal === 'devportal') {
         cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${tenant}`);
-        cy.get('#itest-devportal-sign-in').click();
+        cy.get('#itest-devportal-sign-in').click({ force: true });
     }
     cy.url().should('contains', `${Utils.getAppOrigin()}/authenticationendpoint/login.do`);
     cy.get('[data-testid=login-page-username-input]').click();
@@ -1096,7 +1104,7 @@ Cypress.Commands.add('createAPIByRestAPIDesignAndSearch', (name = null, version 
     cy.wait(5000);
     cy.visit(`/publisher/apis/`)
     apisHomePage.waitUntillPublisherLoadingSpinnerExit();
-    apisHomePage.getSearchTestBox().clear().type(apiName).type("{enter}");
+    apisHomePage.getSearchTestBox().clear().type(`"${name}"`).type("{enter}");
     apisHomePage.waitUntillPublisherLoadingSpinnerExit();
     cy.wait(2000);
     // Assuming you have an anchor tag with id 'myLink'
@@ -1113,7 +1121,7 @@ Cypress.Commands.add('searchAndDeleteApi', (name, version) => {
     cy.intercept('**/apis*').as('getApis');
     cy.visit(`/publisher/apis`);
     apisHomePage.waitUntillPublisherLoadingSpinnerExit();
-    apisHomePage.getSearchTestBox().clear().type(name).type("{enter}");
+    apisHomePage.getSearchTestBox().clear().type(`"${name}"`).type("{enter}");
     apisHomePage.waitUntillPublisherLoadingSpinnerExit();
     cy.wait(2000);
     cy.wait('@getApis', { timeout: Cypress.config().largeTimeout }).then(() => {

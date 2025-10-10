@@ -68,6 +68,7 @@ describe("prototype apis with security enabled", () => {
                     cy.get("#left-menu-itemdeployments").click();
                     cy.wait(2000);
                     cy.get("#deploy-btn", { timeout: Cypress.config().largeTimeout }).should('not.have.class', 'Mui-disabled').click({ force: true });
+                    cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
 
                     cy.get("#left-menu-itemlifecycle").click();
                     cy.wait(2000);
@@ -81,8 +82,8 @@ describe("prototype apis with security enabled", () => {
                     cy.createApplication(applicationName, "50PerMin", "Sample Description");
                     cy.get('[data-testid="itest-link-to-apis"]', { timeout: Cypress.config().largeTimeout }).click();
 
-                    cy.get('input[placeholder="Search APIs"]').click().type(apiName + "{enter}");
-                    cy.get('table > tbody > tr', { timeout: Cypress.config().largeTimeout }).get(`[area-label="Go to ${apiName}"]`).contains('.api-thumb-chip-main', 'PRE-RELEASED').should('exist');
+                    cy.get('input[placeholder="Search APIs & MCP Servers"]').click().type(apiName + "{enter}");
+                    cy.get('table > tbody > tr', { timeout: Cypress.config().largeTimeout }).get(`[area-label="Go to ${apiName}"]`).should('contain.text', 'PRE-RELEASED');
                     cy.get('table > tbody > tr', { timeout: Cypress.config().largeTimeout }).get(`[area-label="Go to ${apiName}"]`).click();
 
                     // Go to application subscription page

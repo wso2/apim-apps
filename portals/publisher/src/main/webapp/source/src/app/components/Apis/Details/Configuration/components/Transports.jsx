@@ -31,6 +31,7 @@ import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 import { API_SECURITY_MUTUAL_SSL } from './APISecurity/components/apiSecurityConstants';
 
 const PREFIX = 'Transports';
@@ -59,6 +60,15 @@ const StyledGrid = styled(Grid)((
 export default function Transports(props) {
     const { api, configDispatcher, securityScheme, componentValidator } = props;
     const [apiFromContext] = useAPI();
+
+    const getCreateScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), apiFromContext);
 
     const isMutualSSLEnabled = securityScheme.includes(API_SECURITY_MUTUAL_SSL);
     const Validate = () => {
@@ -96,7 +106,7 @@ export default function Transports(props) {
                             <FormControlLabel
                                 control={(
                                     <Checkbox
-                                        disabled={isRestricted(['apim:api_create'], apiFromContext) || 
+                                        disabled={isCreateRestricted() || 
                                             isMutualSSLEnabled}
                                         checked={api.transport
                                             ? api.transport.includes('http') && !isMutualSSLEnabled : null}
@@ -116,7 +126,7 @@ export default function Transports(props) {
                             <FormControlLabel
                                 control={(
                                     <Checkbox
-                                        disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                        disabled={isCreateRestricted()}
                                         checked={api.transport
                                             ? api.transport.includes('https') : null}
                                         onChange={({ target: { checked } }) => configDispatcher({
@@ -139,10 +149,13 @@ export default function Transports(props) {
                         <FormattedMessage
                             id='Apis.Details.Configuration.components.Transports.tooltip'
                             defaultMessage={
-                                'API will be exposed in selected transport(s) in the gateway(s)'
+                                '{type} will be exposed in selected transport(s) in the gateway(s).'
                                 + ' If Mutual SSL option is selected, a trusted client'
-                                + ' certificate should be presented to access the API'
+                                + ' certificate should be presented to access the {type}'
                             }
+                            values={{
+                                type: getTypeToDisplay(api.apiType)
+                            }}
                         />
                     )}
                     aria-label='Transports'

@@ -119,6 +119,24 @@ function EndpointSecurity(props) {
         intl, securityInfo, isProduction, saveEndpointSecurityConfig, closeEndpointSecurityConfig,
         endpointSecurityTypes,
     } = props;
+
+    const getCreateScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), api);
+
+    const getCreateOrPublishScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), api);
     const [endpointSecurityInfo, setEndpointSecurityInfo] = useState(CONSTS.DEFAULT_ENDPOINT_SECURITY);
     const [securityValidity, setSecurityValidity] = useState();
 
@@ -423,7 +441,7 @@ function EndpointSecurity(props) {
         <StyledGrid container direction='row' spacing={2}>
             <Grid item xs={6}>
                 <TextField
-                    disabled={isRestricted(['apim:api_create'], api)}
+                    disabled={isCreateRestricted()}
                     fullWidth
                     select
                     value={endpointSecurityInfo && endpointSecurityInfo.type}
@@ -452,7 +470,7 @@ function EndpointSecurity(props) {
                     <>
                         <Grid item xs={6}>
                             <TextField
-                                disabled={isRestricted(['apim:api_create'], api)}
+                                disabled={isCreateRestricted()}
                                 required
                                 fullWidth
                                 select
@@ -485,7 +503,7 @@ function EndpointSecurity(props) {
                             <>
                                 <Grid item xs={6}>
                                     <TextField
-                                        disabled={isRestricted(['apim:api_create'], api)}
+                                        disabled={isCreateRestricted()}
                                         required
                                         fullWidth
                                         error={securityValidity && securityValidity.tokenUrl === false}
@@ -524,7 +542,7 @@ function EndpointSecurity(props) {
 
                                 <Grid item xs={6}>
                                     <TextField
-                                        disabled={isRestricted(['apim:api_create'], api)}
+                                        disabled={isCreateRestricted()}
                                         required
                                         fullWidth
                                         error={securityValidity && securityValidity.clientId === false}
@@ -565,7 +583,7 @@ function EndpointSecurity(props) {
 
                                 <Grid item xs={6}>
                                     <TextField
-                                        disabled={isRestricted(['apim:api_create'], api)}
+                                        disabled={isCreateRestricted()}
                                         required
                                         fullWidth
                                         error={securityValidity && securityValidity.clientSecret === false}
@@ -615,7 +633,7 @@ function EndpointSecurity(props) {
                 <>
                     <Grid item xs={6}>
                         <TextField
-                            disabled={isRestricted(['apim:api_create'], api)}
+                            disabled={isCreateRestricted()}
                             required
                             fullWidth
                             error={securityValidity && securityValidity.username === false}
@@ -652,7 +670,7 @@ function EndpointSecurity(props) {
 
                     <Grid item xs={6}>
                         <TextField
-                            disabled={isRestricted(['apim:api_create'], api)}
+                            disabled={isCreateRestricted()}
                             required
                             fullWidth
                             error={securityValidity && securityValidity.password === false}
@@ -931,7 +949,7 @@ function EndpointSecurity(props) {
                                         style={{}}
                                     >
                                         <TextField
-                                            disabled={isRestricted(['apim:api_create'], api)}
+                                            disabled={isCreateRestricted()}
                                             required
                                             fullWidth
                                             variant='outlined'
@@ -963,7 +981,7 @@ function EndpointSecurity(props) {
                                         style={{}}
                                     >
                                         <TextField
-                                            disabled={isRestricted(['apim:api_create'], api)}
+                                            disabled={isCreateRestricted()}
                                             required
                                             fullWidth
                                             variant='outlined'
@@ -995,7 +1013,7 @@ function EndpointSecurity(props) {
                                         style={{}}
                                     >
                                         <TextField
-                                            disabled={isRestricted(['apim:api_create'], api)}
+                                            disabled={isCreateRestricted()}
                                             fullWidth
                                             variant='outlined'
                                             id='proxy-username'
@@ -1026,7 +1044,7 @@ function EndpointSecurity(props) {
                                         style={{}}
                                     >
                                         <TextField
-                                            disabled={isRestricted(['apim:api_create'], api)}
+                                            disabled={isCreateRestricted()}
                                             fullWidth
                                             variant='outlined'
                                             id='proxy-password'
@@ -1058,7 +1076,7 @@ function EndpointSecurity(props) {
                                         style={{}}
                                     >
                                         <TextField
-                                            disabled={isRestricted(['apim:api_create'], api)}
+                                            disabled={isCreateRestricted()}
                                             required
                                             fullWidth
                                             variant='outlined'
@@ -1108,7 +1126,7 @@ function EndpointSecurity(props) {
                             size='medium'
                             className={classes.button}
                             onClick={toggleAddParameter}
-                            disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            disabled={isCreateOrPublishRestricted()}
                         >
                             <AddCircle className={classes.buttonIcon} />
                             <FormattedMessage
@@ -1168,10 +1186,7 @@ function EndpointSecurity(props) {
                                                 helperText={validateEmpty(parameterName)
                                                     ? 'Invalid parameter name' : ''}
                                                 error={validateEmpty(parameterName)}
-                                                disabled={isRestricted(
-                                                    ['apim:api_create', 'apim:api_publish'],
-                                                    api,
-                                                )}
+                                                disabled={isCreateOrPublishRestricted()}
                                             />
                                         </TableCell>
                                         <TableCell className={classes.verticalAlignTop}>
@@ -1193,10 +1208,7 @@ function EndpointSecurity(props) {
                                                     onChange={handleParameterChange('parameterValue')}
                                                     onKeyDown={handleKeyDown('parameterValue')}
                                                     error={validateEmpty(parameterValue)}
-                                                    disabled={isRestricted(
-                                                        ['apim:api_create', 'apim:api_publish'],
-                                                        api,
-                                                    )}
+                                                    disabled={isCreateOrPublishRestricted()}
                                                     InputProps={isParameterSecret ? {
                                                         endAdornment: (
                                                             <IconButton
@@ -1220,10 +1232,7 @@ function EndpointSecurity(props) {
                                                                 setIsParameterSecret(isSecret);
                                                                 setShowParameterValue(!isSecret);
                                                             }}
-                                                            disabled={isRestricted(
-                                                                ['apim:api_create', 'apim:api_publish'],
-                                                                api,
-                                                            )}
+                                                            disabled={isCreateOrPublishRestricted()}
                                                             color='primary'
                                                         />
                                                     )}
@@ -1243,9 +1252,7 @@ function EndpointSecurity(props) {
                                                     disabled={
                                                         !parameterValue
                                                         || !parameterName
-                                                        || isRestricted(
-                                                            ['apim:api_create', 'apim:api_publish'], api,
-                                                        )
+                                                        || isCreateOrPublishRestricted()
                                                     }
                                                     onClick={handleAddToList}
                                                 >

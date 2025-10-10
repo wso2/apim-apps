@@ -71,7 +71,7 @@ describe("Invoke API Product", () => {
 
             //Create Users in Devportal
             cy.visit(`/devportal/apis?tenant=carbon.super`);
-            cy.get('#itest-devportal-sign-in', { timeout: Cypress.config().largeTimeout }).click();
+            cy.get('#itest-devportal-sign-in', { timeout: Cypress.config().largeTimeout }).click({ force: true });
             cy.get('#registerLink', { timeout: Cypress.config().largeTimeout }).click();
 
             //Creating user 1
@@ -134,7 +134,9 @@ describe("Invoke API Product", () => {
 
                 //Subscription of API
                 cy.get('#left-menu-subscriptions').click();
-                cy.contains('Subscribe APIs').click();
+                cy.get('[data-testid="api-subscriptions-section"]').within(() => {
+                    cy.get('button').contains('Subscribe').click();
+                });
                 cy.get(`#policy-subscribe-btn-${uuid}`).click();
                 cy.get('[aria-label="close"]').click();
                 cy.logoutFromDevportal();

@@ -1,8 +1,6 @@
 # WSO2 API Manager Portals
-        
 
----
-
+A comprehensive web application suite for WSO2 API Manager, providing intuitive interfaces for API management, development, and administration.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![stackoverflow](https://img.shields.io/badge/stackoverflow-wso2am-orange)](https://stackoverflow.com/tags/wso2-am/)
@@ -14,122 +12,118 @@
 | :------------ |:------------- |:-------------
 | master      | [![Build Status](https://dev.azure.com/apim-apps/apim-apps/_apis/build/status/wso2.apim-apps?branchName=main)](https://dev.azure.com/apim-apps/apim-apps/_build/latest?definitionId=2&branchName=main) | [![Build Status](https://wso2.org/jenkins/view/platform/job/platform-builds/job/apim-apps/badge/icon)](https://wso2.org/jenkins/view/platform/job/platform-builds/job/apim-apps/) |
 
+## Overview
 
-WSO2 API Manager apps consists of several loosely coupled modules.
+The WSO2 API Manager Apps consist of several modular web applications designed to provide comprehensive API management capabilities:
 
-        * API Publisher portal
-        * API Developer portal
-        * API Admin portal
-        * Portals integration tests
-Setup build environment
-==================================
+- **API Publisher Portal** - Create, design, implement, and manage APIs
+- **API Developer Portal** - Discover, explore, and consume APIs
+- **API Admin Portal** - Administrative functions and portal management  
+- **Integration Tests** - Test suites for all portals
 
-1. Install NodeJS 22.x or later LTS version from [https://nodejs.org/en/download/](https://nodejs.org/en/download/).
- > **_Note :-_** 
-   >  
-   > You may use [nvm](https://github.com/nvm-sh/nvm) tool to manage NodeJS on your development environment
-   >
+## Prerequisites
 
-> **_Note :-_** 
-   >  
-   > You can skip following steps if you do not want to build [product-apim](https://github.com/wso2/product-apim) binaries
-   >
+1. **Node.js** - Install version 22.x or later LTS from [nodejs.org](https://nodejs.org/en/download/)
+   - Alternatively, use [nvm](https://github.com/nvm-sh/nvm) to manage Node.js versions
 
-2. Install Maven from [https://maven.apache.org/download.cgi](https://maven.apache.org/download.cgi). * For Maven 3.8 and up, please check the Troubleshoot section.
-3. Install JDK 1.8 [https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html).
+#### Optional Dependencies
+The following dependencies are only required if you plan to build the complete [WSO2 API Manager](https://github.com/wso2/product-apim) distribution:
 
-Fixing an issue in a web application
-==================================
-If you are planning to fix an issue in a specific web application, you don't need to build the whole repository. You only need to build that specific application from the portals folder. We will take fixing an issue in publisher web application as an example.
+2. **Apache Maven** - Download from [maven.apache.org](https://maven.apache.org/download.cgi)
+3. **JDK 1.8** - Download from [Oracle](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html) or use OpenJDK
 
-1. If you do not build a WSO2 API Manager server, Download the built distribution of WSO2 API Manager Server from http://wso2.com/api-manager. 
+## Quick Start
 
-2. Execute api-manager.sh (For unix environment) or api-manager.bat (For windows environment) file from the bin directory to run WSO2 API Manager Server.
+### Development Workflow
+When developing and fixing issues in specific web applications, you don't need to build the entire repository. Here's how to work on a specific portal (using the Publisher as an example):
 
-3. Goto `portals/publisher` directory in the `apim-apps` repository.
+#### Step 1: Set Up WSO2 API Manager Server
+- **Option A**: Download the pre-built distribution from [wso2.com/api-manager](http://wso2.com/api-manager)
+- **Option B**: Build the server yourself by following the [product-apim guide](https://github.com/wso2/product-apim)
 
-4. You can either run `mvn clean install` from root directory or `npm ci` from `src/main/webapp` directory. Note that the `npm ci` will be faster since `mvn clean install` command is executing production build and UI tests.
+#### Step 2: Start the API Manager Server
+```bash
+# Navigate to the server's bin directory
+cd path/to/wso2am-4.x.x/bin
 
-5. Run `npm start` from `src/main/webapp` to start publisher portal in development mode.
+# Start the server (Unix/Linux/macOS)
+./api-manager.sh
+# Or for Windows
+api-manager.bat
+```
 
-Now you can update the code to view the changes in the development server. Once you are done with the fixes,
-you can run `npm run build:prod` to check for errors before committing. Also refer to 'Running Tests' section and run test if the tests are effected. At the moment these tests are valid for only publisher app.
+#### Step 3: Clone the apim-apps Repository
+```bash
+git clone https://github.com/wso2/apim-apps
+cd apim-apps
+```
 
-### Adding or updating a new dependency
-1. Setup the development environment by following the steps given above.
+#### Step 4: Set Up the Portal for Development
+```bash
+# Navigate to the specific portal directory
+cd portals/publisher/src/main/webapp
+npm ci
+```
 
-2. Run the npm command from the web application root folder. ( Ex: For publisher web app, it's `portals/publisher/src/main/webapp` ).
-   - Adding a dependency `npm i <package-name>`. (Ex: `npm i base64url`)
-   - Removing a dependency `npm uninstall <package-name>`. (Ex: `npm uninstall base64url`)
-   - Updating a version or specifying version when installing `npm i <package-name>@<version>`. (Ex: `npm i base64url@3.0.1`).
+#### Step 5: Start the Development Server
+```bash
+# From the src/main/webapp directory
+npm start
+```
 
-3. Once you successfully run the above commands the package.json and package-lock.json files will be updated. You need to commit both of them. 
+The development server will start with hot-reload capabilities, allowing you to see changes immediately. The development servers will run on the following default ports:
 
->
-> Never run `npm i` since it will update the package lock for all the dependencies with there minor updated versions.
->
+- **Publisher Portal**: http://localhost:8081/publisher
+- **Developer Portal**: http://localhost:8084/devportal  
+- **Admin Portal**: http://localhost:8083/admin
 
-Building & Running
-==================================
-### Build
- 1. Download or clone the project source code from https://github.com/wso2/apim-apps
+> **Default Credentials**: Use `admin` / `admin` for username and password to log into all portals.
 
- 2. If you want to build all web apps, run `mvn clean install` from the command line in the project root directory (where the root pom.xml is located). 
+#### Step 6: Validate Changes
+Before committing your changes:
+```bash
+# Run production build to check for errors
+npm run build:prod
+```
 
- 3. Then you just need to build [WSO2 API Manager Server](https://github.com/wso2/product-apim) after. (Follow the guide there)
+**Note:** You can use `mvn clean install` at the root level to build all 3 portals, or navigate to a specific portal's directory and run it there to build only that component. If you use this method, you will need to copy the built `.war` files manually to the `<API-M_HOME>/repository/deployment/server/webapps` directory.
 
-### Run
+## Testing
 
-4. Extract the wso2am-4.0.0.zip and go to the 'bin' directory
-
-5. Run the api-manager.sh or api-manager.bat script based on you operating system.
-
-6. Access the respective WSO2 API-M interfaces
-    * API Publisher web application is running at - https://localhost:9443/publisher \
-  You may sign in to the Publisher using the default administrator credentials (username: admin, password: admin).
-    * Developer Portal web application is running at - https://localhost:9443/devportal \
-  You may sign in to the Developer Portal using the default administrator credentials (username: admin, password: admin).
-Running Tests
-==================================
-## Unit Tests
-
-Product Unit tests have been implemented using [Jest](https://jestjs.io/) along with [enzyme](https://enzymejs.github.io/enzyme/)
-
-### Run Tests for individual module
-
-- Go to the webapp directory in the respective individual portals directory
-
-  i:e `/portals/publisher/src/main/webapp`
-- and run
-
-  ```
-  npm run test
-  ```
-  For more information regarding the test module, checkout the [README](./portals/publisher/source/Tests/README.md) in the publisher `Tests` module.
 ### Integration Tests
 
-Product integration tests have been written using [Cypress Testing Framework](https://www.cypress.io/) and you can run the test suites using the following command.
+The project uses the [Cypress Testing Framework](https://www.cypress.io/) for comprehensive end-to-end testing.
 
-- Goto `/tests/cypress/`
+#### Setup
+```bash
+cd tests
+npm install
+```
 
-#### Headless mode
+#### Test Execution Modes
 
-- Run
+##### Headless Mode (CI/CD)
+Execute tests in the command line without a GUI - ideal for continuous integration:
+```bash
+npm run test
+```
 
-  ```
-  npm run test
-  ```
-#### Interactive mode (with GUI)
+##### Headed Mode (Visual Debugging)
+Run tests with a visible browser interface for debugging:
+```bash
+npm run test:gui
+```
 
-- Run
+##### Interactive Mode (Development)
+Open the Cypress Test Runner for selective test execution and debugging:
+```bash
+npm run test:dev
+```
 
-  ```
-  npm run test:gui
-  ```
 Support
 ==================================
 
-WSO2 Inc. offers a variety of development and production support
+WSO2 LLC. offers a variety of development and production support
 programs, ranging from Web-based support up through normal business
 hours, to premium 24x7 phone support.
 
@@ -142,8 +136,8 @@ Known Issues of WSO2 API Manager
 
 All known issues of WSO2 API Manager are filed at:
    
-* https://github.com/wso2/product-apim/issues
+* https://github.com/wso2/api-manager/issues
 
 
 --------------------------------------------------------------------------------
-(c) Copyright 2021 WSO2 Inc.
+(c) Copyright 2021 - 2025 WSO2 LLC.

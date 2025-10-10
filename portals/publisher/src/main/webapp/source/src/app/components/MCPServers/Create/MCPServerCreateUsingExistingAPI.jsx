@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useReducer, useState, useEffect } from 'react';
+import React, { useReducer, useState, useEffect, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
@@ -89,8 +89,10 @@ const MCPServerCreateUsingExistingAPI = (props) => {
     const urlParams = new URLSearchParams(location.search);
     const apiId = urlParams.get('apiId');
 
-    // Create selectedAPI object if API ID is present
-    const selectedAPI = apiId ? { id: apiId } : null;
+    // Create selectedAPI object if API ID is present - memoized to prevent unnecessary re-renders
+    const selectedAPI = useMemo(() => {
+        return apiId ? { id: apiId } : null;
+    }, [apiId]);
 
     useEffect(() => {
         API.policies('subscription').then((response) => {
@@ -139,6 +141,7 @@ const MCPServerCreateUsingExistingAPI = (props) => {
         switch (action) {
             case 'type':
             case 'name':
+            case 'displayName':
             case 'context':
             case 'version':
             case 'isFormValid':
@@ -182,10 +185,11 @@ const MCPServerCreateUsingExistingAPI = (props) => {
     const createMCPServer = () => {
         setCreating(true);
         const {
-            name, context, version, operations = [],
+            name, context, version, displayName, operations = [],
         } = mcpServerInputs;
         const mcpServerData = {
             name,
+            displayName,
             context,
             version,
             policies,
@@ -198,7 +202,7 @@ const MCPServerCreateUsingExistingAPI = (props) => {
         mcpServerData.operations = operations;
 
         newMCPServer = new MCPServer(mcpServerData);
-        const promisedCreatedMCPServer = newMCPServer
+        return newMCPServer
             .createMCPServerUsingExistingAPI()
             .then((mcpServer) => {
                 Alert.info(intl.formatMessage({
@@ -208,20 +212,27 @@ const MCPServerCreateUsingExistingAPI = (props) => {
                 return mcpServer;
             })
             .catch((error) => {
-                console.error(error);
-                Alert.error(intl.formatMessage({
-                    id: 'MCPServers.Create.MCPServerCreateUsingExistingAPI.created.error',
-                    defaultMessage: 'Failed to create MCP Server',
-                }));
+                // Re-throw the error so it can be caught by the calling code
+                throw error;
             })
             .finally(() => setCreating(false));
-        return promisedCreatedMCPServer.finally(() => setCreating(false));
     }
 
     const createMCPServerOnly = () => {
-        createMCPServer().then((mcpServer) => {
-            history.push(`/mcp-servers/${mcpServer.id}/overview`);
-        });
+        createMCPServer()
+            .then((mcpServer) => {
+                history.push(`/mcp-servers/${mcpServer.id}/overview`);
+            })
+            .catch((error) => {
+                if (error.response) {
+                    Alert.error(error.response.body.description);
+                } else {
+                    Alert.error(intl.formatMessage({
+                        id: 'MCPServers.Create.MCPServerCreateUsingExistingAPI.created.error',
+                        defaultMessage: 'Failed to create MCP Server',
+                    }));
+                }
+            });
     }
 
     const createAndPublishMCPServer = () => {

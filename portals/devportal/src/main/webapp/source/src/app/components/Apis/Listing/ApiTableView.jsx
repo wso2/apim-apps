@@ -42,6 +42,7 @@ import Icon from '@mui/material/Icon';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import DefaultConfigurations from 'AppData/defaultTheme';
 import { useTheme } from '@mui/material';
+import { getBasePath } from 'AppUtils/utils';
 import ImageGenerator from './APICards/ImageGenerator';
 import ApiThumb from './ApiThumb';
 import DocThumb from './APICards/DocThumb';
@@ -283,7 +284,7 @@ class ApiTableViewLegacy extends React.Component {
             const composeQuery = queryString.parse(query);
             composeQuery.limit = this.rowsPerPage;
             composeQuery.offset = page * rowsPerPage;
-            return api.search(composeQuery);
+            return new API().search(composeQuery);
         }
 
         if (selectedTag) {
@@ -360,20 +361,23 @@ class ApiTableViewLegacy extends React.Component {
                 name: 'name',
                 label: intl.formatMessage({
                     id: 'Apis.Listing.ApiTableView.name',
-                    defaultMessage: 'Name',
+                    defaultMessage: 'Display Name',
                 }),
                 options: {
                     customBodyRender: (value, tableMeta, updateValue, tableViewObj = this) => {
                         if (tableMeta.rowData) {
                             const artifact = tableViewObj.state.data[tableMeta.rowIndex];
+                            const displayName = artifact?.displayName;
                             const apiName = tableMeta.rowData[2];
                             const apiId = tableMeta.rowData[0];
+                            const apiType = tableMeta.rowData[6];
+                            const basePath = getBasePath(apiType);
 
                             if (artifact) {
                                 if (artifact.type === 'DOC') {
                                     return (
                                         <Link
-                                            to={'/apis/' + artifact.apiUUID + '/documents'}
+                                            to={basePath + artifact.apiUUID + '/documents'}
                                             className={classes.apiNameLink}
                                         >
                                             <Icon>library_books</Icon>
@@ -385,14 +389,14 @@ class ApiTableViewLegacy extends React.Component {
                                                     defaultMessage='[Doc] '
                                                 />
                                                 {' '}
-                                                {apiName}
+                                                {displayName || apiName}
                                             </span>
                                         </Link>
                                     );
                                 } else if (artifact.type === 'DEFINITION') {
                                     return (
                                         <Link
-                                            to={'/apis/' + apiId + '/overview'}
+                                            to={basePath + apiId + '/overview'}
                                             className={classes.apiNameLink}
                                         >
                                             <Icon>code</Icon>
@@ -404,7 +408,7 @@ class ApiTableViewLegacy extends React.Component {
                                                     defaultMessage='[Def] '
                                                 />
                                                 {' '}
-                                                {apiName}
+                                                {displayName || apiName}
                                             </span>
                                         </Link>
                                     );
@@ -412,12 +416,18 @@ class ApiTableViewLegacy extends React.Component {
                                 const strokeColor = theme.palette.getContrastText(theme.custom.listView.tableBodyEvenBackgrund);
                                 return (
                                     <Link
-                                        to={'/apis/' + apiId + '/overview'}
+                                        to={basePath + apiId + '/overview'}
                                         className={classes.apiNameLink}
                                     >
-                                        <CustomIcon width={16} height={16} icon='api' strokeColor={strokeColor} />
-
-                                        <span>{apiName}</span>
+                                        <CustomIcon
+                                            width={16}
+                                            height={16}
+                                            icon={apiType === 'MCP' ? 'mcp-server' : 'api'}
+                                            strokeColor={strokeColor}
+                                        />
+                                        <span style={{ marginLeft: 8 }}>
+                                            {displayName || apiName}
+                                        </span>
                                     </Link>
                                 );
                             }
@@ -608,12 +618,12 @@ class ApiTableViewLegacy extends React.Component {
                 const artifact = tableViewObj.state.data[dataIndex];
                 if (artifact) {
                     if (artifact.type === 'DOC') {
-                        return <tr key={rowIndex}><td><DocThumb doc={artifact} /></td></tr>;
+                        return <tr key={rowIndex} style={{ margin: 0 }}><td><DocThumb doc={artifact} /></td></tr>;
                     } else if (artifact.type === 'DEFINITION') {
-                        return <tr key={rowIndex}><td><DefinitionThumb def={artifact} /></td></tr>;
+                        return <tr key={rowIndex} style={{ margin: 0 }}><td><DefinitionThumb def={artifact} /></td></tr>;
                     } else {
                         return (
-                            <tr key={rowIndex}>
+                            <tr key={rowIndex} style={{ margin: 0 }}>
                                 <td>
                                     <ApiThumb
                                         api={artifact}
@@ -645,7 +655,8 @@ class ApiTableViewLegacy extends React.Component {
             return <Loading />;
         }
         if ((data && data.length === 0) || !data) {
-            return <NoApi />;
+            const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+            return <NoApi isMCPServersRoute={isMCPServersRoute} />;
         }
         return (
             <StyledStyledEngineProvider injectFirst>

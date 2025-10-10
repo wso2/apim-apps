@@ -37,6 +37,7 @@ import { withRouter } from 'react-router';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import { isRestricted } from 'AppData/AuthManager';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import APIRateLimiting from '../Resources/components/APIRateLimiting';
 import Operation from './Operation';
 
@@ -506,7 +507,7 @@ class Operations extends React.Component {
                         )}
                     </Grid>
                     <Grid item>
-                        <Link to={'/apis/' + api.id + '/overview'}>
+                        <Link to={getBasePath(api.apiType) + api.id + '/overview'}>
                             <Button>
                                 <FormattedMessage
                                     id='Apis.Details.Operations.Operation.cancel'

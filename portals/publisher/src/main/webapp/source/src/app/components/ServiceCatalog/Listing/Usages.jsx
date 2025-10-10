@@ -33,6 +33,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import CircularProgress from '@mui/material/CircularProgress';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 /**
 * Service Catalog service usages
@@ -173,7 +174,7 @@ function Usages(props) {
                                     <TableRow>
                                         <TableCell>
                                             <Link
-                                                to={'/apis/' + api.id + '/overview'}
+                                                to={getBasePath(api.apiType) + api.id + '/overview'}
                                             >
                                                 <span>{api.name}</span>
                                             </Link>

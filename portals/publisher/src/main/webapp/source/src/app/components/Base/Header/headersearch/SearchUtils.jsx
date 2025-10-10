@@ -30,7 +30,7 @@ import Icon from '@mui/material/Icon';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchOutlined from '@mui/icons-material/SearchOutlined';
 import { Link } from 'react-router-dom';
-import ProductIcon from 'AppComponents/Shared/CustomIcon';
+import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import API from 'AppData/api';
@@ -79,45 +79,84 @@ function renderInput(inputProps) {
     );
 }
 
+/**
+ * Get the path for the artifact
+ * @param {Object} suggestion - The suggestion object
+ * @returns {string} @inheritdoc
+ */
 function getPath(suggestion) {
     switch (suggestion.type) {
         case 'API':
             return `/apis/${suggestion.id}/overview`;
         case 'APIPRODUCT':
             return `/api-products/${suggestion.id}/overview`;
+        case 'MCP':
+            return `/mcp-servers/${suggestion.id}/overview`;
         case 'DEFINITION':
             if (suggestion.associatedType === 'API') {
                 return `/apis/${suggestion.apiUUID}/api-definition`
+            } else if (suggestion.associatedType === 'MCP') {
+                return `/mcp-servers/${suggestion.apiUUID}/api-definition`
             } else {
                 return `/api-products/${suggestion.apiUUID}/api-definition`
             }
         default:
             if (suggestion.associatedType === 'API') {
                 return `/apis/${suggestion.apiUUID}/documents/${suggestion.id}/details`;
+            } else if (suggestion.associatedType === 'MCP') {
+                return `/mcp-servers/${suggestion.apiUUID}/documents/${suggestion.id}/details`;
             } else {
                 return `/api-products/${suggestion.apiUUID}/documents/${suggestion.id}/details`;
             }
     }
 }
 
+/**
+ * Get the meta information for the artifact
+ * @param {Object} suggestion - The suggestion object
+ * @returns {string} @inheritdoc
+ */
 function getArtifactMetaInfo(suggestion) {
     switch (suggestion.type) {
         case 'API':
             return suggestion.version;
+        case 'MCP':
+            return suggestion.version;
         case 'APIPRODUCT':
             return '';
         default:
-            return suggestion.apiName + ' ' + suggestion.apiVersion;
+            return (suggestion.apiDisplayName || suggestion.apiName) + ' ' + suggestion.apiVersion;
     }
 }
 
+/**
+ * Get the meta information for the artifact
+ * @param {string} type - The type of the artifact
+ * @returns {React.Component} @inheritdoc
+ */
 function getIcon(type) {
     switch (type) {
         case 'API':
-            return <Icon style={{ fontSize: 30 }}>settings_applications</Icon>;
+            return (
+                <CustomIcon
+                    width={16}
+                    height={16}
+                    icon='apis'
+                    strokeColor='#000000'
+                />
+            );
+        case 'MCP':
+            return (
+                <CustomIcon
+                    width={16}
+                    height={16}
+                    icon='mcp-servers'
+                    strokeColor='#000000'
+                />
+            );
         case 'APIPRODUCT':
             return (
-                <ProductIcon
+                <CustomIcon
                     width={16}
                     height={16}
                     icon='api-product'
@@ -138,8 +177,8 @@ function getIcon(type) {
  * @returns {React.Component} @inheritdoc
  */
 function renderSuggestion(suggestion, { query, isHighlighted }) {
-    const matches = match(suggestion.name, query);
-    const parts = parse(suggestion.name, matches);
+    const matches = match(suggestion.displayName || suggestion.name, query);
+    const parts = parse(suggestion.displayName || suggestion.name, matches);
     const path = getPath(suggestion);
     const artifactMetaInfo = getArtifactMetaInfo(suggestion);
     // TODO: Style the version ( and apiName if docs) apearing in the menu item
@@ -181,7 +220,7 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
  * @returns {String} API Name
  */
 function getSuggestionValue(suggestion) {
-    return suggestion.name;
+    return suggestion.displayName || suggestion.name;
 }
 
 /**

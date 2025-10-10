@@ -30,6 +30,7 @@ import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 /**
  *
@@ -41,6 +42,16 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 export default function DefaultVersion(props) {
     const { api, configDispatcher } = props;
     const [apiFromContext] = useAPI();
+
+    const getCreateScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), apiFromContext);
+
     return (
         <Grid container spacing={1} alignItems='flex-start' xs={11}>
             <Grid item>
@@ -64,7 +75,7 @@ export default function DefaultVersion(props) {
                             style={{ display: 'flow-root' }}
                         >
                             <FormControlLabel
-                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                disabled={isCreateRestricted()}
                                 value
                                 control={<Radio color='primary' />}
                                 label={(
@@ -76,7 +87,7 @@ export default function DefaultVersion(props) {
                                 id='default-version-yes'
                             />
                             <FormControlLabel
-                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                disabled={isCreateRestricted()}
                                 value={false}
                                 control={<Radio color='primary' />}
                                 label={(
@@ -97,10 +108,13 @@ export default function DefaultVersion(props) {
                             <FormattedMessage
                                 id='Apis.Details.Configuration.Configuration.defaultversion.tooltip'
                                 defaultMessage={
-                                    'Indicates if this is the default version of the API. If an '
-                                    + 'API is invoked without specifying a version, the API Gateway will '
-                                    + 'route the request to the default version of the API.'
+                                    'Indicates if this is the default version of the {type}. If an '
+                                    + '{type} is invoked without specifying a version, the Gateway will '
+                                    + 'route the request to the default version of the {type}.'
                                 }
+                                values={{
+                                    type: getTypeToDisplay(api.apiType)
+                                }}
                             />
                         )}
                         aria-label='add'

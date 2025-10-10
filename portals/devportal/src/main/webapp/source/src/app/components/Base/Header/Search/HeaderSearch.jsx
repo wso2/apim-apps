@@ -28,6 +28,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import { FormattedMessage, injectIntl } from 'react-intl';
+import { usePortalMode, PORTAL_MODES } from 'AppUtils/PortalModeUtils';
 import {
     renderInput, renderSuggestion, getSuggestions, getSuggestionValue, buildSearchQuery,
 } from './SearchUtils';
@@ -159,7 +160,7 @@ class HeaderSearch extends React.Component {
          if (event.key === 'Enter' && !this.suggestionSelected) {
              const { history } = this.props;
              const { lcstate } = this.state;
-             history.push('/apis/search?query=' + buildSearchQuery(event.target.value, lcstate));
+             history.push('/search?query=' + buildSearchQuery(event.target.value, lcstate));
          }
          this.suggestionSelected = false;
      }
@@ -216,9 +217,36 @@ class HeaderSearch extends React.Component {
          });
          const { history } = this.props;
          if (event.target.value) {
-             history.push('/apis/search?query=' + buildSearchQuery(searchText, event.target.value));
+             history.push('/search?query=' + buildSearchQuery(searchText, event.target.value));
          } else {
              history.push('/apis/');
+         }
+     }
+
+     /**
+     * Get search placeholder text based on portal mode
+     * @returns {string} Placeholder text
+     */
+     getSearchPlaceholder() {
+         const { intl, portalMode } = this.props;
+
+         switch (portalMode) {
+             case PORTAL_MODES.API_ONLY:
+                 return intl.formatMessage({
+                     id: 'Base.Header.headersearch.HeaderSearch.search_api.tooltip',
+                     defaultMessage: 'Search APIs',
+                 });
+             case PORTAL_MODES.MCP_ONLY:
+                 return intl.formatMessage({
+                     id: 'Base.Header.headersearch.HeaderSearch.search_mcp.tooltip',
+                     defaultMessage: 'Search MCP Servers',
+                 });
+             case PORTAL_MODES.HYBRID:
+             default:
+                 return intl.formatMessage({
+                     id: 'Base.Header.headersearch.HeaderSearch.search_hybrid.tooltip',
+                     defaultMessage: 'Search APIs & MCP Servers',
+                 });
          }
      }
 
@@ -238,10 +266,9 @@ class HeaderSearch extends React.Component {
      }
 
      /**
-     *
-     *
-     * @param {*} options
-     * @returns
+     * Render the suggestions container
+     * @param {Object} options Options for the suggestions container
+     * @returns {React.Component} The suggestions container
      * @memberof HeaderSearch
      */
      renderSuggestionsContainer(options) {
@@ -264,7 +291,7 @@ class HeaderSearch extends React.Component {
      * @memberof HeaderSearch
      */
      render() {
-         const { intl, smSearch } = this.props;
+         const { smSearch } = this.props;
          const {
              searchText, lcstate, isLoading, suggestions,
          } = this.state;
@@ -294,10 +321,7 @@ class HeaderSearch extends React.Component {
                      inputProps={{
                          autoFocus,
                          classes,
-                         placeholder: intl.formatMessage({
-                             id: 'Base.Header.headersearch.HeaderSearch.search_api.tooltip',
-                             defaultMessage: 'Search APIs',
-                         }),
+                         placeholder: this.getSearchPlaceholder(),
                          value: searchText,
                          lcstate,
                          onChange: this.handleChange,
@@ -335,6 +359,12 @@ class HeaderSearch extends React.Component {
                                  </li>
                                  <li>
                                      <FormattedMessage
+                                         id='Base.Header.headersearch.HeaderSearch.tooltip.option7'
+                                         defaultMessage='Display Name [ Syntax - display-name:xxxx ]'
+                                     />
+                                 </li>
+                                 <li>
+                                     <FormattedMessage
                                          id='Base.Header.headersearch.HeaderSearch.tooltip.option2'
                                          defaultMessage='By API Provider [ Syntax - provider:xxxx ]'
                                      />
@@ -363,7 +393,7 @@ class HeaderSearch extends React.Component {
                                          defaultMessage='By Tags [ Syntax - tags:xxxx ]'
                                      />
                                  </li>
-                                 <li style={{ marginTop: '5px' }}>
+                                 <li>
                                      <FormattedMessage
                                          id='Base.Header.headersearch.HeaderSearch.tooltip.option13'
                                          defaultMessage='Gateway Vendor [ Syntax - vendor:xxxx ]'
@@ -398,6 +428,7 @@ class HeaderSearch extends React.Component {
 HeaderSearch.defaultProps = {
     smSearch: false,
     toggleSmSearch: undefined,
+    portalMode: PORTAL_MODES.HYBRID,
 };
 HeaderSearch.propTypes = {
     classes: PropTypes.instanceOf(Object).isRequired,
@@ -409,6 +440,42 @@ HeaderSearch.propTypes = {
     intl: PropTypes.shape({
         formatMessage: PropTypes.func,
     }).isRequired,
+    portalMode: PropTypes.string,
 };
 
-export default injectIntl(withRouter((HeaderSearch)));
+// Create a functional wrapper to use the portal mode hook
+const HeaderSearchWithPortalMode = (props) => {
+    const portalMode = usePortalMode();
+    const {
+        smSearch, toggleSmSearch, history, intl, classes: propClasses,
+    } = props;
+    return (
+        <HeaderSearch
+            smSearch={smSearch}
+            toggleSmSearch={toggleSmSearch}
+            history={history}
+            intl={intl}
+            classes={propClasses}
+            portalMode={portalMode}
+        />
+    );
+};
+
+HeaderSearchWithPortalMode.propTypes = {
+    smSearch: PropTypes.bool,
+    toggleSmSearch: PropTypes.func,
+    history: PropTypes.shape({
+        push: PropTypes.func,
+    }).isRequired,
+    intl: PropTypes.shape({
+        formatMessage: PropTypes.func,
+    }).isRequired,
+    classes: PropTypes.instanceOf(Object).isRequired,
+};
+
+HeaderSearchWithPortalMode.defaultProps = {
+    smSearch: false,
+    toggleSmSearch: undefined,
+};
+
+export default injectIntl(withRouter(HeaderSearchWithPortalMode));

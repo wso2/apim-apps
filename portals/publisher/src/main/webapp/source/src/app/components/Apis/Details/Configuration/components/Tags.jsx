@@ -38,6 +38,15 @@ export default function Tags(props) {
     const [isTagValid, setIsTagValid] = useState(true);
     const [invalidTags, setInvalidTags] = useState([]);
     const [isTagWithinLimit, setIsTagWithinLimit] = useState(true);
+
+    const getCreateOrPublishScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), apiFromContext);
     const regexPattern = /([~!@#;%^&*+=|\\<>"'/,])/;
     const helperText = () => {
         if(!isTagWithinLimit || !isTagValid) {
@@ -84,7 +93,7 @@ export default function Tags(props) {
                         defaultMessage='Tags'
                     />
                 )}
-                disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
+                disabled={isCreateOrPublishRestricted()}
                 value={api.tags}
                 error={!(isTagValid && isTagWithinLimit)}
                 helperText={helperText()}
@@ -110,6 +119,7 @@ export default function Tags(props) {
                                 setInvalidTags(currentInvalidTags);
                                 if (currentInvalidTags.length === 0) {
                                     setIsTagValid(true);
+                                    setIsTagWithinLimit(true);
                                 }
                             }
                             configDispatcher({ action: 'tags', value: api.tags.filter((oldTag) => oldTag !== value) });

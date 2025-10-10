@@ -292,9 +292,9 @@ function Overview() {
     };
 
     const getDocuments = () => {
-        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        const isMCPServer = api.type === 'MCP';
         let promisedApi;
-        if (isMCPServersRoute) {
+        if (isMCPServer) {
             promisedApi = new MCPServer().getDocuments(api.id);
         } else {
             promisedApi = new API().getDocumentsByAPIId(api.id);
@@ -337,24 +337,22 @@ function Overview() {
         const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
         if (showSwaggerDescriptionOnOverview) {
             let promisedSwagger;
-            if (isMCPServersRoute) {
-                promisedSwagger = new MCPServer().getSwaggerByMCPServerIdAndEnvironment(api.id, selectedEndpoint.environmentName);
-            } else {
+            if (!isMCPServersRoute) {
                 promisedSwagger = new API().getSwaggerByAPIIdAndEnvironment(api.id, selectedEndpoint.environmentName);
-            }
-            promisedSwagger
-                .then((swaggerResponse) => {
-                    const swagger = swaggerResponse.obj;
-                    if (swagger && swagger.info) {
-                        setSwaggerDescription(swagger.info.description);
-                    } else {
+                promisedSwagger
+                    .then((swaggerResponse) => {
+                        const swagger = swaggerResponse.obj;
+                        if (swagger && swagger.info) {
+                            setSwaggerDescription(swagger.info.description);
+                        } else {
+                            setSwaggerDescription('');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
                         setSwaggerDescription('');
-                    }
-                })
-                .catch((error) => {
-                    console.log(error);
-                    setSwaggerDescription('');
-                });
+                    });
+            }
         } else {
             setIsLoading(true);
             Promise.all([getDocuments(), getSubscriptionPolicies()])
@@ -473,7 +471,7 @@ function Overview() {
                                     </Box>
                                 )}
                                 <Box ml={3} mr={2}>
-                                    <Typography variant='h4' component='h2'>{api.name}</Typography>
+                                    <Typography variant='h4' component='h2'>{api.displayName || api.name}</Typography>
                                     {api.description && (
                                         <Typography variant='body2' gutterBottom align='left' className={classes.description}>
                                             {(descriptionIsBig && descriptionHidden) ? smallDescription : api.description}
@@ -517,9 +515,9 @@ function Overview() {
                                     </Box>
                                 </Box>
                             </Box>
-                            <Box display='flex' flexDirection='row' alignItems='center' mt={2} pr={6}>
+                            <Box alignItems='center' mt={2} pr={6}>
                                 {
-                                    (api.gatewayVendor === 'solace') ? (
+                                    (api.gatewayType === 'solace') ? (
                                         <SolaceEndpoints />
                                     ) : (
                                         <Environments updateSelectedEndpoint={updateSelectedEndpoint} selectedEndpoint={selectedEndpoint} />

@@ -27,17 +27,20 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import Icon from '@mui/material/Icon';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Dropzone from 'react-dropzone';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import Api from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
+import MCPServer from 'AppData/MCPServer';
 import APIValidation from 'AppData/APIValidation';
 import AppContext from 'AppComponents/Shared/AppContext';
 import Alert from 'AppComponents/Shared/Alert';
 import Configurations from 'Config';
 import { green } from '@mui/material/colors';
+import { Box } from '@mui/material';
 
 const PREFIX = 'CreateEditForm';
 
@@ -141,7 +144,6 @@ const Root = styled('div')((
     [`& .${classes.dropZoneWrapper}`]: {
         height: '100%',
         display: 'flex',
-        cursor: 'pointer',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
@@ -155,7 +157,16 @@ const Root = styled('div')((
     }
 }));
 
+/**
+ * CreateEditForm component
+ * @extends {React.Component} extends React.Component
+ */
 class CreateEditForm extends React.Component {
+
+    /**
+     * constructor component
+     * @param {*} props {intl, apiId, docId, apiType, saveDisabled, setSaveDisabled}
+     */
     constructor(props) {
         super(props);
         this.state = {
@@ -171,7 +182,7 @@ class CreateEditForm extends React.Component {
             nameMaxLengthExceeds: false,
             invalidUrl: false,
             nameEmpty: false,
-            summeryEmpty: false,
+            summaryEmpty: false,
             otherTypeEmpty: false,
             urlEmpty: false,
             invalidDocName: false,
@@ -179,27 +190,23 @@ class CreateEditForm extends React.Component {
         };
     }
 
-    changeType = (e) => {
-        const { value } = e.target;
-        if (value === 'PUBLIC_FORUM' || value === 'SUPPORT_FORUM') {
-            this.setState({ sourceType: 'URL' });
+    /**
+     * componentDidMount component
+     * @returns {void} - The componentDidMount component
+     */
+    componentDidMount() {
+        this.getDocument();
+        const { apiId, docId } = this.props;
+        if (apiId && docId) {
+            this.setState({ disableName: true });
         }
-        this.setState({ type: value });
-    };
-    changeSource = (e) => {
-        const { value } = e.target;
-        this.validate();
-        this.setState({ sourceType: value });
-    };
-    setDisable = (item) => {
-        const { type } = this.state;
-        if (item === 'INLINE' || item === 'MARKDOWN' || item === 'FILE') {
-            if (type === 'PUBLIC_FORUM' || type === 'SUPPORT_FORUM') {
-                return true;
-            }
-        }
-    };
+    }
 
+    /**
+     * handleChange component
+     * @param {string} name - The name
+     * @returns {function} - The handleChange component
+     */
     handleChange = name => (e) => {
         const { value } = e.target;
         if (name === 'name') {
@@ -215,9 +222,13 @@ class CreateEditForm extends React.Component {
         }
     };
 
+    /**
+     * onDrop component
+     * @param {Array} acceptedFile - The accepted file
+     * @returns {void} - The onDrop component
+     */
     onDrop = (acceptedFile) => {
-        const { intl } = this.props;
-        var specialChars = /[`!@#%^*()+\={};'"\\|,<>\/~]/;
+        const specialChars = /[`!@#%^*()+\={};'"\\|,<>\/~]/;
         if (specialChars.test(acceptedFile[0].name)) {
             this.setState({ file: null });
             Alert.error('Document source file name cannot contain spaces or special characters');
@@ -226,48 +237,66 @@ class CreateEditForm extends React.Component {
         }
     };
 
-    addDocument = (apiId) => {
-        const { apiType } = this.props;
-        const restAPI = apiType === Api.CONSTS.APIProduct ? new APIProduct() : new Api();
-        const {
-            name, type, summary, sourceType, sourceUrl, file, otherTypeName, visibility,
-        } = this.state;
-        const docPromise = restAPI.addDocument(apiId, {
-            name,
-            type,
-            summary,
-            sourceType,
-            visibility,
-            sourceUrl,
-            otherTypeName,
-            inlineContent: '',
-        });
-        return { docPromise, file };
+    /**
+     * setDisable component
+     * @param {string} item - The item
+     * @returns {boolean}  item is disabled
+     */
+    setDisable = (item) => {
+        const { type } = this.state;
+        if (item === 'INLINE' || item === 'MARKDOWN' || item === 'FILE') {
+            if (type === 'PUBLIC_FORUM' || type === 'SUPPORT_FORUM') {
+                return true;
+            }
+        }
+        return false;
     };
 
-    updateDocument = (apiId) => {
-        const { apiType } = this.props;
-        const restAPI = apiType === Api.CONSTS.APIProduct ? new APIProduct() : new Api();
-        const {
-            name, type, summary, sourceType, sourceUrl, file, otherTypeName, visibility,
-        } = this.state;
-        const { docId } = this.props;
-        const docPromise = restAPI.updateDocument(apiId, docId, {
-            name,
-            type,
-            summary,
-            sourceType,
-            visibility,
-            sourceUrl,
-            otherTypeName,
-            inlineContent: '',
-        });
-        return { docPromise, file };
-    };
+    /**
+     * getUrlHelperText component
+     * @returns {JSX.Element} - The getUrlHelperText component
+     */
+    getUrlHelperText() {
+        const { invalidUrl, urlEmpty} = this.state;
 
+        if (invalidUrl) {
+            return (
+                <FormattedMessage
+                    id='Apis.Details.Documents.CreateEditForm.source.url.helper.text.error.invalid'
+                    defaultMessage='Enter a valid URL to the source'
+                />
+            );
+        } else if (urlEmpty) {
+            return (
+                <FormattedMessage
+                    id='Apis.Details.Documents.CreateEditForm.source.url.helper.text.error.empty'
+                    defaultMessage='URL Field cannot be empty'
+                />
+            );
+        } else {
+            return (
+                <FormattedMessage
+                    id='Apis.Details.Documents.CreateEditForm.source.url.helper.text'
+                    defaultMessage='Provide the URL to the source'
+                />
+            );
+        }
+    }
+
+    /**
+     * getDocument component
+     * @returns {void} - The getDocument component
+     */
     getDocument() {
         const { apiId, docId, apiType } = this.props;
-        const restAPI = apiType === Api.CONSTS.APIProduct ? new APIProduct() : new Api();
+        let restAPI;
+        if (apiType === Api.CONSTS.APIProduct) {
+            restAPI = new APIProduct();
+        } else if (apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
         if (docId && apiId) {
             const docPromise = restAPI.getDocument(apiId, docId);
             docPromise
@@ -297,6 +326,95 @@ class CreateEditForm extends React.Component {
         }
     }
 
+    /**
+     * addDocument component
+     * @param {string} apiId - The ID of the API
+     * @returns {Object} - The addDocument component
+     */
+    addDocument = (apiId) => {
+        const { apiType } = this.props;
+        let restAPI;
+        if (apiType === Api.CONSTS.APIProduct) {
+            restAPI = new APIProduct();
+        } else if (apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
+        const {
+            name, type, summary, sourceType, sourceUrl, file, otherTypeName, visibility,
+        } = this.state;
+        const docPromise = restAPI.addDocument(apiId, {
+            name,
+            type,
+            summary,
+            sourceType,
+            visibility,
+            sourceUrl,
+            otherTypeName,
+            inlineContent: '',
+        });
+        return { docPromise, file };
+    };
+
+
+    /**
+     * updateDocument component
+     * @param {string} apiId - The ID of the API
+     * @returns {Object} - The updateDocument component
+     */
+    updateDocument = (apiId) => {
+        const { apiType } = this.props;
+        let restAPI;
+        if (apiType === Api.CONSTS.APIProduct) {
+            restAPI = new APIProduct();
+        } else if (apiType === MCPServer.CONSTS.MCP) {
+            restAPI = MCPServer;
+        } else {
+            restAPI = new Api();
+        }
+        const {
+            name, type, summary, sourceType, sourceUrl, file, otherTypeName, visibility,
+        } = this.state;
+        const { docId } = this.props;
+        const docPromise = restAPI.updateDocument(apiId, docId, {
+            name,
+            type,
+            summary,
+            sourceType,
+            visibility,
+            sourceUrl,
+            otherTypeName,
+            inlineContent: '',
+        });
+        return { docPromise, file };
+    };
+
+    /**
+     * changeSource component
+     * @param {*} e {value: string}
+     * @returns {void} - The changeSource component
+     */
+    changeSource = (e) => {
+        const { value } = e.target;
+        this.validate();
+        this.setState({ sourceType: value });
+    };
+
+    changeType = (e) => {
+        const { value } = e.target;
+        if (value === 'PUBLIC_FORUM' || value === 'SUPPORT_FORUM') {
+            this.setState({ sourceType: 'URL' });
+        }
+        this.setState({ type: value });
+    };
+
+    /**
+     * validate component
+     * @param {*} field {string}
+     * @param {*} value {string}
+     * @returns {void} - The validate component
+     */
     validate(field=null, value=null) {
         let invalidUrl = false;
         const { intl } = this.props;
@@ -344,9 +462,9 @@ class CreateEditForm extends React.Component {
             }
         } else if (field === 'summary') {
             if (value === '') {
-                this.setState({ summeryEmpty: true });
+                this.setState({ summaryEmpty: true });
             } else {
-                this.setState({ summeryEmpty: false });
+                this.setState({ summaryEmpty: false });
             }
         } else if (field === 'otherTypeName') {
             if (value === '') {
@@ -357,14 +475,10 @@ class CreateEditForm extends React.Component {
         }
     }
 
-    componentDidMount() {
-        this.getDocument();
-        const { apiId, docId } = this.props;
-        if (apiId && docId) {
-            this.setState({ disableName: true });
-        }
-    }
-
+    /**
+     * showNameHelper component
+     * @returns {JSX.Element} - The showNameHelper component
+     */
     showNameHelper() {
         const { nameEmpty, nameNotDuplicate, nameMaxLengthExceeds, invalidDocName } = this.state;
         if (nameMaxLengthExceeds) {
@@ -405,33 +519,10 @@ class CreateEditForm extends React.Component {
         }
     }
 
-    getUrlHelperText() {
-        const { invalidUrl, urlEmpty} = this.state;
-
-        if (invalidUrl) {
-            return (
-                <FormattedMessage
-                    id='Apis.Details.Documents.CreateEditForm.source.url.helper.text.error.invalid'
-                    defaultMessage='Enter a valid URL to the source'
-                />
-            );
-        } else if (urlEmpty) {
-            return (
-                <FormattedMessage
-                    id='Apis.Details.Documents.CreateEditForm.source.url.helper.text.error.empty'
-                    defaultMessage='URL Field cannot be empty'
-                />
-            );
-        } else {
-            return (
-                <FormattedMessage
-                    id='Apis.Details.Documents.CreateEditForm.source.url.helper.text'
-                    defaultMessage='Provide the URL to the source'
-                />
-            );
-        }
-    }
-
+    /**
+     * render component
+     * @returns {JSX.Element} - The render component
+     */
     render() {
         const {
             name,
@@ -447,29 +538,33 @@ class CreateEditForm extends React.Component {
             nameMaxLengthExceeds,
             nameEmpty,
             invalidDocName,
-            summeryEmpty,
+            summaryEmpty,
             otherTypeEmpty,
             urlEmpty,
             visibility
         } = this.state;
-        const {  setSaveDisabled } = this.props;
+        const {  setSaveDisabled, docId } = this.props;
         const { settings: settingsContext } = this.context;
-        if (
+
+        const isEditing = !!docId;
+        let isFormValid =
             name !== '' &&
             summary !== '' &&
             nameNotDuplicate &&
             !nameMaxLengthExceeds &&
             !invalidDocName &&
-            ((!invalidUrl && sourceUrl) || sourceType !== 'URL')
-        ) {
-            setSaveDisabled(false);
-        } else {
-            setSaveDisabled(true);
+            (sourceType !== 'URL' || (sourceUrl && !invalidUrl));
+
+        if (sourceType === 'FILE' && !isEditing && !file) {
+            isFormValid = false;
         }
 
         if (type === 'OTHER' && !otherTypeName) {
-            setSaveDisabled(true);
+            isFormValid = false;
         }
+
+        setSaveDisabled(!isFormValid);
+
         return (
             <Root className={classes.addNewOther}>
                 <FormControl margin='normal' className={classes.FormControlOdd}>
@@ -524,7 +619,7 @@ class CreateEditForm extends React.Component {
                             />
                         }
                         helperText={
-                            summeryEmpty ? (
+                            summaryEmpty ? (
                                 <FormattedMessage
                                     id='Apis.Details.Documents.CreateEditForm.document.summary.error.empty'
                                     defaultMessage='Document summary can not be empty'
@@ -543,10 +638,10 @@ class CreateEditForm extends React.Component {
                         InputLabelProps={{
                             shrink: true,
                         }}
-                        error={summeryEmpty}
+                        error={summaryEmpty}
                     />
                 </FormControl>
-                {settingsContext.docVisibilityEnabled && 
+                {settingsContext?.docVisibilityEnabled && 
                 <FormControl margin='normal' className={classes.FormControlOdd}>
                     <TextField
                         fullWidth
@@ -554,48 +649,48 @@ class CreateEditForm extends React.Component {
                         select
                         variant='outlined'
                         label={
-                        <FormattedMessage
-                            id='Apis.Details.Documents.CreateEditForm.document.docVisibility'
-                            defaultMessage='Document Visibility'
-                        />
-                    }
+                            <FormattedMessage
+                                id='Apis.Details.Documents.CreateEditForm.document.docVisibility'
+                                defaultMessage='Document Visibility'
+                            />
+                        }
                         helperText={
-                        summeryEmpty ? (
-                            <FormattedMessage
-                                id='Apis.Details.Documents.CreateEditForm.document.summary.error.empty'
-                                defaultMessage='Document summary can not be empty'
-                            />
-                        ) : (
-                            <FormattedMessage
-                                id='Apis.Details.Documents.CreateEditForm.document.summary.helper.text'
-                                defaultMessage='Provide a brief description for the document'
-                            />
-                        )
-                    }
+                            summaryEmpty ? (
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.CreateEditForm.document.summary.error.empty'
+                                    defaultMessage='Document summary can not be empty'
+                                />
+                            ) : (
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.CreateEditForm.document.summary.helper.text'
+                                    defaultMessage='Provide a brief description for the document'
+                                />
+                            )
+                        }
                         type='text'
                         name='visibility'
                         margin='normal'
                         value={visibility}
                         onChange={this.handleChange('visibility')}
-                        error={summeryEmpty}
-                >
+                        error={summaryEmpty}
+                    >
                         <MenuItem value='API_LEVEL'>
                             <FormattedMessage
                                 id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.public'
                                 defaultMessage='Same as API Visibility'
-                        />
+                            />
                         </MenuItem>
                         <MenuItem value='PRIVATE'>
                             <FormattedMessage
                                 id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.private'
                                 defaultMessage='Private'
-                        />
+                            />
                         </MenuItem>
                         <MenuItem value='OWNER_ONLY'>
                             <FormattedMessage
                                 id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.ownerOnly'
                                 defaultMessage='Owner Only'
-                        />
+                            />
                         </MenuItem>
                     </TextField>
                 </FormControl>}
@@ -723,16 +818,16 @@ class CreateEditForm extends React.Component {
                                 otherTypeEmpty ? (
                                     <FormattedMessage
                                         id={
-                                            'Apis.Details.Documents.CreateEditForm.document.create.type.other.error.document.' +
-                                            'category.helper.text'
+                                            'Apis.Details.Documents.CreateEditForm.document.create.type.other.error.' +
+                                            'document.category.helper.text'
                                         }
                                         defaultMessage='Document type cannot be empty'
                                     />
                                 ) : (
                                     <FormattedMessage
                                         id={
-                                            'Apis.Details.Documents.CreateEditForm.document.create.type.other.document.' +
-                                            'category.helper.text'
+                                            'Apis.Details.Documents.CreateEditForm.document.create.type.other.' +
+                                            'document.category.helper.text'
                                         }
                                         defaultMessage='Provide the document type'
                                     />
@@ -846,7 +941,6 @@ class CreateEditForm extends React.Component {
                     <Dropzone
                         multiple={false}
                         accept={Configurations.app.supportedDocTypes}
-                        className={classes.dropzone}
                         activeClassName={classes.acceptDrop}
                         rejectClassName={classes.rejectDrop}
                         onDrop={(dropFile) => {
@@ -854,15 +948,44 @@ class CreateEditForm extends React.Component {
                         }}
                     >
                         {({ getRootProps, getInputProps }) => (
-                            <div {...getRootProps()}>
+                            <div {...getRootProps()} className={classes.dropzone} >
                                 <input {...getInputProps()} />
                                 <div className={classes.dropZoneWrapper}>
-                                    <Icon className={classes.dropIcon} style={{ fontSize: 56 }}>
-                                        cloud_upload
-                                    </Icon>
+                                    {!file && (
+                                        <div>
+                                            <Icon
+                                                className={classes.dropIcon}
+                                                style={{ fontSize: 56 }}
+                                            >
+                                                cloud_upload
+                                            </Icon>
+                                            <Typography
+                                                component="p"
+                                                className={classes.content}
+                                            >
+                                                {isEditing ? (
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Documents.CreateEditForm.document.drop.file.replace'
+                                                        defaultMessage={'Drag and drop a file here, or click to select a file ' +
+                                                            'to replace the existing document'}
+                                                    />
+                                                ) : (
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Documents.CreateEditForm.document.drop.file'
+                                                        defaultMessage='Drag and drop a file here, or click to select a file to upload'
+                                                    />
+                                                )}
+                                            </Typography>
+                                        </div>
+                                    )}
                                     {file && file.length > 0 && (
                                         <div className={classes.uploadedFile}>
-                                            <Icon>file</Icon> {file[0].name}
+                                            <InsertDriveFileIcon color='primary' fontSize='large' />
+                                            <Box fontSize='h6.fontSize' fontWeight='fontWeightLight'>
+                                                <Typography>
+                                                    {file[0].name}
+                                                </Typography>
+                                            </Box>
                                         </div>
                                     )}
                                 </div>

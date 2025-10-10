@@ -22,16 +22,19 @@ import {
     Paper,
     Typography,
     styled,
+    Button,
 } from '@mui/material';
+import { useHistory } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
-import MCPServer from 'AppData/MCPServer';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import Alert from 'AppComponents/Shared/Alert';
 import CONSTS from 'AppData/Constants';
-import GeneralEndpointConfigurations from './GeneralEndpointConfigurations';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { isRestricted } from 'AppData/AuthManager';
+import GeneralEndpointConfigurations from '../GeneralEndpointConfigurations';
 import EndpointCard from './EndpointCard';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -40,6 +43,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
 const AIEndpoints = ({
     apiObject,
+    onChangeAPI,
     endpointConfiguration,
 }) => {
     const [productionEndpoints, setProductionEndpoints] = useState([]);
@@ -47,106 +51,73 @@ const AIEndpoints = ({
     const [endpointList, setEndpointList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isDeleting, setIsDeleting] = useState(false);
-    const isMCPServer = apiObject.type === MCPServer.CONSTS.MCP;
 
     const intl = useIntl();
+    const history = useHistory();
     const { updateAPI } = useContext(APIContext);
 
     const fetchEndpoints = () => {
         setLoading(true);
-        if (isMCPServer) {
-            MCPServer.getMCPServerEndpoints(apiObject.id)
-                .then((response) => {
-                    const endpoints = response.body;
-                    setProductionEndpoints(endpoints);                    
-                    setSandboxEndpoints(endpoints);
+        API.getApiEndpoints(apiObject.id)
+            .then((response) => {
+                const endpoints = response.body.list;
+                const defaultEndpoints = [];
 
-                    // TODO: Change when endpointConfig is converted to a json instead of a string
-                    const endpointUrlList = [
-                        ...endpoints.map(ep => {
-                            const config = typeof ep.endpointConfig === 'string'
-                                ? JSON.parse(ep.endpointConfig)
-                                : ep.endpointConfig;
-                            return config?.production_endpoints;
-                        }),
-                        ...endpoints.map(ep => {
-                            const config = typeof ep.endpointConfig === 'string'
-                                ? JSON.parse(ep.endpointConfig)
-                                : ep.endpointConfig;
-                            return config?.sandbox_endpoints;
-                        })
-                    ].filter(Boolean);
-                    setEndpointList(endpointUrlList);
-                })
-                .catch((error) => {
-                    console.error(error);
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.fetch.error',
-                        defaultMessage: 'Something went wrong while fetching endpoints',
-                    }));
-                })
-                .finally(() => setLoading(false));
-        } else {
-            API.getApiEndpoints(apiObject.id)
-                .then((response) => {
-                    const endpoints = response.body.list;
-                    const defaultEndpoints = [];
+                if (apiObject.endpointConfig?.production_endpoints) {
+                    defaultEndpoints.push({
+                        id: CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION,
+                        name: 'Default Production Endpoint',
+                        deploymentStage: 'PRODUCTION',
+                        endpointConfig: {
+                            production_endpoints: apiObject.endpointConfig.production_endpoints,
+                            endpoint_security: apiObject.endpointConfig.endpoint_security
+                        }
+                    });
+                }
 
-                    if (apiObject.endpointConfig?.production_endpoints) {
-                        defaultEndpoints.push({
-                            id: CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION,
-                            name: 'Default Production Endpoint',
-                            deploymentStage: 'PRODUCTION',
-                            endpointConfig: {
-                                production_endpoints: apiObject.endpointConfig.production_endpoints,
-                                endpoint_security: apiObject.endpointConfig.endpoint_security
-                            }
-                        });
-                    }
+                if (apiObject.endpointConfig?.sandbox_endpoints) {
+                    defaultEndpoints.push({
+                        id: CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX,
+                        name: 'Default Sandbox Endpoint',
+                        deploymentStage: 'SANDBOX',
+                        endpointConfig: {
+                            sandbox_endpoints: apiObject.endpointConfig.sandbox_endpoints,
+                            endpoint_security: apiObject.endpointConfig.endpoint_security
+                        }
+                    });
+                }
 
-                    if (apiObject.endpointConfig?.sandbox_endpoints) {
-                        defaultEndpoints.push({
-                            id: CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX,
-                            name: 'Default Sandbox Endpoint',
-                            deploymentStage: 'SANDBOX',
-                            endpointConfig: {
-                                sandbox_endpoints: apiObject.endpointConfig.sandbox_endpoints,
-                                endpoint_security: apiObject.endpointConfig.endpoint_security
-                            }
-                        });
-                    }
+                const allEndpoints = [...endpoints, ...defaultEndpoints];
+                const prodEndpointList = allEndpoints.filter(ep => ep.deploymentStage === 'PRODUCTION');
+                const sandEndpointList = allEndpoints.filter(ep => ep.deploymentStage === 'SANDBOX');
 
-                    const allEndpoints = [...endpoints, ...defaultEndpoints];
-                    const prodEndpointList = allEndpoints.filter(ep => ep.deploymentStage === 'PRODUCTION');
-                    const sandEndpointList = allEndpoints.filter(ep => ep.deploymentStage === 'SANDBOX');
+                setProductionEndpoints(prodEndpointList);
+                setSandboxEndpoints(sandEndpointList);
 
-                    setProductionEndpoints(prodEndpointList);
-                    setSandboxEndpoints(sandEndpointList);
-
-                    const endpointUrlList = [
-                        ...prodEndpointList.map(ep => ep.endpointConfig?.production_endpoints),
-                        ...sandEndpointList.map(ep => ep.endpointConfig?.sandbox_endpoints)
-                    ].filter(Boolean);
-                    setEndpointList(endpointUrlList);
-                })
-                .catch((error) => {
-                    console.error(error);
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.fetch.error',
-                        defaultMessage: 'Something went wrong while fetching endpoints',
-                    }));
-                })
-                .finally(() => setLoading(false));   
-        }
+                const endpointUrlList = [
+                    ...prodEndpointList.map(ep => ep.endpointConfig?.production_endpoints),
+                    ...sandEndpointList.map(ep => ep.endpointConfig?.sandbox_endpoints)
+                ].filter(Boolean);
+                setEndpointList(endpointUrlList);
+            })
+            .catch((error) => {
+                console.error(error);
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.fetch.error',
+                    defaultMessage: 'Something went wrong while fetching endpoints',
+                }));
+            })
+            .finally(() => setLoading(false));
     }
 
     useEffect(() => {
         fetchEndpoints();
-    }, []);
+    }, [apiObject.id]);
+
     const handleDelete = (endpoint) => {
         // Check if endpoint is primary
-        if (!isMCPServer && (endpoint.id === apiObject.primaryProductionEndpointId ||
-            endpoint.id === apiObject.primarySandboxEndpointId)) {
+        if (endpoint.id === apiObject.primaryProductionEndpointId ||
+            endpoint.id === apiObject.primarySandboxEndpointId) {
             Alert.error(intl.formatMessage({
                 id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.delete.primary.error',
                 defaultMessage: 'Cannot delete primary endpoint. Please remove primary status first.',
@@ -155,44 +126,37 @@ const AIEndpoints = ({
         }
 
         setIsDeleting(true);
-        let deletePromise;
+        let deletePromise
+        const isGeneralEndpoint = endpoint.id === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION ||
+            endpoint.id === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX;
 
-        if (isMCPServer) {
-            deletePromise = MCPServer.deleteMCPServerEndpoint(apiObject.id, endpoint.id);
-        } else {
-            const isGeneralEndpoint = endpoint.id === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION ||
-                endpoint.id === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX;
+        if (isGeneralEndpoint) {
+            const updatedApi = { ...apiObject };
+            const isProduction = endpoint.deploymentStage === 'PRODUCTION';
 
-            if (isGeneralEndpoint) {
-                const updatedApi = { ...apiObject };
-                const isProduction = endpoint.deploymentStage === 'PRODUCTION';
+            // Update endpoint configuration by deleting the property
+            delete updatedApi.endpointConfig[isProduction ? 'production_endpoints' : 'sandbox_endpoints'];
 
-                // Update endpoint configuration by deleting the property
-                delete updatedApi.endpointConfig[isProduction ? 'production_endpoints' : 'sandbox_endpoints'];
-
-                // Clean up security configuration
-                if (updatedApi.endpointConfig.endpoint_security) {
-                    delete updatedApi.endpointConfig.endpoint_security[isProduction ? 'production' : 'sandbox'];
-                    if (!updatedApi.endpointConfig.endpoint_security.production &&
-                        !updatedApi.endpointConfig.endpoint_security.sandbox) {
-                        delete updatedApi.endpointConfig.endpoint_security;
-                    }
+            // Clean up security configuration
+            if (updatedApi.endpointConfig.endpoint_security) {
+                delete updatedApi.endpointConfig.endpoint_security[isProduction ? 'production' : 'sandbox'];
+                if (!updatedApi.endpointConfig.endpoint_security.production &&
+                    !updatedApi.endpointConfig.endpoint_security.sandbox) {
+                    delete updatedApi.endpointConfig.endpoint_security;
                 }
-
-                deletePromise = updateAPI(updatedApi);
-            } else {
-                deletePromise = API.deleteApiEndpoint(apiObject.id, endpoint.id);
             }
+
+            deletePromise = updateAPI(updatedApi);
+        } else {
+            deletePromise = API.deleteApiEndpoint(apiObject.id, endpoint.id);
         }
 
         deletePromise
             .then(() => {
-                if (!isMCPServer) {
-                    if (endpoint.deploymentStage === 'PRODUCTION') {
-                        setProductionEndpoints(prev => prev.filter(ep => ep.id !== endpoint.id));
-                    } else {
-                        setSandboxEndpoints(prev => prev.filter(ep => ep.id !== endpoint.id));
-                    }
+                if (endpoint.deploymentStage === 'PRODUCTION') {
+                    setProductionEndpoints(prev => prev.filter(ep => ep.id !== endpoint.id));
+                } else {
+                    setSandboxEndpoints(prev => prev.filter(ep => ep.id !== endpoint.id));
                 }
 
                 Alert.success(intl.formatMessage({
@@ -212,6 +176,21 @@ const AIEndpoints = ({
             });
     };
 
+    // Helper function to handle onChangeAPI calls
+    const handleAPIChange = (endpoint, updatedApi) => {
+        if (endpoint.deploymentStage === 'PRODUCTION') {
+            onChangeAPI({
+                action: 'set_primary_production_endpoint',
+                value: updatedApi.primaryProductionEndpointId
+            });
+        } else {
+            onChangeAPI({
+                action: 'set_primary_sandbox_endpoint',
+                value: updatedApi.primarySandboxEndpointId
+            });
+        }
+    };
+
     const handleSetAsPrimary = (endpoint) => {
         // Create a deep copy of the API object to avoid direct mutations
         const updatedApi = {
@@ -226,6 +205,7 @@ const AIEndpoints = ({
                     id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.primary.set.success',
                     defaultMessage: 'Primary endpoint updated successfully',
                 }));
+                handleAPIChange(endpoint, updatedApi);
             })
             .catch((error) => {
                 console.error(error);
@@ -257,6 +237,7 @@ const AIEndpoints = ({
                     id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.primary.update.success',
                     defaultMessage: 'Primary endpoint updated successfully',
                 }));
+                handleAPIChange(endpoint, updatedApi);
             })
             .catch((error) => {
                 console.error(error);
@@ -275,21 +256,12 @@ const AIEndpoints = ({
         <Grid container spacing={2}>
             <Grid item xs={12}>
                 <StyledPaper elevation={0} variant='outlined'>
-                    {isMCPServer ? (
-                        <Typography variant='h5' component='h2' gutterBottom sx={{ mb: 3 }}>
-                            <FormattedMessage
-                                id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.production.endpoint.label'
-                                defaultMessage='Production Endpoint'
-                            />
-                        </Typography>
-                    ) : (
-                        <Typography variant='h5' component='h2' gutterBottom sx={{ mb: 3 }}>
-                            <FormattedMessage
-                                id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.production.endpoints.label'
-                                defaultMessage='Production Endpoints'
-                            />
-                        </Typography>
-                    )}
+                    <Typography variant='h5' component='h2' gutterBottom sx={{ mb: 3 }}>
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.production.endpoints.label'
+                            defaultMessage='Production Endpoints'
+                        />
+                    </Typography>
                     {productionEndpoints.length > 0 ? (
                         productionEndpoints.map((endpoint) => (
                             <EndpointCard
@@ -316,21 +288,12 @@ const AIEndpoints = ({
             </Grid>
             <Grid item xs={12}>
                 <StyledPaper elevation={0} variant='outlined'>
-                    {isMCPServer ? (
-                        <Typography variant='h5' component='h2' gutterBottom sx={{ mb: 3 }}>
-                            <FormattedMessage
-                                id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.sandbox.endpoint.label'
-                                defaultMessage='Sandbox Endpoint'
-                            />
-                        </Typography>
-                    ) : (
-                        <Typography variant='h5' component='h2' gutterBottom sx={{ mb: 3 }}>
-                            <FormattedMessage
-                                id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.sandbox.endpoints.label'
-                                defaultMessage='Sandbox Endpoints'
-                            />
-                        </Typography>
-                    )}
+                    <Typography variant='h5' component='h2' gutterBottom sx={{ mb: 3 }}>
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.sandbox.endpoints.label'
+                            defaultMessage='Sandbox Endpoints'
+                        />
+                    </Typography>
                     {sandboxEndpoints.length > 0 ? (
                         sandboxEndpoints.map((endpoint) => (
                             <EndpointCard
@@ -366,6 +329,26 @@ const AIEndpoints = ({
                     <GeneralEndpointConfigurations endpointList={endpointList} />
                 </StyledPaper>
             </Grid>
+            <Grid item xs={12}>
+                <Button
+                    type='submit'
+                    variant='contained'
+                    color='primary'
+                    disabled={isRestricted(['apim:api_publish', 'apim:api_manage'], apiObject)}
+                    endIcon={<OpenInNewIcon />}
+                    onClick={() => {
+                        history.push({
+                            pathname: `/apis/${apiObject.id}/deployments`,
+                            state: 'deploy',
+                        })
+                    }}
+                >
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.deploy.redirect.btn'
+                        defaultMessage='Go to Deployments'
+                    />
+                </Button>
+            </Grid>
         </Grid>
     );
 }
@@ -388,6 +371,7 @@ AIEndpoints.propTypes = {
             }),
         }),
     }).isRequired,
+    onChangeAPI: PropTypes.func.isRequired,
 }
 
 export default AIEndpoints;

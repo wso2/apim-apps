@@ -120,7 +120,15 @@ export default function SimpleSelect(props) {
     const inputLabel = React.useRef(null);
     const [labelWidth, setLabelWidth] = React.useState(0);
     const isSpecificTenants = values.availability === 'specificTenants';
-    const isUIElementDisabled = isRestricted(['apim:api_publish', 'apim:api_create'], api);
+
+    const getCreateOrPublishScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_publish', 'apim:api_create'];
+        }
+    };
+    const isUIElementDisabled = isRestricted(getCreateOrPublishScopes(), api);
 
     React.useEffect(() => {
         setLabelWidth(inputLabel.current.offsetWidth);

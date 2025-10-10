@@ -31,12 +31,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import LockIcon from '@mui/icons-material//Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import MethodView from 'AppComponents/Apis/Details/ProductResources/MethodView';
 
 import { FormattedMessage } from 'react-intl';
 import OperationGovernance
     from 'AppComponents/Apis/Details/Resources/components/operationComponents/OperationGovernance';
-import { getOperationScopes } from 'AppComponents/Apis/Details/Resources/operationUtils';
 import ToolDetailsSection from './ToolDetailsSection';
 
 const PREFIX = 'ToolDetails';
@@ -55,6 +53,9 @@ const classes = {
 
 const Root = styled('div')(({ theme }) => {
     return {
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
         [`& .${classes.paperStyles}`]: {
             borderBottom: '',
         },
@@ -67,12 +68,16 @@ const Root = styled('div')(({ theme }) => {
         [`& .${classes.overlayUnmarkDelete}`]: {
             position: 'absolute',
             zIndex: theme.zIndex.operationDeleteUndo,
-            right: '10%',
+            right: '9%',
         },
         [`& .${classes.toolName}`]: {
             fontWeight: 400,
             fontSize: '1rem',
             color: theme.palette.text.primary,
+            maxWidth: '300px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
         },
         [`& .${classes.accordionContainer}`]: {
             border: '1px solid #f2d4a7',
@@ -83,14 +88,35 @@ const Root = styled('div')(({ theme }) => {
                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.15)',
             },
             transition: 'box-shadow 0.2s ease-in-out',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            width: `calc(100% - ${theme.spacing(2)}) !important`,
+            maxWidth: `calc(100% - ${theme.spacing(2)}) !important`,
+            minWidth: `calc(100% - ${theme.spacing(2)}) !important`,
+            boxSizing: 'border-box',
+            position: 'relative',
+            left: 0,
+            right: 0,
+            '&.Mui-expanded': {
+                margin: theme.spacing(1),
+                width: `calc(100% - ${theme.spacing(2)}) !important`,
+                maxWidth: `calc(100% - ${theme.spacing(2)}) !important`,
+                minWidth: `calc(100% - ${theme.spacing(2)}) !important`,
+                position: 'relative',
+                left: 0,
+                right: 0
+            }
+        },
+        [`& .${classes.accordionContainer}.markedForDelete`]: {
+            opacity: 0.5,
+            filter: 'grayscale(50%)',
+            pointerEvents: 'none',
         },
         [`& .${classes.resourceMappingChip}`]: {
             display: 'flex',
             alignItems: 'center',
             fontSize: '0.875rem',
             marginLeft: theme.spacing(1),
-            width: '200px',
+            width: '250px',
             height: '32px',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -163,7 +189,7 @@ function ToolDetails(props) {
         event.stopPropagation();
         event.preventDefault();
         setExpandedResource(false);
-        onMarkAsDelete({ feature, target }, !markAsDelete);
+        onMarkAsDelete({ target }, !markAsDelete);
     }
 
     const handleExpansion = (panel) => (event, isExpanded) => {
@@ -200,13 +226,19 @@ function ToolDetails(props) {
 
     const backendOperationVerb = operation.backendOperationMapping?.backendOperation?.verb || 
                                  operation.apiOperationMapping?.backendOperation?.verb;
+    const backgroundColor = theme.custom.resourceChipColors[backendOperationVerb.toLowerCase()];
 
     return (
         <Root>
             {markAsDelete && (
                 <Box className={classes.overlayUnmarkDelete}>
                     <Tooltip title='Marked for delete'>
-                        <Button onClick={toggleDelete} variant='outlined' style={{ marginTop: '10px' }}>
+                        <Button
+                            onClick={toggleDelete}
+                            variant='outlined'
+                            style={{ marginTop: '10px' }}
+                            size='small'
+                        >
                             <FormattedMessage
                                 id='Apis.Details.Resources.components.Operation.undo.delete'
                                 defaultMessage='Undo Delete'
@@ -219,7 +251,9 @@ function ToolDetails(props) {
                 expanded={expandedResource === stableId}
                 onChange={handleExpansion(stableId)}
                 disabled={markAsDelete}
-                className={`${classes.paperStyles} ${classes.accordionContainer}`}
+                className={`${classes.paperStyles} ${classes.accordionContainer} ${
+                    markAsDelete ? 'markedForDelete' : ''
+                }`}
             >
                 <AccordionSummary
                     className={highlight ? classes.highlightSelected : ''}
@@ -238,7 +272,14 @@ function ToolDetails(props) {
                         justifyContent='space-between'
                         alignItems='center'
                     >
-                        <Grid item md={4} style={{ display: 'flex', alignItems: 'center' }}>
+                        <Grid 
+                            item 
+                            md={4} 
+                            style={{ 
+                                display: 'flex', 
+                                alignItems: 'center' 
+                            }}
+                        >
                             <Typography
                                 display='inline-block'
                                 variant='h6'
@@ -246,7 +287,12 @@ function ToolDetails(props) {
                                 gutterBottom
                                 className={classes.toolName}
                                 title={getToolName()}
-                                sx={{ marginLeft: theme.spacing(1) }}
+                                style={{ 
+                                    marginLeft: theme.spacing(1),
+                                    minWidth: '150px',
+                                    maxWidth: '150px',
+                                    flexShrink: 0
+                                }}
                             >
                                 {getToolName()}
                             </Typography>
@@ -254,7 +300,7 @@ function ToolDetails(props) {
                                 <Typography
                                     display='inline-block'
                                     style={{
-                                        margin: '0px 20px',
+                                        marginLeft: theme.spacing(3),
                                         maxWidth: '300px',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
@@ -282,27 +328,46 @@ function ToolDetails(props) {
                                         whiteSpace: 'nowrap'
                                     }}
                                 >
-                                    <b>{getOperationScopes(operation, spec).length !== 0 && 'Scope : '}</b>
-                                    {getOperationScopes(operation, spec).join(', ')}
+                                    {operation.scopes && operation.scopes.length > 0 && (
+                                        <>
+                                            <b>Scope : </b>
+                                            {operation.scopes.join(', ')}
+                                        </>
+                                    )}
                                 </Typography>
                             </Box>
                         </Grid>
                         <Grid item md={2}>
-                            <Box display='flex' alignItems='center' justifyContent='flex-start' marginLeft={10}>
+                            <Box display='flex' alignItems='center' justifyContent='flex-start'>
                                 {/* Resource Mapping Display */}
                                 {getResourceMappingDisplay() && (
                                     <Box
                                         className={classes.resourceMappingChip}
                                         title={getResourceMappingDisplay()}
                                     >
-                                        <MethodView
-                                            method={operation.backendOperationMapping?.backendOperation?.verb || 
-                                                   operation.apiOperationMapping?.backendOperation?.verb}
-                                            style={{ marginRight: theme.spacing(0.2), flexShrink: 0 }}
-                                        />
+                                        <Button
+                                            disableFocusRipple
+                                            disableRipple
+                                            variant='contained'
+                                            aria-label={backendOperationVerb}
+                                            size='small'
+                                            className={classes.customButton}
+                                            sx={{
+                                                backgroundColor,
+                                                color: theme.palette.getContrastText(backgroundColor),
+                                                marginRight: theme.spacing(0.2),
+                                                flexShrink: 0,
+                                                '&:hover': {
+                                                    backgroundColor,
+                                                },
+                                                cursor: 'default'
+                                            }}
+                                        >
+                                            {backendOperationVerb}
+                                        </Button>
                                         <Typography
                                             display='inline'
-                                            style={{ margin: '0px 20px' }}
+                                            style={{ margin: '0px 10px' }}
                                             variant='caption'
                                             gutterBottom
                                             className={classes.truncatedText}
@@ -376,13 +441,14 @@ function ToolDetails(props) {
                     backgroundColor: theme.custom.resourceChipColors[backendOperationVerb]
                         || theme.palette.primary.main
                 }} />
-                <AccordionDetails>
+                <AccordionDetails sx={{ width: '100%', overflow: 'hidden' }}>
                     <Grid
                         spacing={2}
                         container
                         direction='row'
                         justifyContent='flex-start'
                         alignItems='flex-start'
+                        sx={{ width: '100%', maxWidth: '100%' }}
                     >
                         <ToolDetailsSection
                             operation={operation}
@@ -404,7 +470,7 @@ function ToolDetails(props) {
                             disableUpdate={disableUpdate}
                             spec={spec}
                             target={target}
-                            feature={feature}
+                            verb={feature}
                             sharedScopes={sharedScopes}
                             setFocusOperationLevel={setFocusOperationLevel}
                             componentValidator={componentValidator}
@@ -472,7 +538,7 @@ ToolDetails.propTypes = {
     expandedResource: PropTypes.string.isRequired,
     setExpandedResource: PropTypes.func.isRequired,
     setFocusOperationLevel: PropTypes.func.isRequired,
-    componentValidator: PropTypes.shape({}).isRequired,
+    componentValidator: PropTypes.arrayOf(PropTypes.string).isRequired,
     availableOperations: PropTypes.arrayOf(PropTypes.shape({
         target: PropTypes.string,
         verb: PropTypes.string,

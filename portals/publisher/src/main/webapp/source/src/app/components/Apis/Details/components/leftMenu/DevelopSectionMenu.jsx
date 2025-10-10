@@ -43,6 +43,7 @@ import { PROPERTIES as UserProperties } from 'AppData/User';
 import { useUser } from 'AppComponents/Shared/AppContext';
 import { useIntl, FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'DevelopSectionMenu';
 
@@ -131,6 +132,14 @@ export default function DevelopSectionMenu(props) {
             user.setProperty(UserProperties.API_CONFIG_OPEN, isExpanded);
         }
     };
+
+    const isAccessRestricted = () => {
+        if (api.apiType.toUpperCase() === 'MCP') {
+            return isRestricted(['apim:mcp_server_publish'], api);
+        } else {
+            return isRestricted(['apim:api_publish'], api);
+        }
+    }
 
     const intl = useIntl();
 
@@ -239,15 +248,26 @@ export default function DevelopSectionMenu(props) {
                         data-testid='itest-api-config'>
                         <FormattedMessage
                             id='Apis.Details.index.design.api.configs.title'
-                            defaultMessage='API Configurations'
+                            defaultMessage='{type} Configurations'
+                            values={{
+                                type: api.isMCPServer() ? 'MCP' : 'API'
+                            }}
                         />
                     </Typography>
                     <Tooltip
-                        title={intl.formatMessage({
-                            id: 'Apis.Details.index.design.api.configs.title.tooltip',
-                            defaultMessage: 'If you make any changes to the API configuration, you need to redeploy'
-                                + ' the API to see updates in the API Gateway.',
-                        })}
+                        title={(
+                            <FormattedMessage
+                                id='Apis.Details.index.design.api.configs.title.tooltip'
+                                defaultMessage={
+                                    'If you make any changes to the {configType} Configurations, '
+                                    + 'you need to redeploy the {type} to see updates in the Gateway.'
+                                }
+                                values={{
+                                    configType: api.isMCPServer() ? 'MCP' : 'API',
+                                    type: getTypeToDisplay(api.apiType)
+                                }}
+                            />
+                        )}
                         placement='bottom'
                     >
                         <IconButton color='primary' size='small' aria-label='delete' sx={{ p: '3px' }}>
@@ -260,7 +280,7 @@ export default function DevelopSectionMenu(props) {
                         root: classes.root2
                     }}>
                     <div>
-                        {!isAPIProduct && !api.isWebSocket() && (
+                        {!isAPIProduct && !api.isWebSocket() && api.gatewayType !== 'solace' && (
                             <LeftMenuItem
                                 text={intl.formatMessage({
                                     id: 'Apis.Details.index.runtime.configs',
@@ -350,7 +370,7 @@ export default function DevelopSectionMenu(props) {
                         />
 
                         {(componentValidator.monetization.includes("monetization") && 
-                            (!api.isWebSocket() && !isRestricted(['apim:api_publish'], api))) && (
+                            (!api.isWebSocket() && !isAccessRestricted())) && (
                             <>
                                 {!isAPIProduct && !api.isMCPServer() && (
                                     <LeftMenuItem
@@ -365,8 +385,7 @@ export default function DevelopSectionMenu(props) {
                                 )}
                             </>
                         )}
-                        {isAPIProduct && !api.isWebSocket()
-                            && !isRestricted(['apim:api_publish'], api) && (
+                        {isAPIProduct && !api.isWebSocket() && !isAccessRestricted() && (
                             <LeftMenuItem
                                 text={intl.formatMessage({
                                     id: 'Apis.Details.index.monetization',

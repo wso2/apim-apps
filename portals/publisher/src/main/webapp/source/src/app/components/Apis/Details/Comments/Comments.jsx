@@ -25,6 +25,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import CommentsAPI from 'AppData/Comments';
+import MCPServer from 'AppData/MCPServer';
 import Comment from './Comment';
 import CommentAdd from './CommentAdd';
 
@@ -152,8 +153,15 @@ class Comments extends Component {
         this.setState({ apiId: api.id });
         const limit = theme.custom.commentsLimit;
         const offset = 0;
+        const isMCPServer = api.type === MCPServer.CONSTS.MCP;
 
-        CommentsAPI.all(api.id, limit, offset)
+        let commentsPromise;
+        if (isMCPServer) {
+            commentsPromise = CommentsAPI.getAllCommentsOfMCPServer(api.id, limit, offset);
+        } else {
+            commentsPromise = CommentsAPI.all(api.id, limit, offset);
+        }
+        commentsPromise
             .then((result) => {
                 const commentList = result.body.list;
                 this.setState({
@@ -177,6 +185,36 @@ class Comments extends Component {
     }
 
     /**
+     * Handles loading the previous comments
+     * @memberof Comments
+     */
+    handleLoadMoreComments() {
+        const { allComments, comments } = this.state;
+        const { theme, api: { id: apiId, type: apiType } } = this.props;
+        const limit = theme.custom.commentsLimit;
+        const offset = comments.length;
+        const isMCPServer = apiType === MCPServer.CONSTS.MCP;
+
+        let commentsPromise;
+        if (isMCPServer) {
+            commentsPromise = CommentsAPI.getAllCommentsOfMCPServer(apiId, limit, offset);
+        } else {
+            commentsPromise = CommentsAPI.all(apiId, limit, offset);
+        }
+
+        commentsPromise
+            .then((result) => {
+                const newAllCommentList = allComments.concat(result.body.list);
+                this.setState({ allComments: newAllCommentList, comments: newAllCommentList });
+            })
+            .catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+            });
+    }
+
+    /**
      * Delete a comment
      * @param {string} commentIdOfCommentToDelete id of deleted commetn
      * @memberof Comments
@@ -185,12 +223,20 @@ class Comments extends Component {
         const {
             apiId, comments, totalComments,
         } = this.state;
+        const { api: { type: apiType } } = this.props;
 
         const remainingComments = comments.filter((item) => item.id !== commentIdOfCommentToDelete);
         const newTotal = totalComments - 1;
+        const isMCPServer = apiType === MCPServer.CONSTS.MCP;
 
         if (newTotal > remainingComments.length) {
-            CommentsAPI
+            let deleteCommentPromise;
+            if (isMCPServer) {
+                deleteCommentPromise = CommentsAPI.deleteCommentOfMCPServer(apiId, commentIdOfCommentToDelete);
+            } else {
+                deleteCommentPromise = CommentsAPI.deleteComment(apiId, commentIdOfCommentToDelete);
+            }
+            deleteCommentPromise
                 .all(apiId, 1, remainingComments.length)
                 .then((result) => {
                     if (result.body) {
@@ -253,28 +299,6 @@ class Comments extends Component {
     }
 
     /**
-     * Handles loading the previous comments
-     * @memberof Comments
-     */
-    handleLoadMoreComments() {
-        const { allComments, comments } = this.state;
-        const { theme, api: { id: apiId } } = this.props;
-        const limit = theme.custom.commentsLimit;
-        const offset = comments.length;
-
-        CommentsAPI.all(apiId, limit, offset)
-            .then((result) => {
-                const newAllCommentList = allComments.concat(result.body.list);
-                this.setState({ allComments: newAllCommentList, comments: newAllCommentList });
-            })
-            .catch((error) => {
-                if (process.env.NODE_ENV !== 'production') {
-                    console.log(error);
-                }
-            });
-    }
-
-    /**
      * Handles expanding the comment section
      * @memberof Comments
      */
@@ -331,7 +355,7 @@ class Comments extends Component {
                                 <Typography component='p'>
                                     <FormattedMessage
                                         id='Apis.Details.Comments.no.comments.content'
-                                        defaultMessage='No comments available for this API yet'
+                                        defaultMessage='There are no comments available at the moment.'
                                     />
                                 </Typography>
                             </InlineMessage>

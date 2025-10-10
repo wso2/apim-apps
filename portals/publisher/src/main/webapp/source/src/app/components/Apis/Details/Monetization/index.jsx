@@ -14,7 +14,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
 import { isRestricted } from 'AppData/AuthManager';
-
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import BusinessPlans from './BusinessPlans';
 
 const PREFIX = 'index';
@@ -202,6 +202,10 @@ class Monetization extends Component {
         }
     }
 
+    /**
+     * Render the Monetization component
+     * @returns {React.Component} React Component
+     */
     render() {
         const { api, } = this.props;
         const { monetizationAttributes, monStatus, enableReadOnly } = this.state;
@@ -323,7 +327,7 @@ class Monetization extends Component {
                         </Button>
                         <Button
                             component={Link}
-                            to={'/apis/' + api.id + '/overview'}
+                            to={getBasePath(api.apiType) + api.id + '/overview'}
                         >
                             <FormattedMessage
                                 id='Apis.Details.Monetization.Index.cancel'

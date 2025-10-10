@@ -368,6 +368,66 @@
       {
         "Name": "apim:common_operation_policy_manage",
         "Roles": "admin,Internal/creator"
+      },
+      {
+        "Name": "apim:llm_provider_manage",
+        "Roles": "admin"
+      },
+      {
+        "Name": "apim:llm_provider_read",
+        "Roles": "admin,Internal/publisher,Internal/creator"
+      },
+      {
+        "Name": "apim:gov_rule_manage",
+        "Roles": "admin"
+      },
+      {
+        "Name":"apim:gov_rule_read",
+        "Roles":"admin,Internal/publisher,Internal/creator,Internal/observer"
+      },
+      {
+        "Name": "apim:gov_result_read",
+        "Roles": "admin,Internal/publisher,Internal/creator,Internal/observer"
+      },
+      {
+        "Name": "apim:gov_policy_manage",
+        "Roles": "admin"
+      },
+      {
+        "Name": "apim:gov_policy_read",
+        "Roles": "admin,Internal/publisher,Internal/creator,Internal/observer"
+      },
+      {
+        "Name": "apim:mcp_server_create",
+        "Roles": "admin,Internal/creator"
+      },
+      {
+        "Name": "apim:mcp_server_manage",
+        "Roles": "admin"
+      },
+      {
+        "Name": "apim:mcp_server_view",
+        "Roles": "admin,Internal/publisher,Internal/creator,Internal/analytics,Internal/observer"
+      },
+      {
+        "Name": "apim:mcp_server_list_view",
+        "Roles": "admin,Internal/integration_dev"
+      },
+      {
+        "Name": "apim:mcp_server_import_export",
+        "Roles": "admin,Internal/devops"
+      },
+      {
+        "Name": "apim:mcp_server_publish",
+        "Roles": "admin,Internal/publisher"
+      },
+      {
+        "Name": "apim:mcp_server_delete",
+        "Roles": "admin,Internal/creator"
+      },
+      {
+        "Name": "apim:mcp_server_generate_key",
+        "Roles": "admin,Internal/creator,Internal/publisher"
       }
     ]
   },

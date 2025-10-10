@@ -39,6 +39,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from 'AppComponents/Shared/Alert';
 import Api from 'AppData/api';
 import { isRestricted } from 'AppData/AuthManager';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'CreateScope';
 
@@ -46,15 +47,7 @@ const classes = {
     root: `${PREFIX}-root`,
     titleWrapper: `${PREFIX}-titleWrapper`,
     titleLink: `${PREFIX}-titleLink`,
-    contentWrapper: `${PREFIX}-contentWrapper`,
-    mainTitle: `${PREFIX}-mainTitle`,
-    FormControl: `${PREFIX}-FormControl`,
-    FormControlOdd: `${PREFIX}-FormControlOdd`,
-    FormControlLabel: `${PREFIX}-FormControlLabel`,
-    buttonSection: `${PREFIX}-buttonSection`,
     saveButton: `${PREFIX}-saveButton`,
-    helpText: `${PREFIX}-helpText`,
-    extraPadding: `${PREFIX}-extraPadding`,
     addNewOther: `${PREFIX}-addNewOther`,
     titleGrid: `${PREFIX}-titleGrid`,
     descriptionForm: `${PREFIX}-descriptionForm`,
@@ -86,48 +79,8 @@ const StyledGrid = styled(Grid)((
         marginRight: theme.spacing(1),
     },
 
-    [`& .${classes.contentWrapper}`]: {
-        maxWidth: theme.custom.contentAreaWidth,
-    },
-
-    [`& .${classes.mainTitle}`]: {
-        paddingLeft: 0,
-    },
-
-    [`& .${classes.FormControl}`]: {
-        padding: `0 0 0 ${theme.spacing(1)}`,
-        width: '100%',
-        marginTop: 0,
-    },
-
-    [`& .${classes.FormControlOdd}`]: {
-        padding: `0 0 0 ${theme.spacing(1)}`,
-        backgroundColor: theme.palette.background.paper,
-        width: '100%',
-        marginTop: 0,
-    },
-
-    [`& .${classes.FormControlLabel}`]: {
-        marginBottom: theme.spacing(1),
-        marginTop: theme.spacing(1),
-        fontSize: theme.typography.caption.fontSize,
-    },
-
-    [`& .${classes.buttonSection}`]: {
-        paddingTop: theme.spacing(3),
-    },
-
     [`& .${classes.saveButton}`]: {
         marginRight: theme.spacing(1),
-    },
-
-    [`& .${classes.helpText}`]: {
-        color: theme.palette.text.hint,
-        marginTop: theme.spacing(1),
-    },
-
-    [`& .${classes.extraPadding}`]: {
-        paddingLeft: theme.spacing(2),
     },
 
     [`& .${classes.addNewOther}`]: {
@@ -190,10 +143,33 @@ class CreateScope extends React.Component {
         this.addScope = this.addScope.bind(this);
         this.validateScopeName = this.validateScopeName.bind(this);
         this.handleScopeNameInput = this.handleScopeNameInput.bind(this);
+        this.handleScopeNameBlur = this.handleScopeNameBlur.bind(this);
         this.validateScopeDescription = this.validateScopeDescription.bind(this);
         this.validateScopeDisplayName = this.validateScopeDisplayName.bind(this);
         this.handleRoleAddition = this.handleRoleAddition.bind(this);
         this.handleRoleDeletion = this.handleRoleDeletion.bind(this);
+    }
+
+    /**
+     * Get the allowed scopes
+     * @returns {string[]} The allowed scopes
+     */
+    getAllowedScopes() {
+        const { api } = this.props;
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create'];
+        }
+    }
+
+    /**
+     * Check if the action is restricted
+     * @returns {boolean} True if the action is restricted, false otherwise
+     */
+    isAccessRestricted() {
+        const { api } = this.props;
+        return isRestricted(this.getAllowedScopes(), api);
     }
 
     handleRoleDeletion = (role) => {
@@ -210,12 +186,24 @@ class CreateScope extends React.Component {
     };
 
     /**
-     * Handle ScopeName Input.
-     * @param {JSON} event click event.
+     * Handle scope name input.
+     * @param {any} target The id and value of the target.
+     * @memberof CreateScope
      */
     handleScopeNameInput({ target: { id, value } }) {
-        this.validateScopeName(id, value);
+        const { apiScope } = this.state;
+        apiScope[id] = value;
+        this.setState({ apiScope });
     }
+
+    /**
+     * Handle scope name blur.
+     * @param {any} target The id and value of the target.
+     * @memberof CreateScope
+     */
+    handleScopeNameBlur = ({ target: { id, value } }) => {
+        this.validateScopeName(id, value);
+    };
 
     /**
      * Handle Role Addition.
@@ -361,7 +349,7 @@ class CreateScope extends React.Component {
             valid[id].invalid = true;
             valid[id].error = intl.formatMessage({
                 id: 'Scopes.Create.Scope.name.already.exist',
-                defaultMessage: 'Scope name already exist'
+                defaultMessage: 'Scope name already exists'
             });
         }
         if (!valid[id].invalid && /[!@#$%^&*(),?"{}[\]|<>\t\n]|(^apim:)/i.test(value)) {
@@ -378,7 +366,7 @@ class CreateScope extends React.Component {
                     valid[id].invalid = true;
                     valid[id].error = intl.formatMessage({
                         id: 'Scopes.Create.Scope.name.already.used',
-                        defaultMessage: 'Scope name is already used by another API',
+                        defaultMessage: 'Scope name is already exist',
                     });
                     this.setState({
                         valid,
@@ -423,14 +411,6 @@ class CreateScope extends React.Component {
         const {
             intl, api, history, updateAPI,
         } = this.props;
-        let urlPrefix;
-        if (api.isMCPServer()) {
-            urlPrefix = 'mcp-servers';
-        } else if (api.apiType === Api.CONSTS.APIProduct) {
-            urlPrefix = 'api-products';
-        } else {
-            urlPrefix = 'apis';
-        }
 
         if (this.validateScopeName('name', this.state.apiScope.name)) {
             // return status of the validation
@@ -455,7 +435,7 @@ class CreateScope extends React.Component {
                     defaultMessage: 'Scope added successfully',
                 }));
                 const { apiScopes } = this.state;
-                const redirectURL = '/' + urlPrefix + '/' + api.id + '/scopes/';
+                const redirectURL = getBasePath(api.apiType) + api.id + '/scopes/';
                 history.push(redirectURL);
                 this.setState({
                     apiScopes,
@@ -481,18 +461,9 @@ class CreateScope extends React.Component {
      */
     render() {
         const {  api, intl } = this.props;
-        let urlPrefix;
-        if (api.isMCPServer()) {
-            urlPrefix = 'mcp-servers';
-        } else if (api.apiType === Api.CONSTS.APIProduct) {
-            urlPrefix = 'api-products';
-        } else {
-            urlPrefix = 'apis';
-        }
-
-        const url = `/${urlPrefix}/${api.id}/scopes`;
+        const url = getBasePath(api.apiType) + api.id + '/scopes';
         const {
-            roleValidity, validRoles, invalidRoles, scopeAddDisabled,
+            roleValidity, validRoles, invalidRoles, scopeAddDisabled, apiScope
         } = this.state;
 
         return (
@@ -554,8 +525,9 @@ class CreateScope extends React.Component {
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
-                                        value={this.state.apiScope.name || ''}
+                                        value={apiScope.name || ''}
                                         onChange={this.handleScopeNameInput}
+                                        onBlur={this.handleScopeNameBlur}
                                     />
                                 </FormControl>
                                 <FormControl margin='normal'>
@@ -687,7 +659,7 @@ class CreateScope extends React.Component {
                                         color='primary'
                                         onClick={this.addScope}
                                         disabled={
-                                            isRestricted(['apim:api_create'], api)
+                                            this.isAccessRestricted()
                                             || this.state.valid.name.invalid
                                             || invalidRoles.length !== 0
                                             || scopeAddDisabled

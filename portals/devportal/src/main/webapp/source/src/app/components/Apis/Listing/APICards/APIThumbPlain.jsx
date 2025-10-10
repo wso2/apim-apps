@@ -136,7 +136,7 @@ function APIThumbPlain(props) {
     const { api, showInfo } = props;
     const { custom: { thumbnail, social: { showRating } } } = theme;
     const {
-        name, version, context, provider,
+        name, version, context, provider, displayName,
     } = api;
 
     const [imageConf, setImageConf] = useState({
@@ -151,12 +151,12 @@ function APIThumbPlain(props) {
     const [technicalAnchorEl, setTechnicalAnchorEl] = useState(null);
     const [businessOpenPopover, setBusinessOpenPopover] = useState(false);
     const [technicalOpenPopover, setTechnicalOpenPopover] = useState(false);
-    const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
-    const pathPrefix = isMCPServersRoute ? '/mcp-servers/' : '/apis/';
+    const isMCPServer = api.type === 'MCP';
+    const pathPrefix = isMCPServer ? '/mcp-servers/' : '/apis/';
 
     useEffect(() => {
         let promisedThumbnail;
-        if (isMCPServersRoute) {
+        if (isMCPServer) {
             promisedThumbnail = new MCPServer().getMCPServerThumbnail(api.id);
         } else {
             promisedThumbnail = new Api().getAPIThumbnail(api.id);
@@ -257,7 +257,7 @@ function APIThumbPlain(props) {
                                 title={name}
                                 className={classes.thumbHeader}
                             >
-                                {name}
+                                {displayName || name}
                             </Typography>
                         </Box>
 

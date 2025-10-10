@@ -37,6 +37,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import CONSTS from 'AppData/Constants';
 import API from 'AppData/api';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'StoreVisibility';
 
@@ -60,9 +61,9 @@ const Root = styled('div')((
 /**
  *
  * api.accessControl possible values are `NONE` and `RESTRICTED`
- * @export
- * @param {*} props
- * @returns
+ * @export StoreVisibility
+ * @param {*} props - The component props
+ * @returns {JSX.Element} The StoreVisibility component
  */
 export default function StoreVisibility(props) {
     const [roleValidity, setRoleValidity] = useState(true);
@@ -71,6 +72,15 @@ export default function StoreVisibility(props) {
     const [invalidRoles, setInvalidRoles] = useState([]);
     const isRestrictedByRoles = api.visibility === 'RESTRICTED';
     const [apiFromContext] = useAPI();
+
+    const getCreateOrPublishScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), apiFromContext);
 
     const restApi = new API();
     const intl = useIntl();
@@ -172,12 +182,15 @@ export default function StoreVisibility(props) {
                     helperText={(
                         <FormattedMessage
                             id='Apis.Details.Configuration.components.storeVisibility.form.helper.text'
-                            defaultMessage='By default API is visible to all developer portal users'
+                            defaultMessage='By default {type} is visible to all developer portal users'
+                            values={{
+                                type: getTypeToDisplay(api.apiType)
+                            }}
                         />
                     )}
                     margin='normal'
                     variant='outlined'
-                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
+                    disabled={isCreateOrPublishRestricted()}
                 >
                     <MenuItem value='PUBLIC'>
                         <FormattedMessage
@@ -215,10 +228,13 @@ export default function StoreVisibility(props) {
                                 <FormattedMessage
                                     id='Apis.Details.Configuration.components.storeVisibility.tooltip.public.desc'
                                     defaultMessage={
-                                        'The API is accessible to everyone and can be advertised '
+                                        'The {type} is accessible to everyone and can be advertised '
                                         + 'in multiple developer portals - a central developer portal '
                                         + 'and/or non-WSO2 developer portals.'
                                     }
+                                    values={{
+                                        type: getTypeToDisplay(api.apiType)
+                                    }}
                                 />
                                 <br />
                                 <br />
@@ -232,9 +248,12 @@ export default function StoreVisibility(props) {
                                 <FormattedMessage
                                     id='Apis.Details.Configuration.components.storeVisibility.tooltip.restrict.desc'
                                     defaultMessage={
-                                        'The API is visible only to specific user'
+                                        'The {type} is visible only to specific user'
                                         + ' roles in the tenant developer portal that you specify.'
                                     }
+                                    values={{
+                                        type: getTypeToDisplay(api.apiType)
+                                    }}
                                 />
                             </p>
                         </>
@@ -259,7 +278,7 @@ export default function StoreVisibility(props) {
                                 defaultMessage='Roles'
                             />
                         )}
-                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
+                        disabled={isCreateOrPublishRestricted()}
                         value={api.visibleRoles.concat(invalidRoles)}
                         alwaysShowPlaceholder={false}
                         placeholder={intl.formatMessage({

@@ -34,6 +34,7 @@ import AuthManager from 'AppData/AuthManager';
 import withSettings from 'AppComponents/Shared/withSettingsContext';
 import SolaceTopicsInfo from 'AppComponents/Apis/Details/SolaceApi/SolaceTopicsInfo';
 import Alert from 'AppComponents/Shared/Alert';
+import PortalModeRouteGuard from 'AppComponents/Shared/PortalModeRouteGuard';
 import classNames from 'classnames';
 import { Helmet } from 'react-helmet';
 import { app } from 'Settings';
@@ -74,7 +75,7 @@ const LoadableSwitch = withRouter((props) => {
     } = props;
 
     // Detect if we're on MCP servers route or APIs route
-    const isMCPServer = window.location.pathname.includes('/mcp-servers');
+    const isMCPServer = api.type === 'MCP';
     const { apiUuid, serverUuid } = match.params;
     const entityUuid = isMCPServer ? serverUuid : apiUuid;
     const basePath = isMCPServer ? '/mcp-servers/' : '/apis/';
@@ -544,7 +545,7 @@ class DetailsLegacy extends React.Component {
                     rootIconSize, rootIconTextVisible, rootIconVisible, position,
                 },
                 apiDetailPages: {
-                    showCredentials, showComments, showTryout, showDocuments, showSdks, showAsyncSpecification, showSolaceTopics,
+                    showCredentials, showComments, showTryout, showDocuments, showSdks, showAsyncSpecification,
                 },
                 title: {
                     prefix, sufix,
@@ -629,7 +630,7 @@ class DetailsLegacy extends React.Component {
                                 id='left-menu-overview'
                             />
                             {user && showCredentials && !isSubValidationDisabled
-                                && (api.gatewayVendor === 'wso2' || !api.gatewayVendor) && (
+                                && (api.gatewayVendor === 'wso2' || !api.gatewayVendor || api.gatewayType === 'solace') && (
                                 <>
 
                                     <LeftMenuItem
@@ -649,7 +650,7 @@ class DetailsLegacy extends React.Component {
                                 </>
                             )}
                             {showTryout && (api.gatewayType !== 'wso2/apk'
-                                || (api.type === 'APIPRODUCT' && !api.gatewayVendor)) && (
+                                || (api.type === 'APIPRODUCT' && !api.gatewayVendor)) && api.gatewayType !== 'solace' && (
                                 <>
                                     <Accordion
                                         id='left-menu-try-out'
@@ -744,21 +745,6 @@ class DetailsLegacy extends React.Component {
                                         </AccordionDetails>
                                     </Accordion>
                                 </>
-                            )}
-                            {(showSolaceTopics && !isMCPServer && api.gatewayVendor === 'solace') && (
-                                <LeftMenuItem
-                                    text={(
-                                        <FormattedMessage
-                                            id='Apis.Details.index.solaceTopicsInfo'
-                                            defaultMessage='Solace Info'
-                                        />
-                                    )}
-                                    route='solaceTopicsInfo'
-                                    iconText='test'
-                                    to={pathPrefix + 'solaceTopicsInfo'}
-                                    open={open}
-                                    id='left-menu-solace-info'
-                                />
                             )}
                             {isAsyncApi && showAsyncSpecification && !isMCPServer && (
                                 <LeftMenuItem
@@ -881,12 +867,14 @@ class DetailsLegacy extends React.Component {
                                 { [classes.contentLoaderRightMenu]: position === 'vertical-right' },
                             )}
                         >
-                            <LoadableSwitch
-                                api={api}
-                                updateSubscriptionData={this.updateSubscriptionData}
-                                setbreadcrumbDocument={this.setbreadcrumbDocument}
-                                apiChatEnabled={apiChatEnabled}
-                            />
+                            <PortalModeRouteGuard>
+                                <LoadableSwitch
+                                    api={api}
+                                    updateSubscriptionData={this.updateSubscriptionData}
+                                    setbreadcrumbDocument={this.setbreadcrumbDocument}
+                                    apiChatEnabled={apiChatEnabled}
+                                />
+                            </PortalModeRouteGuard>
                         </div>
                     </div>
                 </ApiContext.Provider>

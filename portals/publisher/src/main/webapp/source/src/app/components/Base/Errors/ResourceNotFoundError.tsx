@@ -26,6 +26,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Image404 from './Custom404Image';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 
 interface ResourceNotFoundErrorProps {
     message?: {
@@ -35,6 +36,8 @@ interface ResourceNotFoundErrorProps {
 }
 
 const ResourceNotFoundError: FC<ResourceNotFoundErrorProps> = ({ message }) => {
+    const { data: settings } = usePublisherSettings();
+    const isMCPSupportEnabled = settings && (settings as any).isMCPSupportEnabled;
 
     return (
         <>
@@ -77,14 +80,16 @@ const ResourceNotFoundError: FC<ResourceNotFoundErrorProps> = ({ message }) => {
                                                 />
                                             </Button>
                                         </Link>
-                                        <Link to='/mcp-servers/' style={{ marginRight: 8 }}>
-                                            <Button variant='contained' color='primary'>
-                                                <FormattedMessage
-                                                    id='Base.Errors.ResourceNotFound.mcp.server.list'
-                                                    defaultMessage='MCP Server List'
-                                                />
-                                            </Button>
-                                        </Link>
+                                        {isMCPSupportEnabled && (
+                                            <Link to='/mcp-servers/' style={{ marginRight: 8 }}>
+                                                <Button variant='contained' color='primary'>
+                                                    <FormattedMessage
+                                                        id='Base.Errors.ResourceNotFound.mcp.server.list'
+                                                        defaultMessage='MCP Server List'
+                                                    />
+                                                </Button>
+                                            </Link>
+                                        )}
                                         <Link to='/api-products/'>
                                             <Button variant='contained' color='primary'>
                                                 <FormattedMessage

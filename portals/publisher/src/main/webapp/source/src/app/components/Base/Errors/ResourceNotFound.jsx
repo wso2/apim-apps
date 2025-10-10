@@ -10,7 +10,7 @@
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY   
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
@@ -26,11 +26,14 @@ import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import Image404 from './Custom404Image';
 
 const ResourceNotFound = (props) => {
     const { response } = props;
     const { message = {} } = props;
+    const { data: settings } = usePublisherSettings();
+    const isMCPSupportEnabled = settings && settings.isMCPSupportEnabled;
 
     return <>
         <Container maxWidth='md'>
@@ -68,14 +71,16 @@ const ResourceNotFound = (props) => {
                                             />
                                         </Button>
                                     </Link>
-                                    <Link to='/mcp-servers/' style={{ marginRight: 8 }}>
-                                        <Button variant='contained' color='primary'>
-                                            <FormattedMessage
-                                                id='Base.Errors.ResourceNotFound.mcp.server.list'
-                                                defaultMessage='MCP Server List'
-                                            />
-                                        </Button>
-                                    </Link>
+                                    {isMCPSupportEnabled && (
+                                        <Link to='/mcp-servers/' style={{ marginRight: 8 }}>
+                                            <Button variant='contained' color='primary'>
+                                                <FormattedMessage
+                                                    id='Base.Errors.ResourceNotFound.mcp.server.list'
+                                                    defaultMessage='MCP Server List'
+                                                />
+                                            </Button>
+                                        </Link>
+                                    )}
                                     <Link to='/api-products/'>
                                         <Button variant='contained' color='primary'>
                                             <FormattedMessage

@@ -539,6 +539,15 @@ export default function Environments() {
     const pollingRef = useRef(null);
     const pollingStartTimeRef = useRef(null);
 
+    const getCreateOrPublishScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), api);
+
     useEffect(() => {
         if (settings) {
             let gatewayType;
@@ -555,6 +564,9 @@ export default function Environments() {
                     case 'AWS':
                         gatewayType = 'AWS';
                         break;
+                    case 'Azure':
+                        gatewayType = 'Azure';
+                        break;
                     default:
                         if (settings.gatewayTypes.includes(api.gatewayType)) {
                             gatewayType = api.gatewayType;
@@ -564,7 +576,7 @@ export default function Environments() {
                 }
             }
             const internalGatewaysFiltered = settings.environment.filter((p) =>
-                p.provider.toLowerCase().includes('wso2'));
+                p.provider.toLowerCase().includes('wso2') && p.mode !== 'READ_ONLY');
             const selectedInternalGateways = internalGatewaysFiltered.filter((p) =>
                 p.gatewayType.toLowerCase() === gatewayType.toLowerCase())
             if (selectedInternalGateways.length > 0) {
@@ -584,7 +596,8 @@ export default function Environments() {
                 setSelectedEnvironment(selectedInternalGateways.length === 1 ?
                     [selectedInternalGateways[0].name] : []);
             } else {
-                const external = settings.environment.filter((p) => !p.provider.toLowerCase().includes('wso2'));
+                const external = settings.environment.filter((p) => !p.provider.toLowerCase().includes('wso2')
+                && p.mode !== 'READ_ONLY');
                 const selectedExternalGateways = external.filter((p) =>
                     p.gatewayType.toLowerCase() === gatewayType.toLowerCase());
                 setExternalGateways(selectedExternalGateways);
@@ -647,53 +660,55 @@ export default function Environments() {
 
     const externalEnvWithEndpoints = [];
     useEffect(() => {
-        const promise = restApi.getAsyncAPIDefinition(api.id);
-        promise.then(async (response) => {
-            if (response.data && (typeof response.data === "string" || typeof response.data === "object")) {
-                let doc;
-                try {
-                    doc = await Parser.parse(response.data);
-                } catch (err) {
-                    console.warn("Async API does not found");
-                    return;
-                }
-                const protocolBindings = [];
-                // eslint-disable-next-line array-callback-return
-                doc.channelNames().map((channelName) => {
-                    if (doc.channel(channelName).hasPublish()) {
-                        // eslint-disable-next-line array-callback-return
-                        doc.channel(channelName).publish().bindingProtocols().map((protocol) => {
-                            if (!protocolBindings.includes(protocol)) {
-                                protocolBindings.push(protocol);
-                            }
-                        });
+        if (!isMCPServer) {
+            const promise = restApi.getAsyncAPIDefinition(api.id);
+            promise.then(async (response) => {
+                if (response.data && (typeof response.data === "string" || typeof response.data === "object")) {
+                    let doc;
+                    try {
+                        doc = await Parser.parse(response.data);
+                    } catch (err) {
+                        console.warn("Async API does not found");
+                        return;
                     }
-                    if (doc.channel(channelName).hasSubscribe()) {
-                        // eslint-disable-next-line array-callback-return
-                        doc.channel(channelName).subscribe().bindingProtocols().map((protocol) => {
-                            if (!protocolBindings.includes(protocol)) {
-                                protocolBindings.push(protocol);
-                            }
-                        });
-                    }
-                });
-                // eslint-disable-next-line array-callback-return
-                allExternalGateways.map((env) => {
-                    const endpoints = [];
+                    const protocolBindings = [];
                     // eslint-disable-next-line array-callback-return
-                    env.endpointURIs.map((endpoint) => {
-                        // eslint-disable-next-line array-callback-return
-                        protocolBindings.map((protocol) => {
-                            if (protocol === endpoint.protocol) {
-                                const uri = endpoint.endpointURI;
-                                endpoints.push({ protocol, uri });
-                            }
-                        });
+                    doc.channelNames().map((channelName) => {
+                        if (doc.channel(channelName).hasPublish()) {
+                            // eslint-disable-next-line array-callback-return
+                            doc.channel(channelName).publish().bindingProtocols().map((protocol) => {
+                                if (!protocolBindings.includes(protocol)) {
+                                    protocolBindings.push(protocol);
+                                }
+                            });
+                        }
+                        if (doc.channel(channelName).hasSubscribe()) {
+                            // eslint-disable-next-line array-callback-return
+                            doc.channel(channelName).subscribe().bindingProtocols().map((protocol) => {
+                                if (!protocolBindings.includes(protocol)) {
+                                    protocolBindings.push(protocol);
+                                }
+                            });
+                        }
                     });
-                    externalEnvWithEndpoints[env.name] = endpoints;
-                });
-            }
-        })
+                    // eslint-disable-next-line array-callback-return
+                    allExternalGateways.map((env) => {
+                        const endpoints = [];
+                        // eslint-disable-next-line array-callback-return
+                        env.endpointURIs.map((endpoint) => {
+                            // eslint-disable-next-line array-callback-return
+                            protocolBindings.map((protocol) => {
+                                if (protocol === endpoint.protocol) {
+                                    const uri = endpoint.endpointURI;
+                                    endpoints.push({ protocol, uri });
+                                }
+                            });
+                        });
+                        externalEnvWithEndpoints[env.name] = endpoints;
+                    });
+                }
+            })
+        }
     }, [api.id]);
 
     const toggleOpenConfirmDelete = (revisionName, revisionId) => {
@@ -717,7 +732,7 @@ export default function Environments() {
     };
 
     const handleClickOpen = () => {
-        if (!isRestricted(['apim:api_create', 'apim:api_publish'], api)) {
+        if (!isCreateOrPublishRestricted()) {
             setOpen(true);
         }
     };
@@ -1920,7 +1935,7 @@ export default function Environments() {
                                     )}
                                     size='small'
                                     type='submit'
-                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) 
+                                    disabled={isCreateOrPublishRestricted() 
                                         || api.initiatedFromGateway}
                                     startIcon={<RestoreIcon />}
                                 >
@@ -1936,7 +1951,7 @@ export default function Environments() {
                                     )}
                                     disabled={(allEnvRevision && allEnvRevision.filter(
                                         (o1) => o1.id === allRevisions[revision].id,
-                                    ).length !== 0) || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                                    ).length !== 0) || isCreateOrPublishRestricted()}
                                     size='small'
                                     sx={{ color: '#38536c' }}
                                     startIcon={<DeleteForeverIcon />}
@@ -1971,7 +1986,7 @@ export default function Environments() {
                                         allRevisions[revision].displayName, allRevisions[revision].id,
                                     )}
                                     size='small'
-                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) 
+                                    disabled={isCreateOrPublishRestricted() 
                                         || api.initiatedFromGateway}
                                     type='submit'
                                     startIcon={<RestoreIcon />}
@@ -1988,7 +2003,7 @@ export default function Environments() {
                                     )}
                                     disabled={(allEnvRevision && allEnvRevision.filter(
                                         (o1) => o1.id === allRevisions[revision].id,
-                                    ).length !== 0) || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                                    ).length !== 0) || isCreateOrPublishRestricted()}
                                     size='small'
                                     sx={{ color: '#38536c' }}
                                     startIcon={<DeleteForeverIcon />}
@@ -2117,12 +2132,12 @@ export default function Environments() {
      */
     function getDeployedRevisionStatusComponent(row, allEnvRevisionMapping) {
 
-        const deployingGateway = allEnvRevisionMapping.find(gateway => {
+        const deployingGateway = allEnvRevisionMapping?.find(gateway => {
             return gateway.name === row.name
         });
         const gatewayRevisions = deployingGateway?.revisions;
 
-        if (!gatewayRevisions.length) {
+        if (!gatewayRevisions || gatewayRevisions.length === 0) {
             // Content to display when there is no revision
             return (
                 <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -2145,7 +2160,7 @@ export default function Environments() {
                         margin='dense'
                         variant='outlined'
                         style={{ width: '50%' }}
-                        disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
+                        disabled={api.isRevision || isCreateOrPublishRestricted() ||
                             (settings && settings.portalConfigurationOnlyModeEnabled) ||
                             !allRevisions || allRevisions.length === 0}
                     >
@@ -2157,7 +2172,7 @@ export default function Environments() {
                         className={classes.button2}
                         disabled={
                             api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) ||
-                            isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
+                            isCreateOrPublishRestricted() ||
                             !selectedRevision.some((r) => r.env === row.name && r.revision) ||
                             !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
                             (api.advertiseInfo && api.advertiseInfo.advertised) ||
@@ -2224,7 +2239,7 @@ export default function Environments() {
                         variant='outlined'
                         disabled={api.isRevision ||
                             (settings && settings.portalConfigurationOnlyModeEnabled) ||
-                            isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            isCreateOrPublishRestricted()}
                         onClick={() => cancelRevisionDeploymentWorkflow(pendingDeployment.id, row.name)}
                         size='small'
                         id='cancel-btn'
@@ -2258,7 +2273,7 @@ export default function Environments() {
                     margin='dense'
                     variant='outlined'
                     style={{ width: '50%' }}
-                    disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
+                    disabled={api.isRevision || isCreateOrPublishRestricted() ||
                         (settings && settings.portalConfigurationOnlyModeEnabled) ||
                         !filteredRevisions || filteredRevisions.length === 0}
                 >
@@ -2270,7 +2285,7 @@ export default function Environments() {
                     className={classes.button2}
                     disabled={
                         api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) ||
-                        isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
+                        isCreateOrPublishRestricted() ||
                         !selectedRevision.some((r) => r.env === row.name && r.revision) ||
                         !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
                         (api.advertiseInfo && api.advertiseInfo.advertised) ||
@@ -2421,7 +2436,7 @@ export default function Environments() {
      * @returns {JSX.Element} The JSX element representing the deployment component
      */
     function getDeployedRevisionComponent(row, allEnvRevisionMapping) {
-        const deployingGateway = allEnvRevisionMapping.find(gateway => {
+        const deployingGateway = allEnvRevisionMapping?.find(gateway => {
             return gateway.name === row.name
         });
         const gatewayRevisions = deployingGateway?.revisions;
@@ -2455,7 +2470,7 @@ export default function Environments() {
                         variant='outlined'
                         disabled={isUndeploying || api.isRevision || api.initiatedFromGateway ||
                             (settings && settings.portalConfigurationOnlyModeEnabled) ||
-                            isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            isCreateOrPublishRestricted()}
                         onClick={() => undeployRevision(approvedDeployment.id, row.name)}
                         size='small'
                         id='undeploy-btn'
@@ -2605,6 +2620,16 @@ export default function Environments() {
                     </Typography>
                 </MuiAlert>
             )}
+            {api.gatewayType === 'solace' && (
+                <MuiAlert severity='info' className={classes.infoAlert}>
+                    <Typography variant='body' align='left' data-testid='solace-api-deployment-dialog'>
+                        <FormattedMessage
+                            id='Apis.Details.Environments.Environments.solace.warning'
+                            defaultMessage='This API is marked as a Solace API. Hence, deployments are not required.'
+                        />
+                    </Typography>
+                </MuiAlert>
+            )}
             {allRevisions && allRevisions.length === 0 && (
                 <DeploymentOnbording
                     classes={classes}
@@ -2653,7 +2678,7 @@ export default function Environments() {
                             <span>
                                 <Button
                                     onClick={toggleDeployRevisionPopup}
-                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                                    disabled={isCreateOrPublishRestricted()
                                         || (api.advertiseInfo && api.advertiseInfo.advertised)
                                         || isDeployButtonDisabled
                                         || api.lifeCycleStatus === 'RETIRED'}
@@ -2784,7 +2809,7 @@ export default function Environments() {
                                 <Typography variant='h6' align='left' className={classes.sectionTitle}>
                                     <FormattedMessage
                                         id='Apis.Details.Environments.Environments.api.gateways.heading'
-                                        defaultMessage='API Gateways'
+                                        defaultMessage='Gateways'
                                     />
                                 </Typography>
                                 <Grid
@@ -3007,7 +3032,7 @@ export default function Environments() {
                                 <Typography variant='h6' align='left' className={classes.sectionTitle}>
                                     <FormattedMessage
                                         id='Apis.Details.Environments.Environments.external.gateways.heading'
-                                        defaultMessage='API Gateways'
+                                        defaultMessage='Gateways'
                                     />
                                 </Typography>
                                 <Grid
@@ -3135,7 +3160,7 @@ export default function Environments() {
                             color='primary'
                             disabled={SelectedEnvironment.length === 0
                                 || (allRevisions && allRevisions.length === revisionCount && !extraRevisionToDelete)
-                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                                || isCreateOrPublishRestricted()
                                 || (api.advertiseInfo && api.advertiseInfo.advertised)
                                 || (SelectedEnvironment.length === 1
                                     && allEnvRevision && allEnvRevision.some(revision => {
@@ -3155,7 +3180,8 @@ export default function Environments() {
                     </DialogActions>
                 </StyledDialog>
             </Grid>
-            {allRevisions && allRevisions.length !== 0 && (
+            {allRevisions && allRevisions.length !== 0 
+            && !api.isRevision && (settings && !settings.portalConfigurationOnlyModeEnabled) && (
                 <>
                     <Grid
                         container
@@ -3342,7 +3368,7 @@ export default function Environments() {
                     <Typography variant='h6' component='h2' className={classes.sectionTitle}>
                         <FormattedMessage
                             id='Apis.Details.Environments.Environments.APIGateways'
-                            defaultMessage='API Gateways'
+                            defaultMessage='Gateways'
                         />
                     </Typography>
                     <TableContainer component={Paper}>
@@ -3441,7 +3467,7 @@ export default function Environments() {
                                         <TableCell component='th' scope='row'>
                                             {row.displayName}
                                         </TableCell>
-                                        {allEnvDeployments[row.name].revision != null ? (
+                                        {allEnvDeployments && allEnvDeployments[row.name]?.revision != null ? (
                                             <>
                                                 <TableCell align='left' id='gateway-access-url-cell'>
                                                     <div className={classes.primaryEndpoint}>
@@ -3574,7 +3600,7 @@ export default function Environments() {
                     <Typography variant='h6' className={classes.sectionTitle}>
                         <FormattedMessage
                             id='Apis.Details.External.Gateways'
-                            defaultMessage='API Gateways'
+                            defaultMessage='Gateways'
                         />
                     </Typography>
                     <TableContainer component={Paper}>
@@ -3665,7 +3691,7 @@ export default function Environments() {
                                         <TableCell component='th' scope='row'>
                                             {row.displayName}
                                         </TableCell>
-                                        {allEnvDeployments[row.name].revision != null ? (
+                                        {allEnvDeployments && allEnvDeployments[row.name]?.revision != null ? (
                                             <>
                                                 <TableCell align='left' id='gateway-access-url-cell'>
                                                     <div className={classes.primaryEndpoint}>

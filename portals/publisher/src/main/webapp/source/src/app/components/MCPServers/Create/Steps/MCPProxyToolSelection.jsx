@@ -26,7 +26,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 import CheckIcon from '@mui/icons-material/Check';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { FormattedMessage, useIntl } from 'react-intl';
-import debounce from 'lodash.debounce';
 import MCPServer from 'AppData/MCPServer';
 import MethodView from 'AppComponents/Apis/Details/ProductResources/MethodView';
 import TransferList from './components/TransferList';
@@ -53,11 +52,6 @@ const Root = styled('div')(({ theme }) => ({
  * Handles URL validation and tool selection for MCP Proxy servers
  */
 const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
-    // Safety check to prevent crashes if apiInputs is undefined
-    if (!apiInputs) {
-        console.warn('MCPProxyToolSelection: apiInputs is undefined');
-        return null;
-    }
     const [isValidating, setIsValidating] = useState(false);
     const [validationError, setValidationError] = useState(null);
     const [toolInfo, setToolInfo] = useState(null);
@@ -147,7 +141,22 @@ const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
         setAvailableOperations(newOperations);
         setSelectedOperations([]);
         setChecked([]);
+        // Also reset toolInfo when clearing operations
+        if (newOperations.length === 0) {
+            setToolInfo(null);
+        }
     };
+
+    // Reset state when URL changes
+    useEffect(() => {
+        if (!apiInputs?.mcpServerUrl || apiInputs.mcpServerUrl.trim() === '') {
+            setValidationError(null);
+            setToolInfo(null);
+            setAvailableOperations([]);
+            setSelectedOperations([]);
+            setChecked([]);
+        }
+    }, [apiInputs?.mcpServerUrl]);
 
     // Dispatch selected operations to parent and validate form
     useEffect(() => {
@@ -160,67 +169,76 @@ const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
     }, [apiInputs?.mcpServerUrl, validationError, toolInfo, selectedOperations,
         onValidate, inputsDispatcher, operationCleaner]);
 
-    // Debounced URL validation function
-    const validateURLDebounced = useCallback(
-        debounce(async (url) => {
-            if (!url || url.trim() === '') {
-                setValidationError(null);
-                setToolInfo(null);
-                updateAvailableOperations([]);
-                return;
-            }
-
-            setIsValidating(true);
+    // URL validation function (no debounce - only triggered on blur)
+    const validateURL = useCallback(async (url) => {
+        if (!url || url.trim() === '') {
             setValidationError(null);
+            setToolInfo(null);
+            updateAvailableOperations([]);
+            return;
+        }
 
-            try {
-                const response = await MCPServer.validateThirdPartyMCPServerUrl(url);
-                const { body } = response;
+        setIsValidating(true);
+        setValidationError(null);
 
-                if (body.isValid) {
-                    // Extract tool information from the response
-                    if (body.toolInfo && body.toolInfo.operations) {
-                        const tools = body.toolInfo.operations.map(operation => ({
-                            id: `${operation.target}`,
-                            target: operation.target,
-                            description: operation.description,
-                            feature: operation.feature,
-                        }));
-                        
-                        setToolInfo(body.toolInfo);
-                        updateAvailableOperations(tools);
-                    } else {
-                        setToolInfo(null);
-                        updateAvailableOperations([]);
-                    }
+        try {
+            const response = await MCPServer.validateThirdPartyMCPServerUrl(url);
+            const { body } = response;
+
+            if (body.isValid) {
+                // Extract tool information from the response
+                if (body.toolInfo && body.toolInfo.operations) {
+                    const tools = body.toolInfo.operations.map(operation => ({
+                        id: `${operation.target}`,
+                        target: operation.target,
+                        description: operation.description,
+                        feature: operation.feature,
+                    }));
+                    
+                    setToolInfo(body.toolInfo);
+                    updateAvailableOperations(tools);
                 } else {
-                    setValidationError(body.errorMessage || 'Invalid MCP Server URL');
                     setToolInfo(null);
                     updateAvailableOperations([]);
                 }
-            } catch (error) {
-                console.error('Error validating MCP Server URL:', error);
-                setValidationError('Failed to validate MCP Server URL');
+            } else {
+                setValidationError('Invalid MCP Server URL. Please try again.');
                 setToolInfo(null);
                 updateAvailableOperations([]);
-            } finally {
-                setIsValidating(false);
             }
-        }, 500),
-        [updateAvailableOperations]
-    );
+        } catch (error) {
+            console.error('Error validating MCP Server URL:', error);
+            setValidationError('Failed to validate MCP Server URL');
+            setToolInfo(null);
+            updateAvailableOperations([]);
+        } finally {
+            setIsValidating(false);
+        }
+    }, [updateAvailableOperations]);
 
-    // Handle URL input change
+    // Handle URL input change (no validation on change)
     const handleUrlChange = (event) => {
         const { value } = event.target;
         inputsDispatcher({ action: 'mcpServerUrl', value });
-        validateURLDebounced(value);
+        
+        // Clear validation state when user starts typing
+        if (validationError) {
+            setValidationError(null);
+        }
+        
+        // Clear tool info and operations when URL is cleared or changed
+        if (toolInfo || availableOperations.length > 0 || selectedOperations.length > 0) {
+            setToolInfo(null);
+            setAvailableOperations([]);
+            setSelectedOperations([]);
+            setChecked([]);
+        }
     };
 
-    // Handle URL blur
+    // Handle URL blur (validation triggered only on blur)
     const handleUrlBlur = (event) => {
         const { value } = event.target;
-        validateURLDebounced(value);
+        validateURL(value);
     };
 
     // Custom render function for MCP tools - using same style as default renderItem
@@ -234,25 +252,35 @@ const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
         </div>
     );
 
-    // URL validation end adornment
-    const getEndAdornment = () => {
-        if (isValidating) {
-            return <CircularProgress size={20} />;
-        }
+    // URL validation end adornment - matching ProvideOpenAPI.jsx pattern
+    let urlStateEndAdornment = null;
+    if (isValidating) {
+        urlStateEndAdornment = (
+            <InputAdornment position='end'>
+                <CircularProgress />
+            </InputAdornment>
+        );
+    } else if (validationError !== null || toolInfo !== null) {
         if (validationError) {
-            return <ErrorOutlineIcon color='error' />;
+            urlStateEndAdornment = (
+                <InputAdornment position='end'>
+                    <ErrorOutlineIcon fontSize='large' color='error' />
+                </InputAdornment>
+            );
+        } else {
+            urlStateEndAdornment = (
+                <InputAdornment position='end' id='url-validated'>
+                    <CheckIcon fontSize='large' color='primary' />
+                </InputAdornment>
+            );
         }
-        if (toolInfo) {
-            return <CheckIcon color='success' />;
-        }
-        return null;
-    };
+    }
 
-    const urlStateEndAdornment = (
-        <InputAdornment position='end'>
-            {getEndAdornment()}
-        </InputAdornment>
-    );
+    // Safety check to prevent crashes if apiInputs is undefined
+    if (!apiInputs) {
+        console.warn('MCPProxyToolSelection: apiInputs is undefined');
+        return null;
+    }
 
     return (
         <Root>
@@ -274,21 +302,20 @@ const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
                         variant='outlined'
                         value={apiInputs?.mcpServerUrl || ''}
                         onChange={handleUrlChange}
-                        onBlur={handleUrlBlur}
                         InputLabelProps={{
                             shrink: true,
                         }}
                         InputProps={{
+                            onBlur: handleUrlBlur,
                             endAdornment: urlStateEndAdornment,
                         }}
-                        helperText={
-                            validationError || (
+                        helperText={(validationError)
+                            || (
                                 <FormattedMessage
                                     id='MCPServers.Create.MCPProxyToolSelection.url.helper.text'
                                     defaultMessage='Click away to validate the URL'
                                 />
-                            )
-                        }
+                            )}
                         error={!!validationError}
                         data-testid='mcp-server-url-input'
                     />

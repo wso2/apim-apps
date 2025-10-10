@@ -35,14 +35,12 @@ import PropTypes from 'prop-types';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { CircularProgress, useTheme } from '@mui/material';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import API from 'AppData/api';
-import MCPServer from 'AppData/MCPServer';
 import Checkbox from '@mui/material/Checkbox';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { isRestricted } from 'AppData/AuthManager';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
-import CONSTS from 'AppData/Constants';
+import { checkEndpointStatus } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'DeploymentOnbording';
 
@@ -153,14 +151,26 @@ export default function DeploymentOnboarding(props) {
     const isMCPServer = api.isMCPServer();
     const { maxCommentLength } = theme.custom;
     const { settings: { environment: environments, gatewayTypes } } = useAppContext();
+
+    const getCreateOrPublishScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), api);
+
     const [internalGateways, setInternalGateways] = useState([]);
     const [externalGateways, setExternalGateways] = useState([]);
     const [selectedExternalGateway, setSelectedExternalGateway] = useState([]);
-    const [isEndpointSecurityConfigured, setIsEndpointSecurityConfigured] = useState(false);
     const [descriptionOpen, setDescriptionOpen] = useState(false);
     const [selectedEnvironment, setSelectedEnvironment] = useState([]);
     const [selectedVhostDeploy, setVhostsDeploy] = useState(null);
-    const [isEndpointAvailable, setEndpointAvailable] = useState(false);
+    const [endpointStatus, setEndpointStatus] = useState({
+        isEndpointReady: false,
+        isLoading: true
+    });
 
     useEffect(() => {
         let gatewayType;
@@ -177,6 +187,12 @@ export default function DeploymentOnboarding(props) {
                 case 'AWS':
                     gatewayType = 'AWS';
                     break;
+                case 'solace':
+                    gatewayType = 'Solace';
+                    break;
+                case 'Azure':
+                    gatewayType = 'Azure';
+                    break;
                 default:
                     if (gatewayTypes.includes(api.gatewayType)) {
                         gatewayType = api.gatewayType;
@@ -185,7 +201,8 @@ export default function DeploymentOnboarding(props) {
                     }
             }
         }
-        const internalGatewaysFiltered = environments.filter((p) => p.provider.toLowerCase().includes('wso2'));
+        const internalGatewaysFiltered = environments.filter((p) => p.provider.toLowerCase().includes('wso2')
+        && p.mode !== 'READ_ONLY');
         const selectedInternalGateways = internalGatewaysFiltered.filter((p) => 
             p.gatewayType.toLowerCase() === gatewayType.toLowerCase())
         if (selectedInternalGateways.length > 0) {
@@ -203,7 +220,8 @@ export default function DeploymentOnboarding(props) {
             setVhostsDeploy(defaultVhosts);
             setSelectedEnvironment(selectedInternalGateways.length === 1 ? [selectedInternalGateways[0].name] : []);
         } else {
-            const external = environments.filter((p) => !p.provider.toLowerCase().includes('wso2'));
+            const external = environments.filter((p) => !p.provider.toLowerCase().includes('wso2')
+            && p.mode !== 'READ_ONLY');
             const selectedExternalGateways = external.filter((p) =>
                 p.gatewayType.toLowerCase() === gatewayType.toLowerCase());
             setExternalGateways(selectedExternalGateways);
@@ -225,84 +243,29 @@ export default function DeploymentOnboarding(props) {
         }
     }, []);
 
-    useEffect(() => {
-        const checkEndpointSecurity = async () => {
-            try {
-                const hasProductionEndpoint = !!api.primaryProductionEndpointId;
-                const hasSandboxEndpoint = !!api.primarySandboxEndpointId;
-                let isProductionSecure = false;
-                let isSandboxSecure = false;
-
-                if (hasProductionEndpoint) {
-                    if (api.primaryProductionEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION) {
-                        isProductionSecure = !!api.endpointConfig?.endpoint_security?.production;
-                    } else {
-                        const endpoint = await API.getApiEndpoint(api.id, api.primaryProductionEndpointId);
-                        isProductionSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.production;
-                    }
-                }
-
-                if (hasSandboxEndpoint) {
-                    if (api.primarySandboxEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX) {
-                        isSandboxSecure = !!api.endpointConfig?.endpoint_security?.sandbox;
-                    } else {
-                        const endpoint = await API.getApiEndpoint(api.id, api.primarySandboxEndpointId);
-                        isSandboxSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.sandbox;
-                    }
-                }
-
-                if (hasProductionEndpoint && hasSandboxEndpoint) {
-                    setIsEndpointSecurityConfigured(isProductionSecure && isSandboxSecure);
-                } else if (hasProductionEndpoint) {
-                    setIsEndpointSecurityConfigured(isProductionSecure);
-                } else if (hasSandboxEndpoint) {
-                    setIsEndpointSecurityConfigured(isSandboxSecure);
-                } else {
-                    setIsEndpointSecurityConfigured(false);
-                }
-            } catch (error) {
-                console.error('Error checking endpoint security:', error);
-                setIsEndpointSecurityConfigured(false);
-            }
-        };
-        checkEndpointSecurity();
-
-        if (isMCPServer) {
-            if (api.isMCPServerFromExistingAPI()) {
-                setEndpointAvailable(true); // TODO: Check the endpoint availability for MCP Server from existing API
-                // API.getAPIById(underlyingApi.id)
-                //     .then((response) => {
-                //         const apiObject = response.body;
-                //         setEndpointAvailable(apiObject.subtypeConfiguration?.subtype === 'AIAPI'
-                //             ? (apiObject.primaryProductionEndpointId !== null
-                //                 || apiObject.primarySandboxEndpointId !== null)
-                //             : apiObject.endpointConfig !== null);
-                //     });
-            } else {
-                MCPServer.getMCPServerEndpoints(api.id)
-                    .then((response) => {
-                        const fetchedEndpoints = response.body;
-                        if (fetchedEndpoints && fetchedEndpoints.length > 0) {
-                            setEndpointAvailable(true);
-                        } else {
-                            setEndpointAvailable(false);
-                        }
-                    });
-            }
-        } else {
-            setEndpointAvailable(api.subtypeConfiguration?.subtype === 'AIAPI'
-                ? (api.primaryProductionEndpointId !== null || api.primarySandboxEndpointId !== null)
-                : api.endpointConfig !== null);
+    const handleEndpointStatusCheck = async () => {
+        setEndpointStatus(prev => ({ ...prev, isLoading: true }));
+        try {
+            const isEndpointReady = await checkEndpointStatus(api);
+            setEndpointStatus({
+                isEndpointReady,
+                isLoading: false
+            });
+        } catch (error) {
+            console.error('Error checking endpoint status:', error);
+            setEndpointStatus({
+                isEndpointReady: false,
+                isLoading: false
+            });
         }
+    };
+
+    useEffect(() => {
+        handleEndpointStatusCheck();
     }, [api]);
 
-    const isDeployButtonDisabled = ((api.type !== 'WEBSUB' && !(
-        isEndpointAvailable &&
-        (api.subtypeConfiguration?.subtype === 'AIAPI'
-            ? isEndpointSecurityConfigured
-            : true
-        )
-    )) || api.workflowStatus === 'CREATED' || api.initiatedFromGateway);
+    const isDeployButtonDisabled = ((api.type !== 'WEBSUB' && !endpointStatus.isEndpointReady) 
+        || api.workflowStatus === 'CREATED' || api.initiatedFromGateway);
 
     /**
      * Handle Description
@@ -440,7 +403,7 @@ export default function DeploymentOnboarding(props) {
                                     <Typography className={classes.textRevision}>
                                         <FormattedMessage
                                             id='Apis.Details.Environments.deploy.api.gateways.text'
-                                            defaultMessage='API Gateways'
+                                            defaultMessage='Gateways'
                                         />
                                     </Typography>
                                     <Box mt={4}>
@@ -647,8 +610,9 @@ export default function DeploymentOnboarding(props) {
                                             }
                                             color='primary'
                                             disabled={selectedEnvironment.length === 0
-                                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                                                || isCreateOrPublishRestricted()
                                                 || (advertiseInfo && advertiseInfo.advertised)
+                                                || api.gatewayType === 'solace'
                                                 || isDeployButtonDisabled}
                                         >
                                             <FormattedMessage
@@ -665,7 +629,7 @@ export default function DeploymentOnboarding(props) {
                                     <Typography className={classes.textRevision}>
                                         <FormattedMessage 
                                             id='Apis.Details.Environments.deploy.api.external.gateways.text'
-                                            defaultMessage='API Gateways'
+                                            defaultMessage='Gateways'
                                         />
                                     </Typography>
                                     <Box mt={4}>
@@ -690,8 +654,7 @@ export default function DeploymentOnboarding(props) {
                                                                     value={row.name}
                                                                     checked=
                                                                         {selectedExternalGateway.includes(row.name)}
-                                                                    disabled={isRestricted(['apim:api_publish',
-                                                                        'apim:api_create'])}
+                                                                    disabled={isCreateOrPublishRestricted()}
                                                                     onChange={handleChange}
                                                                     color='primary'
                                                                     icon={<RadioButtonUncheckedIcon />}
@@ -793,7 +756,7 @@ export default function DeploymentOnboarding(props) {
                                                     name='description'
                                                     margin='dense'
                                                     variant='outlined'
-                                                    disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                                                    disabled={isCreateOrPublishRestricted()}
                                                     label='Description'
                                                     inputProps={{ maxLength: maxCommentLength }}
                                                     helperText={(
@@ -822,7 +785,7 @@ export default function DeploymentOnboarding(props) {
                                             }
                                             color='primary'
                                             disabled={selectedExternalGateway.length === 0
-                                                || isRestricted(['apim:api_publish', 'apim:api_create'])
+                                                || isCreateOrPublishRestricted()
                                                 || isDeployButtonDisabled || isDeploying}
                                         >
                                             <FormattedMessage

@@ -100,6 +100,12 @@ export default {
             activeMenuItem: '#254061',
             divider: '#000000',
         },
+        charts: {
+            success: '#00B81D',
+            error: '#FF5252',
+            warn: '#FFC107',
+            info: '#2E96FF',
+        }
     },
     typography: {
         fontFamily: '"Open Sans", "Helvetica", "Arial", sans-serif',
@@ -134,8 +140,8 @@ export default {
         leftMenuIconMainSize: 52,
         leftMenuTextStyle: 'capitalize',
         leftMenuAnalytics: {
-            enable: true, // If `false`, External link to choreo cloud analytics icon will be removed/hidden in nav bar
-            link: 'https://console.choreo.dev/insights',
+            enable: true, // If `false`, External link to Moesif Basic Analytics icon will be removed/hidden in nav bar
+            link: 'https://www.moesif.com/wrap/basic?onboard=true',
         },
         resourceChipColors: { // https://github.com/swagger-api/swagger-ui/blob/master/src/style/_variables.scss#L45-L52
             get: '#61affe',
@@ -192,8 +198,8 @@ export default {
             },
         },
         thumbnail: {
-            width: 240,
-            height: 140,
+            width: 100,
+            height: 100,
             textShadow: '0 1px 0 #ccc,0 1px 3px rgba(0,0,0,.1), 0 10px 10px rgba(0,0,0,.1), 0 20px 20px rgba(0,0,0,.1)',
             offset: 0.4, // Ratio between dark and light gradient, don't want a gradient make it 0
             colorMap: { // Any hashed color code or if you remove a mapping will fallback to default
@@ -265,9 +271,18 @@ export default {
                 mcpServerFromExistingApiIcon: '/site/public/images/landing-icons/mcp-server-from-existing-api.svg',
                 mcpServerProxyIcon: '/site/public/images/landing-icons/mcp-server-proxy.svg',
                 noDataIcon: '/site/public/images/landing-icons/no-data.svg',
+                documentationIcon: '/site/public/images/landing-icons/documentation.svg',
+                apiDefinitionIcon: '/site/public/images/landing-icons/api-definition.svg',
             },
             menu: {
                 primary: '#34679D',
+            },
+            summarySection: {
+                bgImages: {
+                    apis: '/site/public/images/landing-icons/apis-bg.svg',
+                    apiProducts: '/site/public/images/landing-icons/api-products-bg.svg',
+                    mcps: '/site/public/images/landing-icons/mcps-bg.svg',
+                },
             },
         },
         title: {
@@ -304,6 +319,15 @@ export default {
             activeRevision: {
                 background: 'radial-gradient(#29bb89, #f7ea00)',
             },
+        },
+        gatewayGradients: {
+            azure: 'linear-gradient(135deg, #0078d4 0%, #005a9f 100%)',
+            aws: 'linear-gradient(135deg, #ff9a00 0%, #ff6600 100%)',
+            kong: 'linear-gradient(135deg, #003459 0%, #007acc 100%)',
+            kubernetes: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            envoy: 'linear-gradient(135deg, #9333EA 0%, #4F46E5 100%)',
+            universal: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            default: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         },
     },
 };

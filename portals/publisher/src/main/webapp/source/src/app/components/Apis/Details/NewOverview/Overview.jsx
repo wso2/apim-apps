@@ -28,7 +28,6 @@ import MCPServer from 'AppData/MCPServer';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { green } from '@mui/material/colors';
 import Tools from 'AppComponents/MCPServers/Details/Overview/Tools';
-
 import Resources from './Resources';
 import Operations from './Operations';
 import ProductResources from './ProductResources';
@@ -37,6 +36,7 @@ import CustomizedStepper from './CustomizedStepper';
 import MetaData from './MetaData';
 import Endpoints from './Endpoints';
 import Topics from './Topics';
+import AssociatedAPI from './AssociatedAPI';
 
 const PREFIX = 'Overview';
 
@@ -191,8 +191,10 @@ const Root = styled('div')(({ theme }) => ({
 /**
  * API Overview page
  *
- * @param {*} props
- * @returns
+ * @param {Object} props - Component props
+ * @param {Object} props.api - The API object
+ * @param {Function} props.setOpenPageSearch - Function to set page search state
+ * @returns {JSX.Element} - The Overview component
  */
 function Overview(props) {
     const {  api: newApi, setOpenPageSearch } = props; // TODO <tmkasun>: Remove newApi prop & merge to api
@@ -220,6 +222,8 @@ function Overview(props) {
     if (api.apiType === API.CONSTS.API || (api.type === MCPServer.CONSTS.MCP
         && !api.isMCPServerFromExistingAPI())) {
         loadEndpoints = <Endpoints parentClasses={classes} api={api} />;
+    } else if (api.type === MCPServer.CONSTS.MCP && api.isMCPServerFromExistingAPI()) {
+        loadEndpoints = <AssociatedAPI parentClasses={classes} api={api} />;
     }
 
     /**
@@ -256,7 +260,7 @@ function Overview(props) {
                     defaultMessage='Overview'
                 />
             </Typography>
-            {(api.apiType !== API.CONSTS.API || !api.advertiseInfo.advertised) && (
+            {(api.apiType !== API.CONSTS.API || !api.advertiseInfo.advertised) && api.gatewayType !== 'solace' && (
                 <Grid container>
                     <Grid item xs={12}>
                         <Paper className={classes.stepperWrapper}>
@@ -316,6 +320,7 @@ Overview.propTypes = {
     api: PropTypes.shape({
         id: PropTypes.string,
     }).isRequired,
+    setOpenPageSearch: PropTypes.func.isRequired,
 };
 
 export default (Overview);

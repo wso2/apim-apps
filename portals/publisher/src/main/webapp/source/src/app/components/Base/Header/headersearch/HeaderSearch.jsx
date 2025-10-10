@@ -156,7 +156,7 @@ class HeaderSearch extends React.Component {
     onKeyDown(event) {
         if (event.key === 'Enter' && !this.suggestionSelected) {
             const { history } = this.props;
-            history.push('/apis/search?query=' + buildSearchQuery(event.target.value));
+            history.push('/search?query=' + buildSearchQuery(event.target.value));
         }
         this.suggestionSelected = false;
     }
@@ -322,6 +322,12 @@ class HeaderSearch extends React.Component {
                                         <FormattedMessage
                                             id='Base.Header.headersearch.HeaderSearch.tooltip.option1'
                                             defaultMessage='Name [ Syntax - name:xxxx ]'
+                                        />
+                                    </li>
+                                    <li style={{ marginTop: '5px' }}>
+                                        <FormattedMessage
+                                            id='Base.Header.headersearch.HeaderSearch.tooltip.option7'
+                                            defaultMessage='Display Name [ Syntax - display-name:xxxx ]'
                                         />
                                     </li>
                                     <li style={{ marginTop: '5px' }}>

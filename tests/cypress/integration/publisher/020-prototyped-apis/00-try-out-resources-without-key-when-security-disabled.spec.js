@@ -66,6 +66,7 @@ describe("prototype apis with security disabled", () => {
             cy.intercept('PUT', '**/swagger').as('swagger');
 
             cy.get("#split-button-menu").contains('li', 'Save and deploy').click();
+            cy.get('[data-testid="custom-select-save-button"]').scrollIntoView().click();
             cy.wait('@swagger', { timeout: 15000 }).its('response.statusCode').should('equal', 200)
 
             cy.wait(5000)
@@ -88,8 +89,8 @@ describe("prototype apis with security disabled", () => {
 
             //login to dev portal as Developer
             cy.loginToDevportal(userName, password);
-            cy.get('input[placeholder="Search APIs"]').click().type(apiName + "{enter}");
-            cy.get('table > tbody > tr', { timeout: Cypress.config().largeTimeout }).get(`[area-label="Go to ${apiName}"]`).contains('.api-thumb-chip-main', 'PRE-RELEASED').should('exist');
+            cy.get('input[placeholder="Search APIs & MCP Servers"]').click().type(apiName + "{enter}");
+            cy.get('table > tbody > tr', { timeout: Cypress.config().largeTimeout }).get(`[area-label="Go to ${apiName}"]`).should('contain.text', 'PRE-RELEASED');
             cy.get('table > tbody > tr', { timeout: Cypress.config().largeTimeout }).get(`[area-label="Go to ${apiName}"]`).click();
             cy.contains('button', "Try Out", { timeout: Cypress.config().largeTimeout }).click();
             cy.get('.opblock-summary-get > .opblock-summary-control', { timeout: Cypress.config().largeTimeout }).click();

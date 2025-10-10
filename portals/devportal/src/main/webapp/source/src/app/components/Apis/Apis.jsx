@@ -48,7 +48,7 @@ function Apis() {
                 )}
             />
             <Route
-                path='/apis/search'
+                path='/search'
                 render={(props) => (
                     <CommonListing {...props} />)}
             />

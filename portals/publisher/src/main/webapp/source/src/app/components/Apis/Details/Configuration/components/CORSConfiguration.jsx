@@ -33,6 +33,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'CORSConfiguration';
 
@@ -94,6 +95,15 @@ export default function CORSConfiguration(props) {
     const isAllowAllOrigins = corsConfiguration.accessControlAllowOrigins[0] === '*'
         && corsConfiguration.accessControlAllowOrigins.length === 1;
 
+    const getCreateScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), apiFromContext);
+
     const generateElement = (isEnabled) => {
         if (isEnabled) {
             return (
@@ -114,7 +124,10 @@ export default function CORSConfiguration(props) {
                         title={(
                             <FormattedMessage
                                 id='Apis.Details.Configuration.components.CORSConfiguration.tooltip'
-                                defaultMessage='If enabled, the CORS configuration for the API will be enabled.'
+                                defaultMessage='If enabled, the CORS configuration for the {type} will be enabled.'
+                                values={{
+                                    type: getTypeToDisplay(apiFromContext.apiType)
+                                }}
                             />
                         )}
                         aria-label='CORS Configuration helper text'
@@ -128,7 +141,7 @@ export default function CORSConfiguration(props) {
                     className={classes.actionSpace}
                     control={(
                         <Switch
-                            disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                            disabled={isCreateRestricted()}
                             checked={corsConfiguration.corsConfigurationEnabled}
                             onChange={({ target: { checked } }) => configDispatcher({
                                 action: 'corsConfigurationEnabled',
@@ -163,7 +176,7 @@ export default function CORSConfiguration(props) {
                                                 style={{ display: 'flex' }}
                                                 control={(
                                                     <Checkbox
-                                                        disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                                        disabled={isCreateRestricted()}
                                                         checked={isAllowAllOrigins}
                                                         onChange={({ target: { checked, value } }) => configDispatcher({
                                                             action: 'accessControlAllowOrigins',
@@ -239,7 +252,7 @@ export default function CORSConfiguration(props) {
                                     <ChipInput
                                         style={{ marginBottom: 40, display: 'flex' }}
                                         value={corsConfiguration.accessControlAllowHeaders}
-                                        disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                        disabled={isCreateRestricted()}
                                         helperText={(
                                             <FormattedMessage
                                                 id={
@@ -283,7 +296,7 @@ export default function CORSConfiguration(props) {
                                     <ChipInput
                                         style={{ marginBottom: 40, display: 'flex' }}
                                         value={corsConfiguration.accessControlAllowMethods}
-                                        disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                        disabled={isCreateRestricted()}
                                         helperText={(
                                             <FormattedMessage
                                                 id={
@@ -325,7 +338,7 @@ export default function CORSConfiguration(props) {
                                     <FormControlLabel
                                         control={(
                                             <Checkbox
-                                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                                disabled={isCreateRestricted()}
                                                 checked={corsConfiguration.accessControlAllowCredentials}
                                                 onChange={({ target: { checked } }) => configDispatcher({
                                                     action: 'accessControlAllowCredentials',

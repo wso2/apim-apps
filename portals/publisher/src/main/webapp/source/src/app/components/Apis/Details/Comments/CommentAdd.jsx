@@ -25,6 +25,7 @@ import Grid from '@mui/material/Grid';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import CommentsAPI from 'AppData/Comments';
+import MCPServer from 'AppData/MCPServer';
 import { isRestricted } from 'AppData/AuthManager';
 
 const PREFIX = 'CommentAdd';
@@ -137,16 +138,22 @@ class CommentAdd extends React.Component {
      * * */
     handleClickAddComment() {
         const {
-            api: { id: apiId }, replyTo, handleShowReply, addComment, addReply, intl
+            api: { id: apiId, type: apiType }, replyTo, handleShowReply, addComment, addReply, intl
         } = this.props;
         const { content } = this.state;
         const comment = {
             content: content.trim(), category: 'general',
         };
-
+        const isMCPServer = apiType === MCPServer.CONSTS.MCP;
         // to check whether a string does not contain only white spaces
         if (comment.content.replace(/\s/g, '').length) {
-            CommentsAPI.add(apiId, comment, replyTo)
+            let addCommentPromise;
+            if (isMCPServer) {
+                addCommentPromise = CommentsAPI.addCommentToMCPServer(apiId, comment, replyTo);
+            } else {
+                addCommentPromise = CommentsAPI.add(apiId, comment, replyTo);
+            }
+            addCommentPromise
                 .then((newComment) => {
                     this.setState({ content: '' });
                     if (replyTo === null) {
@@ -181,6 +188,19 @@ class CommentAdd extends React.Component {
     }
 
     /**
+     * Determines if the current user has restricted access based on context
+     * @returns {boolean} - True if access is restricted, false otherwise
+     */
+    isAccessRestricted() {
+        const { api } = this.props;
+        if (api.apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
+            return isRestricted(['apim:comment_write', 'apim:comment_manage'], api);
+        } else {
+            return isRestricted(['apim:api_create', 'apim:api_publish'], api);
+        }
+    }
+
+    /**
      * Render method of the component
      * @returns {React.Component} Comment html component
      * @memberof CommentAdd
@@ -205,8 +225,7 @@ class CommentAdd extends React.Component {
                             data-testid='new-comment-field'
                             autoFocus
                             multiline
-                            disabled={api.isRevision 
-                            || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            disabled={api.isRevision || this.isAccessRestricted()}
                             className={classes.textField}
                             margin='normal'
                             placeholder={intl.formatMessage({
@@ -227,9 +246,7 @@ class CommentAdd extends React.Component {
                             <Button
                                 variant='contained'
                                 color='primary'
-                                disabled={api.isRevision ||
-                                isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                || currentLength === 0}
+                                disabled={api.isRevision || this.isAccessRestricted() || currentLength === 0}
                                 onClick={() => this.handleClickAddComment()}
                                 className={classes.commentAddButton}
                                 id='add-comment-btn'

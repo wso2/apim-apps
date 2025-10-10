@@ -541,7 +541,7 @@ export default function Topics(props) {
                                                 markAsDelete={Boolean(markedOperations[target]
                                                         && markedOperations[target].subscribe)}
                                                 onMarkAsDelete={onMarkAsDelete}
-                                                disableDelete={api.gatewayVendor === 'solace'}
+                                                disableDelete={api.gatewayType === 'solace'}
                                                 componentValidator={componentValidator}
                                             />
                                         </Grid>
@@ -560,7 +560,7 @@ export default function Topics(props) {
                                                 markAsDelete={Boolean(markedOperations[target]
                                                         && markedOperations[target].publish)}
                                                 onMarkAsDelete={onMarkAsDelete}
-                                                disableDelete={api.gatewayVendor === 'solace'}
+                                                disableDelete={api.gatewayType === 'solace'}
                                                 componentValidator={componentValidator}
                                             />
                                         </Grid>

@@ -18,7 +18,7 @@
  */
 
 import React from 'react';
-import { Box, Chip, Typography, TableRow, TableCell, LinearProgress } from '@mui/material';
+import { Box, Chip, Typography, TableRow, TableCell, LinearProgress, useTheme } from '@mui/material';
 import ListBaseWithPagination from 'AppComponents/AdminPages/Addons/ListBaseWithPagination';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Link as RouterLink } from 'react-router-dom';
@@ -74,6 +74,7 @@ function apiCall(params) {
 
 export default function PolicyAdherenceTable() {
     const intl = useIntl();
+    const theme = useTheme();
 
     // TODO: reuse this function in other components
     const renderProgress = (followed, total, status) => {
@@ -108,7 +109,7 @@ export default function PolicyAdherenceTable() {
                         borderRadius: 1,
                         backgroundColor: '#e0e0e0',
                         '& .MuiLinearProgress-bar': {
-                            backgroundColor: '#00B81D',
+                            backgroundColor: theme.palette.charts.success,
                             borderRadius: 1,
                         },
                     }}
@@ -245,7 +246,7 @@ export default function PolicyAdherenceTable() {
                                         color: 'inherit'
                                     }}
                                 >
-                                    {artifact.info.name}
+                                    {artifact.info.name} {artifact.info.version}
                                     <OpenInNewIcon sx={{ ml: 0.5, fontSize: 16 }} />
                                 </RouterLink>
                             </Box>

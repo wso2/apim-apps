@@ -40,6 +40,8 @@ const Root = styled('div')({
             position: 'absolute',
             right: 'auto',
         },
+        borderRadius: '4px',
+        overflow: 'hidden',
     },
 });
 
@@ -109,8 +111,8 @@ class ImageGeneratorLegacy extends PureComponent {
 }
 
 ImageGeneratorLegacy.defaultProps = {
-    height: 190,
-    width: 250,
+    height: 100,
+    width: 100,
     fixedIcon: {
         category: null,
         key: null,

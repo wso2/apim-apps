@@ -29,13 +29,13 @@ import API from 'AppData/api';
 import APIValidation from 'AppData/APIValidation';
 
 /**
- *
- *
- * @export
- * @param {*} props
- * @returns
+ * ApiKeyHeader component
+ * @param {Object} props - The props for the component
+ * @param {Object} props.api - The api object
+ * @param {Function} props.configDispatcher - The config dispatcher function
+ * @param {boolean} props.apiKeyEnabled - Whether the api key is enabled
+ * @returns {React.Component} @inheritdoc
  */
-
 export default function ApiKeyHeader(props) {
     const { api, configDispatcher, apiKeyEnabled } = props;
     const [apiFromContext] = useAPI();
@@ -43,6 +43,19 @@ export default function ApiKeyHeader(props) {
     const [isHeaderNameValid, setIsHeaderNameValid] = useState(true);
     const apiKeyHeaderValue = api.apiKeyHeader;
 
+    const getCreateScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), apiFromContext);
+
+    /**
+     * Validate the header name
+     * @param {string} value - The value to validate
+     */
     function validateHeader(value) {
         const headerValidity = APIValidation.apiKeyHeader.required()
             .validate(value, { abortEarly: false }).error;
@@ -60,7 +73,7 @@ export default function ApiKeyHeader(props) {
             <Grid container spacing={1} alignItems='center'>
                 <Grid item xs={11}>
                     <TextField
-                        disabled={isRestricted(['apim:api_create'], apiFromContext) || !apiKeyEnabled}
+                        disabled={isCreateRestricted() || !apiKeyEnabled}
                         id='outlined-name'
                         label={(
                             <FormattedMessage

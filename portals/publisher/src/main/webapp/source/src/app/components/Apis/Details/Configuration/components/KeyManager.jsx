@@ -147,8 +147,18 @@ export default function KeyManager(props) {
             value: newKeyManagers,
         });
     };
+
+    const getCreateScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), api);
+
     useEffect(() => {
-        if (!isRestricted(['apim:api_create'], api)) {
+        if (!isCreateRestricted()) {
             API.keyManagers().then((response) => {
                 setKeyManagersConfigured(response.body.list);
                 
@@ -222,7 +232,7 @@ export default function KeyManager(props) {
                     >
                         <FormControlLabel
                             value='all'
-                            control={<Radio disabled={isRestricted(['apim:api_create'], api)} />}
+                            control={<Radio disabled={isCreateRestricted()} />}
                             label={(
                                 <FormattedMessage
                                     id='Apis.Details.Configuration.components.KeyManager.allow.all'
@@ -232,7 +242,7 @@ export default function KeyManager(props) {
                         />
                         <FormControlLabel
                             value='selected'
-                            control={<Radio disabled={isRestricted(['apim:api_create'], api)} />}
+                            control={<Radio disabled={isCreateRestricted()} />}
                             label={(
                                 <FormattedMessage
                                     id='Apis.Details.Configuration.components.KeyManager.allow.selected'
@@ -317,7 +327,7 @@ export default function KeyManager(props) {
                                     }
                                 }}
                                 MenuProps={MenuProps}
-                                disabled={isRestricted(['apim:api_create'], api)}
+                                disabled={isCreateRestricted()}
                             >
                                 {keyManagersConfigured.map((keyManager) => (
                                     <MenuItem

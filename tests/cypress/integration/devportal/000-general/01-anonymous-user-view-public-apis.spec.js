@@ -50,7 +50,7 @@ describe("Anonymous view apis", () => {
                         let remainingAttempts = 15;
                         let attemptCount = 0;
                         for (; attemptCount < remainingAttempts; attemptCount++) {
-                            let $apis = Cypress.$(`[title="${apiName}"]`, { timeout: Cypress.config().largeTimeout });
+                            let $apis = Cypress.$('a', apiName, { timeout: Cypress.config().largeTimeout });
                             if ($apis.length) {
                                 // At least one with api name was found.
                                 // Return a jQuery object.
@@ -105,8 +105,9 @@ describe("Anonymous view apis", () => {
         cy.loginToDevportal(developer, password);
         cy.visit(`/devportal/apis?tenant=carbon.super`);
         cy.url().should('contain', '/apis?tenant=carbon.super');
-        cy.get(`[title="${apiName}"]`, { timeout: 30000 });
-        cy.get(`[title="${apiName}"]`).click();
+        cy.contains('a', apiName, { timeout: 30000 })
+          .should('exist')
+          .click();
         cy.get('#left-menu-sdk').click();
         // Download all sdks one by one
         /*

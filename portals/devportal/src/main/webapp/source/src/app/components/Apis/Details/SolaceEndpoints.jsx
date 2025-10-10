@@ -129,7 +129,7 @@ function SolaceEndpoints() {
 
     return (
         <Root>
-            {(api.gatewayVendor === 'solace') && (
+            {(api.gatewayType === 'solace') && (
                 <Grid container spacing={2} xs={12}>
                     <Grid item spacing={2} xs={2}>
                         <Typography
@@ -164,7 +164,15 @@ function SolaceEndpoints() {
                             <Grid item spacing={2} xs={12}>
                                 {protocols && protocols.map((p) => (
                                     <Grid container spacing={2} xs={12}>
-                                        <Grid item>
+                                        <Grid
+                                            item
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                marginBottom: '15px',
+                                            }}
+                                        >
                                             <Typography component='p' variant='body1'>
                                                 <FormattedMessage
                                                     id='Apis.Details.NewOverview.Endpoints.blank'
@@ -178,6 +186,7 @@ function SolaceEndpoints() {
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
+                                                marginBottom: '15px',
                                             }}
                                         >
                                             <Chip
@@ -185,17 +194,18 @@ function SolaceEndpoints() {
                                                 data-testid={upperCaseString(p.protocol) + '-label'}
                                                 color='primary'
                                                 style={{
-                                                    width: '70px',
+                                                    width: '120px',
                                                 }}
                                             />
                                         </Grid>
                                         <Grid
-                                            xs={10}
+                                            xs={9}
                                             item
                                             style={{
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
+                                                marginBottom: '15px',
                                             }}
                                         >
                                             <Paper

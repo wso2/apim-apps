@@ -172,6 +172,7 @@ function TenantConfSave() {
                             sx={{ mr: 2 }}
                             onClick={formSaveCallback}
                             data-testid='monaco-editor-save'
+                            disabled={loading}
                         >
                             <FormattedMessage
                                 id='Settings.Advanced.TenantConfSave.form.save'

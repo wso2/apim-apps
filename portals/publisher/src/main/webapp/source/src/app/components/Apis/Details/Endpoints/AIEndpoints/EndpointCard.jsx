@@ -17,7 +17,6 @@
  */
 
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
 import {
     Typography,
     Button,
@@ -29,24 +28,15 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CodeIcon from '@mui/icons-material/Code';
-import Drawer from '@mui/material/Drawer';
 import Tooltip from '@mui/material/Tooltip';
-import Box from '@mui/material/Box';
 import WarningIcon from '@mui/icons-material/Warning';
 import PropTypes from 'prop-types';
-import * as monaco from 'monaco-editor'
-import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
 import { styled } from '@mui/material/styles';
 import { isRestricted } from 'AppData/AuthManager';
-import API from 'AppData/api';
-import MCPServer from 'AppData/MCPServer';
 import { useHistory } from 'react-router-dom';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'EndpointCard';
-
-// load Monaco from node_modules instead of CDN
-loader.config({ monaco });
 
 const classes = {
     cardContent: `${PREFIX}-cardContent`,
@@ -112,58 +102,18 @@ const EndpointCard = ({
     endpointConfiguration,
 }) => {
     const history = useHistory();
-    const [open, setOpen] = React.useState(false);
-    const isMCPServer = apiObject.type === MCPServer.CONSTS.MCP;
-
-    const getUrlPrefix = () => {
-        if (isMCPServer) {
-            return 'mcp-servers';
-        }
-        if (apiObject.apiType === API.CONSTS.APIProduct) {
-            return 'api-products';
-        }
-        return 'apis';
-    }
-
-    const toggleDefinitionViewDrawer = (state) => () => {
-        setOpen(state);
-    }
-
+    const urlPrefix = getBasePath(apiObject.apiType);
     const isSolePrimaryEndpoint = !apiObject.primaryProductionEndpointId || !apiObject.primarySandboxEndpointId;
 
     const getEndpointUrl = () => {
-        if (isMCPServer) {
-            const endpointConfig = JSON.parse(endpoint.endpointConfig) || {};
-            return endpointConfig.production_endpoints?.url ||
-                endpointConfig.sandbox_endpoints?.url ||
-                'No URL configured';
-        } else {
-            return endpoint.deploymentStage === 'PRODUCTION'
-                ? endpoint.endpointConfig?.production_endpoints?.url
-                : endpoint.endpointConfig?.sandbox_endpoints?.url;
-        }
+        return endpoint.deploymentStage === 'PRODUCTION'
+            ? endpoint.endpointConfig?.production_endpoints?.url
+            : endpoint.endpointConfig?.sandbox_endpoints?.url;
     }
 
     const getEndpointName = () => {
         return endpoint.name || 'No Name Configured';
     }
-
-    const getApiDefinition = () => {
-        const apiDef = endpoint.definition || '{}';
-        if (typeof apiDef === 'string') {
-            const parsedDef = JSON.parse(apiDef);
-            return JSON.stringify(parsedDef, null, 2);
-        }
-        return JSON.stringify(apiDef, null, 2);
-    }
-
-    const editorOptions = {
-        selectOnLineNumbers: true,
-        readOnly: true,
-        minimap: {
-            enabled: false,
-        },
-    };
 
     const renderEndpointSecurityWarning = () => {
         if (endpointConfiguration.authenticationConfiguration.enabled) {
@@ -186,12 +136,8 @@ const EndpointCard = ({
                             variant='outlined'
                             className={classes.warningChip}
                             onClick={() => {
-                                const urlPrefix =
-                                    apiObject.apiType === API.CONSTS.APIProduct
-                                        ? 'api-products'
-                                        : 'apis';
                                 history.push(
-                                    `/${urlPrefix}/${apiObject.id}/endpoints/${endpoint.id}`,
+                                    urlPrefix + apiObject.id + '/endpoints/' + endpoint.id,
                                 );
                             }}
                             sx={{ my: '4px' }}
@@ -214,12 +160,8 @@ const EndpointCard = ({
                             variant='outlined'
                             className={classes.warningChip}
                             onClick={() => {
-                                const urlPrefix =
-                                    apiObject.apiType === API.CONSTS.APIProduct
-                                        ? 'api-products'
-                                        : 'apis';
                                 history.push(
-                                    `/${urlPrefix}/${apiObject.id}/endpoints/${endpoint.id}`,
+                                    urlPrefix + apiObject.id + '/endpoints/' + endpoint.id,
                                 );
                             }}
                             sx={{ my: '4px' }}
@@ -254,120 +196,59 @@ const EndpointCard = ({
                     </Typography>
                 </div>
                 <CardActions className={classes.cardActions}>
-                    {isMCPServer ? (
-                        <>
-                            <Tooltip title='View Backend Definition'  >
-                                <IconButton
-                                    size='small'
-                                    onClick={toggleDefinitionViewDrawer(true)}
-                                >
-                                    <CodeIcon fontSize='small' />
-                                </IconButton>
-                            </Tooltip>
-                            <Drawer
-                                anchor='right'
-                                open={open}
-                                onClose={toggleDefinitionViewDrawer(false)}
-                                sx={{
-                                    zIndex: 1300,
-                                    '& .MuiDrawer-paper': {
-                                        width: '45%',
-                                        height: '100vh',
-                                        backgroundColor: '#ffffff',
-                                        color: '#000000',
-                                        zIndex: 1300,
-                                    },
-                                }}
-                                ModalProps={{
-                                    container: document.body,
-                                    style: { zIndex: 1300 }
-                                }}
+                    <div
+                        style={{
+                            display: 'flex',
+                            gap: '8px',
+                            marginRight: 'auto',
+                        }}
+                    >
+                        {renderEndpointSecurityWarning()}
+                        {isPrimary ? (
+                            <Tooltip
+                                title={
+                                    isSolePrimaryEndpoint
+                                        ? 'At least one primary endpoint is required'
+                                        : ''
+                                }
                             >
-                                <Box
-                                    role='presentation'
-                                    sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-                                    <Typography variant='h6' sx={{ p: 2, flexShrink: 0 }}>
-                                        <FormattedMessage
-                                            id='Apis.Details.Endpoints.AIEndpoints.EndpointCard.backend.api.definition'
-                                            defaultMessage='Backend API Definition'
-                                        />
-                                    </Typography>
-                                    <Box
-                                        sx={{
-                                            flex: 1,
-                                            minHeight: 0,
-                                            overflowY: 'auto',
-                                        }}
-                                        px={2}
-                                        pb={2}
+                                <span>
+                                    <Button
+                                        size='small'
+                                        className={classes.primaryActionButton}
+                                        onClick={() =>
+                                            onRemovePrimary(endpoint)
+                                        }
+                                        disabled={
+                                            isRestricted(
+                                                ['apim:api_create'],
+                                                apiObject,
+                                            ) || isSolePrimaryEndpoint
+                                        }
                                     >
-                                        <MonacoEditor
-                                            language='json'
-                                            width='100%'
-                                            height='100%'
-                                            value={getApiDefinition()}
-                                            options={editorOptions}
-                                            theme='vs-dark'
-                                        />
-                                    </Box>
-                                </Box>
-                            </Drawer>
-                        </>
-                    ) : (
-                        <div
-                            style={{
-                                display: 'flex',
-                                gap: '8px',
-                                marginRight: 'auto',
-                            }}
-                        >
-                            {renderEndpointSecurityWarning()}
-                            {isPrimary ? (
-                                <Tooltip
-                                    title={
-                                        isSolePrimaryEndpoint
-                                            ? 'At least one primary endpoint is required'
-                                            : ''
-                                    }
-                                >
-                                    <span>
-                                        <Button
-                                            size='small'
-                                            className={classes.primaryActionButton}
-                                            onClick={() =>
-                                                onRemovePrimary(endpoint)
-                                            }
-                                            disabled={
-                                                isRestricted(
-                                                    ['apim:api_create'],
-                                                    apiObject,
-                                                ) || isSolePrimaryEndpoint
-                                            }
-                                        >
-                                            Remove Primary
-                                        </Button>
-                                    </span>
-                                </Tooltip>
-                            ) : (
-                                <Button
-                                    size='small'
-                                    className={classes.primaryActionButton}
-                                    onClick={() => onSetPrimary(endpoint)}
-                                    disabled={isRestricted(
-                                        ['apim:api_create'],
-                                        apiObject,
-                                    )}
-                                >
-                                    Set as Primary
-                                </Button>
-                            )}
-                        </div>
-                    )}
+                                        Remove Primary
+                                    </Button>
+                                </span>
+                            </Tooltip>
+                        ) : (
+                            <Button
+                                size='small'
+                                className={classes.primaryActionButton}
+                                onClick={() => onSetPrimary(endpoint)}
+                                disabled={isRestricted(
+                                    ['apim:api_create'],
+                                    apiObject,
+                                )}
+                            >
+                                Set as Primary
+                            </Button>
+                        )}
+                    </div>
                     <IconButton
                         size='small'
                         onClick={() => {
                             history.push(
-                                `/${getUrlPrefix()}/${apiObject.id}/endpoints/${endpoint.id}`,
+                                urlPrefix + apiObject.id + '/endpoints/' + endpoint.id,
                             );
                         }}
                         disabled={isRestricted(['apim:api_create'], apiObject)}

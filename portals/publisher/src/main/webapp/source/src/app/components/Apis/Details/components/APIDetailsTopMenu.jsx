@@ -34,14 +34,16 @@ import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import ThumbnailView from 'AppComponents/Apis/Listing/components/ImageGenerator/ThumbnailView';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import GoTo from 'AppComponents/Apis/Details/GoTo/GoTo';
 import Tooltip from '@mui/material/Tooltip';
+import Chip from '@mui/material/Chip';
 import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
-import MUIAlert from 'AppComponents/Shared/MuiAlert';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
+import clsx from 'clsx';
 import DeleteApiButton from './DeleteApiButton';
 import CreateNewVersionButton from './CreateNewVersionButton';
 import ShareButton from './ShareButton';
@@ -61,9 +63,9 @@ const classes = {
     downloadApiFlex: `${PREFIX}-downloadApiFlex`,
     revisionWrapper: `${PREFIX}-revisionWrapper`,
     topRevisionStyle: `${PREFIX}-topRevisionStyle`,
-    readOnlyStyle: `${PREFIX}-readOnlyStyle`,
     active: `${PREFIX}-active`,
-    alertMargin: `${PREFIX}-alertMargin`,
+    chip: `${PREFIX}-chip`,
+    chipSecondary: `${PREFIX}-chipSecondary`,
 };
 
 const Root = styled('div')(({ theme }) => ({
@@ -134,9 +136,6 @@ const Root = styled('div')(({ theme }) => ({
         marginLeft: theme.spacing(1),
         maxWidth: 500,
     },
-    [`.${classes.readOnlyStyle}`]: {
-        color: 'red',
-    },
     [`.${classes.active}`]: {
         background: theme.custom.revision.activeRevision.background,
         width: 8,
@@ -144,8 +143,20 @@ const Root = styled('div')(({ theme }) => ({
         borderRadius: '50%',
         alignItems: 'center',
     },
-    [`.${classes.alertMargin}`]: {
+    [`.${classes.chip}`]: {
+        height: 28,
+        borderRadius: 4,
+        backgroundColor: '#eef3f9ff',
+        color: theme.palette.text.primary,
+        overflow: 'hidden',
         marginLeft: theme.spacing(1),
+        '& svg': {
+            marginLeft: '8px',
+            marginRight: '-6px',
+        },
+    },
+    [`.${classes.chipSecondary}`]: {
+        backgroundColor: theme.palette.background.default,
     },
 }));
 
@@ -187,18 +198,21 @@ const APIDetailsTopMenu = (props) => {
             id: 'Apis.Details.LifeCycle.State.Status.PRE-RELEASED', defaultMessage: 'PRE-RELEASED',
         }),
     };
+    const isMCPServer = api.isMCPServer();
 
     const [userOrg, setUserOrg] = useState(null);
 
     useEffect(() => {
-        new API()
-            .getUserOrganizationInfo()
-            .then((result) => {
-                setUserOrg(result.body.organizationId);
-            })
-            .catch((error) => {
-                throw error;
-            });
+        if (!isMCPServer) {
+            new API()
+                .getUserOrganizationInfo()
+                .then((result) => {
+                    setUserOrg(result.body.organizationId);
+                })
+                .catch((error) => {
+                    throw error;
+                });
+        }
     }, []);
 
     /**
@@ -293,9 +307,15 @@ const APIDetailsTopMenu = (props) => {
         <Root>
             <div className={classes.root}>
                 <Link
-                    to={isAPIProduct
-                        ? `/api-products/${api.id}/overview`
-                        : `/apis/${api.id}/overview`}
+                    to={(() => {
+                        if (api.isMCPServer()) {
+                            return `/mcp-servers/${api.id}/overview`;
+                        } else if (isAPIProduct) {
+                            return `/api-products/${api.id}/overview`;
+                        } else {
+                            return `/apis/${api.id}/overview`;
+                        }
+                    })()}
                     className={classes.backLink}
                 >
                     <Box width={70} height={50} marginLeft={1}>
@@ -304,30 +324,48 @@ const APIDetailsTopMenu = (props) => {
                     </Box>
                     <div style={{ marginLeft: theme.spacing(1), maxWidth: 500 }}>
                         <Link
-                            to={isAPIProduct
-                                ? `/api-products/${api.id}/overview`
-                                : `/apis/${api.id}/overview`}
+                            to={(() => {
+                                if (api.isMCPServer()) {
+                                    return `/mcp-servers/${api.id}/overview`;
+                                } else if (isAPIProduct) {
+                                    return `/api-products/${api.id}/overview`;
+                                } else {
+                                    return `/apis/${api.id}/overview`;
+                                }
+                            })()}
                             className={classes.backLink}
                         >
                             <Typography id='itest-api-name-version' variant='h4' component='h1' 
                                 className={classes.apiName}>
-                                {api.name}
+                                {api.displayName || api.name}
                                 {' :'}
                                 {api.version}
                             </Typography>
                             <Typography variant='caption' gutterBottom align='left'>
                                 <FormattedMessage
                                     id='Apis.Details.components.APIDetailsTopMenu.created.by'
-                                    defaultMessage='Created by:'
+                                    defaultMessage='Created by '
                                 />
                                 {' '}
                                 {api.provider}
+                                {!isAPIProduct && !api.isMCPServer() && (
+                                    <>
+                                        &nbsp;
+                                        <FormattedMessage 
+                                            id='Apis.Details.components.APIDetailsTopMenu.created.on' 
+                                            defaultMessage='on' />
+                                        &nbsp;
+                                        {api.gatewayVendor === 'wso2'
+                                            ? api.gatewayVendor.toUpperCase()
+                                            : Utils.capitalizeFirstLetter(api.gatewayType)}
+                                    </>
+                                )}
                             </Typography>
                         </Link>
                     </div>
                 </Link>
                 <VerticalDivider height={70} />
-                <div className={classes.infoItem}>
+                <div>
                     <Typography data-testid='itest-api-state' component='div' variant='subtitle1'>
                         {lifecycleState in ApiLifeCycleStates
                             ? ApiLifeCycleStates[lifecycleState] : lifecycleState}
@@ -339,149 +377,190 @@ const APIDetailsTopMenu = (props) => {
                         />
                     </Typography>
                 </div>
-
-                <div className={classes.dateWrapper} />
-                {api.isRevision && (
-                    <MUIAlert
+                <VerticalDivider height={70} />
+                {api.initiatedFromGateway && (
+                    <Chip
                         variant='outlined'
-                        severity='warning'
-                        icon={false}
-                        className={classes.alertMargin}
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.components.APIDetailsTopMenu.read.only.label'
-                            defaultMessage='Read only'
-                        />
-                    </MUIAlert>
+                        color='primary'
+                        icon={<CustomIcon icon='discovered-api' height={16} width={16} />}
+                        classes={{ root: classes.chip }}
+                        label={
+                            <>
+                                <FormattedMessage
+                                    id='Apis.Details.components.APIDetailsTopMenu.discovered.api.label'
+                                    defaultMessage='Discovered API -'
+                                />
+                                &nbsp;
+                                {api.gatewayVendor === 'wso2'
+                                    ? api.gatewayVendor.toUpperCase()
+                                    : Utils.capitalizeFirstLetter(api.gatewayType)}
+                            </>
+                        }
+                    />
+                )}
+                {api.isRevision && (
+                    <Chip
+                        variant='outlined'
+                        color='default'
+                        icon={<CustomIcon icon='read-only-api' height={16} width={16} />}
+                        classes={{ root: clsx(classes.chip, classes.chipSecondary) }}
+                        label={
+                            <FormattedMessage
+                                id='Apis.Details.components.APIDetailsTopMenu.read.only.label'
+                                defaultMessage='Read Only'
+                            />
+                        }
+                    />
                 )}
                 {(api.subtypeConfiguration?.subtype === 'AIAPI') && (
-                    <MUIAlert
+                    <Chip
                         data-testid='itest-ai-api-label'
                         variant='outlined'
-                        severity='info'
-                        icon={false}
-                        className={classes.alertMargin}
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.components.APIDetailsTopMenu.ai.api.label'
-                            defaultMessage='AI/LLM API'
-                        />
-                    </MUIAlert>
+                        color='primary'
+                        icon={<CustomIcon icon='ai-api' height={16} width={16} />}
+                        classes={{ root: classes.chip }}
+                        label={
+                            <FormattedMessage
+                                id='Apis.Details.components.APIDetailsTopMenu.ai.api.label'
+                                defaultMessage='AI API'
+                            />
+                        }
+                    />
                 )}
                 {(api.advertiseInfo && api.advertiseInfo.advertised) && (
-                    <MUIAlert
+                    <Chip
                         data-testid='itest-third-party-api-label'
                         variant='outlined'
-                        severity='warning'
-                        icon={false}
-                        className={classes.alertMargin}
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.components.APIDetailsTopMenu.advertise.only.label'
-                            defaultMessage='Third Party'
-                        />
-                    </MUIAlert>
+                        color='primary'
+                        icon={<CustomIcon icon='third-party-api' height={16} width={16} />}
+                        classes={{ root: classes.chip }}
+                        label={
+                            <FormattedMessage
+                                id='Apis.Details.components.APIDetailsTopMenu.advertise.only.label'
+                                defaultMessage='Third-party API'
+                            />
+                        }
+                    />
                 )}
-                {(!api.advertiseInfo || !api.advertiseInfo.advertised) && (
+                <div className={classes.dateWrapper} />
+                {(!api.advertiseInfo || !api.advertiseInfo.advertised) && (api.gatewayType !== 'solace') && (
                     <div className={classes.topRevisionStyle}>
-                        <TextField
-                            id='revision-selector'
-                            value={revisionId}
-                            select
-                            SelectProps={{
-                                MenuProps: {
-                                    anchorOrigin: {
-                                        vertical: 'bottom',
-                                        horizontal: 'left',
-                                    },
-                                    getContentAnchorEl: null,
-                                },
-                            }}
-                            name='selectRevision'
-                            onChange={handleChange}
-                            margin='dense'
-                            variant='outlined'
-                        >
-                            {!isAPIProduct ? (
-                                <MenuItem
-                                    value={api.isRevision ? api.revisionedApiId : api.id}
-                                    component={Link}
-                                    to={'/apis/' + (api.isRevision ? api.revisionedApiId : api.id) + '/' + lastIndex}
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Details.components.APIDetailsTopMenu.current.api'
-                                        defaultMessage='Current API'
-                                    />
-                                </MenuItem>
-                            ) : (
-                                <MenuItem
-                                    value={api.isRevision ? api.revisionedApiProductId : api.id}
-                                    component={Link}
-                                    to={'/api-products/' + (api.isRevision
-                                        ? api.revisionedApiProductId : api.id) + '/' + lastIndex}
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Details.components.APIDetailsTopMenu.current.api'
-                                        defaultMessage='Current API'
-                                    />
-                                </MenuItem>
-                            )}
-                            {allRevisions && !isAPIProduct && allRevisions.map((item) => (
-                                <MenuItem key={item.id} 
-                                    value={item.id} component={Link} to={'/apis/' + item.id + '/' + lastIndex}>
-                                    <Grid
-                                        container
-                                        direction='row'
-                                        alignItems='center'
-                                    >
-                                        <Grid item>
-                                            {item.displayName}
-                                        </Grid>
-                                        {allEnvRevision && allEnvRevision.find((env) => env.id === item.id) && (
-                                            <Grid item>
-                                                <Box ml={2}>
-                                                    <Tooltip
-                                                        title={getDeployments(item.id)}
-                                                        placement='bottom'
-                                                    >
-                                                        <Grid className={classes.active} />
-                                                    </Tooltip>
-                                                </Box>
+                        <FormControl margin='dense' variant='outlined'>
+                            <Select
+                                id='revision-selector'
+                                value={revisionId}
+                                name='selectRevision'
+                                onChange={handleChange}
+                                size='small'
+                            >
+                                {(() => {
+                                    let menuItemProps = {};
+                                
+                                    if (isMCPServer) {
+                                        const mcpServerId = api.isRevision ? api.revisionedMCPServerId : api.id;
+                                        menuItemProps = {
+                                            value: mcpServerId,
+                                            component: Link,
+                                            to: `/mcp-servers/${mcpServerId}/${lastIndex}`,
+                                            children: (
+                                                <FormattedMessage
+                                                    id='Apis.Details.components.APIDetailsTopMenu.current.mcp.server'
+                                                    defaultMessage='Current MCP Server'
+                                                />
+                                            )
+                                        };
+                                    } else if (isAPIProduct) {
+                                        const apiProductId = api.isRevision ? api.revisionedApiProductId : api.id;
+                                        menuItemProps = {
+                                            value: apiProductId,
+                                            component: Link,
+                                            to: `/api-products/${apiProductId}/${lastIndex}`,
+                                            children: (
+                                                <FormattedMessage
+                                                    id='Apis.Details.components.APIDetailsTopMenu.current.api'
+                                                    defaultMessage='Current API'
+                                                />
+                                            )
+                                        };
+                                    } else {
+                                        menuItemProps = {
+                                            value: api.isRevision ? api.revisionedApiId : api.id,
+                                            component: Link,
+                                            to: `/apis/${api.isRevision ? api.revisionedApiId : api.id}/${lastIndex}`,
+                                            children: (
+                                                <FormattedMessage
+                                                    id='Apis.Details.components.APIDetailsTopMenu.current.api'
+                                                    defaultMessage='Current API'
+                                                />
+                                            )
+                                        };
+                                    }
+                                
+                                    return <MenuItem {...menuItemProps} />;
+                                })()}
+                                {allRevisions && !isAPIProduct && allRevisions.map((item) => {
+                                    const revisionUrl = isMCPServer 
+                                        ? `/mcp-servers/${item.id}/${lastIndex}`
+                                        : `/apis/${item.id}/${lastIndex}`;
+                                
+                                    return (
+                                        <MenuItem key={item.id} 
+                                            value={item.id} component={Link} to={revisionUrl}>
+                                            <Grid
+                                                container
+                                                direction='row'
+                                                alignItems='center'
+                                            >
+                                                <Grid item>
+                                                    {item.displayName}
+                                                </Grid>
+                                                {allEnvRevision && allEnvRevision.find((env) => env.id === item.id) && (
+                                                    <Grid item>
+                                                        <Box ml={2}>
+                                                            <Tooltip
+                                                                title={getDeployments(item.id)}
+                                                                placement='bottom'
+                                                            >
+                                                                <Grid className={classes.active} />
+                                                            </Tooltip>
+                                                        </Box>
+                                                    </Grid>
+                                                )}
                                             </Grid>
-                                        )}
-                                    </Grid>
-                                </MenuItem>
-                            ))}
-                            {allRevisions && isAPIProduct && allRevisions.map((item) => (
-                                <MenuItem
-                                    value={item.id}
-                                    component={Link}
-                                    to={'/api-products/' + item.id + '/' + lastIndex}
-                                >
-                                    <Grid
-                                        container
-                                        direction='row'
-                                        alignItems='center'
+                                        </MenuItem>
+                                    );
+                                })}
+                                {allRevisions && isAPIProduct && allRevisions.map((item) => (
+                                    <MenuItem
+                                        value={item.id}
+                                        component={Link}
+                                        to={'/api-products/' + item.id + '/' + lastIndex}
                                     >
-                                        <Grid item>
-                                            {item.displayName}
-                                        </Grid>
-                                        {allEnvRevision && allEnvRevision.find((env) => env.id === item.id) && (
+                                        <Grid
+                                            container
+                                            direction='row'
+                                            alignItems='center'
+                                        >
                                             <Grid item>
-                                                <Box ml={2}>
-                                                    <Tooltip
-                                                        title={getDeployments(item.id)}
-                                                        placement='bottom'
-                                                    >
-                                                        <Grid className={classes.active} />
-                                                    </Tooltip>
-                                                </Box>
+                                                {item.displayName}
                                             </Grid>
-                                        )}
-                                    </Grid>
-                                </MenuItem>
-                            ))}
-                        </TextField>
+                                            {allEnvRevision && allEnvRevision.find((env) => env.id === item.id) && (
+                                                <Grid item>
+                                                    <Box ml={2}>
+                                                        <Tooltip
+                                                            title={getDeployments(item.id)}
+                                                            placement='bottom'
+                                                        >
+                                                            <Grid className={classes.active} />
+                                                        </Tooltip>
+                                                    </Box>
+                                                </Grid>
+                                            )}
+                                        </Grid>
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </div>
                 )}
 
@@ -512,7 +591,9 @@ const APIDetailsTopMenu = (props) => {
                         </Typography>
                     </a>
                 )}
-                {api.type === 'HTTP' && (() => {
+                {(settings && settings.isMCPSupportEnabled) &&
+                api.type === 'HTTP' && api.gatewayType === 'wso2/synapse' &&
+                api.subtypeConfiguration?.subtype !== 'AIAPI' && (() => {
                     const mcpServerUrl = `/mcp-servers/create/mcp-from-existing-api?apiId=${api.id}`;
                     return (
                         <>
@@ -520,7 +601,7 @@ const APIDetailsTopMenu = (props) => {
                             <Link
                                 className={classes.viewInStoreLauncher}
                                 to={mcpServerUrl}
-                                style={{ minWidth: 90, marginTop: -8 }}
+                                style={{ minWidth: 90 }}
                             >
                                 <div>
                                     <CustomIcon

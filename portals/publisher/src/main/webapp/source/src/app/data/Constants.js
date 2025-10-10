@@ -109,6 +109,11 @@ const CONSTS = {
         { value: 'FAILED', label: 'Failed' },
         { value: 'UNAPPLIED', label: 'Unapplied' },
     ],
+    ENTITY_TYPES: {
+        APIS: 'apis',
+        API_PRODUCTS: 'api-products',
+        MCP_SERVERS: 'mcp-servers'
+    },
 };
 
 export default CONSTS;

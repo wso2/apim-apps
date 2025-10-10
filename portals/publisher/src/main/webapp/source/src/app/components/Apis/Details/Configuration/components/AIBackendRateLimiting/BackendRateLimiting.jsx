@@ -25,16 +25,25 @@ import { isRestricted } from 'AppData/AuthManager';
 import BackendRateLimitingForm from './BackendRateLimitingForm';
 
 /**
- * Backend Rate Limiting for AI/LLM APIs
+ * Backend Rate Limiting for AI APIs
  *
- * @export
- * @param {*} props
- * @returns
+ * @export BackendRateLimiting
+ * @param {*} props - The component props
+ * @returns {JSX.Element} The BackendRateLimiting component
  */
 export default function BackendRateLimiting(props) {
     const { api, configDispatcher } = props;
 
     const intl = useIntl();
+
+    const getCreateScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create'];
+        } else {
+            return ['apim:api_create'];
+        }
+    };
+    const isCreateRestricted = () => isRestricted(getCreateScopes(), api);
 
     const stylesSx = {
         subHeading: {
@@ -71,7 +80,7 @@ export default function BackendRateLimiting(props) {
                         control={(
                             <Radio
                                 color='primary'
-                                disabled={isRestricted(['apim:api_create'], api)}
+                                disabled={isCreateRestricted()}
                             />
                         )}
                         label={intl.formatMessage({
@@ -80,14 +89,13 @@ export default function BackendRateLimiting(props) {
                             defaultMessage: 'Unlimited',
                         })}
                         labelPlacement='end'
-
                     />
                     <FormControlLabel
                         value='specify'
                         control={(
                             <Radio
                                 color='primary'
-                                disabled={isRestricted(['apim:api_create'], api)}
+                                disabled={isCreateRestricted()}
                             />
                         )}
                         label={intl.formatMessage({
@@ -96,7 +104,7 @@ export default function BackendRateLimiting(props) {
                             defaultMessage: 'Specify',
                         })}
                         labelPlacement='end'
-                        disabled={isRestricted(['apim:api_create'], api)}
+                        disabled={isCreateRestricted()}
                     />
                 </RadioGroup>
             </FormControl>

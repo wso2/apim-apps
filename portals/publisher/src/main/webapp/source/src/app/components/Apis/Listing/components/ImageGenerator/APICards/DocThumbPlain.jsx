@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'DocThumbPlain';
 
@@ -87,7 +88,10 @@ function DocThumbPlain(props) {
         <StyledCard className={classes.root} variant='outlined'>
             <CardContent>
                 <Box>
-                    <Link to={'/apis/' + doc.apiUUID + '/documents/' + doc.id + '/details'} aria-hidden='true'>
+                    <Link
+                        to={getBasePath(doc.associatedType) + doc.apiUUID + '/documents/' + doc.id + '/details'}
+                        aria-hidden='true'
+                    >
                         <Box display='flex'>
                             <Box>
                                 <Icon className={classes.icon} style={{ fontSize: 40 + 'px', color: '#ccc' }}>
@@ -108,7 +112,7 @@ function DocThumbPlain(props) {
                 </Box>
                 <Box mt={2}>
                     <Typography variant='subtitle1' className={classes.contextBox}>
-                        {doc.apiName}
+                        {doc.apiDisplayName || doc.apiName}
                     </Typography>
                     <Typography
                         variant='caption'

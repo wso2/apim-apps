@@ -64,6 +64,7 @@ describe("Lifecycle changes", () => {
 
             // Deploying
             cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').scrollIntoView().click({force:true});
+            cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
             cy.contains("Create revisions and deploy in Gateway Environments", {timeout: Cypress.config().largeTimeout})
             // Going to lifecycle page
             cy.get('#left-menu-itemlifecycle').click();

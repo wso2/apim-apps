@@ -46,7 +46,7 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
-
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -472,8 +472,7 @@ const AddEditAIEndpoint = ({
         }
     };
 
-    const urlPrefix = apiObject.apiType === API.CONSTS.APIProduct ? 'api-products' : 'apis';
-    const url = `/${urlPrefix}/${apiObject.id}/endpoints`;
+    const url = getBasePath(apiObject.apiType) + apiObject.id + '/endpoints';
 
     useEffect(() => {
         if (apiObject.subtypeConfiguration?.subtype === 'AIAPI') {
@@ -828,7 +827,7 @@ const AddEditAIEndpoint = ({
                         defaultMessage: 'Endpoint Added Successfully',
                     }));
                 }
-                const redirectURL = `/${urlPrefix}/${apiObject.id}/endpoints`;
+                const redirectURL = getBasePath(apiObject.apiType) + apiObject.id + '/endpoints';
                 history.push(redirectURL);
             })
             .catch((error) => {

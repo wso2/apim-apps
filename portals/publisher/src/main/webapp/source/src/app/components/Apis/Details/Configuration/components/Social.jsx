@@ -22,6 +22,7 @@ import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import TextField from '@mui/material/TextField';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 
 /**
  *
@@ -33,6 +34,15 @@ import TextField from '@mui/material/TextField';
 const Social = (props) => {
     const { slackURL, githubURL, configDispatcher } = props;
     const [apiFromContext] = useAPI();
+
+    const getCreateOrPublishScopes = () => {
+        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    };
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), apiFromContext);
     return (
         <>
             <TextField
@@ -48,11 +58,15 @@ const Social = (props) => {
                 fullWidth
                 margin='normal'
                 onChange={(e) => configDispatcher({ action: 'github_repo', value: e.target.value })}
-                disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
+                disabled={isCreateOrPublishRestricted()}
                 helperText={(
                     <FormattedMessage
                         id='Apis.Details.Configuration.components.Social.giturl.help'
-                        defaultMessage='This GitHub URL will be available in the API overview page in developer portal'
+                        defaultMessage={'This GitHub URL will be available in the {type} overview ' +
+                            'page in developer portal'}
+                        values={{
+                            type: getTypeToDisplay(apiFromContext.apiType)
+                        }}
                     />
                 )}
                 style={{ marginTop: 0 }}
@@ -70,12 +84,15 @@ const Social = (props) => {
                 fullWidth
                 margin='normal'
                 onChange={(e) => configDispatcher({ action: 'slack_url', value: e.target.value })}
-                disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
+                disabled={isCreateOrPublishRestricted()}
                 helperText={(
                     <FormattedMessage
                         id='Apis.Details.Configuration.components.Social.slack_url.help'
                         defaultMessage={'This Slack Channel URL will be available in the'
-                        + ' API overview page in developer portal'}
+                        + ' {type} overview page in developer portal'}
+                        values={{
+                            type: getTypeToDisplay(apiFromContext.apiType)
+                        }}
                     />
                 )}
                 style={{ marginTop: 0 }}

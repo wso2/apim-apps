@@ -41,6 +41,7 @@ import { Progress } from 'AppComponents/Shared';
 import {
     mapAPIOperations,
 } from 'AppComponents/Apis/Details/Resources/operationUtils';
+import OperationsSelector from 'AppComponents/Apis/Details/Resources/components/OperationsSelector';
 import AddTool from './components/AddTool';
 import ToolDetails from './components/ToolDetails';
 
@@ -92,10 +93,7 @@ const Tools = ({
     const [mcpEndpoints, setMcpEndpoints] = useState([]);
     const [availableOperations, setAvailableOperations] = useState([]);
     const [sharedScopes, setSharedScopes] = useState();
-    // const [sharedScopesByName, setSharedScopesByName] = useState();
-    // const [securityDefScopes, setSecurityDefScopes] = useState({});
     const [throttlingPolicy, setThrottlingPolicy] = useState(api.throttlingPolicy);
-    // const [resolvedSpec, setResolvedSpec] = useState({ spec: {}, errors: [] });
     const [focusOperationLevel, setFocusOperationLevel] = useState(false);
     const [expandedResource, setExpandedResource] = useState('');
     const [componentValidator, setComponentValidator] = useState([]);
@@ -109,21 +107,93 @@ const Tools = ({
                 .then((response) => {
                     if (response.body && response.body.list) {
                         const sharedScopesList = [];
-                        const sharedScopesByNameList = {};
                         const shared = true;
                         for (const scope of response.body.list) {
                             const modifiedScope = {};
                             modifiedScope.scope = scope;
                             modifiedScope.shared = shared;
                             sharedScopesList.push(modifiedScope);
-                            sharedScopesByNameList[scope.name] = modifiedScope;
                         }
                         setSharedScopes(sharedScopesList);
-                        // setSharedScopesByName(sharedScopesByNameList);
                     }
                 });
         }
     }, []);
+
+    /**
+     * Generate a static ID for an operation based on target and verb
+     * @param {string} target - The operation target
+     * @param {string} verb - The operation verb
+     * @returns {string} - The generated ID
+     */
+    function generateOperationId(target, verb) {
+        return `tool_${target}_${verb}`;
+    }
+
+    /**
+     * Create operation object from API operation data
+     * @param {Object} operation - The operation data from API
+     * @returns {Object} - The formatted operation object
+     */
+    function createOperationFromAPI(operation) {
+        const operationName = operation.target || operation.id;
+        if (!operationName) return null;
+        
+        const formattedOperation = {
+            id: operation.id || generateOperationId(operation.target, operation.verb || 'GET'),
+            target: operation.target,
+            feature: 'TOOL',
+            name: operation.target,
+            description: operation.description || '',
+            'x-auth-type': operation.authType || 'Application & Application User',
+            throttlingPolicy: operation.throttlingPolicy || 'Unlimited',
+            'x-throttling-tier': operation.throttlingPolicy || 'Unlimited',
+            schemaDefinition: operation.schemaDefinition,
+            backendOperationMapping: operation.backendOperationMapping,
+            apiOperationMapping: operation.apiOperationMapping,
+            scopes: operation.scopes || [],
+            'x-wso2-new': false
+        };
+        return formattedOperation;
+    }
+
+    /**
+     * Map operation to API format for sending to backend
+     * @param {string} name - The operation name
+     * @param {Object} operation - The operation object
+     * @returns {Object} - The mapped operation for API
+     */
+    function mapOperationForAPI(name, operation) {
+        const mappedOperation = {
+            id: operation.id || '',
+            target: operation.target || name,
+            feature: 'TOOL',
+            authType: operation['x-auth-type'] || 'Application & Application User',
+            throttlingPolicy: operation.throttlingPolicy || 'Unlimited',
+            description: operation.description || '',
+            schemaDefinition: operation.schemaDefinition,
+            scopes: operation.scopes || [],
+            payloadSchema: operation.payloadSchema || null,
+            uriMapping: operation.uriMapping || null,
+            operationPolicies: operation.operationPolicies || {
+                request: [],
+                response: [],
+                fault: []
+            },
+            backendOperationMapping: operation.apiOperationMapping
+                ? null
+                : (operation.backendOperationMapping || {
+                    backendId: operation.backendOperationMapping?.backendId || (mcpEndpoints?.[0]?.id || ''),
+                    backendOperation: {
+                        target: (operation.backendOperationMapping?.backendOperation?.target
+                            || operation.target || name),
+                        verb: operation.backendOperationMapping?.backendOperation?.verb || 'GET'
+                    }
+                }),
+            apiOperationMapping: operation.apiOperationMapping || null
+        };
+        return mappedOperation;
+    }
 
     /**
      * Operations reducer for MCP tools management
@@ -147,33 +217,20 @@ const Tools = ({
                 const operationsMap = {};
                 if (api.operations && api.operations.length > 0) {
                     api.operations.forEach(operation => {
-                        const operationName = operation.target || operation.id;
-                        if (operationName) {
-                            operationsMap[operationName] = {
-                                id: operation.id || `${operationName}_${Date.now()}`,
-                                target: operation.target,
-                                feature: 'TOOL',
-                                name: operation.target,
-                                description: operation.description || '',
-                                'x-auth-type': operation.authType || 'Application & Application User',
-                                throttlingPolicy: operation.throttlingPolicy || 'Unlimited',
-                                'x-throttling-tier': operation.throttlingPolicy || 'Unlimited',
-                                schemaDefinition: operation.schemaDefinition,
-                                backendOperationMapping: operation.backendOperationMapping,
-                                scopes: operation.scopes || [],
-                                'x-wso2-new': false
-                            };
+                        const formattedOperation = createOperationFromAPI(operation);
+                        if (formattedOperation) {
+                            operationsMap[formattedOperation.target] = formattedOperation;
                         }
                     });
                 }
                 return operationsMap;
             }
-            // case 'removeAllSecurity':
-            //     setSelectedOperation({});
-            //     return Object.entries(currentOperations).reduce((acc, [key, operation]) => {
-            //         const newOperation = { ...operation, 'x-auth-type': data.disable ? 'None' : 'Any' };
-            //         return { ...acc, [key]: newOperation };
-            //     }, {});
+            case 'removeAllSecurity':
+                setSelectedOperation({});
+                return Object.entries(currentOperations).reduce((acc, [key, operation]) => {
+                    const newOperation = { ...operation, 'x-auth-type': data.disable ? 'None' : 'Any' };
+                    return { ...acc, [key]: newOperation };
+                }, {});
             case 'description':
                 if (target) {
                     updatedOperation = cloneDeep(currentOperations[target]);
@@ -204,21 +261,18 @@ const Tools = ({
                     return { ...currentOperations, [target]: updatedOperation };
                 }
                 break;
-            case 'scopes':
+            case 'scopes': {
                 if (target) {
                     updatedOperation = cloneDeep(currentOperations[target]);
-                    if (!updatedOperation.security) {
-                        updatedOperation.security = [{ default: [] }];
-                    } else if (!updatedOperation.security.find((item) => item.default)) {
-                        updatedOperation.security.push({ default: [] });
-                    }
-                    const defValue = value[0] || value;
-                    updatedOperation.scopes = Array.isArray(defValue)
-                        ? defValue : [defValue];
-                    updatedOperation.security.find((item) => item.default).default = updatedOperation.scopes;
+                    const defValue = value[0];
+                    
+                    // For MCP servers, directly update the scopes property
+                    updatedOperation.scopes = defValue || [];
+                    
                     return { ...currentOperations, [target]: updatedOperation };
                 }
                 break;
+            }
             case 'updateBackendOperation':
                 if (target) {
                     updatedOperation = cloneDeep(currentOperations[target]);
@@ -239,6 +293,18 @@ const Tools = ({
                     return { ...currentOperations, [target]: updatedOperation };
                 }
                 break;
+            case 'updateApiThrottlingPolicy':
+                // This action is handled at the component level, not in the operations reducer
+                // It's used to trigger API-level throttling policy updates
+                return currentOperations;
+            case 'batchUpdate': {
+                // Handle batch updates for multiple operations or API-level changes
+                const { operations: batchOperations } = data;
+                if (batchOperations) {
+                    return { ...currentOperations, ...batchOperations };
+                }
+                return currentOperations;
+            }
             case 'add': {
                 const { name, description, selectedOperation } = data;
                 if (!name || !selectedOperation) {
@@ -259,8 +325,8 @@ const Tools = ({
                 }
 
                 updatedOperations = cloneDeep(currentOperations);
-                // Generate a ID for the operation
-                const operationId = `tool_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                // Generate a static ID for the operation based on target and verb
+                const operationId = generateOperationId(selectedOperation.target, selectedOperation.verb);
 
                 // Determine which type of mapping to create based on MCP server type
                 const isFromExistingAPI = api.isMCPServerFromExistingAPI();
@@ -302,6 +368,156 @@ const Tools = ({
 
     // Operations state management
     const [operations, operationsDispatcher] = useReducer(operationsReducer, {});
+
+    /**
+     * Filter out operations that are already added to the MCP server
+     * @param {Array} availableOps - Array of available operations
+     * @param {Object} currentOps - Current operations in the MCP server
+     * @param {string} excludeTarget - Optional target to exclude from filtering (for editing)
+     * @returns {Array} - Filtered available operations
+     */
+    function filterAlreadyAddedOperations(availableOps, currentOps, excludeTarget = null) {
+        if (!availableOps || !Array.isArray(availableOps)) {
+            return [];
+        }
+
+        const currentOperationKeys = new Set();
+        
+        // Collect all current operation targets and their verb-target combinations
+        Object.entries(currentOps).forEach(([target, operation]) => {
+            // Skip the operation being edited - this allows the current operation to remain available
+            if (excludeTarget && target === excludeTarget) {
+                return;
+            }
+            
+            // Add verb-target combinations from backend mappings
+            if (operation.backendOperationMapping?.backendOperation) {
+                const backendOp = operation.backendOperationMapping.backendOperation;
+                const key = `${backendOp.verb}_${backendOp.target}`;
+                currentOperationKeys.add(key);
+            }
+            
+            // Add verb-target combinations from API mappings
+            if (operation.apiOperationMapping?.backendOperation) {
+                const apiOp = operation.apiOperationMapping.backendOperation;
+                const key = `${apiOp.verb}_${apiOp.target}`;
+                currentOperationKeys.add(key);
+            }
+        });
+
+        // Filter out operations that are already added
+        // Use precise verb-target matching instead of broad target matching
+        return availableOps.filter(operation => {
+            const verbTargetKey = `${operation.verb}_${operation.target}`;
+            
+            // Only check the precise verb-target combination
+            return !currentOperationKeys.has(verbTargetKey);
+        });
+    }
+
+    /**
+     * Get filtered available operations for components
+     * This function dynamically filters based on current operations state,
+     * ensuring that when a tool's operation mapping is updated, the old operation
+     * becomes available again and the new operation is removed from available options.
+     * 
+     * @param {string} excludeTarget - Optional target to exclude from filtering (for editing)
+     * @returns {Array} - Filtered available operations
+     */
+    function getFilteredAvailableOperations(excludeTarget = null) {
+        return filterAlreadyAddedOperations(availableOperations, operations, excludeTarget);
+    }
+
+    const enableSecurity = () => {
+        operationsDispatcher({ action: 'removeAllSecurity', data: { disable: false } });
+    };
+    const disableSecurity = () => {
+        operationsDispatcher({ action: 'removeAllSecurity', data: { disable: true } });
+    };
+
+    /**
+     * Transform tools operations to the format expected by OperationsSelector
+     * @param {Object} toolsOperations - The flat tools operations object
+     * @returns {Object} - Transformed operations in nested format
+     */
+    function transformOperationsForSelector(toolsOperations) {
+        const transformed = {};
+        Object.entries(toolsOperations).forEach(([target, operation]) => {
+            // Create a nested structure with a default verb for tools
+            transformed[target] = {
+                TOOL: operation
+            };
+        });
+        return transformed;
+    }
+
+    /**
+     * Transform marked operations to the format expected by OperationsSelector
+     * @param {Object} markedOps - The flat marked operations object
+     * @returns {Object} - Transformed marked operations in nested format
+     */
+    function transformMarkedOperationsForSelector(markedOps) {
+        const transformed = {};
+        Object.entries(markedOps).forEach(([target, isMarked]) => {
+            if (isMarked) {
+                transformed[target] = {
+                    TOOL: true
+                };
+            }
+        });
+        return transformed;
+    }
+
+    /**
+     * Handle operations selection from OperationsSelector
+     * @param {Object} selectedOps - The selected operations in nested format
+     */
+    function handleOperationsSelection(selectedOps) {
+        // Handle the case where OperationsSelector passes the full operations object (select all)
+        if (selectedOps === operations) {
+            // This is a "select all" operation - mark all operations for deletion
+            const allSelected = {};
+            Object.keys(operations).forEach(target => {
+                allSelected[target] = true;
+            });
+            setSelectedOperation(allSelected);
+            return;
+        }
+        
+        // Handle the case where OperationsSelector passes an empty object (clear all)
+        if (Object.keys(selectedOps).length === 0) {
+            setSelectedOperation({});
+            return;
+        }
+        
+        // Handle individual selections - this should not happen with the current OperationsSelector
+        // but we keep it for safety
+        const flatSelected = {};
+        Object.entries(selectedOps).forEach(([target, verbObj]) => {
+            if (verbObj.TOOL) {
+                flatSelected[target] = true;
+            }
+        });
+        setSelectedOperation(flatSelected);
+    }
+
+    /**
+     * Handle marking tools for deletion
+     * @param {Object} operation - The operation object with target
+     * @param {boolean} checked - Whether to mark for deletion
+     */
+    function onMarkAsDelete(operation, checked) {
+        const { target } = operation;
+        setSelectedOperation((currentSelections) => {
+            const nextSelectedOperations = cloneDeep(currentSelections);
+            if (checked) {
+                nextSelectedOperations[target] = true;
+            } else {
+                delete nextSelectedOperations[target];
+            }
+            return nextSelectedOperations;
+        });
+    }
 
     /**
      * Fetch available operations from MCP Server endpoints
@@ -401,6 +617,8 @@ const Tools = ({
         () => ({
             id: api.id,
             throttlingPolicy,
+            // Set apiThrottlingPolicy to null when throttlingPolicy is null to enable operation-level throttling
+            apiThrottlingPolicy: throttlingPolicy === null ? null : throttlingPolicy,
             scopes: api.scopes,
             operations: api.isAPIProduct() ? {} : mapAPIOperations(api.operations),
             endpointConfig: mcpEndpoints.endpointConfig,
@@ -416,75 +634,44 @@ const Tools = ({
         const operationsMap = {};
         if (api.operations && api.operations.length > 0) {
             api.operations.forEach(operation => {
-                const operationName = operation.target || operation.id;
-                if (operationName) {
-                    operationsMap[operationName] = {
-                        id: operation.id || `${operationName}_${Date.now()}`,
-                        target: operation.target,
-                        feature: 'TOOL',
-                        name: operation.target,
-                        description: operation.description || '',
-                        'x-auth-type': operation.authType || 'Application & Application User',
-                        throttlingPolicy: operation.throttlingPolicy || 'Unlimited',
-                        'x-throttling-tier': operation.throttlingPolicy || 'Unlimited',
-                        schemaDefinition: operation.schemaDefinition,
-                        backendOperationMapping: operation.backendOperationMapping,
-                        apiOperationMapping: operation.apiOperationMapping,
-                        scopes: operation.scopes || [],
-                        'x-wso2-new': false
-                    };
+                const formattedOperation = createOperationFromAPI(operation);
+                if (formattedOperation) {
+                    operationsMap[formattedOperation.target] = formattedOperation;
                 }
             });
         }
         operationsDispatcher({ action: 'init', data: operationsMap });
     }
 
-    /**
-     * Update MCP Server tools using API update
-     * @param {Object} toolsOperations Updated tools operations
-     * @returns {Promise} Promise resolving to updated API object
-     */
-    function updateMCPServerTools(toolsOperations) {
-        console.log('Updating MCP Server tools with operations:', toolsOperations);
-        const operationsArray = Object.entries(toolsOperations).map(([name, operation]) => {
-            const mappedOperation = {
-                id: operation.id || '',
-                target: operation.target || name,
-                feature: 'TOOL',
-                authType: operation['x-auth-type'] || 'Application & Application User',
-                throttlingPolicy: operation.throttlingPolicy || 'Unlimited',
-                description: operation.description || '',
-                schemaDefinition: operation.schemaDefinition,
-                scopes: operation.scopes || [],
-                payloadSchema: operation.payloadSchema || null,
-                uriMapping: operation.uriMapping || null,
-                operationPolicies: operation.operationPolicies || {
-                    request: [],
-                    response: [],
-                    fault: []
-                },
-                backendOperationMapping: operation.apiOperationMapping ? null : (operation.backendOperationMapping || {
-                    backendId: operation.backendOperationMapping?.backendId || (mcpEndpoints?.[0]?.id || ''),
-                    backendOperation: {
-                        target: operation.backendOperationMapping?.backendOperation?.target || operation.target || name,
-                        verb: operation.backendOperationMapping?.backendOperation?.verb || 'GET'
-                    }
-                }),
-                apiOperationMapping: operation.apiOperationMapping || null
-            };
-            console.log(`Mapped operation for ${name}:`, mappedOperation);
-            return mappedOperation;
-        });
 
-        return updateAPI({ operations: operationsArray })
-            .catch((error) => {
-                console.error(error);
-                Alert.error(intl.formatMessage({
-                    id: 'MCPServers.Details.Tools.update.error',
-                    defaultMessage: 'Error while updating MCP Server tools',
-                }));
-                throw error;
-            });
+
+    /**
+     * Collect all shared scopes used in operations
+     * @param {Object} copyOfOperations - The operations object to collect shared scopes from
+     * @returns {Array} - Array of shared scope objects
+     */
+    function collectSharedScopesFromOperations(copyOfOperations) {
+        const sharedScopesSet = new Set();
+        const sharedScopesMap = new Map();
+        
+        // Collect all shared scopes used in operations
+        Object.values(copyOfOperations).forEach(operation => {
+            if (operation.scopes && Array.isArray(operation.scopes)) {
+                operation.scopes.forEach(scopeName => {
+                    // Check if this scope is a shared scope
+                    if (sharedScopes) {
+                        const sharedScope = sharedScopes.find(ss => ss.scope.name === scopeName);
+                        if (sharedScope) {
+                            sharedScopesSet.add(scopeName);
+                            sharedScopesMap.set(scopeName, sharedScope);
+                        }
+                    }
+                });
+            }
+        });
+        
+        // Convert to array format expected by API
+        return Array.from(sharedScopesSet).map(scopeName => sharedScopesMap.get(scopeName));
     }
 
     /**
@@ -524,24 +711,80 @@ const Tools = ({
                 return Promise.reject(new Error('Unsupported tool operation!'));
         }
 
-        if (throttlingPolicy !== api.throttlingPolicy) {
-            return updateAPI({ throttlingPolicy })
-                .then((updatedApi) => {
-                    setThrottlingPolicy(updatedApi.throttlingPolicy);
-                    return updatedApi;
-                })
-                .catch((error) => {
-                    console.error(error);
-                    Alert.error(intl.formatMessage({
-                        id: 'MCPServers.Details.Tools.api.update.error',
-                        defaultMessage: 'Error while updating the MCP Server',
-                    }));
-                    throw error;
-                })
-                .then(() => updateMCPServerTools(copyOfOperations));
-        } else {
-            return updateMCPServerTools(copyOfOperations);
+        // Prepare the update payload based on what needs to be updated
+        const updatePayload = {};
+        const throttlingPolicyChanged = throttlingPolicy !== api.throttlingPolicy;
+        
+        if (throttlingPolicyChanged) {
+            updatePayload.throttlingPolicy = throttlingPolicy;
         }
+
+        // Collect shared scopes from operations and combine with existing API scopes
+        const sharedScopesFromOperations = collectSharedScopesFromOperations(copyOfOperations);
+        const existingApiScopes = api.scopes || [];
+        
+        // Create a map of existing scopes by name for easy lookup
+        const existingScopesMap = new Map();
+        existingApiScopes.forEach(scope => {
+            existingScopesMap.set(scope.scope.name, scope);
+        });
+        
+        // Add shared scopes from operations to the map
+        sharedScopesFromOperations.forEach(sharedScope => {
+            existingScopesMap.set(sharedScope.scope.name, sharedScope);
+        });
+        
+        // Convert back to array
+        const combinedScopes = Array.from(existingScopesMap.values());
+        
+        if (combinedScopes.length > 0) {
+            updatePayload.scopes = combinedScopes;
+        }
+
+        // Always include operations in the payload
+        const operationsArray = Object.entries(copyOfOperations).map(([name, operation]) => 
+            mapOperationForAPI(name, operation)
+        );
+        
+        updatePayload.operations = operationsArray;
+
+        console.log('Update payload:', updatePayload);
+
+        // Single API call with all necessary updates
+        return updateAPI(updatePayload)
+            .then((updatedApi) => {
+                console.log('Successfully updated MCP Server');
+                
+                // Update local throttling policy state if it was changed
+                if (throttlingPolicyChanged) {
+                    setThrottlingPolicy(updatedApi.throttlingPolicy);
+                }
+
+                // Clear marked operations after successful update
+                setSelectedOperation({});
+                
+                // Re-initialize operations from the updated API to ensure state synchronization
+                const updatedOperationsMap = {};
+                if (updatedApi.operations && updatedApi.operations.length > 0) {
+                    updatedApi.operations.forEach(operation => {
+                        const formattedOperation = createOperationFromAPI(operation);
+                        if (formattedOperation) {
+                            updatedOperationsMap[formattedOperation.target] = formattedOperation;
+                        }
+                    });
+                }
+                operationsDispatcher({ action: 'init', data: updatedOperationsMap });
+                
+                return updatedApi;
+            })
+            .catch((error) => {
+                console.error('Error updating MCP Server:', error);
+                Alert.error(intl.formatMessage({
+                    id: 'MCPServers.Details.Tools.update.error',
+                    defaultMessage: 'Error while updating MCP Server',
+                }));
+                throw error;
+            });
     }
 
     useEffect(() => {
@@ -566,14 +809,15 @@ const Tools = ({
             // Fallback to default if MCPServer doesn't have policies method
             setOperationRateLimits([]);
         }
-    }, [api.id]);
+    }, [api.id, api.operations]); // Add api.operations as dependency to re-initialize when operations change
 
     useEffect(() => {
         if (!isLoading) {
-            setComponentValidator(publisherSettings.gatewayFeatureCatalog
-                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].resources);
+            const validator = publisherSettings.gatewayFeatureCatalog
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].resources;
+            setComponentValidator(Array.isArray(validator) ? validator : []);
         }
-    }, [isLoading]);
+    }, [isLoading, publisherSettings, api.gatewayType]);
 
     useEffect(() => {
         setThrottlingPolicy(api.throttlingPolicy);
@@ -620,11 +864,12 @@ const Tools = ({
                         />
                     </Grid>
                 )}
-                {!isRestricted(['apim:api_create'], api) && !disableAddOperation && (
+                {!isRestricted(['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'], api) &&
+                !disableAddOperation && (
                     <Grid item md={12} xs={12}>
                         <AddTool
                             operationsDispatcher={operationsDispatcher}
-                            availableOperations={availableOperations}
+                            availableOperations={getFilteredAvailableOperations()}
                             api={api}
                         />
                     </Grid>
@@ -643,33 +888,43 @@ const Tools = ({
                                 </Box>
                             </Grid>
                         ) : (
-                            Object.entries(operations).map(([target, operation]) => (
-                                <Grid key={operation.id || target} item md={12}>
-                                    <ToolDetails
-                                        target={target}
-                                        feature={operation.feature || 'TOOL'}
-                                        operation={operation}
-                                        operationsDispatcher={operationsDispatcher}
-                                        api={localAPI}
-                                        disableUpdate={disableUpdate}
-                                        markedOperations={markedOperations}
-                                        onMarkAsDelete={setSelectedOperation}
-                                        markAsDelete={Boolean(markedOperations[target])}
-                                        spec={{}}
-                                        operationRateLimits={operationRateLimits}
-                                        sharedScopes={sharedScopes}
-                                        setFocusOperationLevel={setFocusOperationLevel}
-                                        expandedResource={expandedResource}
-                                        setExpandedResource={setExpandedResource}
-                                        componentValidator={componentValidator}
-                                        resourcePolicy={{}}
-                                        resolvedSpec={{}}
-                                        highlight={false}
-                                        disableDelete={false}
-                                        availableOperations={availableOperations}
-                                    />
-                                </Grid>
-                            ))
+                            <>
+                                <OperationsSelector
+                                    operations={transformOperationsForSelector(operations)}
+                                    selectedOperations={transformMarkedOperationsForSelector(markedOperations)}
+                                    setSelectedOperation={handleOperationsSelection}
+                                    enableSecurity={enableSecurity}
+                                    disableSecurity={disableSecurity}
+                                    componentValidator={componentValidator}
+                                />
+                                {Object.entries(operations).map(([target, operation]) => (
+                                    <Grid key={operation.id || target} item md={12}>
+                                        <ToolDetails
+                                            target={target}
+                                            feature={operation.feature || 'TOOL'}
+                                            operation={operation}
+                                            operationsDispatcher={operationsDispatcher}
+                                            api={localAPI}
+                                            disableUpdate={disableUpdate}
+                                            markedOperations={markedOperations}
+                                            onMarkAsDelete={onMarkAsDelete}
+                                            markAsDelete={Boolean(markedOperations[target])}
+                                            spec={{}}
+                                            operationRateLimits={operationRateLimits}
+                                            sharedScopes={sharedScopes}
+                                            setFocusOperationLevel={setFocusOperationLevel}
+                                            expandedResource={expandedResource}
+                                            setExpandedResource={setExpandedResource}
+                                            componentValidator={componentValidator}
+                                            resourcePolicy={{}}
+                                            resolvedSpec={{}}
+                                            highlight={false}
+                                            disableDelete={false}
+                                            availableOperations={getFilteredAvailableOperations(target)}
+                                        />
+                                    </Grid>
+                                ))}
+                            </>
                         )}
                     </Paper>
                     <Grid
@@ -685,6 +940,10 @@ const Tools = ({
                                     operationsDispatcher={operationsDispatcher}
                                     updateOpenAPI={apiUpdateCall}
                                     api={api}
+                                    disableSave={
+                                        Object.keys(operations).length > 0 &&
+                                        Object.keys(markedOperations).length === Object.keys(operations).length
+                                    }
                                 />
                             )}
                         </Grid>
@@ -697,21 +956,15 @@ const Tools = ({
 }
 
 Tools.defaultProps = {
-    // operationProps: { disableDelete: false },
     disableUpdate: false,
     disableRateLimiting: false,
-    // disableMultiSelect: false,
     disableAddOperation: false,
 }
 
 Tools.propTypes = {
     disableRateLimiting: PropTypes.bool,
-    // disableMultiSelect: PropTypes.bool,
     disableAddOperation: PropTypes.bool,
     disableUpdate: PropTypes.bool,
-    // operationProps: PropTypes.shape({
-    //     disableDelete: PropTypes.bool,
-    // }),
 }
 
 export default Tools;

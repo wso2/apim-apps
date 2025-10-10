@@ -16,62 +16,17 @@
  * under the License.
  */
 import React from 'react';
-import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { Typography } from '@mui/material';
 import AccountBox from '@mui/icons-material/AccountBox';
 import Grid from '@mui/material/Grid';
 import Alert from 'AppComponents/Shared/Alert';
 import ConfirmDialog from 'AppComponents/Shared/ConfirmDialog';
-import API from 'AppData/api';
+import CommentsAPI from 'AppData/Comments';
+import MCPServer from 'AppData/MCPServer';
+import { injectIntl } from 'react-intl';
 import CommentEdit from './CommentEdit';
 import CommentOptions from './CommentOptions';
-import { injectIntl } from 'react-intl';
-
-const PREFIX = 'CommentReply';
-
-const classes = {
-    link: `${PREFIX}-link`,
-    commentIcon: `${PREFIX}-commentIcon`,
-    commentText: `${PREFIX}-commentText`,
-    root: `${PREFIX}-root`,
-    contentWrapper: `${PREFIX}-contentWrapper`
-};
-
-const StyledConfirmDialog
- = styled(ConfirmDialog
-)((
-    {
-        theme
-    }
-) => ({
-    [`& .${classes.link}`]: {
-        color: theme.palette.getContrastText(theme.palette.background.default),
-        cursor: 'pointer',
-    },
-
-    [`& .${classes.commentIcon}`]: {
-        color: theme.palette.getContrastText(theme.palette.background.default),
-    },
-
-    [`& .${classes.commentText}`]: {
-        color: theme.palette.getContrastText(theme.palette.background.default),
-        marginTop: theme.spacing(1),
-        width: '100%',
-        whiteSpace: 'pre-wrap',
-        overflowWrap: 'break-word',
-    },
-
-    [`& .${classes.root}`]: {
-        marginTop: theme.spacing(2.5),
-    },
-
-    [`& .${classes.contentWrapper}`]: {
-        maxWidth: theme.custom.contentAreaWidth,
-        paddingLeft: theme.spacing(2),
-        paddingTop: theme.spacing(1),
-    }
-}));
 
 /**
  * Display a particular comment and details
@@ -158,15 +113,22 @@ class CommentReply extends React.Component {
      * @memberof CommentReply
      */
     handleClickDeleteComment() {
-        const Api = new API();
         const { deleteComment } = this.state;
-        const { api, allComments, commentsUpdate } = this.props;
+        const { api, allComments, commentsUpdate, intl } = this.props;
         const commentIdOfCommentToDelete = deleteComment.commentId;
         const parentCommentIdOfCommentToDelete = deleteComment.parentCommentId;
         const apiId = api.id;
+        const isMCPServer = api.type === MCPServer.CONSTS.MCP;
         this.handleClose();
 
-        Api.deleteComment(apiId, commentIdOfCommentToDelete)
+        const apiClient = new CommentsAPI();
+        let deleteCommentPromise;
+        if (isMCPServer) {
+            deleteCommentPromise = apiClient.deleteCommentOfMCPServer(apiId, commentIdOfCommentToDelete);
+        } else {
+            deleteCommentPromise = apiClient.deleteComment(apiId, commentIdOfCommentToDelete);
+        }
+        deleteCommentPromise
             .then(() => {
                 if (parentCommentIdOfCommentToDelete === undefined) {
                     const remainingComments = allComments.filter(this.filterRemainingComments);

@@ -56,8 +56,10 @@ const StyledPaper = styled(Paper)(() => ({
  * @returns {React.ReactNode} - The AddTool component
  */
 function AddTool(props) {
-    const { operationsDispatcher, availableOperations } = props;
+    const { operationsDispatcher, availableOperations, api } = props;
     const intl = useIntl();
+
+    const isMCPServerProxy = api && api.isMCPServerFromProxy();
 
     /**
      * Reducer for new tool state
@@ -214,10 +216,26 @@ function AddTool(props) {
                                 defaultMessage: 'Operation selection is required',
                             })
                         }
-                        label={intl.formatMessage({
-                            id: 'MCPServers.Details.Tools.AddTool.operation.label',
-                            defaultMessage: 'Operation',
-                        })}
+                        label={isMCPServerProxy 
+                            ? intl.formatMessage({
+                                id: 'MCPServers.Details.Tools.AddTool.tool.label',
+                                defaultMessage: 'Tool',
+                            })
+                            : intl.formatMessage({
+                                id: 'MCPServers.Details.Tools.AddTool.operation.label',
+                                defaultMessage: 'Operation',
+                            })
+                        }
+                        placeholder={isMCPServerProxy 
+                            ? intl.formatMessage({
+                                id: 'MCPServers.Details.Tools.AddTool.tool.placeholder',
+                                defaultMessage: 'Select a tool',
+                            })
+                            : intl.formatMessage({
+                                id: 'MCPServers.Details.Tools.AddTool.operation.placeholder',
+                                defaultMessage: 'Select an operation',
+                            })
+                        }
                     />
                 </Grid>
 
@@ -359,6 +377,7 @@ AddTool.propTypes = {
         verb: PropTypes.string,
         description: PropTypes.string,
     })).isRequired,
+    api: PropTypes.shape({}).isRequired,
 };
 
 export default React.memo(AddTool);

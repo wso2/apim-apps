@@ -58,10 +58,12 @@ import API from 'AppData/api.js';
 import MCPServer from 'AppData/MCPServer';
 import APIProduct from 'AppData/APIProduct';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import { getBasePath, getTypeToDisplay } from 'AppComponents/Shared/Utils';
 import DefaultVersion from './components/DefaultVersion';
 import DescriptionEditor from './components/DescriptionEditor';
 import AccessControl from './components/AccessControl';
 import AdvertiseInfo from './components/AdvertiseInfo';
+import DisplayName from './components/DisplayName';
 import StoreVisibility from './components/StoreVisibility';
 import Tags from './components/Tags';
 import Social from './components/Social';
@@ -199,12 +201,12 @@ function copyAPIConfig(api) {
     if (api.apiType === API.CONSTS.APIProduct && api.isDefaultVersion == null) {
         isDefaultVersion = true;
     }
-    
     const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
-    
+
     const copiedConfig = {
         id: api.id,
         name: api.name,
+        displayName: api.displayName,
         description: api.description,
         lifeCycleStatus: api.lifeCycleStatus,
         accessControl: api.accessControl,
@@ -228,6 +230,7 @@ function copyAPIConfig(api) {
             accessControlAllowMethods: [...api.corsConfiguration.accessControlAllowMethods],
         },
         type: api.type,
+        apiType: api.apiType,
         policies: [...api.policies],
         endpointConfig: api.endpointConfig,
     };
@@ -295,6 +298,7 @@ function configReducer(state, configAction) {
     const { action, value } = configAction;
     const nextState = copyAPIConfig(state);
     switch (action) {
+        case 'displayName': 
         case 'description':
         case 'isDefaultVersion':
         case 'authorizationHeader':
@@ -327,11 +331,6 @@ function configReducer(state, configAction) {
                 display: true,
             };
             
-            // Debug logging
-            console.log(`[DEBUG] Updating ${action} with value: "${value}" for MCP server: ${isMCPServer}`);
-            console.log(`[DEBUG] nextState.type:`, nextState.type);
-            console.log(`[DEBUG] MCPServer.CONSTS.MCP:`, MCPServer.CONSTS.MCP);
-            
             if (isMCPServer) {
                 // Handle additionalPropertiesMap for MCP servers
                 if (!nextState.additionalPropertiesMap) {
@@ -346,9 +345,6 @@ function configReducer(state, configAction) {
                 
                 // Update the virtual additionalProperties array for UI compatibility (clean rebuild)
                 nextState.additionalProperties = Object.values(nextState.additionalPropertiesMap);
-                
-                console.log(`[DEBUG] Updated additionalPropertiesMap:`, nextState.additionalPropertiesMap);
-                console.log(`[DEBUG] Updated additionalProperties:`, nextState.additionalProperties);
             } else {
                 // Handle additionalProperties for regular APIs
                 const targetProperty = nextState.additionalProperties.find((property) => property.name === action);
@@ -404,6 +400,7 @@ export default function DesignConfigurations() {
     const [errorInAccessRoles, setErrorInAccessRoles] = useState(false);
     const [errorInRoleVisibility, setErrorInRoleVisibility] = useState(false);
     const [errorInTags, setErrorInTags] = useState(false);
+    const [errorInDisplayName, setErrorInDisplayName] = useState(false);
     const [errorInExternalEndpoints, setErrorInExternalEndpoints] = useState(false);
     const [apiConfig, configDispatcher] = useReducer(configReducer, copyAPIConfig(api));
 
@@ -416,10 +413,8 @@ export default function DesignConfigurations() {
     const [overview, setOverview] = useState('');
     const [overviewDocument, setOverviewDocument] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
+    const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
     const [slackURLProperty, githubURLProperty] = useMemo(() => {
-        // For MCP servers, get the latest values from additionalPropertiesMap if available
-        const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
-        
         let slackProp;
         let githubProp;
         
@@ -438,13 +433,7 @@ export default function DesignConfigurations() {
             const githubProps = apiConfig.additionalProperties.filter((prop) => prop.name === 'github_repo');
             githubProp = githubProps.find(prop => prop.display === true) || githubProps[githubProps.length - 1];
         }
-        
-        console.log(`[DEBUG] useMemo - isMCPServer:`, isMCPServer);
-        console.log(`[DEBUG] useMemo - additionalProperties:`, apiConfig.additionalProperties);
-        console.log(`[DEBUG] useMemo - additionalPropertiesMap:`, apiConfig.additionalPropertiesMap);
-        console.log(`[DEBUG] useMemo - slackURLProperty:`, slackProp);
-        console.log(`[DEBUG] useMemo - githubURLProperty:`, githubProp);
-        
+
         return [slackProp, githubProp];
     }, [apiConfig.additionalProperties, apiConfig.additionalPropertiesMap, api.apiType]);
     const invalidTagsExist = apiConfig.tags.find((tag) => {
@@ -464,8 +453,13 @@ export default function DesignConfigurations() {
     };
     const loadContentForDoc = (documentId) => {
         const { apiType } = api.apiType;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const docPromise = restApi.getInlineContentOfDocument(api.id, documentId);
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.getInlineContentOfDocument(api.id, documentId);
+        } else {
+            const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+            docPromise = restApi.getInlineContentOfDocument(api.id, documentId);
+        }
         docPromise
             .then((doc) => {
                 const { text } = doc;
@@ -474,30 +468,55 @@ export default function DesignConfigurations() {
     };
     const addDocument = async () => {
         const { apiType } = api.apiType;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const docPromise = await restApi.addDocument(api.id, {
-            name: 'overview',
-            type: 'OTHER',
-            summary: 'overview',
-            sourceType: 'MARKDOWN',
-            visibility: 'API_LEVEL',
-            sourceUrl: '',
-            otherTypeName: CONSTS.DESCRIPTION_TYPES.OVERVIEW,
-            inlineContent: '',
-        }).then((response) => {
-            return response.body;
-        }).catch((error) => {
-            if (process.env.NODE_ENV !== 'production') {
-                console.log(error);
-            }
-        });
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.addDocument(api.id, {
+                name: 'overview',
+                type: 'OTHER',
+                summary: 'overview',
+                sourceType: 'MARKDOWN',
+                visibility: 'API_LEVEL',
+                sourceUrl: '',
+                otherTypeName: CONSTS.DESCRIPTION_TYPES.OVERVIEW,
+                inlineContent: '',
+            }).then((response) => {
+                return response.body;
+            }).catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+            });
+        } else {
+            const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+            docPromise = await restApi.addDocument(api.id, {
+                name: 'overview',
+                type: 'OTHER',
+                summary: 'overview',
+                sourceType: 'MARKDOWN',
+                visibility: 'API_LEVEL',
+                sourceUrl: '',
+                otherTypeName: CONSTS.DESCRIPTION_TYPES.OVERVIEW,
+                inlineContent: '',
+            }).then((response) => {
+                return response.body;
+            }).catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+            });
+        }
         return docPromise;
     };
 
     const addDocumentContent = (document) => {
         const { apiType } = api.apiType;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const docPromise = restApi.addInlineContentToDocument(api.id, document.documentId, 'MARKDOWN', overview);
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.addInlineContentToDocument(api.id, document.documentId, 'MARKDOWN', overview);
+        } else {
+            const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+            docPromise = restApi.addInlineContentToDocument(api.id, document.documentId, 'MARKDOWN', overview);
+        }
         docPromise
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
@@ -512,8 +531,13 @@ export default function DesignConfigurations() {
 
     const deleteOverviewDocument = () => {
         const { apiType } = api.apiType;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const docPromise = restApi.deleteDocument(api.id, overviewDocument.documentId);
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.deleteDocument(api.id, overviewDocument.documentId);
+        } else {
+            const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+            docPromise = restApi.deleteDocument(api.id, overviewDocument.documentId);
+        }
         docPromise
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
@@ -525,8 +549,13 @@ export default function DesignConfigurations() {
     useEffect(() => {
         const { apiType } = api.apiType;
         const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const promisedApi = restApi.getDocuments(api.id);
-        promisedApi
+        let promisedDocs;
+        if (isMCPServer) {
+            promisedDocs = MCPServer.getDocuments(api.id);
+        } else {
+            promisedDocs = restApi.getDocuments(api.id);
+        }
+        promisedDocs
             .then((response) => {
                 const overviewDoc = response.body.list.filter((item) => item.otherTypeName === '_overview');
                 if (overviewDoc.length > 0) {
@@ -547,13 +576,14 @@ export default function DesignConfigurations() {
                     }));
                 }
             });
-        // const apiClient = new API();
-        API.labels().then((response) => setLabels(response.body));
-        restApi.getAPILabels(api.id).then((response) => {
-            setUpdatedLabels(response.body.list.map((label) => label.name));
-        }).finally(() => {
-            setLoading(false);
-        });
+        if (!isMCPServer) {
+            API.labels().then((response) => setLabels(response.body));
+            restApi.getAPILabels(api.id).then((response) => {
+                setUpdatedLabels(response.body.list.map((label) => label.name));
+            }).finally(() => {
+                setLoading(false);
+            });
+        }
     }, []);
 
     useEffect(() => {
@@ -585,17 +615,15 @@ export default function DesignConfigurations() {
      */
     async function handleSave() {
         setIsUpdating(true);
-        
-        // Prepare the update payload based on the API type
-        const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
         let updatePayload = { ...apiConfig };
         
+        // Exclude apiType field from the payload
+        const { apiType, ...payloadWithoutApiType } = updatePayload;
+        updatePayload = payloadWithoutApiType;
+
         if (isMCPServer) {
             // For MCP servers, ensure we're using additionalPropertiesMap and exclude forbidden fields
             const { responseCachingEnabled, cacheTimeout, wsdlUrl, additionalProperties, ...mcpConfig } = updatePayload;
-            
-            console.log(`[DEBUG] Save - Original additionalProperties:`, additionalProperties);
-            console.log(`[DEBUG] Save - Original additionalPropertiesMap:`, mcpConfig.additionalPropertiesMap);
             
             // Ensure additionalPropertiesMap is present and up-to-date
             if (!mcpConfig.additionalPropertiesMap) {
@@ -608,8 +636,6 @@ export default function DesignConfigurations() {
                     mcpConfig.additionalPropertiesMap[property.name] = property;
                 });
             }
-            
-            console.log(`[DEBUG] Save - Final additionalPropertiesMap:`, mcpConfig.additionalPropertiesMap);
             updatePayload = mcpConfig;
         }
         
@@ -628,9 +654,7 @@ export default function DesignConfigurations() {
             if (overviewDocument) {
                 deleteOverviewDocument();
             }
-        }
-
-        else {
+        } else {
             let document = overviewDocument;
             if (document === null) {
                 document = await addDocument();
@@ -685,10 +709,17 @@ export default function DesignConfigurations() {
         configDispatcher({ action: 'advertised', value: api.advertiseInfo.advertised });
         setIsOpen(false);
     };
-    const restricted = isRestricted(['apim:api_publish', 'apim:api_create'], api
-        || isUpdating || api.isRevision || invalidTagsExist
-        || (apiConfig.visibility === 'RESTRICTED'
-            && apiConfig.visibleRoles.length === 0));
+
+    const isAccessRestricted = () => {
+        if (api.apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
+            return isRestricted(['apim:mcp_server_publish', 'apim:mcp_server_create'], api);
+        } else {
+            return isRestricted(['apim:api_publish', 'apim:api_create'], api);
+        }
+    }
+
+    const restricted = isAccessRestricted() || isUpdating || api.isRevision || invalidTagsExist
+        || (apiConfig.visibility === 'RESTRICTED' && apiConfig.visibleRoles.length === 0);
 
     const LabelMenu = () => {
         if (searchResult && searchResult.list && searchQuery !== '') {
@@ -859,24 +890,15 @@ export default function DesignConfigurations() {
                     />
                 </Typography>
                 <Box color='text.secondary'>
-                    {api.apiType === API.CONSTS.APIProduct
-                        ? (
-                            <Typography variant='caption'>
-                                <FormattedMessage
-                                    id='Apis.Details.Configuration
-                                        .Configuration.Design.APIProduct.sub.heading'
-                                    defaultMessage='Configure basic API Product meta information'
-                                />
-                            </Typography>
-                        )
-                        : (
-                            <Typography variant='caption'>
-                                <FormattedMessage
-                                    id='Apis.Details.Configuration.Configuration.Design.sub.heading'
-                                    defaultMessage='Configure basic API meta information'
-                                />
-                            </Typography>
-                        )}
+                    <Typography variant='caption'>
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.Configuration.Design.sub.heading'
+                            defaultMessage='Configure basic {type} meta information'
+                            values={{
+                                type: getTypeToDisplay(api.apiType)
+                            }}
+                        />
+                    </Typography>
                 </Box>
             </Grid>
             <Grid container direction='row' justifyContent='space-around' alignItems='stretch'
@@ -888,17 +910,16 @@ export default function DesignConfigurations() {
                                 <Box px={8} py={5}>
                                     <Box py={1}>
                                         <Grid container spacing={0}>
-                                            <Grid item xs={12} md={2} id='edit-api-thumbnail-btn'>
+                                            <Grid item xs={12} md={2.5} id='edit-api-thumbnail-btn'>
                                                 <ThumbnailView
                                                     api={api}
                                                     width={100}
                                                     height={100}
                                                     updateAPI={updateAPI}
-                                                    isEditable={!isRestricted(['apim:api_publish',
-                                                        'apim:api_create'], api)}
+                                                    isEditable={!isAccessRestricted()}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12} md={10}>
+                                            <Grid item xs={12} md={9.5}>
                                                 <DescriptionEditor
                                                     api={apiConfig}
                                                     updateContent={updateContent}
@@ -906,6 +927,10 @@ export default function DesignConfigurations() {
                                                 />
                                             </Grid>
                                         </Grid>
+                                    </Box>
+                                    <Box py={1}>
+                                        <DisplayName api={apiConfig} configDispatcher={configDispatcher}
+                                            setIsDisabled={setErrorInDisplayName}/>
                                     </Box>
                                     <Box py={1}>
                                         <APIDescription
@@ -972,6 +997,7 @@ export default function DesignConfigurations() {
                                                     === 'RESTRICTED' && errorInRoleVisibility) ||
                                                 restricted ||
                                                 errorInTags ||
+                                                errorInDisplayName ||
                                                 errorInExternalEndpoints}
                                             type='submit'
                                             variant='contained'
@@ -988,7 +1014,7 @@ export default function DesignConfigurations() {
                                         </Button>
                                         <Button
                                             component={Link}
-                                            to={'/apis/' + api.id + '/overview'}
+                                            to={getBasePath(api.apiType) + api.id + '/overview'}
                                             aria-label='Cancel'
                                         >
                                             <FormattedMessage
@@ -1002,54 +1028,57 @@ export default function DesignConfigurations() {
                         </Paper>
                     </Grid>
                 </Grid>
-                <Grid item xs={12} md={3}>
-                    <Paper elevation={0}>
-                        <Box p={2}>
-                            <Grid item xs={12} container direction='row'
-                                justifyContent='space-between' >
-                                <Grid item md={6}>
-                                    <Typography
-                                        id='itest-label-head' variant='h5' component='h5'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Configuration.Configuration.Design.topic.label'
-                                            defaultMessage='Labels'
-                                        />
-                                    </Typography>
-                                </Grid>
-                                <Grid item md={6} align='right'>
-                                    {!api.isRevision && (
-                                        <Tooltip title='Attach Labels'>
-                                            <IconButton onClick={handleOpenList}>
-                                                <AddIcon />
-                                            </IconButton>
-                                        </Tooltip>
-                                    )}
-                                </Grid>
-                            </Grid>
-                            <Box>
-                                {loading ? (
-                                    <CircularProgress size='30px'/>
-                                ) : (
-                                    <Stack direction='row' spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
-                                        {updatedLabels.length !== 0 ? (
-                                            updatedLabels.map((label) => (
-                                                <Chip key={label} label={label}
-                                                    onDelete={!api.isRevision ? () => detachLabel(label) : undefined}/>
-                                            ))
-                                        ) : (
-                                            <Typography variant='body2' color='textSecondary'>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Configuration.Configuration.Design.no.labels'
-                                                    defaultMessage='No Labels Attached'
-                                                />
-                                            </Typography>
+                {!isMCPServer && (
+                    <Grid item xs={12} md={3}>
+                        <Paper elevation={0}>
+                            <Box p={2}>
+                                <Grid item xs={12} container direction='row'
+                                    justifyContent='space-between' >
+                                    <Grid item md={6}>
+                                        <Typography
+                                            id='itest-label-head' variant='h5' component='h5'>
+                                            <FormattedMessage
+                                                id='Apis.Details.Configuration.Configuration.Design.topic.label'
+                                                defaultMessage='Labels'
+                                            />
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item md={6} align='right'>
+                                        {!api.isRevision && (
+                                            <Tooltip title='Attach Labels'>
+                                                <IconButton onClick={handleOpenList}>
+                                                    <AddIcon />
+                                                </IconButton>
+                                            </Tooltip>
                                         )}
-                                    </Stack>
-                                )}
+                                    </Grid>
+                                </Grid>
+                                <Box>
+                                    {loading ? (
+                                        <CircularProgress size='30px'/>
+                                    ) : (
+                                        <Stack direction='row' spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
+                                            {updatedLabels.length !== 0 ? (
+                                                updatedLabels.map((label) => (
+                                                    <Chip key={label} label={label}
+                                                        onDelete={!api.isRevision
+                                                            ? () => detachLabel(label) : undefined}/>
+                                                ))
+                                            ) : (
+                                                <Typography variant='body2' color='textSecondary'>
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Configuration.Configuration.Design.no.labels'
+                                                        defaultMessage='No Labels Attached'
+                                                    />
+                                                </Typography>
+                                            )}
+                                        </Stack>
+                                    )}
+                                </Box>
                             </Box>
-                        </Box>
-                    </Paper>
-                </Grid>
+                        </Paper>
+                    </Grid>
+                )}
             </Grid>
             <UpdateWithoutDetails
                 classes={classes}

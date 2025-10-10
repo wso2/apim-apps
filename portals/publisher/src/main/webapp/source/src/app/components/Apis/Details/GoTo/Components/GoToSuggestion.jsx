@@ -30,13 +30,19 @@ import PropTypes from 'prop-types';
  */
 function RenderSuggestion(suggestionProps) {
     const {
-        suggestion, index, itemProps, highlightedIndex, isAPIProduct, handleClickAway, apiId,
+        suggestion, index, itemProps, highlightedIndex, isAPIProduct, isMCPServer, handleClickAway, apiId,
     } = suggestionProps;
     const isHighlighted = highlightedIndex === index;
 
-    const route = (isAPIProduct
-        ? (`/api-products/${apiId}/${suggestion.route}`)
-        : (`/apis/${apiId}/${suggestion.route}`));
+    const route = (() => {
+        if (isMCPServer) {
+            return `/mcp-servers/${apiId}/${suggestion.route}`;
+        } else if (isAPIProduct) {
+            return `/api-products/${apiId}/${suggestion.route}`;
+        } else {
+            return `/apis/${apiId}/${suggestion.route}`;
+        }
+    })();
     return (
         <Link
             component={RouterLink}

@@ -35,6 +35,7 @@ import Progress from 'AppComponents/Shared/Progress';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { isRestricted } from 'AppData/AuthManager';
+import { getBasePath } from 'AppComponents/Shared/Utils';
 import Create from './Create';
 import MarkdownEditor from './MarkdownEditor';
 import Edit from './Edit';
@@ -48,13 +49,9 @@ const PREFIX = 'Listing';
 const classes = {
     root: `${PREFIX}-root`,
     contentWrapper: `${PREFIX}-contentWrapper`,
-    addNewWrapper: `${PREFIX}-addNewWrapper`,
-    addNewHeader: `${PREFIX}-addNewHeader`,
-    addNewOther: `${PREFIX}-addNewOther`,
     titleWrapper: `${PREFIX}-titleWrapper`,
     mainTitle: `${PREFIX}-mainTitle`,
     actionTable: `${PREFIX}-actionTable`,
-    messageBox: `${PREFIX}-messageBox`,
     actions: `${PREFIX}-actions`,
     head: `${PREFIX}-head`,
     genDocumentButton: `${PREFIX}-genDocumentButton`,
@@ -78,27 +75,6 @@ const Root = styled('div')((
         maxWidth: theme.custom.contentAreaWidth,
     },
 
-    [`& .${classes.addNewWrapper}`]: {
-        backgroundColor: theme.palette.background.paper,
-        color: theme.palette.getContrastText(theme.palette.background.paper),
-        border: 'solid 1px ' + theme.palette.grey['300'],
-        borderRadius: theme.shape.borderRadius,
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-    },
-
-    [`& .${classes.addNewHeader}`]: {
-        padding: theme.spacing(2),
-        backgroundColor: theme.palette.grey['300'],
-        fontSize: theme.typography.h6.fontSize,
-        color: theme.typography.h6.color,
-        fontWeight: theme.typography.h6.fontWeight,
-    },
-
-    [`& .${classes.addNewOther}`]: {
-        padding: theme.spacing(2),
-    },
-
     [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
@@ -117,10 +93,6 @@ const Root = styled('div')((
         '& td:first-child': {
             width: 130,
         },
-    },
-
-    [`& .${classes.messageBox}`]: {
-        marginTop: 20,
     },
 
     [`& .${classes.actions}`]: {
@@ -161,29 +133,20 @@ const TextEditor = lazy(() => import('./TextEditor' /* webpackChunkName: "Listin
 
 /**
  * LinkGenerator component for generating document links
- * @param {*} props - Props passed to the component
+ * @param {Object} props - Props passed to the component
+ * @param {string} props.docName - The name of the document
+ * @param {string} props.docId - The ID of the document
+ * @param {string} props.apiId - The ID of the API
+ * @param {string} props.apiType - The type of the API
  * @returns {JSX.Element} - Rendered link element
  */
 function LinkGenerator(props) {
-    if (props.apiType === 'APIPRODUCT') {
-        return (
-            <Link to={'/api-products/' + props.apiId + '/documents/' + props.docId + '/details'}>
-                {props.docName}
-            </Link>
-        );
-    } else if (props.apiType === MCPServer.CONSTS.MCP) {
-        return (
-            <Link to={'/mcp-servers/' + props.apiId + '/documents/' + props.docId + '/details'}>
-                {props.docName}
-            </Link>
-        );
-    } else {
-        return (
-            <Link to={'/apis/' + props.apiId + '/documents/' + props.docId + '/details'}>
-                {props.docName}
-            </Link>
-        );
-    }
+    const { docName, docId, apiId, apiType } = props;
+    return (
+        <Link to={getBasePath(apiType) + apiId + '/documents/' + docId + '/details'}>
+            {docName}
+        </Link>
+    );
 }
 
 /**
@@ -191,6 +154,11 @@ function LinkGenerator(props) {
  * @returns {JSX.Element} - Rendered component
  */
 class Listing extends React.Component {
+    /**
+     * Constructor for Listing component
+     * @param {Object} props - Props passed to the component
+     * @returns {void}
+     */
     constructor(props) {
         super(props);
         this.state = {
@@ -282,6 +250,28 @@ class Listing extends React.Component {
     }
 
     /**
+     * Get the allowed scopes list
+     * @returns {string[]} The allowed scopes
+     */
+    getAllowedScopes() {
+        const { api } = this.props;
+        if (api.apiType && api.apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:document_manage'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish'];
+        }
+    }
+
+    /**
+     * Check if the action is restricted
+     * @returns {boolean} True if the action is restricted, false otherwise
+     */
+    isAccessRestricted() {
+        const { api } = this.props;
+        return isRestricted(this.getAllowedScopes(), api);
+    }
+
+    /**
      * Toggles the visibility of the add document section
      */
     toggleAddDocs() {
@@ -295,20 +285,10 @@ class Listing extends React.Component {
      * @returns {JSX.Element} - Rendered component
      */
     render() {
-        const {  api, isAPIProduct, intl } = this.props;
+        const {  api, intl } = this.props;
         const { docs, showAddDocs, docsToDelete } = this.state;
-
-        let urlPrefix;
-        if (isAPIProduct) {
-            urlPrefix = 'api-products';
-        } else if (api.isMCPServer()) {
-            urlPrefix = 'mcp-servers';
-        } else {
-            urlPrefix = 'apis';
-        }
-
-        const url = `/${urlPrefix}/${api.id}/documents/create`;
-        const showActionsColumn = isRestricted(['apim:api_publish', 'apim:api_create'], api) ? 'excluded' : true;
+        const url = getBasePath(api.apiType) + api.id + '/documents/create';
+        const showActionsColumn = this.isAccessRestricted() ? 'excluded' : true;
         const options = {
             title: false,
             filter: false,
@@ -538,7 +518,12 @@ class Listing extends React.Component {
                                     <table className={classes.actionTable}>
                                         <tr>
                                             <td>
-                                                <Download docId={docId} apiId={this.apiId} docName={docName} />
+                                                <Download 
+                                                    docId={docId} 
+                                                    apiId={this.apiId} 
+                                                    docName={docName} 
+                                                    apiType={api.apiType} 
+                                                />
                                             </td>
                                             <td>
                                                 <Edit
@@ -600,8 +585,8 @@ class Listing extends React.Component {
                             data-testid='add-document-btn'
                             className={classes.button}
                             component={Link}
-                            to={!isRestricted(['apim:api_create', 'apim:api_publish'], api) && !api.isRevision && url}
-                            disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}
+                            to={!this.isAccessRestricted() && !api.isRevision && url}
+                            disabled={this.isAccessRestricted() || api.isRevision}
                         >
                             <AddCircle className={classes.buttonIcon} />
                             <FormattedMessage
@@ -671,46 +656,18 @@ class Listing extends React.Component {
                                     />
                                 </Typography>
                                 {(() => {
-                                    if (api.apiType === API.CONSTS.APIProduct) {
-                                        return (
-                                            <Typography component='p' className={classes.content}>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Documents.Listing.APIProduct.add.new.msg.content'
-                                                    defaultMessage={
-                                                        'You can add different types of documents to an API Product.' +
-                                                        ' Proper documentation helps API publishers to market their ' +
-                                                        ' APIs better and sustain competition. '
-                                                    }
-                                                />
-                                            </Typography>
-                                        );
-                                    } else if (api.apiType === MCPServer.CONSTS.MCP) {
-                                        return (
-                                            <Typography component='p' className={classes.content}>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Documents.Listing.MCP.add.new.msg.content'
-                                                    defaultMessage={
-                                                        'You can add different types of documents to a MCP Server.' +
-                                                        ' Proper documentation helps API publishers to market their ' +
-                                                        ' APIs better and sustain competition. '
-                                                    }
-                                                />
-                                            </Typography>
-                                        );
-                                    } else {
-                                        return (
-                                            <Typography component='p' className={classes.content}>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Documents.Listing.add.new.msg.content'
-                                                    defaultMessage={
-                                                        'You can add different types of documents to an API.' +
-                                                        ' Proper documentation helps API publishers to market their ' +
-                                                        ' APIs better and sustain competition. '
-                                                    }
-                                                />
-                                            </Typography>
-                                        );
-                                    }
+                                    return (
+                                        <Typography component='p' className={classes.content}>
+                                            <FormattedMessage
+                                                id='Apis.Details.Documents.Listing.APIProduct.add.new.msg.content'
+                                                defaultMessage={
+                                                    'You can add various types of documents to provide clarity, ' +
+                                                    'improve discoverability, and enhance the overall developer ' +
+                                                    'experience.'
+                                                }
+                                            />
+                                        </Typography>
+                                    );
                                 })()}
 
                                 <div className={classes.actions}>
@@ -720,11 +677,9 @@ class Listing extends React.Component {
                                         variant='contained'
                                         color='primary'
                                         component={Link}
-                                        to={!isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                            && !api.isRevision && url}
+                                        to={!this.isAccessRestricted() && !api.isRevision && url}
                                         className={classes.button}
-                                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                            || api.isRevision}
+                                        disabled={this.isAccessRestricted() || api.isRevision}
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.Documents.Listing.add.new.msg.button'
@@ -747,7 +702,7 @@ Listing.propTypes = {
     intl: PropTypes.shape({}).isRequired,
     api: PropTypes.shape({
         id: PropTypes.string,
-        apiType: PropTypes.oneOf([API.CONSTS.API, API.CONSTS.APIProduct]),
+        apiType: PropTypes.oneOf([API.CONSTS.API, API.CONSTS.APIProduct, MCPServer.CONSTS.MCP]),
     }).isRequired,
 };
 

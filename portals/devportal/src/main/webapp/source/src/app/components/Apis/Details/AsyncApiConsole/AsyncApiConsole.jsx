@@ -97,6 +97,16 @@ export default function AsyncApiConsole() {
     const user = AuthManager.getUser();
 
     useEffect(() => {
+        if (selectedEnvironment && environmentObject.length > 0) {
+            const env = environmentObject.find(
+                (e) => e.environmentName === selectedEnvironment,
+            );
+            if (env && env.URLs) {
+                setURLs(env.URLs);
+            }
+        }
+    }, [selectedEnvironment, environmentObject]);
+    useEffect(() => {
         const apiID = api.id;
         const apiClient = new Api();
         const promiseAPI = apiClient.getAPIById(apiID);

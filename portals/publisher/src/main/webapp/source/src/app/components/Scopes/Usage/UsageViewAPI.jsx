@@ -65,6 +65,7 @@ const Root = styled('div')((
     [`& .${classes.listHeaderAPI}`]: {
         fontWeight: '600',
         fontSize: theme.typography.pxToRem(19),
+        marginTop: '20px',
     },
 
     [`& .${classes.listHeaderResource}`]: {
@@ -84,7 +85,7 @@ const Root = styled('div')((
 */
 export default function UsageViewAPI(props) {
 
-    const { scopeUsage } = props;
+    const { scopeUsage, sectionTitle } = props;
     const [expanded, setExpanded] = useState(false);
     const apiList = scopeUsage.usedApiList;
 
@@ -98,10 +99,12 @@ export default function UsageViewAPI(props) {
         return (
             <Root className={classes.root}>
                 <Typography className={classes.listHeaderAPI}>
-                    <FormattedMessage
-                        id='Scopes.Usage.UsageViewAPI.api.usage'
-                        defaultMessage='List of APIs'
-                    />
+                    {sectionTitle || (
+                        <FormattedMessage
+                            id='Scopes.Usage.UsageViewAPI.api.usage'
+                            defaultMessage='List of APIs'
+                        />
+                    )}
                 </Typography>
                 <br />
                 {apiList.map((api) => (
@@ -114,8 +117,8 @@ export default function UsageViewAPI(props) {
                             <Typography component='div' className={classes.heading}>
                                 <Box fontWeight='fontWeightBold' m={1}>
                                     <FormattedMessage
-                                        id='Scopes.Usage.Usage.api.name'
-                                        defaultMessage='API Name:'
+                                        id='Scopes.Usage.Usage.name'
+                                        defaultMessage='Name:'
                                     />
                                 </Box>
                             </Typography>
@@ -127,7 +130,7 @@ export default function UsageViewAPI(props) {
                             <Typography component='div' className={classes.heading}>
                                 <Box fontWeight='fontWeightBold' m={1}>
                                     <FormattedMessage
-                                        id='Scopes.Usage.Usage.api.context'
+                                        id='Scopes.Usage.Usage.context'
                                         defaultMessage='Context: '
                                     />
                                 </Box>
@@ -140,7 +143,7 @@ export default function UsageViewAPI(props) {
                             <Typography className={classes.heading}>
                                 <Box fontWeight='fontWeightBold' m={1}>
                                     <FormattedMessage
-                                        id='Scopes.Usage.Usage.api.version'
+                                        id='Scopes.Usage.Usage.version'
                                         defaultMessage='Version: '
                                     />
                                 </Box>
@@ -153,7 +156,7 @@ export default function UsageViewAPI(props) {
                             <Typography className={classes.heading}>
                                 <Box fontWeight='fontWeightBold' m={1}>
                                     <FormattedMessage
-                                        id='Scopes.Usage.Usage.api.provider'
+                                        id='Scopes.Usage.Usage.provider'
                                         defaultMessage='Provider: '
                                     />
                                 </Box>
@@ -181,5 +184,10 @@ UsageViewAPI.propTypes = {
     scopeUsage: PropTypes.shape({
         usedApiList: PropTypes.shape({}),
     }).isRequired,
+    sectionTitle: PropTypes.string,
     intl: PropTypes.shape({}).isRequired,
+};
+
+UsageViewAPI.defaultProps = {
+    sectionTitle: null,
 };

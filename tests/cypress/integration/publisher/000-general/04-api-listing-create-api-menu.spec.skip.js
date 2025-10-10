@@ -30,7 +30,8 @@ describe("Landing page", () => {
         cy.visit(`/publisher/apis`);
         Utils.addAPI({}).then((apiId) => {
             testApiId = apiId;
-            cy.get('#itest-create-api-menu-button', { timeout: 30000 }).should('be.visible').click();
+            cy.get('[data-testid="itest-create-api-button"]', { timeout: 30000 }).should('be.visible').click();
+            cy.get('#itest-rest-api-create-menu').click();
 
             // Checking links under rest apis
             cy.get('a').contains('Start From Scratch')
