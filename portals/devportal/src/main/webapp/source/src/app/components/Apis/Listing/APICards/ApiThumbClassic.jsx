@@ -143,14 +143,14 @@ const StyledCard = styled(Card)(({ theme }) => ({
 }));
 
 // Get type chip label for APIs
-const getTypeChipLabel = (type, gatewayVendor) => {
+const getTypeChipLabel = (type) => {
     const typeMapping = {
         HTTP: 'REST',
         WS: 'WS',
         SOAPTOREST: 'SOAPTOREST',
         SOAP: 'SOAP',
         GRAPHQL: 'GraphQL',
-        WEBSUB: gatewayVendor === 'solace' ? 'SOLACE API' : 'WebSub',
+        WEBSUB: 'WebSub',
         SSE: 'SSE',
         WEBHOOK: 'Webhook',
         ASYNC: 'ASYNC',
@@ -320,7 +320,7 @@ class ApiThumbClassicLegacy extends React.Component {
             // In search route, the apiType comes as `transportType`
             // In non-search (listing) route, the apiType comes as `type`
             // Giving precedence to transportType since there is a different attribute called `type` in search mode
-            label = getTypeChipLabel(api.transportType ? api.transportType : api.type, api.gatewayVendor);
+            label = getTypeChipLabel(api.transportType ? api.transportType : api.type);
             icon = getTypeIcon(api.transportType ? api.transportType : api.type);
         }
 

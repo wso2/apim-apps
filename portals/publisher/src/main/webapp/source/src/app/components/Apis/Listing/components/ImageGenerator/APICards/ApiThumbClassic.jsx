@@ -29,6 +29,7 @@ import Chip from '@mui/material/Chip';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
 import API from 'AppData/api';
+import CONSTS from 'AppData/Constants';
 import Popover from '@mui/material/Popover';
 import Tooltip from '@mui/material/Tooltip';
 import Configurations from 'Config';
@@ -142,19 +143,8 @@ const StyledCard = styled(Card)(({ theme, useFlexibleWidth }) => ({
 }));
 
 // Get type chip label for APIs
-const getTypeChipLabel = (type, gatewayType) => {
-    const typeMapping = {
-        HTTP: 'REST',
-        WS: 'WS',
-        SOAPTOREST: 'SOAPTOREST',
-        SOAP: 'SOAP',
-        GRAPHQL: 'GraphQL',
-        WEBSUB: gatewayType === 'solace' ? 'SOLACE API' : 'WebSub',
-        SSE: 'SSE',
-        WEBHOOK: 'Webhook',
-        ASYNC: 'ASYNC',
-    };
-    return typeMapping[type?.toUpperCase()] || type;
+const getTypeChipLabel = (type) => {
+    return CONSTS.API_TYPES[type?.toUpperCase()] || type;
 };
 
 // Get icon component for API type
@@ -291,14 +281,14 @@ class APIThumb extends Component {
                 // No API Product chip for listing mode (non-search routes)
                 return null;
             } else {
-                label = 'API PRODUCT';
+                label = 'API Product';
                 icon = getTypeIcon('APIProduct');
             }
         } else {
             // In search route, the apiType comes as `transportType`
             // In non-search (listing) route, the apiType comes as `type`
             // Giving precedence to transportType since there is a different attribute called `type` in search mode
-            label = getTypeChipLabel(api.transportType ? api.transportType : api.type, api.gatewayType);
+            label = getTypeChipLabel(api.transportType ? api.transportType : api.type);
             icon = getTypeIcon(api.transportType ? api.transportType : api.type);
         }
 
@@ -436,9 +426,9 @@ class APIThumb extends Component {
                                             &nbsp;
                                             <FormattedMessage id='on' defaultMessage='on' />
                                             &nbsp;
-                                            {api.gatewayVendor === 'wso2' || api.gatewayType === 'solace'
+                                            {api.gatewayVendor === 'wso2'
                                                 ? api.gatewayVendor.toUpperCase()
-                                                : api.gatewayType}
+                                                : Utils.capitalizeFirstLetter(api.gatewayType)}
                                         </>
                                     )}
                                 </Typography>
