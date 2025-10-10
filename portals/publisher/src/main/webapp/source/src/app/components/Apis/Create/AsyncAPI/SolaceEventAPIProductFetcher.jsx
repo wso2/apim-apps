@@ -132,7 +132,7 @@ const SolaceEventAPIProductFetcher = (props) => {
                                             </TableCell>
                                             <TableCell>
                                                 {eventApi.plans.map(plan => (
-                                                    <Chip key={plan} label={plan} />
+                                                    <Chip key={plan} label={plan} sx={{ mr: 0.5 }} />
                                                 ))}
                                             </TableCell>
                                         </TableRow>
