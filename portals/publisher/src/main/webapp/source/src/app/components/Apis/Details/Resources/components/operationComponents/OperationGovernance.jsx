@@ -69,13 +69,9 @@ export default function OperationGovernance(props) {
         setFocusOperationLevel(true);
         document.querySelector('#react-root').scrollTop = 195;
     };
-    // Check if any operation governance features are available
-    const hasOperationSecurity = componentValidator.includes('operationSecurity');
-    const hasOperationRateLimiting = componentValidator.includes('operationLevelRateLimiting');
-    const hasAnyOperationGovernance = hasOperationSecurity || hasOperationRateLimiting;
 
-    // Don't render the component if no operation governance features are available
-    if (!hasAnyOperationGovernance) {
+    if (!componentValidator.includes('operationSecurity') && 
+        !componentValidator.includes('operationLevelRateLimiting')) {
         return null;
     }
 
