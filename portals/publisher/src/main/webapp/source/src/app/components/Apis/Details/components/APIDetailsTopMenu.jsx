@@ -288,10 +288,10 @@ const APIDetailsTopMenu = (props) => {
     }
 
     /**
-     * Checks if the user has access to create APIs.
-     * @returns {boolean} Returns true if the user has access to create APIs, false otherwise.
+     * Checks if the user has access to delete APIs/MCP Servers.
+     * @returns {boolean} Returns true if the user's access is restricted, false otherwise.
      */
-    const isAccessRestricted = () => {
+    const isDeleteAccessRestricted = () => {
         if (api.isMCPServer()) {
             return isRestricted(
                 ['apim:mcp_server_delete', 'apim:mcp_server_manage', 'apim:mcp_server_import_export'],
@@ -300,6 +300,14 @@ const APIDetailsTopMenu = (props) => {
         } else {
             return isRestricted(['apim:api_create'], api);
         }
+    }
+
+    /**
+     * Checks if the user has access to create MCP Servers.
+     * @returns {boolean} Returns true if the user's access is restricted, false otherwise.
+     */
+    const isGenerateMCPServerAccessRestricted = () => {
+        return isRestricted(['apim:mcp_server_create', 'apim:mcp_server_manage'], api);
     }
 
     // todo: need to support rev proxy ~tmkb
@@ -593,7 +601,8 @@ const APIDetailsTopMenu = (props) => {
                 )}
                 {(settings && settings.isMCPSupportEnabled) &&
                 api.type === 'HTTP' && api.gatewayType === 'wso2/synapse' &&
-                api.subtypeConfiguration?.subtype !== 'AIAPI' && (() => {
+                api.subtypeConfiguration?.subtype !== 'AIAPI' &&
+                !isGenerateMCPServerAccessRestricted() && (() => {
                     const mcpServerUrl = `/mcp-servers/create/mcp-from-existing-api?apiId=${api.id}`;
                     return (
                         <>
@@ -664,13 +673,13 @@ const APIDetailsTopMenu = (props) => {
                     )}
                 </div>
                 {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
-                    || isAccessRestricted()
+                    || isDeleteAccessRestricted()
                     ? (<div className={classes.revisionWrapper} />)
                     : (
-                        <DeleteApiButton 
-                            buttonClass={classes.viewInStoreLauncher} 
-                            api={api} 
-                            isAPIProduct={isAPIProduct} 
+                        <DeleteApiButton
+                            buttonClass={classes.viewInStoreLauncher}
+                            api={api}
+                            isAPIProduct={isAPIProduct}
                         />
                     )
                 }
