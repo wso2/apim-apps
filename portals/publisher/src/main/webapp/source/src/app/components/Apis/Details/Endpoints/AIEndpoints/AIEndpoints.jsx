@@ -248,6 +248,49 @@ const AIEndpoints = ({
             });
     };
 
+    const isPrimaryEndpointSecurityConfigured = () => {
+        // Helper function to parse endpointConfig if it's a string
+        const parseEndpointConfig = (config) => {
+            if (typeof config === 'string') {
+                try {
+                    return JSON.parse(config);
+                } catch (error) {
+                    console.error('Error parsing endpoint configuration:', error);
+                    return null;
+                }
+            }
+            return config;
+        };
+
+        // Check production primary endpoint
+        if (apiObject.primaryProductionEndpointId) {
+            const primaryProdEndpoint = productionEndpoints.find(
+                ep => ep.id === apiObject.primaryProductionEndpointId
+            );
+            if (primaryProdEndpoint) {
+                const parsedConfig = parseEndpointConfig(primaryProdEndpoint.endpointConfig);
+                if (!parsedConfig?.endpoint_security?.production) {
+                    return false;
+                }
+            }
+        }
+
+        // Check sandbox primary endpoint
+        if (apiObject.primarySandboxEndpointId) {
+            const primarySandEndpoint = sandboxEndpoints.find(
+                ep => ep.id === apiObject.primarySandboxEndpointId
+            );
+            if (primarySandEndpoint) {
+                const parsedConfig = parseEndpointConfig(primarySandEndpoint.endpointConfig);
+                if (!parsedConfig?.endpoint_security?.sandbox) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    };
+
     if (loading) {
         return <Progress per={90} message='Loading Endpoints ...' />;
     }
@@ -334,7 +377,10 @@ const AIEndpoints = ({
                     type='submit'
                     variant='contained'
                     color='primary'
-                    disabled={isRestricted(['apim:api_create', 'apim:api_publish', 'apim:api_manage'], apiObject)}
+                    disabled={
+                        isRestricted(['apim:api_create', 'apim:api_publish', 'apim:api_manage'], apiObject) ||
+                        !isPrimaryEndpointSecurityConfigured()
+                    }
                     endIcon={<OpenInNewIcon />}
                     onClick={() => {
                         history.push({
