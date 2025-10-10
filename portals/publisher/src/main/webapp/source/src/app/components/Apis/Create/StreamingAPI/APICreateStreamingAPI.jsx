@@ -77,6 +77,7 @@ const APICreateStreamingAPI = (props) => {
     }
     const isWebSub = (apiType === 'WEBSUB');
     const isWebSocket = (apiType === 'WS');
+    const isSSE = (apiType === 'SSE');
     const complianceErrorCode = 903300;
 
     useEffect(() => {
@@ -153,7 +154,7 @@ const APICreateStreamingAPI = (props) => {
 
     const isAPICreatable = apiInputs.name && apiInputs.context && apiInputs.version && !isCreating;
     // TODO: If WebSub API no endpoint is required. Or else check apiInputs.endpoint has a value.
-    const isPublishable = (isWebSocket ? apiInputs.endpoint : true);
+    const isPublishable = ((isWebSocket || isSSE) ? apiInputs.endpoint : true);
 
     /**
      *
