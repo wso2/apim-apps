@@ -1111,6 +1111,7 @@ export default function Environments() {
                 });
             setIsUndeploying(false);
         } else {
+            setIsUndeploying(true);
             restProductApi.undeployProductRevision(api.id, revisionId, body)
                 .then(() => {
                     Alert.info(intl.formatMessage({
@@ -1131,6 +1132,7 @@ export default function Environments() {
                 }).finally(() => {
                     getRevision();
                     getDeployedEnv();
+                    setIsUndeploying(false);
                 });
         }
     }
@@ -1284,27 +1286,36 @@ export default function Environments() {
                 setIsDeploying(false);
             });
         } else {
-            restProductApi.deployProductRevision(api.id, revisionId, body)
-                .then(() => {
-                    Alert.info(intl.formatMessage({
-                        id: 'Apis.Details.Environments.Environments.revision.deploy.success',
-                        defaultMessage: 'Deploy revision Successfully',
-                    }));
-                })
-                .catch((error) => {
-                    if (error.response) {
-                        Alert.error(error.response.body.description);
-                    } else {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Environments.Environments.revision.deploy.error',
-                            defaultMessage: 'Something went wrong while deploying the revision',
+            setIsDeploying(true);
+            restProductApi.deployProductRevision(api.id, revisionId, body).then((response) => {
+                if (response && response.obj && response.obj.length > 0) {
+                    if (response.obj[0]?.status === null || response.obj[0]?.status === 'APPROVED') {
+                        Alert.info(intl.formatMessage({
+                            id: 'Apis.Details.Environments.Environments.revision.deploy.success',
+                            defaultMessage: 'Deploy revision Successfully',
+                        }));
+                    } else if (response.obj[0]?.status === 'CREATED') {
+                        Alert.info(intl.formatMessage({
+                            id: 'Apis.Details.Environments.Environments.revision.deploy.request.success',
+                            defaultMessage: 'Deploy revision request sent successfully',
                         }));
                     }
-                    console.error(error);
-                }).finally(() => {
-                    getRevision();
-                    getDeployedEnv();
-                });
+                }
+            }).catch((error) => {
+                if (error.response) {
+                    Alert.error(error.response.body.description);
+                } else {
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Environments.Environments.revision.deploy.error',
+                        defaultMessage: 'Something went wrong while deploying the revision',
+                    }));
+                }
+                console.error(error);
+            }).finally(() => {
+                getRevision();
+                getDeployedEnv();
+                setIsDeploying(false);
+            });
         }
     }
 
