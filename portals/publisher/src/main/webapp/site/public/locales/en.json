@@ -641,6 +641,8 @@
   "Apis.Details.Configuration.components.storeVisibility.tooltip.public.desc": "The {type} is accessible to everyone and can be advertised in multiple developer portals - a central developer portal and/or non-WSO2 developer portals.",
   "Apis.Details.Configuration.components.storeVisibility.tooltip.restrict": "Restricted by roles(s) :",
   "Apis.Details.Configuration.components.storeVisibility.tooltip.restrict.desc": "The {type} is visible only to specific user roles in the tenant developer portal that you specify.",
+  "Apis.Details.Configuration.components.storeVisibility.tooltip.private": "Visible to my domain :",
+  "Apis.Details.Configuration.components.storeVisibility.tooltip.private.desc": "The {type} is visible only to users in the current tenant domain.",
   "Apis.Details.Configuration.components.transport.empty": "Please select at least one transport!",
   "Apis.Details.Configuration.components.transport.sslHttps": "Please select Https as transport with mutual SSL!",
   "Apis.Details.Configurations.api.categories": "Categories",

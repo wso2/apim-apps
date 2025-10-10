@@ -255,6 +255,24 @@ export default function StoreVisibility(props) {
                                         type: getTypeToDisplay(api.apiType)
                                     }}
                                 />
+                                <br />
+                                <br />
+                                <strong>
+                                    <FormattedMessage
+                                        id='Apis.Details.Configuration.components.storeVisibility.tooltip.private'
+                                        defaultMessage='Visible to my domain :'
+                                    />
+                                </strong>
+                                {'  '}
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.components.storeVisibility.tooltip.private.desc'
+                                    defaultMessage={
+                                        'The {type} is visible only to users in the current tenant domain.'
+                                    }
+                                    values={{
+                                        type: getTypeToDisplay(api.apiType)
+                                    }}
+                                />
                             </p>
                         </>
                     )}
