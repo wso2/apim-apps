@@ -39,6 +39,24 @@ const ModelProviders = ({
     const intl = useIntl();
 
     /**
+     * Gets the appropriate placeholder text based on provider name
+     * @param {string} providerName - The name of the AI service provider
+     * @returns {object} Object with id and defaultMessage for intl.formatMessage
+     */
+    const getModelPlaceholder = (providerName) => {
+        if (providerName === 'AWSBedrock') {
+            return {
+                id: 'AiServiceProviders.ModelProviders.model.provider.models.placeholder.modelId',
+                defaultMessage: 'Type model ID and press Enter',
+            };
+        }
+        return {
+            id: 'AiServiceProviders.ModelProviders.model.provider.models.placeholder',
+            defaultMessage: 'Type model name and press Enter',
+        };
+    };
+
+    /**
      * Handles adding a new model family.
      * Creates a new model object with a unique ID and empty multipleModelProviderSupport and values.
      */
@@ -143,10 +161,7 @@ const ModelProviders = ({
                                 });
                                 onModelsChange(updatedModels);
                             }}
-                            placeholder={intl.formatMessage({
-                                id: 'AiServiceProviders.ModelProviders.model.provider.models.placeholder',
-                                defaultMessage: 'Type Model name and press Enter',
-                            })}
+                            placeholder={intl.formatMessage(getModelPlaceholder(model.name))}
                             data-testid={`ai-vendor-llm-models-${index}`}
                         />
                     </Grid>
