@@ -31,6 +31,7 @@ import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import Alert from 'AppComponents/Shared/Alert';
+import ConfirmDialog from 'AppComponents/Shared/ConfirmDialog';
 import CONSTS from 'AppData/Constants';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { isRestricted } from 'AppData/AuthManager';
@@ -51,6 +52,10 @@ const AIEndpoints = ({
     const [endpointList, setEndpointList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+    const [confirmSetPrimaryOpen, setConfirmSetPrimaryOpen] = useState(false);
+    const [confirmRemovePrimaryOpen, setConfirmRemovePrimaryOpen] = useState(false);
+    const [selectedEndpoint, setSelectedEndpoint] = useState(null);
 
     const intl = useIntl();
     const history = useHistory();
@@ -114,7 +119,13 @@ const AIEndpoints = ({
         fetchEndpoints();
     }, [apiObject.id]);
 
+    // Open confirmation dialog and execute delete
     const handleDelete = (endpoint) => {
+        setSelectedEndpoint(endpoint);
+        setConfirmDeleteOpen(true);
+    };
+
+    const executeDelete = (endpoint) => {
         // Check if endpoint is primary
         if (endpoint.id === apiObject.primaryProductionEndpointId ||
             endpoint.id === apiObject.primarySandboxEndpointId) {
@@ -191,7 +202,13 @@ const AIEndpoints = ({
         }
     };
 
+    // Open confirmation dialog and execute set-as-primary
     const handleSetAsPrimary = (endpoint) => {
+        setSelectedEndpoint(endpoint);
+        setConfirmSetPrimaryOpen(true);
+    };
+
+    const executeSetAsPrimary = (endpoint) => {
         // Create a deep copy of the API object to avoid direct mutations
         const updatedApi = {
             ...apiObject,
@@ -216,7 +233,13 @@ const AIEndpoints = ({
             });
     };
 
+    // Open confirmation dialog and execute remove-primary
     const handleRemovePrimary = (endpoint) => {
+        setSelectedEndpoint(endpoint);
+        setConfirmRemovePrimaryOpen(true);
+    };
+
+    const executeRemovePrimary = (endpoint) => {
         if (!apiObject.primaryProductionEndpointId || !apiObject.primarySandboxEndpointId) {
             Alert.error(intl.formatMessage({
                 id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.primary.remove.error',
@@ -297,6 +320,122 @@ const AIEndpoints = ({
 
     return (
         <Grid container spacing={2}>
+            {/* Confirm: Delete endpoint */}
+            <ConfirmDialog
+                key='confirm-delete-endpoint'
+                labelCancel={
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.confirm.delete.cancel'
+                        defaultMessage='Cancel'
+                    />
+                }
+                title={
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.confirm.delete.title'
+                        defaultMessage='Confirm Delete'
+                    />
+                }
+                message={
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.confirm.delete.message'
+                        defaultMessage='Are you sure you want to delete the endpoint {name}?'
+                        values={{ name: selectedEndpoint?.name || '' }}
+                    />
+                }
+                labelOk={
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.confirm.delete.ok'
+                        defaultMessage='Yes'
+                    />
+                }
+                callback={(ok) => {
+                    if (ok && selectedEndpoint) {
+                        executeDelete(selectedEndpoint);
+                    }
+                    setConfirmDeleteOpen(false);
+                    setSelectedEndpoint(null);
+                }}
+                open={confirmDeleteOpen}
+            />
+
+            {/* Confirm: Set as primary */}
+            <ConfirmDialog
+                key='confirm-set-primary-endpoint'
+                labelCancel={
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.confirm.setprimary.cancel'
+                        defaultMessage='Cancel'
+                    />
+                }
+                title={
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.confirm.setprimary.title'
+                        defaultMessage='Confirm Primary Endpoint Change'
+                    />
+                }
+                message={
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.confirm.setprimary.message'
+                        defaultMessage='Set {name} as the primary {stage} endpoint ?'
+                        values={{ name: selectedEndpoint?.name || '', 
+                            stage: selectedEndpoint?.deploymentStage.toLowerCase() || '' }}
+                    />
+                }
+                labelOk={
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.confirm.setprimary.ok'
+                        defaultMessage='Yes'
+                    />
+                }
+                confirmPrimary
+                callback={(ok) => {
+                    if (ok && selectedEndpoint) {
+                        executeSetAsPrimary(selectedEndpoint);
+                    }
+                    setConfirmSetPrimaryOpen(false);
+                    setSelectedEndpoint(null);
+                }}
+                open={confirmSetPrimaryOpen}
+            />
+
+            {/* Confirm: Remove primary */}
+            <ConfirmDialog
+                key='confirm-remove-primary-endpoint'
+                labelCancel={
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.confirm.removeprimary.cancel'
+                        defaultMessage='Cancel'
+                    />
+                }
+                title={
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.confirm.removeprimary.title'
+                        defaultMessage='Confirm Primary Endpoint Removal'
+                    />
+                }
+                message={
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.confirm.removeprimary.message'
+                        defaultMessage='Remove primary {stage} endpoint {name}?'
+                        values={{ name: selectedEndpoint?.name || '', 
+                            stage: selectedEndpoint?.deploymentStage.toLowerCase() || '' }}
+                    />
+                }
+                labelOk={
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.confirm.removeprimary.ok'
+                        defaultMessage='Yes'
+                    />
+                }
+                callback={(ok) => {
+                    if (ok && selectedEndpoint) {
+                        executeRemovePrimary(selectedEndpoint);
+                    }
+                    setConfirmRemovePrimaryOpen(false);
+                    setSelectedEndpoint(null);
+                }}
+                open={confirmRemovePrimaryOpen}
+            />
             <Grid item xs={12}>
                 <StyledPaper elevation={0} variant='outlined'>
                     <Typography variant='h5' component='h2' gutterBottom sx={{ mb: 3 }}>
