@@ -202,7 +202,7 @@ const MCPServerCreateUsingExistingAPI = (props) => {
         mcpServerData.operations = operations;
 
         newMCPServer = new MCPServer(mcpServerData);
-        const promisedCreatedMCPServer = newMCPServer
+        return newMCPServer
             .createMCPServerUsingExistingAPI()
             .then((mcpServer) => {
                 Alert.info(intl.formatMessage({
@@ -212,20 +212,27 @@ const MCPServerCreateUsingExistingAPI = (props) => {
                 return mcpServer;
             })
             .catch((error) => {
-                console.error(error);
-                Alert.error(intl.formatMessage({
-                    id: 'MCPServers.Create.MCPServerCreateUsingExistingAPI.created.error',
-                    defaultMessage: 'Failed to create MCP Server',
-                }));
+                // Re-throw the error so it can be caught by the calling code
+                throw error;
             })
             .finally(() => setCreating(false));
-        return promisedCreatedMCPServer.finally(() => setCreating(false));
     }
 
     const createMCPServerOnly = () => {
-        createMCPServer().then((mcpServer) => {
-            history.push(`/mcp-servers/${mcpServer.id}/overview`);
-        });
+        createMCPServer()
+            .then((mcpServer) => {
+                history.push(`/mcp-servers/${mcpServer.id}/overview`);
+            })
+            .catch((error) => {
+                if (error.response) {
+                    Alert.error(error.response.body.description);
+                } else {
+                    Alert.error(intl.formatMessage({
+                        id: 'MCPServers.Create.MCPServerCreateUsingExistingAPI.created.error',
+                        defaultMessage: 'Failed to create MCP Server',
+                    }));
+                }
+            });
     }
 
     const createAndPublishMCPServer = () => {
@@ -345,16 +352,26 @@ const MCPServerCreateUsingExistingAPI = (props) => {
 
     const getSteps = () => {
         return [
-            <FormattedMessage
-                variant='caption'
-                id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.one'
-                defaultMessage='Select API and Operations for Tool Generation'
-            />,
-            <FormattedMessage
-                variant='caption'
-                id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.two'
-                defaultMessage='Create MCP Server'
-            />,
+            {
+                key: 'MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.one',
+                label: (
+                    <FormattedMessage
+                        variant='caption'
+                        id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.one'
+                        defaultMessage='Select API and Operations for Tool Generation'
+                    />
+                )
+            },
+            {
+                key: 'MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.two',
+                label: (
+                    <FormattedMessage
+                        variant='caption'
+                        id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.two'
+                        defaultMessage='Create MCP Server'
+                    />
+                )
+            },
         ];
     }
 
@@ -364,9 +381,9 @@ const MCPServerCreateUsingExistingAPI = (props) => {
         >
             <Box sx={{ mb: 3 }}>
                 <Stepper alternativeLabel activeStep={wizardStep}>
-                    {getSteps().map((label) => (
-                        <Step key={label}>
-                            <StepLabel className={classes.alternativeLabel}>{label}</StepLabel>
+                    {getSteps().map((step) => (
+                        <Step key={step.key}>
+                            <StepLabel className={classes.alternativeLabel}>{step.label}</StepLabel>
                         </Step>
                     ))}
                 </Stepper>
@@ -392,7 +409,7 @@ const MCPServerCreateUsingExistingAPI = (props) => {
                         />
                     )}
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{ mt: 3 }}>
                     <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                         <Grid item>
                             {wizardStep === 0 && (

@@ -40,6 +40,7 @@ import Api from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
 import CONSTANTS from 'AppData/Constants';
 import Subscription from 'AppData/Subscription';
+import { getBasePath } from 'AppUtils/utils';
 import { mdiOpenInNew } from '@mdi/js';
 import { Icon as MDIcon } from '@mdi/react';
 import Popover from '@mui/material/Popover';
@@ -295,7 +296,7 @@ class SubscriptionTableData extends React.Component {
             && tiers[0].value.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
         const link = (
             <Link
-                to={tiers.length === 0 ? '' : '/apis/' + apiId}
+                to={tiers.length === 0 ? '' : getBasePath(apiInfo.type) + apiId}
                 style={{ cursor: tiers.length === 0 ? 'default' : '' }}
                 external
             >

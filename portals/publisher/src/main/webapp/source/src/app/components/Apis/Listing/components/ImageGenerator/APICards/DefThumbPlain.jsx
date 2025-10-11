@@ -128,7 +128,7 @@ function DefThumbPlain(props) {
                 </Box>
                 <Box mt={2}>
                     <Typography variant='subtitle1' className={classes.contextBox}>
-                        {def.apiName}
+                        {def.apiDisplayName || def.apiName}
                     </Typography>
                     <Typography
                         variant='caption'

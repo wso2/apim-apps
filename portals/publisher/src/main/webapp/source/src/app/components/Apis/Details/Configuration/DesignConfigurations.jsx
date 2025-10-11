@@ -453,8 +453,13 @@ export default function DesignConfigurations() {
     };
     const loadContentForDoc = (documentId) => {
         const { apiType } = api.apiType;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const docPromise = restApi.getInlineContentOfDocument(api.id, documentId);
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.getInlineContentOfDocument(api.id, documentId);
+        } else {
+            const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+            docPromise = restApi.getInlineContentOfDocument(api.id, documentId);
+        }
         docPromise
             .then((doc) => {
                 const { text } = doc;
@@ -463,31 +468,56 @@ export default function DesignConfigurations() {
     };
     const addDocument = async () => {
         const { apiType } = api.apiType;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const docPromise = await restApi.addDocument(api.id, {
-            name: 'overview',
-            type: 'OTHER',
-            summary: 'overview',
-            sourceType: 'MARKDOWN',
-            visibility: 'API_LEVEL',
-            sourceUrl: '',
-            otherTypeName: CONSTS.DESCRIPTION_TYPES.OVERVIEW,
-            inlineContent: '',
-        }).then((response) => {
-            return response.body;
-        }).catch((error) => {
-            if (process.env.NODE_ENV !== 'production') {
-                console.log(error);
-            }
-        });
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.addDocument(api.id, {
+                name: 'overview',
+                type: 'OTHER',
+                summary: 'overview',
+                sourceType: 'MARKDOWN',
+                visibility: 'API_LEVEL',
+                sourceUrl: '',
+                otherTypeName: CONSTS.DESCRIPTION_TYPES.OVERVIEW,
+                inlineContent: '',
+            }).then((response) => {
+                return response.body;
+            }).catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+            });
+        } else {
+            const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+            docPromise = await restApi.addDocument(api.id, {
+                name: 'overview',
+                type: 'OTHER',
+                summary: 'overview',
+                sourceType: 'MARKDOWN',
+                visibility: 'API_LEVEL',
+                sourceUrl: '',
+                otherTypeName: CONSTS.DESCRIPTION_TYPES.OVERVIEW,
+                inlineContent: '',
+            }).then((response) => {
+                return response.body;
+            }).catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+            });
+        }
         return docPromise;
     };
 
     const addDocumentContent = (document) => {
         const { apiType } = api.apiType;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const docPromise = restApi.addInlineContentToDocument(api.id, document.documentId, 'MARKDOWN', overview);
-        docPromise
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.addInlineContentToDocument(api.id, document.documentId, 'MARKDOWN', overview);
+        } else {
+            const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+            docPromise = restApi.addInlineContentToDocument(api.id, document.documentId, 'MARKDOWN', overview);
+        }
+        return docPromise
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
                     console.log(error);
@@ -496,26 +526,38 @@ export default function DesignConfigurations() {
                 if (status === 404) {
                     console.log(error);
                 }
+                throw error;
             });
     };
 
     const deleteOverviewDocument = () => {
         const { apiType } = api.apiType;
-        const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const docPromise = restApi.deleteDocument(api.id, overviewDocument.documentId);
-        docPromise
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.deleteDocument(api.id, overviewDocument.documentId);
+        } else {
+            const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
+            docPromise = restApi.deleteDocument(api.id, overviewDocument.documentId);
+        }
+        return docPromise
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
                     console.log(error);
                 }
+                throw error;
             });
     };
 
     useEffect(() => {
         const { apiType } = api.apiType;
         const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
-        const promisedApi = restApi.getDocuments(api.id);
-        promisedApi
+        let promisedDocs;
+        if (isMCPServer) {
+            promisedDocs = MCPServer.getDocuments(api.id);
+        } else {
+            promisedDocs = restApi.getDocuments(api.id);
+        }
+        promisedDocs
             .then((response) => {
                 const overviewDoc = response.body.list.filter((item) => item.otherTypeName === '_overview');
                 if (overviewDoc.length > 0) {
@@ -536,13 +578,14 @@ export default function DesignConfigurations() {
                     }));
                 }
             });
-        // const apiClient = new API();
-        API.labels().then((response) => setLabels(response.body));
-        restApi.getAPILabels(api.id).then((response) => {
-            setUpdatedLabels(response.body.list.map((label) => label.name));
-        }).finally(() => {
-            setLoading(false);
-        });
+        if (!isMCPServer) {
+            API.labels().then((response) => setLabels(response.body));
+            restApi.getAPILabels(api.id).then((response) => {
+                setUpdatedLabels(response.body.list.map((label) => label.name));
+            }).finally(() => {
+                setLoading(false);
+            });
+        }
     }, []);
 
     useEffect(() => {
@@ -598,31 +641,37 @@ export default function DesignConfigurations() {
             updatePayload = mcpConfig;
         }
         
-        updateAPI(updatePayload)
-            .catch((error) => {
-                if (error.response) {
-                    Alert.error(error.response.body.description);
-                } else {
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.Configuration.Design.Configurations.error.updating',
-                        defaultMessage: 'Error occurred while updating design configurations',
-                    }));
+        try {
+            await updateAPI(updatePayload);
+            
+            // Handle overview document update
+            if (overview.trim() === '') {
+                if (overviewDocument) {
+                    await deleteOverviewDocument();
+                    // Clear the overview state after successful deletion
+                    setOverview('');
+                    setOverviewDocument(null);
                 }
-            });
-        if (overview.trim() === '') {
-            if (overviewDocument) {
-                deleteOverviewDocument();
+            } else {
+                let document = overviewDocument;
+                if (document === null) {
+                    document = await addDocument();
+                    setOverviewDocument(document);
+                }
+                await addDocumentContent(document);
             }
-        }
-
-        else {
-            let document = overviewDocument;
-            if (document === null) {
-                document = await addDocument();
+        } catch (error) {
+            if (error.response) {
+                Alert.error(error.response.body.description);
+            } else {
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Configuration.Design.Configurations.error.updating',
+                    defaultMessage: 'Error occurred while updating design configurations',
+                }));
             }
-            addDocumentContent(document);
+        } finally {
+            setIsUpdating(false);
         }
-        setIsUpdating(false);
     }
 
     const handleClick = (availableTiers, endpointUrl, endpointType) => {

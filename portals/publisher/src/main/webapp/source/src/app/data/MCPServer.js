@@ -746,6 +746,27 @@ class MCPServer extends Resource {
     }
 
     /**
+     * Clean pending tasks of an MCP Server.
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @returns {Promise} A promise that resolves to the response of the clean pending tasks request.
+     */
+    static cancelLifecyclePendingTask(mcpServerId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Lifecycle'].deleteMCPServerLifecycleStatePendingTasks(
+                {
+                    mcpServerId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * Test the endpoint of an MCP Server.
      * @param {string} endpointUrl - The URL of the endpoint to test.
      * @param {string} id - The ID of the MCP Server.   
@@ -1259,6 +1280,104 @@ class MCPServer extends Resource {
                 this._requestMetaData(),
             );
         });
+    }
+
+    /**
+     * Cancel a pending deployment or undeployment task for a revision of an MCP Server.
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @param {string} revisionId - The ID of the revision.
+     * @param {string} envName - The name of the environment.
+     * @returns {Promise} A promise that resolves to the response of the cancel request.
+     */
+    static cancelRevisionDeploymentWorkflow(mcpServerId, revisionId, envName) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Revisions'].deleteMCPServerRevisionDeploymentPendingTask(
+                {
+                    mcpServerId,
+                    revisionId,
+                    envName,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add a thumbnail to an MCP Server.
+     * @param {String} mcpServerId - The ID of the MCP Server.
+     * @param {File} file - The file to be uploaded.
+     * @returns {Promise} A promise that resolves to the response of the thumbnail upload request.
+     */
+    static addThumbnail(mcpServerId, file) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Servers'].updateMCPServerThumbnail(
+                {
+                    mcpServerId,
+                    'Content-Type': file.type,
+                },
+                {
+                    requestBody: {
+                        file,
+                    },
+                },
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+    }
+
+    /**
+     * Get the thumbnail of an MCP Server.
+     * @param {String} mcpServerId - The ID of the MCP Server.
+     * @returns {Promise} A promise that resolves to the response of the thumbnail get request.
+     */
+    static getThumbnail(mcpServerId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Servers'].getMCPServerThumbnail(
+                {
+                    mcpServerId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get the subscription policies of an MCP Server.
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @returns {Promise} A promise that resolves to the subscription policies of the MCP Server.
+     */
+    static getSubscriptionPolicies(mcpServerId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        const promisePolicies = apiClient.then(client => {
+            return client.apis['MCP Servers'].getMCPServerSubscriptionPolicies(
+                {
+                    mcpServerId,
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promisePolicies.then(response => response.body);
     }
 }
 

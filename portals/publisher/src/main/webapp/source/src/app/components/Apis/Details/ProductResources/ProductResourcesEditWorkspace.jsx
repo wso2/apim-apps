@@ -639,8 +639,10 @@ function ProductResourcesEdit(props) {
                                                 >
                                                     <ListItemText
                                                         id={labelId}
-                                                        primary={apiObj.name}
-                                                        secondary={`${apiObj.version} - ${apiObj.context}`}
+                                                        primary={apiObj.displayName || apiObj.name}
+                                                        secondary={
+                                                            `${apiObj.name} : ${apiObj.version} - ${apiObj.context}`
+                                                        }
                                                         onClick={() => getApiSwagger(apiObj)}
                                                     />
                                                 </ListItem>
@@ -665,7 +667,7 @@ function ProductResourcesEdit(props) {
                                 </div>
                                 {selectedApi && (
                                     <Typography variant='h5' component='h2' className={classes.selectedTitle}>
-                                        {selectedApi.name}
+                                        {selectedApi.displayName || selectedApi.name}
                                     </Typography>
                                 )}
                                 <div className={classes.tootBar}>
@@ -804,7 +806,7 @@ function ProductResourcesEdit(props) {
                                 {api.name && (
                                     <>
                                         <Typography variant='h5' component='h2' className={classes.selectedTitle}>
-                                            {api.name}
+                                            {api.displayName || api.name}
                                         </Typography>
                                     </>
                                 )}

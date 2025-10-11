@@ -128,7 +128,7 @@ const DefinitionThumb = ({ def }) => {
     const theme = useTheme();
     const detailsLink = `/apis/${def.apiUUID}/overview`;
     const {
-        name, apiName, apiVersion, apiProvider, associatedType,
+        name, apiName, apiDisplayName, apiVersion, apiProvider, associatedType,
     } = def;
 
     useEffect(() => {
@@ -190,7 +190,7 @@ const DefinitionThumb = ({ def }) => {
                             >
                                 <Tooltip title={apiName} arrow>
                                     <Typography variant='body1' noWrap>
-                                        {apiName}
+                                        {apiDisplayName || apiName}
                                     </Typography>
                                 </Tooltip>
                                 <Typography variant='caption' component='p' lineHeight={1}>
@@ -251,6 +251,7 @@ DefinitionThumb.propTypes = {
         id: PropTypes.string,
         name: PropTypes.string,
         apiName: PropTypes.string,
+        apiDisplayName: PropTypes.string,
         apiVersion: PropTypes.string,
         apiContext: PropTypes.string,
         apiUUID: PropTypes.string,

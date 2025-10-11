@@ -134,7 +134,19 @@ function TopMenu(props) {
     const {
         data, setListType, count, isAPIProduct, isMCPServer, listType, showToggle, query,
     } = props;
-      
+
+    const isAPIAccessRestricted = () => {
+        return isRestricted(['apim:api_create', 'apim:api_manage']);
+    };
+
+    const isAPIProductAccessRestricted = () => {
+        return isRestricted(['apim:api_publish', 'apim:api_manage']);
+    };
+
+    const isMCPServerAccessRestricted = () => {
+        return isRestricted(['apim:mcp_server_create', 'apim:mcp_server_manage']);
+    };
+
     if (count > 0) {
         return (
             <Root className={classes.root}>
@@ -193,7 +205,7 @@ function TopMenu(props) {
                             variant='contained'
                             color='primary'
                             component={Link}
-                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                            disabled={isAPIProductAccessRestricted()}
                             to='/api-products/create'
                             data-testid='itest-create-api-product-button'
                             startIcon={<AddIcon />}
@@ -209,7 +221,7 @@ function TopMenu(props) {
                             variant='contained'
                             color='primary'
                             component={Link}
-                            disabled={isRestricted(['apim:mcp_server_create', 'apim:mcp_server_manage'])}
+                            disabled={isMCPServerAccessRestricted()}
                             to='/mcp-servers/create'
                             data-testid='itest-create-mcp-server-button'
                             startIcon={<AddIcon />}
@@ -225,7 +237,7 @@ function TopMenu(props) {
                             variant='contained'
                             color='primary'
                             component={Link}
-                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                            disabled={isAPIAccessRestricted()}
                             to='/apis/create'
                             data-testid='itest-create-api-button'
                             startIcon={<AddIcon />}

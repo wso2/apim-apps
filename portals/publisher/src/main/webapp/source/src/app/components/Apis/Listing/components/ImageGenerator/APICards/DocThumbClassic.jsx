@@ -179,7 +179,7 @@ const DocThumbClassic = (props) => {
                             <div style={{ display: 'flex', flexDirection: 'column', flex: 0.65, overflow: 'hidden' }}>
                                 <Tooltip title={doc.apiName} arrow>
                                     <Typography variant='body1' noWrap>
-                                        {doc.apiName}
+                                        {doc.apiDisplayName || doc.apiName}
                                     </Typography>
                                 </Tooltip>
                                 <Typography variant='caption' component='p' color='text.disabled' lineHeight={1}>

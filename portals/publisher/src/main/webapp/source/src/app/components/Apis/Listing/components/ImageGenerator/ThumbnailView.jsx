@@ -13,6 +13,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone';
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import APIProduct from 'AppData/APIProduct';
 import MaterialIcons from 'MaterialIcons';
 import Alert from 'AppComponents/Shared/Alert';
@@ -321,11 +322,19 @@ class ThumbnailView extends Component {
         }));
     }
 
+    deleteThumbnail = (intl) => {
+        const { api } = this.props;
+        const fileObj = new File([], 'FileName.jpg', { type: 'application/json' });
+        this.uploadThumbnail('remove', api.id, fileObj, intl);
+    };
+
     /**
      * Add new thumbnail image to an API
      *
+     * @param {String} selectedTab selected tab
      * @param {String} apiId ID of the API to be updated
      * @param {File} file new thumbnail image file
+     * @param {Object} intl internationalization object
      */
     uploadThumbnail(selectedTab, apiId, file, intl) {
         this.setState({ uploading: true });
@@ -333,9 +342,14 @@ class ThumbnailView extends Component {
             api: { apiType, id },
             setImageUpdate,
         } = this.props;
-        const promisedThumbnail = apiType === Api.CONSTS.APIProduct
-            ? new APIProduct().addAPIProductThumbnail(id, file)
-            : new Api().addAPIThumbnail(id, file);
+        let promisedThumbnail;
+        if (apiType === Api.CONSTS.APIProduct) {
+            promisedThumbnail = new APIProduct().addAPIProductThumbnail(id, file);
+        } else if (apiType === MCPServer.CONSTS.MCP) {
+            promisedThumbnail = MCPServer.addThumbnail(id, file);
+        } else {
+            promisedThumbnail = new Api().addAPIThumbnail(id, file);
+        }
 
         promisedThumbnail
             .then(() => {
@@ -377,12 +391,6 @@ class ThumbnailView extends Component {
                 this.setState({ uploading: false });
             });
     }
-
-    deleteThumbnail = (intl) => {
-        const { api } = this.props;
-        const fileObj = new File([], 'FileName.jpg', { type: 'application/json' });
-        this.uploadThumbnail('remove', api.id, fileObj, intl);
-    };
 
     saveDisableEnable() {
         const {

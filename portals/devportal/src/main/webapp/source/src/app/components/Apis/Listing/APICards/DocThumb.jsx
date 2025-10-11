@@ -128,7 +128,7 @@ const DocThumb = ({ doc }) => {
 
     const theme = useTheme();
     const {
-        id, name, apiUUID, apiName, apiVersion, apiProvider, associatedType,
+        id, name, apiUUID, apiName, apiDisplayName, apiVersion, apiProvider, associatedType,
     } = doc;
     const detailsLink = getBasePath(associatedType) + apiUUID + '/documents/' + id + '/details';
 
@@ -191,7 +191,7 @@ const DocThumb = ({ doc }) => {
                             >
                                 <Tooltip title={apiName} arrow>
                                     <Typography variant='body1' noWrap>
-                                        {apiName}
+                                        {apiDisplayName || apiName}
                                     </Typography>
                                 </Tooltip>
                                 <Typography variant='caption' component='p' lineHeight={1}>
@@ -252,6 +252,7 @@ DocThumb.propTypes = {
         id: PropTypes.string,
         name: PropTypes.string,
         apiName: PropTypes.string,
+        apiDisplayName: PropTypes.string,
         apiVersion: PropTypes.string,
         apiUUID: PropTypes.string,
         apiProvider: PropTypes.string,

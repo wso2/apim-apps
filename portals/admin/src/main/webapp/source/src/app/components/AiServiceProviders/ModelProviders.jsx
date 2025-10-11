@@ -35,8 +35,27 @@ const ModelProviders = ({
     onModelsChange,
     hasErrors,
     validating,
+    providerName,
 }) => {
     const intl = useIntl();
+
+    /**
+     * Gets the appropriate placeholder text based on provider name
+     * @param {string} providerName - The name of the AI service provider
+     * @returns {object} Object with id and defaultMessage for intl.formatMessage
+     */
+    const getModelPlaceholder = () => {
+        if (providerName === 'AWSBedrock') {
+            return {
+                id: 'AiServiceProviders.ModelProviders.model.provider.models.placeholder.modelId',
+                defaultMessage: 'Type model ID and press Enter',
+            };
+        }
+        return {
+            id: 'AiServiceProviders.ModelProviders.model.provider.models.placeholder',
+            defaultMessage: 'Type model name and press Enter',
+        };
+    };
 
     /**
      * Handles adding a new model family.
@@ -143,10 +162,7 @@ const ModelProviders = ({
                                 });
                                 onModelsChange(updatedModels);
                             }}
-                            placeholder={intl.formatMessage({
-                                id: 'AiServiceProviders.ModelProviders.model.provider.models.placeholder',
-                                defaultMessage: 'Type Model name and press Enter',
-                            })}
+                            placeholder={intl.formatMessage(getModelPlaceholder())}
                             data-testid={`ai-vendor-llm-models-${index}`}
                         />
                     </Grid>
@@ -185,6 +201,7 @@ ModelProviders.propTypes = {
     onModelsChange: PropTypes.func.isRequired,
     hasErrors: PropTypes.func.isRequired,
     validating: PropTypes.bool.isRequired,
+    providerName: PropTypes.string.isRequired,
 };
 
 export default ModelProviders;

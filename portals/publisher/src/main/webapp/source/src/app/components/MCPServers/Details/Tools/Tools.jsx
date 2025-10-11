@@ -864,7 +864,8 @@ const Tools = ({
                         />
                     </Grid>
                 )}
-                {!isRestricted(['apim:mcp_server_create'], api) && !disableAddOperation && (
+                {!isRestricted(['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'], api) &&
+                !disableAddOperation && (
                     <Grid item md={12} xs={12}>
                         <AddTool
                             operationsDispatcher={operationsDispatcher}

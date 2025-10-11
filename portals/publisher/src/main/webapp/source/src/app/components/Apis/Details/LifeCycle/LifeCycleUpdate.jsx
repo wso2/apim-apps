@@ -531,6 +531,14 @@ class LifeCycleUpdate extends Component {
                     disabled: buttonDisabled,
                 };
             }
+            if (lifecycleState.event === 'Retire') {
+                const buttonDisabled = api.initiatedFromGateway ?? false;
+
+                return {
+                    ...lifecycleState,
+                    disabled: buttonDisabled,
+                };
+            }
             return {
                 ...lifecycleState,
                 disabled: false,

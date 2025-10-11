@@ -476,6 +476,25 @@ export default function AddEditAiServiceProvider(props) {
             },
         }));
     };
+
+    /**
+     * Gets the appropriate placeholder text based on provider name
+     * @param {string} providerName - The name of the AI service provider
+     * @returns {object} Object with id and defaultMessage for intl.formatMessage
+     */
+    const getModelPlaceholder = (providerName) => {
+        if (providerName === 'AzureOpenAI') {
+            return {
+                id: 'AiServiceProviders.AddEditAiServiceProvider.modelList.placeholder.deploymentId',
+                defaultMessage: 'Type deployment ID and press Enter',
+            };
+        }
+        return {
+            id: 'AiServiceProviders.AddEditAiServiceProvider.modelList.placeholder',
+            defaultMessage: 'Type model name and press Enter',
+        };
+    };
+
     /**
      * Handles changes to the API key identifier input.
      * Updates headerName or queryParameterName in authConfig.parameters.
@@ -735,6 +754,7 @@ export default function AddEditAiServiceProvider(props) {
                                             })}
                                             hasErrors={hasErrors}
                                             validating={validating}
+                                            providerName={state.name}
                                         />
                                     ) : (
                                         <MuiChipsInput
@@ -751,10 +771,7 @@ export default function AddEditAiServiceProvider(props) {
                                                 );
                                                 dispatch({ field: 'modelList', value: filteredModelList });
                                             }}
-                                            placeholder={intl.formatMessage({
-                                                id: 'AiServiceProviders.AddEditAiServiceProvider.modelList.placeholder',
-                                                defaultMessage: 'Type Model name and press Enter',
-                                            })}
+                                            placeholder={intl.formatMessage(getModelPlaceholder(state.name))}
                                             data-testid='ai-vendor-llm-model-list'
                                         />
                                     )}
