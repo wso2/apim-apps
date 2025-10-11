@@ -98,7 +98,7 @@ function ApisWithTag(props) {
 }
 
 ApisWithTag.propTypes = {
-    tag: PropTypes.shape({}).isRequired,
-    maxCount: PropTypes.shape({}).isRequired,
+    tag: PropTypes.string.isRequired,
+    maxCount: PropTypes.number.isRequired,
 };
 export default ApisWithTag;
