@@ -29,6 +29,7 @@ interface TabPanelProps {
     apiPolicyList: Policy[];
     selectedTab: number;
     fetchPolicies: () => void;
+    isReadOnly?: boolean;
 }
 
 /**
@@ -43,6 +44,7 @@ const TabPanel: FC<TabPanelProps> = ({
     apiPolicyList,
     selectedTab,
     fetchPolicies,
+    isReadOnly = false,
 }) => {
     const flowNames = ['request', 'response', 'fault'];
     const currentFlow = flowNames[index];
@@ -56,6 +58,7 @@ const TabPanel: FC<TabPanelProps> = ({
             apiPolicyList={apiPolicyList}
             fetchPolicies={fetchPolicies}
             DraggablePolicyCard={DraggablePolicyCard}
+            isReadOnly={isReadOnly}
         />
     );
 };
