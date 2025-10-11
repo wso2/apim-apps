@@ -33,8 +33,8 @@ module.exports = defineConfig({
       return require('./cypress/plugins/index.js')(on, config)
     },
     excludeSpecPattern: [
-      '**/externalDevPortals/**.spec.js',
-      '**/06-solace-broker-integration.spec.js',
+      '**/externalDevPortals/**.cy.js',
+      '**/06-solace-broker-integration.cy.js',
       '**/*.cy.skip.js',
     ],
     baseUrl: 'https://localhost:9443',
