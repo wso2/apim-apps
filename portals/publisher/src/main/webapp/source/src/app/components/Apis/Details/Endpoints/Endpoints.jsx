@@ -198,6 +198,12 @@ function Endpoints(props) {
                     }
                     return { ...initState, endpointConfig: config, endpointImplementationType: 'ENDPOINT' };
                 }
+                if (endpointType === 'INLINE') {
+                    api.generateMockScripts(api.id).then((res) => {
+                        setSwagger(res.obj);
+                    });
+                    return { ...initState, endpointConfig: config, endpointImplementationType: 'INLINE' };
+                }
                 return { ...initState, endpointConfig: config };
             }
             case 'endpointSecurity': { // set endpoint security
