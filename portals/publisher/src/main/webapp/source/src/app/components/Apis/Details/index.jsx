@@ -127,7 +127,7 @@ const StyledBox = styled(Box)((
     },
 
     [`& .${classes.contentInside}`]: {
-        width: 'calc(100% - 56px)',
+        width: '100%',
         paddingLeft: theme.spacing(3),
         paddingRight: theme.spacing(3),
         paddingTop: theme.spacing(2),
