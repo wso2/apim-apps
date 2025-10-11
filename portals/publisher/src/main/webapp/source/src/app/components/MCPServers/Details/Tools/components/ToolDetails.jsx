@@ -29,12 +29,11 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import LockIcon from '@mui/icons-material//Lock';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 import { FormattedMessage } from 'react-intl';
 import OperationGovernance
     from 'AppComponents/Apis/Details/Resources/components/operationComponents/OperationGovernance';
+import SecurityIcon from 'AppComponents/Apis/Details/Resources/components/operationComponents/SecurityIcon';
 import ToolDetailsSection from './ToolDetailsSection';
 
 const PREFIX = 'ToolDetails';
@@ -403,36 +402,10 @@ function ToolDetails(props) {
                                         </div>
                                     </Tooltip>
                                 )}
-                                <Tooltip
-                                    title={
-                                        (operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
-                                            ? (
-                                                <FormattedMessage
-                                                    id={'Apis.Details.Resources.components.Operation.disable.security'
-                                                        + '.when.used.in.api.products'}
-                                                    defaultMessage='Security enabled'
-                                                />
-                                            )
-                                            : (
-                                                <FormattedMessage
-                                                    id='Apis.Details.Resources.components.enabled.security'
-                                                    defaultMessage='No security'
-                                                />
-                                            )
-                                    }
-                                    aria-label={(
-                                        <FormattedMessage
-                                            id='Apis.Details.Resources.components.Operation.security.operation'
-                                            defaultMessage='Security '
-                                        />
-                                    )}
-                                >
-                                    <IconButton aria-label='Security' size='large'>
-                                        {(operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
-                                            ? <LockIcon fontSize='small' />
-                                            : <LockOpenIcon fontSize='small' />}
-                                    </IconButton>
-                                </Tooltip>
+                                <SecurityIcon 
+                                    operation={operation} 
+                                    componentValidator={componentValidator} 
+                                />
                             </Box>
                         </Grid>
                     </Grid>
