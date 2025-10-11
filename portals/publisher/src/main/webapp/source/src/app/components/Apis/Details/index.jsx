@@ -1356,18 +1356,22 @@ class Details extends Component {
                                         path={Details.subPaths.MONETIZATION_PRODUCT}
                                         render={(props) => <Monetization {...props} api={api} />}
                                     />
-                                    <Route
-                                        path={Details.subPaths.TRYOUT}
-                                        render={(props) => <TryOutConsole {...props} apiObj={api} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.TRYOUT_PRODUCT}
-                                        render={(props) => <TryOutConsole {...props} apiObj={api} />}
-                                    />
-                                    <Route
-                                        path={Details.subPaths.MCP_PLAYGROUND}
-                                        render={(props) => <TryOutConsole {...props} apiObj={api} />}
-                                    />
+                                    {!readOnlyUser && (
+                                        <>
+                                            <Route
+                                                path={Details.subPaths.TRYOUT}
+                                                render={(props) => <TryOutConsole {...props} apiObj={api} />}
+                                            />
+                                            <Route
+                                                path={Details.subPaths.TRYOUT_PRODUCT}
+                                                render={(props) => <TryOutConsole {...props} apiObj={api} />}
+                                            />
+                                            <Route
+                                                path={Details.subPaths.MCP_PLAYGROUND}
+                                                render={(props) => <TryOutConsole {...props} apiObj={api} />}
+                                            />
+                                        </>
+                                    )}
                                     <Route path={Details.subPaths.EXTERNAL_STORES}
                                         component={ExternalStores} />
                                     <Route
