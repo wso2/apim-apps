@@ -394,10 +394,11 @@ function ToolDetails(props) {
                                     >
                                         <div>
                                             <IconButton
-                                                disabled={Boolean(isUsedInAPIProduct) || disableUpdate}
+                                                disabled={Boolean(isUsedInAPIProduct) || disableUpdate || disableDelete}
                                                 onClick={toggleDelete}
                                                 aria-label='delete operation'
-                                                size='large'>
+                                                size='large'
+                                            >
                                                 <DeleteIcon fontSize='small' />
                                             </IconButton>
                                         </div>

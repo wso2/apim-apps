@@ -37,15 +37,24 @@ import { ALL_AUDIENCES_ALLOWED } from './APISecurity/components/apiSecurityConst
 export default function Audience(props) {
     const {
         configDispatcher,
-        api: { audiences },
         api,
     } = props;
+    const { audiences } = api;
     const [isAudValidationEnabled, setAudValidationEnabled] = useState(audiences !== null && audiences.length !== 0 &&
         !(audiences.includes(ALL_AUDIENCES_ALLOWED)));
     const [audienceValues, setAudienceValues] = useState(Array.isArray(audiences) ?
         audiences.filter(value => value !== ALL_AUDIENCES_ALLOWED) : []);
-    
-    const isAccessRestricted = () => isRestricted(['apim:api_publish', 'apim:api_create'], api);
+
+    const getAllowedScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish', 'apim:mcp_server_manage'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish', 'apim:api_manage'];
+        }
+    }
+
+    const isAccessRestricted = () => isRestricted(getAllowedScopes(), api);
+
     return (
         <>
             <Grid sx={() => ({ marginBottom: 2, })}>

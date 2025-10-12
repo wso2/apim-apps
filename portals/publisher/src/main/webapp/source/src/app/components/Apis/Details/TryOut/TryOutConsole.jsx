@@ -51,7 +51,6 @@ import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { isRestricted } from 'AppData/AuthManager';
 import SecurityDetailsPanel from './SecurityDetailsPanel';
 
 const PREFIX = 'TryOutConsole';
@@ -91,7 +90,6 @@ const Root = styled('div')((
 
     [`& .${classes.mcpPlaygroundWrapper}`]: {
         fontFamily: theme.typography.fontFamily,
-        marginTop: theme.spacing(-2),
         '& *': {
             fontFamily: theme.typography.fontFamily,
         },
@@ -165,15 +163,6 @@ const TryOutConsole = () => {
         getDeployments: { inProgress: false, completed: false, error: false },
     });
 
-    const getCreateOrPublishScopes = () => {
-        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
-            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
-        } else {
-            return ['apim:api_create', 'apim:api_publish'];
-        }
-    };
-    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), api);
-
     const generateInternalKey = useCallback(() => {
         tasksStatusDispatcher({ type: 'GENERATE_KEY_START' });
         let generateInternalKeyPromise;
@@ -191,15 +180,7 @@ const TryOutConsole = () => {
             .catch((error) => tasksStatusDispatcher({ type: 'GENERATE_KEY_ERROR', error }))
     }, [api.id]);
 
-    useEffect(() => {
-        // Only auto-generate API Key if user has permission
-        if (!isCreateOrPublishRestricted()) {
-            generateInternalKey();
-        } else {
-            // Mark as completed to avoid infinite loading for read-only users
-            tasksStatusDispatcher({ type: 'GENERATE_KEY_SUCCESS' });
-        }
-    }, []); // Auto generate API Key on page load
+    useEffect(generateInternalKey, []); // Auto generate API Key on page load
     useEffect(() => {
         tasksStatusDispatcher({ type: 'GET_DEPLOYMENTS_START' });
         if (publisherSettings) {

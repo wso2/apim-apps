@@ -722,9 +722,9 @@ export default function DesignConfigurations() {
 
     const isAccessRestricted = () => {
         if (api.apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
-            return isRestricted(['apim:mcp_server_publish', 'apim:mcp_server_create'], api);
+            return isRestricted(['apim:mcp_server_publish', 'apim:mcp_server_create', 'apim:mcp_server_manage'], api);
         } else {
-            return isRestricted(['apim:api_publish', 'apim:api_create'], api);
+            return isRestricted(['apim:api_publish', 'apim:api_create', 'apim:api_manage'], api);
         }
     }
 

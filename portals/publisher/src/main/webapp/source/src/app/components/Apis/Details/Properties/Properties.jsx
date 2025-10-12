@@ -49,7 +49,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import Alert from 'AppComponents/Shared/Alert';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import Progress from 'AppComponents/Shared/Progress';
-import { getBasePath } from 'AppComponents/Shared/Utils';
+import { getBasePath, getTypeToDisplay } from 'AppComponents/Shared/Utils';
 import EditableRow from './EditableRow';
 
 const PREFIX = 'Properties';
@@ -1156,7 +1156,10 @@ function Properties(props) {
                                             <FormattedMessage
                                                 id='Apis.Details.Properties.Properties.update.not.allowed'
                                                 defaultMessage='*You are not authorized to update properties of
-                                                    the API due to insufficient permissions'
+                                                    the {type} due to insufficient permissions'
+                                                values={{
+                                                    type: getTypeToDisplay(api.apiType)
+                                                }}
                                             />
                                         </Typography>
                                     </Grid>

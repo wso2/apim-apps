@@ -29,6 +29,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import Alert from 'AppComponents/Shared/Alert';
 import APIProduct from 'AppData/APIProduct';
+import { getTypeToDisplay } from 'AppComponents/Shared/Utils';
 import LifeCycleUpdate from './LifeCycleUpdate';
 import LifeCycleHistory from './LifeCycleHistory';
 import { API_SECURITY_KEY_TYPE_PRODUCTION, API_SECURITY_KEY_TYPE_SANDBOX }
@@ -262,9 +263,12 @@ class LifeCycle extends Component {
                             <FormattedMessage
                                 id='Apis.Details.LifeCycle.LifeCycle.change.not.allowed'
                                 defaultMessage={
-                                    '* You are not authorized to change the life cycle state of the API'
+                                    '* You are not authorized to change the life cycle state of the {type}'
                                     + ' due to insufficient permissions'
                                 }
+                                values={{
+                                    type: getTypeToDisplay(api.apiType)
+                                }}
                             />
                         </Typography>
                     </Grid>
