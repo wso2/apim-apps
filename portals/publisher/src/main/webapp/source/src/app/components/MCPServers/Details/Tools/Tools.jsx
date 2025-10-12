@@ -830,6 +830,14 @@ const Tools = ({
         }
     }, [api.id, api.throttlingPolicy]);
 
+    const getAllowedScopes = () => {
+        if (api.isMCPServer()) {
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
+        } else {
+            return ['apim:api_create', 'apim:api_manage', 'apim:api_publish'];
+        }
+    };
+
     if (!pageError && (isEmpty(operations) && availableOperations.length === 0)) {
         return (
             <Grid container direction='row' justifyContent='center' alignItems='center'>
@@ -905,7 +913,7 @@ const Tools = ({
                                             operation={operation}
                                             operationsDispatcher={operationsDispatcher}
                                             api={localAPI}
-                                            disableUpdate={disableUpdate}
+                                            disableUpdate={disableUpdate || isRestricted(getAllowedScopes(), api)}
                                             markedOperations={markedOperations}
                                             onMarkAsDelete={onMarkAsDelete}
                                             markAsDelete={Boolean(markedOperations[target])}

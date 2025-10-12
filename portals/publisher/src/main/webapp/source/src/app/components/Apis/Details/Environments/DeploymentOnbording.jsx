@@ -152,14 +152,14 @@ export default function DeploymentOnboarding(props) {
     const { maxCommentLength } = theme.custom;
     const { settings: { environment: environments, gatewayTypes } } = useAppContext();
 
-    const getCreateOrPublishScopes = () => {
+    const getDeployAllowedScopes = () => {
         if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
-            return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
+            return ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'];
         } else {
-            return ['apim:api_create', 'apim:api_publish'];
+            return ['apim:api_create', 'apim:api_manage', 'apim:api_publish'];
         }
     };
-    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), api);
+    const isDeployRestricted = () => isRestricted(getDeployAllowedScopes(), api);
 
     const [internalGateways, setInternalGateways] = useState([]);
     const [externalGateways, setExternalGateways] = useState([]);
@@ -555,6 +555,7 @@ export default function DeploymentOnboarding(props) {
                                             startIcon={<AddIcon />}
                                             onClick={handleDescriptionOpen}
                                             id='add-description-btn'
+                                            disabled={isDeployRestricted()}
                                         >
                                             <FormattedMessage
                                                 id='Apis.Details.Environments.Environments.revision.description.add'
@@ -610,7 +611,7 @@ export default function DeploymentOnboarding(props) {
                                             }
                                             color='primary'
                                             disabled={selectedEnvironment.length === 0
-                                                || isCreateOrPublishRestricted()
+                                                || isDeployRestricted()
                                                 || (advertiseInfo && advertiseInfo.advertised)
                                                 || api.gatewayType === 'solace'
                                                 || isDeployButtonDisabled}
@@ -654,7 +655,7 @@ export default function DeploymentOnboarding(props) {
                                                                     value={row.name}
                                                                     checked=
                                                                         {selectedExternalGateway.includes(row.name)}
-                                                                    disabled={isCreateOrPublishRestricted()}
+                                                                    disabled={isDeployRestricted()}
                                                                     onChange={handleChange}
                                                                     color='primary'
                                                                     icon={<RadioButtonUncheckedIcon />}
@@ -742,6 +743,7 @@ export default function DeploymentOnboarding(props) {
                                             display='inline'
                                             startIcon={<AddIcon />}
                                             onClick={handleDescriptionOpen}
+                                            disabled={isDeployRestricted()}
                                         >
                                             Add a description
                                         </Button>
@@ -756,7 +758,7 @@ export default function DeploymentOnboarding(props) {
                                                     name='description'
                                                     margin='dense'
                                                     variant='outlined'
-                                                    disabled={isCreateOrPublishRestricted()}
+                                                    disabled={isDeployRestricted()}
                                                     label='Description'
                                                     inputProps={{ maxLength: maxCommentLength }}
                                                     helperText={(
@@ -785,7 +787,7 @@ export default function DeploymentOnboarding(props) {
                                             }
                                             color='primary'
                                             disabled={selectedExternalGateway.length === 0
-                                                || isCreateOrPublishRestricted()
+                                                || isDeployRestricted()
                                                 || isDeployButtonDisabled || isDeploying}
                                         >
                                             <FormattedMessage
