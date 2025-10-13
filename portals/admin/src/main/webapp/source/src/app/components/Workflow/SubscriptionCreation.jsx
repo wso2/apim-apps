@@ -322,6 +322,7 @@ function ListLabels() {
                         </div>
                     );
                 },
+                setCellProps: () => ({ style: { width: { xs: '100%', sm: '25%' } } }),
             },
         },
     ];
