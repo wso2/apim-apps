@@ -280,7 +280,7 @@ function ListLabels() {
                             <Box
                                 sx={{
                                     display: 'flex',
-                                    flexDirection: 'row',
+                                    flexDirection: { xs: 'column', sm: 'row' },
                                     gap: 1,
                                     justifyContent: 'flex-start',
                                     alignItems: 'center',
