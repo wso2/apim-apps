@@ -16,6 +16,7 @@
  * under the License.
  */
 
+import React from 'react';
 import PropTypes from 'prop-types';
 import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
