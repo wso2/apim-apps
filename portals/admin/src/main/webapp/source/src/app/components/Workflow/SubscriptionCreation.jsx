@@ -218,6 +218,7 @@ function ListLabels() {
             options: {
                 sort: false,
                 filter: true,
+                setCellProps: () => ({ style: { width: { xs: '100%', sm: '25%' } } }),
             },
         },
         {
@@ -229,6 +230,7 @@ function ListLabels() {
             options: {
                 sort: false,
                 filter: true,
+                setCellProps: () => ({ style: { width: { xs: '100%', sm: '25%' } } }),
             },
         },
         {
@@ -259,6 +261,7 @@ function ListLabels() {
                         </div>
                     );
                 },
+                setCellProps: () => ({ style: { width: { xs: '100%', sm: '25%' } } }),
             },
         },
         {
@@ -274,13 +277,23 @@ function ListLabels() {
                     const { referenceId } = dataRow;
                     return (
                         <div>
-                            <Box component='span' m={1}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    gap: 1,
+                                    justifyContent: 'flex-start',
+                                    alignItems: 'center',
+                                    width: '100%',
+                                }}
+                            >
                                 <Button
                                     color='success'
                                     variant='contained'
                                     size='small'
                                     onClick={() => updateStatus(referenceId, 'APPROVED')}
                                     disabled={isUpdating}
+                                    sx={{ flex: 1 }}
                                 >
                                     <CheckIcon />
                                     <FormattedMessage
@@ -296,6 +309,7 @@ function ListLabels() {
                                     size='small'
                                     onClick={() => updateStatus(referenceId, 'REJECTED')}
                                     disabled={isUpdating}
+                                    sx={{ flex: 1 }}
                                 >
                                     <ClearIcon />
                                     <FormattedMessage
@@ -344,7 +358,8 @@ function ListLabels() {
         download: false,
         viewColumns: false,
         customToolbar: null,
-        responsive: 'vertical',
+        responsive: 'standard',
+        setTableProps: () => ({ style: { tableLayout: 'fixed' } }),
         searchText,
         textLabels: {
             body: {
