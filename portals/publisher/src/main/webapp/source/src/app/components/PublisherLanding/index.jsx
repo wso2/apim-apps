@@ -260,16 +260,22 @@ const PublisherLanding = () => {
     const handleApiDelete = useCallback((deletedId) => {
         // Remove the deleted API from the current list
         setApis((prevApis) => prevApis.filter((api) => api.id !== deletedId));
+        // Decrement the total count
+        setApisTotalCount((prevCount) => prevCount - 1);
     }, []);
 
     const handleApiProductDelete = useCallback((deletedId) => {
         // Remove the deleted API Product from the current list
         setApiProducts((prevProducts) => prevProducts.filter((product) => product.id !== deletedId));
+        // Decrement the total count
+        setApiProductsTotalCount((prevCount) => prevCount - 1);
     }, []);
 
     const handleMcpServerDelete = useCallback((deletedId) => {
         // Remove the deleted MCP Server from the current list
         setMcpServers((prevServers) => prevServers.filter((server) => server.id !== deletedId));
+        // Decrement the total count
+        setMcpServersTotalCount((prevCount) => prevCount - 1);
     }, []);
 
     // Check if we have any data to display
