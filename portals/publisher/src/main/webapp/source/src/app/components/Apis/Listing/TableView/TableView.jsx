@@ -337,7 +337,7 @@ class TableView extends React.Component {
         // Fetch fresh list data without overwriting the decremented count
         setTimeout(() => {
             this.getDataListOnly(rowsPerPage, newPage);
-        }, 500);
+        }, 1000);
     }
 
     /**
