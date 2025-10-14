@@ -291,6 +291,35 @@ class TableView extends React.Component {
     };
 
     /**
+     * Fetch list data without updating the total count (used after deletion)
+     * @param {number} rowsPerPage Number of rows per page
+     * @param {number} page Current page number
+     * @returns {Promise} Promise that resolves when data is fetched
+     * @memberof Listing
+     */
+    getDataListOnly = (rowsPerPage, page) => {
+        const { intl } = this.props;
+        this.setState({ loading: true });
+        return this.xhrRequest(rowsPerPage, page).then((data) => {
+            const { body } = data;
+            const { list } = body;
+            this.setState({
+                apisAndApiProducts: list,
+                notFound: false,
+                rowsPerPage,
+                page,
+            });
+        }).catch(() => {
+            Alert.error(intl.formatMessage({
+                defaultMessage: 'Error While Loading APIs',
+                id: 'Apis.Listing.TableView.TableView.error.loading',
+            }));
+        }).finally(() => {
+            this.setState({ loading: false });
+        });
+    };
+
+    /**
      *
      * Update APIs list if an API get deleted in card or table view
      * @param {String} apiUUID UUID(ID) of the deleted API
@@ -298,11 +327,17 @@ class TableView extends React.Component {
      */
     updateData() {
         const { rowsPerPage, page, totalCount } = this.state;
+        // Immediately decrement the total count for instant UI feedback
+        this.setState({ totalCount: Math.max(0, totalCount - 1) });
+
         let newPage = page;
         if (totalCount - 1 === rowsPerPage * page && page !== 0) {
             newPage = page - 1;
         }
-        this.getData(rowsPerPage, newPage);
+        // Fetch fresh list data without overwriting the decremented count
+        setTimeout(() => {
+            this.getDataListOnly(rowsPerPage, newPage);
+        }, 1000);
     }
 
     /**
