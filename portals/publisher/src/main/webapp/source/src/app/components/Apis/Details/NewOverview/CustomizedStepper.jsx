@@ -353,7 +353,7 @@ export default function CustomizedStepper() {
 
         fetchRevisionsAndValidateProperties();
         validateMandatoryCustomProperties();
-    }, [isMCPServer]);
+    }, [isMCPServer, api.id]);
 
 
     /**
