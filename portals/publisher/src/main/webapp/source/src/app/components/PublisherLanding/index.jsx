@@ -271,9 +271,12 @@ const PublisherLanding = () => {
 
     const fetchApiProductsListOnly = useCallback(async () => {
         try {
+            console.log('fetchApiProductsListOnly: Starting to fetch API Products...');
             const response = await APIProduct.all({ limit: pageSize, offset: 0 });
             if (response.body) {
-                setApiProducts(response.body.list || []);
+                const newList = response.body.list || [];
+                console.log('fetchApiProductsListOnly: Fetched', newList.length, 'API Products');
+                setApiProducts(newList);
             }
         } catch (err) {
             // eslint-disable-next-line no-console
@@ -283,13 +286,17 @@ const PublisherLanding = () => {
 
     const fetchMcpServersListOnly = useCallback(async () => {
         if (!isMCPSupportEnabled) {
+            console.log('fetchMcpServersListOnly: MCP Support not enabled, clearing servers');
             setMcpServers([]);
             return;
         }
         try {
+            console.log('fetchMcpServersListOnly: Starting to fetch MCP Servers...');
             const response = await MCPServer.all({ limit: pageSize, offset: 0 });
             if (response.body) {
-                setMcpServers(response.body.list || []);
+                const newList = response.body.list || [];
+                console.log('fetchMcpServersListOnly: Fetched', newList.length, 'MCP Servers');
+                setMcpServers(newList);
             }
         } catch (err) {
             // eslint-disable-next-line no-console
@@ -307,54 +314,56 @@ const PublisherLanding = () => {
 
         setApisTotalCount((prevCount) => {
             const newCount = Math.max(0, prevCount - 1);
-            // Fetch new data to fill the gap if there are more items available on server
-            // If newCount > pageSize, there are definitely more items to fetch
-            if (newCount >= pageSize) {
-                setTimeout(() => {
-                    fetchApisListOnly();
-                }, 500);
-            }
+            // Always fetch new data after deletion to ensure we display the maximum number of APIs
+            // This prevents the scenario where we show only 4 APIs when there are more than 5 in the system
+            setTimeout(() => {
+                fetchApisListOnly();
+            }, 1000);
             return newCount;
         });
-    }, [fetchApisListOnly, pageSize]);
+    }, [fetchApisListOnly]);
 
     const handleApiProductDelete = useCallback((deletedId) => {
+        console.log('handleApiProductDelete called with ID:', deletedId);
         // Remove the deleted API Product from the current list
         setApiProducts((prevProducts) => {
             const filtered = prevProducts.filter((product) => product.id !== deletedId);
+            console.log('API Products after filtering:', filtered.length);
             return filtered;
         });
 
         setApiProductsTotalCount((prevCount) => {
             const newCount = Math.max(0, prevCount - 1);
-            // Fetch new data to fill the gap if there are more items available on server
-            if (newCount >= pageSize) {
-                setTimeout(() => {
-                    fetchApiProductsListOnly();
-                }, 500);
-            }
+            console.log('API Products total count updated to:', newCount);
+            // Always fetch new data after deletion to ensure we display the maximum number of API Products
+            setTimeout(() => {
+                console.log('Fetching API Products list after deletion...');
+                fetchApiProductsListOnly();
+            }, 1000);
             return newCount;
         });
-    }, [fetchApiProductsListOnly, pageSize]);
+    }, [fetchApiProductsListOnly]);
 
     const handleMcpServerDelete = useCallback((deletedId) => {
+        console.log('handleMcpServerDelete called with ID:', deletedId);
         // Remove the deleted MCP Server from the current list
         setMcpServers((prevServers) => {
             const filtered = prevServers.filter((server) => server.id !== deletedId);
+            console.log('MCP Servers after filtering:', filtered.length);
             return filtered;
         });
 
         setMcpServersTotalCount((prevCount) => {
             const newCount = Math.max(0, prevCount - 1);
-            // Fetch new data to fill the gap if there are more items available on server
-            if (newCount >= pageSize) {
-                setTimeout(() => {
-                    fetchMcpServersListOnly();
-                }, 500);
-            }
+            console.log('MCP Servers total count updated to:', newCount);
+            // Always fetch new data after deletion to ensure we display the maximum number of MCP Servers
+            setTimeout(() => {
+                console.log('Fetching MCP Servers list after deletion...');
+                fetchMcpServersListOnly();
+            }, 1000);
             return newCount;
         });
-    }, [fetchMcpServersListOnly, pageSize]);
+    }, [fetchMcpServersListOnly]);
 
     // Check if we have any data to display
     const hasData = apisTotalCount > 0 || apiProductsTotalCount > 0 || mcpServersTotalCount > 0;
