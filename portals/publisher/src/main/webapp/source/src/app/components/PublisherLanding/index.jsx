@@ -313,7 +313,7 @@ const PublisherLanding = () => {
             // This prevents the scenario where we show only 4 APIs when there are more than 5 in the system
             setTimeout(() => {
                 fetchApisListOnly();
-            }, 1000);
+            }, 500);
             return newCount;
         });
     }, [fetchApisListOnly]);
@@ -330,7 +330,7 @@ const PublisherLanding = () => {
             // Always fetch new data after deletion to ensure we display the maximum number of API Products
             setTimeout(() => {
                 fetchApiProductsListOnly();
-            }, 1000);
+            }, 500);
             return newCount;
         });
     }, [fetchApiProductsListOnly]);
@@ -347,7 +347,7 @@ const PublisherLanding = () => {
             // Always fetch new data after deletion to ensure we display the maximum number of MCP Servers
             setTimeout(() => {
                 fetchMcpServersListOnly();
-            }, 1000);
+            }, 500);
             return newCount;
         });
     }, [fetchMcpServersListOnly]);
