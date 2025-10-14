@@ -24,6 +24,7 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Icon from '@mui/material/Icon';
 import Button from '@mui/material/Button';
+import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -48,7 +49,7 @@ const classes = {
     root: `${PREFIX}-root`,
     titleWrapper: `${PREFIX}-titleWrapper`,
     titleLink: `${PREFIX}-titleLink`,
-    button: `${PREFIX}-button`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
     displayURL: `${PREFIX}-displayURL`,
     displayURLLink: `${PREFIX}-displayURLLink`,
     paper: `${PREFIX}-paper`,
@@ -77,15 +78,11 @@ const Root = styled('div')((
         color: theme.palette.primary.main,
     },
 
-    [`& .${classes.button}`]: {
-        padding: theme.spacing(2),
-        marginTop: theme.spacing(2),
+    [`& .${classes.buttonIcon}`]: {
+        marginRight: 10,
     },
 
     [`& .${classes.displayURL}`]: {
-        padding: theme.spacing(2),
-        marginTop: theme.spacing(2),
-        background: theme.palette.grey[200],
         color: theme.palette.getContrastText(theme.palette.grey[200]),
         display: 'flex',
     },
@@ -290,64 +287,90 @@ function View(props) {
                                     <Typography variant='body1'>{doc.sourceType}</Typography>{' '}
                                 </TableCell>
                             </TableRow>
+                            {doc.sourceType === 'FILE' && (
+                                <TableRow>
+                                    <TableCell>
+                                        <Typography variant='body1'>
+                                            <FormattedMessage
+                                                id='Apis.Details.Documents.View.meta.download'
+                                                defaultMessage='Download'
+                                            />
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Button
+                                            size='small'
+                                            onClick={handleDownload}
+                                            disabled={!isFileAvailable}
+                                            id='download-definition-btn'
+                                        >
+                                            <CloudDownloadRounded className={classes.buttonIcon} />
+                                            <FormattedMessage
+                                                id='Apis.Details.Documents.View.meta.download.file'
+                                                defaultMessage='Download File'
+                                            />
+                                        </Button>
+
+                                    </TableCell>
+                                </TableRow>)}
+                            {doc.sourceType === 'URL' && (
+                                <TableRow>
+                                    <TableCell>
+                                        <Typography variant='body1'>
+                                            <FormattedMessage
+                                                id='Apis.Details.Documents.View.meta.link'
+                                                defaultMessage='Link'
+                                            />
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <a className={classes.displayURL} href={doc.sourceUrl} target='_blank' 
+                                            rel='noreferrer'>
+                                            {doc.sourceUrl}
+                                            <Icon className={classes.displayURLLink}>open_in_new</Icon>
+                                        </a>
+                                    </TableCell>
+                                </TableRow>)}
                         </TableBody>
                     </Table>
                 </Paper>
 
-                <Paper className={classes.paper}>
-                    {doc.sourceType === 'MARKDOWN' && (
-                        <div className='markdown-content-wrapper'>
-                            <Suspense fallback={<CircularProgress />}>
-                                <ReactMarkdown
-                                    skipHtml
-                                    children={code}
-                                    remarkPlugins={[remarkGfm]}
-                                    components={{
-                                        code({
-                                            node, inline, className, children, ...propsInner
-                                        }) {
-                                            const match = /language-(\w+)/.exec(className || '');
-                                            return !inline && match ? (
-                                                <SyntaxHighlighter
-                                                    children={String(children).replace(/\n$/, '')}
-                                                    style={syntaxHighlighterDarkTheme ? vscDarkPlus : vs}
-                                                    language={match[1]}
-                                                    PreTag='div'
-                                                    {...propsInner}
-                                                />
-                                            ) : (
-                                                <code className={className} {...propsInner}>
-                                                    {children}
-                                                </code>
-                                            );
-                                        },
-                                    }}
-                                />
-                            </Suspense>
-                        </div>
-                    )}
-                    {doc.sourceType === 'INLINE' && <HTMLRender html={code} />}
-                    {doc.sourceType === 'URL' && (
-                        <a className={classes.displayURL} href={doc.sourceUrl} target='_blank' rel='noreferrer'>
-                            {doc.sourceUrl}
-                            <Icon className={classes.displayURLLink}>open_in_new</Icon>
-                        </a>
-                    )}
-                    {doc.sourceType === 'FILE' && (
-                        <Button
-                            variant='contained'
-                            className={classes.button}
-                            onClick={handleDownload}
-                            disabled={!isFileAvailable}>
-                            <FormattedMessage
-                                id='Apis.Details.Documents.View.btn.download'
-                                defaultMessage='Download'
-                            />
-
-                            <Icon>arrow_downward</Icon>
-                        </Button>
-                    )}
-                </Paper>
+                {doc.sourceType !== 'FILE' && doc.sourceType !== 'URL'&& (
+                    <Paper className={classes.paper}>
+                        {doc.sourceType === 'MARKDOWN' && (
+                            <div className='markdown-content-wrapper'>
+                                <Suspense fallback={<CircularProgress />}>
+                                    <ReactMarkdown
+                                        skipHtml
+                                        children={code}
+                                        remarkPlugins={[remarkGfm]}
+                                        components={{
+                                            code({
+                                                node, inline, className, children, ...propsInner
+                                            }) {
+                                                const match = /language-(\w+)/.exec(className || '');
+                                                return !inline && match ? (
+                                                    <SyntaxHighlighter
+                                                        children={String(children).replace(/\n$/, '')}
+                                                        style={syntaxHighlighterDarkTheme ? vscDarkPlus : vs}
+                                                        language={match[1]}
+                                                        PreTag='div'
+                                                        {...propsInner}
+                                                    />
+                                                ) : (
+                                                    <code className={className} {...propsInner}>
+                                                        {children}
+                                                    </code>
+                                                );
+                                            },
+                                        }}
+                                    />
+                                </Suspense>
+                            </div>
+                        )}
+                        {doc.sourceType === 'INLINE' && <HTMLRender html={code} />}
+                    </Paper>
+                )}
             </div>
         </Root>
     );
