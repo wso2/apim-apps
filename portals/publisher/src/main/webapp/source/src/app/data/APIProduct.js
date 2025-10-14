@@ -512,8 +512,8 @@ class APIProduct extends Resource {
 
     /**
      * Get the file content of a given API Product document
-     * @param {*} apiProductId
-     * @param {*} docId
+     * @param {String} apiProductId API product ID
+     * @param {String} docId document ID
      */
     getFileForDocument(apiProductId, docId) {
         const promisedGetDocContent = this.client.then((client) => {

@@ -83,9 +83,6 @@ const Root = styled('div')((
     },
 
     [`& .${classes.displayURL}`]: {
-        padding: theme.spacing(2),
-        marginTop: theme.spacing(2),
-        background: theme.palette.grey[200],
         color: theme.palette.getContrastText(theme.palette.grey[200]),
         display: 'flex',
     },
@@ -309,18 +306,36 @@ function View(props) {
                                         >
                                             <CloudDownloadRounded className={classes.buttonIcon} />
                                             <FormattedMessage
-                                                id='Apis.Details.APIDefinition.APIDefinition.download.definition'
+                                                id='Apis.Details.Documents.View.meta.download.file'
                                                 defaultMessage='Download File'
                                             />
                                         </Button>
 
                                     </TableCell>
                                 </TableRow>)}
+                            {doc.sourceType === 'URL' && (
+                                <TableRow>
+                                    <TableCell>
+                                        <Typography variant='body1'>
+                                            <FormattedMessage
+                                                id='Apis.Details.Documents.View.meta.link'
+                                                defaultMessage='Link'
+                                            />
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <a className={classes.displayURL} href={doc.sourceUrl} target='_blank' 
+                                            rel='noreferrer'>
+                                            {doc.sourceUrl}
+                                            <Icon className={classes.displayURLLink}>open_in_new</Icon>
+                                        </a>
+                                    </TableCell>
+                                </TableRow>)}
                         </TableBody>
                     </Table>
                 </Paper>
 
-                {doc.sourceType !== 'FILE' && (
+                {doc.sourceType !== 'FILE' && doc.sourceType !== 'URL'&& (
                     <Paper className={classes.paper}>
                         {doc.sourceType === 'MARKDOWN' && (
                             <div className='markdown-content-wrapper'>
@@ -354,12 +369,6 @@ function View(props) {
                             </div>
                         )}
                         {doc.sourceType === 'INLINE' && <HTMLRender html={code} />}
-                        {doc.sourceType === 'URL' && (
-                            <a className={classes.displayURL} href={doc.sourceUrl} target='_blank' rel='noreferrer'>
-                                {doc.sourceUrl}
-                                <Icon className={classes.displayURLLink}>open_in_new</Icon>
-                            </a>
-                        )}
                     </Paper>
                 )}
             </div>
