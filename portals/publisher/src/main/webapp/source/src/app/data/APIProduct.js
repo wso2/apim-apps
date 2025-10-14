@@ -511,6 +511,28 @@ class APIProduct extends Resource {
     }
 
     /**
+     * Get the file content of a given API Product document
+     * @param {*} apiProductId
+     * @param {*} docId
+     */
+    getFileForDocument(apiProductId, docId) {
+        const promisedGetDocContent = this.client.then((client) => {
+            const payload = {
+                apiProductId,
+                documentId: docId,
+                Accept: 'application/octet-stream',
+            };
+            return client.apis['API Product Documents'].getAPIProductDocumentContent(
+                payload,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+        return promisedGetDocContent;
+    }
+
+    /**
      * Delete specified document
      * @param {*} productId
      * @param {*} docId
