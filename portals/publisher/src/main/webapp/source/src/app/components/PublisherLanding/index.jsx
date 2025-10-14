@@ -256,21 +256,105 @@ const PublisherLanding = () => {
         fetchData();
     }, [fetchApis, fetchApiProducts, fetchMcpServers]);
 
+    // Fetch only the list without updating the count (used after deletion)
+    const fetchApisListOnly = useCallback(async () => {
+        try {
+            const response = await API.all({ limit: pageSize, offset: 0 });
+            if (response.body) {
+                setApis(response.body.list || []);
+            }
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error('Failed to fetch APIs:', err);
+        }
+    }, [pageSize]);
+
+    const fetchApiProductsListOnly = useCallback(async () => {
+        try {
+            const response = await APIProduct.all({ limit: pageSize, offset: 0 });
+            if (response.body) {
+                setApiProducts(response.body.list || []);
+            }
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error('Failed to fetch API Products:', err);
+        }
+    }, [pageSize]);
+
+    const fetchMcpServersListOnly = useCallback(async () => {
+        if (!isMCPSupportEnabled) {
+            setMcpServers([]);
+            return;
+        }
+        try {
+            const response = await MCPServer.all({ limit: pageSize, offset: 0 });
+            if (response.body) {
+                setMcpServers(response.body.list || []);
+            }
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error('Failed to fetch MCP Servers:', err);
+        }
+    }, [pageSize, isMCPSupportEnabled]);
+
     // Delete handlers
     const handleApiDelete = useCallback((deletedId) => {
         // Remove the deleted API from the current list
-        setApis((prevApis) => prevApis.filter((api) => api.id !== deletedId));
-    }, []);
+        setApis((prevApis) => {
+            const filtered = prevApis.filter((api) => api.id !== deletedId);
+            return filtered;
+        });
+
+        setApisTotalCount((prevCount) => {
+            const newCount = Math.max(0, prevCount - 1);
+            // Fetch new data to fill the gap if there are more items available on server
+            // If newCount > pageSize, there are definitely more items to fetch
+            if (newCount >= pageSize) {
+                setTimeout(() => {
+                    fetchApisListOnly();
+                }, 500);
+            }
+            return newCount;
+        });
+    }, [fetchApisListOnly, pageSize]);
 
     const handleApiProductDelete = useCallback((deletedId) => {
         // Remove the deleted API Product from the current list
-        setApiProducts((prevProducts) => prevProducts.filter((product) => product.id !== deletedId));
-    }, []);
+        setApiProducts((prevProducts) => {
+            const filtered = prevProducts.filter((product) => product.id !== deletedId);
+            return filtered;
+        });
+
+        setApiProductsTotalCount((prevCount) => {
+            const newCount = Math.max(0, prevCount - 1);
+            // Fetch new data to fill the gap if there are more items available on server
+            if (newCount >= pageSize) {
+                setTimeout(() => {
+                    fetchApiProductsListOnly();
+                }, 500);
+            }
+            return newCount;
+        });
+    }, [fetchApiProductsListOnly, pageSize]);
 
     const handleMcpServerDelete = useCallback((deletedId) => {
         // Remove the deleted MCP Server from the current list
-        setMcpServers((prevServers) => prevServers.filter((server) => server.id !== deletedId));
-    }, []);
+        setMcpServers((prevServers) => {
+            const filtered = prevServers.filter((server) => server.id !== deletedId);
+            return filtered;
+        });
+
+        setMcpServersTotalCount((prevCount) => {
+            const newCount = Math.max(0, prevCount - 1);
+            // Fetch new data to fill the gap if there are more items available on server
+            if (newCount >= pageSize) {
+                setTimeout(() => {
+                    fetchMcpServersListOnly();
+                }, 500);
+            }
+            return newCount;
+        });
+    }, [fetchMcpServersListOnly, pageSize]);
 
     // Check if we have any data to display
     const hasData = apisTotalCount > 0 || apiProductsTotalCount > 0 || mcpServersTotalCount > 0;
