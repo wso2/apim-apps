@@ -54,6 +54,12 @@ const Root = styled('div')({
         padding: '2px 2px 2px 10px',
         borderRadius: '4px',
         color: '#3b4151',
+        '&.Mui-disabled': {
+          backgroundColor: '#f5f5f5',
+          color: '#999',
+          border: '2px solid #ddd',
+          cursor: 'not-allowed',
+        },
     }
 });
 
@@ -69,11 +75,21 @@ export default function AsyncApiUI(props) {
     const { api } = useContext(ApiContext);
     const isAdvertised = api.advertiseInfo && api.advertiseInfo.advertised;
 
+    const getPreferredEndpoint = (URLsObj, apiType) => {
+      if (!URLsObj) return '';
+      if (apiType === CONSTANTS.API_TYPES.WS) {
+        // prefer ws, but if ws does not exist fall back to wss
+        if (URLsObj.ws) return URLsObj.ws;
+        if (URLsObj.wss) return URLsObj.wss;
+        return '';
+      }
+      // for non-WS APIs prefer http, but if http does not exist fall back to https
+      if (URLsObj.http) return URLsObj.http;
+      if (URLsObj.https) return URLsObj.https;
+      return '';
+    };
     let initialEndpoint;
-    initialEndpoint = URLs && (URLs.http || URLs.https);
-    if (api.type === CONSTANTS.API_TYPES.WS) {
-        initialEndpoint = URLs && (URLs.ws || URLs.wss);
-    }
+    initialEndpoint = getPreferredEndpoint(URLs, api.type);
 
     let expandable = true;
     if (!URLs || (!URLs.http && !URLs.https)) {
@@ -84,11 +100,8 @@ export default function AsyncApiUI(props) {
     const [endPoint, setEndpoint] = useState(initialEndpoint);
 
     useEffect(() => {
-      let newInitialEndpoint = URLs && URLs.http;
-      if (api.type === CONSTANTS.API_TYPES.WS) {
-        newInitialEndpoint = URLs && URLs.ws;
-      }
-      setEndpoint(newInitialEndpoint);
+      const newInitialEndpoint = getPreferredEndpoint(URLs, api.type);
+      setEndpoint(newInitialEndpoint || '');
     }, [URLs, api.type]);
 
     useEffect(() => {
@@ -229,13 +242,21 @@ export default function AsyncApiUI(props) {
                         id="api-endpoint-select"
                         value={endPoint}
                         displayEmpty
+                        disabled={Object.keys(URLs).length === 0 || !Object.values(URLs).some((url) => url)}
                         onChange={handleServerChange}
                     >
-                        {Object.entries(URLs).map(([key, value]) => {
-                            if (value) {
-                                return <MenuItem value={value} key={key}>{value}</MenuItem>;
-                            }
-                        })}
+                      {Object.keys(URLs).length === 0 || !Object.values(URLs).some((url) => url) ? (
+                        <MenuItem value='' disabled>
+                          <em>No servers available</em>
+                        </MenuItem>
+                      ) : (
+                        Object.entries(URLs).map(([key, value]) => {
+                          if (value) {
+                            return <MenuItem value={value} key={key}>{value}</MenuItem>;
+                          }
+                          return null;
+                        })
+                      )}
                     </Select>
                 </FormControl>
                 {api.type === CONSTANTS.API_TYPES.WEBSUB && allTopics.list.map((topic, index) => (
