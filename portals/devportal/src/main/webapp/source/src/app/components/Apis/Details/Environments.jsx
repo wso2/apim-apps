@@ -169,7 +169,7 @@ function Environments(props) {
                             aria-label='Copy the Default Version URL to clipboard'
                             size='large'
                             onClick={() => {
-                                navigator.clipboard.writeText(firstEnabledDefaultUrl).then(onCopy('urlCopied'));
+                                navigator.clipboard.writeText(firstEnabledDefaultUrl).then(onCopy);
                             }}
                         >
                             <Icon color='secondary'>file_copy</Icon>
@@ -276,7 +276,7 @@ function Environments(props) {
                                                     navigator.clipboard.writeText(selectedEndpoint.URLs.https
                                                     || selectedEndpoint.URLs.http
                                                     || selectedEndpoint.URLs.wss
-                                                    || selectedEndpoint.URLs.ws).then(onCopy('urlCopied'));
+                                                    || selectedEndpoint.URLs.ws).then(onCopy);
                                                 }}
                                             >
                                                 <Icon color='secondary'>file_copy</Icon>
@@ -329,7 +329,7 @@ function Environments(props) {
                                                         size='large'
                                                         onClick={() => {
                                                             navigator.clipboard.writeText(selectedEndpoint.URLs.wss
-                                                            || selectedEndpoint.URLs.ws).then(onCopy('urlCopied'));
+                                                            || selectedEndpoint.URLs.ws).then(onCopy);
                                                         }}
                                                     >
                                                         <Icon color='secondary'>file_copy</Icon>
@@ -406,7 +406,7 @@ function Environments(props) {
                                                     navigator.clipboard.writeText(
                                                         advertiseInfo.apiExternalProductionEndpoint,
                                                     )
-                                                        .then(onCopy('urlCopied'));
+                                                        .then(onCopy);
                                                 }}
                                             >
                                                 <Icon color='secondary'>file_copy</Icon>
@@ -459,7 +459,7 @@ function Environments(props) {
                                                                 navigator.clipboard.writeText(
                                                                     advertiseInfo.apiExternalSandboxEndpoint,
                                                                 )
-                                                                    .then(onCopy('urlCopied'));
+                                                                    .then(onCopy);
                                                             }}
                                                         >
                                                             <Icon color='secondary'>file_copy</Icon>
@@ -501,6 +501,23 @@ function Environments(props) {
 Environments.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     intl: PropTypes.shape({}).isRequired,
+    selectedEndpoint: PropTypes.shape({
+        environmentName: PropTypes.string,
+        environmentDisplayName: PropTypes.string,
+        environmentType: PropTypes.string,
+        URLs: PropTypes.shape({
+            http: PropTypes.string,
+            https: PropTypes.string,
+            ws: PropTypes.string,
+            wss: PropTypes.string,
+        }).isRequired,
+        defaultVersionURLs: PropTypes.shape({
+            http: PropTypes.string,
+            https: PropTypes.string,
+            ws: PropTypes.string,
+            wss: PropTypes.string,
+        }),
+    }).isRequired,
 };
 
 export default Environments;
