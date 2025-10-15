@@ -562,6 +562,7 @@ export default function Environments() {
             || hasValidWebSocketPorts(vhost));
     };
 
+    // this function returns the appropriate host value depending on the api type
     const getHostValue = (vhost, isWebSocket) => {
         if (!isWebSocket) {
             return vhost.host;
