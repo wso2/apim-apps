@@ -25,7 +25,7 @@ import {
     Tabs,
     Tab,
 } from '@mui/material';
-import MuiAlert from '@mui/material/Alert'; // ✅ proper MUI Alert
+import MuiAlert from '@mui/material/Alert';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import { FormattedMessage } from 'react-intl';
