@@ -21,7 +21,6 @@ import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import { isRestricted } from 'AppData/AuthManager';
-import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 
 /**
  * APIDescription component renders a text field for editing API description.
@@ -36,16 +35,15 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
  */
 function APIDescription(props) {
     const { api, configDispatcher } = props;
-    const [apiFromContext] = useAPI();
 
     const getCreateOrPublishScopes = () => {
-        if (apiFromContext.apiType && apiFromContext.apiType.toUpperCase() === 'MCP') {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
             return ['apim:mcp_server_create', 'apim:mcp_server_publish'];
         } else {
             return ['apim:api_create', 'apim:api_publish'];
         }
     };
-    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), apiFromContext);
+    const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), api);
 
     return (
         <TextField
