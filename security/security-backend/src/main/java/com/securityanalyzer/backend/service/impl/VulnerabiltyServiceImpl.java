@@ -19,20 +19,13 @@ import java.util.Date;
 import java.util.Objects;
 
 /**
- * The getAllVulnerabilities method has the business logic
- * for getting the list of vulnerabilities by comparing the existing vulnerabilities
- * and vulnerabilities in the newly generated json file.
+ * Service implementation for vulnerability management operations.
+ * Handles business logic for comparing existing vulnerabilities with newly generated JSON data.
  */
 @Service
 public class VulnerabiltyServiceImpl implements VulnerabilityService {
 
-    /**
-     * The getAllVulnerabilities method has the business logic
-     * for getting the list of vulnerabilities by comparing the existing vulnerabilities
-     * and vulnerabilities in the newly generated json file.
-     */
-
-    private static Logger logger = (Logger) LoggerFactory.getLogger(ApplicationUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(VulnerabiltyServiceImpl.class);
 
     @Override
     public ArrayList<Vulnerability> getAllVulnerabilitiesByPortal(String portalName, String branchName) throws FileNotFoundException {
@@ -50,7 +43,7 @@ public class VulnerabiltyServiceImpl implements VulnerabilityService {
 
         if (Objects.equals(oldTable, null)) {
             oldList = vulnerabilities;
-            Table<String,String, ArrayList<Vulnerability>> table = HashBasedTable.create();;
+            Table<String,String, ArrayList<Vulnerability>> table = HashBasedTable.create();
             table.put(portalName,branchName, oldList);
             ApplicationUtils.serializeList(table, portalName,branchName);
             return vulnerabilities;
@@ -127,10 +120,5 @@ public class VulnerabiltyServiceImpl implements VulnerabilityService {
         return date;
 
     }
-
 }
-
-
-
-
 

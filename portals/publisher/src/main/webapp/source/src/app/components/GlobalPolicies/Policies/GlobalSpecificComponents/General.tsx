@@ -259,6 +259,14 @@ const General: FC<GeneralProps> = ({
         return error;
     }
 
+    // Helper function to convert values based on type
+    const convertValueByType = (value: any, type: string) => {
+        const typeLower = type.toLowerCase();
+        if (typeLower === 'integer') return parseInt(value, 10);
+        else if (typeLower === 'boolean') return (value.toString() === 'true');
+        else return value;
+    };
+
     const getValue = (spec: PolicySpecAttribute) => {
         const specName = spec.name;
         const previousVal = getValueOfPolicyParam(specName);
@@ -278,13 +286,9 @@ const General: FC<GeneralProps> = ({
         } else if (state[specName] !== null) {
             return state[specName];
         } else if (previousVal !== null && previousVal !== undefined) {
-            if (spec.type.toLowerCase() === 'integer') return parseInt(previousVal, 10);
-            else if (spec.type.toLowerCase() === 'boolean') return (previousVal.toString() === 'true');
-            else return previousVal;
+            return convertValueByType(previousVal, spec.type);
         } else if (spec.defaultValue !== null && spec.defaultValue !== undefined) {
-            if (spec.type.toLowerCase() === 'integer') return parseInt(spec.defaultValue, 10);
-            else if (spec.type.toLowerCase() === 'boolean') return (spec.defaultValue.toString() === 'true');
-            else return spec.defaultValue;
+            return convertValueByType(spec.defaultValue, spec.type);
         } else {
             return '';
         }
