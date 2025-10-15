@@ -242,10 +242,10 @@ export default function AsyncApiUI(props) {
                         id="api-endpoint-select"
                         value={endPoint}
                         displayEmpty
-                        disabled={Object.keys(URLs).length === 0 || !Object.values(URLs).some((url) => url)}
+                        disabled={Object.keys(URLs).length === 0 || !Object.values(URLs).some(Boolean)}
                         onChange={handleServerChange}
                     >
-                      {Object.keys(URLs).length === 0 || !Object.values(URLs).some((url) => url) ? (
+                      {Object.keys(URLs).length === 0 || !Object.values(URLs).some(Boolean) ? (
                         <MenuItem value='' disabled>
                           <em>No servers available</em>
                         </MenuItem>

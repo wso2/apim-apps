@@ -2485,7 +2485,7 @@ export default function Environments() {
             const gateways = internalGateways.length > 0 ? internalGateways: externalGateways;
             if (api.isWebSocket() ) {
                 vhost = gateways.find((e) => e.name === env).vhosts.find(
-                    (v) => v.wsHost === selected.vhost || (v.wsHost === null && v.wssHost === selected.vhost),
+                    (v) => v.wsHost === selected.vhost || v.wssHost === selected.vhost,
                 );
                 if (!hasValidWebSocketPorts(vhost)) {
                     return 'No valid hosts available for this environment';
@@ -2504,8 +2504,10 @@ export default function Environments() {
             }
             const gatewayUrls = getGatewayAccessUrl(vhost, api.isWebSocket() ? 'WS' : 'HTTP');
             if (shorten) {
-                const helperText = getGatewayAccessUrl(vhost, api.isWebSocket() ? 'WS' : 'HTTP').secondary;
-                return helperText.length > maxtLen ? helperText.substring(0, maxtLen) + '...' : helperText;
+                const wsOrHttp = api.isWebSocket() ? 'WS' : 'HTTP';
+                const endpoints = getGatewayAccessUrl(vhost, wsOrHttp);
+                const preferred = endpoints.secondary || endpoints.primary; // prefer wss/https; fallback to ws/http
+                return preferred.length > maxtLen ? preferred.substring(0, maxtLen) + '...' : preferred;
             }
             return gatewayUrls.combined;
         }
@@ -2963,7 +2965,9 @@ export default function Environments() {
                                                                                 const hostValue = getHostValue(vhost,
                                                                                     api.isWebSocket());
                                                                                 return (
-                                                                                    <MenuItem value={hostValue}>
+                                                                                    <MenuItem
+                                                                                        key={hostValue}
+                                                                                        value={hostValue}>
                                                                                         {hostValue}
                                                                                     </MenuItem>
                                                                                 );
@@ -3136,8 +3140,11 @@ export default function Environments() {
                                                                     >
                                                                         {row.vhosts?.map(
                                                                             (vhost) => (
-                                                                                <MenuItem value={getHostValue(
-                                                                                    vhost,api.isWebSocket())}>
+                                                                                <MenuItem
+                                                                                    key={getHostValue(vhost,
+                                                                                        api.isWebSocket())}
+                                                                                    value={getHostValue(
+                                                                                        vhost,api.isWebSocket())}>
                                                                                     {getHostValue(
                                                                                         vhost,api.isWebSocket())}
                                                                                 </MenuItem>
@@ -3193,7 +3200,7 @@ export default function Environments() {
                     </DialogActions>
                 </StyledDialog>
             </Grid>
-            {allRevisions && allRevisions.length !== 0 
+            {allRevisions && allRevisions.length !== 0
             && !api.isRevision && (settings && !settings.portalConfigurationOnlyModeEnabled) && (
                 <>
                     <Grid
@@ -3521,15 +3528,15 @@ export default function Environments() {
                                             <>
                                                 <TableCell align='left' className={classes.tableCellVhostSelect}>
                                                     <Tooltip
-                                                        title={!hasValidHosts(row)
-                                                            ? 'No valid hosts available for this environment' : (
+                                                        title={hasValidHosts(row)
+                                                            ? (
                                                                 <>
                                                                     <Typography color='inherit'>
                                                                         {getVhostHelperText(row.name,
                                                                             selectedVhosts)}
                                                                     </Typography>
                                                                 </>
-                                                            )}
+                                                            ) : 'No valid hosts available for this environment'}
                                                         placement='bottom'
                                                     >
                                                         <TextField
@@ -3567,8 +3574,10 @@ export default function Environments() {
                                                         >
                                                             {row.vhosts.map(
                                                                 (vhost) => (
-                                                                    <MenuItem value={getHostValue(
-                                                                        vhost, api.isWebSocket())}>
+                                                                    <MenuItem 
+                                                                        key={getHostValue(vhost, api.isWebSocket())}
+                                                                        value={getHostValue(
+                                                                            vhost, api.isWebSocket())}>
                                                                         {getHostValue(vhost, api.isWebSocket())}
                                                                     </MenuItem>
                                                                 ),
@@ -3747,15 +3756,15 @@ export default function Environments() {
                                             <>
                                                 <TableCell align='left' className={classes.tableCellVhostSelect}>
                                                     <Tooltip
-                                                        title={!hasValidHosts(row)
-                                                            ? 'No valid hosts available for this environment' : (
+                                                        title={hasValidHosts(row)
+                                                            ? (
                                                                 <>
                                                                     <Typography color='inherit'>
                                                                         {getVhostHelperText(row.name,
                                                                             selectedVhosts)}
                                                                     </Typography>
                                                                 </>
-                                                            )}
+                                                            ) : 'No valid hosts available for this environment'}
                                                         placement='bottom'
                                                     >
                                                         <TextField
@@ -3789,8 +3798,10 @@ export default function Environments() {
                                                         >
                                                             {row.vhosts.map(
                                                                 (vhost) => (
-                                                                    <MenuItem value={getHostValue(
-                                                                        vhost, api.isWebSocket())}>
+                                                                    <MenuItem
+                                                                        key={getHostValue(vhost, api.isWebSocket())}
+                                                                        value={getHostValue(
+                                                                            vhost, api.isWebSocket())}>
                                                                         {getHostValue(vhost, api.isWebSocket())}
                                                                     </MenuItem>
                                                                 ),
