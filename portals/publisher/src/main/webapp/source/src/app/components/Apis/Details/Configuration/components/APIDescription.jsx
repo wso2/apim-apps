@@ -76,7 +76,10 @@ function APIDescription(props) {
 }
 
 APIDescription.propTypes = {
-    api: PropTypes.shape({}).isRequired,
+    api: PropTypes.shape({
+        description: PropTypes.string,
+        apiType: PropTypes.string,
+    }).isRequired,
     configDispatcher: PropTypes.func.isRequired,
 };
 
