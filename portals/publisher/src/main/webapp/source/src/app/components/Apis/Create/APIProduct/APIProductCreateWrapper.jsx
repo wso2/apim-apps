@@ -248,8 +248,7 @@ export default function ApiProductCreateWrapper(props) {
                         defaultMessage: 'Something went wrong while adding the API Product',
                     }))
                 }
-            }
-            );
+            })
     };
 
     const createAndPublishAPIProduct = () => {
