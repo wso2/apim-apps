@@ -107,7 +107,7 @@ function ListLabels() {
     const [isUpdating, setIsUpdating] = useState(null);
     const [buttonValue, setButtonValue] = useState();
     const [hasListPermission, setHasListPermission] = useState(true);
-    const [openMenu, setOpenMenu] = useState(false);
+    const [openMenuForId, setOpenMenuForId] = useState(null);
     const [errorMessage, setError] = useState(null);
 
     /**
@@ -159,12 +159,12 @@ function ListLabels() {
         });
     };
 
-    const handleRequestOpen = () => {
-        setOpenMenu(true);
+    const handleRequestOpen = (referenceId) => {
+        setOpenMenuForId(referenceId)
     };
 
     const handleRequestClose = () => {
-        setOpenMenu(false);
+        setOpenMenuForId(null);
     };
 
     useEffect(() => {
@@ -185,6 +185,7 @@ function ListLabels() {
         return promisedupdateWorkflow
             .then(() => {
                 setIsUpdating(false);
+                setOpenMenuForId(null);
                 Alert.success(intl.formatMessage({
                     id: 'Workflow.SubscriptionCreation.update.success',
                     defaultMessage: 'Workflow status is updated successfully',
@@ -353,7 +354,7 @@ function ListLabels() {
                                     color='error'
                                     variant='contained'
                                     size='small'
-                                    onClick={handleRequestOpen}
+                                    onClick={() => handleRequestOpen(referenceId)}
                                     disabled={isUpdating}
                                 >
                                     <ClearIcon />
@@ -362,18 +363,18 @@ function ListLabels() {
                                         defaultMessage='Reject'
                                     />
                                 </Button>
-                                <Dialog open={openMenu}>
+                                <Dialog open={openMenuForId === referenceId}>
                                     <DialogTitle>
                                         <FormattedMessage
                                             id='Workflow.SubscriptionCreation.Reject.Title'
-                                            defaultMessage='Reject'
+                                            defaultMessage='Reject Subscription'
                                         />
                                     </DialogTitle>
                                     <DialogContent>
                                         <DialogContentText>
                                             <FormattedMessage
                                                 id='Workflow.SubscriptionCreation.Reject.text.description'
-                                                defaultMessage='Are you sure, you want to reject this subscription ?'
+                                                defaultMessage='Are you sure you want to reject this subscription?'
                                             />
                                         </DialogContentText>
                                     </DialogContent>
