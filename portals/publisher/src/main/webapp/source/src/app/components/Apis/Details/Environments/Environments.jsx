@@ -576,7 +576,7 @@ export default function Environments() {
                 }
             }
             const internalGatewaysFiltered = settings.environment.filter((p) =>
-                p.provider.toLowerCase().includes('wso2') && p.mode !== 'READ_ONLY');
+                p.provider.toLowerCase().includes('wso2'));
             const selectedInternalGateways = internalGatewaysFiltered.filter((p) =>
                 p.gatewayType.toLowerCase() === gatewayType.toLowerCase())
             if (selectedInternalGateways.length > 0) {
@@ -596,8 +596,7 @@ export default function Environments() {
                 setSelectedEnvironment(selectedInternalGateways.length === 1 ?
                     [selectedInternalGateways[0].name] : []);
             } else {
-                const external = settings.environment.filter((p) => !p.provider.toLowerCase().includes('wso2')
-                && p.mode !== 'READ_ONLY');
+                const external = settings.environment.filter((p) => !p.provider.toLowerCase().includes('wso2'));
                 const selectedExternalGateways = external.filter((p) =>
                     p.gatewayType.toLowerCase() === gatewayType.toLowerCase());
                 setExternalGateways(selectedExternalGateways);
@@ -2140,6 +2139,7 @@ export default function Environments() {
             return gateway.name === row.name
         });
         const gatewayRevisions = deployingGateway?.revisions;
+        const gatewayMode = deployingGateway?.mode;
 
         if (!gatewayRevisions || gatewayRevisions.length === 0) {
             // Content to display when there is no revision
@@ -2180,7 +2180,7 @@ export default function Environments() {
                             !selectedRevision.some((r) => r.env === row.name && r.revision) ||
                             !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
                             (api.advertiseInfo && api.advertiseInfo.advertised) ||
-                            isDeployButtonDisabled || isDeploying
+                            isDeployButtonDisabled || isDeploying || gatewayMode === 'READ_ONLY'
                         }
                         variant='outlined'
                         onClick={() =>
@@ -2869,6 +2869,7 @@ export default function Environments() {
                                                                             onChange={handleChange}
                                                                             color='primary'
                                                                             icon={<RadioButtonUncheckedIcon />}
+                                                                            disabled={row.mode === 'READ_ONLY'}
                                                                             checkedIcon={<
                                                                                 CheckCircleIcon color='primary' />}
                                                                             inputProps={{
@@ -3073,6 +3074,7 @@ export default function Environments() {
                                                                 id={row.name.split(' ').join('')}
                                                                 value={row.name}
                                                                 checked={SelectedEnvironment.includes(row.name)}
+                                                                disabled={row.mode === 'READ_ONLY'}
                                                                 onChange={handleChange}
                                                                 color='primary'
                                                                 icon={<RadioButtonUncheckedIcon />}
