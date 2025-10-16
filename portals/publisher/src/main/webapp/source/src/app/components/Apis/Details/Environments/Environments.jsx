@@ -2820,7 +2820,7 @@ export default function Environments() {
                                     container
                                     spacing={3}
                                 >
-                                    {internalGateways && internalGateways.map((row) => (
+                                    {internalGateways?.filter((row) => row.mode !== 'READ_ONLY').map((row) => (
                                         <Grid item xs={4}>
                                             <Card
                                                 style={{
@@ -2869,7 +2869,6 @@ export default function Environments() {
                                                                             onChange={handleChange}
                                                                             color='primary'
                                                                             icon={<RadioButtonUncheckedIcon />}
-                                                                            disabled={row.mode === 'READ_ONLY'}
                                                                             checkedIcon={<
                                                                                 CheckCircleIcon color='primary' />}
                                                                             inputProps={{
@@ -3044,7 +3043,7 @@ export default function Environments() {
                                     container
                                     spacing={3}
                                 >
-                                    {externalGateways.map((row) => (
+                                    {externalGateways?.filter((row) => row.mode !== 'READ_ONLY').map((row) => (
                                         <Grid item xs={4}>
                                             <Card
                                                 className={clsx(SelectedEnvironment
@@ -3074,7 +3073,6 @@ export default function Environments() {
                                                                 id={row.name.split(' ').join('')}
                                                                 value={row.name}
                                                                 checked={SelectedEnvironment.includes(row.name)}
-                                                                disabled={row.mode === 'READ_ONLY'}
                                                                 onChange={handleChange}
                                                                 color='primary'
                                                                 icon={<RadioButtonUncheckedIcon />}
