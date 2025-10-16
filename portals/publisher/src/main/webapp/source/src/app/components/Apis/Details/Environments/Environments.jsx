@@ -2545,7 +2545,7 @@ export default function Environments() {
     
         return allEnvRevision.some(revision =>
             revision.deploymentInfo?.some(env =>
-                env.status === 'APPROVED' &&
+                env.status !== 'CREATED' &&
                 env.failedGatewayCount === 0 &&
                 env.deployedGatewayCount < env.liveGatewayCount &&
                 (
