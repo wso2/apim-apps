@@ -67,7 +67,7 @@ export default function OperationGovernance(props) {
     const intl = useIntl();
     const scrollToTop = () => {
         setFocusOperationLevel(true);
-        document.querySelector('#react-root').scrollTop = 195;
+        window.scrollTo({ top: 195, behavior: 'smooth' });
     };
     return (
         <>
@@ -163,6 +163,7 @@ export default function OperationGovernance(props) {
                                                 display='inline'
                                                 color='primary.main'
                                                 cursor='pointer'
+                                                sx ={{ marginLeft: '4px' }}
                                             >
                                                 <FormattedMessage
                                                     id={'Apis.Details.Resources.components.operationComponents.'
