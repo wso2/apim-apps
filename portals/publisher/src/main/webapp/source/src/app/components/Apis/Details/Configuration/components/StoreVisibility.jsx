@@ -272,7 +272,7 @@ export default function StoreVisibility(props) {
                                                 'The {type} is visible to all users who are registered to the {type}\'s tenant domain.'
                                             }
                                             values={{
-                                                type: getTypeToDisplay(api.apiType),
+                                                type: getTypeToDisplay(api.apiType)
                                             }}
                                         />
                                     </>
