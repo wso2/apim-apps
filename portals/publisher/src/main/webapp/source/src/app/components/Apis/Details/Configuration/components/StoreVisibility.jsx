@@ -273,7 +273,6 @@ export default function StoreVisibility(props) {
                                             }
                                             values={{
                                                 type: getTypeToDisplay(api.apiType),
-                                                type2: getTypeToDisplay(api.apiType)
                                             }}
                                         />
                                     </>
