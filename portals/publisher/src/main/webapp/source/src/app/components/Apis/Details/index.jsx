@@ -109,6 +109,7 @@ const StyledBox = styled(Box)((
         backgroundColor: theme.palette.background.leftMenu,
         width: theme.custom.leftMenuWidth,
         minHeight: `calc(100vh - ${64 + theme.custom.footer.height}px)`,
+        flexShrink: 0, // Prevent sidebar from shrinking
     },
 
     [`& .${classes.leftLInkMain}`]: {
@@ -124,13 +125,15 @@ const StyledBox = styled(Box)((
         flexDirection: 'column',
         paddingBottom: theme.spacing(3),
         overflow: 'auto',
+        minWidth: 0, // Prevents flex item from overflowing
     },
 
     [`& .${classes.contentInside}`]: {
-        width: 'calc(100% - 56px)',
+        width: '100%',
         paddingLeft: theme.spacing(3),
         paddingRight: theme.spacing(3),
         paddingTop: theme.spacing(2),
+        flex: 1, // Ensure content takes full available space
     },
 
     [`& .${classes.footeremaillink}`]: {
@@ -926,7 +929,7 @@ class Details extends Component {
         }
 
         return (
-            <StyledBox display='flex' alignItems='stretch' flexDirection='row'>
+            <StyledBox display='flex' alignItems='stretch' flexDirection='row' sx={{ minHeight: '100vh' }}>
                 <APIProvider
                     value={{
                         api,
