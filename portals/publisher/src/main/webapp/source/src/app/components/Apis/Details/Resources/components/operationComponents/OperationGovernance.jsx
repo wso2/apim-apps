@@ -69,6 +69,12 @@ export default function OperationGovernance(props) {
         setFocusOperationLevel(true);
         window.scrollTo({ top: 195, behavior: 'smooth' });
     };
+
+    if (!componentValidator.includes('operationSecurity') && 
+        !componentValidator.includes('operationLevelRateLimiting')) {
+        return null;
+    }
+
     return (
         <>
             <Grid item xs={12} md={12}>
