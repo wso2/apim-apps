@@ -1,7 +1,55 @@
 {
     "custom": {
         "landingPage": {
-            "active": false
+            "active": false,
+            "carousel": {
+                "active": true,
+                "slides": [
+                    {
+                        "src": "/site/public/images/landing/01.jpg",
+                        "title": "Lorem <span>ipsum</span> dolor sit amet",
+                        "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer felis lacus, placerat vel condimentum in, porta a urna. Suspendisse dolor diam, vestibulum at molestie dapibus, semper eget ex. Morbi sit amet euismod tortor."
+                    }
+                ]
+            },
+            "listByTag": {
+                "active": true,
+                "content": [
+                    {
+                        "tag": "finance",
+                        "title": "Checkout our Finance APIs",
+                        "description": "We offers online payment solutions and has more than 123 million customers worldwide.",
+                        "maxCount": 5
+                    },
+                    {
+                        "tag": "weather",
+                        "title": "Checkout our Weather APIs",
+                        "description": "Discover our comprehensive weather data APIs.",
+                        "maxCount": 5
+                    }
+                ]
+            },
+            "parallax": {
+                "active": true,
+                "content": [
+                    {
+                        "src": "/site/public/images/landing/parallax1.jpg",
+                        "title": "Lorem <span>ipsum</span> dolor sit amet",
+                        "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    }
+                ]
+            },
+            "contact": {
+                "active": true,
+                "contactHTML": "<div><strong>Mailing Address</strong><p><div>787 Castro Street</div><div>Mountain View,</div><div>CA 94041</div></p><div>Tel: +1 650 745 4499 </div><div>Fax: +1 650 584 3894</div></div>",
+                "style": {
+                    "paddingTop": 30,
+                    "paddingBottom": 30,
+                    "backgroundColor": "#f5f5f5",
+                    "borderRadius": "8px",
+                    "padding": "20px"
+                }
+            }
         }
     }
 }
