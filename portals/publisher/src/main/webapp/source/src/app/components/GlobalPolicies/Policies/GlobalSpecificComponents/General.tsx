@@ -16,7 +16,7 @@
 * under the License.
 */
 
-import React, { useState, FC, useContext, useEffect } from 'react';
+import React, { useState, FC, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import {
     Grid,
@@ -38,7 +38,6 @@ import {
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import MuiAlert from '@mui/material/Alert';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
@@ -114,22 +113,6 @@ const General: FC<GeneralProps> = ({
     policySpec.policyAttributes.forEach(attr => { initState[attr.name] = null });
     const [state, setState] = useState(initState);
     const [secretVisibility, setSecretVisibility] = useState<Record<string, boolean>>({});
-    const [showMissingParamsWarning, setShowMissingParamsWarning] = useState(false);
-
-    useEffect(() => {
-        // Check if we're in edit mode and if required parameters are missing
-        if (isEditMode && policySpec.policyAttributes.length > 0) {
-            const hasRequiredAttributes = policySpec.policyAttributes.some(attr => attr.required);
-            const allParametersEmpty = policySpec.policyAttributes.every(attr => {
-                const paramValue = globalPolicy.parameters && globalPolicy.parameters[attr.name];
-                return paramValue === null || paramValue === undefined || paramValue === '';
-            });
-            
-            if (hasRequiredAttributes && allParametersEmpty) {
-                setShowMissingParamsWarning(true);
-            }
-        }
-    }, [isEditMode, policySpec, globalPolicy]);
 
     if (!policyObj) {
         return <Progress />
@@ -380,21 +363,6 @@ const General: FC<GeneralProps> = ({
 
     return (
         <StyledBox p={2}>
-            {showMissingParamsWarning && (
-                <MuiAlert 
-                    severity='warning' 
-                    sx={{ mb: 2 }} 
-                    onClose={() => setShowMissingParamsWarning(false)}
-                >
-                    <FormattedMessage
-                        id='Global.Details.Policies.AttachedPolicyForm.General.missing.parameters.warning'
-                        defaultMessage={
-                            'Policy parameters could not be loaded. ' +
-                            'Please re-enter all required parameter values to update this policy.'
-                        }
-                    />
-                </MuiAlert>
-            )}
             <form onSubmit={submitForm}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} className={classes.drawerInfo}>
