@@ -381,10 +381,17 @@ const General: FC<GeneralProps> = ({
     return (
         <StyledBox p={2}>
             {showMissingParamsWarning && (
-                <MuiAlert severity="warning" sx={{ mb: 2 }} onClose={() => setShowMissingParamsWarning(false)}>
+                <MuiAlert 
+                    severity='warning' 
+                    sx={{ mb: 2 }} 
+                    onClose={() => setShowMissingParamsWarning(false)}
+                >
                     <FormattedMessage
                         id='Global.Details.Policies.AttachedPolicyForm.General.missing.parameters.warning'
-                        defaultMessage='Policy parameters could not be loaded. Please re-enter all required parameter values to update this policy.'
+                        defaultMessage={
+                            'Policy parameters could not be loaded. ' +
+                            'Please re-enter all required parameter values to update this policy.'
+                        }
                     />
                 </MuiAlert>
             )}

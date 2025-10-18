@@ -2127,6 +2127,7 @@
   "Global.Details.Policies.AttachedPolicyForm.General.description.title": "Description",
   "Global.Details.Policies.AttachedPolicyForm.General.description.value.not.provided": "Oops! Looks like this policy does not have a description",
   "Global.Details.Policies.AttachedPolicyForm.General.description.value.provided": "{description}",
+  "Global.Details.Policies.AttachedPolicyForm.General.missing.parameters.warning": "Policy parameters could not be loaded. Please re-enter all required parameter values to update this policy.",
   "Global.Details.Policies.AttachedPolicyForm.General.reset": "Reset",
   "Global.Details.Policies.AttachedPolicyForm.General.save": "Save",
   "Global.Details.Policies.AttachedPolicyForm.General.saving": "Saving",
