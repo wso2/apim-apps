@@ -274,7 +274,7 @@ export default function KeyManager(props) {
                                 ) : (
                                     <FormattedMessage
                                         id='Apis.Details.Configuration.components.KeyManager.more.than.one.info'
-                                        defaultMessage='Select one or more Key Managers'
+                                        defaultMessage='Select one or more valid and enabled Key Managers'
                                     />
                                 )}
                             </InputLabel>
@@ -333,10 +333,14 @@ export default function KeyManager(props) {
                                     <MenuItem
                                         key={keyManager.name}
                                         value={keyManager.name}
-                                        disabled={!keyManager.enabled}
+                                        disabled={!keyManagers.includes(keyManager.name) && !keyManager.enabled}
                                         style={getStyles(keyManager.name, keyManagers, theme)}
-                                    >
-                                        {keyManager.displayName || keyManager.name}
+                                    > 
+                                        <Typography 
+                                            color={!keyManager.enabled ? "textSecondary" : "inherit"}
+                                        >
+                                            {keyManager.displayName || keyManager.name}
+                                        </Typography>
                                     </MenuItem>
                                 ))}
                             </Select>
