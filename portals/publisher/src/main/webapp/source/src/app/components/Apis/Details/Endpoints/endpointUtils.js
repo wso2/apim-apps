@@ -190,6 +190,12 @@ function createEndpointConfig(endpointType) {
             tmpEndpointConfig.production_endpoints = { config: null, url: 'http://localhost' };
             tmpEndpointConfig.sandbox_endpoints = { config: null, url: 'http://localhost' };
             break;
+        case 'INLINE': // mock implementation is functionally prototype.
+            tmpEndpointConfig.implementation_status = 'prototyped';
+            tmpEndpointConfig.endpoint_type = 'http';
+            tmpEndpointConfig.production_endpoints = { config: null, url: 'http://localhost' };
+            tmpEndpointConfig.sandbox_endpoints = { config: null, url: 'http://localhost' };
+            break;
         case 'awslambda':
             tmpEndpointConfig.endpoint_type = 'awslambda';
             tmpEndpointConfig.access_method = 'role-supplied';
