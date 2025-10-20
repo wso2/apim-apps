@@ -39,7 +39,7 @@ import { Link } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { useIntl, FormattedMessage } from 'react-intl';
-import { getOperationScopes } from '../../operationUtils';
+import { getOperationScopes, shouldRenderOperationGovernance } from '../../operationUtils';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
 const checkedIcon = <CheckBoxIcon fontSize='small' />;
@@ -70,28 +70,8 @@ export default function OperationGovernance(props) {
         document.querySelector('#react-root').scrollTop = 195;
     };
 
-    if (!componentValidator.includes('operationSecurity') && 
-        !componentValidator.includes('operationLevelRateLimiting')) {
+    if (!shouldRenderOperationGovernance(api, componentValidator, filteredApiScopes, sharedScopes)) {
         return null;
-    }
-
-    // For AWS Gateway APIs, check if there are actually any features to display
-    const hasOperationSecurity = componentValidator.includes('operationSecurity');
-    const hasOperationRateLimiting = componentValidator.includes('operationLevelRateLimiting');
-    
-    if (!hasOperationSecurity && !hasOperationRateLimiting) {
-        return null;
-    }
-
-    // For AWS Gateway APIs, check if there are actually any features to display
-    if (api.gatewayVendor === 'AWS' || api.gatewayType === 'AWS') {
-        // Check if there are any scopes available for operation security
-        const hasScopes = filteredApiScopes.length > 0 || (sharedScopes && sharedScopes.length > 0);
-        
-        // If no scopes available and no rate limiting, don't show the section
-        if (hasOperationSecurity && !hasScopes && !hasOperationRateLimiting) {
-            return null;
-        }
     }
 
     return (

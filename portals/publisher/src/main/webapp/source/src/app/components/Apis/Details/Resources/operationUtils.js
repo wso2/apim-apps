@@ -271,3 +271,41 @@ export {
     VERSIONS,
     isRef,
 };
+/**
+ * Determine whether the Operation Governance section should be rendered
+ * for a given API and component capability set. This consolidates the
+ * visibility logic to reduce duplication across components.
+ *
+ * Rules:
+ * - If neither operationSecurity nor operationLevelRateLimiting is supported -> hide
+ * - For AWS gateways: if operation security is supported but there are no scopes
+ *   and operation-level rate limiting is not available -> hide
+ * - Otherwise -> show
+ *
+ * @param {object} api API object containing gateway info
+ * @param {Array} componentValidator Capability keys for the current gateway
+ * @param {Array} filteredApiScopes Local scopes array (non-shared)
+ * @param {Array} sharedScopes Shared scopes array
+ * @returns {boolean} true if the section should be rendered
+ */
+function shouldRenderOperationGovernance(api, componentValidator, filteredApiScopes = [], sharedScopes = []) {
+    const supportsOperationSecurity = componentValidator.includes('operationSecurity');
+    const supportsOpLevelRateLimiting = componentValidator.includes('operationLevelRateLimiting');
+
+    if (!supportsOperationSecurity && !supportsOpLevelRateLimiting) {
+        return false;
+    }
+
+    const isAWS = api && (api.gatewayVendor === 'AWS' || api.gatewayType === 'AWS');
+    if (isAWS && supportsOperationSecurity && !supportsOpLevelRateLimiting) {
+        const hasAnyScopes = (filteredApiScopes && filteredApiScopes.length > 0)
+            || (sharedScopes && sharedScopes.length > 0);
+        if (!hasAnyScopes) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+export { shouldRenderOperationGovernance };
