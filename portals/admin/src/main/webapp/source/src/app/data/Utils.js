@@ -17,6 +17,7 @@
  */
 import Configurations from 'Config';
 import CONSTS from 'AppData/Constants';
+import base64url from 'base64url';
 /**
  * Utility class for Admin Portal application
  */
@@ -439,6 +440,26 @@ class Utils {
         document.body.removeChild(link);
 
         window.URL.revokeObjectURL(url);
+    }
+
+    /**
+     * Encodes environment ID to be safely used in URL parameters.
+     * Uses base64url encoding for IDs with special characters.
+     *
+     * @param {string} environmentId - The environment ID to encode
+     * @returns {string} URL-safe encoded environment ID
+     */
+    static encodeEnvironmentId(environmentId) {
+        if (!environmentId) {
+            return environmentId;
+        }
+
+        // Check if the environment ID contains spaces or other characters that need encoding
+        if (encodeURIComponent(environmentId) !== environmentId) {
+            return base64url.encode(environmentId);
+        }
+
+        return environmentId;
     }
 }
 

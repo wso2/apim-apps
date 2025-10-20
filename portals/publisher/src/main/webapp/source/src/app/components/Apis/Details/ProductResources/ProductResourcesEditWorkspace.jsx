@@ -640,7 +640,9 @@ function ProductResourcesEdit(props) {
                                                     <ListItemText
                                                         id={labelId}
                                                         primary={apiObj.displayName || apiObj.name}
-                                                        secondary={`${apiObj.version} - ${apiObj.context}`}
+                                                        secondary={
+                                                            `${apiObj.name} : ${apiObj.version} - ${apiObj.context}`
+                                                        }
                                                         onClick={() => getApiSwagger(apiObj)}
                                                     />
                                                 </ListItem>

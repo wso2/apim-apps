@@ -112,7 +112,7 @@ function DocThumbPlain(props) {
                 </Box>
                 <Box mt={2}>
                     <Typography variant='subtitle1' className={classes.contextBox}>
-                        {doc.apiName}
+                        {doc.apiDisplayName || doc.apiName}
                     </Typography>
                     <Typography
                         variant='caption'

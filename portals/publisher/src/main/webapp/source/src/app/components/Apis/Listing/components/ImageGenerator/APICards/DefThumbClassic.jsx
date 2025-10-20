@@ -179,7 +179,7 @@ const DefThumbClassic = (props) => {
                             <div style={{ display: 'flex', flexDirection: 'column', flex: 0.65, overflow: 'hidden' }}>
                                 <Tooltip title={def.apiName} arrow>
                                     <Typography variant='body1' noWrap>
-                                        {def.apiName}
+                                        {def.apiDisplayName || def.apiName}
                                     </Typography>
                                 </Tooltip>
                                 <Typography variant='caption' component='p' color='text.disabled' lineHeight={1}>

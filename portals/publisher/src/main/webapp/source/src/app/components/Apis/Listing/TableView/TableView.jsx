@@ -26,14 +26,13 @@ import queryString from 'query-string';
 import API from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
 import MCPServer from 'AppData/MCPServer';
-import Icon from '@mui/material/Icon';
+import CONSTS from 'AppData/Constants';
 import ApiThumb from 'AppComponents/Apis/Listing/components/ImageGenerator/ApiThumb';
 import DocThumb from 'AppComponents/Apis/Listing/components/ImageGenerator/DocThumb';
 import { Progress } from 'AppComponents/Shared';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import APILanding from 'AppComponents/Apis/Listing/Landing';
 import TopMenu from 'AppComponents/Apis/Listing/components/TopMenu';
-import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import SampleAPIProduct from 'AppComponents/Apis/Listing/SampleAPI/SampleAPIProduct';
 import MCPServerLanding from 'AppComponents/MCPServers/Landing';
 import Alert from 'AppComponents/Shared/Alert';
@@ -44,7 +43,6 @@ const PREFIX = 'TableView';
 
 const classes = {
     contentInside: `${PREFIX}-contentInside`,
-    apiNameLink: `${PREFIX}-apiNameLink`
 };
 
 
@@ -61,20 +59,6 @@ const Root = styled('div')((
             backgroundColor: 'transparent',
         },
     },
-
-    [`& .${classes.apiNameLink}`]: {
-        display: 'flex',
-        alignItems: 'center',
-        '& span': {
-            marginLeft: theme.spacing(),
-        },
-        '& span.material-icons': {
-            marginLeft: 0,
-            color: '#444',
-            marginRight: theme.spacing(),
-            fontSize: 18,
-        },
-    }
 }));
 
 /**
@@ -357,14 +341,13 @@ class TableView extends React.Component {
                             const apiId = tableMeta.rowData[0];
                             if (isAPIProduct) {
                                 return (
-                                    <Link to={'/api-products/' + apiId + '/overview'} className={classes.apiNameLink}>
-                                        <CustomIcon width={16} height={16} icon='api-product' strokeColor='#444444' />
+                                    <Link to={'/api-products/' + apiId + '/overview'}>
                                         <span>{displayName || apiName}</span>
                                     </Link>
                                 );
                             } else if (isMCPServer) {
                                 return (
-                                    <Link to={'/mcp-servers/' + apiId + '/overview'} className={classes.apiNameLink}>
+                                    <Link to={'/mcp-servers/' + apiId + '/overview'}>
                                         <span>{displayName || apiName}</span>
                                     </Link>
                                 );
@@ -374,13 +357,12 @@ class TableView extends React.Component {
                                     return (
                                         <Link
                                             to={urlPrefix + artifact.apiUUID + '/documents/' + apiId + '/details'}
-                                            className={classes.apiNameLink}
                                         >
-                                            <Icon>library_books</Icon>
                                             <FormattedMessage
                                                 id='Apis.Listing.TableView.TableView.doc.flag'
                                                 defaultMessage=' [Doc]'
                                             />
+                                            &nbsp;
                                             <span>{displayName || apiName}</span>
                                         </Link>
                                     );
@@ -392,20 +374,18 @@ class TableView extends React.Component {
                                     return (
                                         <Link
                                             to={linkTo}
-                                            className={classes.apiNameLink}
                                         >
-                                            <Icon>code</Icon>
                                             <FormattedMessage
                                                 id='Apis.Listing.TableView.TableView.def.flag'
                                                 defaultMessage=' [Def]'
                                             />
+                                            &nbsp;
                                             <span>{artifact.name}</span>
                                         </Link>
                                     );
                                 }
                                 return (
-                                    <Link to={urlPrefix + apiId + '/overview'} className={classes.apiNameLink}>
-                                        <CustomIcon width={16} height={16} icon='api' strokeColor='#444444' />
+                                    <Link to={urlPrefix + apiId + '/overview'}>
                                         <span>{displayName || apiName}</span>
                                     </Link>
                                 );
@@ -426,6 +406,54 @@ class TableView extends React.Component {
                 options: {
                     sort: false,
                 },
+            },
+            {
+                name: 'type',
+                label: intl.formatMessage({
+                    id: 'Apis.Listing.ApiTableView.type',
+                    defaultMessage: 'Type',
+                }),
+                options: {
+                    customBodyRender: (value, tableMeta, updateValue, tableViewObj = this) => {
+                        const apiData = tableViewObj.state.apisAndApiProducts?.[tableMeta.rowIndex];
+                        if (apiData) {
+                            if (apiData.subtype && apiData.subtype === 'AIAPI') {
+                                return intl.formatMessage({
+                                    id: 'Apis.Listing.TableView.TableView.ai.api',
+                                    defaultMessage: 'AI API',
+                                });
+                            } else if (apiData.type === CONSTS.ARTIFACT_TYPES.MCP) {
+                                return intl.formatMessage({
+                                    id: 'Apis.Listing.TableView.TableView.mcp.server',
+                                    defaultMessage: 'MCP Server',
+                                });
+                            } else if (apiData.type === CONSTS.ARTIFACT_TYPES.APIProduct) {
+                                return intl.formatMessage({
+                                    id: 'Apis.Listing.TableView.TableView.api.product',
+                                    defaultMessage: 'API Product',
+                                });
+                            } else if (apiData.type === CONSTS.ARTIFACT_TYPES.DEFINITION) {
+                                return intl.formatMessage({
+                                    id: 'Apis.Listing.TableView.TableView.definition',
+                                    defaultMessage: 'Definition',
+                                });
+                            } else if (apiData.type === CONSTS.ARTIFACT_TYPES.DOCUMENT) {
+                                return intl.formatMessage({
+                                    id: 'Apis.Listing.TableView.TableView.document',
+                                    defaultMessage: 'Document',
+                                });
+                            }
+
+                            // Get the type from transportType (search mode) or type (listing mode)
+                            const apiType = apiData.transportType || apiData.type;
+                            
+                            return CONSTS.API_TYPES[apiType?.toUpperCase()] || apiType || '';
+                        }
+                        return '';
+                    },
+                    sort: false,
+                    filter: false,
+                }
             },
             {
                 name: 'gatewayType',
