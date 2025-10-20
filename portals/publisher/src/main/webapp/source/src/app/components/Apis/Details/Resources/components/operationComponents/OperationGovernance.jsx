@@ -69,6 +69,31 @@ export default function OperationGovernance(props) {
         setFocusOperationLevel(true);
         document.querySelector('#react-root').scrollTop = 195;
     };
+
+    if (!componentValidator.includes('operationSecurity') && 
+        !componentValidator.includes('operationLevelRateLimiting')) {
+        return null;
+    }
+
+    // For AWS Gateway APIs, check if there are actually any features to display
+    const hasOperationSecurity = componentValidator.includes('operationSecurity');
+    const hasOperationRateLimiting = componentValidator.includes('operationLevelRateLimiting');
+    
+    if (!hasOperationSecurity && !hasOperationRateLimiting) {
+        return null;
+    }
+
+    // For AWS Gateway APIs, check if there are actually any features to display
+    if (api.gatewayVendor === 'AWS' || api.gatewayType === 'AWS') {
+        // Check if there are any scopes available for operation security
+        const hasScopes = filteredApiScopes.length > 0 || (sharedScopes && sharedScopes.length > 0);
+        
+        // If no scopes available and no rate limiting, don't show the section
+        if (hasOperationSecurity && !hasScopes && !hasOperationRateLimiting) {
+            return null;
+        }
+    }
+
     return (
         <>
             <Grid item xs={12} md={12}>
