@@ -411,9 +411,7 @@ class TokenManager extends React.Component {
                     const keys = response[1];
                     const { keyRequest } = this.state;
 
-                    // Check if keys actually exist for this tab and keyType
-                    const hasKeysForCurrentTab = keys.size > 0 && keys.get(selectedTab) && keys.get(selectedTab).keyType === keyType;
-                    if (hasKeysForCurrentTab) {
+                    if (keys.size > 0 && keys.get(selectedTab) && keys.get(selectedTab).keyType === keyType) {
                         const {
                             callbackUrl, supportedGrantTypes, additionalProperties, mode,
                         } = keys.get(selectedTab);
