@@ -192,7 +192,7 @@ export default {
         globalNavBar: {
             active: '#46a3ca',
             opened: {
-                drawerWidth: 180,
+                drawerWidth: 230, // Match leftMenuWidth for consistency
             },
             collapsed: {
             },
