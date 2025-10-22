@@ -609,6 +609,12 @@ class TokenManager extends React.Component {
                     Alert.error(`${response.body.message}: ${response.body.description}`);
                 }
             }).finally(() => this.setState({ isLoading: false }));
+        this.application
+            .then((application) => {
+                return application.getSecrets(
+                    applicationKey.keyMappingId,
+                );
+            });
     }
 
     /**

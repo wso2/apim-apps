@@ -47,6 +47,7 @@ import ViewToken from './ViewToken';
 import ViewSecret from './ViewSecret';
 import ViewCurl from './ViewCurl';
 import Settings from 'AppComponents/Shared/SettingsContext';
+import SecretsTable from './SecretsTable';
 
 const PREFIX = 'ViewKeys';
 
@@ -113,6 +114,7 @@ class ViewKeys extends React.Component {
         if (selectedApp) {
             appId = selectedApp.appId || selectedApp.value;
         }
+        this.appId = appId;
         this.applicationPromise = Application.get(appId);
         this.state = {
             showCS: false,
@@ -731,6 +733,10 @@ class ViewKeys extends React.Component {
                                 />
                             </Typography>
                         )}
+                        <SecretsTable 
+                            appId={this.appId}
+                            keyMappingId={keyMappingId} 
+                        />
                     </Grid>
                 </Grid>
             </Root>

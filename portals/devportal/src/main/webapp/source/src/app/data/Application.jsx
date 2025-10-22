@@ -345,6 +345,61 @@ export default class Application extends Resource {
         });
     }
 
+    generateSecret(additionalProperties) {
+        const promisedSecret = this.client.then((client) => {
+            const requestContent = {
+                additionalProperties,
+            };
+            const payload = { applicationId: this.id };
+            const body = { requestBody: requestContent };
+            return client.apis['Application Secrets'].generateConsumerSecret(payload, body);
+        });
+        return promisedSecret.then((secretResponse) => {
+            const secret = secretResponse.obj;
+            console.log(secret)
+            // if (keyType === 'PRODUCTION') {
+            //     this.productionKeys.set(keyManager, keysResponse.obj);
+            //     return this.productionKeys.get(keyManager);
+            // } else {
+            //     this.sandboxKeys.set(keyManager, keysResponse.obj);
+            //     return this.sandboxKeys.get(keyManager);
+            // }
+        });
+    }
+
+    getSecrets(keyMappingId) {
+        return this.client.then((client) => client.apis['Application Secrets']
+            .getConsumerSecrets({ applicationId: this.id, keyMappingId }))
+            .then((secretsResponse) => {
+                const secrets = secretsResponse.obj.list;
+                console.log(secrets)
+                return secrets;
+                // this._setKeys(keys);
+                // this._setTokens(keys);
+                // if (keyType === 'PRODUCTION') {
+                //     return this.productionKeys;
+                // } else {
+                //     return this.sandboxKeys;
+                // }
+            });
+    }
+
+    deleteSecret(keyMappingId, referenceId) {
+        const promisedDelete = this.client.then((client) => {
+            const requestContent = {
+                referenceId
+            };
+            const payload = { applicationId: this.id, keyMappingId };
+            const body = { requestBody: requestContent };
+            console.log(requestContent);
+            console.log(payload);
+            console.log(body);
+            console.log("&&&&&&&&&&&&&&&&&&&&&&&&&")
+            return client.apis['Application Secrets'].deleteConsumerSecret(payload, body);
+        });
+        return promisedDelete.then((response) => response.status);
+    }
+
     /**
      * Provide Consumer Key and Secret of Existing OAuth Apps
      *
