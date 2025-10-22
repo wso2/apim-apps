@@ -271,7 +271,7 @@ export default function ApiProductCreateWrapper(props) {
                         const body1 = [];
                         const getFirstVhost = (envName) => {
                             const env = settings.environment.find(
-                                (e) => e.name === envName && e.vhosts.length > 0,
+                                (e) => e.name === envName && e.mode !== 'READ_ONLY' && e.vhosts.length > 0,
                             );
                             return env && env.vhosts[0].host;
                         };

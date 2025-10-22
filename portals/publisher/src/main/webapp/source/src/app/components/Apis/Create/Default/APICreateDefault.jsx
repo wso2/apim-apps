@@ -367,7 +367,7 @@ function APICreateDefault(props) {
                 const internalGateways = settings.environment;
                 const getFirstVhost = (envName) => {
                     const env = internalGateways.find(
-                        (e) => e.name === envName && e.vhosts.length > 0,
+                        (e) => e.name === envName && e.mode !== 'READ_ONLY' && e.vhosts.length > 0,
                     );
                     return env && env.vhosts[0].host;
                 };
