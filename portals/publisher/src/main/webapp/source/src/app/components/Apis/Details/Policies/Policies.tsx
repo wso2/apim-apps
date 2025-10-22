@@ -23,6 +23,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import cloneDeep from 'lodash.clonedeep';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
+import MuiAlert from '@mui/material/Alert';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
@@ -90,6 +91,7 @@ const Configurations = require('Config');
 const Policies: React.FC = () => {
 
     const [api, updateAPI] = useAPI();
+    const isReadOnly = api?.isRevision || api?.lifeCycleStatus === 'PUBLISHED';
     const [updating, setUpdating] = useState(false);
     const [apiPolicies, setApiPolicies] = useState<Policy[] | null>(null);
     const [commonPolicies, setCommonPolicies] = useState<Policy[] | null>(null);
@@ -595,6 +597,15 @@ const Policies: React.FC = () => {
 
     if (!apiPolicies || !commonPolicies || !openAPISpec || updating) {
         return <Progress per={90} message='Loading Policies ...' />
+    }
+    if (isReadOnly) {
+    return (
+        <Box p={3}>
+            <MuiAlert severity="info">
+                API revisions are read-only. Policy editing is disabled.
+            </MuiAlert>
+        </Box>
+    );
     }
 
     const renderPolicyTabs = () => (
