@@ -15,23 +15,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-export const filenameWithoutLoaders = (filename = '') => {
-    const index = filename.lastIndexOf('!');
+export const filenameWithoutLoaders = (filename?: string): string => {
+    const safeFilename = filename || '';
+    const index = safeFilename.lastIndexOf('!');
 
-    return index < 0 ? filename : filename.substr(index + 1);
+    return index < 0 ? safeFilename : safeFilename.substring(index + 1);
 };
 
-export const filenameHasLoaders = (filename: string) => {
+export const filenameHasLoaders = (filename: string): boolean => {
     const actualFilename = filenameWithoutLoaders(filename);
 
     return actualFilename !== filename;
 };
 
-export const filenameHasSchema = (filename: string) => {
+export const filenameHasSchema = (filename: string): boolean => {
     return /^[\w]+:/.test(filename);
 };
 
-export const isFilenameAbsolute = (filename?: string) => {
+export const isFilenameAbsolute = (filename?: string): boolean => {
     const actualFilename = filenameWithoutLoaders(filename);
 
     if (actualFilename.indexOf('/') === 0) {
@@ -46,7 +47,7 @@ export const makeUrl = (
     scheme?: string,
     line?: number | null,
     column?: number | null,
-) => {
+): string => {
     const actualFilename = filenameWithoutLoaders(filename);
 
     if (filenameHasSchema(filename || '')) {
@@ -84,7 +85,7 @@ export const makeLinkText = (
     filename?: string,
     line?: number | null,
     column?: number | null,
-) => {
+): string => {
     let text = filenameWithoutLoaders(filename);
 
     if (line && text === filename) {

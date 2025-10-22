@@ -417,19 +417,19 @@ export default function DefaultAPIForm(props) {
         product: (
             <FormattedMessage
                 id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.product'
-                defaultMessage='Display name for the API Product (optional)'
+                defaultMessage='Display name for the API Product'
             />
         ),
         mcp: (
             <FormattedMessage
                 id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.mcp'
-                defaultMessage='Display name for the MCP Server (optional)'
+                defaultMessage='Display name for the MCP Server'
             />
         ),
         default: (
             <FormattedMessage
                 id='Apis.Create.Components.DefaultAPIForm.display.name.helper.text.api'
-                defaultMessage='Display name for the API (optional)'
+                defaultMessage='Display name for the API'
             />
         ),
     };
@@ -488,8 +488,11 @@ export default function DefaultAPIForm(props) {
                         />
                     }
                     helperText={displayNameHelperText}
-                    value={api.displayName}
+                    value={api.displayName || api.name}
                     name='displayName'
+                    InputLabelProps={{
+                        shrink: !!(api.displayName || api.name),
+                    }}
                     onChange={onChange}
                     margin='normal'
                     variant='outlined'

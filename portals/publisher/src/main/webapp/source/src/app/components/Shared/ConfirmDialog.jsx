@@ -14,6 +14,7 @@ import { FormattedMessage } from 'react-intl';
 export default function ConfirmDialog(props) {
     const {
         title, message, labelCancel, labelOk, open, callback, idOk, idCancel,
+        confirmPrimary = false,
     } = props;
 
     /**
@@ -39,7 +40,8 @@ export default function ConfirmDialog(props) {
                 <Button id={idCancel} onClick={() => handleRequestClose(ConfirmDialog.Action.CANCEL)} color='primary'>
                     {labelCancel}
                 </Button>
-                <Button id={idOk} onClick={() => handleRequestClose(ConfirmDialog.Action.OK)} color='primary'>
+                <Button id={idOk} onClick={() => handleRequestClose(ConfirmDialog.Action.OK)} color='primary'
+                    variant={confirmPrimary ? 'contained' : 'text'} >
                     {labelOk}
                 </Button>
             </DialogActions>
@@ -53,6 +55,7 @@ ConfirmDialog.defaultProps = {
     labelOk: <FormattedMessage id='Apis.Shared.ConfirmDialog.ok' defaultMessage='OK' />,
     labelCancel: <FormattedMessage id='Apis.Shared.ConfirmDialog.cancel' defaultMessage='Cancel' />,
     callback: () => {},
+    confirmPrimary: false,
 };
 ConfirmDialog.propTypes = {
     title: PropTypes.element,
@@ -61,6 +64,7 @@ ConfirmDialog.propTypes = {
     labelCancel: PropTypes.element,
     open: PropTypes.bool.isRequired,
     callback: PropTypes.func,
+    confirmPrimary: PropTypes.bool,
 };
 ConfirmDialog.Action = {
     OK: 'ok',

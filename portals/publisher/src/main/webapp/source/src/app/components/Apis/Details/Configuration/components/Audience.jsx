@@ -24,6 +24,7 @@ import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import { isRestricted } from 'AppData/AuthManager';
 import { ALL_AUDIENCES_ALLOWED } from './APISecurity/components/apiSecurityConstants';
 
 /**
@@ -36,12 +37,24 @@ import { ALL_AUDIENCES_ALLOWED } from './APISecurity/components/apiSecurityConst
 export default function Audience(props) {
     const {
         configDispatcher,
-        api: { audiences },
+        api,
     } = props;
+    const { audiences } = api;
     const [isAudValidationEnabled, setAudValidationEnabled] = useState(audiences !== null && audiences.length !== 0 &&
         !(audiences.includes(ALL_AUDIENCES_ALLOWED)));
     const [audienceValues, setAudienceValues] = useState(Array.isArray(audiences) ?
         audiences.filter(value => value !== ALL_AUDIENCES_ALLOWED) : []);
+
+    const getAllowedScopes = () => {
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return ['apim:mcp_server_create', 'apim:mcp_server_publish', 'apim:mcp_server_manage'];
+        } else {
+            return ['apim:api_create', 'apim:api_publish', 'apim:api_manage'];
+        }
+    }
+
+    const isAccessRestricted = () => isRestricted(getAllowedScopes(), api);
+
     return (
         <>
             <Grid sx={() => ({ marginBottom: 2, })}>
@@ -86,6 +99,7 @@ export default function Audience(props) {
                                         }
                                     }}
                                     color='primary'
+                                    disabled={isAccessRestricted()}
                                     inputProps={{
                                         'aria-label': 'AudienceValidation',
                                     }}
@@ -110,6 +124,7 @@ export default function Audience(props) {
                                     <ChipInput
                                         style={{ marginBottom: 40, display: 'flex' }}
                                         value={audienceValues}
+                                        disabled={isAccessRestricted()}
                                         helperText={(
                                             <FormattedMessage
                                                 id={

@@ -229,7 +229,7 @@ const SampleAPI = (props) => {
         const deployRevisionPayload = [];
         const getFirstVhost = (envName) => {
             const env = internalGateways.find(
-                (ev) => ev.name === envName && ev.vhosts.length > 0,
+                (ev) => ev.name === envName && ev.mode !== 'READ_ONLY' && ev.vhosts.length > 0,
             );
             return env && env.vhosts[0].host;
         };

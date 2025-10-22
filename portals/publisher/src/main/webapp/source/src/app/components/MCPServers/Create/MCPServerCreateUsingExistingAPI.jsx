@@ -259,7 +259,7 @@ const MCPServerCreateUsingExistingAPI = (props) => {
                         const body1 = [];
                         const getFirstVhost = (envName) => {
                             const env = settings.environment.find(
-                                (e) => e.name === envName && e.vhosts.length > 0,
+                                (e) => e.name === envName && e.mode !== 'READ_ONLY' && e.vhosts.length > 0,
                             );
                             return env && env.vhosts[0].host;
                         };
@@ -352,16 +352,26 @@ const MCPServerCreateUsingExistingAPI = (props) => {
 
     const getSteps = () => {
         return [
-            <FormattedMessage
-                variant='caption'
-                id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.one'
-                defaultMessage='Select API and Operations for Tool Generation'
-            />,
-            <FormattedMessage
-                variant='caption'
-                id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.two'
-                defaultMessage='Create MCP Server'
-            />,
+            {
+                key: 'MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.one',
+                label: (
+                    <FormattedMessage
+                        variant='caption'
+                        id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.one'
+                        defaultMessage='Select API and Operations for Tool Generation'
+                    />
+                )
+            },
+            {
+                key: 'MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.two',
+                label: (
+                    <FormattedMessage
+                        variant='caption'
+                        id='MCPServers.Create.MCPServerCreateUsingExistingAPI.wizard.two'
+                        defaultMessage='Create MCP Server'
+                    />
+                )
+            },
         ];
     }
 
@@ -371,9 +381,9 @@ const MCPServerCreateUsingExistingAPI = (props) => {
         >
             <Box sx={{ mb: 3 }}>
                 <Stepper alternativeLabel activeStep={wizardStep}>
-                    {getSteps().map((label) => (
-                        <Step key={label}>
-                            <StepLabel className={classes.alternativeLabel}>{label}</StepLabel>
+                    {getSteps().map((step) => (
+                        <Step key={step.key}>
+                            <StepLabel className={classes.alternativeLabel}>{step.label}</StepLabel>
                         </Step>
                     ))}
                 </Stepper>
@@ -399,7 +409,7 @@ const MCPServerCreateUsingExistingAPI = (props) => {
                         />
                     )}
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{ mt: 3 }}>
                     <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                         <Grid item>
                             {wizardStep === 0 && (

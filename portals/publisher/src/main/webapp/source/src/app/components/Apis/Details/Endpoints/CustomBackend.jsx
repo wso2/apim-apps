@@ -564,7 +564,7 @@ export default function CustomBackend(props) {
                     <Typography className={classes.uploadSequenceBackendDialogHeader}>
                         <FormattedMessage
                             id='Apis.Details.Endpoints.SequenceBackend.deleteCustomBackend'
-                            defaultMessage='Delete with caution!'
+                            defaultMessage='Confirm Delete'
                         />
                     </Typography>
                 </DialogTitle>
@@ -573,19 +573,23 @@ export default function CustomBackend(props) {
                         <Typography>
                             <FormattedMessage
                                 id='Apis.Details.Endpoints.GeneralConfiguration.Certificates.confirm.certificate.delete'
-                                defaultMessage='Are you sure you want to delete '
+                                defaultMessage='Are you sure you want to delete {sequence} ?'
+                                values={{ sequence: sequenceBackendToDelete.name }}
                             />
-                            {' '}
-                            {sequenceBackendToDelete.name + '?'}
                         </Typography>
                     </div>
                 </DialogContent>
                 <DialogActions>
+                    <Button onClick={() => setSequenceBackendToDelete({ open: false, keyType: '', alias: '' })}>
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.SequenceBackend.delete.cancel.button'
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
                     <Button
                         onClick={() =>
                             deleteSequenceBackendByKey(sequenceBackendToDelete.keyType)
                         }
-                        variant='contained'
                         color='primary'
                         disabled={isDeleting}
                         autoFocus
@@ -593,16 +597,10 @@ export default function CustomBackend(props) {
                     >
                         <FormattedMessage
                             id='Apis.Details.Endpoints.SequenceBackend.delete.ok.button'
-                            defaultMessage='OK'
+                            defaultMessage='Yes'
                         />
                         {isDeleting && <CircularProgress size={24} />}
 
-                    </Button>
-                    <Button onClick={() => setSequenceBackendToDelete({ open: false, keyType: '', alias: '' })}>
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.SequenceBackend.delete.cancel.button'
-                            defaultMessage='Cancel'
-                        />
                     </Button>
                 </DialogActions>
             </Dialog>

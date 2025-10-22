@@ -746,6 +746,27 @@ class MCPServer extends Resource {
     }
 
     /**
+     * Clean pending tasks of an MCP Server.
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @returns {Promise} A promise that resolves to the response of the clean pending tasks request.
+     */
+    static cancelLifecyclePendingTask(mcpServerId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Lifecycle'].deleteMCPServerLifecycleStatePendingTasks(
+                {
+                    mcpServerId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * Test the endpoint of an MCP Server.
      * @param {string} endpointUrl - The URL of the endpoint to test.
      * @param {string} id - The ID of the MCP Server.   
@@ -1255,6 +1276,31 @@ class MCPServer extends Resource {
                 },
                 {
                     requestBody: body,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Cancel a pending deployment or undeployment task for a revision of an MCP Server.
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @param {string} revisionId - The ID of the revision.
+     * @param {string} envName - The name of the environment.
+     * @returns {Promise} A promise that resolves to the response of the cancel request.
+     */
+    static cancelRevisionDeploymentWorkflow(mcpServerId, revisionId, envName) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Revisions'].deleteMCPServerRevisionDeploymentPendingTask(
+                {
+                    mcpServerId,
+                    revisionId,
+                    envName,
                 },
                 this._requestMetaData(),
             );

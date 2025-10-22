@@ -517,7 +517,7 @@ export default function DesignConfigurations() {
             const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
             docPromise = restApi.addInlineContentToDocument(api.id, document.documentId, 'MARKDOWN', overview);
         }
-        docPromise
+        return docPromise
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
                     console.log(error);
@@ -526,6 +526,7 @@ export default function DesignConfigurations() {
                 if (status === 404) {
                     console.log(error);
                 }
+                throw error;
             });
     };
 
@@ -538,11 +539,12 @@ export default function DesignConfigurations() {
             const restApi = apiType === API.CONSTS.APIProduct ? new APIProduct() : new API();
             docPromise = restApi.deleteDocument(api.id, overviewDocument.documentId);
         }
-        docPromise
+        return docPromise
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
                     console.log(error);
                 }
+                throw error;
             });
     };
 
@@ -639,29 +641,37 @@ export default function DesignConfigurations() {
             updatePayload = mcpConfig;
         }
         
-        updateAPI(updatePayload)
-            .catch((error) => {
-                if (error.response) {
-                    Alert.error(error.response.body.description);
-                } else {
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.Configuration.Design.Configurations.error.updating',
-                        defaultMessage: 'Error occurred while updating design configurations',
-                    }));
+        try {
+            await updateAPI(updatePayload);
+            
+            // Handle overview document update
+            if (overview.trim() === '') {
+                if (overviewDocument) {
+                    await deleteOverviewDocument();
+                    // Clear the overview state after successful deletion
+                    setOverview('');
+                    setOverviewDocument(null);
                 }
-            });
-        if (overview.trim() === '') {
-            if (overviewDocument) {
-                deleteOverviewDocument();
+            } else {
+                let document = overviewDocument;
+                if (document === null) {
+                    document = await addDocument();
+                    setOverviewDocument(document);
+                }
+                await addDocumentContent(document);
             }
-        } else {
-            let document = overviewDocument;
-            if (document === null) {
-                document = await addDocument();
+        } catch (error) {
+            if (error.response) {
+                Alert.error(error.response.body.description);
+            } else {
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Configuration.Design.Configurations.error.updating',
+                    defaultMessage: 'Error occurred while updating design configurations',
+                }));
             }
-            addDocumentContent(document);
+        } finally {
+            setIsUpdating(false);
         }
-        setIsUpdating(false);
     }
 
     const handleClick = (availableTiers, endpointUrl, endpointType) => {
@@ -712,9 +722,9 @@ export default function DesignConfigurations() {
 
     const isAccessRestricted = () => {
         if (api.apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
-            return isRestricted(['apim:mcp_server_publish', 'apim:mcp_server_create'], api);
+            return isRestricted(['apim:mcp_server_publish', 'apim:mcp_server_create', 'apim:mcp_server_manage'], api);
         } else {
-            return isRestricted(['apim:api_publish', 'apim:api_create'], api);
+            return isRestricted(['apim:api_publish', 'apim:api_create', 'apim:api_manage'], api);
         }
     }
 
@@ -1046,7 +1056,7 @@ export default function DesignConfigurations() {
                                     <Grid item md={6} align='right'>
                                         {!api.isRevision && (
                                             <Tooltip title='Attach Labels'>
-                                                <IconButton onClick={handleOpenList}>
+                                                <IconButton onClick={handleOpenList} disabled={isAccessRestricted()}>
                                                     <AddIcon />
                                                 </IconButton>
                                             </Tooltip>

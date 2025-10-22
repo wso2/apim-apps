@@ -148,9 +148,6 @@ export default function ApiCreateAIAPI(props) {
         if (endpoint) {
             additionalProperties.endpointConfig = {
                 endpoint_type: 'http',
-                sandbox_endpoints: {
-                    url: endpoint,
-                },
                 production_endpoints: {
                     url: endpoint,
                 },

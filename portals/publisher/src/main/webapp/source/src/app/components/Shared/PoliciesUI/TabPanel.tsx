@@ -32,7 +32,8 @@ interface TabPanelSharedProps {
     DraggablePolicyCard: any;
     policyList?: Policy[];  
     commonPolicyList?: Policy[]; 
-    apiPolicyList?: Policy[];   
+    apiPolicyList?: Policy[];
+    isReadOnly?: boolean;
 }
 
 const TabPanelShared: FC<TabPanelSharedProps> = ({
@@ -44,6 +45,7 @@ const TabPanelShared: FC<TabPanelSharedProps> = ({
     apiPolicyList,
     fetchPolicies,
     DraggablePolicyCard,
+    isReadOnly = false,
 }) => {
     if (policyList != undefined) {
         return (
@@ -63,6 +65,7 @@ const TabPanelShared: FC<TabPanelSharedProps> = ({
                                 showCopyIcon
                                 isLocalToAPI={singlePolicy.isAPISpecific}
                                 fetchPolicies={fetchPolicies}
+                                isReadOnly={isReadOnly}
                             />
                         );
                     })}
@@ -102,6 +105,7 @@ const TabPanelShared: FC<TabPanelSharedProps> = ({
                                                     showCopyIcon
                                                     isLocalToAPI={singlePolicy.isAPISpecific}
                                                     fetchPolicies={fetchPolicies}
+                                                    isReadOnly={isReadOnly}
                                                 />
                                             );
                                         })
@@ -140,6 +144,7 @@ const TabPanelShared: FC<TabPanelSharedProps> = ({
                                                     showCopyIcon
                                                     isLocalToAPI={singlePolicy.isAPISpecific}
                                                     fetchPolicies={fetchPolicies}
+                                                    isReadOnly={isReadOnly}
                                                 />
                                             );
                                         })
