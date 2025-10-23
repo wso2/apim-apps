@@ -71,6 +71,9 @@ function ListLabels() {
     const [hasListPermission, setHasListPermission] = useState(true);
     const [errorMessage, setError] = useState(null);
 
+    const cellWidth = { xs: '100%', sm: '25%' };
+    const setDefaultCellProps = () => ({ style: { width: cellWidth } });
+
     /**
      * API call to get Detected Data
      * @returns {Promise}.
@@ -218,7 +221,7 @@ function ListLabels() {
             options: {
                 sort: false,
                 filter: true,
-                setCellProps: () => ({ style: { width: { xs: '100%', sm: '25%' } } }),
+                setCellProps: setDefaultCellProps,
             },
         },
         {
@@ -230,7 +233,7 @@ function ListLabels() {
             options: {
                 sort: false,
                 filter: true,
-                setCellProps: () => ({ style: { width: { xs: '100%', sm: '25%' } } }),
+                setCellProps: setDefaultCellProps,
             },
         },
         {
@@ -261,7 +264,7 @@ function ListLabels() {
                         </div>
                     );
                 },
-                setCellProps: () => ({ style: { width: { xs: '100%', sm: '25%' } } }),
+                setCellProps: setDefaultCellProps,
             },
         },
         {
@@ -322,7 +325,7 @@ function ListLabels() {
                         </div>
                     );
                 },
-                setCellProps: () => ({ style: { width: { xs: '100%', sm: '25%' } } }),
+                setCellProps: setDefaultCellProps,
             },
         },
     ];
