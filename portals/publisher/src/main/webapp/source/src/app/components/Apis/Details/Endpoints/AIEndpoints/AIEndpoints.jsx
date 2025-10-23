@@ -56,10 +56,28 @@ const AIEndpoints = ({
     const [confirmSetPrimaryOpen, setConfirmSetPrimaryOpen] = useState(false);
     const [confirmRemovePrimaryOpen, setConfirmRemovePrimaryOpen] = useState(false);
     const [selectedEndpoint, setSelectedEndpoint] = useState(null);
+    const [isUnsecured, setUnsecured] = useState(false);
 
     const intl = useIntl();
     const history = useHistory();
     const { updateAPI } = useContext(APIContext);
+
+    useEffect(() => {
+        if (apiObject.subtypeConfiguration?.subtype === 'AIAPI') {
+            API.getLLMProviderEndpointConfiguration(
+                JSON.parse(apiObject.subtypeConfiguration.configuration).llmProviderId)
+                .then((response) => {
+                    if (response.body) {
+                        const config = response.body;
+                        if (config.authenticationConfiguration?.type.toLowerCase() === 'none') {
+                            setUnsecured(true);
+                        } else {
+                            setUnsecured(false);
+                        }
+                    }
+                });
+        }
+    }, []);
 
     const fetchEndpoints = () => {
         setLoading(true);
@@ -518,7 +536,7 @@ const AIEndpoints = ({
                     color='primary'
                     disabled={
                         isRestricted(['apim:api_create', 'apim:api_publish', 'apim:api_manage'], apiObject) ||
-                        !isPrimaryEndpointSecurityConfigured()
+                        (!isUnsecured && !isPrimaryEndpointSecurityConfigured())
                     }
                     endIcon={<OpenInNewIcon />}
                     onClick={() => {
