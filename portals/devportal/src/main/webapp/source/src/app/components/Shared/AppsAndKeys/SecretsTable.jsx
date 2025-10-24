@@ -18,6 +18,7 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import {
+    Button,
     Table,
     TableBody,
     TableCell,
@@ -34,16 +35,16 @@ import {
     TextField,
     InputAdornment,
 } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import NewSecretDialog from "./NewSecretDialog";
 import PropTypes from 'prop-types';
-import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import SearchIcon from "@mui/icons-material/Search";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ErrorIcon from "@mui/icons-material/Error";
 import Application from '../../../data/Application';
 import DeleteSecretDialog from "./DeleteSecret";
 import Alert from 'AppComponents/Shared/Alert';
+//import { format } from 'date-fns';
 
 const SecretsTable = (props) => {
 
@@ -53,6 +54,7 @@ const SecretsTable = (props) => {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [showSecret, setShowSecret] = useState({});
     const [searchTerm, setSearchTerm] = useState("");
+    const [openNewDialog, setOpenNewDialog] = useState(false);
 
     //const {appId} = this.props;
 
@@ -86,17 +88,21 @@ const SecretsTable = (props) => {
         //     defaultMessage: 'Secret deleted successfully!',
         //     id: 'Applications.Listing.Listing.application.deleted.successfully',
         // });
-    try {
-        let message = 'Secret deleted successfully!';
-        const application = await applicationPromise;
-        const status = await application.deleteSecret(props.keyMappingId, referenceId);
+        try {
+            let message = 'Secret deleted successfully!';
+            const application = await applicationPromise;
+            const status = await application.deleteSecret(props.keyMappingId, referenceId);
 
-        if (status === 204) {
-            Alert.info(message);
-            this.toggleDeleteConfirmation();
-            fetchSecrets();
-        }
-    } catch(error) {
+            if (status === 204) {
+                Alert.info(message);
+                // ✅ Remove the deleted item from the state
+                setSecrets((prevSecrets) =>
+                    prevSecrets.filter((secret) => secret.referenceId !== referenceId)
+                );
+            } else {
+                Alert.error('Unexpected response while deleting secret.');
+            }
+        } catch (error) {
             console.log(error);
             message = 'Error while deleting secret';
             // message = intl.formatMessage({
@@ -107,62 +113,82 @@ const SecretsTable = (props) => {
         };
     };
 
-    /**
-   * Calculates how many days remain until expiry.
-   * Handles expired and "never expires" cases.
-   *
-   * @param {number} expiryEpoch - Expiry time in milliseconds since epoch.
-   * @returns {string} Human-readable message: e.g. "5 days remaining", "Expired", or "Never expires".
-   */
-    function daysUntilExpiry(expiryEpoch) {
-        if (!expiryEpoch || expiryEpoch === 0) {
-            return "Never expires";
+    const handleCreateSecret = async (newSecret) => {
+        const application = await applicationPromise;
+
+        // Build payload as expected by your API
+        const payload = {
+            expiresIn: newSecret.expiresInSeconds,
+            description: newSecret.description
+        };
+
+        console.log("payload");
+        console.log(payload);
+
+        try {
+            const response = await application.generateSecret(props.keyMappingId, payload);
+
+            Alert.info("Secret created successfully!");
+            setOpenNewDialog(false);
+            //setNewSecret({ description: "", expiryOption: "30", customDays: "" });
+
+            // Refresh or append new secret to table
+            setSecrets((prev) => [...prev, response]);
+        } catch (error) {
+            console.error("Error creating secret:", error);
+            Alert.error("Failed to create secret");
         }
+    };
 
-        const now = Date.now();
-        const diffMs = expiryEpoch - now;
-        const diffDays = diffMs / (1000 * 60 * 60 * 24);
-
-        if (diffMs < 0) {
-            return "Expired";
-        }
-
-        const daysRemaining = Math.ceil(diffDays);
-        return `${daysRemaining} day${daysRemaining !== 1 ? 's' : ''}`;
-    }
-
-    const renderExpiresIn = (expiresInMs, expiresAt) => {
-        const expiresInDays = Math.floor(expiresInMs / (1000 * 60 * 60 * 24));
-        let displayText = '';
-        let color = 'text.primary';
-
-        if (expiresInMs === 0) {
-            displayText = 'Never expires';
-            color = 'text.secondary';
-        } else if (expiresInMs < 0) {
-            displayText = 'Expired';
-            color = 'error.main';
-        } else {
-            displayText = `${expiresInDays} days`;
-        }
-
-        const formattedDate = expiresAt
-            ? format(new Date(expiresAt), 'PPP p') // e.g. "Oct 25, 2025, 5:30 PM"
-            : 'No expiry date available';
-
+/**
+ * Renders the "Expires In" column with color and tooltip.
+ * Handles "Never expires", "Expired", and remaining days cases.
+ *
+ * @param {number} expiryEpoch - Expiry timestamp in milliseconds (epoch)
+ */
+const renderExpiresIn = (expiryEpoch) => {
+    if (!expiryEpoch || expiryEpoch === 0) {
         return (
-            <Tooltip title={`Expires on: ${formattedDate}`} arrow>
-                <Typography variant="body2" sx={{ color, fontWeight: 500 }}>
-                    {displayText}
+            <Tooltip title="This secret never expires" arrow>
+                <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                    Never expires
                 </Typography>
             </Tooltip>
         );
-    };
+    }
 
-    const isExpired = (daysUntilExpiry) => {
-        // Assuming expiresIn is the remaining time; if <= 0, it’s expired
-        return daysUntilExpiry == 'Expired';
-    };
+    const now = Date.now();
+    const diffMs = expiryEpoch - now;
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    //const formattedDate = format(new Date(expiryEpoch), 'PPP p'); // Example: Oct 25, 2025, 5:30 PM
+    // Format the expiry date in a human-friendly way
+    const expiryDate = new Date(expiryEpoch);
+    const formattedDate = expiryDate.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+
+    if (diffMs < 0) {
+        return (
+            <Tooltip title={`Expired on: ${formattedDate}`} arrow>
+                <Typography variant="body2" sx={{ color: 'error.main', fontWeight: 600 }}>
+                    Expired
+                </Typography>
+            </Tooltip>
+        );
+    }
+
+    return (
+        <Tooltip title={`Expires on: ${formattedDate}`} arrow>
+            <Typography variant="body2" sx={{ color: 'text.primary', fontWeight: 500 }}>
+                {`${diffDays} day${diffDays !== 1 ? 's' : ''}`}
+            </Typography>
+        </Tooltip>
+    );
+};
 
     const handleChangePage = (_, newPage) => setPage(newPage);
     const handleChangeRowsPerPage = (event) => {
@@ -191,10 +217,20 @@ const SecretsTable = (props) => {
         );
 
     return (
-        <Paper sx={{ width: "100%", overflow: "hidden", p: 2 }}>
+        <Paper sx={{ width: "80%", overflow: "hidden", p: 2 }}>
             <Typography variant="h6" gutterBottom>
                 Client Secrets
             </Typography>
+
+            <Box display="flex" justifyContent="space-between" mb={2}>
+                <Button
+                    variant="contained"
+                    startIcon={<AddIcon sx={{ color: "white"}}/>}
+                    onClick={() => setOpenNewDialog(true)}
+                >
+                    New Secret
+                </Button>
+            </Box>
 
             {/* Search bar */}
             <Box sx={{ mb: 2 }}>
@@ -227,14 +263,14 @@ const SecretsTable = (props) => {
                     </TableHead>
 
                     <TableBody>
-                        {secrets.length === 0 ? (
+                        {filteredSecrets.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={4} align="center">
                                     No secrets found
                                 </TableCell>
                             </TableRow>
                         ) : (
-                            secrets
+                            filteredSecrets
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((secret) => {
                                     const { referenceId, secretValue, additionalProperties } = secret;
@@ -268,12 +304,7 @@ const SecretsTable = (props) => {
 
                                             <TableCell>
                                                 <Box display="flex" alignItems="center" gap={1}>
-                                                    <Typography>{daysUntilExpiry(expiresAt)}</Typography>
-                                                    {/* {expired && (
-                            <Tooltip title="Expired">
-                              <ErrorIcon color="error" fontSize="small" />
-                            </Tooltip>
-                          )} */}
+                                                    {renderExpiresIn(expiresAt)}
                                                 </Box>
                                             </TableCell>
 
@@ -296,6 +327,12 @@ const SecretsTable = (props) => {
                 page={page}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+
+            <NewSecretDialog
+                open={openNewDialog}
+                onClose={() => setOpenNewDialog(false)}
+                onCreate={handleCreateSecret}
             />
         </Paper>
     );
