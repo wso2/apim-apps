@@ -1122,8 +1122,9 @@ function EndpointOverview(props) {
                                                                             setAdvancedConfigOpen={toggleAdvanceConfig}
                                                                             esCategory='production'
                                                                             setESConfigOpen={toggleEndpointSecurityConfig}
-                                                                            iId={api.id}
+                                                                            apiId={api.id}
                                                                             componentValidator={componentValidator}
+                                                                            endpointSecurityTypes={endpointSecurityTypes}
                                                                         />
                                                                     )}
                                                             </Collapse>
@@ -1277,6 +1278,7 @@ function EndpointOverview(props) {
                                                                                                 {toggleEndpointSecurityConfig}
                                                                                             apiId={api.id}
                                                                                             componentValidator={componentValidator}
+                                                                                            endpointSecurityTypes={endpointSecurityTypes}
                                                                                         />
                                                                                         </>
                                                                                     )}
