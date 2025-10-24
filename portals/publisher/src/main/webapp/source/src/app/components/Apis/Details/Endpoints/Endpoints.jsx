@@ -188,6 +188,10 @@ function Endpoints(props) {
             }
             case 'endpointImplementationType': { // set implementation status
                 const { endpointType, implementationType } = value;
+                if(endpointType === 'INLINE' || endpointType === 'MOCKED_OAS') {
+                    const tmpconfig = createEndpointConfig('prototyped');
+                    return { ...initState, endpointConfig: tmpconfig, endpointImplementationType: endpointType};
+                }
                 const config = createEndpointConfig(endpointType);
                 if (endpointType === 'prototyped') {
                     if (implementationType === 'mock') {
