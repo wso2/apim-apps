@@ -231,6 +231,7 @@ function endpointReducer(state, { field, value }) {
 
 const AddEditAIEndpoint = ({
     apiObject,
+    llmProviderEndpointConfiguration,
     match: { params: { id: endpointId } },
 }) => {
     const [isEndpointValid, setIsEndpointValid] = useState();
@@ -248,12 +249,6 @@ const AddEditAIEndpoint = ({
             ...CONSTS.DEFAULT_ENDPOINT.endpointConfig,
             endpoint_type: 'http',
             endpoint_security: {},
-        }
-    });
-    const [endpointConfiguration, setEndpointConfiguration] = useState({
-        authenticationConfiguration: {
-            "authenticationConfiguration":
-                { "enabled": false, "type": null, parameters: {} }
         }
     });
     const [isEndpointSaving, setEndpointSaving] = useState(false);
@@ -445,20 +440,22 @@ const AddEditAIEndpoint = ({
         const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
         let apiKeyIdentifier;
         let apiKeyIdentifierType;
-        if (endpointConfiguration.authenticationConfiguration.enabled
-            && endpointConfiguration.authenticationConfiguration.type === "apikey") {
-            if (endpointConfiguration.authenticationConfiguration.parameters.headerEnabled) {
-                apiKeyIdentifier = endpointConfiguration.authenticationConfiguration.parameters.headerName;
+        if (llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled
+            && llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'apikey') {
+            if (llmProviderEndpointConfiguration?.authenticationConfiguration?.parameters?.headerEnabled) {
+                apiKeyIdentifier =
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.parameters?.headerName;
                 apiKeyIdentifierType = "HEADER";
             }
-            if (endpointConfiguration.authenticationConfiguration.parameters.queryParameterEnabled) {
-                apiKeyIdentifier = endpointConfiguration.authenticationConfiguration.parameters.queryParameterName;
+            if (llmProviderEndpointConfiguration?.authenticationConfiguration?.parameters?.queryParameterEnabled) {
+                apiKeyIdentifier =
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.parameters?.queryParameterName;
                 apiKeyIdentifierType = "QUERY_PARAMETER";
             }
         }
         saveEndpointSecurityConfig({
             ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
-            type: endpointConfiguration.authenticationConfiguration.type,
+            type: llmProviderEndpointConfiguration.authenticationConfiguration.type,
             apiKeyIdentifier,
             apiKeyIdentifierType,
             apiKeyValue: updatedApiKeyValue,
@@ -473,19 +470,6 @@ const AddEditAIEndpoint = ({
     };
 
     const url = getBasePath(apiObject.apiType) + apiObject.id + '/endpoints';
-
-    useEffect(() => {
-        if (apiObject.subtypeConfiguration?.subtype === 'AIAPI') {
-            API.getLLMProviderEndpointConfiguration(
-                JSON.parse(apiObject.subtypeConfiguration.configuration).llmProviderId)
-                .then((response) => {
-                    if (response.body) {
-                        const config = response.body;
-                        setEndpointConfiguration(config);
-                    }
-                });
-        }
-    }, []);
 
     useEffect(() => {
         try {
@@ -576,8 +560,8 @@ const AddEditAIEndpoint = ({
                 return false;
             case 'apiKey':
                 if (
-                    endpointConfiguration.authenticationConfiguration?.enabled === true &&
-                    endpointConfiguration.authenticationConfiguration?.type === "apikey"
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled === true &&
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'apikey'
                 ) {
                     if (!fieldValue) {
                         return intl.formatMessage({
@@ -589,8 +573,8 @@ const AddEditAIEndpoint = ({
                 return false;
             case 'accessKey':
                 if (
-                    endpointConfiguration.authenticationConfiguration?.enabled === true &&
-                    endpointConfiguration.authenticationConfiguration?.type === "aws"
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled === true &&
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'aws'
                 ) {
                     if (!fieldValue) {
                         return intl.formatMessage({
@@ -602,8 +586,8 @@ const AddEditAIEndpoint = ({
                 return false;
             case 'secretKey':
                 if (
-                    endpointConfiguration.authenticationConfiguration?.enabled === true &&
-                    endpointConfiguration.authenticationConfiguration?.type === "aws"
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled === true &&
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'aws'
                 ) {
                     if (!fieldValue) {
                         return intl.formatMessage({
@@ -615,8 +599,8 @@ const AddEditAIEndpoint = ({
                 return false;
             case 'region':
                 if (
-                    endpointConfiguration.authenticationConfiguration?.enabled === true &&
-                    endpointConfiguration.authenticationConfiguration?.type === "aws"
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled === true &&
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'aws'
                 ) {
                     if (!fieldValue) {
                         return intl.formatMessage({
@@ -756,8 +740,8 @@ const AddEditAIEndpoint = ({
         }
         saveEndpointSecurityConfig({
             ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
-            type: endpointConfiguration.authenticationConfiguration.type,
-            service: endpointConfiguration.authenticationConfiguration.parameters.awsServiceName,
+            type: llmProviderEndpointConfiguration.authenticationConfiguration.type,
+            service: llmProviderEndpointConfiguration.authenticationConfiguration.parameters.awsServiceName,
             accessKey,
             secretKey,
             region,
@@ -846,25 +830,25 @@ const AddEditAIEndpoint = ({
     // Add this before the return statement, after all hooks and state
     const apiKeyParamConfig = {
         authHeader:
-            endpointConfiguration.authenticationConfiguration?.enabled &&
-                endpointConfiguration.authenticationConfiguration?.type === "apikey" &&
-                endpointConfiguration.authenticationConfiguration?.parameters?.headerEnabled
-                ? endpointConfiguration.authenticationConfiguration.parameters.headerName
+            llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled &&
+            llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'apikey' &&
+            llmProviderEndpointConfiguration?.authenticationConfiguration?.parameters?.headerEnabled
+                ? llmProviderEndpointConfiguration?.authenticationConfiguration?.parameters?.headerName
                 : null,
         authQueryParam:
-            endpointConfiguration.authenticationConfiguration?.enabled &&
-                endpointConfiguration.authenticationConfiguration?.type === "apikey" &&
-                endpointConfiguration.authenticationConfiguration?.parameters?.queryParameterEnabled
-                ? endpointConfiguration.authenticationConfiguration.parameters.queryParameterName
+            llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled &&
+                llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'apikey' &&
+                llmProviderEndpointConfiguration?.authenticationConfiguration?.parameters?.queryParameterEnabled
+                ? llmProviderEndpointConfiguration?.authenticationConfiguration?.parameters?.queryParameterName
                 : null,
     };
 
     const IS_APIKEY_AUTH_ENABLED = (config) =>
-        config.authenticationConfiguration?.enabled === true &&
-        config.authenticationConfiguration?.type === "apikey";
+        config?.authenticationConfiguration?.enabled === true &&
+        config?.authenticationConfiguration?.type === 'apikey';
     const IS_AWS_SIGV4_AUTH_ENABLED = (config) =>
-        config.authenticationConfiguration?.enabled === true &&
-        config.authenticationConfiguration?.type === "aws";
+        config?.authenticationConfiguration?.enabled === true &&
+        config?.authenticationConfiguration?.type === 'aws';
     return (
         <StyledGrid container justifyContent='center'>
             <Grid item sm={12} md={12} lg={8}>
@@ -1042,7 +1026,7 @@ const AddEditAIEndpoint = ({
                                 </FormControl>
                             </Grid>
                             {/* AI Endpoint Auth Fields */}
-                            {IS_APIKEY_AUTH_ENABLED(endpointConfiguration) && (
+                            {IS_APIKEY_AUTH_ENABLED(llmProviderEndpointConfiguration) && (
                                 <>
                                     <Grid item xs={6}>
                                         <TextField
@@ -1114,7 +1098,7 @@ const AddEditAIEndpoint = ({
                             )}
 
                             {/* AWS SigV4 Auth Fields */}
-                            {IS_AWS_SIGV4_AUTH_ENABLED(endpointConfiguration) && (
+                            {IS_AWS_SIGV4_AUTH_ENABLED(llmProviderEndpointConfiguration) && (
                                 <>
                                     <Grid item xs={4}>
                                         <TextField
@@ -1290,6 +1274,19 @@ AddEditAIEndpoint.propTypes = {
             key: PropTypes.string,
             value: PropTypes.string,
         }).isRequired,
+    }).isRequired,
+    llmProviderEndpointConfiguration: PropTypes.shape({
+        authenticationConfiguration: PropTypes.shape({
+            enabled: PropTypes.bool,
+            type: PropTypes.string,
+            parameters: PropTypes.shape({
+                headerEnabled: PropTypes.bool,
+                headerName: PropTypes.string,
+                queryParameterEnabled: PropTypes.bool,
+                queryParameterName: PropTypes.string,
+                awsServiceName: PropTypes.string,
+            }),
+        }),
     }).isRequired,
     match: PropTypes.shape({
         params: PropTypes.shape({
