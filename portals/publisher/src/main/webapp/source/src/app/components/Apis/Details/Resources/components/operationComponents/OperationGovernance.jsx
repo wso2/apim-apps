@@ -58,8 +58,8 @@ export default function OperationGovernance(props) {
     } = props;
     
     // Check if any governance features are supported
-    const supportsOperationSecurity = componentValidator && Array.isArray(componentValidator) && componentValidator && Array.isArray(componentValidator) && componentValidator.includes('operationSecurity');
-    const supportsOpLevelRateLimiting = componentValidator && Array.isArray(componentValidator) && componentValidator && Array.isArray(componentValidator) && componentValidator.includes('operationLevelRateLimiting');
+    const supportsOperationSecurity = componentValidator && Array.isArray(componentValidator) && componentValidator.includes('operationSecurity');
+    const supportsOpLevelRateLimiting = componentValidator && Array.isArray(componentValidator) && componentValidator.includes('operationLevelRateLimiting');
     
     // Early return if no governance features are supported
     if (!supportsOperationSecurity && !supportsOpLevelRateLimiting) {
@@ -71,17 +71,17 @@ export default function OperationGovernance(props) {
         : getOperationScopes(operation, spec);
     const isOperationRateLimiting = api.apiThrottlingPolicy === null || 
         !(componentValidator && Array.isArray(componentValidator) && componentValidator.includes('apiLevelRateLimiting'));
-    const filteredApiScopes = api.scopes.filter((sharedScope) => !sharedScope.shared);
+    const filteredApiScopes = (api.scopes && Array.isArray(api.scopes)) ? api.scopes.filter((sharedScope) => !sharedScope.shared) : [];
 
     const intl = useIntl();
     const scrollToTop = () => {
         setFocusOperationLevel(true);
-        document.querySelector('#react-root').scrollTop = 195;
+        const reactRoot = document.querySelector('#react-root');
+        if (reactRoot) {
+            reactRoot.scrollTop = 195;
+        }
     };
 
-    if (!shouldRenderOperationGovernance(api, componentValidator, filteredApiScopes, sharedScopes)) {
-        return null;
-    }
 
     return (
         <>
