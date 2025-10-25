@@ -56,6 +56,15 @@ export default function OperationGovernance(props) {
         operation, operationsDispatcher, operationRateLimits, api, disableUpdate, spec, target, verb, sharedScopes,
         setFocusOperationLevel, componentValidator, isMCPServer
     } = props;
+    
+    // Check if any governance features are supported
+    const supportsOperationSecurity = componentValidator.includes('operationSecurity');
+    const supportsOpLevelRateLimiting = componentValidator.includes('operationLevelRateLimiting');
+    
+    // Early return if no governance features are supported
+    if (!supportsOperationSecurity && !supportsOpLevelRateLimiting) {
+        return null;
+    }
     // Get operation scopes - handle MCP servers differently since they store scopes directly
     const operationScopes = isMCPServer && operation.scopes 
         ? operation.scopes 

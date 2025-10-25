@@ -1351,6 +1351,7 @@ function EndpointOverview(props) {
                                     globalEpType={endpointType}
                                     apiType={api.type}
                                     componentValidator={componentValidator}
+                                    endpointSecurityTypes={endpointSecurityTypes}
                                 />
                             </Grid>
                         )
