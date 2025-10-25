@@ -58,8 +58,8 @@ export default function OperationGovernance(props) {
     } = props;
     
     // Check if any governance features are supported
-    const supportsOperationSecurity = componentValidator.includes('operationSecurity');
-    const supportsOpLevelRateLimiting = componentValidator.includes('operationLevelRateLimiting');
+    const supportsOperationSecurity = componentValidator && Array.isArray(componentValidator) && componentValidator && Array.isArray(componentValidator) && componentValidator.includes('operationSecurity');
+    const supportsOpLevelRateLimiting = componentValidator && Array.isArray(componentValidator) && componentValidator && Array.isArray(componentValidator) && componentValidator.includes('operationLevelRateLimiting');
     
     // Early return if no governance features are supported
     if (!supportsOperationSecurity && !supportsOpLevelRateLimiting) {
@@ -70,7 +70,7 @@ export default function OperationGovernance(props) {
         ? operation.scopes 
         : getOperationScopes(operation, spec);
     const isOperationRateLimiting = api.apiThrottlingPolicy === null || 
-        !componentValidator.includes('apiLevelRateLimiting');
+        !(componentValidator && Array.isArray(componentValidator) && componentValidator.includes('apiLevelRateLimiting'));
     const filteredApiScopes = api.scopes.filter((sharedScope) => !sharedScope.shared);
 
     const intl = useIntl();
@@ -101,7 +101,7 @@ export default function OperationGovernance(props) {
                 </Typography>
             </Grid>
             <Grid item xs={1} />
-            {componentValidator.includes('operationSecurity') &&
+            {componentValidator && Array.isArray(componentValidator) && componentValidator.includes('operationSecurity') &&
                 <Grid item xs={11}>
                     <FormControl disabled={disableUpdate} component='fieldset'>
                         <FormControlLabel
@@ -147,7 +147,7 @@ export default function OperationGovernance(props) {
             }
             <Grid item md={1} />
             <Grid item md={5}>
-                {componentValidator.includes('operationLevelRateLimiting') &&
+                {componentValidator && Array.isArray(componentValidator) && componentValidator.includes('operationLevelRateLimiting') &&
                     <Box display='flex' flexDirection='row' alignItems='flex-start'>
                         <TextField
                             select
@@ -273,7 +273,7 @@ export default function OperationGovernance(props) {
             </Grid>
             <Grid item md={6} />
             <Grid item md={1} />
-            {componentValidator.includes('operationSecurity') &&
+            {componentValidator && Array.isArray(componentValidator) && componentValidator.includes('operationSecurity') &&
                 <>
                     <Grid item md={7}>
                         {operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none' ? (
