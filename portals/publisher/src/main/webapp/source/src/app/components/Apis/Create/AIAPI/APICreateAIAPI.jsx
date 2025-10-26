@@ -125,8 +125,7 @@ export default function ApiCreateAIAPI(props) {
     function createAPI() {
         setCreating(true);
         const {
-            name, version, context, endpoint, gatewayType, displayName, policies = ["Unlimited"],
-            inputValue, llmProviderId,
+            name, version, context, endpoint, gatewayType, displayName, policies, inputValue, llmProviderId,
         } = apiInputs;
 
         const additionalProperties = {

@@ -45,7 +45,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 const AIEndpoints = ({
     apiObject,
     onChangeAPI,
-    endpointConfiguration,
+    llmProviderEndpointConfiguration,
 }) => {
     const [productionEndpoints, setProductionEndpoints] = useState([]);
     const [sandboxEndpoints, setSandboxEndpoints] = useState([]);
@@ -56,10 +56,22 @@ const AIEndpoints = ({
     const [confirmSetPrimaryOpen, setConfirmSetPrimaryOpen] = useState(false);
     const [confirmRemovePrimaryOpen, setConfirmRemovePrimaryOpen] = useState(false);
     const [selectedEndpoint, setSelectedEndpoint] = useState(null);
+    const [isUnsecured, setUnsecured] = useState(false);
 
     const intl = useIntl();
     const history = useHistory();
     const { updateAPI } = useContext(APIContext);
+
+    useEffect(() => {
+        if (llmProviderEndpointConfiguration) {
+            const authConfig = llmProviderEndpointConfiguration?.authenticationConfiguration;
+            if (authConfig?.enabled === false && authConfig?.type?.toLowerCase() === 'none') {
+                setUnsecured(true);
+            } else {
+                setUnsecured(false);
+            }
+        }
+    }, [llmProviderEndpointConfiguration]);
 
     const fetchEndpoints = () => {
         setLoading(true);
@@ -455,7 +467,7 @@ const AIEndpoints = ({
                                 onDelete={handleDelete}
                                 onSetPrimary={handleSetAsPrimary}
                                 onRemovePrimary={handleRemovePrimary}
-                                endpointConfiguration={endpointConfiguration}
+                                llmProviderEndpointConfiguration={llmProviderEndpointConfiguration}
                             />
                         ))
                     ) : (
@@ -487,7 +499,7 @@ const AIEndpoints = ({
                                 onDelete={handleDelete}
                                 onSetPrimary={handleSetAsPrimary}
                                 onRemovePrimary={handleRemovePrimary}
-                                endpointConfiguration={endpointConfiguration}
+                                llmProviderEndpointConfiguration={llmProviderEndpointConfiguration}
                             />
                         ))
                     ) : (
@@ -518,7 +530,7 @@ const AIEndpoints = ({
                     color='primary'
                     disabled={
                         isRestricted(['apim:api_create', 'apim:api_publish', 'apim:api_manage'], apiObject) ||
-                        !isPrimaryEndpointSecurityConfigured()
+                        (!isUnsecured && !isPrimaryEndpointSecurityConfigured())
                     }
                     endIcon={<OpenInNewIcon />}
                     onClick={() => {
@@ -557,6 +569,13 @@ AIEndpoints.propTypes = {
         }),
     }).isRequired,
     onChangeAPI: PropTypes.func.isRequired,
+    llmProviderEndpointConfiguration: PropTypes.shape({
+        authenticationConfiguration: PropTypes.shape({
+            enabled: PropTypes.bool,
+            type: PropTypes.string,
+            parameters: PropTypes.shape({}),
+        }),
+    }).isRequired,
 }
 
 export default AIEndpoints;

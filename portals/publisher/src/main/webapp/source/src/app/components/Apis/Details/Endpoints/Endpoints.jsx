@@ -31,7 +31,6 @@ import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import cloneDeep from 'lodash.clonedeep';
 import { isRestricted } from 'AppData/AuthManager';
 import { Alert, Progress } from 'AppComponents/Shared';
-import API from 'AppData/api';
 import AddCircle from '@mui/icons-material/AddCircle';
 import { getBasePath } from 'AppComponents/Shared/Utils';
 import MCPServerEndpoints from 'AppComponents/MCPServers/Details/Endpoints/Endpoints';
@@ -120,7 +119,7 @@ const defaultSwagger = { paths: {} };
  * @returns {any} HTML representation.
  */
 function Endpoints(props) {
-    const {  intl, history } = props;
+    const {  intl, history, llmProviderEndpointConfiguration } = props;
     const { data: publisherSettings, isLoading } = usePublisherSettings();
     const { api, updateAPI } = useContext(APIContext);
     const { settings } = useAppContext();
@@ -131,24 +130,9 @@ function Endpoints(props) {
     const [productionBackendList, setProductionBackendList] = useState([]);
     const [isValidSequenceBackend, setIsValidSequenceBackend] = useState(false);
     const [isCustomBackendSelected, setIsCustomBackendSelected] = useState(false);
-    const [endpointConfiguration, setEndpointConfiguration] = useState({
-        authenticationConfiguration: {"authenticationConfiguration":{"enabled":false,"type":null,parameters:{}}}
-    });
     const [componentValidator, setComponentValidator] = useState([]);
     const [endpointSecurityTypes, setEndpointSecurityTypes] = useState([]);
     const isMCPServer = api.isMCPServer();
-
-    useEffect(() => {
-        if (api.subtypeConfiguration?.subtype === 'AIAPI') {
-            API.getLLMProviderEndpointConfiguration(JSON.parse(api.subtypeConfiguration.configuration).llmProviderId)
-                .then((response) => {
-                    if (response.body) {
-                        const config = response.body;
-                        setEndpointConfiguration(config);
-                    }
-                });
-        }
-    }, []);
 
     useEffect(() => {
         if (!isLoading) {
@@ -597,8 +581,8 @@ function Endpoints(props) {
             }
         } else if ((!endpointConfig || !endpointConfig.endpoint_security)
             && apiObject.subtypeConfiguration?.subtype === 'AIAPI'
-            && (endpointConfiguration.authenticationConfiguration)
-            && (endpointConfiguration.authenticationConfiguration.enabled)) {
+            && (llmProviderEndpointConfiguration?.authenticationConfiguration)
+            && (llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled)) {
             return {
                 isValid: false,
                 message: intl.formatMessage({
@@ -821,13 +805,12 @@ function Endpoints(props) {
                                 onChangeAPI={apiDispatcher}
                                 endpointsDispatcher={apiDispatcher}
                                 saveAndRedirect={saveAndRedirect}
-                                endpointConfiguration={endpointConfiguration}
+                                llmProviderEndpointConfiguration={llmProviderEndpointConfiguration}
                             />
                         ))}
                         {isMCPServer && (
                             <MCPServerEndpoints
                                 apiObject={apiObject}
-                                endpointConfiguration={endpointConfiguration}
                                 history={history}
                             />
                         )}
@@ -850,7 +833,6 @@ function Endpoints(props) {
                                             setIsValidSequenceBackend={setIsValidSequenceBackend}
                                             isCustomBackendSelected={isCustomBackendSelected}
                                             setIsCustomBackendSelected={setIsCustomBackendSelected}
-                                            endpointConfiguration={endpointConfiguration}
                                             componentValidator={componentValidator}
                                             endpointSecurityTypes={endpointSecurityTypes}
                                         />
@@ -932,6 +914,13 @@ Endpoints.propTypes = {
     api: PropTypes.shape({}).isRequired,
     intl: PropTypes.shape({}).isRequired,
     history: PropTypes.shape({}).isRequired,
+    llmProviderEndpointConfiguration: PropTypes.shape({
+        authenticationConfiguration: PropTypes.shape({
+            enabled: PropTypes.bool,
+            type: PropTypes.string,
+            parameters: PropTypes.shape({}),
+        }),
+    }).isRequired,
 };
 
 export default withRouter(injectIntl((Endpoints)));
