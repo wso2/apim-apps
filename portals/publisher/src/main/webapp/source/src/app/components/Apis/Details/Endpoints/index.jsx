@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
@@ -24,6 +24,7 @@ import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import { isRestricted } from 'AppData/AuthManager';
 import { getBasePath } from 'AppComponents/Shared/Utils';
 import MCPServer from 'AppData/MCPServer';
+import API from 'AppData/api';
 import AddEditEndpoint from 'AppComponents/MCPServers/Details/Endpoints/AddEditEndpoint';
 import Endpoints from './Endpoints';
 import AddEditAIEndpoint from './AIEndpoints/AddEditAIEndpoint';
@@ -32,26 +33,58 @@ const Endpoint = () => {
     const [api] = useAPI();
     const urlPrefix = getBasePath(api.apiType);
     const isMCPServer = api.type === MCPServer.CONSTS.MCP;
+    const [llmProviderEndpointConfiguration, setLlmProviderEndpointConfiguration] = useState(null);
+
+    useEffect(() => {
+        if (api.subtypeConfiguration?.subtype === 'AIAPI') {
+            API.getLLMProviderEndpointConfiguration(
+                JSON.parse(api.subtypeConfiguration.configuration).llmProviderId)
+                .then((response) => {
+                    if (response.body) {
+                        const config = response.body;
+                        setLlmProviderEndpointConfiguration(config);
+                    }
+                });
+        }
+    }, [api]);
     
     return (
         <Switch>
             <Route
                 exact
                 path={ urlPrefix + ':api_uuid/endpoints/'}
-                render={(props) => <Endpoints {...props} api={api} />}
+                render={(props) => (
+                    <Endpoints
+                        api={api}
+                        llmProviderEndpointConfiguration={llmProviderEndpointConfiguration}
+                        {...props}
+                    />
+                )}
             />
             {!isRestricted(['apim:api_create']) && !isMCPServer && (
                 <Route
                     exact
                     path={urlPrefix + ':api_uuid/endpoints/create'}
-                    render={(props) => <AddEditAIEndpoint apiObject={api} {...props} />}
+                    render={(props) => (
+                        <AddEditAIEndpoint
+                            apiObject={api}
+                            llmProviderEndpointConfiguration={llmProviderEndpointConfiguration}
+                            {...props}
+                        />
+                    )}
                 />
             )}
             {!isRestricted(['apim:api_view', 'apim:api_create']) && !isMCPServer && (
                 <Route
                     exact
                     path={urlPrefix + ':api_uuid/endpoints/:id'}
-                    render={(props) => <AddEditAIEndpoint apiObject={api} {...props} />}
+                    render={(props) => (
+                        <AddEditAIEndpoint
+                            apiObject={api}
+                            llmProviderEndpointConfiguration={llmProviderEndpointConfiguration}
+                            {...props}
+                        />
+                    )}
                 />
             )}
 
@@ -63,7 +96,12 @@ const Endpoint = () => {
                 <Route
                     exact
                     path={urlPrefix + ':mcpserver_uuid/endpoints/create/:id/:endpointType'}
-                    render={(props) => <AddEditEndpoint apiObject={api} {...props} />}
+                    render={(props) => (
+                        <AddEditEndpoint
+                            apiObject={api}
+                            {...props}
+                        />
+                    )}
                 />
             )}
 
@@ -73,7 +111,12 @@ const Endpoint = () => {
                 <Route
                     exact
                     path={urlPrefix + ':mcpserver_uuid/endpoints/:id/:endpointType'}
-                    render={(props) => <AddEditEndpoint {...props} apiObject={api} />}
+                    render={(props) => (
+                        <AddEditEndpoint
+                            apiObject={api}
+                            {...props}
+                        />
+                    )}
                 />
             )}
 

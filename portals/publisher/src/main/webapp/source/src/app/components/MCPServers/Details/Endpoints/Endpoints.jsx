@@ -46,7 +46,6 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
 const Endpoints = ({
     apiObject,
-    endpointConfiguration,
     history,
 }) => {
     const [productionEndpoints, setProductionEndpoints] = useState([]);
@@ -282,7 +281,6 @@ const Endpoints = ({
                                 endpoint={endpoint}
                                 isDeleting={isDeleting}
                                 onDelete={() => handleDelete('PRODUCTION', endpoint)}
-                                endpointConfiguration={endpointConfiguration}
                                 endpointType='PRODUCTION'
                             />
                         ))
@@ -333,7 +331,6 @@ const Endpoints = ({
                                 endpoint={endpoint}
                                 isDeleting={isDeleting}
                                 onDelete={() => handleDelete('SANDBOX', endpoint)}
-                                endpointConfiguration={endpointConfiguration}
                                 endpointType='SANDBOX'
                             />
                         ))
@@ -363,8 +360,11 @@ const Endpoints = ({
                     type='submit'
                     variant='contained'
                     color='primary'
-                    disabled={isRestricted(
-                        ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'], apiObject)}
+                    disabled={
+                        isRestricted(
+                            ['apim:mcp_server_create', 'apim:mcp_server_manage', 'apim:mcp_server_publish'], apiObject
+                        )
+                    }
                     endIcon={<OpenInNewIcon />}
                     onClick={() => {
                         history.push({
