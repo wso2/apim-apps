@@ -19,6 +19,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import {
     Button,
+    Grid,
     Table,
     TableBody,
     TableCell,
@@ -34,6 +35,8 @@ import {
     Tooltip,
     TextField,
     InputAdornment,
+    FormControlLabel,
+    Switch,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import NewSecretDialog from "./NewSecretDialog";
@@ -43,6 +46,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import SearchIcon from "@mui/icons-material/Search";
 import Application from '../../../data/Application';
 import DeleteSecretDialog from "./DeleteSecret";
+import SecretValueDialog from "./SecretValueDialog";
 import Alert from 'AppComponents/Shared/Alert';
 //import { format } from 'date-fns';
 
@@ -55,6 +59,9 @@ const SecretsTable = (props) => {
     const [showSecret, setShowSecret] = useState({});
     const [searchTerm, setSearchTerm] = useState("");
     const [openNewDialog, setOpenNewDialog] = useState(false);
+    const [showExpired, setShowExpired] = useState(false);
+    const [generatedSecret, setGeneratedSecret] = useState(null); // holds the newly created secret
+    const [openSecretValueDialog, setOpenSecretValueDialog] = useState(false); // dialog visibility
 
     //const {appId} = this.props;
 
@@ -122,9 +129,6 @@ const SecretsTable = (props) => {
             description: newSecret.description
         };
 
-        console.log("payload");
-        console.log(payload);
-
         try {
             const response = await application.generateSecret(props.keyMappingId, payload);
 
@@ -134,6 +138,9 @@ const SecretsTable = (props) => {
 
             // Refresh or append new secret to table
             setSecrets((prev) => [...prev, response]);
+            // Show the secret value dialog
+            setGeneratedSecret(response.secretValue);
+            setOpenSecretValueDialog(true);
         } catch (error) {
             console.error("Error creating secret:", error);
             Alert.error("Failed to create secret");
@@ -200,14 +207,40 @@ const renderExpiresIn = (expiryEpoch) => {
         setShowSecret((prev) => ({ ...prev, [id]: !prev[id] }));
     };
 
-    // Filter logic (case-insensitive on description)
+    const handleCloseSecretValueDialog = () => {
+        setOpenSecretValueDialog(false);
+        setGeneratedSecret(null);
+    };
+
+    // Filter by description, expiration, and search term
     const filteredSecrets = useMemo(() => {
-        return secrets.filter((s) =>
-            s.additionalProperties?.description
-                ?.toLowerCase()
-                .includes(searchTerm.toLowerCase())
-        );
-    }, [secrets, searchTerm]);
+        return secrets.filter((secret) => {
+            const { additionalProperties } = secret || {};
+            const { description, expiresAt } = additionalProperties || {};
+
+            const matchesSearch =
+                !searchTerm ||
+                description?.toLowerCase().includes(searchTerm.toLowerCase());
+
+            const isExpired = expiresAt && Date.now() > expiresAt;
+
+            // Show all if showExpired=true, else filter out expired
+            const showSecret = showExpired || !isExpired;
+
+            return matchesSearch && showSecret;
+        });
+    }, [secrets, searchTerm, showExpired]);
+
+    const paginatedSecrets = useMemo(() => {
+        const start = page * rowsPerPage;
+        const end = start + rowsPerPage;
+        return filteredSecrets.slice(start, end);
+    }, [filteredSecrets, page, rowsPerPage]);
+
+    const hasExpiredSecrets = useMemo(
+        () => secrets.some((s) => s.additionalProperties?.expiresAt && Date.now() > s.additionalProperties.expiresAt),
+        [secrets]
+    );
 
     if (loading)
         return (
@@ -217,124 +250,164 @@ const renderExpiresIn = (expiryEpoch) => {
         );
 
     return (
-        <Paper sx={{ width: "80%", overflow: "hidden", p: 2 }}>
-            <Typography variant="h6" gutterBottom>
-                Client Secrets
-            </Typography>
+        <Grid container spacing={2} alignItems="flex-start">
+            {/* Left side title */}
+            <Grid item xs={12} md={1}>
+                <Typography variant="h7" sx={{ mt: 1 }}>
+                    Client Secrets
+                </Typography>
+            </Grid>
 
-            <Box display="flex" justifyContent="space-between" mb={2}>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon sx={{ color: "white"}}/>}
-                    onClick={() => setOpenNewDialog(true)}
-                >
-                    New Secret
-                </Button>
-            </Box>
+            {/* Right side content (everything else) */}
+            <Grid item xs={12} md={7}>
+                <Paper sx={{ width: "100%", overflow: "hidden", p: 3 }}>
+                    {/* Row: New Secret + Show Expired */}
+                    <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        mb={2}
+                    >
+                        <Button
+                            variant="contained"
+                            startIcon={<AddIcon sx={{ color: "white" }} />}
+                            onClick={() => setOpenNewDialog(true)}
+                        >
+                            New Secret
+                        </Button>
 
-            {/* Search bar */}
-            <Box sx={{ mb: 2 }}>
-                <TextField
-                    variant="outlined"
-                    size="small"
-                    placeholder="Search by description..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon />
-                            </InputAdornment>
-                        ),
-                    }}
-                    sx={{ width: "300px" }}
-                />
-            </Box>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={showExpired}
+                                    onChange={(e) => setShowExpired(e.target.checked)}
+                                    color="primary"
+                                    disabled={!hasExpiredSecrets}
+                                />
+                            }
+                            label="Show Expired"
+                        />
+                    </Box>
 
-            <TableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Description</TableCell>
-                            <TableCell>Value</TableCell>
-                            <TableCell>Expires In</TableCell>
-                            <TableCell>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
+                    {/* Search bar (full width) */}
+                    <Box sx={{ mb: 2 }}>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            size="small"
+                            placeholder="Search by description..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    </Box>
 
-                    <TableBody>
-                        {filteredSecrets.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={4} align="center">
-                                    No secrets found
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            filteredSecrets
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((secret) => {
-                                    const { referenceId, secretValue, additionalProperties } = secret;
-                                    const { description, expiresAt } = additionalProperties || {};
-                                    const isVisible = showSecret[referenceId];
-                                    //   const daysUntilExpiry = this.daysUntilExpiry(expiresAt);
-                                    //   const expired = isExpired(daysUntilExpiry);
+                    {/* Table */}
+                    <TableContainer>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Description</TableCell>
+                                    <TableCell>Value</TableCell>
+                                    <TableCell>Expires In</TableCell>
+                                    <TableCell>Actions</TableCell>
+                                </TableRow>
+                            </TableHead>
 
-                                    return (
-                                        <TableRow key={referenceId}>
-                                            <TableCell>{description || "—"}</TableCell>
+                            <TableBody>
+                                {paginatedSecrets.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={4} align="center">
+                                            No secrets found
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    paginatedSecrets.map((secret) => {
+                                        const { referenceId, secretValue, additionalProperties } =
+                                            secret;
+                                        const { description, expiresAt } = additionalProperties || {};
+                                        const isVisible = showSecret[referenceId];
 
-                                            <TableCell sx={{ display: "flex", alignItems: "center" }}>
-                                                <input
-                                                    type={isVisible ? "text" : "password"}
-                                                    value={secretValue}
-                                                    readOnly
-                                                    style={{
-                                                        border: "none",
-                                                        background: "transparent",
-                                                        fontSize: "1rem",
-                                                        width: "90%",
-                                                    }}
-                                                />
-                                                <Tooltip title={isVisible ? "Hide" : "Show"}>
-                                                    <IconButton size="small" onClick={() => toggleSecretVisibility(referenceId)}>
-                                                        {isVisible ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                                                    </IconButton>
-                                                </Tooltip>
-                                            </TableCell>
+                                        return (
+                                            <TableRow key={referenceId}>
+                                                <TableCell>{description || "—"}</TableCell>
 
-                                            <TableCell>
-                                                <Box display="flex" alignItems="center" gap={1}>
-                                                    {renderExpiresIn(expiresAt)}
-                                                </Box>
-                                            </TableCell>
+                                                <TableCell sx={{ display: "flex", alignItems: "center" }}>
+                                                    <input
+                                                        type={isVisible ? "text" : "password"}
+                                                        value={secretValue}
+                                                        readOnly
+                                                        style={{
+                                                            border: "none",
+                                                            background: "transparent",
+                                                            fontSize: "1rem",
+                                                            width: "90%",
+                                                        }}
+                                                    />
+                                                    <Tooltip title={isVisible ? "Hide" : "Show"}>
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={() =>
+                                                                toggleSecretVisibility(referenceId)
+                                                            }
+                                                        >
+                                                            {isVisible ? (
+                                                                <VisibilityOffIcon />
+                                                            ) : (
+                                                                <VisibilityIcon />
+                                                            )}
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </TableCell>
 
-                                            <TableCell>
-                                                <DeleteSecretDialog onDelete={() => handleDelete(referenceId)} />
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                                                <TableCell>
+                                                    <Box display="flex" alignItems="center" gap={1}>
+                                                        {renderExpiresIn(expiresAt)}
+                                                    </Box>
+                                                </TableCell>
 
-            <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={filteredSecrets.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-            />
+                                                <TableCell>
+                                                    <DeleteSecretDialog
+                                                        onDelete={() => handleDelete(referenceId)}
+                                                    />
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
 
-            <NewSecretDialog
-                open={openNewDialog}
-                onClose={() => setOpenNewDialog(false)}
-                onCreate={handleCreateSecret}
-            />
-        </Paper>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={filteredSecrets.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+
+                    <NewSecretDialog
+                        open={openNewDialog}
+                        onClose={() => setOpenNewDialog(false)}
+                        onCreate={handleCreateSecret}
+                    />
+                    <SecretValueDialog
+                        open={openSecretValueDialog}
+                        onClose={handleCloseSecretValueDialog}
+                        secret={generatedSecret}
+                    />
+                </Paper>
+            </Grid>
+        </Grid>
     );
 };
 
