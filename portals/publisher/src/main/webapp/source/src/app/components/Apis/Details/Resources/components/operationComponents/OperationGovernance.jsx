@@ -161,9 +161,7 @@ export default function OperationGovernance(props) {
                                             <Box
                                                 fontWeight='fontWeightBold'
                                                 display='inline'
-                                                color='primary.main'
-                                                cursor='pointer'
-                                                sx ={{ marginLeft: '4px' }}
+                                                sx={{ marginLeft: '4px' }}
                                             >
                                                 <FormattedMessage
                                                     id={'Apis.Details.Resources.components.operationComponents.'
@@ -199,7 +197,7 @@ export default function OperationGovernance(props) {
                                                 defaultMessage='Use'
                                             />
                                             {' '}
-                                            <Box fontWeight='fontWeightBold' display='inline' color='primary.main'>
+                                            <Box fontWeight='fontWeightBold' display='inline'>
                                                 <FormattedMessage
                                                     id={'Apis.Details.Resources.components.operationComponents.'
                                 + 'OperationGovernance.rate.limiting.helperText.section2'}
@@ -244,7 +242,16 @@ export default function OperationGovernance(props) {
                             ))}
                         </TextField>
                         {!isOperationRateLimiting && (
-                            <Button onClick={scrollToTop}>
+                            <Button
+                                onClick={scrollToTop}
+                                variant='text'
+                                size='small'
+                                sx={{
+                                    alignSelf: 'center',
+                                    ml: 1,
+                                    textTransform: 'none'
+                                }}
+                            >
                                 <FormattedMessage
                                     id={
                                         'Apis.Details.Resources.components.operationComponents.'
