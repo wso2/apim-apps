@@ -273,10 +273,7 @@ function Environments(props) {
                                                 aria-label='Copy the API URL to clipboard'
                                                 size='large'
                                                 onClick={() => {
-                                                    navigator.clipboard.writeText(selectedEndpoint.URLs.https
-                                                    || selectedEndpoint.URLs.http
-                                                    || selectedEndpoint.URLs.wss
-                                                    || selectedEndpoint.URLs.ws).then(onCopy);
+                                                    navigator.clipboard.writeText(pickFirstEnabledUrl(selectedEndpoint.URLs)).then(onCopy);
                                                 }}
                                             >
                                                 <Icon color='secondary'>file_copy</Icon>
@@ -328,8 +325,9 @@ function Environments(props) {
                                                         aria-label='Copy the API URL to clipboard'
                                                         size='large'
                                                         onClick={() => {
-                                                            navigator.clipboard.writeText(selectedEndpoint.URLs.wss
-                                                            || selectedEndpoint.URLs.ws).then(onCopy);
+                                                            navigator.clipboard.writeText(pickFirstEnabledUrl(
+                                                                selectedEndpoint.URLs,
+                                                            )).then(onCopy);
                                                         }}
                                                     >
                                                         <Icon color='secondary'>file_copy</Icon>
