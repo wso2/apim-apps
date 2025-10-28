@@ -384,12 +384,12 @@ class ViewKeys extends React.Component {
                 <Grid item container alignItems="center" spacing={1}>
                     {multipleSecretAllowed && (
                         <Grid item md={1} sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Typography variant="subtitle2" sx={{ fontWeight: 400 }}>
+                            <Typography variant="subtitle1" sx={{ fontWeight: 400 }}>
                                 Consumer Key
                             </Typography>
                         </Grid>
                     )}
-                    <Grid item xs={multipleSecretAllowed ? 4 : 6}>
+                    <Grid item xs={multipleSecretAllowed ? 3 : 6}>
                         <Root className={classes.copyWrapper}>
                             <TextField
                                 id='consumer-key'
