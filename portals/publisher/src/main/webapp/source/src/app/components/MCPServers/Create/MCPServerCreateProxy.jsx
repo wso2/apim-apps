@@ -157,10 +157,10 @@ const MCPServerCreateProxy = (props) => {
             context,
             mcpServerUrl,
             gatewayType,
-            policies,
+            policies = ["Unlimited"],
             operations = [],
         } = mcpServerInputs;
-
+        
         let defaultGatewayType;
         if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
             defaultGatewayType = 'wso2/synapse';

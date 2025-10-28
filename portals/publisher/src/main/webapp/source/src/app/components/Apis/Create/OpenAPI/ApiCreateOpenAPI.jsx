@@ -156,7 +156,7 @@ export default function ApiCreateOpenAPI(props) {
     function createAPI() {
         setCreating(true);
         const {
-            name, version, context, endpoint, gatewayType, displayName, policies, inputValue, inputType,
+            name, version, context, endpoint, gatewayType, displayName, policies = ["Unlimited"], inputValue, inputType,
         } = apiInputs;
         let defaultGatewayType;
         if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
