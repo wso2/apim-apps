@@ -57,14 +57,6 @@ export default function OperationGovernance(props) {
         setFocusOperationLevel, componentValidator, isMCPServer
     } = props;
     
-    // Check if any governance features are supported
-    const supportsOperationSecurity = componentValidator && Array.isArray(componentValidator) && componentValidator.includes('operationSecurity');
-    const supportsOpLevelRateLimiting = componentValidator && Array.isArray(componentValidator) && componentValidator.includes('operationLevelRateLimiting');
-    
-    // Early return if no governance features are supported
-    if (!supportsOperationSecurity && !supportsOpLevelRateLimiting) {
-        return null;
-    }
     // Get operation scopes - handle MCP servers differently since they store scopes directly
     const operationScopes = isMCPServer && operation.scopes 
         ? operation.scopes 
@@ -73,15 +65,19 @@ export default function OperationGovernance(props) {
         !(componentValidator && Array.isArray(componentValidator) && componentValidator.includes('apiLevelRateLimiting'));
     const filteredApiScopes = (api.scopes && Array.isArray(api.scopes)) ? api.scopes.filter((sharedScope) => !sharedScope.shared) : [];
 
+    // Check if any governance features are supported - early return for AWS Gateway
+    const supportsOperationSecurity = componentValidator && componentValidator.includes('operationSecurity');
+    const supportsOpLevelRateLimiting = componentValidator && componentValidator.includes('operationLevelRateLimiting');
+    
+    if (!supportsOperationSecurity && !supportsOpLevelRateLimiting) {
+        return null;
+    }
+    
     const intl = useIntl();
     const scrollToTop = () => {
         setFocusOperationLevel(true);
-        const reactRoot = document.querySelector('#react-root');
-        if (reactRoot) {
-            reactRoot.scrollTop = 195;
-        }
+        window.scrollTo({ top: 195, behavior: 'smooth' });
     };
-
 
     return (
         <>
