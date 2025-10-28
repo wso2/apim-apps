@@ -151,7 +151,7 @@ const renderExpiresIn = (expiryEpoch) => {
     if (!expiryEpoch || expiryEpoch === 0) {
         return (
             <Tooltip title="This secret never expires" arrow>
-                <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                <Typography variant="body1" sx={{ color: 'text.secondary', fontWeight: 500 }}>
                     Never expires
                 </Typography>
             </Tooltip>
@@ -175,7 +175,7 @@ const renderExpiresIn = (expiryEpoch) => {
     if (diffMs < 0) {
         return (
             <Tooltip title={`Expired on: ${formattedDate}`} arrow>
-                <Typography variant="body2" sx={{ color: 'error.main', fontWeight: 600 }}>
+                <Typography variant="body1" sx={{ color: 'error.main', fontWeight: 600 }}>
                     Expired
                 </Typography>
             </Tooltip>
@@ -206,7 +206,8 @@ const renderExpiresIn = (expiryEpoch) => {
     const filteredSecrets = useMemo(() => {
         return secrets.filter((secret) => {
             const { additionalProperties } = secret || {};
-            const { description, expiresAt } = additionalProperties || {};
+            const description = additionalProperties?.description || "";
+            const expiresAt = additionalProperties?.expiresAt;
 
             const matchesSearch =
                 !searchTerm ||
@@ -243,14 +244,14 @@ const renderExpiresIn = (expiryEpoch) => {
         <Grid container spacing={2} alignItems="flex-start">
             {/* Left side title */}
             <Grid item xs={12} md={1}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 400 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 400, mt: 3 }}>
                     Consumer Secrets
                 </Typography>
             </Grid>
 
             {/* Right side content (everything else) */}
-            <Grid item xs={12} md={9}>
-                <Paper sx={{ width: "100%", overflow: "hidden", p: 3 }}>
+            <Grid item xs={12} md={8}>
+                <Paper sx={{ width: "100%", overflow: "hidden", p: 2 }}>
                     {/* Row: New Secret + Show Expired */}
                     <Box
                         display="flex"
@@ -299,14 +300,30 @@ const renderExpiresIn = (expiryEpoch) => {
                     </Box>
 
                     {/* Table */}
-                    <TableContainer>
+                    <TableContainer sx={{ tableLayout: 'fixed' }}>
                         <Table size="small">
                             <TableHead>
-                                <TableRow sx={{ '& th': { py: 0.5, fontSize: '0.9rem' } }}>
-                                    <TableCell>Description</TableCell>
-                                    <TableCell>Value</TableCell>
-                                    <TableCell>Expires In</TableCell>
-                                    <TableCell>Actions</TableCell>
+                                <TableRow>
+                                    <TableCell sx={{ width: '40%' }}>
+                                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                            Description
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell sx={{ width: '30%' }}>
+                                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                            Value
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell sx={{ width: '20%' }}>
+                                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                            Expires In
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell sx={{ width: '10%' }}>
+                                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                            Actions
+                                        </Typography>
+                                    </TableCell>
                                 </TableRow>
                             </TableHead>
 
@@ -324,15 +341,15 @@ const renderExpiresIn = (expiryEpoch) => {
                                         const { description, expiresAt } = additionalProperties || {};
 
                                         return (
-                                            <TableRow key={referenceId} sx={{ '& td': { py: 0.5 } }}>
+                                            <TableRow key={referenceId}>
                                                 <TableCell>
-                                                    <Typography variant="body2">
+                                                    <Typography variant="body1">
                                                         {description || "—"}
                                                     </Typography>
                                                 </TableCell>
 
                                                 <TableCell>
-                                                    <Typography variant="body2">
+                                                    <Typography variant="body1">
                                                         {secretValue}
                                                     </Typography>
                                                 </TableCell>
