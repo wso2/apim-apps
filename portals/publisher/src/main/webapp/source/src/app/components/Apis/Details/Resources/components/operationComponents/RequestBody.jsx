@@ -43,7 +43,7 @@ function RequestBody(props) {
                 />
             </TableCell>
             <TableCell>{contentType}</TableCell>
-            <TableCell align='left'>{content.schema.type}</TableCell>
+            <TableCell align='left'>{content.schema?.type}</TableCell>
             <TableCell align='left'>
                 {operation.requestBody.required
                     ? (
