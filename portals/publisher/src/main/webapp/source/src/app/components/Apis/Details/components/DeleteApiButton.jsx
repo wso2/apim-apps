@@ -280,7 +280,7 @@ class DeleteApiButton extends React.Component {
      */
     render() {
         const { api, onClick, updateData } = this.props;
-        const version = api.apiType === API.CONSTS.APIProduct ? null : '-' + api.version;
+        const version = '-' + api.version;
         const deleteHandler = onClick || this.handleApiDelete;
         const type = getTypeToDisplay(api.apiType);
         let path = resourcePath.SINGLE_API;
@@ -339,7 +339,7 @@ class DeleteApiButton extends React.Component {
                                 values={{
                                     b: (msg) => <b>{msg}</b>,
                                     type,
-                                    name: api.name,
+                                    name: api.displayName || api.name,
                                     version,
                                 }}
                             />

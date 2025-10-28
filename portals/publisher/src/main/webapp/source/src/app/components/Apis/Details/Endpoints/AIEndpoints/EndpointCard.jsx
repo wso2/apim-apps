@@ -99,7 +99,7 @@ const EndpointCard = ({
     onDelete,
     onSetPrimary,
     onRemovePrimary,
-    endpointConfiguration,
+    llmProviderEndpointConfiguration,
 }) => {
     const history = useHistory();
     const urlPrefix = getBasePath(apiObject.apiType);
@@ -116,7 +116,7 @@ const EndpointCard = ({
     }
 
     const renderEndpointSecurityWarning = () => {
-        if (endpointConfiguration.authenticationConfiguration.enabled) {
+        if (llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled) {
             const endpointSecurity =
                 endpoint.deploymentStage === 'PRODUCTION'
                     ? endpoint.endpointConfig?.endpoint_security?.production
@@ -125,7 +125,7 @@ const EndpointCard = ({
             // API Key warning
             if (
                 !endpointSecurity &&
-                endpointConfiguration.authenticationConfiguration.type === "apikey"
+                llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'apikey'
             ) {
                 return (
                     <Tooltip title='Configure API Key security for this endpoint'>
@@ -149,7 +149,7 @@ const EndpointCard = ({
             // AWS SigV4 warning
             if (
                 !endpointSecurity &&
-                endpointConfiguration.authenticationConfiguration.type === "aws"
+                llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'aws'
             ) {
                 return (
                     <Tooltip title='Configure AWS security for this endpoint'>
@@ -314,6 +314,13 @@ EndpointCard.propTypes = {
     onDelete: PropTypes.func.isRequired,
     onSetPrimary: PropTypes.func.isRequired,
     onRemovePrimary: PropTypes.func.isRequired,
+    llmProviderEndpointConfiguration: PropTypes.shape({
+        authenticationConfiguration: PropTypes.shape({
+            enabled: PropTypes.bool,
+            type: PropTypes.string,
+            parameters: PropTypes.shape({}),
+        }),
+    }).isRequired,
 };
 
 export default EndpointCard;

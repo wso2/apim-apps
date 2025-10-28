@@ -231,25 +231,41 @@ class Scopes extends React.Component {
                                 <table className={classes.actionTable}>
                                     <tr>
                                         <td>
-                                            <Button
-                                                disabled={this.isAccessRestricted() || api.isRevision}
-                                                to={
-                                                    !this.isAccessRestricted() && !api.isRevision && {
-                                                        pathname: editUrl,
-                                                        state: {
-                                                            scopeName,
-                                                        },
-                                                    }
+                                            <Tooltip
+                                                title={
+                                                    this.isAccessRestricted() || api.isRevision
+                                                        ? (
+                                                            <FormattedMessage
+                                                                id='Apis.Details.Scopes.Scopes.edit.disabled.tooltip'
+                                                                defaultMessage={'You do not have permission to ' + 
+                                                                    'edit scopes'}
+                                                            />
+                                                        )
+                                                        : ''
                                                 }
-                                                component={Link}
-                                                aria-label={'Edit ' + scopeName}
                                             >
-                                                <Icon>edit</Icon>
-                                                <FormattedMessage
-                                                    id='Apis.Details.scopes.Edit.text.editor.edit'
-                                                    defaultMessage='Edit'
-                                                />
-                                            </Button>
+                                                <span>
+                                                    <Button
+                                                        disabled={this.isAccessRestricted() || api.isRevision}
+                                                        to={
+                                                            !this.isAccessRestricted() && !api.isRevision && {
+                                                                pathname: editUrl,
+                                                                state: {
+                                                                    scopeName,
+                                                                },
+                                                            }
+                                                        }
+                                                        component={Link}
+                                                        aria-label={'Edit ' + scopeName}
+                                                    >
+                                                        <Icon>edit</Icon>
+                                                        <FormattedMessage
+                                                            id='Apis.Details.scopes.Edit.text.editor.edit'
+                                                            defaultMessage='Edit'
+                                                        />
+                                                    </Button>
+                                                </span>
+                                            </Tooltip>
                                         </td>
                                         {!enableReadOnly && (
                                             <td>
@@ -437,8 +453,11 @@ class Scopes extends React.Component {
                                     id='Apis.Details.Scopes.Scopes.update.not.allowed'
                                     defaultMessage={
                                         '*You are not authorized to update scopes of'
-                                        + ' the API due to insufficient permissions'
+                                        + ' the {type} due to insufficient permissions'
                                     }
+                                    values={{
+                                        type: getTypeToDisplay(api.apiType)
+                                    }}
                                 />
                             </Typography>
                         </Grid>
