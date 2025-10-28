@@ -135,7 +135,7 @@ const MCPServerCreateDefault = (props) => {
             context,
             endpoint,
             gatewayType,
-            policies,
+            policies = ["Unlimited"],
             inputValue,
             inputType,
             operations = [],
