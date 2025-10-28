@@ -11,11 +11,18 @@ import {
 } from "@mui/material";
 
 const NewSecretDialog = ({ open, onClose, onCreate }) => {
-    const [form, setForm] = useState({
+    const initialFormState = {
         description: "",
         expiryOption: "30",
         customDays: "",
-    });
+    };
+
+    const [form, setForm] = useState(initialFormState);
+
+    const handleClose = () => {
+        setForm(initialFormState); // Reset first
+        onClose(); // Then close the dialog
+    };
 
     const handleSubmit = () => {
         const expiryDays =
@@ -27,6 +34,8 @@ const NewSecretDialog = ({ open, onClose, onCreate }) => {
             expiresInSeconds: expiryDays > 0 ? expiryDays * 24 * 60 * 60 : 0,
         };
         onCreate(payload);
+        // Reset form after creation
+        setForm(initialFormState);
         onClose();
     };
 
@@ -73,7 +82,7 @@ const NewSecretDialog = ({ open, onClose, onCreate }) => {
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose}>Cancel</Button>
+                <Button onClick={handleClose}>Cancel</Button>
                 <Button
                     variant="contained"
                     disabled={!form.description.trim()}
