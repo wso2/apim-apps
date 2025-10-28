@@ -378,109 +378,48 @@ class ViewKeys extends React.Component {
             intl, selectedApp: { hashEnabled }, keyType,
         } = this.props;
         const { keyCopied, secretCopied, showCS } = this.state;
+        const multipleSecretAllowed = true;
         return (
             <>
-                <Grid item xs={6}>
-                    <Root className={classes.copyWrapper}>
-                        <TextField
-                            id='consumer-key'
-                            value={consumerKey}
-                            margin='dense'
-                            size='small'
-                            label={(
-                                <FormattedMessage
-                                    id='Shared.AppsAndKeys.ViewKeys.consumer.key'
-                                    defaultMessage='Consumer Key'
-                                />
-                            )}
-                            fullWidth
-                            variant='outlined'
-                            InputProps={{
-                                readOnly: true,
-                                endAdornment: (
-                                    <InputAdornment position='end'>
-                                        <Tooltip
-                                            title={
-                                                keyCopied
-                                                    ? intl.formatMessage({
-                                                        defaultMessage: 'Copied',
-                                                        id: 'Shared.AppsAndKeys.ViewKeys.copied',
-                                                    })
-                                                    : intl.formatMessage({
-                                                        defaultMessage: 'Copy to clipboard',
-                                                        id: 'Shared.AppsAndKeys.ViewKeys.copy.to',
-                                                    })
-                                            }
-                                            placement='right'
-                                        >
-                                            <IconButton
-                                                aria-label='Copy to clipboard'
-                                                classes={{ root: classes.iconButton }}
-                                                size='large'
-                                                onClick={() => {
-                                                    navigator.clipboard.writeText(consumerKey)
-                                                        .then(() => this.onCopy('keyCopied'));
-                                                }}
-                                            >
-                                                <Icon color='secondary'>
-                                                    file_copy
-                                                </Icon>
-                                            </IconButton>
-                                        </Tooltip>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                    </Root>
-                    <FormControl variant='standard'>
-                        <FormHelperText id='consumer-key-helper-text'>
-                            <FormattedMessage
-                                id='Shared.AppsAndKeys.ViewKeys.consumer.key.title'
-                                defaultMessage='Consumer Key of the application'
-                            />
-                        </FormHelperText>
-                    </FormControl>
-                </Grid>
-                <Grid item xs={6}>
-                    <Root className={classes.copyWrapper}>
-                        {!hashEnabled ? (
+                <Grid item container alignItems="center" spacing={1}>
+                    {multipleSecretAllowed && (
+                        <Grid item md={1} sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 400 }}>
+                                Consumer Key
+                            </Typography>
+                        </Grid>
+                    )}
+                    <Grid item xs={multipleSecretAllowed ? 4 : 6}>
+                        <Root className={classes.copyWrapper}>
                             <TextField
-                                id='consumer-secret'
-                                label={(
-                                    <FormattedMessage
-                                        id='Shared.AppsAndKeys.ViewKeys.consumer.secret'
-                                        defaultMessage='Consumer Secret'
-                                    />
-                                )}
-                                type={showCS || !consumerSecret ? 'text' : 'password'}
-                                value={consumerSecret}
+                                id='consumer-key'
+                                value={consumerKey}
                                 margin='dense'
+                                size='small'
+                                label={
+                                    !multipleSecretAllowed
+                                        ? <FormattedMessage
+                                            id="Shared.AppsAndKeys.ViewKeys.consumer.key"
+                                            defaultMessage="Consumer Key"
+                                        />
+                                        : undefined // no label when multiple secrets are allowed
+                                }
                                 fullWidth
                                 variant='outlined'
-                                size='small'
                                 InputProps={{
                                     readOnly: true,
                                     endAdornment: (
                                         <InputAdornment position='end'>
-                                            <IconButton
-                                                classes={{ root: classes.iconButton }}
-                                                onClick={() => this.handleShowHidden('showCS')}
-                                                onMouseDown={this.handleMouseDownGeneric}
-                                                id='visibility-toggle-btn'
-                                                size='large'
-                                            >
-                                                {showCS ? <Icon>visibility_off</Icon> : <Icon>visibility</Icon>}
-                                            </IconButton>
                                             <Tooltip
                                                 title={
-                                                    secretCopied
+                                                    keyCopied
                                                         ? intl.formatMessage({
                                                             defaultMessage: 'Copied',
                                                             id: 'Shared.AppsAndKeys.ViewKeys.copied',
                                                         })
                                                         : intl.formatMessage({
                                                             defaultMessage: 'Copy to clipboard',
-                                                            id: 'Shared.AppsAndKeys.ViewKeys.copy.to.clipboard',
+                                                            id: 'Shared.AppsAndKeys.ViewKeys.copy.to',
                                                         })
                                                 }
                                                 placement='right'
@@ -490,43 +429,121 @@ class ViewKeys extends React.Component {
                                                     classes={{ root: classes.iconButton }}
                                                     size='large'
                                                     onClick={() => {
-                                                        navigator.clipboard
-                                                            .writeText(consumerSecret).then(() => this.onCopy('secretCopied'));
+                                                        navigator.clipboard.writeText(consumerKey)
+                                                            .then(() => this.onCopy('keyCopied'));
                                                     }}
                                                 >
-                                                    <Icon color='secondary'>file_copy</Icon>
+                                                    <Icon color='secondary'>
+                                                        file_copy
+                                                    </Icon>
                                                 </IconButton>
                                             </Tooltip>
                                         </InputAdornment>
                                     ),
                                 }}
                             />
-                        ) : (
-                            <Button
-                                variant='contained'
-                                color='primary'
-                                sx={{ mt: 1 }}
-                                onClick={() => this.handleSecretRegenerate(consumerKey, keyType, keyMappingId, selectedTab)}
-                                disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
-                            >
+                        </Root>
+                    {!multipleSecretAllowed && (
+                        <FormControl variant="standard">
+                            <FormHelperText id="consumer-key-helper-text">
                                 <FormattedMessage
-                                    defaultMessage='Regenerate Consumer Secret'
-                                    id='Shared.AppsAndKeys.ViewKeys.consumer.secret.button.regenerate'
-                                />
-                            </Button>
-                        )}
-                    </Root>
-                    {!hashEnabled && (
-                        <FormControl variant='standard'>
-                            <FormHelperText id='consumer-secret-helper-text'>
-                                <FormattedMessage
-                                    id='Shared.AppsAndKeys.ViewKeys.consumer.secret.of.application'
-                                    defaultMessage='Consumer Secret of the application'
+                                    id="Shared.AppsAndKeys.ViewKeys.consumer.key.title"
+                                    defaultMessage="Consumer Key of the application"
                                 />
                             </FormHelperText>
                         </FormControl>
                     )}
+                    </Grid>
                 </Grid>
+                {/* Consumer Secret (hidden when multiple secrets enabled) */}
+                {!multipleSecretAllowed && (
+                    <Grid item xs={6}>
+                        <Root className={classes.copyWrapper}>
+                            {!hashEnabled ? (
+                                <TextField
+                                    id='consumer-secret'
+                                    label={(
+                                        <FormattedMessage
+                                            id='Shared.AppsAndKeys.ViewKeys.consumer.secret'
+                                            defaultMessage='Consumer Secret'
+                                        />
+                                    )}
+                                    type={showCS || !consumerSecret ? 'text' : 'password'}
+                                    value={consumerSecret}
+                                    margin='dense'
+                                    fullWidth
+                                    variant='outlined'
+                                    size='small'
+                                    InputProps={{
+                                        readOnly: true,
+                                        endAdornment: (
+                                            <InputAdornment position='end'>
+                                                <IconButton
+                                                    classes={{ root: classes.iconButton }}
+                                                    onClick={() => this.handleShowHidden('showCS')}
+                                                    onMouseDown={this.handleMouseDownGeneric}
+                                                    id='visibility-toggle-btn'
+                                                    size='large'
+                                                >
+                                                    {showCS ? <Icon>visibility_off</Icon> : <Icon>visibility</Icon>}
+                                                </IconButton>
+                                                <Tooltip
+                                                    title={
+                                                        secretCopied
+                                                            ? intl.formatMessage({
+                                                                defaultMessage: 'Copied',
+                                                                id: 'Shared.AppsAndKeys.ViewKeys.copied',
+                                                            })
+                                                            : intl.formatMessage({
+                                                                defaultMessage: 'Copy to clipboard',
+                                                                id: 'Shared.AppsAndKeys.ViewKeys.copy.to.clipboard',
+                                                            })
+                                                    }
+                                                    placement='right'
+                                                >
+                                                    <IconButton
+                                                        aria-label='Copy to clipboard'
+                                                        classes={{ root: classes.iconButton }}
+                                                        size='large'
+                                                        onClick={() => {
+                                                            navigator.clipboard
+                                                                .writeText(consumerSecret).then(() => this.onCopy('secretCopied'));
+                                                        }}
+                                                    >
+                                                        <Icon color='secondary'>file_copy</Icon>
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            ) : (
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    sx={{ mt: 1 }}
+                                    onClick={() => this.handleSecretRegenerate(consumerKey, keyType, keyMappingId, selectedTab)}
+                                    disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
+                                >
+                                    <FormattedMessage
+                                        defaultMessage='Regenerate Consumer Secret'
+                                        id='Shared.AppsAndKeys.ViewKeys.consumer.secret.button.regenerate'
+                                    />
+                                </Button>
+                            )}
+                        </Root>
+                        {!hashEnabled && (
+                            <FormControl variant='standard'>
+                                <FormHelperText id='consumer-secret-helper-text'>
+                                    <FormattedMessage
+                                        id='Shared.AppsAndKeys.ViewKeys.consumer.secret.of.application'
+                                        defaultMessage='Consumer Secret of the application'
+                                    />
+                                </FormHelperText>
+                            </FormControl>
+                        )}
+                    </Grid>
+                )}
             </>
         );
     }
@@ -577,6 +594,7 @@ class ViewKeys extends React.Component {
                 tokenDetails.tokenScopes = initialScopes;
             }
         }
+        const multipleSecretAllowed = true;
 
         let dialogHead;
         if (showCurl) {
@@ -688,55 +706,62 @@ class ViewKeys extends React.Component {
                                 </Button>
                             </DialogActions>
                         </Dialog>
-                        {!hashEnabled && (
-                            <div className={classes.tokenSection}>
-                                {(keyManagerConfig.enableTokenGeneration && supportedGrantTypesUnchanged
-                                    && supportedGrantTypesUnchanged.find((a) => a.includes('client_credentials')))
-                                    && (mode !== 'MAPPED' || enableTokenGenForMappedApps === true)
-                                    && (
+                        {multipleSecretAllowed ? (
+                            // When multiple secrets are allowed → show SecretsTable only
+                            <SecretsTable 
+                                appId={this.appId}
+                                keyMappingId={keyMappingId}
+                            />
+                        ) : (
+                            // When multiple secrets are NOT allowed → show the rest of the UI
+                            <>
+                                {!hashEnabled && (
+                                    <div className={classes.tokenSection}>
+                                        {(keyManagerConfig.enableTokenGeneration && supportedGrantTypesUnchanged
+                                            && supportedGrantTypesUnchanged.find((a) => a.includes('client_credentials')))
+                                            && (mode !== 'MAPPED' || enableTokenGenForMappedApps === true)
+                                            && (
+                                                <Button
+                                                    id='generate-access-token-oauth2'
+                                                    variant='outlined'
+                                                    size='small'
+                                                    color='grey'
+                                                    className={classes.margin}
+                                                    onClick={this.handleClickOpen}
+                                                    disabled={!supportedGrantTypesUnchanged.includes('client_credentials')}
+                                                >
+                                                    <FormattedMessage
+                                                        id='Shared.AppsAndKeys.ViewKeys.generate.access.token'
+                                                        defaultMessage='Generate Access Token'
+                                                    />
+                                                </Button>
+                                            )}
                                         <Button
-                                            id='generate-access-token-oauth2'
+                                            id='curl-to-generate-access-token-btn'
                                             variant='outlined'
                                             size='small'
                                             color='grey'
                                             className={classes.margin}
-                                            onClick={this.handleClickOpen}
-                                            disabled={!supportedGrantTypesUnchanged.includes('client_credentials')}
+                                            onClick={this.handleClickOpenCurl}
                                         >
                                             <FormattedMessage
-                                                id='Shared.AppsAndKeys.ViewKeys.generate.access.token'
-                                                defaultMessage='Generate Access Token'
+                                                id='Shared.AppsAndKeys.ViewKeys.curl.to.generate'
+                                                defaultMessage='CURL to Generate Access Token'
                                             />
                                         </Button>
-                                    )}
-                                <Button
-                                    id='curl-to-generate-access-token-btn'
-                                    variant='outlined'
-                                    size='small'
-                                    color='grey'
-                                    className={classes.margin}
-                                    onClick={this.handleClickOpenCurl}
-                                >
-                                    <FormattedMessage
-                                        id='Shared.AppsAndKeys.ViewKeys.curl.to.generate'
-                                        defaultMessage='CURL to Generate Access Token'
-                                    />
-                                </Button>
-                            </div>
+                                    </div>
+                                )}
+                                {supportedGrantTypesUnchanged && !supportedGrantTypesUnchanged.includes('client_credentials') && !hashEnabled && (
+                                    <Typography variant='caption' gutterBottom>
+                                        <FormattedMessage
+                                            id='Shared.AppsAndKeys.ViewKeys.client.enable.client.credentials'
+                                            defaultMessage={'Enable Client Credentials grant '
+                                                + 'type to generate test access tokens'}
+                                        />
+                                    </Typography>
+                                )}
+                            </>
                         )}
-                        {supportedGrantTypesUnchanged && !supportedGrantTypesUnchanged.includes('client_credentials') && !hashEnabled && (
-                            <Typography variant='caption' gutterBottom>
-                                <FormattedMessage
-                                    id='Shared.AppsAndKeys.ViewKeys.client.enable.client.credentials'
-                                    defaultMessage={'Enable Client Credentials grant '
-                                        + 'type to generate test access tokens'}
-                                />
-                            </Typography>
-                        )}
-                        <SecretsTable 
-                            appId={this.appId}
-                            keyMappingId={keyMappingId} 
-                        />
                     </Grid>
                 </Grid>
             </Root>
