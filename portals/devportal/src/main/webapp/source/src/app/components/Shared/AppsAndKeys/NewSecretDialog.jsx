@@ -40,13 +40,15 @@ const NewSecretDialog = ({ open, onClose, onCreate }) => {
     };
 
     return (
-        <Dialog open={open} onClose={onClose}>
+        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
             <DialogTitle>Create New Secret</DialogTitle>
             <DialogContent>
                 <Box display="flex" flexDirection="column" gap={2} mt={1}>
                     <TextField
                         label="Description"
                         fullWidth
+                        margin="normal"
+                        size="medium"
                         value={form.description}
                         onChange={(e) =>
                             setForm({ ...form, description: e.target.value })
@@ -85,7 +87,6 @@ const NewSecretDialog = ({ open, onClose, onCreate }) => {
                 <Button onClick={handleClose}>Cancel</Button>
                 <Button
                     variant="contained"
-                    disabled={!form.description.trim()}
                     onClick={handleSubmit}
                 >
                     Create
