@@ -27,7 +27,6 @@ import {
     TableHead,
     TableRow,
     Paper,
-    IconButton,
     TablePagination,
     Typography,
     CircularProgress,
@@ -41,14 +40,11 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import NewSecretDialog from "./NewSecretDialog";
 import PropTypes from 'prop-types';
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import SearchIcon from "@mui/icons-material/Search";
 import Application from '../../../data/Application';
 import DeleteSecretDialog from "./DeleteSecret";
 import SecretValueDialog from "./SecretValueDialog";
 import Alert from 'AppComponents/Shared/Alert';
-//import { format } from 'date-fns';
 
 const SecretsTable = (props) => {
 
@@ -56,7 +52,6 @@ const SecretsTable = (props) => {
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [showSecret, setShowSecret] = useState({});
     const [searchTerm, setSearchTerm] = useState("");
     const [openNewDialog, setOpenNewDialog] = useState(false);
     const [showExpired, setShowExpired] = useState(false);
@@ -134,7 +129,6 @@ const SecretsTable = (props) => {
 
             Alert.info("Secret created successfully!");
             setOpenNewDialog(false);
-            //setNewSecret({ description: "", expiryOption: "30", customDays: "" });
 
             // Refresh or append new secret to table
             setSecrets((prev) => [...prev, response]);
@@ -190,7 +184,7 @@ const renderExpiresIn = (expiryEpoch) => {
 
     return (
         <Tooltip title={`Expires on: ${formattedDate}`} arrow>
-            <Typography variant="body2" sx={{ color: 'text.primary', fontWeight: 500 }}>
+            <Typography variant="body2">
                 {`${diffDays} day${diffDays !== 1 ? 's' : ''}`}
             </Typography>
         </Tooltip>
@@ -201,10 +195,6 @@ const renderExpiresIn = (expiryEpoch) => {
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
-    };
-
-    const toggleSecretVisibility = (id) => {
-        setShowSecret((prev) => ({ ...prev, [id]: !prev[id] }));
     };
 
     const handleCloseSecretValueDialog = () => {
@@ -253,13 +243,13 @@ const renderExpiresIn = (expiryEpoch) => {
         <Grid container spacing={2} alignItems="flex-start">
             {/* Left side title */}
             <Grid item xs={12} md={1}>
-                <Typography variant="h7" sx={{ mt: 1 }}>
-                    Client Secrets
+                <Typography variant="subtitle2" sx={{ fontWeight: 400 }}>
+                    Consumer Secrets
                 </Typography>
             </Grid>
 
             {/* Right side content (everything else) */}
-            <Grid item xs={12} md={7}>
+            <Grid item xs={12} md={9}>
                 <Paper sx={{ width: "100%", overflow: "hidden", p: 3 }}>
                     {/* Row: New Secret + Show Expired */}
                     <Box
@@ -310,9 +300,9 @@ const renderExpiresIn = (expiryEpoch) => {
 
                     {/* Table */}
                     <TableContainer>
-                        <Table>
+                        <Table size="small">
                             <TableHead>
-                                <TableRow>
+                                <TableRow sx={{ '& th': { py: 0.5, fontSize: '0.9rem' } }}>
                                     <TableCell>Description</TableCell>
                                     <TableCell>Value</TableCell>
                                     <TableCell>Expires In</TableCell>
@@ -332,38 +322,19 @@ const renderExpiresIn = (expiryEpoch) => {
                                         const { referenceId, secretValue, additionalProperties } =
                                             secret;
                                         const { description, expiresAt } = additionalProperties || {};
-                                        const isVisible = showSecret[referenceId];
 
                                         return (
-                                            <TableRow key={referenceId}>
-                                                <TableCell>{description || "—"}</TableCell>
+                                            <TableRow key={referenceId} sx={{ '& td': { py: 0.5 } }}>
+                                                <TableCell>
+                                                    <Typography variant="body2">
+                                                        {description || "—"}
+                                                    </Typography>
+                                                </TableCell>
 
-                                                <TableCell sx={{ display: "flex", alignItems: "center" }}>
-                                                    <input
-                                                        type={isVisible ? "text" : "password"}
-                                                        value={secretValue}
-                                                        readOnly
-                                                        style={{
-                                                            border: "none",
-                                                            background: "transparent",
-                                                            fontSize: "1rem",
-                                                            width: "90%",
-                                                        }}
-                                                    />
-                                                    <Tooltip title={isVisible ? "Hide" : "Show"}>
-                                                        <IconButton
-                                                            size="small"
-                                                            onClick={() =>
-                                                                toggleSecretVisibility(referenceId)
-                                                            }
-                                                        >
-                                                            {isVisible ? (
-                                                                <VisibilityOffIcon />
-                                                            ) : (
-                                                                <VisibilityIcon />
-                                                            )}
-                                                        </IconButton>
-                                                    </Tooltip>
+                                                <TableCell>
+                                                    <Typography variant="body2">
+                                                        {secretValue}
+                                                    </Typography>
                                                 </TableCell>
 
                                                 <TableCell>
