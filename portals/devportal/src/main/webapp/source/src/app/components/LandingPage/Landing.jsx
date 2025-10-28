@@ -69,7 +69,7 @@ function Landing() {
                                     {listByTagContent[0].description}
                                 </Typography>
                             )}
-                            <ApisWithTag tag={listByTagContent[0].tag} maxCount={listByTagContent[1].maxCount} />
+                            <ApisWithTag tag={listByTagContent[0].tag} maxCount={listByTagContent[0].maxCount} />
                         </Grid>
                     )}
                 </Grid>

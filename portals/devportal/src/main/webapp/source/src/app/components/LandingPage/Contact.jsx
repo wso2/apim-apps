@@ -8,25 +8,28 @@ const classes = {
     root: `${PREFIX}-root`,
 };
 
-const Root = styled('div')(() => ({
-    [`&.${classes.root}`]: {
-        paddingTop: 20,
-        paddingBottom: 20,
-    },
-}));
+const StyledRoot = styled('div')(({ theme }) => {
+    const { custom: { landingPage: { contact: { style = {} } } } } = theme;
+    return {
+        [`&.${classes.root}`]: {
+            paddingTop: style.paddingTop || 20,
+            paddingBottom: style.paddingBottom || 20,
+            ...style,
+        },
+    };
+});
 
 /**
- * Renders parallax scroll section.
- * @param {JSON} props Parent pros.
- * @returns {JSX} rendered parallax scroll view.
+ * Renders contact section.
+ * @returns {JSX} rendered contact view.
  */
 function Contact() {
     const theme = useTheme();
     const { custom: { landingPage: { contact: { contactHTML } } } } = theme;
     return (
-        <Root className={classes.root}>
+        <StyledRoot className={classes.root}>
             <HTMLRender html={contactHTML} />
-        </Root>
+        </StyledRoot>
     );
 }
 
