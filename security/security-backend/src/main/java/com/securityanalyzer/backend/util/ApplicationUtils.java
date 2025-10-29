@@ -41,7 +41,8 @@ public class ApplicationUtils {
     }
 
     /**
-     * The deserializeList method deserializes the collection Table  written in text file and returns a Table */
+     * The deserializeList method deserializes the collection Table written in text file and returns a Table
+     */
     public static Table<String,String,ArrayList<Vulnerability>> deSerializeList(String portalName,String branchName) {
 
         Table<String,String,ArrayList<Vulnerability>> table = null;
@@ -168,7 +169,4 @@ public class ApplicationUtils {
         return newList;
 
     }
-
 }
-
-
