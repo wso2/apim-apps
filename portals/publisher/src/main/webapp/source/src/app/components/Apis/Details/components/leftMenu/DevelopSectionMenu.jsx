@@ -310,7 +310,7 @@ export default function DevelopSectionMenu(props) {
                                     id: 'Apis.Details.index.runtime.configs',
                                     defaultMessage: 'Runtime',
                                 })}
-                                route='runtime-configuration'
+                                route='runtime-configuration-websocket'
                                 to={pathPrefix + 'runtime-configuration-websocket'}
                                 Icon={<RuntimeConfigurationIcon />}
                                 id='left-menu-itemRuntimeConfigurations'
