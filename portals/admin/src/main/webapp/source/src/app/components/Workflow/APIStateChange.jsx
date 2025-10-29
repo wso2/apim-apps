@@ -64,8 +64,7 @@ function ListLabels(props) {
     const intl = useIntl();
     const [data, setData] = useState(null);
     const restApi = new API();
-    const [isUpdating, setIsUpdating] = useState(null);
-    const [buttonValue, setButtonValue] = useState();
+    const [updatingState, setUpdatingState] = useState({}); // Track updating state per referenceId and action
     const [hasListPermission, setHasListPermission] = useState(true);
     const [errorMessage, setError] = useState(null);
     const { isAPIProduct } = props;
@@ -139,9 +138,9 @@ function ListLabels(props) {
     }, []);
 
     const updateStatus = (referenceId, value) => {
-        setButtonValue(value);
+        const updateKey = `${referenceId}-${value}`;
+        setUpdatingState((prev) => ({ ...prev, [updateKey]: true }));
         const body = { status: value, attributes: {}, description: '' };
-        setIsUpdating(true);
         if (value === 'APPROVED') {
             body.description = 'Approve workflow request.';
         }
@@ -152,7 +151,7 @@ function ListLabels(props) {
         const promisedupdateWorkflow = restApi.updateWorkflow(referenceId, body);
         return promisedupdateWorkflow
             .then(() => {
-                setIsUpdating(false);
+                setUpdatingState((prev) => ({ ...prev, [updateKey]: false }));
                 Alert.success(intl.formatMessage({
                     id: 'Workflow.APIStateChange.update.success',
                     defaultMessage: 'Workflow status is updated successfully.',
@@ -177,7 +176,7 @@ function ListLabels(props) {
                     );
                     throw (response.body.description);
                 }
-                setIsUpdating(false);
+                setUpdatingState((prev) => ({ ...prev, [updateKey]: false }));
                 return null;
             })
             .then(() => {
@@ -316,6 +315,8 @@ function ListLabels(props) {
                 customBodyRender: (value, tableMeta) => {
                     const dataRow = data[tableMeta.rowIndex];
                     const { referenceId } = dataRow;
+                    const isApproving = updatingState[`${referenceId}-APPROVED`];
+                    const isRejecting = updatingState[`${referenceId}-REJECTED`];
                     return (
                         <div>
                             <Box component='span' m={1}>
@@ -324,14 +325,14 @@ function ListLabels(props) {
                                     variant='contained'
                                     size='small'
                                     onClick={() => updateStatus(referenceId, 'APPROVED')}
-                                    disabled={isUpdating}
+                                    disabled={isApproving || isRejecting}
                                 >
                                     <CheckIcon />
                                     <FormattedMessage
                                         id='Workflow.APIStateChange.table.button.approve'
                                         defaultMessage='Approve'
                                     />
-                                    {(isUpdating && buttonValue === 'APPROVED') && <CircularProgress size={15} /> }
+                                    {isApproving && <CircularProgress size={15} /> }
                                 </Button>
                                 &nbsp;&nbsp;
                                 <Button
@@ -339,14 +340,14 @@ function ListLabels(props) {
                                     variant='contained'
                                     size='small'
                                     onClick={() => updateStatus(referenceId, 'REJECTED')}
-                                    disabled={isUpdating}
+                                    disabled={isApproving || isRejecting}
                                 >
                                     <ClearIcon />
                                     <FormattedMessage
                                         id='Workflow.APIStateChange.table.button.reject'
                                         defaultMessage='Reject'
                                     />
-                                    {(isUpdating && buttonValue === 'REJECTED') && <CircularProgress size={15} />}
+                                    {isRejecting && <CircularProgress size={15} />}
                                 </Button>
                             </Box>
                         </div>
