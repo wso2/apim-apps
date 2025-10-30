@@ -134,7 +134,7 @@ export default function OperationGovernance(props) {
             <Grid item md={1} />
             <Grid item md={5}>
                 {componentValidator.includes('operationLevelRateLimiting') &&
-                    <Box display='flex' flexDirection='row' alignItems='flex-start'>
+                    <Box display='flex' flexDirection='row' alignItems='center'>
                         <TextField
                             select
                             fullWidth={!isOperationRateLimiting}
@@ -247,9 +247,10 @@ export default function OperationGovernance(props) {
                                 variant='text'
                                 size='small'
                                 sx={{
-                                    alignSelf: 'center',
                                     ml: 1,
-                                    textTransform: 'none'
+                                    mb: 1,
+                                    textTransform: 'none',
+                                    minWidth: 'auto'
                                 }}
                             >
                                 <FormattedMessage
