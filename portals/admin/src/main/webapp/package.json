@@ -40,6 +40,7 @@
         "@mui/x-date-pickers": "^7.29.4",
         "@mui/x-tree-view": "^6.17.0",
         "@react-pdf/renderer": "^3.4.4",
+        "@vscode/codicons": "^0.0.41",
         "async-mutex": "^0.5.0",
         "async-react-component": "^0.7.0",
         "autosuggest-highlight": "^3.3.4",

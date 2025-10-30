@@ -32,6 +32,8 @@ import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 
 import * as monaco from 'monaco-editor';
 import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
+import 'monaco-editor/min/vs/editor/editor.main.css';
+import '@vscode/codicons/dist/codicon.css';
 
 // load Monaco from node_modules instead of CDN
 loader.config({ monaco });
