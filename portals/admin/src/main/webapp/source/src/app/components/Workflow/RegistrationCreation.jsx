@@ -70,6 +70,8 @@ function ListLabels() {
     const [hasListPermission, setHasListPermission] = useState(true);
     const [errorMessage, setError] = useState(null);
 
+    const setDefaultCellProps = () => ({ style: { width: '18.75%' } });
+
     /**
     * Mock API call
     * @returns {Promise}.
@@ -227,6 +229,7 @@ function ListLabels() {
             options: {
                 sort: false,
                 filter: true,
+                setCellProps: setDefaultCellProps,
             },
         },
         {
@@ -238,6 +241,7 @@ function ListLabels() {
             options: {
                 sort: false,
                 filter: true,
+                setCellProps: setDefaultCellProps,
             },
         },
         {
@@ -249,6 +253,7 @@ function ListLabels() {
             options: {
                 sort: false,
                 filter: true,
+                setCellProps: setDefaultCellProps,
             },
         },
         {
@@ -279,6 +284,7 @@ function ListLabels() {
                         </div>
                     );
                 },
+                setCellProps: setDefaultCellProps,
             },
         },
         {

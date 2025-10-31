@@ -76,6 +76,8 @@ function ListLabels(props) {
         workflowType = 'AM_API_STATE';
     }
 
+    const setDefaultCellProps = () => ({ style: { width: '18.75%' } });
+
     /**
      * API call to get Detected Data
      * @returns {Promise}.
@@ -251,6 +253,7 @@ function ListLabels(props) {
             options: {
                 sort: false,
                 filter: true,
+                setCellProps: setDefaultCellProps,
             },
         },
         {
@@ -262,6 +265,7 @@ function ListLabels(props) {
             options: {
                 sort: false,
                 filter: true,
+                setCellProps: setDefaultCellProps,
             },
         },
         {
@@ -273,6 +277,7 @@ function ListLabels(props) {
             options: {
                 sort: false,
                 filter: true,
+                setCellProps: setDefaultCellProps,
             },
         },
         {
@@ -303,6 +308,7 @@ function ListLabels(props) {
                         </div>
                     );
                 },
+                setCellProps: setDefaultCellProps,
             },
         },
         {
