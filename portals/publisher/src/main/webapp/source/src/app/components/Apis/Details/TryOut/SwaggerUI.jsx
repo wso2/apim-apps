@@ -67,8 +67,6 @@ const SwaggerUI = (props) => {
             return req;
         },
         defaultModelExpandDepth: -1,
-        // Enable cURL and copy icon appear inside each operation
-        requestSnippetsEnabled: true,
         plugins: [disableAuthorizeAndInfoPlugin],
     };
     return <SwaggerUILib {...componentProps} />;
