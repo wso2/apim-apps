@@ -388,7 +388,6 @@ function AdvanceEndpointConfig(props) {
                             value={advanceConfigObj.suspendErrorCode}
                             onChange={(event) => handleConfigFieldChange(event, 'suspendErrorCode')}
                             input={<OutlinedInput label='Error Code' id='err-code-select' />}
-                            // input={<Input id='err-code-select' />}
                             MenuProps={MenuProps}
                             variant='outlined'
                             renderValue={(allSelected) => 
@@ -476,7 +475,6 @@ function AdvanceEndpointConfig(props) {
                                     value={advanceConfigObj.retryErroCode}
                                     onChange={(event) => handleConfigFieldChange(event, 'retryErroCode')}
                                     input={<OutlinedInput label='Error Code' id='err-code-select' />}
-                                    // input={<Input id='err-code-select' />}
                                     MenuProps={MenuProps}
                                     renderValue={(allSelected) => 
                                         allSelected.map(selected =>
@@ -542,7 +540,6 @@ function AdvanceEndpointConfig(props) {
                                     value={advanceConfigObj.actionSelect}
                                     onChange={(event) => handleConfigFieldChange(event, 'actionSelect')}
                                     input={<OutlinedInput label='Action' id='err-code-select' />}
-                                    // input={<Input id='err-code-select' />}
                                     MenuProps={MenuProps}
                                 >
                                     {actionItems.map((item) => (
