@@ -69,7 +69,6 @@ const Root = styled('div')((
     [`&.${classes.contentWrapper}`]: {
         paddingLeft: theme.spacing(3),
         marginTop: theme.spacing(1),
-        maxWidth: theme.custom.contentAreaWidth,
         '& span, & h5, & label, & td, & li, & div, & input': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },

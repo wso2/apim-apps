@@ -39,7 +39,7 @@ import { Link } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { useIntl, FormattedMessage } from 'react-intl';
-import { getOperationScopes, shouldRenderOperationGovernance } from '../../operationUtils';
+import { getOperationScopes } from '../../operationUtils';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
 const checkedIcon = <CheckBoxIcon fontSize='small' />;
@@ -57,21 +57,22 @@ export default function OperationGovernance(props) {
         setFocusOperationLevel, componentValidator, isMCPServer
     } = props;
     
+    // Check if any governance features are supported
+    const supportsOperationSecurity = componentValidator.includes('operationSecurity');
+    const supportsOpLevelRateLimiting = componentValidator.includes('operationLevelRateLimiting');
+    
+    // Early return if no governance features are supported
+    if (!supportsOperationSecurity && !supportsOpLevelRateLimiting) {
+        return null;
+    }
+    
     // Get operation scopes - handle MCP servers differently since they store scopes directly
     const operationScopes = isMCPServer && operation.scopes 
         ? operation.scopes 
         : getOperationScopes(operation, spec);
     const isOperationRateLimiting = api.apiThrottlingPolicy === null || 
-        !(componentValidator && Array.isArray(componentValidator) && componentValidator.includes('apiLevelRateLimiting'));
-    const filteredApiScopes = (api.scopes && Array.isArray(api.scopes)) ? api.scopes.filter((sharedScope) => !sharedScope.shared) : [];
-
-    // Check if any governance features are supported - early return for AWS Gateway
-    const supportsOperationSecurity = componentValidator && componentValidator.includes('operationSecurity');
-    const supportsOpLevelRateLimiting = componentValidator && componentValidator.includes('operationLevelRateLimiting');
-    
-    if (!supportsOperationSecurity && !supportsOpLevelRateLimiting) {
-        return null;
-    }
+        !componentValidator.includes('apiLevelRateLimiting');
+    const filteredApiScopes = api.scopes.filter((sharedScope) => !sharedScope.shared);
     
     const intl = useIntl();
     const scrollToTop = () => {
@@ -97,7 +98,7 @@ export default function OperationGovernance(props) {
                 </Typography>
             </Grid>
             <Grid item xs={1} />
-            {componentValidator && Array.isArray(componentValidator) && componentValidator.includes('operationSecurity') &&
+            {supportsOperationSecurity &&
                 <Grid item xs={11}>
                     <FormControl disabled={disableUpdate} component='fieldset'>
                         <FormControlLabel
@@ -143,7 +144,7 @@ export default function OperationGovernance(props) {
             }
             <Grid item md={1} />
             <Grid item md={5}>
-                {componentValidator && Array.isArray(componentValidator) && componentValidator.includes('operationLevelRateLimiting') &&
+                {supportsOpLevelRateLimiting &&
                     <Box display='flex' flexDirection='row' alignItems='flex-start'>
                         <TextField
                             select
@@ -269,7 +270,7 @@ export default function OperationGovernance(props) {
             </Grid>
             <Grid item md={6} />
             <Grid item md={1} />
-            {componentValidator && Array.isArray(componentValidator) && componentValidator.includes('operationSecurity') &&
+            {supportsOperationSecurity &&
                 <>
                     <Grid item md={7}>
                         {operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none' ? (
