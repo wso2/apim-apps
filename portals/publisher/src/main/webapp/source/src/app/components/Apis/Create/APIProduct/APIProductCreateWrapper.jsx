@@ -35,6 +35,7 @@ import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm'
 import ProductResourcesEditWorkspace from 'AppComponents/Apis/Details/ProductResources/ProductResourcesEditWorkspace';
 import API from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';
+import Progress from 'AppComponents/Shared/Progress';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 
 const PREFIX = 'APIProductCreateWrapper';
@@ -85,29 +86,26 @@ export default function ApiProductCreateWrapper(props) {
     const intl = useIntl();
     const [wizardStep, setWizardStep] = useState(0);
     const [apiResources, setApiResources] = useState([]);
-    const { data: settings } = usePublisherSettings();
+    const { data: settings, isLoading } = usePublisherSettings();
     const [isPublishButtonClicked, setIsPublishButtonClicked] = useState(false);
     const [isRevisioning, setIsRevisioning] = useState(false);
     const [isDeploying, setIsDeploying] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false);
-
-    const [policies, setPolicies] = useState([]);
+    const [allPolicies, setAllPolicies] = useState([]);
 
     useEffect(() => {
         API.policies('subscription').then((response) => {
-            const allPolicies = response.body.list;
-            if (allPolicies.length === 0) {
+            const policies = response.body.list;
+            if (policies.length === 0) {
                 Alert.info(intl.formatMessage({
                     id: 'Apis.Create.APIProduct.APIProductCreateWrapper.error.policies.not.available',
                     defaultMessage: 'Throttling policies not available. Contact your administrator',
                 }));
-            } else if (allPolicies.filter((p) => p.name === 'Unlimited').length > 0) {
-                setPolicies(['Unlimited']);
-            } else {
-                setPolicies([allPolicies[0].name]);
             }
+            setAllPolicies(policies);
         });
     }, []);
+
     const pageTitle = (
         (<Root>
             <Typography variant='h5'>
@@ -208,6 +206,25 @@ export default function ApiProductCreateWrapper(props) {
         const {
             name, context, version, displayName,
         } = apiInputs;
+
+        // Select appropriate subscription policy
+        let policies;
+        if (allPolicies.length === 0) {
+            policies = ['Unlimited']; // Fallback to Unlimited if no policies available
+        } else {
+            // Helper to check if a policy exists
+            const findPolicy = (policyName) => allPolicies.find((p) => p.name === policyName);
+
+            // Priority: defaultSubscriptionPolicy -> Unlimited -> first available
+            const { defaultSubscriptionPolicy } = settings || {};
+            const selectedPolicy =
+                (defaultSubscriptionPolicy && findPolicy(defaultSubscriptionPolicy)) ||
+                findPolicy('Unlimited') ||
+                allPolicies[0];
+
+            policies = [selectedPolicy.name];
+        }
+
         const apiData = {
             name,
             displayName,
@@ -356,6 +373,12 @@ export default function ApiProductCreateWrapper(props) {
             })
             .finally(() => setCreating(false));
     };
+
+    if (isLoading) {
+        return (
+            <Progress />
+        )
+    }
 
     return <>
         <APICreateProductBase

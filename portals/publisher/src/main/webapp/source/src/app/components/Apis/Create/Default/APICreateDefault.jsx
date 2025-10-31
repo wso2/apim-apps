@@ -194,16 +194,25 @@ function APICreateDefault(props) {
         } = apiInputs;
         let promisedCreatedAPI;
         let policies;
+        const { defaultSubscriptionPolicy } = settings;
         const allPolicies = await getPolicies();
         if (allPolicies.length === 0) {
             Alert.info(intl.formatMessage({
                 id: 'Apis.Create.Default.APICreateDefault.error.policies.not.available',
                 defaultMessage: 'Throttling policies not available. Contact your administrator',
             }));
-        } else if (allPolicies.filter((p) => p.name === 'Unlimited').length > 0) {
-            policies = ['Unlimited'];
+            policies = ['Unlimited']; // Fallback to Unlimited if no policies available
         } else {
-            policies = [allPolicies[0].name];
+            // Helper to check if a policy exists
+            const findPolicy = (policyName) => allPolicies.find((p) => p.name === policyName);
+
+            // Priority: defaultSubscriptionPolicy -> Unlimited -> first available
+            const selectedPolicy =
+                (defaultSubscriptionPolicy && findPolicy(defaultSubscriptionPolicy)) ||
+                findPolicy('Unlimited') ||
+                allPolicies[0];
+
+            policies = [selectedPolicy.name];
         }
 
         const apiData = {

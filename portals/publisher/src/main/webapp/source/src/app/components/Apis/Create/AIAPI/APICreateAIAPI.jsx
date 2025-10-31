@@ -31,11 +31,11 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
+import Progress from 'AppComponents/Shared/Progress';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { API_SECURITY_API_KEY }
     from 'AppComponents/Apis/Details/Configuration/components/APISecurity/components/apiSecurityConstants';
 import ProvideAIOpenAPI from './Steps/ProvideAIOpenAPI';
-
 
 /**
      *
@@ -81,7 +81,8 @@ function apiInputsReducer(currentState, inputAction) {
 export default function ApiCreateAIAPI(props) {
     const [wizardStep, setWizardStep] = useState(0);
     const { history, multiGateway } = props;
-    const { data: settings } = usePublisherSettings();
+    const { data: settings, isLoading } = usePublisherSettings();
+    const { defaultSubscriptionPolicy } = settings || {};
 
     const [apiInputs, inputsDispatcher] = useReducer(apiInputsReducer, {
         type: 'ApiCreateAIAPI',
@@ -92,6 +93,12 @@ export default function ApiCreateAIAPI(props) {
     });
 
     const intl = useIntl();
+
+    const getPolicies = async () => {
+        const promisedPolicies = API.policies('subscription', null, true);
+        const policies = await promisedPolicies;
+        return policies.body.list;
+    };
 
     /**
      *
@@ -122,12 +129,33 @@ export default function ApiCreateAIAPI(props) {
      *
      * @param {*} params
      */
-    function createAPI() {
+    async function createAPI() {
         setCreating(true);
         const {
-            name, version, context, endpoint, gatewayType, displayName, policies = ["Unlimited"],
-            inputValue, llmProviderId,
+            name, version, context, endpoint, gatewayType, displayName, inputValue, llmProviderId,
         } = apiInputs;
+
+        // Fetch and select appropriate subscription policy
+        let policies;
+        const allPolicies = await getPolicies();
+        if (allPolicies.length === 0) {
+            Alert.info(intl.formatMessage({
+                id: 'Apis.Create.AIAPI.ApiCreateAIAPI.error.policies.not.available',
+                defaultMessage: 'Throttling policies not available. Contact your administrator',
+            }));
+            policies = ['Unlimited']; // Fallback to Unlimited if no policies available
+        } else {
+            // Helper to check if a policy exists
+            const findPolicy = (policyName) => allPolicies.find((p) => p.name === policyName);
+
+            // Priority: defaultSubscriptionPolicy -> Unlimited -> first available
+            const selectedPolicy =
+                (defaultSubscriptionPolicy && findPolicy(defaultSubscriptionPolicy)) ||
+                findPolicy('Unlimited') ||
+                allPolicies[0];
+
+            policies = [selectedPolicy.name];
+        }
 
         const additionalProperties = {
             name,
@@ -174,6 +202,12 @@ export default function ApiCreateAIAPI(props) {
                 }
             })
             .finally(() => setCreating(false));
+    }
+
+    if (isLoading) {
+        return (
+            <Progress />
+        )
     }
 
     return (
