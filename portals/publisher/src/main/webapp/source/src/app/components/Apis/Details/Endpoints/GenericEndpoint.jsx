@@ -118,7 +118,6 @@ function GenericEndpoint(props) {
         id,
         apiId,
         componentValidator,
-        endpointSecurityTypes,
     } = props;
     const [serviceUrl, setServiceUrl] = useState(endpointURL);
     const { api } = useContext(APIContext);
@@ -254,8 +253,7 @@ function GenericEndpoint(props) {
                                             </IconButton>
                                         }
                                         {api.subtypeConfiguration?.subtype !== 'AIAPI' && 
-                                         type !== 'awslambda' && 
-                                         endpointSecurityTypes && endpointSecurityTypes.length > 0 && (<IconButton
+                                         type !== 'awslambda' && (<IconButton
                                             className={classes.iconButton}
                                             aria-label='Security'
                                             onClick={() => setESConfigOpen(type, esCategory)}
@@ -323,8 +321,6 @@ GenericEndpoint.propTypes = {
     name: PropTypes.string,
     apiId: PropTypes.string.isRequired,
     id: PropTypes.string,
-    componentValidator: PropTypes.array,
-    endpointSecurityTypes: PropTypes.array,
 };
 
 export default (GenericEndpoint);

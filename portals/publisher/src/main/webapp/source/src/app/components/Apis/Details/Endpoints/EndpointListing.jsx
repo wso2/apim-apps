@@ -117,7 +117,6 @@ function EndpointListing(props) {
         setESConfigOpen,
         apiId,
         componentValidator,
-        endpointSecurityTypes,
     } = props;
     const [endpointType, setEndpointType] = useState(epType);
     const [endpoints, setEndpoints] = useState([{ url: 'http://myservice/endpoint' }]);
@@ -175,7 +174,6 @@ function EndpointListing(props) {
                                         setESConfigOpen={setESConfigOpen}
                                         apiId={apiId}
                                         componentValidator={componentValidator}
-                                        endpointSecurityTypes={endpointSecurityTypes}
                                     />
                                 );
                             }
@@ -205,8 +203,6 @@ EndpointListing.propTypes = {
     setAdvancedConfigOpen: PropTypes.func.isRequired,
     setESConfigOpen: PropTypes.func.isRequired,
     apiId: PropTypes.string.isRequired,
-    componentValidator: PropTypes.array,
-    endpointSecurityTypes: PropTypes.array,
 };
 
 export default injectIntl((EndpointListing));

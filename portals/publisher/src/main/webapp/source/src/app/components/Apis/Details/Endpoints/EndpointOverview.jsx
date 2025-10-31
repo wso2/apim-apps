@@ -1122,9 +1122,8 @@ function EndpointOverview(props) {
                                                                             setAdvancedConfigOpen={toggleAdvanceConfig}
                                                                             esCategory='production'
                                                                             setESConfigOpen={toggleEndpointSecurityConfig}
-                                                                            apiId={api.id}
+                                                                            iId={api.id}
                                                                             componentValidator={componentValidator}
-                                                                            endpointSecurityTypes={endpointSecurityTypes}
                                                                         />
                                                                     )}
                                                             </Collapse>
@@ -1278,7 +1277,6 @@ function EndpointOverview(props) {
                                                                                                 {toggleEndpointSecurityConfig}
                                                                                             apiId={api.id}
                                                                                             componentValidator={componentValidator}
-                                                                                            endpointSecurityTypes={endpointSecurityTypes}
                                                                                         />
                                                                                         </>
                                                                                     )}
@@ -1351,7 +1349,6 @@ function EndpointOverview(props) {
                                     globalEpType={endpointType}
                                     apiType={api.type}
                                     componentValidator={componentValidator}
-                                    endpointSecurityTypes={endpointSecurityTypes}
                                 />
                             </Grid>
                         )
