@@ -124,11 +124,12 @@ const StyledBox = styled(Box)((
         flexDirection: 'column',
         paddingBottom: theme.spacing(3),
         overflow: 'auto',
+        minWidth: 0, // Allow flex child to shrink below content size
     },
 
     [`& .${classes.contentInside}`]: {
         width: '100%',
-        maxWidth: `calc(100vw - ${theme.custom.leftMenuWidth}px - ${theme.spacing(3) * 2}px)`,
+        maxWidth: '100%', // Constrain to parent width
         paddingLeft: theme.spacing(3),
         paddingRight: theme.spacing(3),
         paddingTop: theme.spacing(2),
