@@ -124,7 +124,9 @@ const StyledBox = styled(Box)((
         flexDirection: 'column',
         paddingBottom: theme.spacing(3),
         overflow: 'auto',
+        overflowX: 'hidden', // Prevent horizontal scrolling
         minWidth: 0, // Allow flex child to shrink below content size
+        maxWidth: `calc(100vw - ${theme.custom.leftMenuWidth}px)`, // Constrain to viewport minus sidebar
     },
 
     [`& .${classes.contentInside}`]: {
