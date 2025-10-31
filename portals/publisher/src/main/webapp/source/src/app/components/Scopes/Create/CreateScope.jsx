@@ -39,6 +39,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import { isRestricted } from 'AppData/AuthManager';
+import AuthorizedError from 'AppComponents/Base/Errors/AuthorizedError';
 
 const PREFIX = 'CreateScope';
 
@@ -497,12 +498,44 @@ class CreateScope extends React.Component {
     }
 
     /**
+     * Get allowed scopes based on API type
+     * @returns {string[]} Array of allowed scopes
+     */
+    getAllowedScopes() {
+        const { api } = this.props;
+        if (api.apiType && api.apiType.toUpperCase() === 'MCP') {
+            return [
+                'apim:mcp_server_create',
+                'apim:mcp_server_manage',
+                'apim:mcp_server_publish',
+            ];
+        } else {
+            return ['apim:api_create'];
+        }
+    }
+
+    /**
+     * Check if the action is restricted
+     * @returns {boolean} True if the action is restricted, false otherwise
+     */
+    isAccessRestricted() {
+        const { api } = this.props;
+        if (isRestricted(['apim:api_create'], api)) {
+            return true;
+        }
+        return isRestricted(this.getAllowedScopes(), api);
+    }
+
+    /**
      *
      *
      * @returns {any} returns the UI render.
      * @memberof CreateScope
      */
     render() {
+        if (this.isAccessRestricted()) {
+            return <AuthorizedError />;
+        }
         const url = '/scopes';
         const {
             roleValidity, validRoles, invalidRoles, scopeAddDisabled, valid, sharedScope,
