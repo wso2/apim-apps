@@ -71,8 +71,7 @@ function ListLabels() {
     const [hasListPermission, setHasListPermission] = useState(true);
     const [errorMessage, setError] = useState(null);
 
-    const cellWidth = { xs: '100%', sm: '25%' };
-    const setDefaultCellProps = () => ({ style: { width: cellWidth } });
+    const setDefaultCellProps = () => ({ style: { width: '25%' } });
 
     /**
      * API call to get Detected Data
@@ -281,14 +280,7 @@ function ListLabels() {
                     return (
                         <div>
                             <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: { xs: 'column', sm: 'row' },
-                                    gap: 1,
-                                    justifyContent: 'flex-start',
-                                    alignItems: 'center',
-                                    width: '100%',
-                                }}
+                                sx={{ gap: 1 }}
                             >
                                 <Button
                                     color='success'
@@ -325,7 +317,6 @@ function ListLabels() {
                         </div>
                     );
                 },
-                setCellProps: setDefaultCellProps,
             },
         },
     ];
@@ -363,7 +354,6 @@ function ListLabels() {
         viewColumns: false,
         customToolbar: null,
         responsive: 'standard',
-        setTableProps: () => ({ style: { tableLayout: 'fixed' } }),
         searchText,
         textLabels: {
             body: {

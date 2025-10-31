@@ -318,13 +318,16 @@ function ListLabels(props) {
                     const { referenceId } = dataRow;
                     return (
                         <div>
-                            <Box component='span' m={1}>
+                            <Box
+                                sx={{ gap: 1 }}
+                            >
                                 <Button
                                     color='success'
                                     variant='contained'
                                     size='small'
                                     onClick={() => updateStatus(referenceId, 'APPROVED')}
                                     disabled={isUpdating}
+                                    sx={{ flex: 1 }}
                                 >
                                     <CheckIcon />
                                     <FormattedMessage
@@ -340,6 +343,7 @@ function ListLabels(props) {
                                     size='small'
                                     onClick={() => updateStatus(referenceId, 'REJECTED')}
                                     disabled={isUpdating}
+                                    sx={{ flex: 1 }}
                                 >
                                     <ClearIcon />
                                     <FormattedMessage
@@ -392,7 +396,7 @@ function ListLabels(props) {
         download: false,
         viewColumns: false,
         customToolbar: null,
-        responsive: 'vertical',
+        responsive: 'standard',
         searchText,
         textLabels: {
             body: {
