@@ -66,6 +66,7 @@ interface PoliciesExpansionProps {
     isChoreoConnectEnabled: boolean;
     policyList: Policy[];
     isAPILevelPolicy: boolean;
+    disabled?: boolean;
 }
 
 const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
@@ -75,6 +76,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     isChoreoConnectEnabled,
     policyList,
     isAPILevelPolicy,
+    disabled,
 }) => {
     // Policies attached for each request, response and fault flow
     const [requestFlowPolicyList, setRequestFlowPolicyList] = useState<AttachedPolicy[]>([]);
@@ -267,8 +269,9 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             FlowArrow={FlowArrow}
             PolicyDropzone={PolicyDropzone}
             listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
-            isApiRevision={api.isRevision}
+            isApiRevision={disabled || api.isRevision}
             apiType={api.type}
+            
         />
     );
 };

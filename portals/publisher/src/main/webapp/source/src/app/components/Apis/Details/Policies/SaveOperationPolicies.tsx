@@ -30,6 +30,7 @@ import ApiContext from '../components/ApiContext';
 interface SaveOperationPoliciesProps {
     saveApi: () => void;
     updating: boolean;
+    disabled?: boolean;
 }
 
 /**
@@ -38,7 +39,7 @@ interface SaveOperationPoliciesProps {
  * @returns {TSX} Policies page save button.
  */
 const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({
-    saveApi, updating
+    saveApi, updating, disabled
 }) => {
     const { api } = useContext<any>(ApiContext);
     const history = useHistory();
@@ -68,7 +69,7 @@ const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({
         <Grid container direction='row' spacing={1}>
             <Grid item>
                 <Box p={1} mt={3}>
-                    {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) || isRestricted(['apim:api_create'], api) ? (
+                    {disabled || api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) || isRestricted(['apim:api_create'], api) ? (
                         <Button
                             disabled
                             type='submit'

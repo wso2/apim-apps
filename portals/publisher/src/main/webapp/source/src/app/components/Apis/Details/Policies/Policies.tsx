@@ -90,6 +90,7 @@ const Configurations = require('Config');
 const Policies: React.FC = () => {
 
     const [api, updateAPI] = useAPI();
+    const isRevision = api.isRevision || Boolean(api.revisionId);
     const [updating, setUpdating] = useState(false);
     const [apiPolicies, setApiPolicies] = useState<Policy[] | null>(null);
     const [commonPolicies, setCommonPolicies] = useState<Policy[] | null>(null);
@@ -582,6 +583,7 @@ const Policies: React.FC = () => {
             updateAllApiOperations,
             deleteApiOperation,
             rearrangeApiOperations,
+            disabled: isRevision,
         }),
         [
             apiOperations,
@@ -590,6 +592,7 @@ const Policies: React.FC = () => {
             updateAllApiOperations,
             deleteApiOperation,
             rearrangeApiOperations,
+            isRevision,
         ],
     );
 
@@ -650,6 +653,7 @@ const Policies: React.FC = () => {
                 api={localAPI}
                 expandedResource={expandedResource}
                 setExpandedResource={setExpandedResource}
+                disabled={isRevision}
             />
             {api.type !== 'GRAPHQL' && (
                 <PolicyPanel
@@ -663,6 +667,7 @@ const Policies: React.FC = () => {
                     api={localAPI}
                     expandedResource={expandedResource}
                     setExpandedResource={setExpandedResource}
+                    disabled={isRevision}
                 />
             )}
         </>
@@ -707,6 +712,7 @@ const Policies: React.FC = () => {
                             isChoreoConnectEnabled={isChoreoConnectEnabled}
                             gatewayType={gateway}
                             apiType={api.type}
+                            disabled={isRevision}
                         />
                     </Box>
                 </Box>
@@ -714,6 +720,7 @@ const Policies: React.FC = () => {
             <SaveOperationPolicies
                 saveApi={saveApi}
                 updating={updating}
+                disabled={isRevision}
             />
         </StyledApiOperationContextProvider>
     );
