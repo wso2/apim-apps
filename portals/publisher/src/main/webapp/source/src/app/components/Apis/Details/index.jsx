@@ -126,7 +126,11 @@ const StyledBox = styled(Box)((
         overflow: 'auto',
         overflowX: 'hidden', // Prevent horizontal scrolling
         minWidth: 0, // Allow flex child to shrink below content size
+<<<<<<< Updated upstream
         maxWidth: `calc(100vw - ${theme.custom.leftMenuWidth}px)`, // Constrain to viewport minus sidebar
+=======
+        maxWidth: `min(calc(100vw - ${theme.custom.leftMenuWidth}px), ${theme.custom.contentAreaWidth}px)`, // Constrain to viewport minus sidebar, respect contentAreaWidth
+>>>>>>> Stashed changes
     },
 
     [`& .${classes.contentInside}`]: {
