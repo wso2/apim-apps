@@ -70,6 +70,8 @@ function ListLabels() {
     const [hasListPermission, setHasListPermission] = useState(true);
     const [errorMessage, setError] = useState(null);
 
+    const setDefaultCellProps = () => ({ style: { width: '18.75%' } });
+
     /**
     * Mock API call
     * @returns {Promise}.
@@ -227,6 +229,7 @@ function ListLabels() {
             options: {
                 sort: false,
                 filter: true,
+                setCellProps: setDefaultCellProps,
             },
         },
         {
@@ -238,6 +241,7 @@ function ListLabels() {
             options: {
                 sort: false,
                 filter: true,
+                setCellProps: setDefaultCellProps,
             },
         },
         {
@@ -249,6 +253,7 @@ function ListLabels() {
             options: {
                 sort: false,
                 filter: true,
+                setCellProps: setDefaultCellProps,
             },
         },
         {
@@ -279,6 +284,7 @@ function ListLabels() {
                         </div>
                     );
                 },
+                setCellProps: setDefaultCellProps,
             },
         },
         {
@@ -294,13 +300,16 @@ function ListLabels() {
                     const { referenceId } = dataRow;
                     return (
                         <div>
-                            <Box component='span' m={1}>
+                            <Box
+                                sx={{ gap: 1 }}
+                            >
                                 <Button
                                     color='success'
                                     variant='contained'
                                     size='small'
                                     onClick={() => updateStatus(referenceId, 'APPROVED')}
                                     disabled={isUpdating}
+                                    sx={{ flex: 1 }}
                                 >
                                     <CheckIcon />
                                     <FormattedMessage
@@ -316,6 +325,7 @@ function ListLabels() {
                                     size='small'
                                     onClick={() => updateStatus(referenceId, 'REJECTED')}
                                     disabled={isUpdating}
+                                    sx={{ flex: 1 }}
                                 >
                                     <ClearIcon />
                                     <FormattedMessage
@@ -364,7 +374,7 @@ function ListLabels() {
         download: false,
         viewColumns: false,
         customToolbar: null,
-        responsive: 'vertical',
+        responsive: 'standard',
         searchText,
         textLabels: {
             body: {
