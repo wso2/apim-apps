@@ -128,11 +128,10 @@ const StyledBox = styled(Box)((
 
     [`& .${classes.contentInside}`]: {
         width: '100%',
-        maxWidth: `calc(100vw - ${theme.custom.leftMenuWidth}px)`,
+        maxWidth: `calc(100vw - ${theme.custom.leftMenuWidth}px - ${theme.spacing(3) * 2}px)`,
         paddingLeft: theme.spacing(3),
         paddingRight: theme.spacing(3),
         paddingTop: theme.spacing(2),
-        flex: 1,
     },
 
     [`& .${classes.footeremaillink}`]: {
