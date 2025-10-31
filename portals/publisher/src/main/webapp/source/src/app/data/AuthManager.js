@@ -204,33 +204,43 @@ class AuthManager {
      * @param {*} api
      */
     static isRestricted(scopesAllowedToEdit, api = {}) {
-        // determines whether the apiType is API PRODUCT and user has publisher role, then allow access.
-        if (api.apiType === 'APIPRODUCT') {
-            if (AuthManager.getUser().scopes.includes('apim:api_publish')) {
-                return false;
-            } else {
-                return true;
-            }
+        const user = AuthManager.getUser();
+
+        // Block read-only users right away
+        if (AuthManager.isReadOnlyUser()) {
+            return true;
         }
 
-        // determines whether the user is a publisher or creator (based on what is passed from the element)
-        // if (scopesAllowedToEdit.filter(element => AuthManager.getUser().scopes.includes(element)).length > 0) {
-        if (AuthManager.getUser()
-            && scopesAllowedToEdit.find((element) => AuthManager.getUser().scopes.includes(element))) {
-            // if the user has publisher role, no need to consider the api LifeCycleStatus
-            const isPublisherOverride = AuthManager.getUser().scopes.includes('apim:api_publish')
-                || (api.apiType === 'MCP' && AuthManager.getUser().scopes.includes('apim:mcp_server_publish'));
-            if ((Object.keys(api).length === 0 && api.constructor === Object) || isPublisherOverride) {
-                return false;
-            } else if (
-                // if the user has creator role, but not the publisher role
-                api.lifeCycleStatus === 'CREATED'
-                || api.lifeCycleStatus === 'PROTOTYPED'
-            ) {
-                return false;
-            } else {
-                return true;
-            }
+        // If user doesn't have any of the required scopes → restrict
+        const hasAllowedScope =
+            user && scopesAllowedToEdit.some(scope => user.scopes.includes(scope));
+        if (!hasAllowedScope) {
+            return true;
+        }
+
+        // If API Product and user has publish scope → allow
+        if (api.apiType === 'APIPRODUCT') {
+            return !user.scopes.includes('apim:api_publish');
+        }
+
+        // Check for publisher override (publisher can always access)
+        const isPublisherOverride =
+            user.scopes.includes('apim:api_publish') ||
+            (api.apiType === 'MCP' && user.scopes.includes('apim:mcp_server_publish'));
+
+        if (isPublisherOverride) {
+            return false; // unrestricted
+        }
+
+        // Handle create-page case (empty api object)
+        if (Object.keys(api).length === 0 && api.constructor === Object) {
+            // Only allow users with create permission on create pages
+            return !user.scopes.includes('apim:api_create');
+        }
+
+        // Allow creator access based on lifecycle status
+        if (api.lifeCycleStatus === 'CREATED' || api.lifeCycleStatus === 'PROTOTYPED') {
+            return false;
         }
         return true;
     }
