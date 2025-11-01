@@ -17,7 +17,7 @@ export default function DeleteSecretDialog({ onDelete }) {
   const handleClose = () => setOpen(false);
 
   const handleConfirmDelete = () => {
-    onDelete(); // invoke your delete API or logic
+    onDelete();
     setOpen(false);
   };
 

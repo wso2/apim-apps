@@ -41,7 +41,7 @@ import AddIcon from "@mui/icons-material/Add";
 import NewSecretDialog from "./NewSecretDialog";
 import PropTypes from 'prop-types';
 import SearchIcon from "@mui/icons-material/Search";
-import Application from '../../../data/Application';
+import Application from '../../../../data/Application';
 import DeleteSecretDialog from "./DeleteSecret";
 import SecretValueDialog from "./SecretValueDialog";
 import Alert from 'AppComponents/Shared/Alert';
@@ -85,7 +85,7 @@ const SecretsTable = (props) => {
         fetchSecrets();
     }, []);
 
-    const handleDelete = async (referenceId) => {
+    const handleDelete = async (secretId) => {
         // let message = intl.formatMessage({
         //     defaultMessage: 'Secret deleted successfully!',
         //     id: 'Applications.Listing.Listing.application.deleted.successfully',
@@ -93,13 +93,17 @@ const SecretsTable = (props) => {
         try {
             let message = 'Secret deleted successfully!';
             const application = await applicationPromise;
-            const status = await application.deleteSecret(props.keyMappingId, referenceId);
+            console.log("@@@@@@@@@@@@@@@@@@@@@@");
+            console.log(secretId);
+            const status = await application.deleteSecret(props.keyMappingId, secretId);
+            console.log("@@@@@@@@@@@@@@@@@@@@@@");
+            console.log(secretId);
 
             if (status === 204) {
                 Alert.info(message);
                 // ✅ Remove the deleted item from the state
                 setSecrets((prevSecrets) =>
-                    prevSecrets.filter((secret) => secret.referenceId !== referenceId)
+                    prevSecrets.filter((secret) => secret.secretId !== secretId)
                 );
             } else {
                 Alert.error('Unexpected response while deleting secret.');
@@ -243,15 +247,43 @@ const renderExpiresIn = (expiryEpoch) => {
     return (
         <Grid container spacing={2} alignItems="flex-start">
             {/* Left side title */}
-            <Grid item xs={12} md={1}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 400, mt: 3 }}>
+            {/* <Grid item xs={12} md={1}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 400, mt: 3 }}>
                     Consumer Secrets
                 </Typography>
-            </Grid>
+            </Grid> */}
 
             {/* Right side content (everything else) */}
-            <Grid item xs={12} md={8}>
-                <Paper sx={{ width: "100%", overflow: "hidden", p: 2 }}>
+            <Grid item xs={12} md={9}>
+                <Box sx={{ position: "relative", mt: 2 }}>
+                <Typography
+                    variant="caption"
+                    sx={{
+                    position: "absolute",
+                    top: -10,
+                    left: 14,
+                    backgroundColor: "background.paper",
+                    px: 0.5,
+                    color: "text.secondary",
+                    }}
+                >
+                    Consumer Secrets
+                    {/* <FormattedMessage
+                    id="Shared.AppsAndKeys.ViewKeys.consumer.secrets"
+                    defaultMessage="Consumer Secrets"
+                    /> */}
+                </Typography>
+                <Paper
+                variant="outlined"
+  sx={{
+    
+    width: "100%", overflow: "hidden", p: 2,
+    borderColor: "rgba(0, 0, 0, 0.23)", // Same as MUI's default TextField outline
+    borderWidth: 1,
+    borderRadius: 1, // Matches TextField rounded corners
+    boxShadow: "none", // Remove Paper shadow
+    p: 3,
+  }}>
                     {/* Row: New Secret + Show Expired */}
                     <Box
                         display="flex"
@@ -304,12 +336,12 @@ const renderExpiresIn = (expiryEpoch) => {
                         <Table size="small">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell sx={{ width: '40%' }}>
+                                    <TableCell sx={{ width: '35%' }}>
                                         <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
                                             Description
                                         </Typography>
                                     </TableCell>
-                                    <TableCell sx={{ width: '30%' }}>
+                                    <TableCell sx={{ width: '35%' }}>
                                         <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
                                             Value
                                         </Typography>
@@ -336,12 +368,12 @@ const renderExpiresIn = (expiryEpoch) => {
                                     </TableRow>
                                 ) : (
                                     paginatedSecrets.map((secret) => {
-                                        const { referenceId, secretValue, additionalProperties } =
+                                        const { secretId, secretValue, additionalProperties } =
                                             secret;
                                         const { description, expiresAt } = additionalProperties || {};
 
                                         return (
-                                            <TableRow key={referenceId}>
+                                            <TableRow key={secretId}>
                                                 <TableCell>
                                                     <Typography variant="body1">
                                                         {description || "—"}
@@ -362,7 +394,7 @@ const renderExpiresIn = (expiryEpoch) => {
 
                                                 <TableCell>
                                                     <DeleteSecretDialog
-                                                        onDelete={() => handleDelete(referenceId)}
+                                                        onDelete={() => handleDelete(secretId)}
                                                     />
                                                 </TableCell>
                                             </TableRow>
@@ -394,6 +426,7 @@ const renderExpiresIn = (expiryEpoch) => {
                         secret={generatedSecret}
                     />
                 </Paper>
+            </Box>
             </Grid>
         </Grid>
     );
