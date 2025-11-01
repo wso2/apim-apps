@@ -261,7 +261,7 @@ const renderExpiresIn = (expiryEpoch) => {
                     sx={{
                     position: "absolute",
                     top: -10,
-                    left: 14,
+                    left: 12,
                     backgroundColor: "background.paper",
                     px: 0.5,
                     color: "text.secondary",
@@ -299,17 +299,29 @@ const renderExpiresIn = (expiryEpoch) => {
                             New Secret
                         </Button>
 
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={showExpired}
-                                    onChange={(e) => setShowExpired(e.target.checked)}
-                                    color="primary"
-                                    disabled={!hasExpiredSecrets}
-                                />
+                        <Tooltip
+                            title={
+                                !hasExpiredSecrets
+                                ? "No expired secrets available"
+                                : ""
                             }
-                            label="Show Expired"
-                        />
+                            disableHoverListener={hasExpiredSecrets}
+                            >
+                            <span>
+                                <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={showExpired}
+                                        onChange={(e) => setShowExpired(e.target.checked)}
+                                        color="primary"
+                                        disabled={!hasExpiredSecrets}
+                                        size="small"
+                                    />
+                                }
+                                label="Show Expired"
+                                />
+                            </span>
+                            </Tooltip>
                     </Box>
 
                     {/* Search bar (full width) */}
