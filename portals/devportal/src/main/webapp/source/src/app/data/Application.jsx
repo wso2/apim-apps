@@ -383,14 +383,15 @@ export default class Application extends Resource {
             });
     }
 
-    deleteSecret(keyMappingId, referenceId) {
+    deleteSecret(keyMappingId, secretId, additionalProperties) {
         const promisedDelete = this.client.then((client) => {
             const requestContent = {
-                referenceId
+                secretId,
+                additionalProperties
             };
             const payload = { applicationId: this.id, keyMappingId };
             const body = { requestBody: requestContent };
-            return client.apis['Application Secrets'].deleteConsumerSecret(payload, body);
+            return client.apis['Application Secrets'].revokeConsumerSecret(payload, body);
         });
         return promisedDelete.then((response) => response.status);
     }
