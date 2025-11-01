@@ -11,7 +11,7 @@ import {
     Box,
 } from "@mui/material";
 
-import ViewSecret from "./ViewSecret"; // your existing component
+import ViewSecret from "../ViewSecret"; // your existing component
 
 export default function SecretValueDialog({ open, onClose, secret }) {
 
