@@ -47,7 +47,8 @@ import ViewToken from './ViewToken';
 import ViewSecret from './ViewSecret';
 import ViewCurl from './ViewCurl';
 import Settings from 'AppComponents/Shared/SettingsContext';
-import SecretsTable from './SecretsTable';
+import SecretsTable from './Secrets/SecretsTable';
+import { getClientSecretCount, isMultipleClientSecretsEnabled } from './Secrets/util';
 
 const PREFIX = 'ViewKeys';
 
@@ -382,13 +383,6 @@ class ViewKeys extends React.Component {
         return (
             <>
                 <Grid item container alignItems="center" spacing={1}>
-                    {multipleSecretAllowed && (
-                        <Grid item md={1} sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Typography variant="subtitle1" sx={{ fontWeight: 400 }}>
-                                Consumer Key
-                            </Typography>
-                        </Grid>
-                    )}
                     <Grid item xs={multipleSecretAllowed ? 3 : 6}>
                         <Root className={classes.copyWrapper}>
                             <TextField
@@ -397,12 +391,10 @@ class ViewKeys extends React.Component {
                                 margin='dense'
                                 size='small'
                                 label={
-                                    !multipleSecretAllowed
-                                        ? <FormattedMessage
-                                            id="Shared.AppsAndKeys.ViewKeys.consumer.key"
-                                            defaultMessage="Consumer Key"
-                                        />
-                                        : undefined // no label when multiple secrets are allowed
+                                    <FormattedMessage
+                                        id="Shared.AppsAndKeys.ViewKeys.consumer.key"
+                                        defaultMessage="Consumer Key"
+                                    />
                                 }
                                 fullWidth
                                 variant='outlined'
@@ -443,7 +435,6 @@ class ViewKeys extends React.Component {
                                 }}
                             />
                         </Root>
-                    {!multipleSecretAllowed && (
                         <FormControl variant="standard">
                             <FormHelperText id="consumer-key-helper-text">
                                 <FormattedMessage
@@ -452,7 +443,6 @@ class ViewKeys extends React.Component {
                                 />
                             </FormHelperText>
                         </FormControl>
-                    )}
                     </Grid>
                 </Grid>
                 {/* Consumer Secret (hidden when multiple secrets enabled) */}
@@ -594,7 +584,12 @@ class ViewKeys extends React.Component {
                 tokenDetails.tokenScopes = initialScopes;
             }
         }
-        const multipleSecretAllowed = true;
+
+        const multipleSecretAllowed = isMultipleClientSecretsEnabled(keyManagerConfig.additionalProperties);
+        let secretCount;
+        if (multipleSecretAllowed) {
+            secretCount = getClientSecretCount(keyManagerConfig.additionalProperties);
+        }
 
         let dialogHead;
         if (showCurl) {
@@ -711,6 +706,7 @@ class ViewKeys extends React.Component {
                             <SecretsTable 
                                 appId={this.appId}
                                 keyMappingId={keyMappingId}
+                                secretCount={secretCount}
                             />
                         ) : (
                             // When multiple secrets are NOT allowed → show the rest of the UI
