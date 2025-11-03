@@ -7,13 +7,17 @@ import {
   DialogContentText,
   DialogActions,
   IconButton,
+  Tooltip,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-export default function DeleteSecretDialog({ onDelete }) {
+export default function DeleteSecretDialog({ onDelete, disabled }) {
   const [open, setOpen] = useState(false);
 
-  const handleClickOpen = () => setOpen(true);
+  const handleClickOpen = () => {
+    if (!disabled) setOpen(true); // don't open dialog if disabled
+  };
+
   const handleClose = () => setOpen(false);
 
   const handleConfirmDelete = () => {
@@ -23,12 +27,14 @@ export default function DeleteSecretDialog({ onDelete }) {
 
   return (
     <>
-      {/* Delete button in your table row */}
-      <IconButton color="error" onClick={handleClickOpen}>
-        <DeleteIcon />
-      </IconButton>
+      <Tooltip title={disabled ? "At least one secret must be present" : "Delete secret"}>
+        <span>
+          <IconButton color="error" onClick={handleClickOpen} disabled={disabled}>
+            <DeleteIcon />
+          </IconButton>
+        </span>
+      </Tooltip>
 
-      {/* Confirmation dialog */}
       <Dialog
         open={open}
         onClose={handleClose}
@@ -38,8 +44,7 @@ export default function DeleteSecretDialog({ onDelete }) {
         <DialogTitle id="delete-secret-title">Delete Secret</DialogTitle>
         <DialogContent>
           <DialogContentText id="delete-secret-description">
-            Are you sure you want to delete this secret? 
-            This action cannot be undone.
+            Are you sure you want to delete this secret? This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
