@@ -46,6 +46,9 @@ import {
     Radio,
     RadioGroup,
     TableCell,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
 } from '@mui/material';
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
@@ -57,6 +60,7 @@ import TokenMangerSummary from './TokenManagerSummary';
 import Progress from '../Progress';
 import RemoveKeys from './RemoveKeys';
 import CleanKeys from './CleanKeys';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Settings from 'AppComponents/Shared/SettingsContext';
 
 const PREFIX = 'TokenManager';
@@ -752,6 +756,129 @@ class TokenManager extends React.Component {
             initialValidityTime, initialScopes, importDisabled, mode, tokenType, isOrgWideAppUpdateEnabled,
         } = this.state;
 
+        const keyConfigurationTitle = (
+            <Typography className={classes.subTitle} variant="h6" component="h6">
+                {key ? (
+                    <FormattedMessage
+                        defaultMessage="Key Configurations"
+                        id="Shared.AppsAndKeys.TokenManager.update.configuration"
+                    />
+                ) : (
+                    <FormattedMessage
+                        defaultMessage="Key Configuration"
+                        id="Shared.AppsAndKeys.TokenManager.key.configuration"
+                    />
+                )}
+            </Typography>
+        );
+
+        const keyConfigurationContent = (keymanager) => (
+            <Box m={2}>
+                <KeyConfiguration
+                    keys={keys}
+                    key={key}
+                    selectedApp={selectedApp}
+                    selectedTab={selectedTab}
+                    keyType={keyType}
+                    updateKeyRequest={this.updateKeyRequest}
+                    keyRequest={keyRequest}
+                    isUserOwner={isUserOwner}
+                    isKeysAvailable={!!key}
+                    keyManagerConfig={keymanager}
+                    validating={validating}
+                    updateHasError={this.updateHasError}
+                    callbackError={hasError}
+                    setValidating={this.setValidating}
+                    defaultTokenEndpoint={defaultTokenEndpoint}
+                    mode={mode}
+                />
+                <div className={classes.generateWrapper}>
+                    <ScopeValidation
+                        resourcePath={resourcePaths.APPLICATION_GENERATE_KEYS}
+                        resourceMethod={resourceMethods.POST}
+                    >
+                        {!isOrgWideAppUpdateEnabled && !isUserOwner ? (
+                            <>
+                                <Button
+                                    id='generate-keys'
+                                    variant='contained'
+                                    color='primary'
+                                    className={classes.button}
+                                    onClick={
+                                        key ? this.updateKeys : this.generateKeys
+                                    }
+                                    disabled={(!isOrgWideAppUpdateEnabled && !isUserOwner) || isLoading || !keymanager.enableOAuthAppCreation
+                                        || (isKeyManagerAllowed
+                                            && !isKeyManagerAllowed(keymanager.name)
+                                            && ((keymanager.name !== 'Resident Key Manager')
+                                                || (!this.isTokenExchangeEnabled()
+                                                    && keymanager.name === 'Resident Key Manager')))}
+                                >
+                                    {key
+                                        ? this.props.intl.formatMessage({
+                                            id: 'Shared.AppsAndKeys.TokenManager.update.keys',
+                                            defaultMessage: 'Update Keys',
+                                        })
+                                        : this.props.intl.formatMessage({
+                                            id: 'Shared.AppsAndKeys.TokenManager.generate.keys',
+                                            defaultMessage: 'Generate Keys',
+                                        })}
+                                    {isLoading && <CircularProgress size={20} />}
+                                </Button>
+                                <Typography variant='caption'>
+                                    <FormattedMessage
+                                        defaultMessage='Only owner can generate or update keys'
+                                        id='Shared.AppsAndKeys.TokenManager.key.and.user.owner'
+                                    />
+                                </Typography>
+                            </>
+                        ) : (
+                            <Box display='flex'>
+                                <Button
+                                    id='generate-keys'
+                                    variant='contained'
+                                    color='primary'
+                                    className={classes.button}
+                                    onClick={key ? this.updateKeys : this.generateKeys}
+                                    disabled={hasError || (isLoading || !keymanager.enableOAuthAppCreation)
+                                        || (mode && mode === 'MAPPED')
+                                        || (isKeyManagerAllowed
+                                            && !isKeyManagerAllowed(keymanager.name)
+                                            && ((keymanager.name !== 'Resident Key Manager')
+                                                || (!this.isTokenExchangeEnabled()
+                                                    && keymanager.name === 'Resident Key Manager')))}
+                                >
+                                    {key
+                                        ? this.props.intl.formatMessage({
+                                            id: 'Shared.AppsAndKeys.TokenManager.update',
+                                            defaultMessage: 'Update',
+                                        })
+                                        : this.props.intl.formatMessage({
+                                            id: 'Shared.AppsAndKeys.TokenManager.generate.keys',
+                                            defaultMessage: 'Generate Keys',
+                                        })}
+                                    {isLoading && <CircularProgress size={20} />}
+                                </Button>
+                                {!keymanager.enableOAuthAppCreation && (
+                                    <Box m={2} display='flex'>
+                                        <WarningIcon className={classes.warningIcon} />
+                                        <Typography variant='body1'>
+                                            <FormattedMessage
+                                                defaultMessage='Oauth app creation
+                                                                         disabled for {kmName} key manager'
+                                                id='Shared.AppsAndKeys.TokenManager.app.creation.disable.warn'
+                                                values={{ kmName: keymanager.displayName || keymanager.name }}
+                                            />
+                                        </Typography>
+                                    </Box>
+                                )}
+                            </Box>
+                        )}
+                    </ScopeValidation>
+                </div>
+            </Box>
+        );
+
         if (keyManagers && keyManagers.length === 0) {
             return (
                 <Root>
@@ -797,6 +924,8 @@ class TokenManager extends React.Component {
             isUserOwner = true;
         }
         const key = keys.size > 0 && keys.get(selectedTab) && (keys.get(selectedTab).keyType === keyType) ? keys.get(selectedTab) : null;
+
+        const multipleSecretAllowed = true;
 
         if (summary) {
             if (keys) {
@@ -962,128 +1091,23 @@ class TokenManager extends React.Component {
                                             loadApplication={this.loadApplication}
                                         />
                                     </Box>
-                                    <Typography className={classes.subTitle} variant='h6' component='h6'>
-                                        {
-                                            key
-                                                ? (
-                                                    <FormattedMessage
-                                                        defaultMessage='Key Configurations'
-                                                        id='Shared.AppsAndKeys.TokenManager.update.configuration'
-                                                    />
-                                                )
-                                                : (
-                                                    <FormattedMessage
-                                                        defaultMessage='Key Configuration'
-                                                        id='Shared.AppsAndKeys.TokenManager.key.configuration'
-                                                    />
-                                                )
-                                        }
-                                    </Typography>
-                                    <Box m={2}>
-                                        <KeyConfiguration
-                                            keys={keys}
-                                            key={key}
-                                            selectedApp={selectedApp}
-                                            selectedTab={selectedTab}
-                                            keyType={keyType}
-                                            updateKeyRequest={this.updateKeyRequest}
-                                            keyRequest={keyRequest}
-                                            isUserOwner={isUserOwner}
-                                            isKeysAvailable={!!key}
-                                            keyManagerConfig={keymanager}
-                                            validating={validating}
-                                            updateHasError={this.updateHasError}
-                                            callbackError={hasError}
-                                            setValidating={this.setValidating}
-                                            defaultTokenEndpoint={defaultTokenEndpoint}
-                                            mode={mode}
-                                        />
-                                        <div className={classes.generateWrapper}>
-                                            <ScopeValidation
-                                                resourcePath={resourcePaths.APPLICATION_GENERATE_KEYS}
-                                                resourceMethod={resourceMethods.POST}
+                                    {multipleSecretAllowed ? (
+                                        <Accordion defaultExpanded={!key}>
+                                            <AccordionSummary
+                                                expandIcon={<ExpandMoreIcon />}
+                                                aria-controls="key-configuration-content"
+                                                id="key-configuration-header"
                                             >
-                                                {!isOrgWideAppUpdateEnabled && !isUserOwner ? (
-                                                    <>
-                                                        <Button
-                                                            id='generate-keys'
-                                                            variant='contained'
-                                                            color='primary'
-                                                            className={classes.button}
-                                                            onClick={
-                                                                key ? this.updateKeys : this.generateKeys
-                                                            }
-                                                            disabled={(!isOrgWideAppUpdateEnabled && !isUserOwner) || isLoading || !keymanager.enableOAuthAppCreation
-                                                                || (isKeyManagerAllowed
-                                                                    && !isKeyManagerAllowed(keymanager.name)
-                                                                    && ((keymanager.name !== 'Resident Key Manager')
-                                                                    || (!this.isTokenExchangeEnabled()
-                                                                    && keymanager.name === 'Resident Key Manager')))}
-                                                        >
-                                                            {key
-                                                                ? this.props.intl.formatMessage({
-                                                                    id: 'Shared.AppsAndKeys.TokenManager.update.keys',
-                                                                    defaultMessage: 'Update Keys',
-                                                                })
-                                                                : this.props.intl.formatMessage({
-                                                                    id: 'Shared.AppsAndKeys.TokenManager.generate.keys',
-                                                                    defaultMessage: 'Generate Keys',
-                                                                })}
-                                                            {isLoading && <CircularProgress size={20} />}
-                                                        </Button>
-                                                        <Typography variant='caption'>
-                                                            <FormattedMessage
-                                                                defaultMessage='Only owner can generate or update keys'
-                                                                id='Shared.AppsAndKeys.TokenManager.key.and.user.owner'
-                                                            />
-                                                        </Typography>
-                                                    </>
-                                                ) : (
-                                                    <Box display='flex'>
-                                                        <Button
-                                                            id='generate-keys'
-                                                            variant='contained'
-                                                            color='primary'
-                                                            className={classes.button}
-                                                            onClick={key ? this.updateKeys : this.generateKeys}
-                                                            disabled={hasError || (isLoading || !keymanager.enableOAuthAppCreation)
-                                                                || (mode && mode === 'MAPPED')
-                                                            || (isKeyManagerAllowed
-                                                                && !isKeyManagerAllowed(keymanager.name)
-                                                                && ((keymanager.name !== 'Resident Key Manager')
-                                                                || (!this.isTokenExchangeEnabled()
-                                                                && keymanager.name === 'Resident Key Manager')))}
-                                                        >
-                                                            {key
-                                                                ? this.props.intl.formatMessage({
-                                                                    id: 'Shared.AppsAndKeys.TokenManager.update',
-                                                                    defaultMessage: 'Update',
-                                                                })
-                                                                : this.props.intl.formatMessage({
-                                                                    id: 'Shared.AppsAndKeys.TokenManager.generate.keys',
-                                                                    defaultMessage: 'Generate Keys',
-                                                                })}
-                                                            {isLoading && <CircularProgress size={20} />}
-                                                        </Button>
-                                                        {!keymanager.enableOAuthAppCreation && (
-                                                            <Box m={2} display='flex'>
-                                                                <WarningIcon className={classes.warningIcon} />
-                                                                <Typography variant='body1'>
-                                                                    <FormattedMessage
-                                                                        defaultMessage='Oauth app creation
-                                                                         disabled for {kmName} key manager'
-                                                                        id='Shared.AppsAndKeys.TokenManager.app.creation.disable.warn'
-                                                                        values={{ kmName: keymanager.displayName || keymanager.name }}
-                                                                    />
-                                                                </Typography>
-                                                            </Box>
-                                                        )}
-                                                    </Box>
-                                                )}
-                                            </ScopeValidation>
-                                        </div>
-
-                                    </Box>
+                                                {keyConfigurationTitle}
+                                            </AccordionSummary>
+                                            <AccordionDetails>{keyConfigurationContent(keymanager)}</AccordionDetails>
+                                        </Accordion>
+                                    ) : (
+                                        <>
+                                            {keyConfigurationTitle}
+                                            {keyConfigurationContent(keymanager)}
+                                        </>
+                                    )}
                                 </TabPanel>
                             )}
                             {keymanager.tokenType === 'EXCHANGED' && (
