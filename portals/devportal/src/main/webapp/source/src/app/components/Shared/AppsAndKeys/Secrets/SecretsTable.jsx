@@ -58,8 +58,6 @@ const SecretsTable = (props) => {
     const [generatedSecret, setGeneratedSecret] = useState(null); // holds the newly created secret
     const [openSecretValueDialog, setOpenSecretValueDialog] = useState(false); // dialog visibility
 
-    //const {appId} = this.props;
-
     const applicationPromise = Application.get(props.appId);
 
     const fetchSecrets = async () => {
@@ -93,11 +91,7 @@ const SecretsTable = (props) => {
         try {
             let message = 'Secret deleted successfully!';
             const application = await applicationPromise;
-            console.log("@@@@@@@@@@@@@@@@@@@@@@");
-            console.log(secretId);
             const status = await application.deleteSecret(props.keyMappingId, secretId);
-            console.log("@@@@@@@@@@@@@@@@@@@@@@");
-            console.log(secretId);
 
             if (status === 204) {
                 Alert.info(message);
@@ -145,55 +139,55 @@ const SecretsTable = (props) => {
         }
     };
 
-/**
- * Renders the "Expires In" column with color and tooltip.
- * Handles "Never expires", "Expired", and remaining days cases.
- *
- * @param {number} expiryEpoch - Expiry timestamp in milliseconds (epoch)
- */
-const renderExpiresIn = (expiryEpoch) => {
-    if (!expiryEpoch || expiryEpoch === 0) {
+    /**
+     * Renders the "Expires In" column with color and tooltip.
+     * Handles "Never expires", "Expired", and remaining days cases.
+     *
+     * @param {number} expiryEpoch - Expiry timestamp in milliseconds (epoch)
+     */
+    const renderExpiresIn = (expiryEpoch) => {
+        if (!expiryEpoch || expiryEpoch === 0) {
+            return (
+                <Tooltip title="This secret never expires" arrow>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                        Never expires
+                    </Typography>
+                </Tooltip>
+            );
+        }
+
+        const now = Date.now();
+        const diffMs = expiryEpoch - now;
+        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        //const formattedDate = format(new Date(expiryEpoch), 'PPP p'); // Example: Oct 25, 2025, 5:30 PM
+        // Format the expiry date in a human-friendly way
+        const expiryDate = new Date(expiryEpoch);
+        const formattedDate = expiryDate.toLocaleString(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+
+        if (diffMs < 0) {
+            return (
+                <Tooltip title={`Expired on: ${formattedDate}`} arrow>
+                    <Typography variant="body2" sx={{ color: 'error.main', fontWeight: 600 }}>
+                        Expired
+                    </Typography>
+                </Tooltip>
+            );
+        }
+
         return (
-            <Tooltip title="This secret never expires" arrow>
-                <Typography variant="body1" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                    Never expires
+            <Tooltip title={`Expires on: ${formattedDate}`} arrow>
+                <Typography variant="body2">
+                    {`${diffDays} day${diffDays !== 1 ? 's' : ''}`}
                 </Typography>
             </Tooltip>
         );
-    }
-
-    const now = Date.now();
-    const diffMs = expiryEpoch - now;
-    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-    //const formattedDate = format(new Date(expiryEpoch), 'PPP p'); // Example: Oct 25, 2025, 5:30 PM
-    // Format the expiry date in a human-friendly way
-    const expiryDate = new Date(expiryEpoch);
-    const formattedDate = expiryDate.toLocaleString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-
-    if (diffMs < 0) {
-        return (
-            <Tooltip title={`Expired on: ${formattedDate}`} arrow>
-                <Typography variant="body1" sx={{ color: 'error.main', fontWeight: 600 }}>
-                    Expired
-                </Typography>
-            </Tooltip>
-        );
-    }
-
-    return (
-        <Tooltip title={`Expires on: ${formattedDate}`} arrow>
-            <Typography variant="body2">
-                {`${diffDays} day${diffDays !== 1 ? 's' : ''}`}
-            </Typography>
-        </Tooltip>
-    );
-};
+    };
 
     const handleChangePage = (_, newPage) => setPage(newPage);
     const handleChangeRowsPerPage = (event) => {
@@ -237,6 +231,9 @@ const renderExpiresIn = (expiryEpoch) => {
         [secrets]
     );
 
+    const currentCount = secrets?.length || 0;
+    const maxReached = currentCount >= props.secretCount;
+
     if (loading)
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
@@ -246,199 +243,208 @@ const renderExpiresIn = (expiryEpoch) => {
 
     return (
         <Grid container spacing={2} alignItems="flex-start">
-            {/* Left side title */}
-            {/* <Grid item xs={12} md={1}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 400, mt: 3 }}>
-                    Consumer Secrets
-                </Typography>
-            </Grid> */}
-
-            {/* Right side content (everything else) */}
             <Grid item xs={12} md={9}>
                 <Box sx={{ position: "relative", mt: 2 }}>
-                <Typography
-                    variant="caption"
-                    sx={{
-                    position: "absolute",
-                    top: -10,
-                    left: 12,
-                    backgroundColor: "background.paper",
-                    px: 0.5,
-                    color: "text.secondary",
-                    }}
-                >
-                    Consumer Secrets
-                    {/* <FormattedMessage
+                    <Typography
+                        variant="caption"
+                        sx={{
+                            position: "absolute",
+                            top: -10,
+                            left: 10,
+                            backgroundColor: "background.paper",
+                            px: 0.3,
+                            color: "text.disabled",
+                        }}
+                    >
+                        Consumer Secrets
+                        {/* <FormattedMessage
                     id="Shared.AppsAndKeys.ViewKeys.consumer.secrets"
                     defaultMessage="Consumer Secrets"
                     /> */}
-                </Typography>
-                <Paper
-                variant="outlined"
-  sx={{
-    
-    width: "100%", overflow: "hidden", p: 2,
-    borderColor: "rgba(0, 0, 0, 0.23)", // Same as MUI's default TextField outline
-    borderWidth: 1,
-    borderRadius: 1, // Matches TextField rounded corners
-    boxShadow: "none", // Remove Paper shadow
-    p: 3,
-  }}>
-                    {/* Row: New Secret + Show Expired */}
-                    <Box
-                        display="flex"
-                        justifyContent="space-between"
-                        alignItems="center"
-                        mb={2}
-                    >
-                        <Button
-                            variant="contained"
-                            startIcon={<AddIcon sx={{ color: "white" }} />}
-                            onClick={() => setOpenNewDialog(true)}
+                    </Typography>
+                    <Paper
+                        variant="outlined"
+                        sx={{
+
+                            width: "100%", overflow: "hidden", p: 2,
+                            borderColor: "rgba(0, 0, 0, 0.23)", // Same as MUI's default TextField outline
+                            borderWidth: 1,
+                            borderRadius: 1, // Matches TextField rounded corners
+                            boxShadow: "none", // Remove Paper shadow
+                            p: 3,
+                        }}>
+                        {/* Row: New Secret + Show Expired */}
+                        <Box
+                            display="flex"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            mb={2}
                         >
-                            New Secret
-                        </Button>
-
-                        <Tooltip
-                            title={
-                                !hasExpiredSecrets
-                                ? "No expired secrets available"
-                                : ""
-                            }
-                            disableHoverListener={hasExpiredSecrets}
+                            <Tooltip
+                                title={maxReached ? "Maximum number of consumer secrets reached" : ""}
+                                placement="top"
                             >
-                            <span>
-                                <FormControlLabel
-                                control={
-                                    <Switch
-                                        checked={showExpired}
-                                        onChange={(e) => setShowExpired(e.target.checked)}
-                                        color="primary"
-                                        disabled={!hasExpiredSecrets}
-                                        size="small"
-                                    />
-                                }
-                                label="Show Expired"
-                                />
-                            </span>
+                                {/* Wrapping Button in span so Tooltip works when button is disabled */}
+                                <span>
+                                    <Button
+                                        variant="contained"
+                                        startIcon={<AddIcon sx={{ color: "white" }} />}
+                                        onClick={() => setOpenNewDialog(true)}
+                                        disabled={maxReached}
+                                    >
+                                        New Secret
+                                    </Button>
+                                </span>
                             </Tooltip>
-                    </Box>
 
-                    {/* Search bar (full width) */}
-                    <Box sx={{ mb: 2 }}>
-                        <TextField
-                            fullWidth
-                            variant="outlined"
-                            size="small"
-                            placeholder="Search by description..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                    </Box>
+                            <Tooltip
+                                title={
+                                    !hasExpiredSecrets
+                                        ? "No expired secrets available"
+                                        : ""
+                                }
+                                disableHoverListener={hasExpiredSecrets}
+                            >
+                                <span>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={showExpired}
+                                                onChange={(e) => setShowExpired(e.target.checked)}
+                                                color="primary"
+                                                disabled={!hasExpiredSecrets}
+                                                size="small"
+                                            />
+                                        }
+                                        label="Show Expired"
+                                    />
+                                </span>
+                            </Tooltip>
+                        </Box>
 
-                    {/* Table */}
-                    <TableContainer sx={{ tableLayout: 'fixed' }}>
-                        <Table size="small">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell sx={{ width: '35%' }}>
-                                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                                            Description
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell sx={{ width: '35%' }}>
-                                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                                            Value
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell sx={{ width: '20%' }}>
-                                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                                            Expires In
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell sx={{ width: '10%' }}>
-                                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                                            Actions
-                                        </Typography>
-                                    </TableCell>
-                                </TableRow>
-                            </TableHead>
+                        {/* Search bar (full width) */}
+                        <Box sx={{ mb: 2 }}>
+                            <TextField
+                                fullWidth
+                                variant="outlined"
+                                size="small"
+                                placeholder="Search by description..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        </Box>
 
-                            <TableBody>
-                                {paginatedSecrets.length === 0 ? (
+                        {/* Table */}
+                        <TableContainer sx={{ tableLayout: 'fixed' }}>
+                            <Table size="small">
+                                <TableHead>
                                     <TableRow>
-                                        <TableCell colSpan={4} align="center">
-                                            No secrets found
+                                        <TableCell sx={{ width: '35%' }}>
+                                            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                                Description
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell sx={{ width: '35%' }}>
+                                            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                                Value
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell sx={{ width: '20%' }}>
+                                            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                                Expires In
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell sx={{ width: '10%' }}>
+                                            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                                Actions
+                                            </Typography>
                                         </TableCell>
                                     </TableRow>
-                                ) : (
-                                    paginatedSecrets.map((secret) => {
-                                        const { secretId, secretValue, additionalProperties } =
-                                            secret;
-                                        const { description, expiresAt } = additionalProperties || {};
+                                </TableHead>
 
-                                        return (
-                                            <TableRow key={secretId}>
-                                                <TableCell>
-                                                    <Typography variant="body1">
-                                                        {description || "—"}
-                                                    </Typography>
-                                                </TableCell>
+                                <TableBody>
+                                    {paginatedSecrets.length === 0 ? (
+                                        <TableRow>
+                                            <TableCell colSpan={4} align="center">
+                                                No secrets found
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : (
+                                        paginatedSecrets.map((secret) => {
+                                            const { secretId, secretValue, additionalProperties } =
+                                                secret;
+                                            const { description, expiresAt } = additionalProperties || {};
 
-                                                <TableCell>
-                                                    <Typography variant="body1">
-                                                        {secretValue}
-                                                    </Typography>
-                                                </TableCell>
+                                            return (
+                                                <TableRow key={secretId}>
+                                                    <TableCell>
+                                                        <Typography 
+                                                            variant="body2"
+                                                            fontStyle={!description ? 'italic' : 'normal'}
+                                                            color={!description ? 'text.secondary' : 'inherit'}
+                                                        >
+                                                            {description || "No description"}
+                                                        </Typography>
+                                                    </TableCell>
 
-                                                <TableCell>
-                                                    <Box display="flex" alignItems="center" gap={1}>
-                                                        {renderExpiresIn(expiresAt)}
-                                                    </Box>
-                                                </TableCell>
+                                                    <TableCell>
+                                                        <Typography variant="body2">
+                                                            {secretValue}
+                                                        </Typography>
+                                                    </TableCell>
 
-                                                <TableCell>
-                                                    <DeleteSecretDialog
-                                                        onDelete={() => handleDelete(secretId)}
-                                                    />
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })
-                                )}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                                                    <TableCell>
+                                                        {/* <Typography variant="body2">
+                                                            {renderExpiresIn(expiresAt)}
+                                                        </Typography> */}
+                                                        <Box display="flex" alignItems="center" gap={1}>
+                                                            {renderExpiresIn(expiresAt)}
+                                                        </Box>
+                                                    </TableCell>
 
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
-                        component="div"
-                        count={filteredSecrets.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
+                                                    <TableCell>
+                                                        <DeleteSecretDialog
+                                                            onDelete={() => handleDelete(secretId)}
+                                                            disabled={paginatedSecrets.length === 1}
+                                                        />
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
 
-                    <NewSecretDialog
-                        open={openNewDialog}
-                        onClose={() => setOpenNewDialog(false)}
-                        onCreate={handleCreateSecret}
-                    />
-                    <SecretValueDialog
-                        open={openSecretValueDialog}
-                        onClose={handleCloseSecretValueDialog}
-                        secret={generatedSecret}
-                    />
-                </Paper>
-            </Box>
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            component="div"
+                            count={filteredSecrets.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
+
+                        <NewSecretDialog
+                            open={openNewDialog}
+                            onClose={() => setOpenNewDialog(false)}
+                            onCreate={handleCreateSecret}
+                        />
+                        <SecretValueDialog
+                            open={openSecretValueDialog}
+                            onClose={handleCloseSecretValueDialog}
+                            secret={generatedSecret}
+                        />
+                    </Paper>
+                </Box>
             </Grid>
         </Grid>
     );
