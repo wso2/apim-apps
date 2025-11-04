@@ -76,7 +76,6 @@ export default function OperationGovernance(props) {
     const intl = useIntl();
     const scrollToTop = () => {
         setFocusOperationLevel(true);
-        window.scrollTo({ top: 195, behavior: 'smooth' });
     };
 
     return (
