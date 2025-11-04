@@ -76,6 +76,7 @@ export default function OperationGovernance(props) {
     const intl = useIntl();
     const scrollToTop = () => {
         setFocusOperationLevel(true);
+        document.querySelector('#react-root').scrollTop = 195;
     };
 
     return (
