@@ -45,6 +45,7 @@ import Application from '../../../../data/Application';
 import DeleteSecretDialog from "./DeleteSecret";
 import SecretValueDialog from "./SecretValueDialog";
 import Alert from 'AppComponents/Shared/Alert';
+import { maskSecret } from './util';
 
 const SecretsTable = (props) => {
 
@@ -128,11 +129,18 @@ const SecretsTable = (props) => {
             Alert.info("Secret created successfully!");
             setOpenNewDialog(false);
 
-            // Refresh or append new secret to table
-            setSecrets((prev) => [...prev, response]);
             // Show the secret value dialog
             setGeneratedSecret(response.secretValue);
             setOpenSecretValueDialog(true);
+
+            // Mask secret before adding to table
+            const maskedResponse = {
+                ...response,
+                secretValue: maskSecret(response.secretValue, props.hashEnabled),
+            };
+
+            // Refresh or append new secret to table
+            setSecrets((prev) => [...prev, maskedResponse]);
         } catch (error) {
             console.error("Error creating secret:", error);
             Alert.error("Failed to create secret");
@@ -244,7 +252,7 @@ const SecretsTable = (props) => {
     return (
         <Grid container spacing={2} alignItems="flex-start">
             <Grid item xs={12} md={9}>
-                <Box sx={{ position: "relative", mt: 2 }}>
+                <Box sx={{ position: "relative" }}>
                     <Typography
                         variant="caption"
                         sx={{
