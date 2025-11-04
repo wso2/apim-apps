@@ -97,9 +97,17 @@ const SecretsTable = (props) => {
             if (status === 204) {
                 Alert.info(message);
                 // ✅ Remove the deleted item from the state
-                setSecrets((prevSecrets) =>
-                    prevSecrets.filter((secret) => secret.secretId !== secretId)
-                );
+                setSecrets((prev) => {
+                    const updated = prev.filter((s) => s.secretId !== secretId);
+
+                    // Adjust pagination if current page is now invalid
+                    const maxPage = Math.ceil(updated.length / rowsPerPage) - 1;
+                    if (page > maxPage) {
+                        setPage(maxPage);
+                    }
+
+                    return updated;
+                });
             } else {
                 Alert.error('Unexpected response while deleting secret.');
             }
@@ -420,7 +428,7 @@ const SecretsTable = (props) => {
                                                     <TableCell>
                                                         <DeleteSecretDialog
                                                             onDelete={() => handleDelete(secretId)}
-                                                            disabled={paginatedSecrets.length === 1}
+                                                            disabled={secrets.length <= 1}
                                                         />
                                                     </TableCell>
                                                 </TableRow>
