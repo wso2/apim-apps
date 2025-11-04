@@ -707,6 +707,7 @@ class ViewKeys extends React.Component {
                                 appId={this.appId}
                                 keyMappingId={keyMappingId}
                                 secretCount={secretCount}
+                                hashEnabled={hashEnabled}
                             />
                         ) : (
                             // When multiple secrets are NOT allowed → show the rest of the UI

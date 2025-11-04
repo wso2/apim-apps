@@ -34,3 +34,26 @@ export function getClientSecretCount(additionalProps) {
 export function isMultipleClientSecretsEnabled(additionalProps) {
     return additionalProps?.["enable_multiple_client_secrets"] === "true";
 }
+
+/**
+ * Mask a secret value depending on whether hashing is enabled.
+ * Always returns a 16-character masked string for consistency.
+ *
+ * @param {string} secret - The actual secret value.
+ * @param {boolean} hashEnabled - Whether secret hashing is enabled.
+ * @returns {string} - Masked secret for display.
+ */
+export function maskSecret(secret, hashEnabled) {
+    const MASK_LENGTH = 16;
+
+    // If no secret or hash is enabled → fully masked
+    if (!secret || hashEnabled) {
+        return "*".repeat(MASK_LENGTH);
+    }
+
+    // Show first 3 characters, mask the rest to make total length = 16
+    const visibleChars = 3;
+    const maskedPartLength = Math.max(MASK_LENGTH - visibleChars, 0);
+
+    return secret.slice(0, visibleChars) + "*".repeat(maskedPartLength);
+}
