@@ -73,7 +73,6 @@ export default function OperationGovernance(props) {
     const isOperationRateLimiting = api.apiThrottlingPolicy === null || 
         !componentValidator.includes('apiLevelRateLimiting');
     const filteredApiScopes = api.scopes.filter((sharedScope) => !sharedScope.shared);
-    
     const intl = useIntl();
     const scrollToTop = () => {
         setFocusOperationLevel(true);
