@@ -242,6 +242,7 @@ class TokenManager extends React.Component {
             mode: null,
             tokenType: 'DIRECT',
             isOrgWideAppUpdateEnabled: false,
+            isAccordionExpanded: true,
         };
         this.keyStates = {
             COMPLETED: 'COMPLETED',
@@ -433,6 +434,7 @@ class TokenManager extends React.Component {
                             importDisabled: (mode === 'MAPPED' || mode === 'CREATED'),
                             mode,
                         });
+                        this.setState({ isAccordionExpanded: false });
                     } else {
                         const selectedGrantTypes = [];
                         if (selectdKM.availableGrantTypes.find((gt) => gt === 'password')) {
@@ -525,6 +527,7 @@ class TokenManager extends React.Component {
                 this.setState({
                     keys: newKeys, isKeyJWT, initialToken, initialValidityTime, initialScopes,
                 });
+                this.setState({ isAccordionExpanded: false });
                 if (response.keyState === this.keyStates.CREATED || response.keyState === this.keyStates.REJECTED) {
                     Alert.info(intl.formatMessage({
                         id: 'Shared.AppsAndKeys.TokenManager.key.generate.success.blocked',
@@ -742,6 +745,12 @@ class TokenManager extends React.Component {
         this.setState({ tokenType: 'DIRECT' });
     }
 
+    handleAccordionToggle = () => {
+        this.setState((prevState) => ({
+            isAccordionExpanded: !prevState.isAccordionExpanded,
+        }));
+    };
+
     /**
      *  @returns {Component}
      * @memberof Tokenemanager
@@ -753,7 +762,7 @@ class TokenManager extends React.Component {
         const {
             keys, keyRequest, isLoading, isKeyJWT, providedConsumerKey,
             providedConsumerSecret, selectedTab, keyManagers, validating, hasError, initialToken,
-            initialValidityTime, initialScopes, importDisabled, mode, tokenType, isOrgWideAppUpdateEnabled,
+            initialValidityTime, initialScopes, importDisabled, mode, tokenType, isOrgWideAppUpdateEnabled, isAccordionExpanded,
         } = this.state;
 
         const keyConfigurationTitle = (
@@ -1092,7 +1101,10 @@ class TokenManager extends React.Component {
                                         />
                                     </Box>
                                     {multipleSecretAllowed ? (
-                                        <Accordion defaultExpanded={!key}>
+                                        <Accordion
+                                            expanded={isAccordionExpanded}
+                                            onChange={this.handleAccordionToggle}
+                                        >
                                             <AccordionSummary
                                                 expandIcon={<ExpandMoreIcon />}
                                                 aria-controls="key-configuration-content"
