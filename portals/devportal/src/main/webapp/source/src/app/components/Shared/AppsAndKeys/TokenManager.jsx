@@ -62,6 +62,7 @@ import RemoveKeys from './RemoveKeys';
 import CleanKeys from './CleanKeys';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Settings from 'AppComponents/Shared/SettingsContext';
+import { isMultipleClientSecretsEnabled } from './Secrets/util';
 
 const PREFIX = 'TokenManager';
 
@@ -934,8 +935,6 @@ class TokenManager extends React.Component {
         }
         const key = keys.size > 0 && keys.get(selectedTab) && (keys.get(selectedTab).keyType === keyType) ? keys.get(selectedTab) : null;
 
-        const multipleSecretAllowed = true;
-
         if (summary) {
             if (keys) {
                 return (
@@ -1100,7 +1099,7 @@ class TokenManager extends React.Component {
                                             loadApplication={this.loadApplication}
                                         />
                                     </Box>
-                                    {multipleSecretAllowed ? (
+                                    {isMultipleClientSecretsEnabled(keymanager.additionalProperties) ? (
                                         <Accordion
                                             expanded={isAccordionExpanded}
                                             onChange={this.handleAccordionToggle}

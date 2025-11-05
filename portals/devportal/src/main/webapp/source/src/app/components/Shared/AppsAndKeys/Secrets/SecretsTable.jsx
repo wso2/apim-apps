@@ -248,7 +248,7 @@ const SecretsTable = (props) => {
     );
 
     const currentCount = secrets?.length || 0;
-    const maxReached = currentCount >= props.secretCount;
+    const maxReached = props.secretCount > 0 && currentCount >= props.secretCount;
 
     if (loading)
         return (
