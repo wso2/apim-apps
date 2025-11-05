@@ -374,16 +374,15 @@ class ViewKeys extends React.Component {
             });
     };
 
-    viewKeyAndSecret = (consumerKey, consumerSecret, keyMappingId, selectedTab, isUserOwner, isOrgWideAppUpdateEnabled) => {
+    viewKeyAndSecret = (consumerKey, consumerSecret, keyMappingId, selectedTab, isUserOwner, isOrgWideAppUpdateEnabled, multipleSecretsAllowed = false) => {
         const {
             intl, selectedApp: { hashEnabled }, keyType,
         } = this.props;
         const { keyCopied, secretCopied, showCS } = this.state;
-        const multipleSecretAllowed = true;
         return (
             <>
                 <Grid item container alignItems="center" spacing={1}>
-                    <Grid item xs={multipleSecretAllowed ? 3 : 6}>
+                    <Grid item xs={multipleSecretsAllowed ? 3 : 6}>
                         <Root className={classes.copyWrapper}>
                             <TextField
                                 id='consumer-key'
@@ -446,7 +445,7 @@ class ViewKeys extends React.Component {
                     </Grid>
                 </Grid>
                 {/* Consumer Secret (hidden when multiple secrets enabled) */}
-                {!multipleSecretAllowed && (
+                {!multipleSecretsAllowed && (
                     <Grid item xs={6}>
                         <Root className={classes.copyWrapper}>
                             {!hashEnabled ? (
@@ -585,9 +584,9 @@ class ViewKeys extends React.Component {
             }
         }
 
-        const multipleSecretAllowed = isMultipleClientSecretsEnabled(keyManagerConfig.additionalProperties);
+        const multipleSecretsAllowed = isMultipleClientSecretsEnabled(keyManagerConfig.additionalProperties);
         let secretCount;
-        if (multipleSecretAllowed) {
+        if (multipleSecretsAllowed) {
             secretCount = getClientSecretCount(keyManagerConfig.additionalProperties);
         }
 
@@ -623,7 +622,7 @@ class ViewKeys extends React.Component {
         return consumerKey && (
             <Root className={classes.inputWrapper}>
                 <Grid container spacing={3}>
-                    {this.viewKeyAndSecret(consumerKey, consumerSecret, keyMappingId, selectedTab, isUserOwner, isOrgWideAppUpdateEnabled)}
+                    {this.viewKeyAndSecret(consumerKey, consumerSecret, keyMappingId, selectedTab, isUserOwner, isOrgWideAppUpdateEnabled, multipleSecretsAllowed)}
                     <Grid item xs={12}>
                         <Dialog
                             fullScreen={fullScreen}
@@ -701,7 +700,7 @@ class ViewKeys extends React.Component {
                                 </Button>
                             </DialogActions>
                         </Dialog>
-                        {multipleSecretAllowed ? (
+                        {multipleSecretsAllowed ? (
                             // When multiple secrets are allowed → show SecretsTable only
                             <SecretsTable 
                                 appId={this.appId}
