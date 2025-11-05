@@ -11,18 +11,18 @@
  * @returns {number} - Number of allowed client secrets, Infinity if not specified but enabled, 0 if disabled
  */
 export function getClientSecretCount(additionalProps) {
-    if (!additionalProps) return 0;
+    if (!additionalProps) return 1;
 
-    const multipleSecretsEnabled = additionalProps["enable_multiple_client_secrets"];
-    if (multipleSecretsEnabled === "true") {
+    const multipleSecretsEnabled = isMultipleClientSecretsEnabled(additionalProps);
+    if (multipleSecretsEnabled) {
         const countStr = additionalProps["client_secret_count"];
         if (!countStr) {
             // Default to unlimited
-            return Infinity;
+            return -1;
         }
         return parseInt(countStr, 10);
     }
-    return 0;
+    return 1;
 }
 
 /**
