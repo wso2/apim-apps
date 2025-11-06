@@ -206,22 +206,23 @@ class AuthManager {
     static isRestricted(scopesAllowedToEdit, api = {}) {
         const user = AuthManager.getUser();
 
-        // Block read-only users right away
-        if (AuthManager.isReadOnlyUser()) {
+        if (!user) {
             return true;
         }
-
-        // If user doesn't have any of the required scopes → restrict
-        const hasAllowedScope =
-            user && scopesAllowedToEdit.some(scope => user.scopes.includes(scope));
-        if (!hasAllowedScope) {
+        // Block read-only users right away
+        if (AuthManager.isReadOnlyUser()) {
             return true;
         }
         // determines whether the apiType is API PRODUCT and user has publisher role, then allow access.
         if (api.apiType === 'APIPRODUCT') {
             return !user.scopes.includes('apim:api_publish');
         }
-
+        // If user doesn't have any of the required scopes → restrict
+        const hasAllowedScope =
+            scopesAllowedToEdit.some(scope => user.scopes.includes(scope));
+        if (!hasAllowedScope) {
+            return true;
+        }
         // Check for publisher override (publisher can always access)
         const isPublisherOverride =
             user.scopes.includes('apim:api_publish') ||
