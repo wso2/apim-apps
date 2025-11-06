@@ -199,18 +199,19 @@ class AuthManager {
     }
 
     /**
-     *
-     * @param {*} scopesAllowedToEdit
-     * @param {*} api
+     * Determines if a user is restricted from editing an API based on their scopes and the API's state.
+     * 
+     * @param {string[]} scopesAllowedToEdit - Array of scope strings that are allowed to edit
+     * @param {Object} api - The API object containing apiType, lifeCycleStatus, etc.
+     * @param {string} [api.apiType] - Type of API (e.g., 'APIPRODUCT', 'MCP')
+     * @param {string} [api.lifeCycleStatus] - Lifecycle status (e.g., 'CREATED', 'PROTOTYPED')
+     * @returns {boolean} true if user is restricted, false if unrestricted
      */
     static isRestricted(scopesAllowedToEdit, api = {}) {
         const user = AuthManager.getUser();
 
-        if (!user) {
-            return true;
-        }
-        // Block read-only users right away
-        if (AuthManager.isReadOnlyUser()) {
+        // Block if no user or read-only user
+        if (!user || AuthManager.isReadOnlyUser()) {
             return true;
         }
         // determines whether the apiType is API PRODUCT and user has publisher role, then allow access.
