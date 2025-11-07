@@ -444,13 +444,19 @@ class APIDefinition extends React.Component {
      * Handle save and deploy
      * */
     handleSaveAndDeploy() {
-        const { swaggerModified, asyncAPIModified } = this.state;
+        const { swaggerModified, asyncAPIModified, swaggerImporting, isImporting } = this.state;
         const { api, history } = this.props;
         if (asyncAPIModified !== null) {
             this.updateAsyncAPIDefinitionAndDeploy(asyncAPIModified, '', '');
             history.push({
                 pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
                     : `/apis/${api.id}/deployments`,
+                state: 'deploy',
+            });
+        } else if (isImporting) { 
+            this.updateSwaggerDefinition(swaggerImporting, '', '');
+            history.push({
+                pathname: getBasePath(api.apiType) + api.id + '/deployments',
                 state: 'deploy',
             });
         } else {
