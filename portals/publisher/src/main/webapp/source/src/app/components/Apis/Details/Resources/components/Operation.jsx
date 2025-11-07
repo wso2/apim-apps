@@ -288,36 +288,38 @@ function Operation(props) {
                                     </div>
                                 </Tooltip>
                             )}
-                            <Tooltip
-                                title={
-                                    (operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
-                                        ? (
-                                            <FormattedMessage
-                                                id={'Apis.Details.Resources.components.Operation.disable.security'
-                                                    + '.when.used.in.api.products'}
-                                                defaultMessage='Security enabled'
-                                            />
-                                        )
-                                        : (
-                                            <FormattedMessage
-                                                id='Apis.Details.Resources.components.enabled.security'
-                                                defaultMessage='No security'
-                                            />
-                                        )
-                                }
-                                aria-label={(
-                                    <FormattedMessage
-                                        id='Apis.Details.Resources.components.Operation.security.operation'
-                                        defaultMessage='Security '
-                                    />
-                                )}
-                            >
-                                <IconButton aria-label='Security' size='large'>
-                                    {(operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
-                                        ? <LockIcon fontSize='small' />
-                                        : <LockOpenIcon fontSize='small' />}
-                                </IconButton>
-                            </Tooltip>
+                            {componentValidator.includes('operationSecurity') && (
+                                <Tooltip
+                                    title={
+                                        (operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
+                                            ? (
+                                                <FormattedMessage
+                                                    id={'Apis.Details.Resources.components.Operation.disable.security'
+                                                        + '.when.used.in.api.products'}
+                                                    defaultMessage='Security enabled'
+                                                />
+                                            )
+                                            : (
+                                                <FormattedMessage
+                                                    id='Apis.Details.Resources.components.enabled.security'
+                                                    defaultMessage='No security'
+                                                />
+                                            )
+                                    }
+                                    aria-label={(
+                                        <FormattedMessage
+                                            id='Apis.Details.Resources.components.Operation.security.operation'
+                                            defaultMessage='Security '
+                                        />
+                                    )}
+                                >
+                                    <IconButton aria-label='Security' size='large'>
+                                        {(operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
+                                            ? <LockIcon fontSize='small' />
+                                            : <LockOpenIcon fontSize='small' />}
+                                    </IconButton>
+                                </Tooltip>
+                            )}
 
                         </Grid>
                     </Grid>

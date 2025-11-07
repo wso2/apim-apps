@@ -29,6 +29,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import MCPServer from 'AppData/MCPServer';
 import MethodView from 'AppComponents/Apis/Details/ProductResources/MethodView';
 import TransferList from './components/TransferList';
+import { useToolSelection } from './hooks/useToolSelection';
 
 const PREFIX = 'MCPProxyToolSelection';
 
@@ -79,74 +80,29 @@ const MCPProxyToolSelection = ({ onValidate, apiInputs, inputsDispatcher }) => {
         });
     };
 
-    // Custom hook state for tool selection without validation side effects
-    const [checked, setChecked] = useState([]);
-    const [availableOperations, setAvailableOperations] = useState([]);
-    const [selectedOperations, setSelectedOperations] = useState([]);
+    // Use the custom hook for tool selection logic
+    const {
+        checked,
+        availableOperations,
+        selectedOperations,
+        getCheckedItemsInList,
+        handleToggle,
+        numberOfChecked,
+        handleToggleAll,
+        handleCheckedObjectsRight,
+        handleCheckedObjectsLeft,
+        updateAvailableOperations: updateOperations,
+    } = useToolSelection(
+        [],
+        () => {}, // onValidate - handled separately
+        () => {}, // inputsDispatcher - handled separately
+        (obj) => `${obj.verb}-${obj.target}`,
+        operationCleaner
+    );
 
-    const getCheckedItemsInList = (items, itemKeyExtractor = (obj) => `${obj.verb}-${obj.target}`) => {
-        const itemKeys = items.map(itemKeyExtractor);
-        return itemKeys.filter(key => checked.includes(key));
-    };
-
-    const handleToggle = (value, itemKeyExtractor = (obj) => `${obj.verb}-${obj.target}`) => () => {
-        const valueKey = itemKeyExtractor(value);
-        if (checked.includes(valueKey)) {
-            setChecked(prev => prev.filter(key => key !== valueKey));
-        } else {
-            setChecked(prev => [...prev, valueKey]);
-        }
-    };
-
-    const numberOfChecked = (items, itemKeyExtractor = (obj) => `${obj.verb}-${obj.target}`) => {
-        const itemKeys = items.map(itemKeyExtractor);
-        return itemKeys.filter(key => checked.includes(key)).length;
-    };
-
-    const handleToggleAll = (items, itemKeyExtractor = (obj) => `${obj.verb}-${obj.target}`) => () => {
-        const itemKeys = items.map(itemKeyExtractor);
-        const currentChecked = numberOfChecked(items, itemKeyExtractor);
-        
-        if (currentChecked === items.length) {
-            // All are checked, uncheck all of them from this list
-            setChecked(prev => prev.filter(key => !itemKeys.includes(key)));
-        } else {
-            // Not all are checked, check all of them from this list
-            setChecked(prev => [...new Set([...prev, ...itemKeys])]);
-        }
-    };
-
-    const handleCheckedObjectsRight = () => {
-        const itemsToMove = availableOperations.filter(item => 
-            checked.includes(`${item.verb}-${item.target}`)
-        );
-        setSelectedOperations(prev => [...prev, ...itemsToMove]);
-        setAvailableOperations(prev => 
-            prev.filter(item => !checked.includes(`${item.verb}-${item.target}`))
-        );
-        setChecked(prev => 
-            prev.filter(key => !itemsToMove.some(item => `${item.verb}-${item.target}` === key))
-        );
-    };
-
-    const handleCheckedObjectsLeft = () => {
-        const itemsToMove = selectedOperations.filter(item => 
-            checked.includes(`${item.verb}-${item.target}`)
-        );
-        setAvailableOperations(prev => [...prev, ...itemsToMove]);
-        setSelectedOperations(prev => 
-            prev.filter(item => !checked.includes(`${item.verb}-${item.target}`))
-        );
-        setChecked(prev => 
-            prev.filter(key => !itemsToMove.some(item => `${item.verb}-${item.target}` === key))
-        );
-    };
-
+    // Custom updateAvailableOperations that also resets toolInfo
     const updateAvailableOperations = (newOperations) => {
-        setAvailableOperations(newOperations);
-        setSelectedOperations([]);
-        setChecked([]);
-        // Also reset toolInfo when clearing operations
+        updateOperations(newOperations);
         if (newOperations.length === 0) {
             setToolInfo(null);
         }
