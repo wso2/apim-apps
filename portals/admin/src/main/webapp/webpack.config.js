@@ -143,15 +143,11 @@ module.exports = function (env, args) {
                     ],
                 },
                 {
-                    test: /\.(woff|woff2|eot|ttf|svg)$/,
-                    use: [
-                        {
-                            loader: 'url-loader',
-                            options: {
-                                limit: 100000,
-                            },
-                        }
-                    ]
+                    test: /\.(woff2?|eot|ttf|otf|svg)$/i,
+                    type: 'asset/resource',
+                    generator: {
+                         filename: 'static/fonts/[name].[contenthash][ext]', // per-font hashed filename
+                    },
                 },
                 // Until https://github.com/jantimon/html-webpack-plugin/issues/1483 ~tmkb
                 // This was added to generate the index.jsp from a hbs template file including the hashed bundle file
