@@ -40,6 +40,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import Api from 'AppData/api';
 import { isRestricted } from 'AppData/AuthManager';
 import { getBasePath } from 'AppComponents/Shared/Utils';
+import Utils from 'AppData/Utils';
 
 const PREFIX = 'CreateScope';
 
@@ -215,23 +216,11 @@ class CreateScope extends React.Component {
         const promise = APIValidation.role.validate(base64url.encode(role));
         promise
             .then(() => {
-                const splitRole = role.split('/', 2);
-                let validatedRole = '';
-                if (splitRole.length > 1) {
-                    const domain = splitRole.length > 0 ? splitRole[0] : '';
-                    if (domain.toUpperCase() !== 'INTERNAL') {
-                        const domainUpperCase = domain.toUpperCase().concat('/');
-                        validatedRole = domainUpperCase.concat(splitRole[1]);
-                    } else {
-                        validatedRole = role;
-                    }
-                } else {
-                    validatedRole = role;
-                }
-                if (!validRoles.includes(validatedRole)) {
+                const formattedRole = Utils.formatAndGetRoleByDomain(role);
+                if (!validRoles.includes(formattedRole)) {
                     this.setState({
                         roleValidity: true,
-                        validRoles: [...validRoles, validatedRole],
+                        validRoles: [...validRoles, formattedRole],
                     });
                 }
             })
