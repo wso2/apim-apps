@@ -590,7 +590,7 @@
   "Apis.Details.Configuration.components.KeyManager.allow.selected": "Allow selected",
   "Apis.Details.Configuration.components.KeyManager.configuration": "Key Manager Configuration",
   "Apis.Details.Configuration.components.KeyManager.more.than.one.error": "Select at least one Key Manager",
-  "Apis.Details.Configuration.components.KeyManager.more.than.one.info": "Select one or more Key Managers",
+  "Apis.Details.Configuration.components.KeyManager.more.than.one.info": "Select one or more valid and enabled Key Managers",
   "Apis.Details.Configuration.components.KeyManager.single.selection.error": "Select a Key Manager",
   "Apis.Details.Configuration.components.KeyManager.single.selection.info": "Select a Key Manager",
   "Apis.Details.Configuration.components.MaxBackendTps.formattedMessage": "Maximum backend transactions per second in integers",
