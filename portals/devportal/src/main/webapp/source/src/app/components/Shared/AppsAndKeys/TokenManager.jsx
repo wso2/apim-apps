@@ -447,6 +447,8 @@ class TokenManager extends React.Component {
                             },
                             keyManagers: responseKeyManagerList,
                             selectedTab,
+                            importDisabled: false, 
+                            mode: null,            
                         });
                     }
                 })

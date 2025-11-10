@@ -113,9 +113,6 @@ export default function ListApis() {
         const nextPage = Math.floor(page * rowsPerPageRatio);
         setPage(nextPage);
         setRowsPerPage(nextRowsPerPage);
-        apiCall(page).then((result) => {
-            setApiList(result);
-        });
     }
 
     function clearSearch() {
