@@ -146,7 +146,7 @@ class HeaderSearch extends React.Component {
          this.suggestionSelected = true;
          const { history } = this.props;
          if (event.key === 'Enter') {
-             const path = suggestion.type === 'API' ? `/apis/${suggestion.id}/overview`
+             const path = (suggestion.type === 'API' || suggestion.type === 'APIPRODUCT') ? `/apis/${suggestion.id}/overview`
                  : `/apis/${suggestion.apiUUID}/documents/${suggestion.id}/details`;
              history.push(path);
          }
