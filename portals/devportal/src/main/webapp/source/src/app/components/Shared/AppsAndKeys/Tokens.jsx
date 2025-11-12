@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
@@ -26,6 +26,10 @@ import Checkbox from '@mui/material/Checkbox';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const PREFIX = 'Tokens';
 
@@ -100,8 +104,21 @@ const tokens = (props) => {
         updateAccessTokenRequest(newRequest);
     };
     const {
-        accessTokenRequest, subscriptionScopes,
+        accessTokenRequest, subscriptionScopes, multipleSecretsAllowed, onConsumerSecretChange
     } = props;
+
+    const [consumerSecret, setConsumerSecret] = useState('');
+    const [showSecret, setShowSecret] = useState(false);
+
+    const handleSecretChange = (e) => {
+        const value = e.target.value;
+        setConsumerSecret(value);
+        onConsumerSecretChange && onConsumerSecretChange(value);
+    };
+
+    const toggleVisibility = () => {
+        setShowSecret((prev) => !prev);
+    };
 
     return (
         <Root>
@@ -111,6 +128,32 @@ const tokens = (props) => {
                 className={classes.FormControlOdd}
                 disabled={subscriptionScopes.length === 0}
             >
+                {multipleSecretsAllowed && (
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        size="small"
+                        margin="dense"
+                        type={showSecret ? "text" : "password"}
+                        label={(
+                            <FormattedMessage
+                                id='Shared.AppsAndKeys.Tokens.consumer.secret'
+                                defaultMessage='Consumer Secret'
+                            />
+                        )}
+                        value={consumerSecret}
+                        onChange={handleSecretChange}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={toggleVisibility} edge="end">
+                                        {showSecret ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                )}
                 <Autocomplete
                     multiple
                     limitTags={5}

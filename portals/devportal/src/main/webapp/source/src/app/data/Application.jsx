@@ -107,7 +107,7 @@ export default class Application extends Resource {
      * instance and return tokenObject received as Promise object
      */
     generateToken(selectedTab, type, validityPeriod, selectedScopes, isTokenExchange,
-        externalToken) {
+        externalToken, isMultipleClientSecretsAllowed = false, consumerSecret = null) {
         if (isTokenExchange) {
             const defaultKMTab = 'Resident Key Manager';
             const promiseToken = this.getKeys()
@@ -166,13 +166,23 @@ export default class Application extends Resource {
                     } else {
                         accessToken = this.sandboxTokens.get(selectedTab);
                     }
-                    const requestContent = {
-                        consumerSecret: keys.consumerSecret,
-                        validityPeriod,
-                        revokeToken: accessToken.accessToken,
-                        scopes: selectedScopes,
-                        additionalProperties: keys.additionalProperties,
-                    };
+                    let requestContent;
+                    if (isMultipleClientSecretsAllowed) {
+                        requestContent = {
+                            consumerSecret: consumerSecret,
+                            validityPeriod,
+                            scopes: selectedScopes,
+                            additionalProperties: keys.additionalProperties,
+                        };
+                    } else {
+                        requestContent = {
+                            consumerSecret: keys.consumerSecret,
+                            validityPeriod,
+                            revokeToken: accessToken.accessToken,
+                            scopes: selectedScopes,
+                            additionalProperties: keys.additionalProperties,
+                        };
+                    }
                     const payload = { applicationId: this.id, keyMappingId };
                     const body = { requestBody: requestContent };
                     return client.apis['Application Tokens']
