@@ -36,6 +36,7 @@ import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import WarningIcon from '@mui/icons-material/Warning';
 import API from 'AppData/api';
 import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
 import TokenExchangeKeyConfiguration from 'AppComponents/Shared/AppsAndKeys/TokenExchangeKeyConfiguration';
 import TableRow from '@mui/material/TableRow';
 import {
@@ -53,6 +54,7 @@ import {
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
 import KeyConfiguration from './KeyConfiguration';
+import EndpointRow from './EndpointRow';
 import ViewKeys from './ViewKeys';
 import WaitingForApproval from './WaitingForApproval';
 import { ScopeValidation, resourceMethods, resourcePaths } from '../ScopeValidation';
@@ -244,6 +246,7 @@ class TokenManager extends React.Component {
             tokenType: 'DIRECT',
             isOrgWideAppUpdateEnabled: false,
             isAccordionExpanded: true,
+            urlCopied: false,
         };
         this.keyStates = {
             COMPLETED: 'COMPLETED',
@@ -457,6 +460,7 @@ class TokenManager extends React.Component {
                             importDisabled: false, 
                             mode: null,            
                         });
+                        this.setState({ isAccordionExpanded: true });
                     }
                 })
                 .catch((error) => {
@@ -742,7 +746,7 @@ class TokenManager extends React.Component {
         this.setState({ tokenType: e.target.defaultValue });
     }
 
-    handleClose=() => {
+    handleClose = () => {
         this.setState({ tokenType: 'DIRECT' });
     }
 
@@ -750,6 +754,15 @@ class TokenManager extends React.Component {
         this.setState((prevState) => ({
             isAccordionExpanded: !prevState.isAccordionExpanded,
         }));
+    };
+
+    onCopy = () => {
+        this.setState({ urlCopied: true }); // ✅ correct way to update state
+
+        // Use arrow function so "this" is preserved
+        setTimeout(() => {
+            this.setState({ urlCopied: false });
+        }, 2000);
     };
 
     /**
@@ -765,22 +778,6 @@ class TokenManager extends React.Component {
             providedConsumerSecret, selectedTab, keyManagers, validating, hasError, initialToken,
             initialValidityTime, initialScopes, importDisabled, mode, tokenType, isOrgWideAppUpdateEnabled, isAccordionExpanded,
         } = this.state;
-
-        const keyConfigurationTitle = (
-            <Typography className={classes.subTitle} variant="h6" component="h6">
-                {key ? (
-                    <FormattedMessage
-                        defaultMessage="Key Configurations"
-                        id="Shared.AppsAndKeys.TokenManager.update.configuration"
-                    />
-                ) : (
-                    <FormattedMessage
-                        defaultMessage="Key Configuration"
-                        id="Shared.AppsAndKeys.TokenManager.key.configuration"
-                    />
-                )}
-            </Typography>
-        );
 
         const keyConfigurationContent = (keymanager) => (
             <Box m={2}>
@@ -1016,9 +1013,9 @@ class TokenManager extends React.Component {
                                     label={keymanager.displayName || keymanager.name}
                                     value={keymanager.name}
                                     disabled={!keymanager.enabled || (isKeyManagerAllowed
-                                    && !isKeyManagerAllowed(keymanager.name)
-                                    && ((keymanager.name !== 'Resident Key Manager')
-                                    || (!this.isTokenExchangeEnabled() && keymanager.name === 'Resident Key Manager')))}
+                                        && !isKeyManagerAllowed(keymanager.name)
+                                        && ((keymanager.name !== 'Resident Key Manager')
+                                            || (!this.isTokenExchangeEnabled() && keymanager.name === 'Resident Key Manager')))}
                                     id={keymanager.name.replace(/\s/g, '')}
                                 />
                             ))}
@@ -1099,23 +1096,78 @@ class TokenManager extends React.Component {
                                             loadApplication={this.loadApplication}
                                         />
                                     </Box>
+                                    <Typography className={classes.subTitle} variant="h6" component="h6">
+                                        {key ? (
+                                            <FormattedMessage
+                                                defaultMessage="Key Configurations"
+                                                id="Shared.AppsAndKeys.TokenManager.update.configuration"
+                                            />
+                                        ) : (
+                                            <FormattedMessage
+                                                defaultMessage="Key Configuration"
+                                                id="Shared.AppsAndKeys.TokenManager.key.configuration"
+                                            />
+                                        )}
+                                    </Typography>
                                     {isMultipleClientSecretsEnabled(keymanager.additionalProperties) ? (
-                                        <Accordion
-                                            expanded={isAccordionExpanded}
-                                            onChange={this.handleAccordionToggle}
-                                        >
-                                            <AccordionSummary
-                                                expandIcon={<ExpandMoreIcon />}
-                                                aria-controls="key-configuration-content"
-                                                id="key-configuration-header"
-                                            >
-                                                {keyConfigurationTitle}
-                                            </AccordionSummary>
-                                            <AccordionDetails>{keyConfigurationContent(keymanager)}</AccordionDetails>
-                                        </Accordion>
+                                        <>
+                                            {keyConfigurationContent(keymanager)}
+                                        </>
+                                        // <Box display='flex' alignItems='center'>
+                                        //     <Table className={classes.table}>
+                                        //         <TableBody>
+                                        //             {(keymanager.tokenEndpoint && keymanager.tokenEndpoint !== '') && (
+                                        //                 <EndpointRow
+                                        //                     labelId="Shared.AppsAndKeys.KeyConfiguration.token.endpoint.label"
+                                        //                     defaultLabel="Token Endpoint"
+                                        //                     endpoint={keymanager.tokenEndpoint}
+                                        //                     urlCopied={this.state.urlCopied}
+                                        //                     onCopy={this.onCopy}
+                                        //                     classes={classes}
+                                        //                 />
+                                        //             )}
+                                        //             {(keymanager.revokeEndpoint && keymanager.revokeEndpoint !== '') && (
+                                        //                 <EndpointRow
+                                        //                     labelId="Shared.AppsAndKeys.KeyConfiguration.revoke.endpoint.label"
+                                        //                     defaultLabel="Revoke Endpoint"
+                                        //                     endpoint={keymanager.revokeEndpoint}
+                                        //                     urlCopied={this.state.urlCopied}
+                                        //                     onCopy={this.onCopy}
+                                        //                     classes={classes}
+                                        //                 />
+                                        //             )}
+                                        //             {(keymanager.userInfoEndpoint && keymanager.userInfoEndpoint !== '') && (
+                                        //                 <EndpointRow
+                                        //                     labelId="Shared.AppsAndKeys.KeyConfiguration.userinfo.endpoint.label"
+                                        //                     defaultLabel="User Info Endpoint"
+                                        //                     endpoint={keymanager.userInfoEndpoint}
+                                        //                     urlCopied={this.state.urlCopied}
+                                        //                     onCopy={this.onCopy}
+                                        //                     classes={classes}
+                                        //                 />
+                                        //             )}
+                                        //         </TableBody>
+                                        //     </Table>
+                                        // </Box>
+                                        // <Accordion
+                                        //     sx={{
+                                        //         backgroundColor: 'inherit',
+                                        //         //boxShadow: 'none', // optional: remove the default Paper shadow
+                                        //     }}
+                                        //     expanded={isAccordionExpanded}
+                                        //     onChange={this.handleAccordionToggle}
+                                        // >
+                                        //     <AccordionSummary
+                                        //         expandIcon={<ExpandMoreIcon />}
+                                        //         aria-controls="key-configuration-content"
+                                        //         id="key-configuration-header"
+                                        //     >
+                                        //         {keyConfigurationTitle}
+                                        //     </AccordionSummary>
+                                        //     <AccordionDetails>{keyConfigurationContent(keymanager)}</AccordionDetails>
+                                        // </Accordion>
                                     ) : (
                                         <>
-                                            {keyConfigurationTitle}
                                             {keyConfigurationContent(keymanager)}
                                         </>
                                     )}
