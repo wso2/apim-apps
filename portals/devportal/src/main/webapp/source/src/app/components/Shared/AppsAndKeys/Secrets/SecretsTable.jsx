@@ -37,6 +37,7 @@ import {
     FormControlLabel,
     Switch,
 } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
 import AddIcon from "@mui/icons-material/Add";
 import NewSecretDialog from "./NewSecretDialog";
 import PropTypes from 'prop-types';
@@ -45,6 +46,7 @@ import Application from '../../../../data/Application';
 import DeleteSecretDialog from "./DeleteSecret";
 import SecretValueDialog from "./SecretValueDialog";
 import Alert from 'AppComponents/Shared/Alert';
+import { useIntl, FormattedMessage } from 'react-intl';
 import { maskSecret } from './util';
 
 const SecretsTable = (props) => {
@@ -58,6 +60,7 @@ const SecretsTable = (props) => {
     const [showExpired, setShowExpired] = useState(false);
     const [generatedSecret, setGeneratedSecret] = useState(null); // holds the newly created secret
     const [openSecretValueDialog, setOpenSecretValueDialog] = useState(false); // dialog visibility
+    const intl = useIntl();
 
     const applicationPromise = Application.get(props.appId);
 
@@ -67,10 +70,6 @@ const SecretsTable = (props) => {
             const response = await application.getSecrets(props.keyMappingId);
             setSecrets(response || []);
         } catch (error) {
-            if (process.env.NODE_ENV !== 'production') {
-                console.error("Error fetching secrets:", error);
-            }
-
             const status = error?.status;
             if (status === 404) {
                 this.setState({ notFound: true });
@@ -85,18 +84,18 @@ const SecretsTable = (props) => {
     }, []);
 
     const handleDelete = async (secretId) => {
-        // let message = intl.formatMessage({
-        //     defaultMessage: 'Secret deleted successfully!',
-        //     id: 'Applications.Listing.Listing.application.deleted.successfully',
-        // });
+
         try {
-            let message = 'Secret deleted successfully!';
             const application = await applicationPromise;
             const status = await application.deleteSecret(props.keyMappingId, secretId);
 
             if (status === 204) {
-                Alert.info(message);
-                // ✅ Remove the deleted item from the state
+                let successMessage = intl.formatMessage({
+                    defaultMessage: 'Secret deleted successfully!',
+                    id: 'Shared.AppsAndKeys.Secrets.SecretsTable.secret.deleted.successfully',
+                });
+                Alert.info(successMessage);
+                // Remove the deleted item from the state
                 setSecrets((prev) => {
                     const updated = prev.filter((s) => s.secretId !== secretId);
 
@@ -109,15 +108,18 @@ const SecretsTable = (props) => {
                     return updated;
                 });
             } else {
-                Alert.error('Unexpected response while deleting secret.');
+                let errorMessage = intl.formatMessage({
+                    defaultMessage: 'Unexpected response while deleting secret.',
+                    id: 'Shared.AppsAndKeys.Secrets.SecretsTable.secret.deletion.unexpected.response',
+                });
+                Alert.error(errorMessage);
             }
         } catch (error) {
             console.log(error);
-            message = 'Error while deleting secret';
-            // message = intl.formatMessage({
-            //     defaultMessage: 'Error while deleting secret',
-            //     id: 'Applications.Listing.Listing.application.deleting.error',
-            // });
+            let message = intl.formatMessage({
+                defaultMessage: 'Error while deleting secret',
+                id: 'Shared.AppsAndKeys.Secrets.SecretsTable.secret.deletion.error',
+            });
             Alert.error(message);
         };
     };
@@ -134,7 +136,11 @@ const SecretsTable = (props) => {
         try {
             const response = await application.generateSecret(props.keyMappingId, payload);
 
-            Alert.info("Secret created successfully!");
+            let successMessage = intl.formatMessage({
+                defaultMessage: 'Secret created successfully!',
+                id: 'Shared.AppsAndKeys.Secrets.SecretsTable.secret.created.successfully',
+            });
+            Alert.info(successMessage);
             setOpenNewDialog(false);
 
             // Show the secret value dialog
@@ -151,7 +157,11 @@ const SecretsTable = (props) => {
             setSecrets((prev) => [...prev, maskedResponse]);
         } catch (error) {
             console.error("Error creating secret:", error);
-            Alert.error("Failed to create secret");
+            let errorMessage = intl.formatMessage({
+                defaultMessage: 'Secret creation failed!',
+                id: 'Shared.AppsAndKeys.Secrets.SecretsTable.secret.creation.failed',
+            });
+            Alert.error(errorMessage);
         }
     };
 
@@ -164,9 +174,20 @@ const SecretsTable = (props) => {
     const renderExpiresIn = (expiryEpoch) => {
         if (!expiryEpoch || expiryEpoch === 0) {
             return (
-                <Tooltip title="This secret never expires" arrow>
+                <Tooltip
+                    title={
+                        <FormattedMessage
+                            id="Shared.AppsAndKeys.Secrets.SecretsTable.body.tooltip.never.expire"
+                            defaultMessage="This secret never expires"
+                        />
+                    }
+                    arrow
+                >
                     <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                        Never expires
+                        <FormattedMessage
+                            id='Shared.AppsAndKeys.Secrets.SecretsTable.body.never.expire.secret'
+                            defaultMessage='Never expires'
+                        />
                     </Typography>
                 </Tooltip>
             );
@@ -188,18 +209,44 @@ const SecretsTable = (props) => {
 
         if (diffMs < 0) {
             return (
-                <Tooltip title={`Expired on: ${formattedDate}`} arrow>
+                <Tooltip
+                    title={
+                        <FormattedMessage
+                            id="Shared.AppsAndKeys.Secrets.SecretsTable.body.tooltip.expiredOn"
+                            defaultMessage="Expired on: {date}"
+                            values={{ date: formattedDate }}
+                        />
+                    }
+                    arrow
+                >
                     <Typography variant="body2" sx={{ color: 'error.main', fontWeight: 600 }}>
-                        Expired
+                        <FormattedMessage
+                            id='Shared.AppsAndKeys.Secrets.SecretsTable.body.expired.secret'
+                            defaultMessage='Expired'
+                        />
                     </Typography>
                 </Tooltip>
             );
         }
 
         return (
-            <Tooltip title={`Expires on: ${formattedDate}`} arrow>
+            <Tooltip
+                title={
+                    <FormattedMessage
+                        id="Shared.AppsAndKeys.Secrets.SecretsTable.body.tooltip.expiresOn"
+                        defaultMessage="Expires on: {date}"
+                        values={{ date: formattedDate }}
+                    />
+                }
+                arrow
+            >
                 <Typography variant="body2">
-                    {`${diffDays} day${diffDays !== 1 ? 's' : ''}`}
+                    <FormattedMessage
+                        id="Shared.AppsAndKeys.Secrets.SecretsTable.body.expiresInDays"
+                        defaultMessage="{count} day{count, plural, one {} other {s}}"
+                        values={{ count: diffDays }}
+                    />
+                    {/*`${diffDays} day${diffDays !== 1 ? 's' : ''}`*/}
                 </Typography>
             </Tooltip>
         );
@@ -247,6 +294,22 @@ const SecretsTable = (props) => {
         [secrets]
     );
 
+    const allSecretsExpired = useMemo(
+        () =>
+            secrets.length > 0 &&
+            secrets.every(
+                (s) => s.additionalProperties?.expiresAt && Date.now() > s.additionalProperties.expiresAt
+            ),
+        [secrets]
+    );
+
+    // Automatically toggle ON if all secrets are expired
+    useEffect(() => {
+        if (allSecretsExpired) {
+            setShowExpired(true);
+        }
+    }, [allSecretsExpired]);
+
     const currentCount = secrets?.length || 0;
     const maxReached = props.secretCount > 0 && currentCount >= props.secretCount;
 
@@ -258,9 +321,12 @@ const SecretsTable = (props) => {
         );
 
     return (
-        <Grid container spacing={2} alignItems="flex-start">
+        <Grid container spacing={2} alignItems="flex-start" mb={2}>
             <Grid item xs={12} md={9}>
-                <Box sx={{ position: "relative" }}>
+                <Box sx={(theme) => ({
+                    position: "relative",
+                    backgroundColor: "inherit", // Paper inherits from parent
+                })}>
                     <Typography
                         variant="caption"
                         sx={{
@@ -272,16 +338,15 @@ const SecretsTable = (props) => {
                             color: "text.disabled",
                         }}
                     >
-                        Consumer Secrets
-                        {/* <FormattedMessage
-                    id="Shared.AppsAndKeys.ViewKeys.consumer.secrets"
-                    defaultMessage="Consumer Secrets"
-                    /> */}
+                        <FormattedMessage
+                            id="Shared.AppsAndKeys.Secrets.SecretsTable.consumer.secrets"
+                            defaultMessage="Consumer Secrets"
+                        />
                     </Typography>
                     <Paper
                         variant="outlined"
                         sx={{
-
+                            backgroundColor: 'inherit',
                             width: "100%", overflow: "hidden", p: 2,
                             borderColor: "rgba(0, 0, 0, 0.23)", // Same as MUI's default TextField outline
                             borderWidth: 1,
@@ -297,7 +362,14 @@ const SecretsTable = (props) => {
                             mb={2}
                         >
                             <Tooltip
-                                title={maxReached ? "Maximum number of consumer secrets reached" : ""}
+                                title={
+                                    maxReached && (
+                                        <FormattedMessage
+                                            id="Shared.AppsAndKeys.Secrets.SecretsTable.new.secret.button.tooltip.maxReached"
+                                            defaultMessage="Maximum number of consumer secrets reached"
+                                        />
+                                    )
+                                }
                                 placement="top"
                             >
                                 {/* Wrapping Button in span so Tooltip works when button is disabled */}
@@ -308,18 +380,50 @@ const SecretsTable = (props) => {
                                         onClick={() => setOpenNewDialog(true)}
                                         disabled={maxReached}
                                     >
-                                        New Secret
+                                        <FormattedMessage
+                                            id="Shared.AppsAndKeys.Secrets.SecretsTable.new.secret.button"
+                                            defaultMessage="New Secret"
+                                        />
                                     </Button>
                                 </span>
                             </Tooltip>
 
+                            {/*  Show banner when all secrets are expired */}
+                            {allSecretsExpired && (
+                                <MuiAlert
+                                    severity="warning"
+                                    sx={{
+                                        height: 40,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        px: 2,
+                                        py: 0,
+                                        borderRadius: 1,
+                                        whiteSpace: "nowrap", // keeps text on one line
+                                    }}
+                                >
+                                    <FormattedMessage
+                                        id="Shared.AppsAndKeys.Secrets.SecretsTable.alert.allExpired"
+                                        defaultMessage="All secrets have expired. Showing expired secrets only."
+                                    />
+                                </MuiAlert>
+                            )}
                             <Tooltip
                                 title={
-                                    !hasExpiredSecrets
-                                        ? "No expired secrets available"
-                                        : ""
+                                    allSecretsExpired ? (
+                                        <FormattedMessage
+                                            id="Shared.AppsAndKeys.Secrets.SecretsTable.switch.tooltip.allExpired"
+                                            defaultMessage="All secrets are expired"
+                                        />
+                                    ) : !hasExpiredSecrets ? (
+                                        <FormattedMessage
+                                            id="Shared.AppsAndKeys.Secrets.SecretsTable.switch.tooltip.noneExpired"
+                                            defaultMessage="No expired secrets available"
+                                        />
+                                    ) : (
+                                        ""
+                                    )
                                 }
-                                disableHoverListener={hasExpiredSecrets}
                             >
                                 <span>
                                     <FormControlLabel
@@ -328,11 +432,16 @@ const SecretsTable = (props) => {
                                                 checked={showExpired}
                                                 onChange={(e) => setShowExpired(e.target.checked)}
                                                 color="primary"
-                                                disabled={!hasExpiredSecrets}
+                                                disabled={!hasExpiredSecrets || allSecretsExpired}
                                                 size="small"
                                             />
                                         }
-                                        label="Show Expired"
+                                        label={
+                                            <FormattedMessage
+                                                id="Shared.AppsAndKeys.Secrets.SecretsTable.switch.showExpired"
+                                                defaultMessage="Show Expired"
+                                            />
+                                        }
                                     />
                                 </span>
                             </Tooltip>
@@ -344,7 +453,12 @@ const SecretsTable = (props) => {
                                 fullWidth
                                 variant="outlined"
                                 size="small"
-                                placeholder="Search by description..."
+                                placeholder={
+                                    <FormattedMessage
+                                        id="Shared.AppsAndKeys.Secrets.SecretsTable.searchPlaceholder"
+                                        defaultMessage="Search by description..."
+                                    />
+                                }
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 InputProps={{
@@ -364,22 +478,34 @@ const SecretsTable = (props) => {
                                     <TableRow>
                                         <TableCell sx={{ width: '35%' }}>
                                             <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                                                Description
+                                                <FormattedMessage
+                                                    id="Shared.AppsAndKeys.Secrets.SecretsTable.heading.description"
+                                                    defaultMessage="Description"
+                                                />
                                             </Typography>
                                         </TableCell>
                                         <TableCell sx={{ width: '35%' }}>
                                             <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                                                Value
+                                                <FormattedMessage
+                                                    id="Shared.AppsAndKeys.Secrets.SecretsTable.heading.value"
+                                                    defaultMessage="Value"
+                                                />
                                             </Typography>
                                         </TableCell>
                                         <TableCell sx={{ width: '20%' }}>
                                             <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                                                Expires In
+                                                <FormattedMessage
+                                                    id="Shared.AppsAndKeys.Secrets.SecretsTable.heading.expiresIn"
+                                                    defaultMessage="Expires In"
+                                                />
                                             </Typography>
                                         </TableCell>
                                         <TableCell sx={{ width: '10%' }}>
                                             <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                                                Actions
+                                                <FormattedMessage
+                                                    id="Shared.AppsAndKeys.Secrets.SecretsTable.heading.actions"
+                                                    defaultMessage="Actions"
+                                                />
                                             </Typography>
                                         </TableCell>
                                     </TableRow>
@@ -389,7 +515,10 @@ const SecretsTable = (props) => {
                                     {paginatedSecrets.length === 0 ? (
                                         <TableRow>
                                             <TableCell colSpan={4} align="center">
-                                                No secrets found
+                                                <FormattedMessage
+                                                    id="Shared.AppsAndKeys.Secrets.SecretsTable.body.no.secrets.found"
+                                                    defaultMessage="No secrets found"
+                                                />
                                             </TableCell>
                                         </TableRow>
                                     ) : (
@@ -401,12 +530,17 @@ const SecretsTable = (props) => {
                                             return (
                                                 <TableRow key={secretId}>
                                                     <TableCell>
-                                                        <Typography 
+                                                        <Typography
                                                             variant="body2"
                                                             fontStyle={!description ? 'italic' : 'normal'}
                                                             color={!description ? 'text.secondary' : 'inherit'}
                                                         >
-                                                            {description || "No description"}
+                                                            {description || (
+                                                                <FormattedMessage
+                                                                    id="Shared.AppsAndKeys.Secrets.SecretsTable.body.noDescription"
+                                                                    defaultMessage="No description"
+                                                                />
+                                                            )}
                                                         </Typography>
                                                     </TableCell>
 
@@ -417,9 +551,6 @@ const SecretsTable = (props) => {
                                                     </TableCell>
 
                                                     <TableCell>
-                                                        {/* <Typography variant="body2">
-                                                            {renderExpiresIn(expiresAt)}
-                                                        </Typography> */}
                                                         <Box display="flex" alignItems="center" gap={1}>
                                                             {renderExpiresIn(expiresAt)}
                                                         </Box>

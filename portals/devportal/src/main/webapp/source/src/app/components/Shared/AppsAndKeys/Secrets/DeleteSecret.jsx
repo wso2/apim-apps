@@ -10,9 +10,11 @@ import {
   Tooltip,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useIntl, FormattedMessage } from 'react-intl';
 
 export default function DeleteSecretDialog({ onDelete, disabled }) {
   const [open, setOpen] = useState(false);
+  const intl = useIntl();
 
   const handleClickOpen = () => {
     if (!disabled) setOpen(true); // don't open dialog if disabled
@@ -27,7 +29,16 @@ export default function DeleteSecretDialog({ onDelete, disabled }) {
 
   return (
     <>
-      <Tooltip title={disabled ? "At least one secret must be present" : "Delete secret"}>
+      <Tooltip title={disabled ?
+        intl.formatMessage({
+          id: 'Shared.AppsAndKeys.Secrets.DeleteSecret.at.least.one.secret.tooltip.title',
+          defaultMessage: 'At least one secret must be present',
+        })
+        : intl.formatMessage({
+          id: 'Shared.AppsAndKeys.Secrets.DeleteSecret.delete.secret.tooltip.title',
+          defaultMessage: 'Delete secret',
+        })}
+      >
         <span>
           <IconButton color="error" onClick={handleClickOpen} disabled={disabled}>
             <DeleteIcon />
@@ -41,18 +52,32 @@ export default function DeleteSecretDialog({ onDelete, disabled }) {
         aria-labelledby="delete-secret-title"
         aria-describedby="delete-secret-description"
       >
-        <DialogTitle id="delete-secret-title">Delete Secret</DialogTitle>
+        <DialogTitle id="delete-secret-title">
+          <FormattedMessage
+            id='Shared.AppsAndKeys.Secrets.DeleteSecret.delete.secret.dialog.title'
+            defaultMessage='Delete Secret'
+          />
+        </DialogTitle>
         <DialogContent>
           <DialogContentText id="delete-secret-description">
-            Are you sure you want to delete this secret? This action cannot be undone.
+            <FormattedMessage
+              id='Shared.AppsAndKeys.Secrets.DeleteSecret.delete.secret.dialog.confirmation'
+              defaultMessage='Are you sure you want to delete this secret? This action cannot be undone.'
+            />
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="inherit">
-            Cancel
+            <FormattedMessage
+              id='Shared.AppsAndKeys.Secrets.DeleteSecret.delete.secret.dialog.cancel.button'
+              defaultMessage='Cancel'
+            />
           </Button>
           <Button onClick={handleConfirmDelete} color='primary' variant="contained" autoFocus>
-            Delete
+            <FormattedMessage
+              id='Shared.AppsAndKeys.Secrets.DeleteSecret.delete.secret.dialog.delete.button'
+              defaultMessage='Delete'
+            />
           </Button>
         </DialogActions>
       </Dialog>

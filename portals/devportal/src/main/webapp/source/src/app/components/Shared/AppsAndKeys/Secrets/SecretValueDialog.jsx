@@ -6,16 +6,14 @@ import {
     DialogContentText,
     DialogActions,
     Button,
-    IconButton,
-    Tooltip,
-    Box,
 } from "@mui/material";
+import { FormattedMessage } from 'react-intl';
 
-import ViewSecret from "../ViewSecret"; // your existing component
+import ViewSecret from "../ViewSecret";
 
 export default function SecretValueDialog({ open, onClose, secret }) {
 
-    if (!secret) return null; // nothing to show
+    if (!secret) return null;
 
     return (
         <Dialog
@@ -25,12 +23,15 @@ export default function SecretValueDialog({ open, onClose, secret }) {
             maxWidth="sm"
         >
             <DialogTitle>
-                Secret Generated Successfully
+                <FormattedMessage
+                    id='Shared.AppsAndKeys.Secrets.SecretValueDialog.secret.generate.success.dialog.title'
+                    defaultMessage='Secret Generated Successfully'
+                />
             </DialogTitle>
 
             <DialogContent>
                 <DialogContentText component="div">
-                    <ViewSecret secret={ { consumerSecret: secret } } />
+                    <ViewSecret secret={{ consumerSecret: secret }} isGenerated={true} />
                 </DialogContentText>
             </DialogContent>
 
@@ -42,7 +43,10 @@ export default function SecretValueDialog({ open, onClose, secret }) {
                 }}
             >
                 <Button onClick={onClose} variant="contained" color="primary">
-                    Close
+                    <FormattedMessage
+                        id='Shared.AppsAndKeys.Secrets.SecretValueDialog.delete.button'
+                        defaultMessage='Close'
+                    />
                 </Button>
             </DialogActions>
         </Dialog>
