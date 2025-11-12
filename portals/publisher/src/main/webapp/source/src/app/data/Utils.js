@@ -768,6 +768,31 @@ class Utils {
         if (!string) return '';
         return string.charAt(0).toUpperCase() + string.slice(1);
     };
+
+    /**
+     * Format and get the role by domain
+     * A domain not equal to "INTERNAL" or "APPLICATION" indicates that the role comes from a Secondary user store.
+     * If so convert the domain to uppercase and append it to the role to maintain consistency.
+     * 
+     * @param {String} role - role string
+     * @returns {String} - formatted role string
+     */
+    static formatAndGetRoleByDomain(role) {
+        const splitRole = role.split('/', 2);
+        let formattedRole = '';
+        if (splitRole.length > 1) {
+            const domain = splitRole.length > 0 ? splitRole[0] : '';
+            const domainUpper = domain.toUpperCase();
+            if (domainUpper !== 'INTERNAL' && domainUpper !== 'APPLICATION') {
+                formattedRole = domain.toUpperCase().concat('/', splitRole[1]);
+            } else {
+                formattedRole = role;
+            }
+        } else {
+            formattedRole = role;
+        }
+        return formattedRole;
+    }
 }
 
 Utils.CONST = {
