@@ -453,12 +453,10 @@ const SecretsTable = (props) => {
                                 fullWidth
                                 variant="outlined"
                                 size="small"
-                                placeholder={
-                                    <FormattedMessage
-                                        id="Shared.AppsAndKeys.Secrets.SecretsTable.searchPlaceholder"
-                                        defaultMessage="Search by description..."
-                                    />
-                                }
+                                placeholder={intl.formatMessage({
+                                    id: "Shared.AppsAndKeys.Secrets.SecretsTable.searchPlaceholder",
+                                    defaultMessage: "Search by description...",
+                                })}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 InputProps={{
@@ -579,7 +577,6 @@ const SecretsTable = (props) => {
                             onPageChange={handleChangePage}
                             onRowsPerPageChange={handleChangeRowsPerPage}
                         />
-
                         <NewSecretDialog
                             open={openNewDialog}
                             onClose={() => setOpenNewDialog(false)}
