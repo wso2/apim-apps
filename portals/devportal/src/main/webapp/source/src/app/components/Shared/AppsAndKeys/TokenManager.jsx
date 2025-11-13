@@ -60,6 +60,7 @@ import CleanKeys from './CleanKeys';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Settings from 'AppComponents/Shared/SettingsContext';
 import { isMultipleClientSecretsEnabled } from './Secrets/util';
+import SecretValueDialog from "./Secrets/SecretValueDialog";
 
 const PREFIX = 'TokenManager';
 
@@ -242,6 +243,8 @@ class TokenManager extends React.Component {
             isOrgWideAppUpdateEnabled: false,
             isAccordionExpanded: true,
             urlCopied: false,
+            openSecretValueDialog: false,
+            generatedSecret: null,
         };
         this.keyStates = {
             COMPLETED: 'COMPLETED',
@@ -287,6 +290,13 @@ class TokenManager extends React.Component {
         const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
         this.setState({ isOrgWideAppUpdateEnabled: orgWideAppUpdateEnabled });
     }
+
+    handleCloseSecretValueDialog = () => {
+        this.setState({
+            openSecretValueDialog: false,
+            generatedSecret: null,
+        })
+    };
 
     /**
      * Handle onCLick of remove keys
@@ -433,7 +443,6 @@ class TokenManager extends React.Component {
                             importDisabled: (mode === 'MAPPED' || mode === 'CREATED'),
                             mode,
                         });
-                        this.setState({ isAccordionExpanded: false });
                     } else {
                         const selectedGrantTypes = [];
                         if (selectdKM.availableGrantTypes.find((gt) => gt === 'password')) {
@@ -455,7 +464,6 @@ class TokenManager extends React.Component {
                             importDisabled: false, 
                             mode: null,            
                         });
-                        this.setState({ isAccordionExpanded: true });
                     }
                 })
                 .catch((error) => {
@@ -526,8 +534,8 @@ class TokenManager extends React.Component {
                 const initialScopes = response.token ? response.token.tokenScopes : [];
                 this.setState({
                     keys: newKeys, isKeyJWT, initialToken, initialValidityTime, initialScopes,
+                    generatedSecret: response.consumerSecret, openSecretValueDialog: true,
                 });
-                this.setState({ isAccordionExpanded: false });
                 if (response.keyState === this.keyStates.CREATED || response.keyState === this.keyStates.REJECTED) {
                     Alert.info(intl.formatMessage({
                         id: 'Shared.AppsAndKeys.TokenManager.key.generate.success.blocked',
@@ -1193,6 +1201,11 @@ class TokenManager extends React.Component {
                                             </ScopeValidation>
                                         </div>
                                     </Box>
+                                    <SecretValueDialog
+                                        open={this.state.openSecretValueDialog}
+                                        onClose={this.handleCloseSecretValueDialog}
+                                        secret={this.state.generatedSecret}
+                                    />
                                 </TabPanel>
                             )}
                             {keymanager.tokenType === 'EXCHANGED' && (
