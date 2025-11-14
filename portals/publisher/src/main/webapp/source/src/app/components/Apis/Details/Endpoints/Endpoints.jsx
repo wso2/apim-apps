@@ -173,14 +173,15 @@ function Endpoints(props) {
             case 'endpointImplementationType': { // set implementation status
                 const { endpointType, implementationType } = value;
                 const config = createEndpointConfig(endpointType);
-                if (endpointType === 'prototyped') {
+                if (endpointType === 'INLINE' || endpointType === 'MOCKED_OAS') {
+                    const tmpconfig = createEndpointConfig('prototyped');
                     if (implementationType === 'mock') {
                         api.generateMockScripts(api.id).then((res) => { // generates mock/sample payloads
                             setSwagger(res.obj);
                         });
-                        return { ...initState, endpointConfig: config, endpointImplementationType: 'INLINE' };
+                        return { ...initState, endpointConfig: tmpconfig, endpointImplementationType: endpointType };
                     }
-                    return { ...initState, endpointConfig: config, endpointImplementationType: 'ENDPOINT' };
+                    return { ...initState, endpointConfig: tmpconfig, endpointImplementationType: 'ENDPOINT' };
                 }
                 return { ...initState, endpointConfig: config };
             }
