@@ -173,8 +173,8 @@ function AsyncOperation(props) {
                                 {target}
                             </Typography>
                         </Grid>
-                        {!(disableDelete || markAsDelete) && (
-                            <Grid item md={1} justifyContent='flex-end' container>
+                        <Grid item md={1} justify='flex-end' container>
+                            {!(disableDelete || markAsDelete) && (
                                 <Tooltip
                                     title={
                                         isUsedInAPIProduct
@@ -211,8 +211,40 @@ function AsyncOperation(props) {
                                         </IconButton>
                                     </div>
                                 </Tooltip>
-                            </Grid>
-                        )}
+                            )}
+                            <Tooltip
+                                title={
+                                    (operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
+                                        ? (
+                                            <FormattedMessage
+                                                id={'Apis.Details.Resources.components.AsyncOperation.security'
+                                                    + '.enabled'}
+                                                defaultMessage='Security enabled'
+                                            />
+                                        )
+                                        : (
+                                            <FormattedMessage
+                                                id='Apis.Details.Resources.components.AsyncOperation.no.security'
+                                                defaultMessage='No security'
+                                            />
+                                        )
+                                }
+                                aria-label={(
+                                    <FormattedMessage
+                                        id='Apis.Details.Resources.components.AsyncOperation.security.operation'
+                                        defaultMessage='Security '
+                                    />
+                                )}
+                            >
+                                <IconButton
+                                    aria-label='Security'
+                                >
+                                    {(operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
+                                        ? <LockIcon fontSize='small' />
+                                        : <LockOpenIcon fontSize='small' />}
+                                </IconButton>
+                            </Tooltip>
+                        </Grid>
                     </Grid>
                 </AccordionSummary>
                 <Divider sx={{ backgroundColor }} />
