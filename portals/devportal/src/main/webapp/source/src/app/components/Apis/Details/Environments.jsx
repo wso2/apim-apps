@@ -128,6 +128,19 @@ function Environments(props) {
         );
         return firstUrl || '';
     };
+    const pickFirstEnabledWSUrl = (urls) => {
+        if (!urls || typeof urls !== 'object') {
+            return '';
+        }
+        const keys = ['ws', 'wss'];
+        for (const key of keys) {
+            const val = urls[key];
+            if (typeof val === 'string' && val.trim() !== '') {
+                return val;
+            }
+        }
+        return '';
+    };
 
     const onCopy = () => {
         setUrlCopied(true);
@@ -302,7 +315,7 @@ function Environments(props) {
                                                 <InputBase
                                                     className={classes.input}
                                                     inputProps={{ 'aria-label': 'api url' }}
-                                                    value={pickFirstEnabledUrl(selectedEndpoint.URLs)}
+                                                    value={pickFirstEnabledWSUrl(selectedEndpoint.URLs)}
                                                     data-testid='websocket-url'
                                                 />
                                             </Tooltip>
