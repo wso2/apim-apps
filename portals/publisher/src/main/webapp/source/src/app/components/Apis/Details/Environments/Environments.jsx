@@ -74,6 +74,13 @@ import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import Utils from 'AppData/Utils';
 import { Parser } from '@asyncapi/parser';
 import GovernanceViolations from 'AppComponents/Shared/Governance/GovernanceViolations';
+import {
+    wsDisabled,
+    wssDisabled,
+    hasValidWebSocketPorts,
+    hasValidHosts,
+    getHostValue
+} from 'AppComponents/Shared/Environments/Vhosts';
 import DisplayDevportal from './DisplayDevportal';
 import DeploymentOnbording from './DeploymentOnbording';
 import Permission from './Permission';
@@ -547,31 +554,6 @@ export default function Environments() {
     };
     const isCreateOrPublishRestricted = () => isRestricted(getCreateOrPublishScopes(), api);
 
-    const wsDisabled = (vhost) => vhost.wsPort === null && vhost.wsHost === null;
-    const wssDisabled = (vhost) => vhost.wssPort === null && vhost.wssHost === null;
-
-    const hasValidWebSocketPorts = (vhost) => {
-        return !wsDisabled(vhost) || !wssDisabled(vhost);
-    };
-
-    const hasValidHosts = (environment) => {
-        if (!environment.vhosts || environment.vhosts.length === 0) {
-            return false;
-        }
-        return environment.vhosts.some((vhost) => !api.isWebSocket()
-            || hasValidWebSocketPorts(vhost));
-    };
-
-    // this function returns the appropriate host value depending on the api type
-    const getHostValue = (vhost, isWebSocket) => {
-        if (!isWebSocket) {
-            return vhost.host;
-        }
-        if (wsDisabled(vhost) && !wssDisabled(vhost)) {
-            return vhost.wssHost;
-        }
-        return vhost.wsHost;
-    };
     useEffect(() => {
         if (settings) {
             let gatewayType;
@@ -795,7 +777,7 @@ export default function Environments() {
     const handleChange = (event) => {
         // Check if the environment has valid hosts before allowing selection
         const environment = settings.environment.find((env) => env.name === event.target.value);
-        if (event.target.checked && environment && !hasValidHosts(environment)) {
+        if (event.target.checked && environment && !hasValidHosts(environment, api.isWebSocket())) {
             return; // Prevent selection if no valid hosts
         }
 
@@ -2202,7 +2184,7 @@ export default function Environments() {
                         disabled={api.isRevision || isCreateOrPublishRestricted() ||
                             (settings && settings.portalConfigurationOnlyModeEnabled) ||
                             !allRevisions || allRevisions.length === 0
-                            || !hasValidHosts(row)}
+                            || !hasValidHosts(row, api.isWebSocket())}
                     >
                         {allRevisions && allRevisions.length !== 0 && allRevisions.map((number) => (
                             <MenuItem value={number.id}>{number.displayName}</MenuItem>
@@ -2316,7 +2298,7 @@ export default function Environments() {
                     disabled={api.isRevision || isCreateOrPublishRestricted() ||
                         (settings && settings.portalConfigurationOnlyModeEnabled) ||
                         !filteredRevisions || filteredRevisions.length === 0
-                        || !hasValidHosts(row)}
+                        || !hasValidHosts(row, api.isWebSocket())}
                 >
                     {filteredRevisions && filteredRevisions.length !== 0 && filteredRevisions.map((number) => (
                         <MenuItem value={number.id}>{number.displayName}</MenuItem>
@@ -2909,7 +2891,8 @@ export default function Environments() {
                                                                             checked={
                                                                                 SelectedEnvironment.includes(row.name)}
                                                                             onChange={handleChange}
-                                                                            disabled={!hasValidHosts(row)}
+                                                                            disabled={!hasValidHosts(
+                                                                                row, api.isWebSocket())}
                                                                             color='primary'
                                                                             icon={<RadioButtonUncheckedIcon />}
                                                                             checkedIcon={<
@@ -2986,7 +2969,8 @@ export default function Environments() {
                                                                         value={selectedVhostDeploy.find(
                                                                             (v) => v.env === row.name,
                                                                         ).vhost}
-                                                                        disabled={!hasValidHosts(row)}
+                                                                        disabled={!hasValidHosts(
+                                                                            row, api.isWebSocket())}
                                                                         onChange={handleVhostDeploySelect}
                                                                         margin='dense'
                                                                         variant='outlined'
@@ -3564,7 +3548,7 @@ export default function Environments() {
                                             <>
                                                 <TableCell align='left' className={classes.tableCellVhostSelect}>
                                                     <Tooltip
-                                                        title={hasValidHosts(row)
+                                                        title={hasValidHosts(row, api.isWebSocket())
                                                             ? (
                                                                 <>
                                                                     <Typography color='inherit'>
@@ -3603,7 +3587,7 @@ export default function Environments() {
                                                                         // eslint-disable-next-line max-len
                                                                             && settings.portalConfigurationOnlyModeEnabled)
                                                                         || !allRevisions || allRevisions.length === 0
-                                                                        || !hasValidHosts(row)
+                                                                        || !hasValidHosts(row, api.isWebSocket())
                                                             }
                                                             helperText={getVhostHelperText(row.name, selectedVhosts,
                                                                 true, 100)}
@@ -3792,7 +3776,7 @@ export default function Environments() {
                                             <>
                                                 <TableCell align='left' className={classes.tableCellVhostSelect}>
                                                     <Tooltip
-                                                        title={hasValidHosts(row)
+                                                        title={hasValidHosts(row, api.isWebSocket())
                                                             ? (
                                                                 <>
                                                                     <Typography color='inherit'>
@@ -3828,7 +3812,7 @@ export default function Environments() {
                                                             disabled={api.isRevision
                                                             || (settings && settings.portalConfigurationOnlyModeEnabled)
                                                             || !allRevisions || allRevisions.length === 0
-                                                            || !hasValidHosts(row)}
+                                                            || !hasValidHosts(row, api.isWebSocket())}
                                                             helperText={getVhostHelperText(row.name, selectedVhosts,
                                                                 true, 100)}
                                                         >
