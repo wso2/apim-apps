@@ -41,6 +41,11 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { isRestricted } from 'AppData/AuthManager';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { checkEndpointStatus } from 'AppComponents/Shared/Utils';
+import {
+    hasValidWebSocketPorts,
+    hasValidHosts,
+    getHostValue
+} from 'AppComponents/Shared/Environments/Vhosts';
 
 const PREFIX = 'DeploymentOnbording';
 
@@ -171,28 +176,6 @@ export default function DeploymentOnboarding(props) {
         isEndpointReady: false,
         isLoading: true
     });
-
-    const wsDisabled = (vhost) => vhost.wsPort === null && vhost.wsHost === null;
-    const wssDisabled = (vhost) => vhost.wssPort === null && vhost.wssHost === null;
-    const hasValidWebSocketPorts = (vhost) => {
-        return !wsDisabled(vhost) || !wssDisabled(vhost);
-    };
-    const hasValidHosts = (environment) => {
-        if (!environment.vhosts || environment.vhosts.length === 0) {
-            return false;
-        }
-        return environment.vhosts.some((vhost) => !api.isWebSocket()
-            || hasValidWebSocketPorts(vhost));
-    };
-    const getHostValue = (vhost, isWebSocket) => {
-        if (!isWebSocket) {
-            return vhost.host;
-        }
-        if (wsDisabled(vhost) && !wssDisabled(vhost)) {
-            return vhost.wssHost;
-        }
-        return vhost.wsHost;
-    };
 
     useEffect(() => {
         let gatewayType;
@@ -456,7 +439,8 @@ export default function DeploymentOnboarding(props) {
                                                                         value={row.name}
                                                                         checked={selectedEnvironment.includes(row.name)}
                                                                         onChange={handleChange}
-                                                                        disabled={!hasValidHosts(row)}
+                                                                        disabled={!hasValidHosts(
+                                                                            row, api.isWebSocket())}
                                                                         color='primary'
                                                                         icon={<RadioButtonUncheckedIcon />}
                                                                         checkedIcon=
@@ -682,7 +666,7 @@ export default function DeploymentOnboarding(props) {
                                                                     checked=
                                                                         {selectedExternalGateway.includes(row.name)}
                                                                     disabled={isDeployRestricted()
-                                                                        || !hasValidHosts(row)}
+                                                                        || !hasValidHosts(row, api.isWebSocket())}
                                                                     onChange={handleChange}
                                                                     color='primary'
                                                                     icon={<RadioButtonUncheckedIcon />}
