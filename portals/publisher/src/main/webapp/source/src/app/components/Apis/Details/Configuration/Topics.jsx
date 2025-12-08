@@ -161,7 +161,7 @@ export default function Topics(props) {
             case 'init':
                 setSelectedOperation({});
                 return data || asyncAPISpec.channels;
-            case 'removeAllSecurity':
+            case 'toggleSecurityStatus':
                 setSelectedOperation({});
                 return Object.entries(currentOperations).reduce((channelAcc, [channelKey, channelObj]) => {
                     const newChannel = { ...channelObj };
@@ -288,14 +288,14 @@ export default function Topics(props) {
      * Enable security for all topics/operations
      */
     const enableSecurity = () => {
-        operationsDispatcher({ action: 'removeAllSecurity', data: { disable: false } });
+        operationsDispatcher({ action: 'toggleSecurityStatus', data: { disable: false } });
     };
 
     /**
      * Disable security for all topics/operations
      */
     const disableSecurity = () => {
-        operationsDispatcher({ action: 'removeAllSecurity', data: { disable: true } });
+        operationsDispatcher({ action: 'toggleSecurityStatus', data: { disable: true } });
     };
 
     /**
