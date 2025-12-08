@@ -22,6 +22,9 @@ export const wssDisabled = (vhost) => vhost?.wssPort === null && vhost?.wssHost 
  * @returns {boolean}
  */
 export const hasValidWebSocketPorts = (vhost) => {
+    if (!vhost) {
+        return false;
+    }
     return !wsDisabled(vhost) || !wssDisabled(vhost);
 };
 
