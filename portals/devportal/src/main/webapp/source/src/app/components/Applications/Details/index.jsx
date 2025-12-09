@@ -138,9 +138,9 @@ const Root = styled('div')((
         marginRight: (theme.custom.leftMenu.position === 'vertical-right' ? theme.custom.leftMenu.width : 0),
         paddingBottom: theme.spacing(3),
         overflowX: 'hidden',
-        [theme.breakpoints.down('md')]: {
-            marginLeft: (theme.custom.leftMenu.position === 'vertical-left' ? (theme.custom.leftMenu.width - 4) : 0) !== 0 && 50,
-            marginRight: (theme.custom.leftMenu.position === 'vertical-right' ? theme.custom.leftMenu.width : 0) !== 0 && 50,
+        [theme.breakpoints.down('sm')]: {
+            marginLeft: (theme.custom.leftMenu.position === 'vertical-left' ? 50 : 0),
+            marginRight: (theme.custom.leftMenu.position === 'vertical-right' ? 50 : 0),
         },
     },
 
@@ -444,19 +444,7 @@ class Details extends Component {
                         id='left-menu-subscriptions'
                     />
                 </nav>
-                <Box sx={(theme) => ({
-                    display: 'flex',
-                    flex: 1,
-                    flexDirection: 'column',
-                    marginLeft: (theme.custom.leftMenu.position === 'vertical-left' ? (theme.custom.leftMenu.width - 158) : 0),
-                    paddingBottom: theme.spacing(3),
-                    overflowX: 'hidden',
-                    [theme.breakpoints.down('md')]: {
-                        marginLeft: (theme.custom.leftMenu.position === 'vertical-left'
-                            ? (theme.custom.leftMenu.width - 4) : 0) !== 0 && 50,
-                    },
-                })}
-                >
+                <Box className={classes.content}>
                     <InfoBar
                         application={application}
                         applicationId={match.params.application_uuid}
