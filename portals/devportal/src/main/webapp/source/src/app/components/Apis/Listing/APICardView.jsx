@@ -198,9 +198,14 @@ class APICardView extends React.Component {
             const policyList = listLocal[i].throttlingPolicies
                 .filter((policy) => !policy.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN));
             listLocal[i].throttlingPolicies = policyList;
-            if (!((!subscribedIds.includes(listLocal[i].id) && !listLocal[i].advertiseInfo.advertised)
-                && listLocal[i].isSubscriptionAvailable
-                && (listLocal[i].gatewayVendor === 'wso2' || !listLocal[i].gatewayVendor))) {
+            const api = listLocal[i];
+            const isNotSubscribed = !subscribedIds.includes(api.id);
+            const isNotAdvertised = !api.advertiseInfo.advertised;
+            const isWSO2Gateway = api.gatewayVendor === 'wso2' || !api.gatewayVendor;
+            const canSubscribe = isNotSubscribed && isNotAdvertised 
+                && api.isSubscriptionAvailable && isWSO2Gateway;
+            
+            if (!canSubscribe) {
                 listLocal[i].throttlingPolicies = null;
             }
         }
