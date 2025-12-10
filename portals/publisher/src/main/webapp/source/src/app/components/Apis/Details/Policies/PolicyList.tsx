@@ -75,6 +75,7 @@ interface PolicyListPorps {
     isChoreoConnectEnabled: boolean;
     gatewayType: string;
     apiType: string;
+    disabled?: boolean;
 }
 
 /**
@@ -83,7 +84,7 @@ interface PolicyListPorps {
  * @returns {TSX} List of policies local to the API segment.
  */
 const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetchPolicies, isChoreoConnectEnabled, 
-    gatewayType, apiType}) => {
+    gatewayType, apiType, disabled}) => {
 
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
     const [dialogOpen, setDialogOpen] = React.useState(false);
@@ -110,7 +111,7 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
                         {!isChoreoConnectEnabled && (
                             <Button
                                 onClick={handleAddPolicy}
-                                disabled={isRestricted(['apim:api_create', 'apim:api_publish'])}
+                                disabled={disabled || isRestricted(['apim:api_create', 'apim:api_publish'])}
                                 variant='outlined'
                                 color='primary'
                                 data-testid='add-new-api-specific-policy'
@@ -224,6 +225,7 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
                                     selectedTab={selectedTab}
                                     fetchPolicies={fetchPolicies}
                                     isReadOnly={isRestricted(['apim:api_create', 'apim:api_publish', 'apim:api_manage'])}
+                                    disabled={disabled}
                                 />
                             </Box>
                         ) : (
@@ -251,6 +253,7 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
                                     selectedTab={selectedTab}
                                     fetchPolicies={fetchPolicies}
                                     isReadOnly={isRestricted(['apim:api_create', 'apim:api_publish', 'apim:api_manage'])}
+                                    disabled={disabled}
                                 />
                                 <TabPanel
                                     commonPolicyList={commonPolicyList.filter(
@@ -275,6 +278,7 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
                                     selectedTab={selectedTab}
                                     fetchPolicies={fetchPolicies}
                                     isReadOnly={isRestricted(['apim:api_create', 'apim:api_publish', 'apim:api_manage'])}
+                                    disabled={disabled}
                                 />
                                 {!isChoreoConnectEnabled && (
                                     <TabPanel
@@ -300,6 +304,7 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
                                         selectedTab={selectedTab}
                                         fetchPolicies={fetchPolicies}
                                         isReadOnly={isRestricted(['apim:api_create', 'apim:api_publish', 'apim:api_manage'])}
+                                        disabled={disabled}
                                     />
                                 )}
                             </Box>
