@@ -202,7 +202,7 @@ class APICardView extends React.Component {
             const isNotSubscribed = !subscribedIds.includes(api.id);
             const isNotAdvertised = !api.advertiseInfo.advertised;
             const isWSO2Gateway = api.gatewayVendor === 'wso2' || !api.gatewayVendor;
-            const canSubscribe = isNotSubscribed && isNotAdvertised 
+            const canSubscribe = isNotSubscribed && isNotAdvertised
                 && api.isSubscriptionAvailable && isWSO2Gateway;
             
             if (!canSubscribe) {
