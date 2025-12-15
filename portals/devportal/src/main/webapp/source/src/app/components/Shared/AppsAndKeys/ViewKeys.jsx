@@ -345,7 +345,6 @@ class ViewKeys extends React.Component {
                 accessTokenRequest.scopesSelected,
                 undefined,                        // isTokenExchange
                 undefined,                        // externalToken
-                multipleSecretsAllowed ? true : false,  // multipleSecretsAllowed
                 multipleSecretsAllowed ? consumerSecret : undefined // consumerSecret
             ))
             .then((response) => {

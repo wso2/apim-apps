@@ -107,7 +107,7 @@ export default class Application extends Resource {
      * instance and return tokenObject received as Promise object
      */
     generateToken(selectedTab, type, validityPeriod, selectedScopes, isTokenExchange,
-        externalToken, isMultipleClientSecretsAllowed = false, consumerSecret = null) {
+        externalToken, consumerSecret = null) {
         if (isTokenExchange) {
             const defaultKMTab = 'Resident Key Manager';
             const promiseToken = this.getKeys()
@@ -167,7 +167,7 @@ export default class Application extends Resource {
                         accessToken = this.sandboxTokens.get(selectedTab);
                     }
                     let requestContent;
-                    if (isMultipleClientSecretsAllowed) {
+                    if (consumerSecret) {
                         requestContent = {
                             consumerSecret: consumerSecret,
                             validityPeriod,
