@@ -47,6 +47,8 @@ import Api from '../../../data/api';
 import Application from '../../../data/Application';
 import CONSTANTS from '../../../data/Constants';
 import SelectAppPanel from './SelectAppPanel';
+import { isMultipleClientSecretsEnabled } from 'AppComponents/Shared/AppsAndKeys/Secrets/util';
+import Alert from 'AppComponents/Shared/Alert';
 
 const PREFIX = 'TryOutController';
 
@@ -185,6 +187,7 @@ function TryOutController(props) {
     const [ksGenerated, setKSGenerated] = useState(false);
     const [showMoreGWUrls, setShowMoreGWUrls] = useState(false);
     const [tokenValue, setTokenValue] = useState('');
+    const [consumerSecret, setConsumerSecret] = useState('');
     const apiID = api.id;
     const restApi = new Api();
     const user = AuthManager.getUser();
@@ -357,6 +360,9 @@ function TryOutController(props) {
                     selectedKeyType,
                     3600,
                     scopes,
+                    undefined,
+                    undefined,
+                    consumerSecret
                 ))
                 .then((response) => {
                     console.log('token generated successfully ' + response);
@@ -376,6 +382,10 @@ function TryOutController(props) {
                         setNotFound(true);
                     }
                     setIsUpdating(false);
+                    const { response } = error;
+                    if (response && response.body && response.body.message && response.body.description) {
+                        Alert.error(`${response.body.message}: ${response.body.description}`);
+                    }
                 });
         }
     }
@@ -590,6 +600,9 @@ function TryOutController(props) {
 
     const authHeader = `${authorizationHeader}: ${prefix}`;
 
+    const isMultipleClientSecretsAllowed = isMultipleClientSecretsEnabled(selectedKMObject?.additionalProperties);
+    const isButtonEnabled = isMultipleClientSecretsAllowed ? consumerSecret.trim() !== "" : false;
+
     useEffect(() => {
         if (securitySchemeType === 'API-KEY') {
             setTokenValue(selectedKeyType === 'PRODUCTION' ? productionApiKey : sandboxApiKey);
@@ -726,6 +739,9 @@ function TryOutController(props) {
                                 selectedKeyManager={selectedKeyManager}
                                 selectedKeyType={selectedKeyType}
                                 keyManagers={keyManagers}
+                                consumerSecret={consumerSecret}
+                                onConsumerSecretChange={setConsumerSecret}
+                                selectedKMObject={selectedKMObject}
                             />
                         )}
                     {subscriptions && subscriptions.length === 0 && securitySchemeType !== 'TEST'
@@ -886,7 +902,8 @@ function TryOutController(props) {
                                             className={classes.genKeyButton}
                                             disabled={!user
                                                 || (subscriptions && subscriptions.length === 0 && !isSubValidationDisabled)
-                                                || (!ksGenerated && securitySchemeType === 'OAUTH')}
+                                                || (!ksGenerated && securitySchemeType === 'OAUTH')
+                                                        || !isButtonEnabled}
                                             id='gen-test-key'
                                         >
                                             {isUpdating && (

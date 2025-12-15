@@ -30,6 +30,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import Stack from '@mui/material/Stack';
 
 const PREFIX = 'Tokens';
 
@@ -53,7 +54,7 @@ const Root = styled('div')((
     },
 
     [`& .${classes.FormControlOdd}`]: {
-        padding: theme.spacing(2),
+        //padding: theme.spacing(2),
         backgroundColor: theme.palette.background.paper,
         width: '100%',
     },
@@ -128,6 +129,7 @@ const tokens = (props) => {
                 className={classes.FormControlOdd}
                 disabled={subscriptionScopes.length === 0}
             >
+                <Stack spacing={2}>
                 {multipleSecretsAllowed && (
                     <TextField
                         fullWidth
@@ -201,6 +203,7 @@ const tokens = (props) => {
                             + 'access to any API resource beyond its associated scopes.'}
                     />
                 </Typography>
+                </Stack>
             </FormControl>
         </Root>
     );
