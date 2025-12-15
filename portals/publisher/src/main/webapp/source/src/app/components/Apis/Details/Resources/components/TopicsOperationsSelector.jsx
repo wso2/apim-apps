@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2025, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com) All Rights Reserved.
  *
- * WSO2 Inc. licenses this file to you under the Apache License,
+ * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,7 +24,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import LockIcon from '@material-ui/icons//Lock';
+import LockIcon from '@material-ui/icons/Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import LockOpenTwoToneIcon from '@material-ui/icons/LockOpenTwoTone';
 
@@ -69,7 +69,7 @@ export default function TopicsOperationsSelector(props) {
         <Grid container direction='row' justify='flex-end' alignItems='center'>
             <Grid item>
                 <Box mr={2} my={1} display='flex'>
-                    { (operationWithSecurityCount === 0)
+                    {(operationWithSecurityCount === 0)
                     && (
                         <Tooltip
                             title='Enable security for all'
@@ -86,7 +86,7 @@ export default function TopicsOperationsSelector(props) {
                             </div>
                         </Tooltip>
                     )}
-                    { (operationWithSecurityCount === operationCount)
+                    {(operationWithSecurityCount === operationCount)
                     && (
                         <Tooltip
                             title='Disable security for all'
@@ -103,7 +103,7 @@ export default function TopicsOperationsSelector(props) {
                             </div>
                         </Tooltip>
                     )}
-                    { (operationWithSecurityCount !== 0 && operationWithSecurityCount !== operationCount)
+                    {(operationWithSecurityCount !== 0 && operationWithSecurityCount !== operationCount)
                     && (
                         <Tooltip
                             title='Enable security for all'

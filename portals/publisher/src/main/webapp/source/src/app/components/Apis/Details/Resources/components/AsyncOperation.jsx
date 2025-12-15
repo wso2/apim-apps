@@ -31,6 +31,8 @@ import Utils from 'AppData/Utils';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
