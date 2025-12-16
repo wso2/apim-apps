@@ -65,7 +65,7 @@ export default function TopicsOperationsSelector(props) {
         }
     });
 
-    return (
+    return operationCount > 0 && (
         <Grid container direction='row' justify='flex-end' alignItems='center'>
             <Grid item>
                 <Box mr={2} my={1} display='flex'>
