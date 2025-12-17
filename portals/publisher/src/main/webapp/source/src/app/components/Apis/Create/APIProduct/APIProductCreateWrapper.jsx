@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useReducer, useState, useEffect } from 'react';
+import React, { useReducer, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
@@ -33,9 +33,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import APICreateProductBase from 'AppComponents/Apis/Create/Components/APICreateProductBase';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import ProductResourcesEditWorkspace from 'AppComponents/Apis/Details/ProductResources/ProductResourcesEditWorkspace';
-import API from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';
+import Progress from 'AppComponents/Shared/Progress';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import { getDefaultSubscriptionPolicy } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'APIProductCreateWrapper';
 
@@ -85,29 +86,13 @@ export default function ApiProductCreateWrapper(props) {
     const intl = useIntl();
     const [wizardStep, setWizardStep] = useState(0);
     const [apiResources, setApiResources] = useState([]);
-    const { data: settings } = usePublisherSettings();
+    const { data: settings, isLoading } = usePublisherSettings();
     const [isPublishButtonClicked, setIsPublishButtonClicked] = useState(false);
     const [isRevisioning, setIsRevisioning] = useState(false);
     const [isDeploying, setIsDeploying] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false);
+    const { defaultSubscriptionPolicy } = settings || {};
 
-    const [policies, setPolicies] = useState([]);
-
-    useEffect(() => {
-        API.policies('subscription').then((response) => {
-            const allPolicies = response.body.list;
-            if (allPolicies.length === 0) {
-                Alert.info(intl.formatMessage({
-                    id: 'Apis.Create.APIProduct.APIProductCreateWrapper.error.policies.not.available',
-                    defaultMessage: 'Throttling policies not available. Contact your administrator',
-                }));
-            } else if (allPolicies.filter((p) => p.name === 'Unlimited').length > 0) {
-                setPolicies(['Unlimited']);
-            } else {
-                setPolicies([allPolicies[0].name]);
-            }
-        });
-    }, []);
     const pageTitle = (
         (<Root>
             <Typography variant='h5'>
@@ -185,6 +170,11 @@ export default function ApiProductCreateWrapper(props) {
             value: isFormValid,
         });
     }
+
+    /**
+     * Get the steps for the Stepper component
+     * @returns {Array} The steps for the Stepper component
+     */
     function getSteps() {
         return [
             <FormattedMessage
@@ -203,11 +193,20 @@ export default function ApiProductCreateWrapper(props) {
     const steps = getSteps();
     let newAPIProduct;
 
-    const createAPIProduct = () => {
+    const createAPIProduct = async () => {
         setCreating(true);
         const {
             name, context, version, displayName,
         } = apiInputs;
+
+        // Fetch and select appropriate subscription policy
+        const policies = await getDefaultSubscriptionPolicy(
+            'subscription',
+            false,
+            defaultSubscriptionPolicy,
+            'Unlimited',
+        );
+
         const apiData = {
             name,
             displayName,
@@ -356,6 +355,12 @@ export default function ApiProductCreateWrapper(props) {
             })
             .finally(() => setCreating(false));
     };
+
+    if (isLoading) {
+        return (
+            <Progress />
+        )
+    }
 
     return <>
         <APICreateProductBase

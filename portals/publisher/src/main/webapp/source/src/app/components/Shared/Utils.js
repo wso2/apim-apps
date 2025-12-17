@@ -159,15 +159,15 @@ export const checkEndpointStatus = async (api) => {
             }
         } else if (api.subtypeConfiguration?.subtype === 'AIAPI') {
             // For AI APIs, both URL availability and security must be ready
-            const hasPrimaryEndpoints = api.primaryProductionEndpointId !== null || 
+            const hasPrimaryEndpoints = api.primaryProductionEndpointId !== null ||
                 api.primarySandboxEndpointId !== null;
-            
+
             if (hasPrimaryEndpoints) {
                 const response = await API.getLLMProviderEndpointConfiguration(
                     JSON.parse(api.subtypeConfiguration.configuration).llmProviderId
                 );
                 const config = response.body?.authenticationConfiguration;
-                
+
                 // Use optimized function to check both URL availability and security
                 isEndpointReady = await checkEndpointConfiguration(api, config);
             }
@@ -180,5 +180,46 @@ export const checkEndpointStatus = async (api) => {
     } catch (error) {
         console.error('Error checking endpoint status:', error);
         return false;
+    }
+};
+
+/**
+ * Fetch available policy list and select the default subscription policy to use
+ * @param {string} policyLevel Policy level for fetching policies
+ * @param {boolean} isAiApi Whether the API is an AI API
+ * @param {string|null} defaultSubscriptionPolicy Name of the default subscription policy
+ * @param {string} fallbackPolicy Fallback policy name if the default is not found
+ * @returns {Promise<Array>} Array containing the selected policy name, or empty array if no policies available
+ */
+export const getDefaultSubscriptionPolicy = async (
+    policyLevel = 'subscription',
+    isAiApi = false,
+    defaultSubscriptionPolicy = null,
+    fallbackPolicy = 'Unlimited',
+) => {
+    try {
+        // Call API.policies with the appropriate parameters
+        const promisedPolicies = API.policies(policyLevel, null, isAiApi);
+
+        const response = await promisedPolicies;
+        const allPolicies = response.body.list;
+
+        if (!allPolicies || allPolicies.length === 0) {
+            return [];
+        }
+
+        // Helper to check if a policy exists
+        const findPolicy = (policyName) => allPolicies.find((p) => (p.name || p.policyName) === policyName);
+
+        // Priority: defaultSubscriptionPolicy -> fallbackPolicy -> first available
+        const selectedPolicy =
+            (defaultSubscriptionPolicy && findPolicy(defaultSubscriptionPolicy)) ||
+            (fallbackPolicy && findPolicy(fallbackPolicy)) ||
+            allPolicies[0];
+
+        return [selectedPolicy.name];
+    } catch (error) {
+        console.error('Error fetching subscription policies:', error);
+        return [];
     }
 };

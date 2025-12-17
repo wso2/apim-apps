@@ -32,16 +32,16 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
-
+import Progress from 'AppComponents/Shared/Progress';
+import { getDefaultSubscriptionPolicy } from 'AppComponents/Shared/Utils';
 import ProvideOpenAPI from './Steps/ProvideOpenAPI';
 
 /**
-     *
-     * Reduce the events triggered from API input fields to current state
-     * @param {*} currentState
-     * @param {*} inputAction
-     * @returns
-     */
+ * Reduce the events triggered from API input fields to current state
+ * @param {*} currentState current state of the API inputs
+ * @param {*} inputAction action triggered from the input fields
+ * @returns {*} current state of the API inputs
+ */
 function apiInputsReducer(currentState, inputAction) {
     const { action, value } = inputAction;
     switch (action) {
@@ -84,7 +84,8 @@ export default function ApiCreateOpenAPI(props) {
         multiGateway: assistantMultiGateway } = location.state || {};
     const { history } = props;
     let { multiGateway } = props;
-    let { data: settings } = usePublisherSettings();
+    const { data: settingsData, isLoading } = usePublisherSettings();
+    let settings = settingsData;
 
     if (!settings) {
         settings = assistantSettings;
@@ -153,10 +154,10 @@ export default function ApiCreateOpenAPI(props) {
      *
      * @param {*} params
      */
-    function createAPI() {
+    async function createAPI() {
         setCreating(true);
         const {
-            name, version, context, endpoint, gatewayType, displayName, policies = ["Unlimited"], inputValue, inputType,
+            name, version, context, endpoint, gatewayType, displayName, inputValue, inputType,
         } = apiInputs;
         let defaultGatewayType;
         if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
@@ -166,6 +167,15 @@ export default function ApiCreateOpenAPI(props) {
         } else {
             defaultGatewayType = 'default';
         }
+
+        // Fetch and select appropriate subscription policy
+        const { defaultSubscriptionPolicy } = settings || {};
+        const policies = await getDefaultSubscriptionPolicy(
+            'subscription',
+            false,
+            defaultSubscriptionPolicy,
+            'Unlimited',
+        );
 
         const additionalProperties = {
             name,
@@ -209,6 +219,12 @@ export default function ApiCreateOpenAPI(props) {
                 console.error(error);
             })
             .finally(() => setCreating(false));
+    }
+
+    if (isLoading) {
+        return (
+            <Progress />
+        )
     }
 
     return (

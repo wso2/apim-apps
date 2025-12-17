@@ -31,19 +31,19 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
+import Progress from 'AppComponents/Shared/Progress';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { API_SECURITY_API_KEY }
     from 'AppComponents/Apis/Details/Configuration/components/APISecurity/components/apiSecurityConstants';
+import { getDefaultSubscriptionPolicy } from 'AppComponents/Shared/Utils';
 import ProvideAIOpenAPI from './Steps/ProvideAIOpenAPI';
 
-
 /**
-     *
-     * Reduce the events triggered from API input fields to current state
-     * @param {*} currentState
-     * @param {*} inputAction
-     * @returns
-     */
+ * Reduce the events triggered from API input fields to current state
+ * @param {*} currentState current state of the API inputs
+ * @param {*} inputAction action triggered from the input fields
+ * @returns {*} returns the updated state
+ */
 function apiInputsReducer(currentState, inputAction) {
     const { action, value } = inputAction;
     switch (action) {
@@ -81,7 +81,7 @@ function apiInputsReducer(currentState, inputAction) {
 export default function ApiCreateAIAPI(props) {
     const [wizardStep, setWizardStep] = useState(0);
     const { history, multiGateway } = props;
-    const { data: settings } = usePublisherSettings();
+    const { data: settings, isLoading } = usePublisherSettings();
 
     const [apiInputs, inputsDispatcher] = useReducer(apiInputsReducer, {
         type: 'ApiCreateAIAPI',
@@ -122,12 +122,20 @@ export default function ApiCreateAIAPI(props) {
      *
      * @param {*} params
      */
-    function createAPI() {
+    async function createAPI() {
         setCreating(true);
         const {
-            name, version, context, endpoint, gatewayType, displayName, policies = ["Unlimited"],
-            inputValue, llmProviderId,
+            name, version, context, endpoint, gatewayType, displayName, inputValue, llmProviderId,
         } = apiInputs;
+
+        // Fetch and select appropriate subscription policy
+        const { defaultSubscriptionPolicy } = settings || {};
+        const policies = await getDefaultSubscriptionPolicy(
+            'subscription',
+            true,
+            defaultSubscriptionPolicy,
+            'Unlimited',
+        );
 
         const additionalProperties = {
             name,
@@ -174,6 +182,12 @@ export default function ApiCreateAIAPI(props) {
                 }
             })
             .finally(() => setCreating(false));
+    }
+
+    if (isLoading) {
+        return (
+            <Progress />
+        )
     }
 
     return (

@@ -110,7 +110,7 @@ const getMCPServerOperations = () => [
     },
 ];
 
-const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
+const getSampleOpenAPI = (defaultAdvancePolicy = 'Unlimited') => ({
     openapi: '3.0.0',
     info: {
         description: 'This is a RESTFul API for Pizza Shack online pizza delivery store.\n',
@@ -205,7 +205,7 @@ const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
                 },
                 security: [{ default: [] }],
                 'x-auth-type': 'Application & Application User',
-                'x-throttling-tier': defaultSubscriptionPolicy,
+                'x-throttling-tier': defaultAdvancePolicy,
                 'x-wso2-application-security': {
                     'security-types': ['oauth2'],
                     optional: false,
@@ -242,7 +242,7 @@ const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
                 },
                 security: [{ default: [] }],
                 'x-auth-type': 'Application & Application User',
-                'x-throttling-tier': defaultSubscriptionPolicy,
+                'x-throttling-tier': defaultAdvancePolicy,
                 'x-wso2-application-security': {
                     'security-types': ['oauth2'],
                     optional: false,
@@ -284,7 +284,7 @@ const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
                 },
                 security: [{ default: [] }],
                 'x-auth-type': 'Application & Application User',
-                'x-throttling-tier': defaultSubscriptionPolicy,
+                'x-throttling-tier': defaultAdvancePolicy,
                 'x-wso2-application-security': {
                     'security-types': ['oauth2'],
                     optional: false,
@@ -334,7 +334,7 @@ const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
                 },
                 security: [{ default: [] }],
                 'x-auth-type': 'Application & Application User',
-                'x-throttling-tier': defaultSubscriptionPolicy,
+                'x-throttling-tier': defaultAdvancePolicy,
                 'x-wso2-application-security': {
                     'security-types': ['oauth2'],
                     optional: false,
@@ -357,7 +357,7 @@ const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
                 },
                 security: [{ default: [] }],
                 'x-auth-type': 'Application & Application User',
-                'x-throttling-tier': defaultSubscriptionPolicy,
+                'x-throttling-tier': defaultAdvancePolicy,
                 'x-wso2-application-security': {
                     'security-types': ['oauth2'],
                     optional: false,
@@ -511,7 +511,7 @@ const getSampleAPIData = (defaultAdvancePolicy, defaultSubscriptionPolicy) => {
     };
 };
 
-const getSampleMCPServerData = (defaultAdvancePolicy, defaultSubscriptionPolicy) => {
+const getSampleMCPServerData = (defaultSubscriptionPolicy) => {
     return {
         name: 'PizzaShackServer',
         description: 'This is a simple MCP Server for Pizza Shack online pizza delivery store.',
