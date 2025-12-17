@@ -35,6 +35,8 @@ import MCPProxyToolSelection from 'AppComponents/MCPServers/Create/Steps/MCPProx
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import MCPServer from 'AppData/MCPServer';
+import Progress from 'AppComponents/Shared/Progress';
+import { getDefaultSubscriptionPolicy } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'MCPServerCreateProxy';
 
@@ -76,7 +78,7 @@ const MCPServerCreateProxy = (props) => {
     const intl = useIntl();
     const [wizardStep, setWizardStep] = useState(0);
     const [isCreating, setCreating] = useState();
-    const { data: settings } = usePublisherSettings();
+    const { data: settings, isLoading } = usePublisherSettings();
 
     const pageTitle = (
         <Root>
@@ -148,7 +150,7 @@ const MCPServerCreateProxy = (props) => {
         });
     }
 
-    const createMCPServer = () => {
+    const createMCPServer = async () => {
         setCreating(true);
         const {
             name,
@@ -157,7 +159,6 @@ const MCPServerCreateProxy = (props) => {
             context,
             mcpServerUrl,
             gatewayType,
-            policies = ["Unlimited"],
             operations = [],
         } = mcpServerInputs;
         
@@ -169,6 +170,15 @@ const MCPServerCreateProxy = (props) => {
         } else {
             defaultGatewayType = 'default';
         }
+
+        // Fetch and select appropriate subscription policy
+        const { defaultSubscriptionPolicy } = settings || {};
+        const policies = await getDefaultSubscriptionPolicy(
+            'subscription',
+            false,
+            defaultSubscriptionPolicy,
+            'Unlimited',
+        );
 
         const additionalProperties = {
             name,
@@ -233,6 +243,10 @@ const MCPServerCreateProxy = (props) => {
                 />
             },
         ];
+    }
+
+    if (isLoading) {
+        return <Progress />;
     }
 
     return (

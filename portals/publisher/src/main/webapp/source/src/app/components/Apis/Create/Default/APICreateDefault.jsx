@@ -37,18 +37,13 @@ import APIProduct from 'AppData/APIProduct';
 import AuthManager from 'AppData/AuthManager';
 import Progress from 'AppComponents/Shared/Progress';
 import Utils from 'AppData/Utils';
+import { getDefaultSubscriptionPolicy } from 'AppComponents/Shared/Utils';
 
 const gatewayTypeMap = {
     'Regular': 'wso2/synapse',
     'APK': 'wso2/apk',
     'AWS': 'AWS',
     'Azure': 'Azure',
-};
-
-const getPolicies = async () => {
-    const promisedPolicies = API.policies('subscription');
-    const policies = await promisedPolicies;
-    return policies.body.list;
 };
 /**
  *
@@ -193,27 +188,12 @@ function APICreateDefault(props) {
             name, version, context, endpoint, gatewayType, displayName,
         } = apiInputs;
         let promisedCreatedAPI;
-        let policies;
-        const { defaultSubscriptionPolicy } = settings;
-        const allPolicies = await getPolicies();
-        if (allPolicies.length === 0) {
-            Alert.info(intl.formatMessage({
-                id: 'Apis.Create.Default.APICreateDefault.error.policies.not.available',
-                defaultMessage: 'Throttling policies not available. Contact your administrator',
-            }));
-            policies = ['Unlimited']; // Fallback to Unlimited if no policies available
-        } else {
-            // Helper to check if a policy exists
-            const findPolicy = (policyName) => allPolicies.find((p) => p.name === policyName);
 
-            // Priority: defaultSubscriptionPolicy -> Unlimited -> first available
-            const selectedPolicy =
-                (defaultSubscriptionPolicy && findPolicy(defaultSubscriptionPolicy)) ||
-                findPolicy('Unlimited') ||
-                allPolicies[0];
-
-            policies = [selectedPolicy.name];
-        }
+        // Fetch and select appropriate subscription policy
+        const { defaultSubscriptionPolicy } = settings || {};
+        const policies = await getDefaultSubscriptionPolicy(
+            'subscription', false, defaultSubscriptionPolicy, 'Unlimited'
+        );
 
         const apiData = {
             name,

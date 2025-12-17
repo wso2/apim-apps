@@ -32,6 +32,7 @@ import TaskState from 'AppComponents/Apis/Listing/SampleAPI/components/TaskState
 import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
 import { getSampleAPIData, getSampleOpenAPI } from 'AppData/SamplePizzaShack';
+import { getDefaultSubscriptionPolicy } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'SampleAPI';
 
@@ -114,9 +115,17 @@ const SampleAPI = (props) => {
         setShowStatus(true);
         const restApi = new API();
 
+        // Fetch and select appropriate subscription policy
+        const policies = await getDefaultSubscriptionPolicy(
+            'subscription',
+            false,
+            defaultSubscriptionPolicy,
+            'Unlimited',
+        );
+        const selectedSubscriptionPolicy = policies.length > 0 ? policies[0] : 'Unlimited';
+
         const sampleAPIObj = new API(getSampleAPIData(defaultAdvancePolicy || 'Unlimited',
-            defaultSubscriptionPolicy || 'Unlimited'));
-        
+            selectedSubscriptionPolicy));
         // Check scopes for 1st API call (Create API)
         if (AuthManager.isRestricted(['apim:api_create', 'apim:api_manage'])) {
             // Mark all tasks as completed with permission error and skip the flow

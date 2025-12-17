@@ -26,7 +26,6 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import CircularProgress from '@mui/material/CircularProgress';
-
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
@@ -70,7 +69,7 @@ const APICreateStreamingAPI = (props) => {
     const [isDeploying, setIsDeploying] = useState(false);
     const [isPublishButtonClicked, setIsPublishButtonClicked] = useState(false);
 
-    const [policies, setPolicies] = useState([]);
+    const [allPolicies, setAllPolicies] = useState([]);
     let { apiType } = useParams();
     if (apiType) {
         apiType = apiType.toUpperCase();
@@ -82,19 +81,14 @@ const APICreateStreamingAPI = (props) => {
 
     useEffect(() => {
         API.asyncAPIPolicies().then((response) => {
-            const allPolicies = response.body.list;
-            if (allPolicies.length === 0) {
+            const policies = response.body.list;
+            if (policies.length === 0) {
                 Alert.info(intl.formatMessage({
                     id: 'Apis.Create.Default.APICreateDefault.error.policies.not.available',
                     defaultMessage: 'Throttling policies not available. Contact your administrator',
                 }));
-            } else if (isWebSub && allPolicies.filter((p) => p.policyName === 'AsyncWHUnlimited').length > 0) {
-                setPolicies(['AsyncWHUnlimited']);
-            } else if (!isWebSub && allPolicies.filter((p) => p.policyName === 'AsyncUnlimited').length > 0) {
-                setPolicies(['AsyncUnlimited']);
-            } else {
-                setPolicies([allPolicies[0].policyName]);
             }
+            setAllPolicies(policies);
         });
     }, []);
 
@@ -187,6 +181,26 @@ const APICreateStreamingAPI = (props) => {
         const {
             name, version, context, endpoint, protocol, displayName,
         } = apiInputs;
+
+        // Select appropriate subscription policy
+        let policies;
+        if (allPolicies.length === 0) {
+            policies = [];
+        } else {
+            // Helper to check if a policy exists
+            const findPolicy = (policyName) => allPolicies.find((p) => p.policyName === policyName);
+
+            // Priority: defaultSubscriptionPolicy -> Unlimited -> first available
+            const { defaultSubscriptionPolicy } = settings || {};
+            const selectedPolicy =
+                (defaultSubscriptionPolicy && findPolicy(defaultSubscriptionPolicy)) ||
+                (isWebSub && findPolicy('AsyncWHUnlimited')) ||
+                (!isWebSub && findPolicy('AsyncUnlimited')) ||
+                allPolicies[0];
+
+            policies = [selectedPolicy.policyName];
+        }
+
         const apiData = {
             name,
             displayName,

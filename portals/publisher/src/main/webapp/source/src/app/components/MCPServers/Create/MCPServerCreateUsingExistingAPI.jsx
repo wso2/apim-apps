@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useReducer, useState, useEffect, useMemo } from 'react';
+import React, { useReducer, useState, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
@@ -33,10 +33,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import ExistingAPIToolSelection from 'AppComponents/MCPServers/Create/Steps/ExistingAPIToolSelection';
-import API from 'AppData/api';
+import { getDefaultSubscriptionPolicy } from 'AppComponents/Shared/Utils';
 import AuthManager from 'AppData/AuthManager';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import MCPServer from 'AppData/MCPServer';
+import Progress from 'AppComponents/Shared/Progress';
 
 const PREFIX = 'MCPServerCreateUsingExistingAPI';
 
@@ -82,8 +83,8 @@ const MCPServerCreateUsingExistingAPI = (props) => {
     const [isRevisioning, setIsRevisioning] = useState(false);
     const [isDeploying, setIsDeploying] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false);
-    const [policies, setPolicies] = useState([]);
-    const { data: settings } = usePublisherSettings();
+    const { data: settings, isLoading } = usePublisherSettings();
+    const { defaultSubscriptionPolicy } = settings || {};
 
     // Extract API ID from URL parameters
     const urlParams = new URLSearchParams(location.search);
@@ -93,22 +94,6 @@ const MCPServerCreateUsingExistingAPI = (props) => {
     const selectedAPI = useMemo(() => {
         return apiId ? { id: apiId } : null;
     }, [apiId]);
-
-    useEffect(() => {
-        API.policies('subscription').then((response) => {
-            const allPolicies = response.body.list;
-            if (allPolicies.length === 0) {
-                Alert.info(intl.formatMessage({
-                    id: 'Apis.Create.APIProduct.APIProductCreateWrapper.error.policies.not.available',
-                    defaultMessage: 'Throttling policies not available. Contact your administrator',
-                }));
-            } else if (allPolicies.filter((p) => p.name === 'Unlimited').length > 0) {
-                setPolicies(['Unlimited']);
-            } else {
-                setPolicies([allPolicies[0].name]);
-            }
-        });
-    }, []);
 
     const pageTitle = (
         <Root>
@@ -182,11 +167,20 @@ const MCPServerCreateUsingExistingAPI = (props) => {
     }
 
     let newMCPServer;
-    const createMCPServer = () => {
+    const createMCPServer = async () => {
         setCreating(true);
         const {
             name, context, version, displayName, operations = [],
         } = mcpServerInputs;
+
+        // Fetch and select appropriate subscription policy
+        const policies = await getDefaultSubscriptionPolicy(
+            'subscription',
+            false,
+            defaultSubscriptionPolicy,
+            'Unlimited',
+        );
+
         const mcpServerData = {
             name,
             displayName,
@@ -373,6 +367,10 @@ const MCPServerCreateUsingExistingAPI = (props) => {
                 )
             },
         ];
+    }
+
+    if (isLoading) {
+        return <Progress />;
     }
 
     return (

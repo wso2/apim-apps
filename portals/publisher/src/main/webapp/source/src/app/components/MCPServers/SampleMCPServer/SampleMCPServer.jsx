@@ -25,13 +25,14 @@ import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import LandingMenuItem from 'AppComponents/Apis/Listing/Landing/components/LandingMenuItem';
 import { getSampleMCPServerData, getSampleOpenAPI } from 'AppData/SamplePizzaShack';
 import AuthManager from 'AppData/AuthManager';
-import { 
-    MCP_SERVER_SCOPES, 
-    isRestrictedForScopes, 
-    markTasksAsCompletedWithError, 
-    getInternalGateways, 
-    buildDeploymentPayload, 
-    convertOpenAPIToFile 
+import { getDefaultSubscriptionPolicy } from 'AppComponents/Shared/Utils';
+import {
+    MCP_SERVER_SCOPES,
+    isRestrictedForScopes,
+    markTasksAsCompletedWithError,
+    getInternalGateways,
+    buildDeploymentPayload,
+    convertOpenAPIToFile
 } from './components/MCPServerUtils';
 import MCPServerDeploymentModal from './components/MCPServerDeploymentModal';
 
@@ -94,11 +95,19 @@ const SampleMCPServer = (props) => {
 
         setShowStatus(true);
 
+        // Fetch and select appropriate subscription policy
+        const policies = await getDefaultSubscriptionPolicy(
+            'subscription',
+            false,
+            defaultSubscriptionPolicy,
+            'Unlimited',
+        );
+        const selectedSubscriptionPolicy = policies.length > 0 ? policies[0] : 'Unlimited';
+
         // Get sample MCP Server data and OpenAPI definition
-        const sampleMCPServerData = getSampleMCPServerData(defaultAdvancePolicy || 'Unlimited',
-            defaultSubscriptionPolicy || 'Unlimited');
-        const sampleOpenAPIDefinition = getSampleOpenAPI(defaultSubscriptionPolicy || 'Unlimited');
-        
+        const sampleMCPServerData = getSampleMCPServerData(selectedSubscriptionPolicy);
+        const sampleOpenAPIDefinition = getSampleOpenAPI(defaultAdvancePolicy || 'Unlimited');
+
         // Convert OpenAPI definition to File object for binary upload
         const openAPIFile = convertOpenAPIToFile(sampleOpenAPIDefinition);
         

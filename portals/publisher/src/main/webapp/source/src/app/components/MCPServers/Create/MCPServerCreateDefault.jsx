@@ -35,6 +35,8 @@ import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
 import ProvideOpenAPI from 'AppComponents/Apis/Create/OpenAPI/Steps/ProvideOpenAPI';
 import ToolSelection from 'AppComponents/MCPServers/Create/Steps/ToolSelection';
 import MCPServer from 'AppData/MCPServer';
+import Progress from 'AppComponents/Shared/Progress';
+import { getDefaultSubscriptionPolicy } from 'AppComponents/Shared/Utils';
 
 /**
  * Reduce the events triggered from API input fields to current state
@@ -86,7 +88,7 @@ const MCPServerCreateDefault = (props) => {
     const intl = useIntl();
     let { multiGateway } = props;
     const { multiGateway: assistantMultiGateway } = location.state || {};
-    const { data: settings } = usePublisherSettings();
+    const { data: settings, isLoading } = usePublisherSettings();
 
     if (!multiGateway) {
         multiGateway = assistantMultiGateway;
@@ -126,7 +128,7 @@ const MCPServerCreateDefault = (props) => {
      * Create the MCP Server using the provided OpenAPI definition
      * @throws {Error} - If the API creation fails
      */
-    const createMCPServer = () => {
+    const createMCPServer = async () => {
         setCreating(true);
         const {
             name,
@@ -135,7 +137,6 @@ const MCPServerCreateDefault = (props) => {
             context,
             endpoint,
             gatewayType,
-            policies = ["Unlimited"],
             inputValue,
             inputType,
             operations = [],
@@ -160,6 +161,15 @@ const MCPServerCreateDefault = (props) => {
                 }
             }
         }));
+
+        // Fetch and select appropriate subscription policy
+        const { defaultSubscriptionPolicy } = settings || {};
+        const policies = await getDefaultSubscriptionPolicy(
+            'subscription',
+            false,
+            defaultSubscriptionPolicy,
+            'Unlimited',
+        );
 
         const additionalProperties = {
             name,
@@ -204,6 +214,10 @@ const MCPServerCreateDefault = (props) => {
                 }
             })
             .finally(() => setCreating(false));
+    }
+
+    if (isLoading) {
+        return <Progress />;
     }
 
     return (

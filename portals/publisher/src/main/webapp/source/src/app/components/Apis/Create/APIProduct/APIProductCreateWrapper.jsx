@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useReducer, useState, useEffect } from 'react';
+import React, { useReducer, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
@@ -33,10 +33,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import APICreateProductBase from 'AppComponents/Apis/Create/Components/APICreateProductBase';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import ProductResourcesEditWorkspace from 'AppComponents/Apis/Details/ProductResources/ProductResourcesEditWorkspace';
-import API from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';
 import Progress from 'AppComponents/Shared/Progress';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import { getDefaultSubscriptionPolicy } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'APIProductCreateWrapper';
 
@@ -91,20 +91,7 @@ export default function ApiProductCreateWrapper(props) {
     const [isRevisioning, setIsRevisioning] = useState(false);
     const [isDeploying, setIsDeploying] = useState(false);
     const [isPublishing, setIsPublishing] = useState(false);
-    const [allPolicies, setAllPolicies] = useState([]);
-
-    useEffect(() => {
-        API.policies('subscription').then((response) => {
-            const policies = response.body.list;
-            if (policies.length === 0) {
-                Alert.info(intl.formatMessage({
-                    id: 'Apis.Create.APIProduct.APIProductCreateWrapper.error.policies.not.available',
-                    defaultMessage: 'Throttling policies not available. Contact your administrator',
-                }));
-            }
-            setAllPolicies(policies);
-        });
-    }, []);
+    const { defaultSubscriptionPolicy } = settings || {};
 
     const pageTitle = (
         (<Root>
@@ -183,6 +170,11 @@ export default function ApiProductCreateWrapper(props) {
             value: isFormValid,
         });
     }
+
+    /**
+     * Get the steps for the Stepper component
+     * @returns {Array} The steps for the Stepper component
+     */
     function getSteps() {
         return [
             <FormattedMessage
@@ -201,29 +193,19 @@ export default function ApiProductCreateWrapper(props) {
     const steps = getSteps();
     let newAPIProduct;
 
-    const createAPIProduct = () => {
+    const createAPIProduct = async () => {
         setCreating(true);
         const {
             name, context, version, displayName,
         } = apiInputs;
 
-        // Select appropriate subscription policy
-        let policies;
-        if (allPolicies.length === 0) {
-            policies = ['Unlimited']; // Fallback to Unlimited if no policies available
-        } else {
-            // Helper to check if a policy exists
-            const findPolicy = (policyName) => allPolicies.find((p) => p.name === policyName);
-
-            // Priority: defaultSubscriptionPolicy -> Unlimited -> first available
-            const { defaultSubscriptionPolicy } = settings || {};
-            const selectedPolicy =
-                (defaultSubscriptionPolicy && findPolicy(defaultSubscriptionPolicy)) ||
-                findPolicy('Unlimited') ||
-                allPolicies[0];
-
-            policies = [selectedPolicy.name];
-        }
+        // Fetch and select appropriate subscription policy
+        const policies = await getDefaultSubscriptionPolicy(
+            'subscription',
+            false,
+            defaultSubscriptionPolicy,
+            'Unlimited',
+        );
 
         const apiData = {
             name,
