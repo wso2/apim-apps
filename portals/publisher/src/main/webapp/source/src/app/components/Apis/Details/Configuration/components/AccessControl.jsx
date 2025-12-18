@@ -79,13 +79,17 @@ export default function AccessControl(props) {
         }
     }, [invalidRoles]);
     useEffect(() => {
-        if (otherValidSystemRoles.length === api.accessControlRoles.length && otherValidSystemRoles.length !== 0
+        // Exclude userRoleValidity check for admin users
+        const isAdmin = !isRestricted(['apim:admin'], apiFromContext);
+        if (isAdmin) {
+            setUserRoleValidity(true);
+        } else if (otherValidSystemRoles.length === api.accessControlRoles.length && otherValidSystemRoles.length !== 0
             && (otherValidSystemRoles.every((val) => api.accessControlRoles.includes(val)))) {
             setUserRoleValidity(false);
         } else {
             setUserRoleValidity(true);
         }
-    }, [otherValidSystemRoles]);
+    }, [otherValidSystemRoles, apiFromContext]);
     const handleRoleAddition = (role) => {
         const systemRolePromise = APIValidation.role.validate(base64url.encode(role));
         const userRolePromise = APIValidation.userRole.validate(base64url.encode(role));
@@ -146,7 +150,10 @@ export default function AccessControl(props) {
     };
 
     const handleRoleValidationFailure = () => {
-        if(!roleValidity || !userRoleValidity) {
+        const isAdmin = !isRestricted(['apim:admin'], apiFromContext);
+        const shouldCheckUserRoleValidity = !isAdmin && !userRoleValidity;
+
+        if(!roleValidity || shouldCheckUserRoleValidity) {
             setIsDisabled(true);
         } else {
             setIsDisabled(false);
@@ -158,7 +165,7 @@ export default function AccessControl(props) {
                     defaultMessage='Role is invalid'
                 />
             );
-        } else if (!userRoleValidity) {
+        } else if (shouldCheckUserRoleValidity) {
             return (
                 <FormattedMessage
                     id='Apis.Details.Scopes.Roles.User.Invalid'
@@ -293,14 +300,21 @@ export default function AccessControl(props) {
                         placeholder='Enter roles and press Enter'
                         blurBehavior='clear'
                         InputProps={{
-                            endAdornment: (!roleValidity || !userRoleValidity) && (
-                                <InputAdornment position='end'>
-                                    <Error color='error' />
-                                </InputAdornment>
-                            ),
+                            endAdornment: (() => {
+                                const isAdmin = !isRestricted(['apim:admin'], apiFromContext);
+                                const shouldShowError = !roleValidity || (!isAdmin && !userRoleValidity);
+                                return shouldShowError && (
+                                    <InputAdornment position='end'>
+                                        <Error color='error' />
+                                    </InputAdornment>
+                                );
+                            })(),
                         }}
                         onAdd={handleRoleAddition}
-                        error={!roleValidity || !userRoleValidity}
+                        error={(() => {
+                            const isAdmin = !isRestricted(['apim:admin'], apiFromContext);
+                            return !roleValidity || (!isAdmin && !userRoleValidity);
+                        })()}
                         helperText={handleRoleValidationFailure()}
                         chipRenderer={({ value }, key) => (
                             <Chip
