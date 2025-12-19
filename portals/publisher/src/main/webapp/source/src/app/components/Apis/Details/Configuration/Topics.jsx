@@ -37,6 +37,7 @@ import AddOperation from '../Resources/components/AddOperation';
 import SubscriptionConfig from '../Resources/components/operationComponents/asyncapi/SubscriptionConfig';
 import { extractAsyncAPIPathParameters } from '../Resources/operationUtils';
 import SaveOperations from '../Resources/components/SaveOperations';
+import TopicsOperationsSelector from '../Resources/components/TopicsOperationsSelector';
 
 const verbMap = {
     sub: 'subscribe',
@@ -160,6 +161,15 @@ export default function Topics(props) {
             case 'init':
                 setSelectedOperation({});
                 return data || asyncAPISpec.channels;
+            case 'toggleSecurityStatus':
+                setSelectedOperation({});
+                return Object.entries(currentOperations).reduce((channelAcc, [channelKey, channelObj]) => {
+                    const newChannel = { ...channelObj };
+                    newChannel['x-auth-type'] = data.disable ? 'None' : 'Any';
+                    const newChannelAcc = { ...channelAcc };
+                    newChannelAcc[channelKey] = newChannel;
+                    return newChannelAcc;
+                }, {});
             case 'description':
                 updatedOperation[action] = value;
                 return {
@@ -273,6 +283,20 @@ export default function Topics(props) {
         };
     }
     const [operations, operationsDispatcher] = useReducer(operationsReducer, {});
+
+    /**
+     * Enable security for all topics/operations
+     */
+    const enableSecurity = () => {
+        operationsDispatcher({ action: 'toggleSecurityStatus', data: { disable: false } });
+    };
+
+    /**
+     * Disable security for all topics/operations
+     */
+    const disableSecurity = () => {
+        operationsDispatcher({ action: 'toggleSecurityStatus', data: { disable: true } });
+    };
 
     /**
      *
@@ -517,6 +541,13 @@ export default function Topics(props) {
             )}
             <Grid item md={12}>
                 <Paper>
+                    {(api.gatewayVendor === 'wso2') && (api.type === 'WS') && (
+                        <TopicsOperationsSelector
+                            operations={operations}
+                            enableSecurity={enableSecurity}
+                            disableSecurity={disableSecurity}
+                        />
+                    )}
                     {
                         operations && Object.entries(operations).map(([target, operation]) => (
                             <GroupOfOperations tag={target} operation={operation}>
