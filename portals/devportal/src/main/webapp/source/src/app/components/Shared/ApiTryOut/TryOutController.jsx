@@ -601,7 +601,7 @@ function TryOutController(props) {
     const authHeader = `${authorizationHeader}: ${prefix}`;
 
     const isMultipleClientSecretsAllowed = isMultipleClientSecretsEnabled(selectedKMObject?.additionalProperties);
-    const isButtonEnabled = isMultipleClientSecretsAllowed ? consumerSecret.trim() !== "" : false;
+    const enableGetTestKeyButton = !isMultipleClientSecretsAllowed || consumerSecret.trim() !== "";
 
     useEffect(() => {
         if (securitySchemeType === 'API-KEY') {
@@ -903,7 +903,7 @@ function TryOutController(props) {
                                             disabled={!user
                                                 || (subscriptions && subscriptions.length === 0 && !isSubValidationDisabled)
                                                 || (!ksGenerated && securitySchemeType === 'OAUTH')
-                                                        || !isButtonEnabled}
+                                                        || !enableGetTestKeyButton}
                                             id='gen-test-key'
                                         >
                                             {isUpdating && (
