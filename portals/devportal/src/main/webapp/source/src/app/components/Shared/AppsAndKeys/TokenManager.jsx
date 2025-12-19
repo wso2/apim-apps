@@ -61,6 +61,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Settings from 'AppComponents/Shared/SettingsContext';
 import { isMultipleClientSecretsEnabled } from './Secrets/util';
 import SecretValueDialog from "./Secrets/SecretValueDialog";
+import { isMultipleClientSecretsEnabled } from './Secrets/util';
 
 const PREFIX = 'TokenManager';
 
@@ -245,6 +246,7 @@ class TokenManager extends React.Component {
             urlCopied: false,
             openSecretValueDialog: false,
             generatedSecret: null,
+            isMultipleSecretsAllowed: false,
         };
         this.keyStates = {
             COMPLETED: 'COMPLETED',
@@ -421,6 +423,12 @@ class TokenManager extends React.Component {
                             : responseKeyManagerList[0].name;
                     }
                     const selectdKM = responseKeyManagerList.find((x) => x.name === selectedTab);
+                    const isMultipleSecretsAllowed = isMultipleClientSecretsEnabled(selectdKM.additionalProperties);
+                    if (isMultipleSecretsAllowed) {
+                        this.setState({
+                            isMultipleSecretsAllowed: true,
+                        });
+                    }
                     // processing promisedGetKeys response
                     const keys = response[1];
                     const { keyRequest } = this.state;
@@ -495,7 +503,7 @@ class TokenManager extends React.Component {
      * @memberof KeyConfiguration
      */
     generateKeys() {
-        const { keyRequest, keys, selectedTab } = this.state;
+        const { keyRequest, keys, selectedTab, isMultipleSecretsAllowed } = this.state;
         const {
             keyType, updateSubscriptionData, selectedApp: { tokenType, hashEnabled }, intl,
         } = this.props;
@@ -534,8 +542,12 @@ class TokenManager extends React.Component {
                 const initialScopes = response.token ? response.token.tokenScopes : [];
                 this.setState({
                     keys: newKeys, isKeyJWT, initialToken, initialValidityTime, initialScopes,
-                    generatedSecret: response.consumerSecret, openSecretValueDialog: true,
                 });
+                if (isMultipleSecretsAllowed) {
+                    this.setState({
+                        generatedSecret: response.consumerSecret, openSecretValueDialog: true,
+                    });
+                }
                 if (response.keyState === this.keyStates.CREATED || response.keyState === this.keyStates.REJECTED) {
                     Alert.info(intl.formatMessage({
                         id: 'Shared.AppsAndKeys.TokenManager.key.generate.success.blocked',
