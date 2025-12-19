@@ -216,7 +216,8 @@ function AsyncOperation(props) {
                             )}
                             <Tooltip
                                 title={
-                                    (operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
+                                    // security is enabled if x-auth-type is not present or not set to 'none'
+                                    (!operation['x-auth-type'] || operation['x-auth-type'].toLowerCase() !== 'none')
                                         ? (
                                             <FormattedMessage
                                                 id={'Apis.Details.Resources.components.AsyncOperation.security'
@@ -241,7 +242,7 @@ function AsyncOperation(props) {
                                 <IconButton
                                     aria-label='Security'
                                 >
-                                    {(operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
+                                    {(!operation['x-auth-type'] || operation['x-auth-type'].toLowerCase() !== 'none')
                                         ? <LockIcon fontSize='small' />
                                         : <LockOpenIcon fontSize='small' />}
                                 </IconButton>

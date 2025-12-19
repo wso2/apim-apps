@@ -47,7 +47,8 @@ export default function TopicsOperationsSelector(props) {
     // Count total operations and operations with security enabled
     Object.entries(operations).forEach(([, channelObj]) => {
         // Check the channel-level x-auth-type
-        if (channelObj['x-auth-type'] && channelObj['x-auth-type'].toLowerCase() !== 'none') {
+        // If x-auth-type doesn't exist or is not 'none', security is enabled
+        if (!channelObj['x-auth-type'] || channelObj['x-auth-type'].toLowerCase() !== 'none') {
             // If security is enabled at channel level, count all verbs (subscribe/publish) in this channel
             if (channelObj.subscribe) {
                 operationWithSecurityCount++;
