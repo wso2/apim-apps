@@ -108,7 +108,7 @@ describe.skip('Publisher <HeaderSearch> component tests', () => {
         const autoSuggestProps = wrapper.find(Autosuggest).props();
         const firstSuggestion = autoSuggestProps.suggestions[0];
         autoSuggestProps.onSuggestionSelected({ key: 'Enter' }, { suggestion: firstSuggestion });
-        const expectedPath = firstSuggestion.type === 'API' ? `/apis/${firstSuggestion.id}/overview`
+        const expectedPath = (firstSuggestion.type === 'API' || firstSuggestion.type === 'APIPRODUCT') ? `/apis/${firstSuggestion.id}/overview`
             : `/apis/${firstSuggestion.apiUUID}/documents/${firstSuggestion.id}/details`;
         expect(wrapper.find('HeaderSearch').props().history.push.mock.calls[0][0]).toEqual(expectedPath);
     });
