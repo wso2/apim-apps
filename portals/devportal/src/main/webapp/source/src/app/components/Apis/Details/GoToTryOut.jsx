@@ -412,6 +412,7 @@ export default function GoToTryOut() {
                                             borderRadius: 2,
                                             p: 2,
                                             mt: 2,
+                                            mb: 2,
                                             bgcolor: 'background.default',
                                         }}
                                     >
@@ -461,7 +462,8 @@ export default function GoToTryOut() {
                                         >
                                             <FormattedMessage
                                                 id='Apis.Details.GoToTryOut.consumerSecret.notice'
-                                                defaultMessage='This consumer secret will be displayed only once. Please copy it now.'
+                                                defaultMessage='Please make a note of the generated consumer secret
+                                                value as it will be displayed only once.'
                                             />
                                         </Typography>
                                     </Box>
