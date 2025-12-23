@@ -420,7 +420,10 @@ export default function GoToTryOut() {
                                             color='textPrimary'
                                             gutterBottom
                                         >
-                                            Consumer Secret
+                                            <FormattedMessage
+                                                id='Apis.Details.GoToTryOut.consumerSecret.title'
+                                                defaultMessage='Consumer Secret'
+                                            />
                                         </Typography>
 
                                         <Box
@@ -445,7 +448,10 @@ export default function GoToTryOut() {
                                                 variant='outlined'
                                                 onClick={() => navigator.clipboard.writeText(consumerSecretValue)}
                                             >
-                                                Copy
+                                                <FormattedMessage
+                                                    id='Apis.Details.GoToTryOut.consumerSecret.copy'
+                                                    defaultMessage='Copy'
+                                                />
                                             </Button>
                                         </Box>
 
@@ -453,7 +459,10 @@ export default function GoToTryOut() {
                                             variant='caption'
                                             color='textSecondary'
                                         >
-                                            This consumer secret will be displayed only once. Please copy it now.
+                                            <FormattedMessage
+                                                id='Apis.Details.GoToTryOut.consumerSecret.notice'
+                                                defaultMessage='This consumer secret will be displayed only once. Please copy it now.'
+                                            />
                                         </Typography>
                                     </Box>
                                 </Grid>
