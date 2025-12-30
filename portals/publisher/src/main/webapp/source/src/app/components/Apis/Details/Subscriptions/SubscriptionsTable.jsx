@@ -1317,7 +1317,9 @@ SubscriptionsTable.propTypes = {
     api: PropTypes.shape({
         id: PropTypes.string,
     }).isRequired,
-    intl: PropTypes.shape({}).isRequired,
+    intl: PropTypes.shape({
+        formatMessage: PropTypes.func.isRequired,
+    }).isRequired,
 };
 
 export default injectIntl((SubscriptionsTable));
