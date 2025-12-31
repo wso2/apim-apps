@@ -747,46 +747,21 @@ class SubscriptionsTable extends Component {
     openContactSubscribersLink() {
         const { subscriberClaims } = this.state;
         const subMails = {};
-        const emails =
-            subscriberClaims && Object.entries(subscriberClaims).length > 0
-                ? Object.entries(subscriberClaims)
-                    .map(([, v]) => {
-                        let email = null;
-                        if (
-                            !subMails[v.name] &&
-                              v.claims &&
-                              v.claims.length > 0
-                        ) {
-                            const emailClaim = v.claims.find(
-                                (claim) =>
-                                    claim.uri ===
-                                      'http://wso2.org/claims/emailaddress',
-                            );
-                            if (emailClaim) {
-                                email = emailClaim.value;
-                                subMails[v.name] = email;
-                            }
-                        }
-                        return email;
-                    })
-                    .reduce((a, b) => {
-                        return b !== null ? `${a || ''},${b}` : a;
-                    }, '')
-                : '';
 
-        let names = null;
-        if (subMails) {
-            Object.entries(subMails).map(([k, v]) => {
-                if (v) {
-                    if (names === null) {
-                        names = k;
-                    } else {
-                        names = `${names}, ${k}`;
-                    }
-                }
-                return null;
-            });
-        }
+        Object.values(subscriberClaims || {}).forEach((v) => {
+            if (!v || !v.name || !v.claims || !v.claims.length || subMails[v.name]) {
+                return;
+            }
+            const emailClaim = v.claims.find(
+                (claim) => claim.uri === 'http://wso2.org/claims/emailaddress',
+            );
+            if (emailClaim && emailClaim.value) {
+                subMails[v.name] = emailClaim.value;
+            }
+        });
+
+        const emails = Object.values(subMails).join(',');
+        const names = Object.keys(subMails).join(', ');
 
         if (emails) {
             window.location.href = `mailto:?subject=Message from the API Publisher&cc=${emails}&body=Hi ${
@@ -887,7 +862,7 @@ class SubscriptionsTable extends Component {
         
         if (loadingClaims[subscriptionId]) {
             return (
-                <Grid container direction='row' justify='center' alignItems='center'>
+                <Grid container direction='row' justifyContent='center' alignItems='center'>
                     <Grid item>
                         <CircularProgress size={20} />
                     </Grid>
@@ -1274,10 +1249,16 @@ class SubscriptionsTable extends Component {
                                 {loadingContactInfo ? (
                                     <>
                                         <CircularProgress size={16} style={{ marginRight: 8 }} />
-                                        Loading...
+                                        <FormattedMessage
+                                            id='Apis.Details.Subscriptions.SubscriptionsTable.loading.contact.info'
+                                            defaultMessage='Loading...'
+                                        />
                                     </>
                                 ) : (
-                                    'Contact Subscribers'
+                                    <FormattedMessage
+                                        id='Apis.Details.Subscriptions.SubscriptionsTable.contact.subscribers'
+                                        defaultMessage='Contact Subscribers'
+                                    />
                                 )}
                             </Button>
                         )}
