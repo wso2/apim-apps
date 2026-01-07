@@ -868,7 +868,7 @@ class SubscriptionsTable extends Component {
                     {claimsObject.claims && (
                         <Box m={0.5}>
                             {claimsObject.claims.map((claim) => (
-                                <Box display='flex' gap={4}>
+                                <Box display='flex' gap={4} key={claim.uri}>
                                     <Box flexShrink={0}>
                                         <Typography variant='caption' noWrap>{claim.name}</Typography>
                                     </Box>
