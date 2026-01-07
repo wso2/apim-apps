@@ -29,17 +29,12 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import Paper from '@mui/material/Paper';
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableRow from '@mui/material/TableRow';
-import Tooltip from '@mui/material/Tooltip';
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import MUIDataTable from 'mui-datatables';
 import Configurations from 'Config';
 import InfoIcon from '@mui/icons-material/Info';
-import UserIcon from '@mui/icons-material/Person';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
@@ -73,7 +68,6 @@ const classes = {
     titleWrapper: `${PREFIX}-titleWrapper`,
     typography: `${PREFIX}-typography`,
     root: `${PREFIX}-root`,
-    InfoToolTip: `${PREFIX}-InfoToolTip`,
     subscriberHeader: `${PREFIX}-subscriberHeader`
 };
 
@@ -98,15 +92,6 @@ const Root = styled('div')((
         alignItems: 'center',
         borderBottom: '2px solid #40E0D0',
         textAlign: 'center',
-    },
-
-    [`& .${classes.table}`]: {
-        '& td': {
-            fontSize: theme.typography.fontSize,
-        },
-        '& th': {
-            fontSize: theme.typography.fontSize * 1.2,
-        },
     },
 
     [`& .${classes.searchDiv}`]: {
@@ -189,22 +174,20 @@ const Root = styled('div')((
         flexGrow: 1,
     },
 
-    [`& .${classes.InfoToolTip}`]: {
-        backgroundColor: theme.custom.disableColor,
-        color: theme.palette.getContrastText(theme.custom.disableColor),
-        fontSize: theme.typography.fontSize,
-        fontWeight: theme.typography.h6.fontWeight,
-        border: 'solid 1px ' + theme.palette.grey,
-        borderRadius: theme.shape.borderRadius,
-        padding: theme.spacing(2),
-    },
-
     [`& .${classes.subscriberHeader}`]: {
         fontSize: theme.typography.h6.fontSize,
         color: theme.typography.h6.color,
         fontWeight: theme.typography.h6.fontWeight,
     }
 }));
+
+const CustomTooltip = styled(({ className, ...props }) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+))({
+    [`& .${tooltipClasses.tooltip}`]: {
+        maxWidth: 200,
+    },
+});
 
 const subscriptionStatus = {
     BLOCKED: 'BLOCKED',
@@ -301,6 +284,7 @@ class SubscriptionsTable extends Component {
     constructor(props) {
         super(props);
         this.api = props.api;
+        this.apiClient = new API();
         this.state = {
             subscriptions: null,
             page: 0,
@@ -534,8 +518,8 @@ class SubscriptionsTable extends Component {
      * @memberof SubscriptionsTable
      */
     blockSubscription(subscriptionId) {
+        const api = this.apiClient;
         const { intl } = this.props;
-        const api = new API();
         const promisedSubscriptionUpdate = api.blockSubscriptions(subscriptionId, subscriptionStatus.BLOCKED);
         promisedSubscriptionUpdate
             .then(() => {
@@ -565,8 +549,8 @@ class SubscriptionsTable extends Component {
      * @memberof SubscriptionsTable
      */
     blockProductionOnly(subscriptionId) {
+        const api = this.apiClient;
         const { intl } = this.props;
-        const api = new API();
         const promisedSubscriptionUpdate = api.blockSubscriptions(subscriptionId, subscriptionStatus.PROD_BLOCKED);
         promisedSubscriptionUpdate
             .then(() => {
@@ -596,8 +580,8 @@ class SubscriptionsTable extends Component {
      * @memberof SubscriptionsTable
      */
     unblockSubscription(subscriptionId) {
+        const api = this.apiClient;
         const { intl } = this.props;
-        const api = new API();
         const promisedSubscriptionUpdate = api.unblockSubscriptions(subscriptionId);
         promisedSubscriptionUpdate
             .then(() => {
@@ -626,7 +610,7 @@ class SubscriptionsTable extends Component {
      * @memberof SubscriptionsTable
      */
     fetchSubscriptionData() {
-        const api = new API();
+        const api = this.apiClient;
         const { page, rowsPerPage, searchQuery } = this.state;
         const { intl } = this.props;
         const { maxSubscriptionLimit } = Configurations.apis;
@@ -676,9 +660,9 @@ class SubscriptionsTable extends Component {
      * @memberof SubscriptionsTable
      */
     fetchAllSubscriberClaims() {
+        const api = this.apiClient;
         const { subscriptions, subscriberClaims } = this.state;
         const { intl } = this.props;
-        const api = new API();
 
         this.setState({ loadingContactInfo: true });
 
@@ -777,6 +761,7 @@ class SubscriptionsTable extends Component {
      * @memberof SubscriptionsTable
      */
     fetchSubscriberClaims(subscriptionId) {
+        const api = this.apiClient;
         const { subscriberClaims, loadingClaims } = this.state;
         const { intl } = this.props;
 
@@ -793,7 +778,6 @@ class SubscriptionsTable extends Component {
             },
         }));
 
-        const api = new API();
         const promisedInfo = api.getSubscriberInfo(subscriptionId);
         promisedInfo
             .then((resp) => {
@@ -881,32 +865,21 @@ class SubscriptionsTable extends Component {
         if (claimsObject) {
             return (
                 <div className={classes.root}>
-                    {claimsObject.name}
-                    <Grid container spacing={1}>
-                        <Grid item>
-                            <UserIcon color='primary' />
-                        </Grid>
-                        <Grid item>
-                            {claimsObject.name}
-                        </Grid>
-                    </Grid>
                     {claimsObject.claims && (
-                        <div>
-                            <Table className={classes.table}>
-                                <TableBody>
-                                    {claimsObject.claims.map((claim) => (
-                                        <TableRow hover>
-                                            <TableCell>{claim.name}</TableCell>
-                                            {claim.value ? (
-                                                <TableCell>{claim.value}</TableCell>
-                                            ) : (
-                                                <TableCell>Not Available</TableCell>
-                                            )}
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </div>
+                        <Box m={0.5}>
+                            {claimsObject.claims.map((claim) => (
+                                <Box display='flex' gap={4}>
+                                    <Box flexShrink={0}>
+                                        <Typography variant='caption' noWrap>{claim.name}</Typography>
+                                    </Box>
+                                    <Box flexGrow={1} textAlign='right'>
+                                        <Typography variant='caption' style={{ wordBreak: 'break-all' }}>
+                                            {claim.value || 'Not Available'}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            ))}
+                        </Box>
                     )}
                 </div>
             );
@@ -978,12 +951,9 @@ class SubscriptionsTable extends Component {
                                     <Box pr={1}>
                                         {subscriberName}
                                     </Box>
-                                    <Tooltip
+                                    <CustomTooltip
                                         interactive
                                         placement='top'
-                                        classes={{
-                                            tooltip: classes.InfoToolTip,
-                                        }}
                                         onOpen={() => this.fetchSubscriberClaims(subscriptionId)}
                                         title={(
                                             (<Root>
@@ -998,7 +968,7 @@ class SubscriptionsTable extends Component {
                                                 </Typography>
                                             </Grid>
                                         </Grid>
-                                    </Tooltip>
+                                    </CustomTooltip>
                                 </Box>
                             );
                         }
