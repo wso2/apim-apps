@@ -108,8 +108,35 @@ describe.skip('Publisher <HeaderSearch> component tests', () => {
         const autoSuggestProps = wrapper.find(Autosuggest).props();
         const firstSuggestion = autoSuggestProps.suggestions[0];
         autoSuggestProps.onSuggestionSelected({ key: 'Enter' }, { suggestion: firstSuggestion });
-        const expectedPath = firstSuggestion.type === 'API' ? `/apis/${firstSuggestion.id}/overview`
-            : `/apis/${firstSuggestion.apiUUID}/documents/${firstSuggestion.id}/details`;
+        let expectedPath;
+        switch (firstSuggestion.type) {
+            case 'API':
+                expectedPath = `/apis/${firstSuggestion.id}/overview`;
+                break;
+            case 'APIPRODUCT':
+                expectedPath = `/api-products/${firstSuggestion.id}/overview`;
+                break;
+            case 'MCP':
+                expectedPath = `/mcp-servers/${firstSuggestion.id}/overview`;
+                break;
+            case 'DEFINITION':
+                if (firstSuggestion.associatedType === 'API') {
+                    expectedPath = `/apis/${firstSuggestion.apiUUID}/api-definition`;
+                } else if (firstSuggestion.associatedType === 'MCP') {
+                    expectedPath = `/mcp-servers/${firstSuggestion.apiUUID}/api-definition`;
+                } else {
+                    expectedPath = `/api-products/${firstSuggestion.apiUUID}/api-definition`;
+                }
+                break;
+            default:
+                if (firstSuggestion.associatedType === 'API') {
+                    expectedPath = `/apis/${firstSuggestion.apiUUID}/documents/${firstSuggestion.id}/details`;
+                } else if (firstSuggestion.associatedType === 'MCP') {
+                    expectedPath = `/mcp-servers/${firstSuggestion.apiUUID}/documents/${firstSuggestion.id}/details`;
+                } else {
+                    expectedPath = `/api-products/${firstSuggestion.apiUUID}/documents/${firstSuggestion.id}/details`;
+                }
+        }
         expect(wrapper.find('HeaderSearch').props().history.push.mock.calls[0][0]).toEqual(expectedPath);
     });
     test.skip('Search results needs to be wiped out when search query is erased', async () => {
