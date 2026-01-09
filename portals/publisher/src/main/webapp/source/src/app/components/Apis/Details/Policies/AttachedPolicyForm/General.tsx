@@ -46,6 +46,8 @@ import ModelRoundRobin from '../CustomPolicies/ModelRoundRobin';
 import ModelWeightedRoundRobin from '../CustomPolicies/ModelWeightedRoundRobin';
 import ModelFailover from '../CustomPolicies/ModelFailover';
 import SemanticRouting from '../CustomPolicies/SemanticRouting';
+import ModelGuardrail from '../CustomPolicies/ModelGuardrail';
+import IntelligentModelRouting from '../CustomPolicies/IntelligentModelRouting';
 import { Editor } from '@monaco-editor/react';
 
 const PREFIX = 'General';
@@ -132,13 +134,16 @@ const General: FC<GeneralProps> = ({
     const [isManual, setManual] = useState(false);
     const [manualPolicyConfig, setManualPolicyConfig] = useState<string>('');
     const [secretVisibility, setSecretVisibility] = useState<Record<string, boolean>>({});
+    const [providerNotConfigured, setProviderNotConfigured] = useState<boolean>(false);
 
     useEffect(() => {
         if (
             (policyObj && policyObj.name === 'modelRoundRobin') ||
             (policyObj && policyObj.name === 'modelWeightedRoundRobin') ||
             (policyObj && policyObj.name === 'modelFailover') ||
-            (policyObj && policyObj.name === 'semanticRouting')
+            (policyObj && policyObj.name === 'semanticRouting') ||
+            (policyObj && policyObj.name === 'modelGuardrail') ||
+            (policyObj && policyObj.name === 'intelligentModelRouting')
         ) {
             setManual(true);
         }
@@ -252,7 +257,7 @@ const General: FC<GeneralProps> = ({
             }
         });
 
-        if (policyObj.name === 'modelRoundRobin' || policyObj.name === 'modelWeightedRoundRobin' || policyObj.name === 'modelFailover' || policyObj.name === 'semanticRouting') {
+        if (policyObj.name === 'modelRoundRobin' || policyObj.name === 'modelWeightedRoundRobin' || policyObj.name === 'modelFailover' || policyObj.name === 'semanticRouting' || policyObj.name === 'modelGuardrail' || policyObj.name === 'intelligentModelRouting') {
             updateCandidates[policySpec.policyAttributes[0].name] = manualPolicyConfig;
         }
 
@@ -490,6 +495,20 @@ const General: FC<GeneralProps> = ({
                         <SemanticRouting
                             setManualPolicyConfig={setManualPolicyConfig}
                             manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
+                            setProviderNotConfigured={setProviderNotConfigured}
+                        />
+                    )}
+                    {(isManual && policyObj.name === 'modelGuardrail') && (
+                        <ModelGuardrail
+                            setManualPolicyConfig={setManualPolicyConfig}
+                            manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
+                        />
+                    )}
+                    {(isManual && policyObj.name === 'intelligentModelRouting') && (
+                        <IntelligentModelRouting
+                            setManualPolicyConfig={setManualPolicyConfig}
+                            manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
+                            setProviderNotConfigured={setProviderNotConfigured}
                         />
                     )}
                     {!isManual && policySpec.policyAttributes && policySpec.policyAttributes.map((spec: PolicySpecAttribute) => (
@@ -726,7 +745,7 @@ const General: FC<GeneralProps> = ({
                             type='submit'
                             color='primary'
                             data-testid='policy-attached-details-save'
-                            disabled={!isManual && (isSaveDisabled() || formHasErrors() || saving)}
+                            disabled={providerNotConfigured || (!isManual && (isSaveDisabled() || formHasErrors() || saving))}
                         >
                             {saving
                                 ? <>

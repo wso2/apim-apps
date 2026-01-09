@@ -44,16 +44,15 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import Chip from '@mui/material/Chip';
-import Box from '@mui/material/Box';
-import ChipInput from 'AppComponents/Shared/ChipInput';
 import LaunchIcon from '@mui/icons-material/Launch';
+// import Chip from '@mui/material/Chip';
+// import Box from '@mui/material/Box';
 
-interface RoutingConfig {
+interface RoutingRuleConfig {
+    name: string;
+    context: string;
     model: string;
     endpointId: string;
-    utterances: string[];
-    scorethreshold: string;
 }
 
 interface DefaultModelConfig {
@@ -61,22 +60,22 @@ interface DefaultModelConfig {
     endpointId: string;
 }
 
+interface ContentPathConfig {
+    path: string;
+}
+
 interface EnvironmentConfig {
     defaultModel: DefaultModelConfig;
-    routes: RoutingConfig[];
+    routingrules: RoutingRuleConfig[];
 }
 
-interface SemanticRoutingConfig {
+interface IntelligentModelRoutingConfig {
     production: EnvironmentConfig;
     sandbox: EnvironmentConfig;
-    contentpath?: string;
+    contentPath: ContentPathConfig;
 }
 
-interface PathConfig {
-    contentpath: string;
-}
-
-interface SemanticRoutingProps {
+interface IntelligentModelRoutingProps {
     setManualPolicyConfig: React.Dispatch<React.SetStateAction<string>>;
     manualPolicyConfig: string;
     setProviderNotConfigured: React.Dispatch<React.SetStateAction<boolean>>;
@@ -100,24 +99,24 @@ const StyledAccordionSummary = styled(AccordionSummary)(() => ({
     }
 }));
 
-const SemanticRouting: FC<SemanticRoutingProps> = ({
+const IntelligentModelRouting: FC<IntelligentModelRoutingProps> = ({
     setManualPolicyConfig,
     manualPolicyConfig,
     setProviderNotConfigured,
 }) => {
     const [apiFromContext] = useAPI();
     const { data: settings }: any = usePublisherSettings();
-    const embeddingProviderConfigured = settings?.aiApiConfiguration?.embeddingProviderConfigured;
-    const [config, setConfig] = useState<SemanticRoutingConfig>({
+    const llmProviderConfigured = settings?.aiApiConfiguration?.llmProviderConfigured;
+    const [config, setConfig] = useState<IntelligentModelRoutingConfig>({
         production: {
             defaultModel: { model: '', endpointId: '' },
-            routes: [],
+            routingrules: [],
         },
         sandbox: {
             defaultModel: { model: '', endpointId: '' },
-            routes: [],
+            routingrules: [],
         },
-        contentpath: '',
+        contentPath: { path: '' },
     });
     const [modelList, setModelList] = useState<ModelVendor[]>([]);
     const [productionEndpoints, setProductionEndpoints] = useState<Endpoint[]>([]);
@@ -126,24 +125,24 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
     const [productionEnabled, setProductionEnabled] = useState<boolean>(false);
     const [sandboxEnabled, setSandboxEnabled] = useState<boolean>(false);
 
-    // Check if embedding provider is configured and update parent component
+    // Check if LLM provider is configured and update parent component
     useEffect(() => {
-        if (settings && !embeddingProviderConfigured) {
+        if (settings && !llmProviderConfigured) {
             setProviderNotConfigured(true);
         } else {
             setProviderNotConfigured(false);
         }
-    }, [settings, embeddingProviderConfigured, setProviderNotConfigured]);
+    }, [settings, llmProviderConfigured, setProviderNotConfigured]);
 
-    const embeddingProviderNotConfiguredWarning = (
+    const llmProviderNotConfiguredWarning = (
         <FormattedMessage
-            id='Apis.Details.Policies.CustomPolicies.SemanticRouting.warning.embeddingProviderNotConfigured'
-            defaultMessage={'Configure embedding provider in deployment.toml to enable Semantic Routing. '
+            id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.warning.llmProviderNotConfigured'
+            defaultMessage={'Configure Classifier LLM provider in deployment.toml to enable Intelligent Model Routing. '
                 + 'For more information, refer to {docLink}'}
             values={{
                 docLink: (
                     <a
-                        id='semantic-routing-doc-link'
+                        id='intelligent-model-routing-doc-link'
                         href='https://apim.docs.wso2.com/en/latest/deploy-and-publish/deploy-on-gateway/choreo-connect/deploy-api/deploy-rest-api-in-choreo-connect/'
                         target='_blank'
                         rel='noopener noreferrer'
@@ -229,150 +228,130 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
             try {
                 const parsedConfig = JSON.parse(manualPolicyConfig.replace(/\'/g, "'").replace(/'/g, '"'));
                 
-                // Handle path - backend expects single object with contentpath field
-                let contentpath = '';
-                if (parsedConfig.path && typeof parsedConfig.path === 'object') {
-                    contentpath = parsedConfig.path.contentpath || '';
-                }
-                
                 const productionConfig: EnvironmentConfig = {
                     defaultModel: parsedConfig.production?.defaultModel || { model: '', endpointId: '' },
-                    routes: parsedConfig.production?.routes || [],
+                    routingrules: parsedConfig.production?.routingrules || [],
                 };
                 
                 const sandboxConfig: EnvironmentConfig = {
                     defaultModel: parsedConfig.sandbox?.defaultModel || { model: '', endpointId: '' },
-                    routes: parsedConfig.sandbox?.routes || [],
+                    routingrules: parsedConfig.sandbox?.routingrules || [],
                 };
                 
                 setConfig({
                     production: productionConfig,
                     sandbox: sandboxConfig,
-                    contentpath: contentpath,
+                    contentPath: parsedConfig.contentPath || { path: '' },
                 });
                 
-                const hasProductionConfig = parsedConfig.production && parsedConfig.production.routes && parsedConfig.production.routes.length > 0;
-                const hasSandboxConfig = parsedConfig.sandbox && parsedConfig.sandbox.routes && parsedConfig.sandbox.routes.length > 0;
+                const hasProductionConfig = parsedConfig.production && parsedConfig.production.routingrules && parsedConfig.production.routingrules.length > 0;
+                const hasSandboxConfig = parsedConfig.sandbox && parsedConfig.sandbox.routingrules && parsedConfig.sandbox.routingrules.length > 0;
                 
                 setProductionEnabled(hasProductionConfig);
                 setSandboxEnabled(hasSandboxConfig);
             } catch (error) {
                 console.error('Error parsing manual policy config:', error);
-                // Set default empty config if parsing fails
                 setConfig({
                     production: {
                         defaultModel: { model: '', endpointId: '' },
-                        routes: [],
+                        routingrules: [],
                     },
                     sandbox: {
                         defaultModel: { model: '', endpointId: '' },
-                        routes: [],
+                        routingrules: [],
                     },
-                    contentpath: '',
+                    contentPath: { path: '' },
                 });
             }
         }
     }, [manualPolicyConfig]);
 
     useEffect(() => {
-        // Convert to backend format with production/sandbox each having defaultModel and routes
-        const configForBackend: any = {
-            production: {
-                defaultModel: config.production.defaultModel,
-                routes: config.production.routes,
-            },
-            sandbox: {
-                defaultModel: config.sandbox.defaultModel,
-                routes: config.sandbox.routes,
-            },
+        const configForBackend = {
+            production: config.production,
+            sandbox: config.sandbox,
+            contentPath: config.contentPath,
         };
         
-        // Add path as single object (not array) - backend expects this format
-        if (config.contentpath && config.contentpath.trim() !== '') {
-            configForBackend.path = { contentpath: config.contentpath.trim() };
-        }
-        
-        // Convert to string format expected by backend
-        // Backend expects single quotes for the string representation
         const jsonString = JSON.stringify(configForBackend);
         const formattedString = jsonString.replace(/"/g, "'");
         setManualPolicyConfig(formattedString);
     }, [config, setManualPolicyConfig]);
 
-    const handleAddProductionRoute = () => {
-        const newRoute: RoutingConfig = {
+    const handleAddProductionRule = () => {
+        const newRule: RoutingRuleConfig = {
+            name: '',
+            context: '',
             model: '',
             endpointId: '',
-            utterances: [],
-            scorethreshold: '0.8',
         };
 
         setConfig((prevConfig) => ({
             ...prevConfig,
             production: {
                 ...prevConfig.production,
-                routes: [...prevConfig.production.routes, newRoute],
+                routingrules: [...prevConfig.production.routingrules, newRule],
             },
         }));
     }
 
-    const handleProductionRouteUpdate = (index: number, field: keyof RoutingConfig, value: any) => {
+    const handleProductionRuleUpdate = (index: number, field: keyof RoutingRuleConfig, value: string) => {
         setConfig((prevConfig) => ({
             ...prevConfig,
             production: {
                 ...prevConfig.production,
-                routes: prevConfig.production.routes.map((item, i) => 
+                routingrules: prevConfig.production.routingrules.map((item, i) => 
                     i === index ? { ...item, [field]: value } : item
                 ),
             },
         }));
     }
 
-    const handleProductionRouteDelete = (index: number) => {
+    const handleProductionRuleDelete = (index: number) => {
         setConfig((prevConfig) => ({
             ...prevConfig,
             production: {
                 ...prevConfig.production,
-                routes: prevConfig.production.routes.filter((item, i) => i !== index),
+                routingrules: prevConfig.production.routingrules.filter((item, i) => i !== index),
             },
         }));
     }
 
-    const handleAddSandboxRoute = () => {
-        const newRoute: RoutingConfig = {
+    const handleAddSandboxRule = () => {
+        const newRule: RoutingRuleConfig = {
+            name: '',
+            context: '',
             model: '',
             endpointId: '',
-            utterances: [],
-            scorethreshold: '0.8',
         };
 
         setConfig((prevConfig) => ({
             ...prevConfig,
             sandbox: {
                 ...prevConfig.sandbox,
-                routes: [...prevConfig.sandbox.routes, newRoute],
+                routingrules: [...prevConfig.sandbox.routingrules, newRule],
             },
         }));
     }
 
-    const handleSandboxRouteUpdate = (index: number, field: keyof RoutingConfig, value: any) => {
+    const handleSandboxRuleUpdate = (index: number, field: keyof RoutingRuleConfig, value: string) => {
         setConfig((prevConfig) => ({
             ...prevConfig,
             sandbox: {
                 ...prevConfig.sandbox,
-                routes: prevConfig.sandbox.routes.map((item, i) => 
+                routingrules: prevConfig.sandbox.routingrules.map((item, i) => 
                     i === index ? { ...item, [field]: value } : item
                 ),
             },
         }));
     }
 
-    const handleSandboxRouteDelete = (index: number) => {
+    const handleSandboxRuleDelete = (index: number) => {
         setConfig((prevConfig) => ({
             ...prevConfig,
             sandbox: {
                 ...prevConfig.sandbox,
-                routes: prevConfig.sandbox.routes.filter((item, i) => i !== index),
+                routingrules: prevConfig.sandbox.routingrules.filter((item, i) => i !== index),
             },
         }));
     }
@@ -390,15 +369,10 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
         }));
     }
 
-    const normalizeContentPath = (path: string): string => {
-        return path.replace(/'/g, '"');
-    }
-
     const handleContentPathUpdate = (value: string) => {
-        const normalizedPath = normalizeContentPath(value);
         setConfig((prevConfig) => ({
             ...prevConfig,
-            contentpath: normalizedPath,
+            contentPath: { path: value },
         }));
     }
 
@@ -420,7 +394,7 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                 ...prev,
                 production: {
                     defaultModel: { model: '', endpointId: '' },
-                    routes: [],
+                    routingrules: [],
                 },
             }));
         }
@@ -433,7 +407,7 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                 ...prev,
                 sandbox: {
                     defaultModel: { model: '', endpointId: '' },
-                    routes: [],
+                    routingrules: [],
                 },
             }));
         }
@@ -447,52 +421,20 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
         }
     };
 
-    const handleUtteranceAdd = (env: 'production' | 'sandbox', index: number, value: string) => {
-        if (value.trim() === '') return;
-        
-        if (env === 'production') {
-            const currentUtterances = config.production.routes[index].utterances;
-            handleProductionRouteUpdate(index, 'utterances', [...currentUtterances, value.trim()]);
-        } else {
-            const currentUtterances = config.sandbox.routes[index].utterances;
-            handleSandboxRouteUpdate(index, 'utterances', [...currentUtterances, value.trim()]);
-        }
-    };
-
-    const handleUtteranceDelete = (env: 'production' | 'sandbox', routeIndex: number, utteranceIndex: number) => {
-        if (env === 'production') {
-            const currentUtterances = config.production.routes[routeIndex].utterances;
-            handleProductionRouteUpdate(
-                routeIndex, 
-                'utterances', 
-                currentUtterances.filter((_, i) => i !== utteranceIndex)
-            );
-        } else {
-            const currentUtterances = config.sandbox.routes[routeIndex].utterances;
-            handleSandboxRouteUpdate(
-                routeIndex, 
-                'utterances', 
-                currentUtterances.filter((_, i) => i !== utteranceIndex)
-            );
-        }
-    };
 
     if (loading) {
         return <Progress per={90} message='Loading Endpoints ...' />;
     }
 
 
-    const renderDefaultModelCard = (env: 'production' | 'sandbox', endpoints: Endpoint[]) => {
-        const envConfig = config[env];
-        
+    const renderContentPath = () => {
         return (
             <Paper elevation={2} sx={{ padding: 2, marginTop: 2, marginBottom: 1 }}>
                 <Grid container spacing={2}>
-                    {/* Content Path Section */}
                     <Grid item xs={12}>
                         <Typography variant='subtitle2' sx={{ mb: 1 }}>
                             <FormattedMessage
-                                id='Apis.Details.Policies.CustomPolicies.SemanticRouting.contentpath.title'
+                                id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.contentpath.title'
                                 defaultMessage='Content Path'
                             />
                         </Typography>
@@ -503,22 +445,31 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                             fullWidth
                             label={
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.CustomPolicies.SemanticRouting.contentpath'
+                                    id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.contentpath'
                                     defaultMessage='Content Path'
                                 />
                             }
-                            value={config.contentpath || ''}
+                            value={config.contentPath.path || ''}
                             onChange={(e) => handleContentPathUpdate(e.target.value)}
-                            placeholder="$.messages[?(@.role=='user')].content"
-                            helperText="Enter JSONPath expression (e.g., $.messages[?(@.role=='user')].content)"
+                            placeholder="$.contents[*].parts[*].text"
+                            helperText="Enter JSONPath expression (e.g., $.contents[*].parts[*].text)"
                         />
                     </Grid>
-                    
-                    {/* Default Model Section */}
-                    <Grid item xs={12} sx={{ mt: 2 }}>
+                </Grid>
+            </Paper>
+        );
+    };
+
+    const renderDefaultModel = (env: 'production' | 'sandbox', endpoints: Endpoint[]) => {
+        const envConfig = config[env];
+        
+        return (
+            <Paper elevation={2} sx={{ padding: 2, marginTop: 2, marginBottom: 1 }}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
                         <Typography variant='subtitle2' sx={{ mb: 1 }}>
                             <FormattedMessage
-                                id='Apis.Details.Policies.CustomPolicies.SemanticRouting.defaultmodel.title'
+                                id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.defaultmodel.title'
                                 defaultMessage='Default Model'
                             />
                         </Typography>
@@ -527,7 +478,7 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                         <FormControl size='small' fullWidth>
                             <InputLabel id={`default-model-label-${env}`}>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.CustomPolicies.SemanticRouting.select.model'
+                                    id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.select.model'
                                     defaultMessage='Model'
                                 />
                             </InputLabel>
@@ -552,7 +503,7 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                         <FormControl size='small' fullWidth>
                             <InputLabel id={`default-endpoint-label-${env}`}>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.CustomPolicies.SemanticRouting.select.endpoint'
+                                    id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.select.endpoint'
                                     defaultMessage='Endpoint'
                                 />
                             </InputLabel>
@@ -576,38 +527,42 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
         );
     };
 
-    const renderRoutingCard = (
-        route: RoutingConfig,
+    const renderRuleCard = (
+        rule: RoutingRuleConfig,
         env: 'production' | 'sandbox',
         index: number,
         endpoints: Endpoint[],
         onDelete?: () => void
     ) => {
+        const handleNameChange = (value: string) => {
+            if (env === 'production') {
+                handleProductionRuleUpdate(index, 'name', value);
+            } else {
+                handleSandboxRuleUpdate(index, 'name', value);
+            }
+        };
+
+        const handleContextChange = (value: string) => {
+            if (env === 'production') {
+                handleProductionRuleUpdate(index, 'context', value);
+            } else {
+                handleSandboxRuleUpdate(index, 'context', value);
+            }
+        };
+
         const handleModelChange = (value: string) => {
             if (env === 'production') {
-                handleProductionRouteUpdate(index, 'model', value);
+                handleProductionRuleUpdate(index, 'model', value);
             } else {
-                handleSandboxRouteUpdate(index, 'model', value);
+                handleSandboxRuleUpdate(index, 'model', value);
             }
         };
 
         const handleEndpointChange = (value: string) => {
             if (env === 'production') {
-                handleProductionRouteUpdate(index, 'endpointId', value);
+                handleProductionRuleUpdate(index, 'endpointId', value);
             } else {
-                handleSandboxRouteUpdate(index, 'endpointId', value);
-            }
-        };
-
-        const handleThresholdChange = (value: string) => {
-            // Validate that the value is between 0 and 1
-            const numValue = parseFloat(value);
-            if (value === '' || (!isNaN(numValue) && numValue >= 0 && numValue <= 1)) {
-                if (env === 'production') {
-                    handleProductionRouteUpdate(index, 'scorethreshold', value);
-                } else {
-                    handleSandboxRouteUpdate(index, 'scorethreshold', value);
-                }
+                handleSandboxRuleUpdate(index, 'endpointId', value);
             }
         };
 
@@ -618,14 +573,14 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                         <FormControl size='small' fullWidth>
                             <InputLabel id={`model-label-${env}-${index}`}>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.CustomPolicies.SemanticRouting.select.model'
+                                    id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.select.model'
                                     defaultMessage='Model'
                                 />
                             </InputLabel>
                             <Select
                                 labelId={`model-label-${env}-${index}`}
                                 id={`model-${env}-${index}`}
-                                value={route.model}
+                                value={rule.model}
                                 label='Model'
                                 onChange={(e) => handleModelChange(e.target.value as string)}
                             >
@@ -643,14 +598,14 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                         <FormControl size='small' fullWidth>
                             <InputLabel id={`endpoint-label-${env}-${index}`}>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.CustomPolicies.SemanticRouting.select.endpoint'
+                                    id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.select.endpoint'
                                     defaultMessage='Endpoint'
                                 />
                             </InputLabel>
                             <Select
                                 labelId={`endpoint-label-${env}-${index}`}
                                 id={`endpoint-${env}-${index}`}
-                                value={route.endpointId}
+                                value={rule.endpointId}
                                 label='Endpoint'
                                 onChange={(e) => handleEndpointChange(e.target.value as string)}
                             >
@@ -666,64 +621,33 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                         <TextField
                             size='small'
                             fullWidth
-                            type='number'
                             label={
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.CustomPolicies.SemanticRouting.scorethreshold'
-                                    defaultMessage='Score Threshold (0-1)'
+                                    id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.rule.name'
+                                    defaultMessage='Rule Name'
                                 />
                             }
-                            value={route.scorethreshold}
-                            onChange={(e) => handleThresholdChange(e.target.value)}
-                            inputProps={{
-                                step: 0.1,
-                                min: 0,
-                                max: 1,
-                            }}
-                            helperText='Enter a value between 0 and 1 (e.g., 0.1, 0.7, 0.9)'
+                            value={rule.name}
+                            onChange={(e) => handleNameChange(e.target.value)}
+                            placeholder='e.g., code-generation'
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <ChipInput
-                            fullWidth
-                            variant='outlined'
+                        <TextField
                             size='small'
-                            id={`utterances-${env}-${index}`}
+                            fullWidth
+                            multiline
+                            rows={2}
                             label={
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.CustomPolicies.SemanticRouting.utterances'
-                                    defaultMessage='Utterances'
+                                    id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.rule.context'
+                                    defaultMessage='Context'
                                 />
                             }
-                            value={route.utterances}
-                            onAdd={(utterance: string) => handleUtteranceAdd(env, index, utterance)}
-                            onDelete={(utterance: string) => {
-                                const utteranceIndex = route.utterances.indexOf(utterance);
-                                if (utteranceIndex !== -1) {
-                                    handleUtteranceDelete(env, index, utteranceIndex);
-                                }
-                            }}
-                            helperText={
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.CustomPolicies.SemanticRouting.utterances.helper'
-                                    defaultMessage='Enter keywords to match similarity. Press Enter to add.'
-                                />
-                            }
-                            placeholder='Type utterance and press Enter'
-                            chipRenderer={({ value, text, isFocused, isDisabled, isReadOnly, handleClick, handleDelete, className }: any, key: number) => (
-                                <Chip
-                                    key={key}
-                                    className={className}
-                                    style={{
-                                        pointerEvents: isDisabled || isReadOnly ? 'none' : undefined,
-                                        marginRight: '8px',
-                                    }}
-                                    onClick={handleClick}
-                                    onDelete={handleDelete}
-                                    label={text}
-                                    size='small'
-                                />
-                            )}
+                            value={rule.context}
+                            onChange={(e) => handleContextChange(e.target.value)}
+                            placeholder='Describe the context for this rule'
+                            helperText='Provide a description of when this rule should be used'
                         />
                     </Grid>
                 </Grid>
@@ -734,12 +658,12 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                         sx={{
                             display: 'flex',
                             justifyContent: 'flex-end',
-                            mt: 2,
+                            mt: 1,
                         }}
                     >
                         <IconButton
                             color='error'
-                            data-testid='route-delete'
+                            data-testid='rule-delete'
                             onClick={onDelete}
                             size="small"
                         >
@@ -753,10 +677,10 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
 
     return (
         <>
-            {!embeddingProviderConfigured && (
+            {!llmProviderConfigured && (
                 <Grid item xs={12}>
                     <Alert severity='warning' sx={{ mb: 2 }}>
-                        {embeddingProviderNotConfiguredWarning}
+                        {llmProviderNotConfiguredWarning}
                     </Alert>
                 </Grid>
             )}
@@ -771,7 +695,7 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                     >
                         <Typography variant='subtitle2' color='textPrimary'>
                             <FormattedMessage
-                                id='Apis.Details.Policies.CustomPolicies.SemanticRouting.accordion.production'
+                                id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.accordion.production'
                                 defaultMessage='Production'
                             />
                         </Typography>
@@ -791,7 +715,7 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                         {modelList.length === 0 ? (
                             <Alert severity="warning" sx={{ mb: 2 }}>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.CustomPolicies.SemanticRouting.no.models'
+                                    id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.no.models'
                                     defaultMessage='No models available. Please configure models for the LLM provider.'
                                 />
                             </Alert>
@@ -800,7 +724,7 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                                 {productionEndpoints.length === 0 && (
                                     <Alert severity="warning" sx={{ mb: 2 }}>
                                         <FormattedMessage
-                                            id='Apis.Details.Policies.CustomPolicies.SemanticRouting.no.production.endpoints'
+                                            id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.no.production.endpoints'
                                             defaultMessage='No production endpoints available. Please {configureLink} first.'
                                             values={{
                                                 configureLink: (
@@ -812,36 +736,36 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                                         />
                                     </Alert>
                                 )}
-                                <Typography variant='subtitle2' sx={{ mb: 1 }}>
+                                {renderDefaultModel('production', productionEndpoints)}
+                                <Typography variant='subtitle2' sx={{ mb: 1, mt: 2 }}>
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.CustomPolicies.SemanticRouting.routing.routes'
-                                        defaultMessage='Routing rule'
+                                        id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.routingrules'
+                                        defaultMessage='Routing Rules'
                                     />
                                 </Typography>
                                 <Button
                                     variant='outlined'
                                     color='primary'
-                                    data-testid='add-production-route'
+                                    data-testid='add-production-rule'
                                     sx={{ ml: 1, mb: 2 }}
-                                    onClick={handleAddProductionRoute}
+                                    onClick={handleAddProductionRule}
                                     disabled={isAddRouteDisabled('production')}
                                 >
                                     <AddCircle sx={{ mr: 1 }} />
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.CustomPolicies.SemanticRouting.add.route'
-                                        defaultMessage='Add rule'
+                                        id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.add.rule'
+                                        defaultMessage='Add Rule'
                                     />
                                 </Button>
-                                {config.production.routes.map((route, index) => 
-                                    renderRoutingCard(
-                                        route, 
+                                {config.production.routingrules.map((rule, index) => 
+                                    renderRuleCard(
+                                        rule, 
                                         'production', 
                                         index, 
                                         productionEndpoints,
-                                        () => handleProductionRouteDelete(index)
+                                        () => handleProductionRuleDelete(index)
                                     )
                                 )}
-                                {renderDefaultModelCard('production', productionEndpoints)}
                             </>
                         )}
                     </AccordionDetails>
@@ -856,7 +780,7 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                     >
                         <Typography variant='subtitle2' color='textPrimary'>
                             <FormattedMessage
-                                id='Apis.Details.Policies.CustomPolicies.SemanticRouting.accordion.sandbox'
+                                id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.accordion.sandbox'
                                 defaultMessage='Sandbox'
                             />
                         </Typography>
@@ -876,7 +800,7 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                         {modelList.length === 0 ? (
                             <Alert severity="warning" sx={{ mb: 2 }}>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.CustomPolicies.SemanticRouting.no.models'
+                                    id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.no.models'
                                     defaultMessage='No models available. Please configure models for the LLM provider.'
                                 />
                             </Alert>
@@ -885,7 +809,7 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                                 {sandboxEndpoints.length === 0 && (
                                     <Alert severity="warning" sx={{ mb: 2 }}>
                                         <FormattedMessage
-                                            id='Apis.Details.Policies.CustomPolicies.SemanticRouting.no.sandbox.endpoints'
+                                            id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.no.sandbox.endpoints'
                                             defaultMessage='No sandbox endpoints available. Please {configureLink} first.'
                                             values={{
                                                 configureLink: (
@@ -897,43 +821,46 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                                         />
                                     </Alert>
                                 )}
-                                <Typography variant='subtitle2' sx={{ mb: 1 }}>
+                                {renderDefaultModel('sandbox', sandboxEndpoints)}
+                                <Typography variant='subtitle2' sx={{ mb: 1, mt: 2 }}>
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.CustomPolicies.SemanticRouting.routing.routes'
-                                        defaultMessage='Routing rule'
+                                        id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.routingrules'
+                                        defaultMessage='Routing Rules'
                                     />
                                 </Typography>
                                 <Button
                                     variant='outlined'
                                     color='primary'
-                                    data-testid='add-sandbox-route'
+                                    data-testid='add-sandbox-rule'
                                     sx={{ ml: 1, mb: 2 }}
-                                    onClick={handleAddSandboxRoute}
+                                    onClick={handleAddSandboxRule}
                                     disabled={isAddRouteDisabled('sandbox')}
                                 >
                                     <AddCircle sx={{ mr: 1 }} />
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.CustomPolicies.SemanticRouting.add.route'
-                                        defaultMessage='Add rule'
+                                        id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.add.rule'
+                                        defaultMessage='Add Rule'
                                     />
                                 </Button>
-                                {config.sandbox.routes.map((route, index) => 
-                                    renderRoutingCard(
-                                        route, 
+                                {config.sandbox.routingrules.map((rule, index) => 
+                                    renderRuleCard(
+                                        rule, 
                                         'sandbox', 
                                         index, 
                                         sandboxEndpoints,
-                                        () => handleSandboxRouteDelete(index)
+                                        () => handleSandboxRuleDelete(index)
                                     )
                                 )}
-                                {renderDefaultModelCard('sandbox', sandboxEndpoints)}
                             </>
                         )}
                     </AccordionDetails>
                 </Accordion>
             </Grid>
+            <Grid item xs={12}>
+                {renderContentPath()}
+            </Grid>
         </>
     );
 }
 
-export default SemanticRouting;
+export default IntelligentModelRouting;
