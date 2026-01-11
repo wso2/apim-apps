@@ -188,6 +188,7 @@ function TryOutController(props) {
     const [showMoreGWUrls, setShowMoreGWUrls] = useState(false);
     const [tokenValue, setTokenValue] = useState('');
     const [consumerSecret, setConsumerSecret] = useState('');
+    const [showSecret, setShowSecret] = useState(false);
     const apiID = api.id;
     const restApi = new Api();
     const user = AuthManager.getUser();
@@ -739,9 +740,6 @@ function TryOutController(props) {
                                 selectedKeyManager={selectedKeyManager}
                                 selectedKeyType={selectedKeyType}
                                 keyManagers={keyManagers}
-                                consumerSecret={consumerSecret}
-                                onConsumerSecretChange={setConsumerSecret}
-                                selectedKMObject={selectedKMObject}
                             />
                         )}
                     {subscriptions && subscriptions.length === 0 && securitySchemeType !== 'TEST'
@@ -840,7 +838,33 @@ function TryOutController(props) {
                                         </Grid>
                                     </>
                                 )}
-
+                                {isMultipleClientSecretsAllowed && securitySchemeType === 'OAUTH' && selectedKMObject
+                                && !selectedKMObject.enableTokenHashing && (
+                                    <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        margin="normal"
+                                        type={true ? "text" : "password"}
+                                        label={(
+                                            <FormattedMessage
+                                                id='Shared.AppsAndKeys.Tokens.consumer.secret'
+                                                defaultMessage='Consumer Secret'
+                                            />
+                                        )}
+                                        name="consumerSecret"
+                                        value={consumerSecret}
+                                        onChange={(e) => onConsumerSecretChange(e.target.value)}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton onClick={true} edge="end">
+                                                        {true ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                )}
                                 {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST' && (
                                     <TextField
                                         fullWidth
