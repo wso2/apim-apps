@@ -45,6 +45,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import Application from '../../../../data/Application';
 import DeleteSecretDialog from "./DeleteSecret";
 import SecretValueDialog from "./SecretValueDialog";
+import CONSTS from 'AppData/Constants';
 import Alert from 'AppComponents/Shared/Alert';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { maskSecret } from './util';
@@ -581,6 +582,7 @@ const SecretsTable = (props) => {
                             open={openNewDialog}
                             onClose={() => setOpenNewDialog(false)}
                             onCreate={handleCreateSecret}
+                            mode={CONSTS.SECRET_DIALOG_MODES.ADD_SECRET}
                         />
                         <SecretValueDialog
                             open={openSecretValueDialog}

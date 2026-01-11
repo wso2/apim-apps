@@ -31,6 +31,10 @@ const CONSTS = {
     },
     DEFAULT_SUBSCRIPTIONLESS_PLAN: 'DefaultSubscriptionless',
     DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN: 'AsyncDefaultSubscriptionless',
+    SECRET_DIALOG_MODES: {
+        KEY_GENERATION: 'KEY_GENERATION',
+        ADD_SECRET: 'ADD_SECRET',
+    },
 };
 
 export default CONSTS;
