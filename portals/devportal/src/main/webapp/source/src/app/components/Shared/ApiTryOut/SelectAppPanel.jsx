@@ -4,14 +4,8 @@ import { FormattedMessage } from 'react-intl';
 import {
     Grid, FormControl, FormControlLabel, RadioGroup, Radio, Typography,
 } from '@mui/material';
-import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import IconButton from '@mui/material/IconButton';
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { isMultipleClientSecretsEnabled } from 'AppComponents/Shared/AppsAndKeys/Secrets/util';
 
 const PREFIX = 'SelectAppPanel';
 
@@ -43,20 +37,12 @@ const Root = styled('div')((
 
 const SelectAppPanel = (props) => {
     let {
-        selectedApplication, selectedKeyType, consumerSecret, selectedKMObject,
+        selectedApplication, selectedKeyType,
     } = props;
 
     const {
-        subscriptions, handleChanges, allApplications, onConsumerSecretChange,
+        subscriptions, handleChanges, allApplications,
     } = props;
-
-    const [showSecret, setShowSecret] = useState(false);
-
-    const toggleVisibility = () => {
-        setShowSecret((prev) => !prev);
-    };
-
-    const isMultipleSecretsAllowed = isMultipleClientSecretsEnabled(selectedKMObject.additionalProperties);
 
     /**
      * This method is used to handle the updating of key generation
