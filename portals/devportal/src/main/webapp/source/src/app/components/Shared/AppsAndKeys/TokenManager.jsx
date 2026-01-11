@@ -32,6 +32,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import ImportExternalApp from 'AppComponents/Shared/AppsAndKeys/ImportExternalApp';
 import Application from 'AppData/Application';
 import AuthManager from 'AppData/AuthManager';
+import CONSTS from 'AppData/Constants';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import WarningIcon from '@mui/icons-material/Warning';
 import API from 'AppData/api';
@@ -60,6 +61,7 @@ import CleanKeys from './CleanKeys';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Settings from 'AppComponents/Shared/SettingsContext';
 import { isMultipleClientSecretsEnabled } from './Secrets/util';
+import NewSecretDialog from './Secrets/NewSecretDialog';
 import SecretValueDialog from "./Secrets/SecretValueDialog";
 import { isMultipleClientSecretsEnabled } from './Secrets/util';
 
@@ -247,6 +249,9 @@ class TokenManager extends React.Component {
             openSecretValueDialog: false,
             generatedSecret: null,
             isMultipleSecretsAllowed: false,
+            openSecretCreateDialog: false,
+            pendingGenerate: false,
+            secretMeta: null, // { description, expiresInSeconds }
         };
         this.keyStates = {
             COMPLETED: 'COMPLETED',
@@ -578,6 +583,54 @@ class TokenManager extends React.Component {
                     })}, ${error.response.body.message}`);
             }).finally(() => this.setState({ isLoading: false }));
     }
+
+    handleGenerateKeysClick = () => {
+        const { isMultipleSecretsAllowed } = this.state;
+
+        if (isMultipleSecretsAllowed) {
+            this.setState({
+                openSecretCreateDialog: true,
+                pendingGenerate: true,
+            });
+        } else {
+            this.generateKeys(); // existing flow unchanged
+        }
+    };
+
+    handleCloseSecretCreateDialog = () => {
+        this.setState({
+            openSecretCreateDialog: false,
+            pendingGenerate: false,
+            secretMeta: null,
+        });
+    };
+
+    handleCreateSecret = ({ description, expiresInSeconds }) => {
+        const { keyRequest } = this.state;
+
+        const updatedKeyRequest = {
+            ...keyRequest,
+            additionalProperties: {
+                ...keyRequest.additionalProperties,
+                client_secret_description: description,
+                ...(expiresInSeconds !== undefined && {
+                    client_secret_expires_in: expiresInSeconds,
+                }),
+            },
+        };
+
+        this.setState(
+            {
+                keyRequest: updatedKeyRequest,
+                openSecretCreateDialog: false,
+                pendingGenerate: false,
+                secretMeta: { description, expiresInSeconds },
+            },
+            () => {
+                this.generateKeys(); // 🔥 actual API call happens HERE
+            }
+        );
+    };
 
     /**
      *
@@ -1175,7 +1228,7 @@ class TokenManager extends React.Component {
                                                             variant='contained'
                                                             color='primary'
                                                             className={classes.button}
-                                                            onClick={key ? this.updateKeys : this.generateKeys}
+                                                            onClick={key ? this.updateKeys : this.handleGenerateKeysClick}
                                                             disabled={hasError || (isLoading || !keymanager.enableOAuthAppCreation)
                                                                 || (mode && mode === 'MAPPED')
                                                                 || (isKeyManagerAllowed
@@ -1213,6 +1266,12 @@ class TokenManager extends React.Component {
                                             </ScopeValidation>
                                         </div>
                                     </Box>
+                                    <NewSecretDialog
+                                        open={this.state.openSecretCreateDialog}
+                                        onClose={this.handleCloseSecretCreateDialog}
+                                        onCreate={this.handleCreateSecret}
+                                        mode={CONSTS.SECRET_DIALOG_MODES.KEY_GENERATION}
+                                    />
                                     <SecretValueDialog
                                         open={this.state.openSecretValueDialog}
                                         onClose={this.handleCloseSecretValueDialog}
