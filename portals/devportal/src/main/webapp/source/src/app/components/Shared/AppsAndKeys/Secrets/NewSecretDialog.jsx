@@ -9,17 +9,18 @@ import {
     Button,
     Box,
     Tooltip,
+    Alert,
 } from "@mui/material";
 import { useIntl, FormattedMessage } from 'react-intl';
+import CONSTS from 'AppData/Constants';
 
-const NewSecretDialog = ({ open, onClose, onCreate }) => {
+const NewSecretDialog = ({ open, onClose, onCreate, mode }) => {
     const initialFormState = {
         description: "",
         expiryOption: "30",
         customDays: "",
     };
 
-    const [value, setValue] = useState("");
     const [isValid, setIsValid] = useState(false);
     const [form, setForm] = useState(initialFormState);
     const [error, setError] = useState(false);
@@ -147,8 +148,28 @@ const NewSecretDialog = ({ open, onClose, onCreate }) => {
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-            <DialogTitle>Create New Secret</DialogTitle>
+            <DialogTitle>
+                {mode === CONSTS.SECRET_DIALOG_MODES.KEY_GENERATION ? (
+                    <FormattedMessage
+                        id="Shared.AppsAndKeys.Secrets.NewSecretDialog.title.keygen"
+                        defaultMessage="Generate Application Keys – Create Secret"
+                    />
+                ) : (
+                    <FormattedMessage
+                        id="Shared.AppsAndKeys.Secrets.NewSecretDialog.title.add"
+                        defaultMessage="Create New Secret"
+                    />
+                )}
+            </DialogTitle>
             <DialogContent>
+                {mode === CONSTS.SECRET_DIALOG_MODES.KEY_GENERATION && (
+                    <Alert severity="info" sx={{ mb: 2 }}>
+                        <FormattedMessage
+                            id="Shared.AppsAndKeys.Secrets.NewSecretDialog.context.keygen"
+                            defaultMessage="You can provide a description and expiry time for the consumer secret being generated during this process"
+                        />
+                    </Alert>
+                )}
                 <Box display="flex" flexDirection="column" gap={2} mt={1}>
                     <TextField
                         label={intl.formatMessage({
@@ -221,7 +242,7 @@ const NewSecretDialog = ({ open, onClose, onCreate }) => {
                         <TextField
                             label={intl.formatMessage({
                                 id: 'Shared.AppsAndKeys.Secrets.NewSecretDialog.custom.expiry.time.label',
-                                defaultMessage: 'Custom Expiry Time(days)',
+                                defaultMessage: 'Custom Expiry Time (days)',
                             })}
                             type="number"
                             fullWidth
