@@ -64,9 +64,9 @@ const SessionTimeout = () => {
             }
         };
 
-        document.onclick = resetIdleTimer;
-        document.onmousemove = resetIdleTimer;
-        document.onkeydown = resetIdleTimer;
+        document.addEventListener('click', resetIdleTimer);
+        document.addEventListener('mousemove', resetIdleTimer);
+        document.addEventListener('keydown', resetIdleTimer);
 
         const worker = new Worker(new URL('../webWorkers/timer.worker.js', import.meta.url));
         worker.onmessage = () => {
@@ -77,9 +77,9 @@ const SessionTimeout = () => {
 
         // Cleanup function to remove event listeners and terminate the worker
         return () => {
-            document.onclick = null;
-            document.onmousemove = null;
-            document.onkeydown = null;
+            document.removeEventListener('click', resetIdleTimer);
+            document.removeEventListener('mousemove', resetIdleTimer);
+            document.removeEventListener('keydown', resetIdleTimer);
             worker.terminate();
         };
     }, []);
