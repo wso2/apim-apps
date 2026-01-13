@@ -44,6 +44,7 @@ import Scopes from 'AppComponents/Scopes/Scopes';
 import Subscription from 'AppComponents/Subscription/Subscription';
 import CommonPolicies from 'AppComponents/CommonPolicies/CommonPolicies';
 import GlobalPolicies from 'AppComponents/GlobalPolicies/GlobalPolicies';
+import SessionTimeout from 'AppComponents/SessionTimeout';
 import merge from 'lodash/merge';
 import User from './data/User';
 import Utils from './data/Utils';
@@ -212,6 +213,7 @@ export default class Protected extends Component {
                     <AppErrorBoundary>
                         <QueryClientProviderX>
                             <Base user={user}>
+                                <SessionTimeout />
                                 <AppContextProvider value={{
                                     user,
                                     settings,
