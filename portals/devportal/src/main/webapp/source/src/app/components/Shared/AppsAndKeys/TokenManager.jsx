@@ -58,12 +58,10 @@ import TokenMangerSummary from './TokenManagerSummary';
 import Progress from '../Progress';
 import RemoveKeys from './RemoveKeys';
 import CleanKeys from './CleanKeys';
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Settings from 'AppComponents/Shared/SettingsContext';
 import { isMultipleClientSecretsEnabled } from './Secrets/util';
 import NewSecretDialog from './Secrets/NewSecretDialog';
 import SecretValueDialog from "./Secrets/SecretValueDialog";
-import { isMultipleClientSecretsEnabled } from './Secrets/util';
 
 const PREFIX = 'TokenManager';
 
