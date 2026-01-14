@@ -47,6 +47,8 @@ import Api from '../../../data/api';
 import Application from '../../../data/Application';
 import CONSTANTS from '../../../data/Constants';
 import SelectAppPanel from './SelectAppPanel';
+import { isMultipleClientSecretsEnabled } from 'AppComponents/Shared/AppsAndKeys/Secrets/util';
+import Alert from 'AppComponents/Shared/Alert';
 
 const PREFIX = 'TryOutController';
 
@@ -185,6 +187,8 @@ function TryOutController(props) {
     const [ksGenerated, setKSGenerated] = useState(false);
     const [showMoreGWUrls, setShowMoreGWUrls] = useState(false);
     const [tokenValue, setTokenValue] = useState('');
+    const [consumerSecret, setConsumerSecret] = useState('');
+    const [showSecret, setShowSecret] = useState(false);
     const apiID = api.id;
     const restApi = new Api();
     const user = AuthManager.getUser();
@@ -357,6 +361,9 @@ function TryOutController(props) {
                     selectedKeyType,
                     3600,
                     scopes,
+                    undefined,
+                    undefined,
+                    consumerSecret
                 ))
                 .then((response) => {
                     console.log('token generated successfully ' + response);
@@ -376,6 +383,10 @@ function TryOutController(props) {
                         setNotFound(true);
                     }
                     setIsUpdating(false);
+                    const { response } = error;
+                    if (response && response.body && response.body.message && response.body.description) {
+                        Alert.error(`${response.body.message}: ${response.body.description}`);
+                    }
                 });
         }
     }
@@ -589,6 +600,9 @@ function TryOutController(props) {
     const showSecurityType = isPublished || isPrototypedAPI;
 
     const authHeader = `${authorizationHeader}: ${prefix}`;
+
+    const isMultipleClientSecretsAllowed = isMultipleClientSecretsEnabled(selectedKMObject?.additionalProperties);
+    const enableGetTestKeyButton = !isMultipleClientSecretsAllowed || consumerSecret.trim() !== "";
 
     useEffect(() => {
         if (securitySchemeType === 'API-KEY') {
@@ -824,7 +838,33 @@ function TryOutController(props) {
                                         </Grid>
                                     </>
                                 )}
-
+                                {isMultipleClientSecretsAllowed && securitySchemeType === 'OAUTH' && selectedKMObject
+                                && !selectedKMObject.enableTokenHashing && (
+                                    <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        margin="normal"
+                                        type={true ? "text" : "password"}
+                                        label={(
+                                            <FormattedMessage
+                                                id='Shared.AppsAndKeys.Tokens.consumer.secret'
+                                                defaultMessage='Consumer Secret'
+                                            />
+                                        )}
+                                        name="consumerSecret"
+                                        value={consumerSecret}
+                                        onChange={(e) => onConsumerSecretChange(e.target.value)}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton onClick={true} edge="end">
+                                                        {true ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                    />
+                                )}
                                 {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST' && (
                                     <TextField
                                         fullWidth
@@ -886,7 +926,8 @@ function TryOutController(props) {
                                             className={classes.genKeyButton}
                                             disabled={!user
                                                 || (subscriptions && subscriptions.length === 0 && !isSubValidationDisabled)
-                                                || (!ksGenerated && securitySchemeType === 'OAUTH')}
+                                                || (!ksGenerated && securitySchemeType === 'OAUTH')
+                                                        || !enableGetTestKeyButton}
                                             id='gen-test-key'
                                         >
                                             {isUpdating && (
