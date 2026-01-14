@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2026, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -107,7 +107,7 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
 }) => {
     const [apiFromContext] = useAPI();
     const { data: settings }: any = usePublisherSettings();
-    const embeddingProviderConfigured = settings?.aiApiConfiguration?.embeddingProviderConfigured;
+    const embeddingProviderConfigured = settings?.aiApiPolicyConfiguration?.embeddingProviderConfigured;
     const [config, setConfig] = useState<SemanticRoutingConfig>({
         production: {
             defaultModel: { model: '', endpointId: '' },
@@ -710,6 +710,9 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                                 />
                             }
                             placeholder='Type utterance and press Enter'
+                            InputProps={{
+                                sx: { pt: 1 }
+                            }}
                             chipRenderer={({ value, text, isFocused, isDisabled, isReadOnly, handleClick, handleDelete, className }: any, key: number) => (
                                 <Chip
                                     key={key}
@@ -754,13 +757,13 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
     return (
         <>
             {!embeddingProviderConfigured && (
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{ pt: 1 }}>
                     <Alert severity='warning' sx={{ mb: 2 }}>
                         {embeddingProviderNotConfiguredWarning}
                     </Alert>
                 </Grid>
             )}
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{ pt: 1 }}>
                 <Accordion 
                     expanded={productionEnabled} 
                     onChange={handleAccordionChange('production')}

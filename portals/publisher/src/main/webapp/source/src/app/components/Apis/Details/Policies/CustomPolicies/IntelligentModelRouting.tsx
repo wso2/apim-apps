@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2026, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -106,7 +106,7 @@ const IntelligentModelRouting: FC<IntelligentModelRoutingProps> = ({
 }) => {
     const [apiFromContext] = useAPI();
     const { data: settings }: any = usePublisherSettings();
-    const llmProviderConfigured = settings?.aiApiConfiguration?.llmProviderConfigured;
+    const llmProviderConfigured = settings?.aiApiPolicyConfiguration?.llmProviderConfigured;
     const [config, setConfig] = useState<IntelligentModelRoutingConfig>({
         production: {
             defaultModel: { model: '', endpointId: '' },
