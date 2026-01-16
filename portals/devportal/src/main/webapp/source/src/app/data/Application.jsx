@@ -397,7 +397,7 @@ export default class Application extends Resource {
         const promisedDelete = this.client.then((client) => {
             const requestContent = {
                 secretId,
-                additionalProperties
+                additionalProperties,
             };
             const payload = { applicationId: this.id, keyMappingId };
             const body = { requestBody: requestContent };

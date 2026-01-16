@@ -121,7 +121,6 @@ export default function GoToTryOut() {
                         keyRequest.callbackUrl = 'http://localhost';
                     }
                     isMultipleSecretsAllowed = isMultipleClientSecretsEnabled(selectedKeyManager.additionalProperties);
-                    console.log('isMultipleSecretsAllowed2' + isMultipleSecretsAllowed);
                 } catch (e) {
                     Alert.error(intl.formatMessage({
                         id: 'Apis.Details.Credentials.Wizard.GenerateKeysStep.error.keymanager',
@@ -213,12 +212,10 @@ export default function GoToTryOut() {
         setShowStatus(true);
         // Get the request for key generation using the key managers.
         const { keyRequest, isMultipleSecretsAllowed } = await taskManager(getKeyRequest(), 'prepare');
-        console.log('isMultipleSecretsAllowed' + isMultipleSecretsAllowed);
         setMultipleSecretsEnabled(isMultipleSecretsAllowed);
         // Generate consumer key and secret
         const generatedKeys = await taskManager(generateKeys(keyRequest, defaultApplication.value), 'generate');
-        console.log('consumerSecretValue' + generatedKeys.consumerSecret);
-        setConsumerSecretValue(generatedKeys.consumerSecret);
+        setConsumerSecretValue(generatedKeys?.consumerSecret);
         // Subscribe this API to the default application
         await taskManager(restApi.subscribe(
             api.id,

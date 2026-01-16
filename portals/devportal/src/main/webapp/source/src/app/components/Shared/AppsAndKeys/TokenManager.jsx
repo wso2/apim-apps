@@ -352,6 +352,10 @@ class TokenManager extends React.Component {
         return isEnabled;
     }
 
+    getMultipleSecretsAllowed = (keyManager) => {
+        return isMultipleClientSecretsEnabled(keyManager?.additionalProperties);
+    };
+
     handleTabChange = (event, newSelectedTab) => {
         const { keys, keyManagers, keyRequest } = this.state;
         const { keyType } = this.props;
@@ -364,6 +368,7 @@ class TokenManager extends React.Component {
         if (availableGrantTypes.find((gt) => gt === 'client_credentials')) {
             selectedGrantsByDefault.push('client_credentials');
         }
+        const isMultipleSecretsAllowed = this.getMultipleSecretsAllowed(selectedKM);
 
         if (keys.size > 0 && keys.get(newSelectedTab) && keys.get(newSelectedTab).keyType === keyType) {
             const {
@@ -381,6 +386,7 @@ class TokenManager extends React.Component {
                 selectedTab: newSelectedTab,
                 mode,
                 importDisabled: (mode === 'MAPPED' || mode === 'CREATED'),
+                isMultipleSecretsAllowed,
             });
         } else {
             // Fill the keyRequest.additionalProperties from the selectedKM.applicationConfiguration defaultValues.
@@ -393,6 +399,7 @@ class TokenManager extends React.Component {
                 selectedTab: newSelectedTab,
                 mode: null,
                 importDisabled: false,
+                isMultipleSecretsAllowed,
             });
         }
     };
@@ -426,12 +433,7 @@ class TokenManager extends React.Component {
                             : responseKeyManagerList[0].name;
                     }
                     const selectdKM = responseKeyManagerList.find((x) => x.name === selectedTab);
-                    const isMultipleSecretsAllowed = isMultipleClientSecretsEnabled(selectdKM.additionalProperties);
-                    if (isMultipleSecretsAllowed) {
-                        this.setState({
-                            isMultipleSecretsAllowed: true,
-                        });
-                    }
+                    const isMultipleSecretsAllowed = this.getMultipleSecretsAllowed(selectdKM);
                     // processing promisedGetKeys response
                     const keys = response[1];
                     const { keyRequest } = this.state;
@@ -453,6 +455,7 @@ class TokenManager extends React.Component {
                             selectedTab,
                             importDisabled: (mode === 'MAPPED' || mode === 'CREATED'),
                             mode,
+                            isMultipleSecretsAllowed,
                         });
                     } else {
                         const selectedGrantTypes = [];
@@ -474,6 +477,7 @@ class TokenManager extends React.Component {
                             selectedTab,
                             importDisabled: false, 
                             mode: null,            
+                            isMultipleSecretsAllowed,
                         });
                     }
                 })

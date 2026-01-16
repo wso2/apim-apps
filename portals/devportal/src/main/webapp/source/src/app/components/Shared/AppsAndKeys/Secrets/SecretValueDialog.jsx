@@ -44,7 +44,7 @@ export default function SecretValueDialog({ open, onClose, secret }) {
             >
                 <Button onClick={onClose} variant="contained" color="primary">
                     <FormattedMessage
-                        id='Shared.AppsAndKeys.Secrets.SecretValueDialog.delete.button'
+                        id='Shared.AppsAndKeys.Secrets.SecretValueDialog.close.button'
                         defaultMessage='Close'
                     />
                 </Button>
