@@ -602,7 +602,19 @@ function TryOutController(props) {
     const authHeader = `${authorizationHeader}: ${prefix}`;
 
     const isMultipleClientSecretsAllowed = isMultipleClientSecretsEnabled(selectedKMObject?.additionalProperties);
-    const enableGetTestKeyButton = !isMultipleClientSecretsAllowed || consumerSecret.trim() !== "";
+    const enableGetTestKeyButton =
+        securitySchemeType === 'OAUTH'
+            ? consumerSecret.trim() !== "" : securitySchemeType === 'API-KEY'
+                ? true : false;
+
+    const toggleVisibility = () => {
+        setShowSecret((prev) => !prev);
+    };
+
+    const handleSecretChange = (e) => {
+        const value = e.target.value;
+        setConsumerSecret(value);
+    };
 
     useEffect(() => {
         if (securitySchemeType === 'API-KEY') {
@@ -838,13 +850,16 @@ function TryOutController(props) {
                                         </Grid>
                                     </>
                                 )}
+                                /* TODO: Align the components properly */
                                 {isMultipleClientSecretsAllowed && securitySchemeType === 'OAUTH' && selectedKMObject
                                 && !selectedKMObject.enableTokenHashing && (
+                                    <Grid container>
+                                        <Grid xs={12} item>
                                     <TextField
                                         fullWidth
                                         variant="outlined"
                                         margin="normal"
-                                        type={true ? "text" : "password"}
+                                        type={showSecret ? "text" : "password"}
                                         label={(
                                             <FormattedMessage
                                                 id='Shared.AppsAndKeys.Tokens.consumer.secret'
@@ -853,19 +868,22 @@ function TryOutController(props) {
                                         )}
                                         name="consumerSecret"
                                         value={consumerSecret}
-                                        onChange={(e) => onConsumerSecretChange(e.target.value)}
+                                        onChange={handleSecretChange}
                                         InputProps={{
                                             endAdornment: (
                                                 <InputAdornment position="end">
-                                                    <IconButton onClick={true} edge="end">
-                                                        {true ? <VisibilityOff /> : <Visibility />}
+                                                    <IconButton onClick={toggleVisibility} edge="end">
+                                                        {showSecret ? <VisibilityOff /> : <Visibility />}
                                                     </IconButton>
                                                 </InputAdornment>
                                             ),
                                         }}
                                     />
+                                    </Grid>
+                                </Grid>
                                 )}
                                 {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST' && (
+                                    <Grid container alignItems="center" spacing={1}>
                                     <TextField
                                         fullWidth
                                         margin='normal'
@@ -914,6 +932,7 @@ function TryOutController(props) {
                                             ),
                                         }}
                                     />
+                                    </Grid>
                                 )}
                                 {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
                                 && selectedKMObject && !selectedKMObject.enableTokenHashing && (
