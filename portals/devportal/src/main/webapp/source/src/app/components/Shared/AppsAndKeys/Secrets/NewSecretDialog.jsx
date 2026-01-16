@@ -147,7 +147,7 @@ const NewSecretDialog = ({ open, onClose, onCreate, mode }) => {
             : "";
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
             <DialogTitle>
                 {mode === CONSTS.SECRET_DIALOG_MODES.KEY_GENERATION ? (
                     <FormattedMessage

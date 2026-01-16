@@ -8,7 +8,7 @@
  * only if multiple client secrets are enabled.
  *
  * @param {Object} additionalProps - The additionalProperties object from Key Manager config
- * @returns {number} - Number of allowed client secrets, Infinity if not specified but enabled, 0 if disabled
+ * @returns {number} - Number of allowed client secrets, -1 if unlimited, 1 if disabled
  */
 export function getClientSecretCount(additionalProps) {
     if (!additionalProps) return 1;
@@ -20,7 +20,8 @@ export function getClientSecretCount(additionalProps) {
             // Default to unlimited
             return -1;
         }
-        return parseInt(countStr, 10);
+        const count = parseInt(countStr, 10);
+        return Number.isNaN(count) ? -1 : count;
     }
     return 1;
 }

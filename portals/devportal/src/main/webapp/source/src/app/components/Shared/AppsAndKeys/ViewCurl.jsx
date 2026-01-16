@@ -158,7 +158,7 @@ function ViewCurl(props) {
                                 onClick={() => {
                                     navigator.clipboard.writeText(`curl -k -X POST ${tokenEndpoint} -d ` +
                                         '"grant_type=password&username=Username&password=Password" ' +
-                                        `${getAuthSnippetString()}`).then(onCopy())
+                                        `${getAuthSnippetString()}`).then(onCopy)
                                 }}
                             >
                                 <FileCopy color='secondary'/>
@@ -219,7 +219,8 @@ function ViewCurl(props) {
                                 size="large"
                                 onClick={() => {navigator.clipboard.writeText(`curl -k -X POST ${tokenEndpoint} -d ` +
                                   '"grant_type=client_credentials"' + azureScope + ' ' +
-                                    `${getAuthSnippetString()}`).then(onCopy())}}
+                                    `${getAuthSnippetString()}`).then(onCopy)
+                                }}
                             >
                                 <FileCopy color='secondary'/>
                             </IconButton>

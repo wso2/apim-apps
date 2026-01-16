@@ -63,7 +63,7 @@ const SecretsTable = (props) => {
     const [openSecretValueDialog, setOpenSecretValueDialog] = useState(false); // dialog visibility
     const intl = useIntl();
 
-    const applicationPromise = Application.get(props.appId);
+    const applicationPromise = useMemo(() => Application.get(props.appId), [props.appId]);
 
     const fetchSecrets = async () => {
         try {
@@ -73,7 +73,13 @@ const SecretsTable = (props) => {
         } catch (error) {
             const status = error?.status;
             if (status === 404) {
-                this.setState({ notFound: true });
+                // Clear secrets for this key mapping
+                setSecrets([]);
+            } else {
+                Alert.error(intl.formatMessage({
+                    id: 'Shared.AppsAndKeys.Secrets.SecretsTable.fetch.error',
+                    defaultMessage: 'Error fetching secrets',
+                }));
             }
         } finally {
             setLoading(false);
@@ -348,7 +354,7 @@ const SecretsTable = (props) => {
                         variant="outlined"
                         sx={{
                             backgroundColor: 'inherit',
-                            width: "100%", overflow: "hidden", p: 2,
+                            width: "100%", overflow: "hidden",
                             borderColor: "rgba(0, 0, 0, 0.23)", // Same as MUI's default TextField outline
                             borderWidth: 1,
                             borderRadius: 1, // Matches TextField rounded corners
