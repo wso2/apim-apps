@@ -29,7 +29,6 @@ import AddCircle from '@mui/icons-material/AddCircle';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { Endpoint, ModelVendor } from './Types';
 import { styled } from '@mui/material/styles';
 import Alert from '@mui/material/Alert';
@@ -47,9 +46,9 @@ import MenuItem from '@mui/material/MenuItem';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 import ChipInput from 'AppComponents/Shared/ChipInput';
-import LaunchIcon from '@mui/icons-material/Launch';
 
 interface RoutingConfig {
+    id: string;
     model: string;
     endpointId: string;
     utterances: string[];
@@ -79,7 +78,6 @@ interface PathConfig {
 interface SemanticRoutingProps {
     setManualPolicyConfig: React.Dispatch<React.SetStateAction<string>>;
     manualPolicyConfig: string;
-    setProviderNotConfigured: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const StyledAccordionSummary = styled(AccordionSummary)(() => ({
@@ -103,11 +101,8 @@ const StyledAccordionSummary = styled(AccordionSummary)(() => ({
 const SemanticRouting: FC<SemanticRoutingProps> = ({
     setManualPolicyConfig,
     manualPolicyConfig,
-    setProviderNotConfigured,
 }) => {
     const [apiFromContext] = useAPI();
-    const { data: settings }: any = usePublisherSettings();
-    const embeddingProviderConfigured = settings?.aiApiPolicyConfiguration?.embeddingProviderConfigured;
     const [config, setConfig] = useState<SemanticRoutingConfig>({
         production: {
             defaultModel: { model: '', endpointId: '' },
@@ -125,39 +120,6 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
     const [loading, setLoading] = useState<boolean>(false);
     const [productionEnabled, setProductionEnabled] = useState<boolean>(false);
     const [sandboxEnabled, setSandboxEnabled] = useState<boolean>(false);
-
-    // Check if embedding provider is configured and update parent component
-    useEffect(() => {
-        if (settings && !embeddingProviderConfigured) {
-            setProviderNotConfigured(true);
-        } else {
-            setProviderNotConfigured(false);
-        }
-    }, [settings, embeddingProviderConfigured, setProviderNotConfigured]);
-
-    const embeddingProviderNotConfiguredWarning = (
-        <FormattedMessage
-            id='Apis.Details.Policies.CustomPolicies.SemanticRouting.warning.embeddingProviderNotConfigured'
-            defaultMessage={'Configure embedding provider in deployment.toml to enable Semantic Routing. '
-                + 'For more information, refer to {docLink}'}
-            values={{
-                docLink: (
-                    <a
-                        id='semantic-routing-doc-link'
-                        href='https://apim.docs.wso2.com/en/latest/deploy-and-publish/deploy-on-gateway/choreo-connect/deploy-api/deploy-rest-api-in-choreo-connect/'
-                        target='_blank'
-                        rel='noopener noreferrer'
-                    >
-                        documentation
-                        <LaunchIcon
-                            style={{ marginLeft: '2px' }}
-                            fontSize='small'
-                        />
-                    </a>
-                ),
-            }}
-        />
-    );
 
     const fetchEndpoints = () => {
         setLoading(true);
@@ -227,7 +189,7 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
     useEffect(() => {
         if (manualPolicyConfig !== '') {
             try {
-                const parsedConfig = JSON.parse(manualPolicyConfig.replace(/\'/g, "'").replace(/'/g, '"'));
+                const parsedConfig = JSON.parse(manualPolicyConfig.replace(/'/g, '"'));
                 
                 // Handle path - backend expects single object with contentpath field
                 let contentpath = '';
@@ -301,6 +263,7 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
 
     const handleAddProductionRoute = () => {
         const newRoute: RoutingConfig = {
+            id: `route-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             model: '',
             endpointId: '',
             utterances: [],
@@ -340,6 +303,7 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
 
     const handleAddSandboxRoute = () => {
         const newRoute: RoutingConfig = {
+            id: `route-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             model: '',
             endpointId: '',
             utterances: [],
@@ -482,13 +446,10 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
     }
 
 
-    const renderDefaultModelCard = (env: 'production' | 'sandbox', endpoints: Endpoint[]) => {
-        const envConfig = config[env];
-        
+    const renderContentPath = () => {
         return (
             <Paper elevation={2} sx={{ padding: 2, marginTop: 2, marginBottom: 1 }}>
                 <Grid container spacing={2}>
-                    {/* Content Path Section */}
                     <Grid item xs={12}>
                         <Typography variant='subtitle2' sx={{ mb: 1 }}>
                             <FormattedMessage
@@ -510,12 +471,22 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                             value={config.contentpath || ''}
                             onChange={(e) => handleContentPathUpdate(e.target.value)}
                             placeholder="$.messages[?(@.role=='user')].content"
-                            helperText="Enter JSONPath expression (e.g., $.messages[?(@.role=='user')].content)"
+                            helperText="The JSONPath expression used to extract content from the payload. If not specified, the entire payload will be used for validation."
+                            required
                         />
                     </Grid>
-                    
-                    {/* Default Model Section */}
-                    <Grid item xs={12} sx={{ mt: 2 }}>
+                </Grid>
+            </Paper>
+        );
+    };
+
+    const renderDefaultModel = (env: 'production' | 'sandbox', endpoints: Endpoint[]) => {
+        const envConfig = config[env];
+        
+        return (
+            <Paper elevation={2} sx={{ padding: 2, marginTop: 2, marginBottom: 1 }}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
                         <Typography variant='subtitle2' sx={{ mb: 1 }}>
                             <FormattedMessage
                                 id='Apis.Details.Policies.CustomPolicies.SemanticRouting.defaultmodel.title'
@@ -680,7 +651,7 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                                 min: 0,
                                 max: 1,
                             }}
-                            helperText='Enter a value between 0 and 1 (e.g., 0.1, 0.7, 0.9)'
+                            helperText='The similarity threshold that must be met for rule enforcement.'
                         />
                     </Grid>
                     <Grid item xs={12}>
@@ -706,10 +677,11 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                             helperText={
                                 <FormattedMessage
                                     id='Apis.Details.Policies.CustomPolicies.SemanticRouting.utterances.helper'
-                                    defaultMessage='Enter keywords to match similarity. Press Enter to add.'
+                                    defaultMessage='Enter keywords to match similarity. Press Enter to add. At least one utterance is required.'
                                 />
                             }
                             placeholder='Type utterance and press Enter'
+                            required
                             InputProps={{
                                 sx: { pt: 1 }
                             }}
@@ -729,40 +701,33 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                             )}
                         />
                     </Grid>
-                </Grid>
-                {onDelete && (
-                    <Grid
-                        item
-                        xs={12}
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'flex-end',
-                            mt: 2,
-                        }}
-                    >
-                        <IconButton
-                            color='error'
-                            data-testid='route-delete'
-                            onClick={onDelete}
-                            size="small"
+                    {onDelete && (
+                        <Grid
+                            item
+                            xs={12}
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                                mt: 2,
+                            }}
                         >
-                            <DeleteIcon />
-                        </IconButton>
-                    </Grid>
-                )}
+                            <IconButton
+                                color='error'
+                                data-testid='route-delete'
+                                onClick={onDelete}
+                                size="small"
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </Grid>
+                    )}
+                </Grid>
             </Paper>
         );
     };
 
     return (
         <>
-            {!embeddingProviderConfigured && (
-                <Grid item xs={12} sx={{ pt: 1 }}>
-                    <Alert severity='warning' sx={{ mb: 2 }}>
-                        {embeddingProviderNotConfiguredWarning}
-                    </Alert>
-                </Grid>
-            )}
             <Grid item xs={12} sx={{ pt: 1 }}>
                 <Accordion 
                     expanded={productionEnabled} 
@@ -815,10 +780,11 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                                         />
                                     </Alert>
                                 )}
-                                <Typography variant='subtitle2' sx={{ mb: 1 }}>
+                                {renderDefaultModel('production', productionEndpoints)}
+                                <Typography variant='subtitle2' sx={{ mb: 1, mt: 2 }}>
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.CustomPolicies.SemanticRouting.routing.routes'
-                                        defaultMessage='Routing rule'
+                                        id='Apis.Details.Policies.CustomPolicies.SemanticRouting.routingrules'
+                                        defaultMessage='Routing Rules'
                                     />
                                 </Typography>
                                 <Button
@@ -835,16 +801,17 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                                         defaultMessage='Add rule'
                                     />
                                 </Button>
-                                {config.production.routes.map((route, index) => 
-                                    renderRoutingCard(
-                                        route, 
-                                        'production', 
-                                        index, 
-                                        productionEndpoints,
-                                        () => handleProductionRouteDelete(index)
-                                    )
-                                )}
-                                {renderDefaultModelCard('production', productionEndpoints)}
+                                {config.production.routes.map((route, index) => (
+                                    <React.Fragment key={route.id || `production-route-${index}`}>
+                                        {renderRoutingCard(
+                                            route, 
+                                            'production', 
+                                            index, 
+                                            productionEndpoints,
+                                            () => handleProductionRouteDelete(index)
+                                        )}
+                                    </React.Fragment>
+                                ))}
                             </>
                         )}
                     </AccordionDetails>
@@ -900,10 +867,11 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                                         />
                                     </Alert>
                                 )}
-                                <Typography variant='subtitle2' sx={{ mb: 1 }}>
+                                {renderDefaultModel('sandbox', sandboxEndpoints)}
+                                <Typography variant='subtitle2' sx={{ mb: 1, mt: 2 }}>
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.CustomPolicies.SemanticRouting.routing.routes'
-                                        defaultMessage='Routing rule'
+                                        id='Apis.Details.Policies.CustomPolicies.SemanticRouting.routingrules'
+                                        defaultMessage='Routing Rules'
                                     />
                                 </Typography>
                                 <Button
@@ -920,20 +888,24 @@ const SemanticRouting: FC<SemanticRoutingProps> = ({
                                         defaultMessage='Add rule'
                                     />
                                 </Button>
-                                {config.sandbox.routes.map((route, index) => 
-                                    renderRoutingCard(
-                                        route, 
-                                        'sandbox', 
-                                        index, 
-                                        sandboxEndpoints,
-                                        () => handleSandboxRouteDelete(index)
-                                    )
-                                )}
-                                {renderDefaultModelCard('sandbox', sandboxEndpoints)}
+                                {config.sandbox.routes.map((route, index) => (
+                                    <React.Fragment key={route.id || `sandbox-route-${index}`}>
+                                        {renderRoutingCard(
+                                            route, 
+                                            'sandbox', 
+                                            index, 
+                                            sandboxEndpoints,
+                                            () => handleSandboxRouteDelete(index)
+                                        )}
+                                    </React.Fragment>
+                                ))}
                             </>
                         )}
                     </AccordionDetails>
                 </Accordion>
+            </Grid>
+            <Grid item xs={12}>
+                {renderContentPath()}
             </Grid>
         </>
     );

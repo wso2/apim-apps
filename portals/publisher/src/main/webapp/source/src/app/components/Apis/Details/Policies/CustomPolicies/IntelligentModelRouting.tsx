@@ -29,7 +29,6 @@ import AddCircle from '@mui/icons-material/AddCircle';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { Endpoint, ModelVendor } from './Types';
 import { styled } from '@mui/material/styles';
 import Alert from '@mui/material/Alert';
@@ -44,11 +43,11 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import LaunchIcon from '@mui/icons-material/Launch';
 // import Chip from '@mui/material/Chip';
 // import Box from '@mui/material/Box';
 
 interface RoutingRuleConfig {
+    id: string;
     name: string;
     context: string;
     model: string;
@@ -78,7 +77,6 @@ interface IntelligentModelRoutingConfig {
 interface IntelligentModelRoutingProps {
     setManualPolicyConfig: React.Dispatch<React.SetStateAction<string>>;
     manualPolicyConfig: string;
-    setProviderNotConfigured: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const StyledAccordionSummary = styled(AccordionSummary)(() => ({
@@ -102,11 +100,8 @@ const StyledAccordionSummary = styled(AccordionSummary)(() => ({
 const IntelligentModelRouting: FC<IntelligentModelRoutingProps> = ({
     setManualPolicyConfig,
     manualPolicyConfig,
-    setProviderNotConfigured,
 }) => {
     const [apiFromContext] = useAPI();
-    const { data: settings }: any = usePublisherSettings();
-    const llmProviderConfigured = settings?.aiApiPolicyConfiguration?.llmProviderConfigured;
     const [config, setConfig] = useState<IntelligentModelRoutingConfig>({
         production: {
             defaultModel: { model: '', endpointId: '' },
@@ -124,39 +119,6 @@ const IntelligentModelRouting: FC<IntelligentModelRoutingProps> = ({
     const [loading, setLoading] = useState<boolean>(false);
     const [productionEnabled, setProductionEnabled] = useState<boolean>(false);
     const [sandboxEnabled, setSandboxEnabled] = useState<boolean>(false);
-
-    // Check if LLM provider is configured and update parent component
-    useEffect(() => {
-        if (settings && !llmProviderConfigured) {
-            setProviderNotConfigured(true);
-        } else {
-            setProviderNotConfigured(false);
-        }
-    }, [settings, llmProviderConfigured, setProviderNotConfigured]);
-
-    const llmProviderNotConfiguredWarning = (
-        <FormattedMessage
-            id='Apis.Details.Policies.CustomPolicies.IntelligentModelRouting.warning.llmProviderNotConfigured'
-            defaultMessage={'Configure Classifier LLM provider in deployment.toml to enable Intelligent Model Routing. '
-                + 'For more information, refer to {docLink}'}
-            values={{
-                docLink: (
-                    <a
-                        id='intelligent-model-routing-doc-link'
-                        href='https://apim.docs.wso2.com/en/latest/deploy-and-publish/deploy-on-gateway/choreo-connect/deploy-api/deploy-rest-api-in-choreo-connect/'
-                        target='_blank'
-                        rel='noopener noreferrer'
-                    >
-                        documentation
-                        <LaunchIcon
-                            style={{ marginLeft: '2px' }}
-                            fontSize='small'
-                        />
-                    </a>
-                ),
-            }}
-        />
-    );
 
     const fetchEndpoints = () => {
         setLoading(true);
@@ -226,7 +188,7 @@ const IntelligentModelRouting: FC<IntelligentModelRoutingProps> = ({
     useEffect(() => {
         if (manualPolicyConfig !== '') {
             try {
-                const parsedConfig = JSON.parse(manualPolicyConfig.replace(/\'/g, "'").replace(/'/g, '"'));
+                const parsedConfig = JSON.parse(manualPolicyConfig.replace(/'/g, '"'));
                 
                 const productionConfig: EnvironmentConfig = {
                     defaultModel: parsedConfig.production?.defaultModel || { model: '', endpointId: '' },
@@ -280,6 +242,7 @@ const IntelligentModelRouting: FC<IntelligentModelRoutingProps> = ({
 
     const handleAddProductionRule = () => {
         const newRule: RoutingRuleConfig = {
+            id: `rule-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             name: '',
             context: '',
             model: '',
@@ -319,6 +282,7 @@ const IntelligentModelRouting: FC<IntelligentModelRoutingProps> = ({
 
     const handleAddSandboxRule = () => {
         const newRule: RoutingRuleConfig = {
+            id: `rule-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             name: '',
             context: '',
             model: '',
@@ -452,7 +416,8 @@ const IntelligentModelRouting: FC<IntelligentModelRoutingProps> = ({
                             value={config.contentPath.path || ''}
                             onChange={(e) => handleContentPathUpdate(e.target.value)}
                             placeholder="$.contents[*].parts[*].text"
-                            helperText="Enter JSONPath expression (e.g., $.contents[*].parts[*].text)"
+                            helperText="The JSONPath expression used to extract content from the payload. If not specified, the entire payload will be used for validation."
+                            required
                         />
                     </Grid>
                 </Grid>
@@ -630,6 +595,8 @@ const IntelligentModelRouting: FC<IntelligentModelRoutingProps> = ({
                             value={rule.name}
                             onChange={(e) => handleNameChange(e.target.value)}
                             placeholder='e.g., code-generation'
+                            helperText='For identification, provide a unique name'
+                            required
                         />
                     </Grid>
                     <Grid item xs={12}>
@@ -648,42 +615,36 @@ const IntelligentModelRouting: FC<IntelligentModelRoutingProps> = ({
                             onChange={(e) => handleContextChange(e.target.value)}
                             placeholder='Describe the context for this rule'
                             helperText='Provide a description of when this rule should be used'
+                            required
                         />
                     </Grid>
-                </Grid>
-                {onDelete && (
-                    <Grid
-                        item
-                        xs={12}
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'flex-end',
-                            mt: 1,
-                        }}
-                    >
-                        <IconButton
-                            color='error'
-                            data-testid='rule-delete'
-                            onClick={onDelete}
-                            size="small"
+                    {onDelete && (
+                        <Grid
+                            item
+                            xs={12}
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                                mt: 1,
+                            }}
                         >
-                            <DeleteIcon />
-                        </IconButton>
-                    </Grid>
-                )}
+                            <IconButton
+                                color='error'
+                                data-testid='rule-delete'
+                                onClick={onDelete}
+                                size="small"
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </Grid>
+                    )}
+                </Grid>
             </Paper>
         );
     };
 
     return (
         <>
-            {!llmProviderConfigured && (
-                <Grid item xs={12}>
-                    <Alert severity='warning' sx={{ mb: 2 }}>
-                        {llmProviderNotConfiguredWarning}
-                    </Alert>
-                </Grid>
-            )}
             <Grid item xs={12}>
                 <Accordion 
                     expanded={productionEnabled} 
@@ -757,15 +718,17 @@ const IntelligentModelRouting: FC<IntelligentModelRoutingProps> = ({
                                         defaultMessage='Add Rule'
                                     />
                                 </Button>
-                                {config.production.routingrules.map((rule, index) => 
-                                    renderRuleCard(
-                                        rule, 
-                                        'production', 
-                                        index, 
-                                        productionEndpoints,
-                                        () => handleProductionRuleDelete(index)
-                                    )
-                                )}
+                                {config.production.routingrules.map((rule, index) => (
+                                    <React.Fragment key={rule.id || `production-rule-${index}`}>
+                                        {renderRuleCard(
+                                            rule, 
+                                            'production', 
+                                            index, 
+                                            productionEndpoints,
+                                            () => handleProductionRuleDelete(index)
+                                        )}
+                                    </React.Fragment>
+                                ))}
                             </>
                         )}
                     </AccordionDetails>
@@ -842,15 +805,17 @@ const IntelligentModelRouting: FC<IntelligentModelRoutingProps> = ({
                                         defaultMessage='Add Rule'
                                     />
                                 </Button>
-                                {config.sandbox.routingrules.map((rule, index) => 
-                                    renderRuleCard(
-                                        rule, 
-                                        'sandbox', 
-                                        index, 
-                                        sandboxEndpoints,
-                                        () => handleSandboxRuleDelete(index)
-                                    )
-                                )}
+                                {config.sandbox.routingrules.map((rule, index) => (
+                                    <React.Fragment key={rule.id || `sandbox-rule-${index}`}>
+                                        {renderRuleCard(
+                                            rule, 
+                                            'sandbox', 
+                                            index, 
+                                            sandboxEndpoints,
+                                            () => handleSandboxRuleDelete(index)
+                                        )}
+                                    </React.Fragment>
+                                ))}
                             </>
                         )}
                     </AccordionDetails>

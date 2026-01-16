@@ -133,7 +133,6 @@ const General: FC<GeneralProps> = ({
     const [isManual, setManual] = useState(false);
     const [manualPolicyConfig, setManualPolicyConfig] = useState<string>('');
     const [secretVisibility, setSecretVisibility] = useState<Record<string, boolean>>({});
-    const [providerNotConfigured, setProviderNotConfigured] = useState<boolean>(false);
 
     useEffect(() => {
         if (
@@ -493,14 +492,12 @@ const General: FC<GeneralProps> = ({
                         <SemanticRouting
                             setManualPolicyConfig={setManualPolicyConfig}
                             manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
-                            setProviderNotConfigured={setProviderNotConfigured}
                         />
                     )}
                     {(isManual && policyObj.name === 'intelligentModelRouting') && (
                         <IntelligentModelRouting
                             setManualPolicyConfig={setManualPolicyConfig}
                             manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
-                            setProviderNotConfigured={setProviderNotConfigured}
                         />
                     )}
                     {!isManual && policySpec.policyAttributes && policySpec.policyAttributes.map((spec: PolicySpecAttribute) => (
@@ -737,7 +734,7 @@ const General: FC<GeneralProps> = ({
                             type='submit'
                             color='primary'
                             data-testid='policy-attached-details-save'
-                            disabled={providerNotConfigured || (!isManual && (isSaveDisabled() || formHasErrors() || saving))}
+                            disabled={!isManual && (isSaveDisabled() || formHasErrors() || saving)}
                         >
                             {saving
                                 ? <>
