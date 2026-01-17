@@ -310,6 +310,14 @@ const SecretsTable = (props) => {
         [secrets]
     );
 
+    // ID of the most recently added secret
+    const latestSecretId = useMemo(() => {
+        if (!secrets || secrets.length === 0) {
+            return null;
+        }
+        return secrets[secrets.length - 1].secretId;
+    }, [secrets]);
+
     // Automatically toggle ON if all secrets are expired
     useEffect(() => {
         if (allSecretsExpired) {
@@ -564,7 +572,7 @@ const SecretsTable = (props) => {
                                                     <TableCell>
                                                         <DeleteSecretDialog
                                                             onDelete={() => handleDelete(secretId)}
-                                                            disabled={secrets.length <= 1}
+                                                            disabled={secretId === latestSecretId}
                                                         />
                                                     </TableCell>
                                                 </TableRow>
