@@ -31,8 +31,8 @@ export default function DeleteSecretDialog({ onDelete, disabled }) {
     <>
       <Tooltip title={disabled ?
         intl.formatMessage({
-          id: 'Shared.AppsAndKeys.Secrets.DeleteSecret.at.least.one.secret.tooltip.title',
-          defaultMessage: 'At least one secret must be present',
+          id: 'Shared.AppsAndKeys.Secrets.DeleteSecret.latest.secret.tooltip',
+          defaultMessage: 'The most recently added secret cannot be deleted',
         })
         : intl.formatMessage({
           id: 'Shared.AppsAndKeys.Secrets.DeleteSecret.delete.secret.tooltip.title',
