@@ -602,10 +602,13 @@ function TryOutController(props) {
     const authHeader = `${authorizationHeader}: ${prefix}`;
 
     const isMultipleClientSecretsAllowed = isMultipleClientSecretsEnabled(selectedKMObject?.additionalProperties);
-    const enableGetTestKeyButton =
-        securitySchemeType === 'OAUTH'
-            ? consumerSecret.trim() !== "" : securitySchemeType === 'API-KEY'
-                ? true : false;
+
+    // When multiple client secrets are allowed, for OAuth security scheme, the consumer secret should
+    // be available for the Get Test Key button to be enabled.
+    let enableGetTestKeyButton = true; // default
+    if (securitySchemeType === 'OAUTH' && isMultipleClientSecretsAllowed) {
+        enableGetTestKeyButton = !!consumerSecret?.trim(); // must provide consumer secret
+    }
 
     const toggleVisibility = () => {
         setShowSecret((prev) => !prev);
