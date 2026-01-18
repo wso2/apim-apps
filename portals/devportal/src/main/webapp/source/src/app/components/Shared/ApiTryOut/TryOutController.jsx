@@ -565,6 +565,9 @@ function TryOutController(props) {
             case 'selectedEndpoint':
                 setSelectedEndpoint(value);
                 break;
+            case 'consumerSecret':
+                setConsumerSecret(value);
+                break;
             default:
         }
     }
@@ -610,14 +613,8 @@ function TryOutController(props) {
         enableGetTestKeyButton = !!consumerSecret?.trim(); // must provide consumer secret
     }
 
-    const toggleVisibility = () => {
-        setShowSecret((prev) => !prev);
-    };
-
-    const handleSecretChange = (e) => {
-        const value = e.target.value;
-        setConsumerSecret(value);
-    };
+    const isConsumerSecretRequired = isMultipleClientSecretsAllowed && securitySchemeType === 'OAUTH' &&
+        selectedKMObject && !selectedKMObject.enableTokenHashing;
 
     useEffect(() => {
         if (securitySchemeType === 'API-KEY') {
@@ -797,6 +794,44 @@ function TryOutController(props) {
                                 </Grid>
                             )
                         )}
+                    {/* New Consumer Secret Field - Only shows for OAUTH */}
+                    <Box display='block' justifyContent='center'>
+                        <Grid x={8} md={6} className={classes.tokenType} item>
+                            {isConsumerSecretRequired && (
+                            <TextField
+                                fullWidth
+                                margin='normal'
+                                variant='outlined'
+                                required
+                                label={(
+                                    <FormattedMessage
+                                        id='consumer.secret'
+                                        defaultMessage='Consumer Secret'
+                                    />
+                                )}
+                                name='consumerSecret'
+                                onChange={handleChanges}
+                                type={showSecret ? 'text' : 'password'}
+                                value={consumerSecret || ''}
+                                id='consumerSecretInput'
+                                InputProps={{
+                                    autoComplete: 'new-password',
+                                    endAdornment: (
+                                        <InputAdornment position='end'>
+                                            <IconButton
+                                                edge='end'
+                                                onClick={() => setShowSecret(!showSecret)}
+                                                size='large'
+                                            >
+                                                {showSecret ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        )}
+                        </Grid>
+                    </Box>
                     {((!api.advertiseInfo || !api.advertiseInfo.advertised) 
                         && (api.gatewayVendor === 'wso2' || !api.gatewayVendor)) ? (
                         <Box display='block' justifyContent='center'>
@@ -853,40 +888,7 @@ function TryOutController(props) {
                                         </Grid>
                                     </>
                                 )}
-                                /* TODO: Align the components properly */
-                                {isMultipleClientSecretsAllowed && securitySchemeType === 'OAUTH' && selectedKMObject
-                                && !selectedKMObject.enableTokenHashing && (
-                                    <Grid container>
-                                        <Grid xs={12} item>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        margin="normal"
-                                        type={showSecret ? "text" : "password"}
-                                        label={(
-                                            <FormattedMessage
-                                                id='Shared.AppsAndKeys.Tokens.consumer.secret'
-                                                defaultMessage='Consumer Secret'
-                                            />
-                                        )}
-                                        name="consumerSecret"
-                                        value={consumerSecret}
-                                        onChange={handleSecretChange}
-                                        InputProps={{
-                                            endAdornment: (
-                                                <InputAdornment position="end">
-                                                    <IconButton onClick={toggleVisibility} edge="end">
-                                                        {showSecret ? <VisibilityOff /> : <Visibility />}
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                    />
-                                    </Grid>
-                                </Grid>
-                                )}
                                 {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST' && (
-                                    <Grid container alignItems="center" spacing={1}>
                                     <TextField
                                         fullWidth
                                         margin='normal'
@@ -935,7 +937,6 @@ function TryOutController(props) {
                                             ),
                                         }}
                                     />
-                                    </Grid>
                                 )}
                                 {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
                                 && selectedKMObject && !selectedKMObject.enableTokenHashing && (
