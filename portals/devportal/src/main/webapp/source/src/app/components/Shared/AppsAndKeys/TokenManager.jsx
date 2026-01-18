@@ -61,7 +61,8 @@ import CleanKeys from './CleanKeys';
 import Settings from 'AppComponents/Shared/SettingsContext';
 import { isMultipleClientSecretsEnabled } from './Secrets/util';
 import NewSecretDialog from './Secrets/NewSecretDialog';
-import SecretValueDialog from "./Secrets/SecretValueDialog";
+import SecretValueDialog from './Secrets/SecretValueDialog';
+import { isMultipleClientSecretsEnabled } from './Secrets/util';
 
 const PREFIX = 'TokenManager';
 
