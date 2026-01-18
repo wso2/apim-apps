@@ -103,6 +103,7 @@ export default class Application extends Resource {
      * @param {string} selectedScopes token scopes
      * @param {boolean} isTokenExchange is token exchange flow
      * @param {string} externalToken token from external identity provider
+     * @param {string} consumerSecret consumer secret of the application
      * @returns {promise} Set the generated token into current
      * instance and return tokenObject received as Promise object
      */
