@@ -165,7 +165,7 @@ const generateKeysStep = (props) => {
 
     const {
         currentStep, createdApp, incrementStep, setCreatedKeyType,
-        setStepStatus, stepStatuses, setCreatedSelectedTab,
+        setStepStatus, stepStatuses, setCreatedSelectedTab, setGeneratedConsumerSecret,
     } = props;
 
     useEffect(() => {
@@ -241,6 +241,7 @@ const generateKeysStep = (props) => {
                 // Show the consumer secret in the dialog before advancing
                 if (isMultipleSecretsAllowed && response?.consumerSecret) {
                     setGeneratedSecret(response.consumerSecret);
+                    setGeneratedConsumerSecret(response.consumerSecret);
                     setSecretDialogOpen(true);
                 } else {
                     proceedToNextStep();
