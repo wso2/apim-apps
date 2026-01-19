@@ -89,11 +89,12 @@ interface OperationPolicyProps {
     policyList: Policy[];
     allPolicies: PolicySpec[] | null;
     isChoreoConnectEnabled: boolean;
+    disabled?: boolean;
 }
 
 const OperationPolicy: FC<OperationPolicyProps> = ({
     operation, highlight, api, target, verb, expandedResource, setExpandedResource,
-    policyList, allPolicies, isChoreoConnectEnabled
+    policyList, allPolicies, isChoreoConnectEnabled, disabled,
 }) => {
     const apiOperation = api.operations[target] && api.operations[target][verb.toUpperCase()];
     const isUsedInAPIProduct = apiOperation && Array.isArray(
@@ -195,6 +196,7 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                     isChoreoConnectEnabled={isChoreoConnectEnabled}
                     policyList={policyList}
                     isAPILevelPolicy={false}
+                    disabled={disabled} 
                 />
             </Accordion>
         </Root>)

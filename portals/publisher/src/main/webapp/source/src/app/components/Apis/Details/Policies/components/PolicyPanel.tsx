@@ -33,6 +33,7 @@ interface PolicyPanelProps {
     api: any;
     expandedResource: string | null;
     setExpandedResource: React.Dispatch<React.SetStateAction<string | null>>;
+    disabled?: boolean;
 }
 
 /**
@@ -52,6 +53,7 @@ const PolicyPanel: FC<PolicyPanelProps> = ({
     api,
     expandedResource,
     setExpandedResource,
+    disabled, 
 }) => {
     const tabs = ['api-level', 'operation-level'];
     const currentTab = tabs[index];
@@ -73,6 +75,7 @@ const PolicyPanel: FC<PolicyPanelProps> = ({
                     api={api}
                     expandedResource={expandedResource}
                     setExpandedResource={setExpandedResource}
+                    disabled={disabled}
                 />
             </Box>
         </div>
