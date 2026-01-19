@@ -176,10 +176,10 @@ const SecretsTable = (props) => {
      * Renders the "Expires In" column with color and tooltip.
      * Handles "Never expires", "Expired", and remaining days cases.
      *
-     * @param {number} expiryEpoch - Expiry timestamp in milliseconds (epoch)
+     * @param {number} expiryEpochInSeconds - Expiry timestamp in seconds (epoch)
      */
-    const renderExpiresIn = (expiryEpoch) => {
-        if (!expiryEpoch || expiryEpoch === 0) {
+    const renderExpiresIn = (expiryEpochInSeconds) => {
+        if (!expiryEpochInSeconds || expiryEpochInSeconds === 0) {
             return (
                 <Tooltip
                     title={
@@ -200,10 +200,10 @@ const SecretsTable = (props) => {
             );
         }
 
+        const expiryEpoch = expiryEpochInSeconds * 1000;
         const now = Date.now();
         const diffMs = expiryEpoch - now;
         const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-        //const formattedDate = format(new Date(expiryEpoch), 'PPP p'); // Example: Oct 25, 2025, 5:30 PM
         // Format the expiry date in a human-friendly way
         const expiryDate = new Date(expiryEpoch);
         const formattedDate = expiryDate.toLocaleString(undefined, {
