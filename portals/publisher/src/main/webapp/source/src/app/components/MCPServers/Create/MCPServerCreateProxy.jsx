@@ -178,7 +178,10 @@ const MCPServerCreateProxy = (props) => {
     const handleUrlBlur = (event) => {
         const { value } = event.target;
         if (!value || value.trim() === '') {
-            setUrlFieldError('MCP Server URL is required');
+            setUrlFieldError(intl.formatMessage({
+                id: 'MCPServers.Create.MCPServerCreateProxy.url.required',
+                defaultMessage: 'MCP Server URL is required',
+            }));
         } else {
             setUrlFieldError('');
         }
@@ -217,8 +220,11 @@ const MCPServerCreateProxy = (props) => {
                     setToolInfo(body.toolInfo || null);
                     setWizardStep((step) => step + 1);
                 } else {
-                    const errorMsg = 'MCP Server validation failed. Please check the URL '
-                    + 'and security credentials and try again.';
+                    const errorMsg = intl.formatMessage({
+                        id: 'MCPServers.Create.MCPServerCreateProxy.validation.failed',
+                        defaultMessage: 'MCP Server validation failed. Please check '
+                        + 'the URL and security credentials (if any) and try again.',
+                    });
                     setValidationError(errorMsg);
                     setToolInfo(null);
                 }
@@ -227,8 +233,11 @@ const MCPServerCreateProxy = (props) => {
                 if (error.response && error.response.body) {
                     setValidationError('Failed to validate MCP Server URL');
                 } else {
-                    const errorMsg = 'Failed to validate MCP Server URL. '
-                        + 'Please check your connection and try again.';
+                    const errorMsg = intl.formatMessage({
+                        id: 'MCPServers.Create.MCPServerCreateProxy.validation.error',
+                        defaultMessage: 'Failed to validate MCP Server URL. Please '
+                        + 'check your connection and try again.',
+                    });
                     setValidationError(errorMsg);
                 }
                 setToolInfo(null);
@@ -569,7 +578,7 @@ const MCPServerCreateProxy = (props) => {
                                 <Button
                                     variant='contained'
                                     color='primary'
-                                    disabled={!mcpServerInputs.mcpServerUrl || isValidating}
+                                    disabled={!mcpServerInputs.mcpServerUrl?.trim() || isValidating || !!urlFieldError}
                                     onClick={validateMCPServer}
                                 >
                                     {isValidating ? (
