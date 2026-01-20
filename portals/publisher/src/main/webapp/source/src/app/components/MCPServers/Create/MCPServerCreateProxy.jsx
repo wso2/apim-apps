@@ -217,18 +217,15 @@ const MCPServerCreateProxy = (props) => {
                     setToolInfo(body.toolInfo || null);
                     setWizardStep((step) => step + 1);
                 } else {
-                    const errorMsg = body.errorMessage
-                        || 'Validation failed. Please check the URL and try again.';
+                    const errorMsg = 'MCP Server validation failed. Please check the URL '
+                    + 'and security credentials and try again.';
                     setValidationError(errorMsg);
                     setToolInfo(null);
                 }
             })
             .catch((error) => {
                 if (error.response && error.response.body) {
-                    const errorMsg = error.response.body.errorMessage
-                        || error.response.body.description
-                        || 'Failed to validate MCP Server URL';
-                    setValidationError(errorMsg);
+                    setValidationError('Failed to validate MCP Server URL');
                 } else {
                     const errorMsg = 'Failed to validate MCP Server URL. '
                         + 'Please check your connection and try again.';
