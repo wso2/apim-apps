@@ -147,6 +147,7 @@ function EndpointSecurity(props) {
     const [parameterValue, setParameterValue] = useState(null);
     const [isParameterSecret, setIsParameterSecret] = useState(false);
     const [showParameterValue, setShowParameterValue] = useState(false);
+    const [showApiKeyValue, setShowApiKeyValue] = useState(false);
     const endpointType = isProduction ? 'production' : 'sandbox';
 
     const authTypes = () => {
@@ -183,11 +184,27 @@ function EndpointSecurity(props) {
                     defaultMessage: 'OAuth 2.0',
                 }),
             },
+            {
+                id: 'apikey',
+                key: 'apikey',
+                value: intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.apikey',
+                    defaultMessage: 'API Key',
+                }),
+            },
         ];
 
         const selectedTypes = [types[0]];
 
-        return selectedTypes.concat(types.filter((type) => endpointSecurityTypes?.includes(type.id)));
+        // Filter types based on endpointSecurityTypes, but ensure apikey is only available for MCP servers
+        const filteredTypes = types.filter((type) => {
+            if (type.id === 'apikey') {
+                return api.apiType && api.apiType.toUpperCase() === 'MCP' && endpointSecurityTypes?.includes(type.id);
+            }
+            return endpointSecurityTypes?.includes(type.id);
+        });
+
+        return selectedTypes.concat(filteredTypes);
     };
 
     const grantTypes = [
@@ -213,7 +230,7 @@ function EndpointSecurity(props) {
             const {
                 type, username, password, grantType, tokenUrl, clientId, clientSecret, customParameters,
                 connectionTimeoutDuration, connectionRequestTimeoutDuration, socketTimeoutDuration, proxyConfigs,
-                connectionTimeoutConfigType, proxyConfigType,
+                connectionTimeoutConfigType, proxyConfigType, apiKeyIdentifier, apiKeyValue, apiKeyIdentifierType,
             } = securityInfo;
             const secretPlaceholder = '******';
             tmpSecurity.type = type == null ? 'NONE' : type;
@@ -223,6 +240,9 @@ function EndpointSecurity(props) {
             tmpSecurity.tokenUrl = tokenUrl;
             tmpSecurity.clientId = clientId === '' ? secretPlaceholder : clientId;
             tmpSecurity.clientSecret = clientSecret === '' ? secretPlaceholder : clientSecret;
+            tmpSecurity.apiKeyIdentifier = apiKeyIdentifier;
+            tmpSecurity.apiKeyValue = apiKeyValue === '' ? secretPlaceholder : apiKeyValue;
+            tmpSecurity.apiKeyIdentifierType = apiKeyIdentifierType || 'HEADER';
             tmpSecurity.customParameters = customParameters;
             tmpSecurity.connectionTimeoutDuration = connectionTimeoutDuration;
             tmpSecurity.connectionRequestTimeoutDuration = connectionRequestTimeoutDuration;
@@ -705,6 +725,143 @@ function EndpointSecurity(props) {
                             onBlur={() => validateAndUpdateSecurityInfo('password')}
                             InputProps={{
                                 autoComplete: 'new-password',
+                            }}
+                        />
+                    </Grid>
+                </>
+            )}
+
+            {endpointSecurityInfo.type === 'apikey' && (
+                <>
+                    <Grid item xs={6}>
+                        <TextField
+                            disabled={isCreateRestricted()}
+                            required
+                            fullWidth
+                            select
+                            variant='outlined'
+                            id='auth-apiKeyIdentifierType'
+                            label={(
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.'
+                                        + 'apiKeyIdentifierType.input'}
+                                    defaultMessage='API Key Identifier Type'
+                                />
+                            )}
+                            onChange={(event) => setEndpointSecurityInfo(
+                                { ...endpointSecurityInfo, apiKeyIdentifierType: event.target.value },
+                            )}
+                            value={endpointSecurityInfo.apiKeyIdentifierType}
+                            helperText={(
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.'
+                                        + 'apiKeyIdentifierType.message'}
+                                    defaultMessage='Select where the API Key is sent'
+                                />
+                            )}
+                        >
+                            <MenuItem value='HEADER'>
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.'
+                                        + 'apiKeyIdentifierType.header'}
+                                    defaultMessage='Header'
+                                />
+                            </MenuItem>
+                            <MenuItem value='QUERY_PARAMETER'>
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.'
+                                        + 'apiKeyIdentifierType.query'}
+                                    defaultMessage='Query Parameter'
+                                />
+                            </MenuItem>
+                        </TextField>
+                    </Grid>
+
+                    <Grid item xs={6}>
+                        <TextField
+                            disabled={isCreateRestricted()}
+                            required
+                            fullWidth
+                            error={securityValidity && securityValidity.apiKeyIdentifier === false}
+                            helperText={
+                                securityValidity && securityValidity.apiKeyIdentifier === false ? (
+                                    <FormattedMessage
+                                        id={'Apis.Details.Endpoints.GeneralConfiguration.'
+                                        + 'EndpointSecurity.no.apiKeyIdentifier.error'}
+                                        defaultMessage='API Key Identifier should not be empty'
+                                    />
+                                ) : (
+                                    <FormattedMessage
+                                        id={'Apis.Details.Endpoints.GeneralConfiguration.'
+                                        + 'EndpointSecurity.apiKeyIdentifier.message'}
+                                        defaultMessage='Enter API Key Identifier (e.g., X-API-Key, api_key)'
+                                    />
+                                )
+                            }
+                            variant='outlined'
+                            id='auth-apiKeyIdentifier'
+                            label={(
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.'
+                                    + 'apiKeyIdentifier.input'}
+                                    defaultMessage='API Key Identifier'
+                                />
+                            )}
+                            onChange={(event) => setEndpointSecurityInfo(
+                                { ...endpointSecurityInfo, apiKeyIdentifier: event.target.value },
+                            )}
+                            value={endpointSecurityInfo.apiKeyIdentifier}
+                            onBlur={() => validateAndUpdateSecurityInfo('apiKeyIdentifier')}
+                        />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <TextField
+                            disabled={isCreateRestricted()}
+                            required
+                            fullWidth
+                            error={securityValidity && securityValidity.apiKeyValue === false}
+                            helperText={
+                                securityValidity && securityValidity.apiKeyValue === false ? (
+                                    <FormattedMessage
+                                        id={'Apis.Details.Endpoints.GeneralConfiguration.'
+                                        + 'EndpointSecurity.no.apiKeyValue.error'}
+                                        defaultMessage='API Key Value should not be empty'
+                                    />
+                                ) : (
+                                    <FormattedMessage
+                                        id={'Apis.Details.Endpoints.GeneralConfiguration.'
+                                        + 'EndpointSecurity.apiKeyValue.message'}
+                                        defaultMessage='Enter API Key Value'
+                                    />
+                                )
+                            }
+                            variant='outlined'
+                            type={showApiKeyValue ? 'text' : 'password'}
+                            id='auth-apiKeyValue'
+                            label={(
+                                <FormattedMessage
+                                    id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.apiKeyValue.input'
+                                    defaultMessage='API Key Value'
+                                />
+                            )}
+                            value={endpointSecurityInfo.apiKeyValue}
+                            onChange={(event) => setEndpointSecurityInfo(
+                                { ...endpointSecurityInfo, apiKeyValue: event.target.value },
+                            )}
+                            onBlur={() => validateAndUpdateSecurityInfo('apiKeyValue')}
+                            InputProps={{
+                                autoComplete: 'new-password',
+                                endAdornment: (
+                                    <IconButton
+                                        aria-label='toggle API key visibility'
+                                        onClick={() => setShowApiKeyValue(!showApiKeyValue)}
+                                        edge='end'
+                                        className={classes.eye}
+                                    >
+                                        {showApiKeyValue ? <Visibility /> : <VisibilityOff />}
+                                    </IconButton>
+                                ),
                             }}
                         />
                     </Grid>
@@ -1280,7 +1437,7 @@ function EndpointSecurity(props) {
                     </Table>
                 </Grid>
             )}
-            <Grid className={classes.advanceDialogActions}>
+            <Grid pl={2}>
                 <Button
                     onClick={() => saveEndpointSecurityConfig(endpointSecurityInfo, endpointType)}
                     color='primary'
