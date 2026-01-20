@@ -196,15 +196,7 @@ function EndpointSecurity(props) {
 
         const selectedTypes = [types[0]];
 
-        // Filter types based on endpointSecurityTypes, but ensure apikey is only available for MCP servers
-        const filteredTypes = types.filter((type) => {
-            if (type.id === 'apikey') {
-                return api.apiType && api.apiType.toUpperCase() === 'MCP' && endpointSecurityTypes?.includes(type.id);
-            }
-            return endpointSecurityTypes?.includes(type.id);
-        });
-
-        return selectedTypes.concat(filteredTypes);
+        return selectedTypes.concat(types.filter((type) => endpointSecurityTypes?.includes(type.id)));
     };
 
     const grantTypes = [
