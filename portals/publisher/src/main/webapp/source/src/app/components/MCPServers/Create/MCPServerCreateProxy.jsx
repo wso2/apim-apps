@@ -27,6 +27,18 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ErrorIcon from '@mui/icons-material/Error';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import Tooltip from '@mui/material/Tooltip';
 import { Link } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -35,6 +47,8 @@ import MCPProxyToolSelection from 'AppComponents/MCPServers/Create/Steps/MCPProx
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import MCPServer from 'AppData/MCPServer';
+import Progress from 'AppComponents/Shared/Progress';
+import { getDefaultSubscriptionPolicy } from 'AppComponents/Shared/Utils';
 
 const PREFIX = 'MCPServerCreateProxy';
 
@@ -43,7 +57,8 @@ const classes = {
     saveButton: `${PREFIX}-saveButton`,
     titleWrapper: `${PREFIX}-titleWrapper`,
     buttonWrapper: `${PREFIX}-buttonWrapper`,
-    alternativeLabel: `${PREFIX}-alternativeLabel`
+    alternativeLabel: `${PREFIX}-alternativeLabel`,
+    mandatoryStar: `${PREFIX}-mandatoryStar`,
 };
 
 const Root = styled('div')(({ theme }) => ({
@@ -68,7 +83,12 @@ const Root = styled('div')(({ theme }) => ({
 
     [`& .${classes.alternativeLabel}`]: {
         marginTop: theme.spacing(1),
-    }
+    },
+
+    [`& .${classes.mandatoryStar}`]: {
+        color: theme.palette.error.main,
+        marginLeft: theme.spacing(0.1),
+    },
 }));
 
 const MCPServerCreateProxy = (props) => {
@@ -76,7 +96,12 @@ const MCPServerCreateProxy = (props) => {
     const intl = useIntl();
     const [wizardStep, setWizardStep] = useState(0);
     const [isCreating, setCreating] = useState();
-    const { data: settings } = usePublisherSettings();
+    const [isValidating, setValidating] = useState(false);
+    const [validationError, setValidationError] = useState('');
+    const [toolInfo, setToolInfo] = useState(null);
+    const [urlFieldError, setUrlFieldError] = useState('');
+    const [showSecurityValue, setShowSecurityValue] = useState(false);
+    const { data: settings, isLoading } = usePublisherSettings();
 
     const pageTitle = (
         <Root>
@@ -112,6 +137,8 @@ const MCPServerCreateProxy = (props) => {
             case 'mcpServerUrl':
             case 'isFormValid':
             case 'operations':
+            case 'securityHeader':
+            case 'securityValue':
                 return { ...currentState, [action]: value };
             default:
                 return currentState;
@@ -126,6 +153,8 @@ const MCPServerCreateProxy = (props) => {
         operations: [],
         isFormValid: false,
         mcpServerUrl: '',
+        securityHeader: '',
+        securityValue: '',
     });
 
     /**
@@ -135,6 +164,27 @@ const MCPServerCreateProxy = (props) => {
     const handleOnChange = (event) => {
         const { name: action, value } = event.target;
         inputsDispatcher({ action, value });
+
+        // Clear URL field error when user starts typing
+        if (action === 'mcpServerUrl' && urlFieldError) {
+            setUrlFieldError('');
+        }
+    }
+
+    /**
+     * Handle URL field blur event
+     * @param {Object} event - The blur event
+     */
+    const handleUrlBlur = (event) => {
+        const { value } = event.target;
+        if (!value || value.trim() === '') {
+            setUrlFieldError(intl.formatMessage({
+                id: 'MCPServers.Create.MCPServerCreateProxy.url.required',
+                defaultMessage: 'MCP Server URL is required',
+            }));
+        } else {
+            setUrlFieldError('');
+        }
     }
 
     /**
@@ -148,7 +198,54 @@ const MCPServerCreateProxy = (props) => {
         });
     }
 
-    const createMCPServer = () => {
+    /**
+     * Validate the MCP Server URL provided
+     */
+    const validateMCPServer = () => {
+        setValidating(true);
+        setValidationError('');
+        const { mcpServerUrl, securityHeader, securityValue } = mcpServerInputs;
+
+        const securityInfo = {
+            isSecure: !!(securityHeader && securityValue),
+            header: securityHeader || '',
+            value: securityValue || ''
+        };
+
+        MCPServer.validateThirdPartyMCPServerUrl(mcpServerUrl, securityInfo)
+            .then((response) => {
+                const { body } = response;
+                if (body.isValid) {
+                    setValidationError('');
+                    setToolInfo(body.toolInfo || null);
+                    setWizardStep((step) => step + 1);
+                } else {
+                    const errorMsg = intl.formatMessage({
+                        id: 'MCPServers.Create.MCPServerCreateProxy.validation.failed',
+                        defaultMessage: 'MCP Server validation failed. Please check '
+                        + 'the URL and security credentials (if any) and try again.',
+                    });
+                    setValidationError(errorMsg);
+                    setToolInfo(null);
+                }
+            })
+            .catch((error) => {
+                if (error.response && error.response.body) {
+                    setValidationError('Failed to validate MCP Server URL');
+                } else {
+                    const errorMsg = intl.formatMessage({
+                        id: 'MCPServers.Create.MCPServerCreateProxy.validation.error',
+                        defaultMessage: 'Failed to validate MCP Server URL. Please '
+                        + 'check your connection and try again.',
+                    });
+                    setValidationError(errorMsg);
+                }
+                setToolInfo(null);
+            })
+            .finally(() => setValidating(false));
+    }
+
+    const createMCPServer = async () => {
         setCreating(true);
         const {
             name,
@@ -156,11 +253,12 @@ const MCPServerCreateProxy = (props) => {
             version,
             context,
             mcpServerUrl,
+            securityHeader,
+            securityValue,
             gatewayType,
-            policies = ["Unlimited"],
             operations = [],
         } = mcpServerInputs;
-        
+
         let defaultGatewayType;
         if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
             defaultGatewayType = 'wso2/synapse';
@@ -169,6 +267,15 @@ const MCPServerCreateProxy = (props) => {
         } else {
             defaultGatewayType = 'default';
         }
+
+        // Fetch and select appropriate subscription policy
+        const { defaultSubscriptionPolicy } = settings || {};
+        const policies = await getDefaultSubscriptionPolicy(
+            'subscription',
+            false,
+            defaultSubscriptionPolicy,
+            'Unlimited',
+        );
 
         const additionalProperties = {
             name,
@@ -191,8 +298,17 @@ const MCPServerCreateProxy = (props) => {
             };
         }
 
+        const securityInfo = {
+            isSecure: !!(securityHeader && securityValue),
+            header: securityHeader || '',
+            value: securityValue || ''
+        };
+
         const newMCPServer = new MCPServer(additionalProperties);
-        const promisedCreatedMCPServer = newMCPServer.createMCPServerUsingMCPServerURL(mcpServerUrl);
+        const promisedCreatedMCPServer = newMCPServer.createMCPServerUsingMCPServerURL(
+            mcpServerUrl,
+            securityInfo
+        );
         promisedCreatedMCPServer
             .then((mcpServer) => {
                 Alert.info(intl.formatMessage({
@@ -229,10 +345,22 @@ const MCPServerCreateProxy = (props) => {
                 label: <FormattedMessage
                     variant='caption'
                     id='MCPServers.Create.MCPServerCreateProxy.wizard.two'
+                    defaultMessage='Select Tools'
+                />
+            },
+            {
+                key: 'MCPServers.Create.MCPServerCreateProxy.wizard.three',
+                label: <FormattedMessage
+                    variant='caption'
+                    id='MCPServers.Create.MCPServerCreateProxy.wizard.three'
                     defaultMessage='Create MCP Server'
                 />
             },
         ];
+    }
+
+    if (isLoading) {
+        return <Progress />;
     }
 
     return (
@@ -252,13 +380,147 @@ const MCPServerCreateProxy = (props) => {
             <Grid container>
                 <Grid item md={12}>
                     {wizardStep === 0 && (
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    autoFocus
+                                    id='mcp-server-url'
+                                    label={(
+                                        <>
+                                            <FormattedMessage
+                                                id='MCPServers.Create.MCPServerCreateProxy.url.label'
+                                                defaultMessage='MCP Server URL'
+                                            />
+                                            <sup className={classes.mandatoryStar}>*</sup>
+                                        </>
+                                    )}
+                                    fullWidth
+                                    margin='normal'
+                                    variant='outlined'
+                                    value={mcpServerInputs.mcpServerUrl || ''}
+                                    onChange={handleOnChange}
+                                    onBlur={handleUrlBlur}
+                                    name='mcpServerUrl'
+                                    error={!!urlFieldError}
+                                    helperText={urlFieldError || ' '}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sx={{ mt: -1 }}>
+                                <Accordion defaultExpanded={false}>
+                                    <AccordionSummary
+                                        expandIcon={<ExpandMoreIcon />}
+                                        aria-controls='advanced-config-content'
+                                        id='advanced-config-header'
+                                    >
+                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                            <Typography>
+                                                <FormattedMessage
+                                                    id='MCPServers.Create.MCPServerCreateProxy.advancedConfig'
+                                                    defaultMessage='Advanced Configurations'
+                                                />
+                                            </Typography>
+                                            <Tooltip
+                                                title={(
+                                                    <FormattedMessage
+                                                        id={'MCPServers.Create.MCPServerCreateProxy.'
+                                                            + 'advancedConfig.tooltip'}
+                                                        defaultMessage={
+                                                            'If the MCP Server is protected, ensure to '
+                                                            + 'provide the security credentials (Authentication header '
+                                                            + 'and value) to authenticate with the server.'
+                                                        }
+                                                    />
+                                                )}
+                                                placement='right'
+                                            >
+                                                <IconButton
+                                                    color='primary'
+                                                    size='small'
+                                                    aria-label='advanced config help'
+                                                    sx={{ p: '3px', ml: 1 }}
+                                                >
+                                                    <InfoOutlinedIcon fontSize='small' />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </Box>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Grid container spacing={2}>
+                                            <Grid item xs={12}>
+                                                <Typography variant='subtitle2'>
+                                                    <FormattedMessage
+                                                        id='MCPServers.Create.MCPServerCreateProxy.headerAuth.subtitle'
+                                                        defaultMessage='Configure Authentication Header'
+                                                    />
+                                                </Typography>
+                                            </Grid>
+                                            <Grid item xs={12} md={6}>
+                                                <TextField
+                                                    id='security-header'
+                                                    label={(
+                                                        <FormattedMessage
+                                                            id='MCPServers.Create.MCPServerCreateProxy.header.label'
+                                                            defaultMessage='Header'
+                                                        />
+                                                    )}
+                                                    fullWidth
+                                                    margin='normal'
+                                                    variant='outlined'
+                                                    value={mcpServerInputs.securityHeader || ''}
+                                                    onChange={handleOnChange}
+                                                    name='securityHeader'
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} md={6}>
+                                                <TextField
+                                                    id='security-value'
+                                                    label={(
+                                                        <FormattedMessage
+                                                            id='MCPServers.Create.MCPServerCreateProxy.value.label'
+                                                            defaultMessage='Value'
+                                                        />
+                                                    )}
+                                                    fullWidth
+                                                    margin='normal'
+                                                    variant='outlined'
+                                                    type={showSecurityValue ? 'text' : 'password'}
+                                                    value={mcpServerInputs.securityValue || ''}
+                                                    onChange={handleOnChange}
+                                                    name='securityValue'
+                                                    InputProps={{
+                                                        endAdornment: (
+                                                            <InputAdornment position='end'>
+                                                                <IconButton
+                                                                    aria-label='toggle password visibility'
+                                                                    onClick={() => setShowSecurityValue(
+                                                                        !showSecurityValue
+                                                                    )}
+                                                                    edge='end'
+                                                                >
+                                                                    {showSecurityValue
+                                                                        ? <Visibility />
+                                                                        : <VisibilityOff />}
+                                                                </IconButton>
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                />
+                                            </Grid>
+                                        </Grid>
+                                    </AccordionDetails>
+                                </Accordion>
+                            </Grid>
+                        </Grid>
+                    )}
+                    {wizardStep === 1 && (
                         <MCPProxyToolSelection
                             onValidate={handleOnValidate}
                             apiInputs={mcpServerInputs}
                             inputsDispatcher={inputsDispatcher}
+                            toolInfo={toolInfo}
                         />
                     )}
-                    {wizardStep === 1 && (
+                    {wizardStep === 2 && (
                         <DefaultAPIForm
                             onValidate={handleOnValidate}
                             onChange={handleOnChange}
@@ -271,8 +533,26 @@ const MCPServerCreateProxy = (props) => {
                         />
                     )}
                 </Grid>
+                {validationError && (
+                    <Grid item xs={12} sx={{ mt: 4 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <ErrorIcon color='error' />
+                            <Box>
+                                <Typography sx={{ fontWeight: 600 }}>
+                                    <FormattedMessage
+                                        id='MCPServers.Create.MCPServerCreateProxy.validation.error'
+                                        defaultMessage='Error while validating MCP Server'
+                                    />
+                                </Typography>
+                                <Typography variant='body2'>
+                                    {validationError}
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Grid>
+                )}
                 <Grid item xs={12} sx={{ mt: 3 }}>
-                    <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
+                    <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={1}>
                         <Grid item>
                             {wizardStep === 0 && (
                                 <Link to='/mcp-servers/'>
@@ -284,7 +564,7 @@ const MCPServerCreateProxy = (props) => {
                                     </Button>
                                 </Link>
                             )}
-                            {(wizardStep === 1) && (
+                            {(wizardStep === 1 || wizardStep === 2) && (
                                 <Button onClick={() => setWizardStep((step) => step - 1)}>
                                     <FormattedMessage
                                         id='MCPServers.Create.MCPServerCreateProxy.back'
@@ -293,8 +573,25 @@ const MCPServerCreateProxy = (props) => {
                                 </Button>
                             )}
                         </Grid>
-                        <Grid item>
+                        <Grid item mt={1}>
                             {(wizardStep === 0) && (
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    disabled={!mcpServerInputs.mcpServerUrl?.trim() || isValidating || !!urlFieldError}
+                                    onClick={validateMCPServer}
+                                >
+                                    {isValidating ? (
+                                        <CircularProgress size={24} />
+                                    ) : (
+                                        <FormattedMessage
+                                            id='MCPServers.Create.MCPServerCreateProxy.validate'
+                                            defaultMessage='Next'
+                                        />
+                                    )}
+                                </Button>
+                            )}
+                            {(wizardStep === 1) && (
                                 <Button 
                                     variant='contained'
                                     color='primary'
@@ -307,7 +604,7 @@ const MCPServerCreateProxy = (props) => {
                                     />
                                 </Button>
                             )}
-                            {wizardStep === 1 && (
+                            {wizardStep === 2 && (
                                 <Button
                                     variant='contained'
                                     color='primary'

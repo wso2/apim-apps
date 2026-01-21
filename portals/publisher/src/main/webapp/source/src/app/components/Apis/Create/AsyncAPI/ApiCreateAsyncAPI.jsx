@@ -32,11 +32,10 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
-
+import Progress from 'AppComponents/Shared/Progress';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
-
 import Chip from '@mui/material/Chip';
 import Joi from '@hapi/joi';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
@@ -87,7 +86,9 @@ export default function ApiCreateAsyncAPI(props) {
         multiGateway: assistantMultiGateway } = location.state || {};
     const { history } = props;
     let { multiGateway } = props;
-    let { data: settings } = usePublisherSettings();
+    const { data: settingsData, isLoading } = usePublisherSettings();
+    const { defaultSubscriptionPolicy } = settingsData || {};
+    let settings = settingsData;
     if (!settings) {
         settings = assistantSettings;
     }
@@ -103,12 +104,18 @@ export default function ApiCreateAsyncAPI(props) {
     const [isValidExternalEndpoint, setValidExternalEndpoint] = useState(true);
 
     const intl = useIntl();
+
+    const getPolicies = async () => {
+        const promisedPolicies = API.asyncAPIPolicies();
+        const policies = await promisedPolicies;
+        return policies.body.list;
+    };
+
     /**
-     *
      * Reduce the events triggered from API input fields to current state
-     * @param {*} currentState
-     * @param {*} inputAction
-     * @returns
+     * @param {*} currentState current state
+     * @param {*} inputAction action triggered from input fields
+     * @returns {*} updated state
      */
     function apiInputsReducer(currentState, inputAction) {
         const { action, value } = inputAction;
@@ -149,7 +156,6 @@ export default function ApiCreateAsyncAPI(props) {
         inputType: 'url',
         inputValue: '',
         formValidity: false,
-        policies: ['AsyncUnlimited'], 
         gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
             'wso2/synapse' : multiGateway[0]?.value),
     });
@@ -269,12 +275,35 @@ export default function ApiCreateAsyncAPI(props) {
      *
      * @param {*} params
      */
-    function createAPI() {
+    async function createAPI() {
         setCreating(true);
         const {
-            name, version, context, endpoint, policies, inputValue, inputType, protocol, gatewayVendor,
+            name, version, context, endpoint, inputValue, inputType, protocol, gatewayVendor,
             externalEndpoint,
         } = apiInputs;
+
+        // Fetch and select appropriate subscription policy
+        let policies;
+        const allPolicies = await getPolicies();
+        if (allPolicies.length === 0) {
+            Alert.info(intl.formatMessage({
+                id: 'Apis.Create.AsyncAPI.ApiCreateAsyncAPI.error.policies.not.available',
+                defaultMessage: 'Throttling policies not available. Contact your administrator',
+            }));
+            policies = [];
+        } else {
+            // Helper to check if a policy exists
+            const findPolicy = (policyName) => allPolicies.find((p) => p.policyName === policyName);
+
+            // Priority: defaultSubscriptionPolicy -> AsyncUnlimited -> first available
+            const selectedPolicy =
+                (defaultSubscriptionPolicy && findPolicy(defaultSubscriptionPolicy)) ||
+                findPolicy('AsyncUnlimited') ||
+                allPolicies[0];
+
+            policies = [selectedPolicy.policyName];
+        }
+
         const additionalProperties = {
             name,
             version,
@@ -336,6 +365,12 @@ export default function ApiCreateAsyncAPI(props) {
                 console.error(error);
             })
             .finally(() => setCreating(false));
+    }
+
+    if (isLoading) {
+        return (
+            <Progress />
+        )
     }
 
     return (

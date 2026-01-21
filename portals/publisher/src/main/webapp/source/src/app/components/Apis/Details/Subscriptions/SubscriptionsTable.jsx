@@ -29,17 +29,12 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import Paper from '@mui/material/Paper';
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableRow from '@mui/material/TableRow';
-import Tooltip from '@mui/material/Tooltip';
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import MUIDataTable from 'mui-datatables';
 import Configurations from 'Config';
 import InfoIcon from '@mui/icons-material/Info';
-import UserIcon from '@mui/icons-material/Person';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
@@ -73,7 +68,6 @@ const classes = {
     titleWrapper: `${PREFIX}-titleWrapper`,
     typography: `${PREFIX}-typography`,
     root: `${PREFIX}-root`,
-    InfoToolTip: `${PREFIX}-InfoToolTip`,
     subscriberHeader: `${PREFIX}-subscriberHeader`
 };
 
@@ -98,15 +92,6 @@ const Root = styled('div')((
         alignItems: 'center',
         borderBottom: '2px solid #40E0D0',
         textAlign: 'center',
-    },
-
-    [`& .${classes.table}`]: {
-        '& td': {
-            fontSize: theme.typography.fontSize,
-        },
-        '& th': {
-            fontSize: theme.typography.fontSize * 1.2,
-        },
     },
 
     [`& .${classes.searchDiv}`]: {
@@ -189,22 +174,20 @@ const Root = styled('div')((
         flexGrow: 1,
     },
 
-    [`& .${classes.InfoToolTip}`]: {
-        backgroundColor: theme.custom.disableColor,
-        color: theme.palette.getContrastText(theme.custom.disableColor),
-        fontSize: theme.typography.fontSize,
-        fontWeight: theme.typography.h6.fontWeight,
-        border: 'solid 1px ' + theme.palette.grey,
-        borderRadius: theme.shape.borderRadius,
-        padding: theme.spacing(2),
-    },
-
     [`& .${classes.subscriberHeader}`]: {
         fontSize: theme.typography.h6.fontSize,
         color: theme.typography.h6.color,
         fontWeight: theme.typography.h6.fontWeight,
     }
 }));
+
+const CustomTooltip = styled(({ className, ...props }) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+))({
+    [`& .${tooltipClasses.tooltip}`]: {
+        maxWidth: 200,
+    },
+});
 
 const subscriptionStatus = {
     BLOCKED: 'BLOCKED',
@@ -301,6 +284,7 @@ class SubscriptionsTable extends Component {
     constructor(props) {
         super(props);
         this.api = props.api;
+        this.apiClient = new API();
         this.state = {
             subscriptions: null,
             page: 0,
@@ -308,7 +292,9 @@ class SubscriptionsTable extends Component {
             searchQuery: null,
             emptyColumnHeight: 60,
             policies: [],
-            subscriberClaims: null,
+            subscriberClaims: {},
+            loadingClaims: {},
+            loadingContactInfo: false,
         };
         this.formatSubscriptionStateString = this.formatSubscriptionStateString.bind(this);
         this.blockSubscription = this.blockSubscription.bind(this);
@@ -319,6 +305,8 @@ class SubscriptionsTable extends Component {
         this.filterSubscriptions = this.filterSubscriptions.bind(this);
         this.isMonetizedPolicy = this.isMonetizedPolicy.bind(this);
         this.renderClaims = this.renderClaims.bind(this);
+        this.fetchSubscriberClaims = this.fetchSubscriberClaims.bind(this);
+        this.fetchAllSubscriberClaims = this.fetchAllSubscriberClaims.bind(this);
         this.isNotCreator = AuthManager.isNotCreator();
         this.isNotPublisher = AuthManager.isNotPublisher();
     }
@@ -530,8 +518,8 @@ class SubscriptionsTable extends Component {
      * @memberof SubscriptionsTable
      */
     blockSubscription(subscriptionId) {
+        const api = this.apiClient;
         const { intl } = this.props;
-        const api = new API();
         const promisedSubscriptionUpdate = api.blockSubscriptions(subscriptionId, subscriptionStatus.BLOCKED);
         promisedSubscriptionUpdate
             .then(() => {
@@ -561,8 +549,8 @@ class SubscriptionsTable extends Component {
      * @memberof SubscriptionsTable
      */
     blockProductionOnly(subscriptionId) {
+        const api = this.apiClient;
         const { intl } = this.props;
-        const api = new API();
         const promisedSubscriptionUpdate = api.blockSubscriptions(subscriptionId, subscriptionStatus.PROD_BLOCKED);
         promisedSubscriptionUpdate
             .then(() => {
@@ -592,8 +580,8 @@ class SubscriptionsTable extends Component {
      * @memberof SubscriptionsTable
      */
     unblockSubscription(subscriptionId) {
+        const api = this.apiClient;
         const { intl } = this.props;
-        const api = new API();
         const promisedSubscriptionUpdate = api.unblockSubscriptions(subscriptionId);
         promisedSubscriptionUpdate
             .then(() => {
@@ -622,7 +610,7 @@ class SubscriptionsTable extends Component {
      * @memberof SubscriptionsTable
      */
     fetchSubscriptionData() {
-        const api = new API();
+        const api = this.apiClient;
         const { page, rowsPerPage, searchQuery } = this.state;
         const { intl } = this.props;
         const { maxSubscriptionLimit } = Configurations.apis;
@@ -635,26 +623,8 @@ class SubscriptionsTable extends Component {
         promisedSubscriptions
             .then((response) => {
                 for (let i = 0; i < response.body.list.length; i++) {
-                    const { subscriptionId } = response.body.list[i];
                     response.body.list[i].name = response.body.list[i].applicationInfo.name;
                     response.body.list[i].subscriber = response.body.list[i].applicationInfo.subscriber;
-                    const promisedInfo = api.getSubscriberInfo(subscriptionId);
-                    promisedInfo
-                        .then((resp) => {
-                            this.setState((prevState) => ({
-                                subscriberClaims: {
-                                    ...prevState.subscriberClaims,
-                                    [subscriptionId]: resp.body,
-                                },
-                            }));
-                        })
-                        .catch((errorMessage) => {
-                            console.error(errorMessage);
-                            Alert.error(intl.formatMessage({
-                                id: 'Apis.Details.Subscriptions.SubscriptionsTable.subscriber.info.error',
-                                defaultMessage: 'Error while retrieving the subscriber information',
-                            }));
-                        });
                 }
                 this.setState({
                     subscriptions: response.body.list,
@@ -681,6 +651,162 @@ class SubscriptionsTable extends Component {
             .then((policies) => {
                 const filteredPolicies = policies ? policies.filter((policy) => policy.tierPlan === 'COMMERCIAL') : [];
                 this.setState({ policies: filteredPolicies });
+            });
+    }
+
+    /**
+     * Fetches all subscriber claims for all subscriptions
+     *
+     * @memberof SubscriptionsTable
+     */
+    fetchAllSubscriberClaims() {
+        const api = this.apiClient;
+        const { subscriptions, subscriberClaims } = this.state;
+        const { intl } = this.props;
+
+        this.setState({ loadingContactInfo: true });
+
+        // Get all subscription IDs that don't have claims yet
+        const subscriptionsToFetch = subscriptions.filter(
+            (sub) => !subscriberClaims[sub.subscriptionId],
+        );
+
+        const promises = subscriptionsToFetch.map((sub) =>
+            api
+                .getSubscriberInfo(sub.subscriptionId)
+                .then((resp) => ({
+                    subscriptionId: sub.subscriptionId,
+                    data: resp.body,
+                }))
+                .catch((error) => {
+                    console.error(
+                        `Error fetching claims for ${sub.subscriptionId}:`,
+                        error,
+                    );
+                    return null;
+                }),
+        );
+
+        Promise.all(promises)
+            .then((results) => {
+                const newClaims = {};
+                results.forEach((result) => {
+                    if (result) {
+                        newClaims[result.subscriptionId] = result.data;
+                    }
+                });
+
+                this.setState(
+                    (prevState) => ({
+                        subscriberClaims: {
+                            ...prevState.subscriberClaims,
+                            ...newClaims,
+                        },
+                        loadingContactInfo: false,
+                    }),
+                    () => {
+                        // After all claims are loaded, open the mailto link
+                        this.openContactSubscribersLink();
+                    },
+                );
+            })
+            .catch((error) => {
+                console.error('Error fetching subscriber claims:', error);
+                Alert.error(
+                    intl.formatMessage({
+                        id: 'Apis.Details.Subscriptions.SubscriptionsTable.subscriber.info.error.bulk',
+                        defaultMessage:
+                            'Error while retrieving subscriber information',
+                    }),
+                );
+                this.setState({ loadingContactInfo: false });
+            });
+    }
+
+    /**
+     * Opens the mailto link with all subscriber emails
+     *
+     * @memberof SubscriptionsTable
+     */
+    openContactSubscribersLink() {
+        const { subscriberClaims } = this.state;
+        const subMails = {};
+
+        Object.values(subscriberClaims || {}).forEach((v) => {
+            if (!v || !v.name || !v.claims || !v.claims.length || subMails[v.name]) {
+                return;
+            }
+            const emailClaim = v.claims.find(
+                (claim) => claim.uri === 'http://wso2.org/claims/emailaddress',
+            );
+            if (emailClaim && emailClaim.value) {
+                subMails[v.name] = emailClaim.value;
+            }
+        });
+
+        const emails = Object.values(subMails).join(',');
+        const names = Object.keys(subMails).join(', ');
+
+        if (emails) {
+            window.location.href = `mailto:?subject=Message from the API Publisher&cc=${emails}&body=Hi ${
+                names || ''
+            },`;
+        }
+    }
+
+    /**
+     * Fetches subscriber claims for a specific subscription
+     *
+     * @param {string} subscriptionId Subscription ID
+     * @memberof SubscriptionsTable
+     */
+    fetchSubscriberClaims(subscriptionId) {
+        const api = this.apiClient;
+        const { subscriberClaims, loadingClaims } = this.state;
+        const { intl } = this.props;
+
+        // Don't fetch if already loaded or currently loading
+        if (subscriberClaims[subscriptionId] || loadingClaims[subscriptionId]) {
+            return;
+        }
+
+        // Mark as loading
+        this.setState((prevState) => ({
+            loadingClaims: {
+                ...prevState.loadingClaims,
+                [subscriptionId]: true,
+            },
+        }));
+
+        const promisedInfo = api.getSubscriberInfo(subscriptionId);
+        promisedInfo
+            .then((resp) => {
+                this.setState((prevState) => ({
+                    subscriberClaims: {
+                        ...prevState.subscriberClaims,
+                        [subscriptionId]: resp.body,
+                    },
+                    loadingClaims: {
+                        ...prevState.loadingClaims,
+                        [subscriptionId]: false,
+                    },
+                }));
+            })
+            .catch((errorMessage) => {
+                console.error(errorMessage);
+                Alert.error(
+                    intl.formatMessage({
+                        id: 'Apis.Details.Subscriptions.SubscriptionsTable.subscriber.info.error',
+                        defaultMessage:
+                            'Error while retrieving the subscriber information',
+                    }),
+                );
+                this.setState((prevState) => ({
+                    loadingClaims: {
+                        ...prevState.loadingClaims,
+                        [subscriptionId]: false,
+                    },
+                }));
             });
     }
 
@@ -715,36 +841,45 @@ class SubscriptionsTable extends Component {
     /**
      * Render claims based on the claim object
      */
-    renderClaims(claimsObject) {
+    renderClaims(claimsObject, subscriptionId) {
+        const { loadingClaims } = this.state;
+        
+        if (loadingClaims[subscriptionId]) {
+            return (
+                <Grid container direction='row' justifyContent='center' alignItems='center'>
+                    <Grid item>
+                        <CircularProgress size={20} />
+                    </Grid>
+                    <Grid item>
+                        <Typography className={classes.typography}>
+                            <FormattedMessage
+                                id='Apis.Details.Subscriptions.Subscriber.loading.claims'
+                                defaultMessage='Loading subscriber information...'
+                            />
+                        </Typography>
+                    </Grid>
+                </Grid>
+            );
+        }
+
         if (claimsObject) {
             return (
                 <div className={classes.root}>
-                    {claimsObject.name}
-                    <Grid container spacing={1}>
-                        <Grid item>
-                            <UserIcon color='primary' />
-                        </Grid>
-                        <Grid item>
-                            {claimsObject.name}
-                        </Grid>
-                    </Grid>
                     {claimsObject.claims && (
-                        <div>
-                            <Table className={classes.table}>
-                                <TableBody>
-                                    {claimsObject.claims.map((claim) => (
-                                        <TableRow hover>
-                                            <TableCell>{claim.name}</TableCell>
-                                            {claim.value ? (
-                                                <TableCell>{claim.value}</TableCell>
-                                            ) : (
-                                                <TableCell>Not Available</TableCell>
-                                            )}
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </div>
+                        <Box m={0.5}>
+                            {claimsObject.claims.map((claim) => (
+                                <Box display='flex' gap={4} key={claim.uri}>
+                                    <Box flexShrink={0}>
+                                        <Typography variant='caption' noWrap>{claim.name}</Typography>
+                                    </Box>
+                                    <Box flexGrow={1} textAlign='right'>
+                                        <Typography variant='caption' style={{ wordBreak: 'break-all' }}>
+                                            {claim.value || 'Not Available'}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            ))}
+                        </Box>
                     )}
                 </div>
             );
@@ -766,7 +901,7 @@ class SubscriptionsTable extends Component {
      */
     render() {
         const {
-            subscriptions, rowsPerPage, emptyColumnHeight, subscriberClaims,
+            subscriptions, rowsPerPage, emptyColumnHeight, subscriberClaims, loadingContactInfo,
         } = this.state;
         const {  api, intl } = this.props;
         if (!subscriptions) {
@@ -805,28 +940,24 @@ class SubscriptionsTable extends Component {
                     sort: false,
                     customBodyRender: (value, tableMeta) => {
                         if (tableMeta.rowData) {
+                            const subscriptionId = tableMeta.rowData[0];
+                            const subscriberName = tableMeta.rowData[2];
                             let claimsObject;
                             if (subscriberClaims) {
-                                claimsObject = subscriberClaims[tableMeta.rowData[0]];
+                                claimsObject = subscriberClaims[subscriptionId];
                             }
                             return (
                                 <Box display='flex'>
                                     <Box pr={1}>
-                                        {subscriberClaims && claimsObject && claimsObject.name}
+                                        {subscriberName}
                                     </Box>
-                                    <Tooltip
+                                    <CustomTooltip
                                         interactive
                                         placement='top'
-                                        classes={{
-                                            tooltip: classes.InfoToolTip,
-                                        }}
+                                        onOpen={() => this.fetchSubscriberClaims(subscriptionId)}
                                         title={(
                                             (<Root>
-                                                {subscriberClaims && (
-                                                    <div>
-                                                        {this.renderClaims(claimsObject)}
-                                                    </div>
-                                                )}
+                                                {this.renderClaims(claimsObject, subscriptionId)}
                                             </Root>)
                                         )}
                                     >
@@ -837,7 +968,7 @@ class SubscriptionsTable extends Component {
                                                 </Typography>
                                             </Grid>
                                         </Grid>
-                                    </Tooltip>
+                                    </CustomTooltip>
                                 </Box>
                             );
                         }
@@ -1053,6 +1184,9 @@ class SubscriptionsTable extends Component {
             selectableRows: 'none',
             rowsPerPageOptions: [5, 10, 25, 50, 100],
             rowsPerPage,
+            onChangeRowsPerPage: (numberOfRows) => {
+                this.setState({ rowsPerPage: numberOfRows });
+            },
             textLabels: {
                 pagination: {
                     rowsPerPage: intl.formatMessage({
@@ -1066,31 +1200,6 @@ class SubscriptionsTable extends Component {
                 },
             },
         };
-        const subMails = {};
-        const emails = subscriberClaims && Object.entries(subscriberClaims).map(([, v]) => {
-            let email = null;
-            if (!subMails[v.name] && v.claims.length > 0) {
-                email = v.claims.find((claim) => claim.uri === 'http://wso2.org/claims/emailaddress').value;
-                subMails[v.name] = email;
-            }
-            return email;
-        }).reduce((a, b) => {
-            return b !== null ? `${a || ''},${b}` : a;
-        });
-        let names = null;
-        if (subMails) {
-            Object.entries(subMails).map(([k, v]) => {
-                if (v) {
-                    if (names === null) {
-                        names = k;
-                    } else {
-                        names = `${names}, ${k}`;
-                    }
-                }
-                return null;
-            });
-        }
-        const Tip = names ? React.Fragment : Tooltip;
         return (
             <Root>
                 <div className={classes.heading}>
@@ -1101,24 +1210,27 @@ class SubscriptionsTable extends Component {
                         />
                         {'   '}
                         {subscriptions.length > 0 && (
-                            <Tip title='No contact details' placement='top'>
-                                <span>
-                                    <Button
-                                        target='_blank'
-                                        rel='noopener'
-                                        href={`mailto:?subject=Message from the API Publisher&cc=${emails}`
-                                            + `&body=Hi ${names},`}
-                                        size='small'
-                                        disabled={!names}
-                                        variant='outlined'
-                                    >
+                            <Button
+                                onClick={this.fetchAllSubscriberClaims}
+                                size='small'
+                                disabled={loadingContactInfo}
+                                variant='outlined'
+                            >
+                                {loadingContactInfo ? (
+                                    <>
+                                        <CircularProgress size={16} style={{ marginRight: 8 }} />
                                         <FormattedMessage
-                                            id='Apis.Details.Subscriptions.SubscriptionsTable.contact.subscribers'
-                                            defaultMessage='Contact Subscribers'
+                                            id='Apis.Details.Subscriptions.SubscriptionsTable.loading.contact.info'
+                                            defaultMessage='Loading...'
                                         />
-                                    </Button>
-                                </span>
-                            </Tip>
+                                    </>
+                                ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.Subscriptions.SubscriptionsTable.contact.subscribers'
+                                        defaultMessage='Contact Subscribers'
+                                    />
+                                )}
+                            </Button>
                         )}
                     </Typography>
                     <Typography variant='caption' gutterBottom>
@@ -1156,7 +1268,9 @@ SubscriptionsTable.propTypes = {
     api: PropTypes.shape({
         id: PropTypes.string,
     }).isRequired,
-    intl: PropTypes.shape({}).isRequired,
+    intl: PropTypes.shape({
+        formatMessage: PropTypes.func.isRequired,
+    }).isRequired,
 };
 
 export default injectIntl((SubscriptionsTable));

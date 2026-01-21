@@ -170,8 +170,35 @@ class HeaderSearch extends React.Component {
         const { history } = this.props;
         this.suggestionSelected = true;
         if (event.key === 'Enter') {
-            const path = suggestion.type === 'API' ? `/apis/${suggestion.id}/overview`
-                : `/apis/${suggestion.apiUUID}/documents/${suggestion.id}/details`;
+            let path;
+            switch (suggestion.type) {
+                case 'API':
+                    path = `/apis/${suggestion.id}/overview`;
+                    break;
+                case 'APIPRODUCT':
+                    path = `/api-products/${suggestion.id}/overview`;
+                    break;
+                case 'MCP':
+                    path = `/mcp-servers/${suggestion.id}/overview`;
+                    break;
+                case 'DEFINITION':
+                    if (suggestion.associatedType === 'API') {
+                        path = `/apis/${suggestion.apiUUID}/api-definition`;
+                    } else if (suggestion.associatedType === 'MCP') {
+                        path = `/mcp-servers/${suggestion.apiUUID}/api-definition`;
+                    } else {
+                        path = `/api-products/${suggestion.apiUUID}/api-definition`;
+                    }
+                    break;
+                default:
+                    if (suggestion.associatedType === 'API') {
+                        path = `/apis/${suggestion.apiUUID}/documents/${suggestion.id}/details`;
+                    } else if (suggestion.associatedType === 'MCP') {
+                        path = `/mcp-servers/${suggestion.apiUUID}/documents/${suggestion.id}/details`;
+                    } else {
+                        path = `/api-products/${suggestion.apiUUID}/documents/${suggestion.id}/details`;
+                    }
+            }
             history.push(path);
         }
     }
