@@ -196,9 +196,10 @@ class MCPServer extends Resource {
     /**
      * Create a new MCP Server using an MCP Server URL.
      * @param {string} mcpServerUrl - The URL of the MCP Server to create.
+     * @param {Object} [securityInfo] - Security information for the MCP Server.
      * @returns {Promise<MCPServer>} A promise that resolves to the created MCPServer instance.
      */
-    createMCPServerUsingMCPServerURL(mcpServerUrl) {
+    createMCPServerUsingMCPServerURL(mcpServerUrl, securityInfo = null) {
         let payload;
         const promisedCreate = this.client.then(client => {
             const apiData = this.getDataFromSpecFields(client);
@@ -207,7 +208,7 @@ class MCPServer extends Resource {
                 requestBody: {
                     url: mcpServerUrl,
                     additionalProperties: apiData,
-                    securityInfo: {
+                    securityInfo: securityInfo || {
                         isSecure: false,
                         header: '',
                         value: ''
@@ -295,9 +296,13 @@ class MCPServer extends Resource {
     /**
      * Validate the MCP Server URL.
      * @param {string} url - The URL of the MCP Server to validate.
+     * @param {Object} [securityInfo] - Security information for the MCP Server.
+     * @param {boolean} [securityInfo.isSecure] - Whether security is enabled.
+     * @param {string} [securityInfo.header] - The security header name.
+     * @param {string} [securityInfo.value] - The security header value.
      * @returns {Promise} A promise that resolves to the validation result.
      */
-    static validateThirdPartyMCPServerUrl(url) {
+    static validateThirdPartyMCPServerUrl(url, securityInfo = null) {
         const apiClient = new APIClientFactory()
             .getAPIClient(
                 Utils.getCurrentEnvironment(),
@@ -310,7 +315,7 @@ class MCPServer extends Resource {
             const requestBody = {
                 requestBody: {
                     url,
-                    securityInfo: {
+                    securityInfo: securityInfo || {
                         isSecure: false,
                         header: '',
                         value: ''
