@@ -276,12 +276,13 @@ const SecretsTable = (props) => {
             const { additionalProperties } = secret || {};
             const description = additionalProperties?.description || "";
             const expiresAt = additionalProperties?.expiresAt;
+            const expiresAtInSeconds = expiresAt * 1000;
 
             const matchesSearch =
                 !searchTerm ||
                 description?.toLowerCase().includes(searchTerm.toLowerCase());
 
-            const isExpired = expiresAt && Date.now() > expiresAt;
+            const isExpired = expiresAtInSeconds && Date.now() > expiresAtInSeconds;
 
             // Show all if showExpired=true, else filter out expired
             const showSecret = showExpired || !isExpired;
@@ -296,17 +297,17 @@ const SecretsTable = (props) => {
         return filteredSecrets.slice(start, end);
     }, [filteredSecrets, page, rowsPerPage]);
 
+    const isExpired = (expiresAtInSeconds) => Date.now() > expiresAtInSeconds * 1000;
+
     const hasExpiredSecrets = useMemo(
-        () => secrets.some((s) => s.additionalProperties?.expiresAt && Date.now() > s.additionalProperties.expiresAt),
+        () => secrets.some((s) => s.additionalProperties?.expiresAt && isExpired(s.additionalProperties.expiresAt)),
         [secrets]
     );
 
     const allSecretsExpired = useMemo(
         () =>
             secrets.length > 0 &&
-            secrets.every(
-                (s) => s.additionalProperties?.expiresAt && Date.now() > s.additionalProperties.expiresAt
-            ),
+            secrets.every((s) => s.additionalProperties?.expiresAt && isExpired(s.additionalProperties.expiresAt)),
         [secrets]
     );
 
