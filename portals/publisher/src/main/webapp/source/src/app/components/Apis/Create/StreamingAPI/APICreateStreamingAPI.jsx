@@ -361,15 +361,26 @@ const APICreateStreamingAPI = (props) => {
                     }
                     setIsDeploying(true);
                     streamingApi.deployRevision(api.id, revisionId, body1)
-                        .then(() => {
+                        .then((res) => {
+                            setIsDeploying(false);
+
+                            // Check deployment status before publishing (same logic as APICreateDefault)
+                            const deploymentStatus = res.body[0].status;
+                            if (deploymentStatus === 'CREATED') {
+                                setIsPublishing(false);
+                                setIsPublishButtonClicked(false);
+                                history.push(`/apis/${api.id}/overview`);
+                                return;
+                            }
+
                             Alert.info(
                                 intl.formatMessage({
                                     id: 'Apis.Create.Default.APICreateDefault.streaming.revision.deployed.',
                                     defaultMessage: 'API Revision Deployed Successfully',
                                 }),
                             );
-                            setIsDeploying(false);
-                            // Publishing API after deploying
+
+                            // Publishing API after successful deployment
                             setIsPublishing(true);
                             api.publish()
                                 .then((response) => {
