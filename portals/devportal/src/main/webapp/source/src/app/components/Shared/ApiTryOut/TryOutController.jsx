@@ -802,7 +802,6 @@ function TryOutController(props) {
                                 fullWidth
                                 margin='normal'
                                 variant='outlined'
-                                required
                                 label={(
                                     <FormattedMessage
                                         id='consumer.secret'
@@ -814,6 +813,14 @@ function TryOutController(props) {
                                 type={showSecret ? 'text' : 'password'}
                                 value={consumerSecret || ''}
                                 id='consumerSecretInput'
+                                helperText={
+                                    isConsumerSecretRequired && !consumerSecret?.trim()
+                                        ? <FormattedMessage
+                                            id='Apis.Details.TryOutConsole.consumerSecret.required.helper'
+                                            defaultMessage='Consumer Secret is required to generate a new Test Key.'
+                                        />
+                                        : null
+                                }
                                 InputProps={{
                                     autoComplete: 'new-password',
                                     endAdornment: (
@@ -965,13 +972,20 @@ function TryOutController(props) {
                                             placement='right'
                                             interactive
                                             title={(
-                                                <FormattedMessage
-                                                    id='Apis.Details.TryOutConsole.access.token.tooltip'
-                                                    defaultMessage={
-                                                        'You can use your existing Access Token or '
-                                                                + 'you can generate a new Test Key.'
-                                                    }
-                                                />
+                                                <>
+                                                    <FormattedMessage
+                                                        id='Apis.Details.TryOutConsole.access.token.tooltip'
+                                                        defaultMessage='You can use your existing Access Token or generate a new Test Key.'
+                                                    />
+                                                    {!enableGetTestKeyButton && securitySchemeType === 'OAUTH' && isMultipleClientSecretsAllowed && (
+                                                        <div style={{ marginTop: 4, fontWeight: 500 }}>
+                                                            <FormattedMessage
+                                                                id='Apis.Details.TryOutConsole.consumer.secret.required'
+                                                                defaultMessage='Consumer Secret is required to generate a new Test Key.'
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </>
                                             )}
                                         >
                                             <Box m={1} mt={2}>
