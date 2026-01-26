@@ -263,10 +263,8 @@ const AddEditAIEndpoint = ({
     const [secretKey, setSecretKey] = useState(null);
     const [region, setRegion] = useState(null);
     const [showApiKey, setShowApiKey] = useState(false);
-
-    const subtypeConfig = apiObject.subtypeConfiguration && JSON.parse(apiObject.subtypeConfiguration.configuration);
-    const llmProviderName = subtypeConfig ? subtypeConfig.llmProviderName : null;
-
+    const [authKeyIdentifier, setAuthKeyIdentifier] = useState('');
+    const [authKeyIdentifierType, setAuthKeyIdentifierType] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
 
     const history = useHistory();
@@ -324,11 +322,15 @@ const AddEditAIEndpoint = ({
                     setEndpointUrl(endpointConfig.sandbox_endpoints.url);
                 }
 
-                // Set API key value
+                // Set API key value and identifier
                 const envType = isProd ? 'production' : 'sandbox';
                 const securityConfig = endpointConfig.endpoint_security?.[envType];
                 if (securityConfig?.apiKeyValue === '') {
                     setApiKeyValue('********');
+                }
+                if (securityConfig?.apiKeyIdentifier) {
+                    setAuthKeyIdentifier(securityConfig.apiKeyIdentifier);
+                    setAuthKeyIdentifierType(securityConfig.apiKeyIdentifierType);
                 }
                 // Set AWS related values
                 if (securityConfig?.accessKey) {
@@ -354,11 +356,15 @@ const AddEditAIEndpoint = ({
                             setEndpointUrl(body.endpointConfig.sandbox_endpoints.url);
                         }
 
-                        // Set API key value
+                        // Set API key value and identifier
                         const envType = body.deploymentStage === "PRODUCTION" ? 'production' : 'sandbox';
                         const securityConfig = body.endpointConfig.endpoint_security?.[envType];
                         if (securityConfig?.apiKeyValue === '') {
                             setApiKeyValue('********');
+                        }
+                        if (securityConfig?.apiKeyIdentifier) {
+                            setAuthKeyIdentifier(securityConfig.apiKeyIdentifier);
+                            setAuthKeyIdentifierType(securityConfig.apiKeyIdentifierType);
                         }
                         // Set AWS related values
                         if (securityConfig?.accessKey) {
@@ -432,32 +438,18 @@ const AddEditAIEndpoint = ({
         }
 
         let updatedApiKeyValue = apiKeyValue;
-        if ((llmProviderName === 'MistralAI' || llmProviderName === 'OpenAI') &&
-            apiKeyValue !== null && apiKeyValue !== '') {
+        if (apiKeyValue !== null && apiKeyValue !== '' && authKeyIdentifier.toLowerCase() === 'authorization') {
             updatedApiKeyValue = `Bearer ${updatedApiKeyValue}`;
         }
 
         const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
-        let apiKeyIdentifier;
-        let apiKeyIdentifierType;
-        if (llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled
-            && llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'apikey') {
-            if (llmProviderEndpointConfiguration?.authenticationConfiguration?.parameters?.headerEnabled) {
-                apiKeyIdentifier =
-                    llmProviderEndpointConfiguration?.authenticationConfiguration?.parameters?.headerName;
-                apiKeyIdentifierType = "HEADER";
-            }
-            if (llmProviderEndpointConfiguration?.authenticationConfiguration?.parameters?.queryParameterEnabled) {
-                apiKeyIdentifier =
-                    llmProviderEndpointConfiguration?.authenticationConfiguration?.parameters?.queryParameterName;
-                apiKeyIdentifierType = "QUERY_PARAMETER";
-            }
-        }
+        // Use the state values for apiKeyIdentifier and apiKeyIdentifierType
+        // These are either loaded from backend (edit mode) or set from config (add mode)
         saveEndpointSecurityConfig({
             ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
             type: llmProviderEndpointConfiguration.authenticationConfiguration.type,
-            apiKeyIdentifier,
-            apiKeyIdentifierType,
+            apiKeyIdentifier: authKeyIdentifier,
+            apiKeyIdentifierType: authKeyIdentifierType,
             apiKeyValue: updatedApiKeyValue,
             enabled: true,
         }, isProduction ? 'production' : 'sandbox');
@@ -828,7 +820,8 @@ const AddEditAIEndpoint = ({
     };
 
     // Add this before the return statement, after all hooks and state
-    const apiKeyParamConfig = {
+    // Get the default values from LLM provider configuration
+    const defaultApiKeyParamConfig = {
         authHeader:
             llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled &&
             llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'apikey' &&
@@ -841,6 +834,25 @@ const AddEditAIEndpoint = ({
                 llmProviderEndpointConfiguration?.authenticationConfiguration?.parameters?.queryParameterEnabled
                 ? llmProviderEndpointConfiguration?.authenticationConfiguration?.parameters?.queryParameterName
                 : null,
+    };
+
+    // Initialize authKeyIdentifier from config if not already set (for add scenario)
+    useEffect(() => {
+        if (!authKeyIdentifier && !isEditing) {
+            const defaultValue = defaultApiKeyParamConfig.authHeader || defaultApiKeyParamConfig.authQueryParam;
+            if (defaultValue) {
+                setAuthKeyIdentifier(defaultValue);
+                setAuthKeyIdentifierType(defaultApiKeyParamConfig.authHeader ? 'HEADER' : 'QUERY_PARAMETER');
+            }
+        }
+    }, [defaultApiKeyParamConfig.authHeader, defaultApiKeyParamConfig.authQueryParam]);
+
+    // Determine if it's a header or query param type
+    const isHeaderType = authKeyIdentifierType === 'HEADER' ||
+        (!authKeyIdentifierType && defaultApiKeyParamConfig.authHeader);
+
+    const handleAuthKeyIdentifierChange = (event) => {
+        setAuthKeyIdentifier(event.target.value);
     };
 
     const IS_APIKEY_AUTH_ENABLED = (config) =>
@@ -1030,8 +1042,8 @@ const AddEditAIEndpoint = ({
                                 <>
                                     <Grid item xs={6}>
                                         <TextField
-                                            disabled
-                                            label={apiKeyParamConfig.authHeader ? (
+                                            disabled={isRestricted(['apim:api_create'], apiObject)}
+                                            label={isHeaderType ? (
                                                 <FormattedMessage
                                                     id='Apis.Details.Endpoints.AIEndpoints.Edit.api.key.header'
                                                     defaultMessage='Authorization Header'
@@ -1044,10 +1056,10 @@ const AddEditAIEndpoint = ({
                                             )}
                                             fullWidth
                                             id='api-key-id'
-                                            value={apiKeyParamConfig.authHeader ||
-                                                apiKeyParamConfig.authQueryParam}
-                                            placeholder={apiKeyParamConfig.authHeader ||
-                                                apiKeyParamConfig.authQueryParam}
+                                            value={authKeyIdentifier}
+                                            onChange={handleAuthKeyIdentifierChange}
+                                            placeholder={defaultApiKeyParamConfig.authHeader ||
+                                                defaultApiKeyParamConfig.authQueryParam}
                                             InputLabelProps={{
                                                 shrink: true,
                                             }}
