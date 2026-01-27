@@ -117,7 +117,7 @@ function Onboarding() {
                         variant='outlined'
                         color='primary'
                         href={Configurations.app.docUrl
-                            + 'manage-apis/design/create-api/create-an-api-using-a-service/'}
+                            + 'api-design-manage/design/create-api/create-an-api-using-a-service/'}
                         target='_blank'
                         rel='noopener noreferrer'
                         endIcon={<LaunchIcon style={{ fontSize: 15 }} />}
