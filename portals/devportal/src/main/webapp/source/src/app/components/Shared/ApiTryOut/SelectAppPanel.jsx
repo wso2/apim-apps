@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import {
@@ -211,7 +211,33 @@ const SelectAppPanel = (props) => {
                                 )}
                             />
                         </RadioGroup>
-                    </FormControl>
+                        {isMultipleSecretsAllowed && (
+                            <TextField
+                                fullWidth
+                                variant="outlined"
+                                margin="normal"
+                                type={showSecret ? "text" : "password"}
+                                label={(
+                                    <FormattedMessage
+                                        id='Shared.AppsAndKeys.Tokens.consumer.secret'
+                                        defaultMessage='Consumer Secret'
+                                    />
+                                )}
+                                name="consumerSecret"
+                                value={consumerSecret}
+                                onChange={(e) => onConsumerSecretChange(e.target.value)}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton onClick={toggleVisibility} edge="end">
+                                                {showSecret ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                    )}
+                </FormControl>
                 )}
             </Grid>
         </Root>
