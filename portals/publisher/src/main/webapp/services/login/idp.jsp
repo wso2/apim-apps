@@ -50,7 +50,7 @@
     String serverUrl = "";
     String forwarded_for = request.getHeader((String) Util.readJsonObj(settings, "app.customUrl.forwardedHeader"));
     boolean customUrlEnabled = (boolean) Util.readJsonObj(settings, "app.customUrl.enabled");
-    if (customUrlEnabled && !forwarded_for.isEmpty()) {
+    if (customUrlEnabled && forwarded_for != null && !forwarded_for.isEmpty()) {
         serverUrl = "https://" + forwarded_for;
     } else {
         serverUrl = APIUtil.getServerURL();

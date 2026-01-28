@@ -61,7 +61,7 @@
     String serverUrl = "";
     String forwarded_for = request.getHeader((String) Util.readJsonObj(settings, "app.customUrl.forwardedHeader"));
     boolean customUrlEnabled = (boolean) Util.readJsonObj(settings, "app.customUrl.enabled");
-    if (customUrlEnabled && !forwarded_for.isEmpty()) {
+    if (customUrlEnabled && forwarded_for != null && !forwarded_for.isEmpty()) {
         // Even though we redirect to custom URL, IS redirection happens to carbon host/proxy port combination
         // i:e https://<carbonhost>:<proxyport|serverport>/authenticationendpoint/oauth2_logout_consent.do?sp=admin_admin_publisher&tenantDomain=carbon.super
         serverUrl = "https://" + forwarded_for;
