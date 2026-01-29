@@ -74,6 +74,7 @@ function ViewCurl(props) {
         keyManagerConfig,
         jwtToken,
         defaultTokenEndpoint,
+        consumerSecretMasked,
     } = props;
     const bas64Encoded = window.btoa(consumerKey + ':' + consumerSecret);
     const [showReal, setShowReal] = useState(false);
@@ -93,8 +94,8 @@ function ViewCurl(props) {
     let { tokenEndpoint } = keyManagerConfig;
     const isAzureAD = keyManagerConfig.type === 'AzureAD';
     const azureScope = isAzureAD ? ` -d "scope=api://${consumerKey}/.default"` : '';
-    const multipleSecretsAllowed = isMultipleClientSecretsEnabled(keyManagerConfig.additionalProperties);
-    const multipleSecretSnippet =
+    const isConsumerSecretRequired = isMultipleClientSecretsEnabled(keyManagerConfig.additionalProperties) || consumerSecretMasked;
+    const consumerSecretRequiredSnippet =
         <div>
             <span className={classes.command}> -u </span>
             {'"consumerKey:<CONSUMER_SECRET>" '}
@@ -102,7 +103,7 @@ function ViewCurl(props) {
 
     // Returns the authorization part for the curl command
     const getAuthSnippetString = () => {
-        return multipleSecretsAllowed
+        return isConsumerSecretRequired
             ? `-u "${consumerKey}:<CONSUMER_SECRET>"`
             : `-H "Authorization: Basic ${bas64Encoded}"`
     };
@@ -125,7 +126,7 @@ function ViewCurl(props) {
                             <span className={classes.command}> -d </span>{' '}
                             {'"grant_type=password&username=Username&password=Password"'}
                         </div>
-                        {multipleSecretsAllowed ? (multipleSecretSnippet) : (
+                        {isConsumerSecretRequired ? (consumerSecretRequiredSnippet) : (
                             <div>
                                 <span className={classes.command}> -H </span>
                                 {'"Authorization: Basic'}
@@ -187,7 +188,7 @@ function ViewCurl(props) {
                               </>
                             )}
                         </div>
-                        {multipleSecretsAllowed ? (multipleSecretSnippet) : (
+                        {isConsumerSecretRequired ? (consumerSecretRequiredSnippet) : (
                             <div>
                                 <span className={classes.command}> -H </span>
                                 {'"Authorization: Basic'}
@@ -269,14 +270,16 @@ function ViewCurl(props) {
                                     {showReal ? ' ' + jwtToken : 'jwtToken'}
                                 </a>
                             </div>
-                            <div>
-                                <span className={classes.command}> -H </span>
-                                {'"Authorization: Basic'}
-                                <a onClick={applyReal} className={classes.encodeVisible}>
-                                    {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
-                                </a>
-                                {'"'}
-                            </div>
+                            {isConsumerSecretRequired ? (consumerSecretRequiredSnippet) : (
+                                <div>
+                                    <span className={classes.command}> -H </span>
+                                    {'"Authorization: Basic'}
+                                    <a onClick={applyReal} className={classes.encodeVisible}>
+                                        {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
+                                    </a>
+                                    {'"'}
+                                </div>
+                            )}
                         </div>
                         <div>
                             <Tooltip
@@ -301,8 +304,8 @@ function ViewCurl(props) {
                                         '"grant_type=urn:ietf:params:oauth:grant-type:token-exchange" -d ' +
                                         '"subject_token_type=urn:ietf:params:oauth:token-type:jwt" -d ' +
                                         '"requested_token_type=urn:ietf:params:oauth:token-type:jwt" -d ' +
-                                        `"subject_token=${jwtToken}"  -H ` +
-                                        `"Authorization: Basic ${bas64Encoded}"`).then(onCopy())}}
+                                        `"subject_token=${jwtToken}" ` +
+                                        `${getAuthSnippetString()}`).then(onCopy)}}
                                 >
                                     <FileCopy color='secondary'/>
                                 </IconButton>

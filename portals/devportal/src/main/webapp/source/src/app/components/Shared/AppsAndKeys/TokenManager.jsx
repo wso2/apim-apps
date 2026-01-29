@@ -692,12 +692,6 @@ class TokenManager extends React.Component {
                     Alert.error(`${response.body.message}: ${response.body.description}`);
                 }
             }).finally(() => this.setState({ isLoading: false }));
-        this.application
-            .then((application) => {
-                return application.getSecrets(
-                    applicationKey.keyMappingId,
-                );
-            });
     }
 
     /**
@@ -1018,10 +1012,12 @@ class TokenManager extends React.Component {
         }
 
         let defaultTokenEndpoint;
+        let multipleSecretsAllowedForResidentKM = false;
 
         if (keyManagers.length > 0) {
             const residentKMs = keyManagers.filter((item) => item.name === 'Resident Key Manager');
             defaultTokenEndpoint = residentKMs.length > 0 ? (residentKMs)[0].tokenEndpoint : null;
+            multipleSecretsAllowedForResidentKM = this.getMultipleSecretsAllowed(residentKMs.length > 0 ? (residentKMs)[0] : null);
         }
 
         if (key && key.keyState === 'APPROVED' && !key.consumerKey) {
@@ -1317,6 +1313,7 @@ class TokenManager extends React.Component {
                                             callbackError={hasError}
                                             setValidating={this.setValidating}
                                             defaultTokenEndpoint={defaultTokenEndpoint}
+                                            multipleSecretsAllowed={multipleSecretsAllowedForResidentKM}
                                         />
                                     </Box>
                                 </TabPanel>
@@ -1526,6 +1523,7 @@ class TokenManager extends React.Component {
                                                         callbackError={hasError}
                                                         setValidating={this.setValidating}
                                                         defaultTokenEndpoint={defaultTokenEndpoint}
+                                                        multipleSecretsAllowed={multipleSecretsAllowedForResidentKM}
                                                     />
                                                 </Box>
                                             </TabPanel>
