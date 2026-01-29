@@ -178,7 +178,9 @@ const RoutingRuleCard: FC<RoutingRuleCardProps> = ({
                             onChange={(e: any) => handleTargetChange(e)}
                         >
                             {modelList[0].values.map((modelValue) => (
-                                <MenuItem key={modelValue} value={modelValue}>{modelValue}</MenuItem>
+                                <MenuItem key={modelValue} value={modelValue}>
+                                    {modelValue}
+                                </MenuItem>
                             ))}
                         </Select>
                     </FormControl>
@@ -221,9 +223,13 @@ const RoutingRuleCard: FC<RoutingRuleCardProps> = ({
                                 name='model'
                                 onChange={(e: any) => handleTargetChange(e)}
                             >
-                                {modelList.find((modelEntry) => modelEntry.vendor === target.vendor)?.values.map((modelValue) => (
-                                    <MenuItem key={modelValue} value={modelValue}>{modelValue}</MenuItem>
-                                ))}
+                                {modelList
+                                    .find((modelEntry) => modelEntry.vendor === target.vendor)
+                                    ?.values.map((modelValue) => (
+                                        <MenuItem key={modelValue} value={modelValue}>
+                                            {modelValue}
+                                        </MenuItem>
+                                    ))}
                             </Select>
                         </FormControl>
                     </>
@@ -244,7 +250,9 @@ const RoutingRuleCard: FC<RoutingRuleCardProps> = ({
                         onChange={(e: any) => handleTargetChange(e)}
                     >
                         {endpointList.map((endpoint) => (
-                            <MenuItem key={endpoint.id} value={endpoint.id}>{endpoint.name}</MenuItem>
+                            <MenuItem key={endpoint.id} value={endpoint.id}>
+                                {endpoint.name}
+                            </MenuItem>
                         ))}
                     </Select>
                 </FormControl>
@@ -301,8 +309,9 @@ const ContentBasedRouter: FC<ContentBasedRouterProps> = ({
                         name: 'Default Production Endpoint',
                         deploymentStage: 'PRODUCTION',
                         endpointConfig: {
-                            production_endpoints: apiFromContext.endpointConfig.production_endpoints,
-                            endpoint_security: apiFromContext.endpointConfig.endpoint_security
+                            production_endpoints:
+                                apiFromContext.endpointConfig.production_endpoints,
+                            endpoint_security: apiFromContext.endpointConfig.endpoint_security,
                         }
                     });
                 }
@@ -313,16 +322,21 @@ const ContentBasedRouter: FC<ContentBasedRouterProps> = ({
                         name: 'Default Sandbox Endpoint',
                         deploymentStage: 'SANDBOX',
                         endpointConfig: {
-                            sandbox_endpoints: apiFromContext.endpointConfig.sandbox_endpoints,
-                            endpoint_security: apiFromContext.endpointConfig.endpoint_security
+                            sandbox_endpoints:
+                                apiFromContext.endpointConfig.sandbox_endpoints,
+                            endpoint_security: apiFromContext.endpointConfig.endpoint_security,
                         }
                     });
                 }
 
                 const allEndpoints = [...defaultEndpoints, ...endpoints];
 
-                const prodEndpointList = allEndpoints.filter((endpoint: Endpoint) => endpoint.deploymentStage === 'PRODUCTION');
-                const sandEndpointList = allEndpoints.filter((endpoint: Endpoint) => endpoint.deploymentStage === 'SANDBOX');
+                const prodEndpointList = allEndpoints.filter(
+                    (endpoint: Endpoint) => endpoint.deploymentStage === 'PRODUCTION',
+                );
+                const sandEndpointList = allEndpoints.filter(
+                    (endpoint: Endpoint) => endpoint.deploymentStage === 'SANDBOX',
+                );
                 setProductionEndpoints(prodEndpointList);
                 setSandboxEndpoints(sandEndpointList);
 
@@ -334,7 +348,8 @@ const ContentBasedRouter: FC<ContentBasedRouterProps> = ({
     }
 
     const fetchModelList = () => {
-        const modelListPromise = API.getLLMProviderModelList(JSON.parse(apiFromContext.subtypeConfiguration.configuration).llmProviderId);
+        const llmProviderId = JSON.parse(apiFromContext.subtypeConfiguration.configuration).llmProviderId;
+        const modelListPromise = API.getLLMProviderModelList(llmProviderId);
         modelListPromise
             .then((response) => {
                 const vendors: ModelVendor[] = response.body.map((vendor: any) => ({
@@ -409,7 +424,11 @@ const ContentBasedRouter: FC<ContentBasedRouterProps> = ({
         }));
     }
 
-    const handleUpdate = (env: 'production' | 'sandbox', index: number, updatedRule: RoutingRule) => {
+    const handleUpdate = (
+        env: 'production' | 'sandbox',
+        index: number,
+        updatedRule: RoutingRule,
+    ) => {
         setConfig((prevConfig) => ({
             ...prevConfig,
             [env]: prevConfig[env].map((item, i) => (i === index ? updatedRule : item)),
@@ -427,7 +446,9 @@ const ContentBasedRouter: FC<ContentBasedRouterProps> = ({
         if (modelList.length === 0) {
             return true;
         }
-        return env === 'production' ? productionEndpoints.length === 0 : sandboxEndpoints.length === 0;
+        return env === 'production'
+            ? productionEndpoints.length === 0
+            : sandboxEndpoints.length === 0;
     };
 
     const getEndpointsUrl = () => {
@@ -454,11 +475,18 @@ const ContentBasedRouter: FC<ContentBasedRouterProps> = ({
         }
     };
 
-    const handleAccordionChange = (env: 'production' | 'sandbox') => (_event: React.SyntheticEvent, expanded: boolean) => {
+    const handleAccordionChange = (env: 'production' | 'sandbox') => (
+        _event: React.SyntheticEvent,
+        expanded: boolean,
+    ) => {
         if (env === 'production') {
-            handleProductionToggle({ target: { checked: expanded } } as React.ChangeEvent<HTMLInputElement>);
+            handleProductionToggle(
+                { target: { checked: expanded } } as React.ChangeEvent<HTMLInputElement>,
+            );
         } else {
-            handleSandboxToggle({ target: { checked: expanded } } as React.ChangeEvent<HTMLInputElement>);
+            handleSandboxToggle(
+                { target: { checked: expanded } } as React.ChangeEvent<HTMLInputElement>,
+            );
         }
     };
 
@@ -521,7 +549,9 @@ const ContentBasedRouter: FC<ContentBasedRouterProps> = ({
                             <Alert severity="warning" sx={{ mb: 2 }}>
                                 <FormattedMessage
                                     id='Apis.Details.Policies.CustomPolicies.ContentBasedRouter.no.models'
-                                    defaultMessage='No models available. Please configure models for the LLM provider.'
+                                    defaultMessage={
+                                        'No models available. Please configure models for the LLM provider.'
+                                    }
                                 />
                             </Alert>
                         ) : (
@@ -530,7 +560,9 @@ const ContentBasedRouter: FC<ContentBasedRouterProps> = ({
                                     <Alert severity="warning" sx={{ mb: 2 }}>
                                         <FormattedMessage
                                             id='Apis.Details.Policies.CustomPolicies.ContentBasedRouter.no.production.endpoints'
-                                            defaultMessage='No production endpoints available. Please {configureLink} first.'
+                                            defaultMessage={
+                                                'No production endpoints available. Please {configureLink} first.'
+                                            }
                                             values={{
                                                 configureLink: (
                                                     <Link to={getEndpointsUrl()}>
@@ -561,7 +593,9 @@ const ContentBasedRouter: FC<ContentBasedRouterProps> = ({
                                         rule={rule}
                                         modelList={modelList}
                                         endpointList={productionEndpoints}
-                                        onUpdate={(updatedRule) => handleUpdate('production', index, updatedRule)}
+                                        onUpdate={(updatedRule) =>
+                                            handleUpdate('production', index, updatedRule)
+                                        }
                                         onDelete={() => handleDelete('production', index)}
                                     />
                                 ))}
@@ -600,7 +634,9 @@ const ContentBasedRouter: FC<ContentBasedRouterProps> = ({
                             <Alert severity="warning" sx={{ mb: 2 }}>
                                 <FormattedMessage
                                     id='Apis.Details.Policies.CustomPolicies.ContentBasedRouter.no.models'
-                                    defaultMessage='No models available. Please configure models for the LLM provider.'
+                                    defaultMessage={
+                                        'No models available. Please configure models for the LLM provider.'
+                                    }
                                 />
                             </Alert>
                         ) : (
@@ -609,7 +645,9 @@ const ContentBasedRouter: FC<ContentBasedRouterProps> = ({
                                     <Alert severity="warning" sx={{ mb: 2 }}>
                                         <FormattedMessage
                                             id='Apis.Details.Policies.CustomPolicies.ContentBasedRouter.no.sandbox.endpoints'
-                                            defaultMessage='No sandbox endpoints available. Please {configureLink} first.'
+                                            defaultMessage={
+                                                'No sandbox endpoints available. Please {configureLink} first.'
+                                            }
                                             values={{
                                                 configureLink: (
                                                     <Link to={getEndpointsUrl()}>
@@ -640,7 +678,9 @@ const ContentBasedRouter: FC<ContentBasedRouterProps> = ({
                                         rule={rule}
                                         modelList={modelList}
                                         endpointList={sandboxEndpoints}
-                                        onUpdate={(updatedRule) => handleUpdate('sandbox', index, updatedRule)}
+                                        onUpdate={(updatedRule) =>
+                                            handleUpdate('sandbox', index, updatedRule)
+                                        }
                                         onDelete={() => handleDelete('sandbox', index)}
                                     />
                                 ))}
