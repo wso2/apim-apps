@@ -79,6 +79,7 @@ export default function GoToTryOut() {
     const intl = useIntl();
     const history = useHistory();
     const theme = useTheme();
+    const [copied, setCopied] = useState(false);
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('sm'));
     const isAsyncAPI = (api
         && (api.type === CONSTANTS.API_TYPES.WS
@@ -444,12 +445,23 @@ export default function GoToTryOut() {
                                             <Button
                                                 size='small'
                                                 variant='outlined'
-                                                onClick={() => navigator.clipboard.writeText(consumerSecretValue)}
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(consumerSecretValue);
+                                                    setCopied(true);
+                                                    setTimeout(() => setCopied(false), 2000);
+                                                }}
                                             >
-                                                <FormattedMessage
-                                                    id='Apis.Details.GoToTryOut.consumerSecret.copy'
-                                                    defaultMessage='Copy'
-                                                />
+                                                {copied ? (
+                                                    <FormattedMessage
+                                                        id='Apis.Details.GoToTryOut.consumerSecret.copied'
+                                                        defaultMessage='Copied!'
+                                                    />
+                                                ) : (
+                                                    <FormattedMessage
+                                                        id='Apis.Details.GoToTryOut.consumerSecret.copy'
+                                                        defaultMessage='Copy'
+                                                    />
+                                                )}
                                             </Button>
                                         </Box>
 

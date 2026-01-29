@@ -326,7 +326,7 @@ class ViewKeys extends React.Component {
      * */
     handleClose = () => {
         this.setState({
-            open: false, showCurl: false, isKeyJWT: false, showSecretGen: false,
+            open: false, showCurl: false, isKeyJWT: false, showSecretGen: false, consumerSecret: ''
         });
     };
 
