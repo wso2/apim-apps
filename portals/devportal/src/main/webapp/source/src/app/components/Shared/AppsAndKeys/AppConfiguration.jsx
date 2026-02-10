@@ -20,6 +20,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import Chip from '@mui/material/Chip';
@@ -36,6 +37,7 @@ import Box from '@mui/material/Box';
 import ChipInput from 'AppComponents/Shared/ChipInput';
 import Autocomplete from '@mui/material/Autocomplete';
 import Settings from 'AppComponents/Shared/SettingsContext';
+import validateConstraint from './constraintValidator';
 
 
 const PREFIX = 'AppConfiguration';
@@ -105,24 +107,13 @@ const Root = styled('div')(
 const AppConfiguration = (props) => {
 
     const {
-        config, isUserOwner, previousValue, handleChange, subscriptionScopes,
+        config, isUserOwner, previousValue, handleChange, subscriptionScopes, onValidationError,
     } = props;
 
     const [selectedValue, setSelectedValue] = useState(previousValue);
+    const [constraintError, setConstraintError] = useState('');
     const [isOrgWideAppUpdateEnabled, setIsOrgWideAppUpdateEnabled] = useState(false);
     const settingsContext = useContext(Settings);
-
-    /**
-     * This method is used to handle the updating of key generation
-     * request object.
-     * @param {*} field field that should be updated in key request
-     * @param {*} event event fired
-     */
-    const handleAppRequestChange = (event) => {
-        const { target: currentTarget } = event;
-        setSelectedValue(currentTarget.value);
-        handleChange('additionalProperties', event);
-    }
 
     const AppConfigLabels = defineMessages({
         application_access_token_expiry_time: {
@@ -186,6 +177,59 @@ const AppConfiguration = (props) => {
         }
     });
 
+    const ConstraintErrorMessages = defineMessages({
+        rangeMin: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.range.min',
+            defaultMessage: 'Value must be at least {min}',
+        },
+        rangeMax: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.range.max',
+            defaultMessage: 'Value must be at most {max}',
+        },
+        rangeMinInRange: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.range.min.in.range',
+            defaultMessage: 'Value must be at least {min} (allowed range: {min} - {max})',
+        },
+        rangeMaxInRange: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.range.max.in.range',
+            defaultMessage: 'Value must be at most {max} (allowed range: {min} - {max})',
+        },
+        rangeInvalid: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.range.invalid',
+            defaultMessage: 'Value must be a number between {min} and {max}',
+        },
+        enumInvalid: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.enum',
+            defaultMessage: 'Value must be one of: {allowed}',
+        },
+        regexInvalid: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.regex',
+            defaultMessage: 'Value does not match the required pattern: {pattern}',
+        },
+    });
+
+    /**
+     * This method is used to handle the updating of key generation
+     * request object.
+     * @param {*} field field that should be updated in key request
+     * @param {*} event event fired
+     */
+    const handleAppRequestChange = (event) => {
+        const { target: currentTarget } = event;
+        const newValue = currentTarget.type === 'checkbox' ? currentTarget.checked : currentTarget.value;
+        setSelectedValue(newValue);
+
+        // Validate against constraint if present
+        const { constraint } = config;
+        const result = validateConstraint(newValue, constraint, props.intl, ConstraintErrorMessages);
+        setConstraintError(result.valid ? '' : result.message);
+        if (onValidationError) {
+            onValidationError(config.name, !result.valid);
+        }
+
+        handleChange('additionalProperties', event);
+    }
+
     const getAppConfigLabel = () => {
         return AppConfigLabels[config.name]
             ? props.intl.formatMessage(AppConfigLabels[config.name])
@@ -205,6 +249,16 @@ const AppConfiguration = (props) => {
         setSelectedValue(previousValue);
         const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
         setIsOrgWideAppUpdateEnabled(orgWideAppUpdateEnabled);
+
+        // Validate on initial load
+        if (previousValue !== undefined && previousValue !== null && previousValue !== '') {
+            const { constraint } = config;
+            const result = validateConstraint(previousValue, constraint, props.intl, ConstraintErrorMessages);
+            setConstraintError(result.valid ? '' : result.message);
+            if (onValidationError) {
+                onValidationError(config.name, !result.valid);
+            }
+        }
     }, [previousValue, settingsContext]);
 
     const setCheckboxValue = () => {
@@ -233,11 +287,9 @@ const AppConfiguration = (props) => {
                                 value={selectedValue}
                                 name={config.name}
                                 onChange={e => handleAppRequestChange(e)}
-                                helperText={
-                                    <Typography variant='caption'>
-                                        {getAppConfigToolTip()}
-                                    </Typography>
-                                }
+                                error={!!constraintError}
+                                helperText={constraintError || getAppConfigToolTip()}
+                                FormHelperTextProps={constraintError ? { error: true } : {}}
                                 margin='dense'
                                 variant='outlined'
                                 size='small'
@@ -292,7 +344,7 @@ const AppConfiguration = (props) => {
                             </>
                         ) : (
                             <>
-                                <FormControl variant="outlined" className={classes.formControl} fullWidth>
+                                <FormControl variant="outlined" className={classes.formControl} fullWidth error={!!constraintError}>
                                     <InputLabel id="multi-select-label">{config.label}</InputLabel>
                                     <Select
                                         variant="standard"
@@ -312,11 +364,6 @@ const AppConfiguration = (props) => {
                                                 ))}
                                             </div>
                                         )}
-                                        helperText={
-                                            <Typography variant='caption'>
-                                                {getAppConfigToolTip()}
-                                            </Typography>
-                                        }
                                         label={getAppConfigLabel()}
                                     >
                                         {config.values.map(key => (
@@ -326,10 +373,7 @@ const AppConfiguration = (props) => {
                                             </MenuItem>
                                         ))}
                                     </Select>
-
-                                    <Typography variant='caption'>
-                                        {getAppConfigToolTip()}
-                                    </Typography>
+                                    <FormHelperText>{constraintError || getAppConfigToolTip()}</FormHelperText>
                                 </FormControl>
                             </>
                         ) : (config.type === 'input' && config.multiple === true) ? (
@@ -378,11 +422,9 @@ const AppConfiguration = (props) => {
                                 value={selectedValue}
                                 name={config.name}
                                 onChange={e => handleAppRequestChange(e)}
-                                helperText={
-                                    <Typography variant='caption'>
-                                        {getAppConfigToolTip()}
-                                    </Typography>
-                                }
+                                error={!!constraintError}
+                                helperText={constraintError || getAppConfigToolTip()}
+                                FormHelperTextProps={constraintError ? { error: true } : {}}
                                 margin='dense'
                                 size='small'
                                 variant='outlined'
@@ -419,11 +461,9 @@ const AppConfiguration = (props) => {
                                 value={selectedValue}
                                 name={config.name}
                                 onChange={e => handleAppRequestChange(e)}
-                                helperText={
-                                    <Typography variant='caption'>
-                                        {getAppConfigToolTip()}
-                                    </Typography>
-                                }
+                                error={!!constraintError}
+                                helperText={constraintError || getAppConfigToolTip()}
+                                FormHelperTextProps={constraintError ? { error: true } : {}}
                                 margin='dense'
                                 variant='outlined'
                                 disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
@@ -450,6 +490,7 @@ AppConfiguration.propTypes = {
     handleChange: PropTypes.func.isRequired,
     config: PropTypes.any.isRequired,
     subscriptionScopes: PropTypes.arrayOf(PropTypes.string),
+    onValidationError: PropTypes.func,
     notFound: PropTypes.bool,
     intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
 };
