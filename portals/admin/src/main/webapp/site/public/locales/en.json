@@ -724,6 +724,7 @@
   "KeyManagers.AddEditKeyManager.advanced.description": "Advanced options for the Key Manager",
   "KeyManagers.AddEditKeyManager.api.invocation.method": "API Invocation Method",
   "KeyManagers.AddEditKeyManager.api.no.usages": "No API usages for this key manager specifically.",
+  "KeyManagers.AddEditKeyManager.app.config.constraints": "Application Configuration Constraints",
   "KeyManagers.AddEditKeyManager.application.no.usages": "No Application usages for this key manager specifically.",
   "KeyManagers.AddEditKeyManager.certificate": "Certificates",
   "KeyManagers.AddEditKeyManager.certificate.description": "Upload or provide the certificate inline.",

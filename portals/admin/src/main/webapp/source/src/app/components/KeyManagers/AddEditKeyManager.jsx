@@ -61,6 +61,14 @@ import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 
+const CONSTRAINT_TYPES = {
+    RANGE_MIN: 'RANGE_MIN',
+    RANGE_MAX: 'RANGE_MAX',
+    RANGE: 'RANGE',
+    ENUM: 'ENUM',
+    REGEX: 'REGEX',
+};
+
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
 const StyledHr = styled('hr')({ border: 'solid 1px #efefef' });
@@ -246,6 +254,8 @@ function AddEditKeyManager(props) {
     const [enableExchangeToken, setEnableExchangeToken] = useState(false);
     const [enableDirectToken, setEnableDirectToken] = useState(true);
     const [organizations, setOrganizations] = useState([]);
+    const [availableAppConfigConstraints, setAvailableAppConfigConstraints] = useState([]);
+    const [appConfigConstraints, setAppConfigConstraints] = useState({});
 
     const restApi = new API();
     const handleRoleAddition = (role) => {
@@ -287,6 +297,7 @@ function AddEditKeyManager(props) {
         if (settings.keyManagerConfiguration) {
             settings.keyManagerConfiguration.map(({
                 type: key, defaultConsumerKeyClaim, defaultScopesClaim, configurations, authConfigurations,
+                availableAppConfigConstraints: constraints,
             }) => {
                 if (key === keyManagerType) {
                     if (!id) {
@@ -302,6 +313,11 @@ function AddEditKeyManager(props) {
                         ...(Array.isArray(authConfigurations) ? authConfigurations : []),
                         ...configurations,
                     ]);
+                    setAvailableAppConfigConstraints(constraints || []);
+                    return true;
+                } else if (key === 'WSO2-IS' && keyManagerType === 'default') {
+                    // since Application properties are same for default(resident key manager) and WSO2-IS Key managers
+                    setAvailableAppConfigConstraints(constraints || []);
                     return true;
                 } else {
                     return false;
@@ -505,6 +521,73 @@ function AddEditKeyManager(props) {
                 || hasErrors('alias', alias, validatingActive);
         }
     };
+
+    const parseConstraintValueToInput = (constraintType, constraintValue) => {
+        switch (constraintType) {
+            case CONSTRAINT_TYPES.RANGE:
+                if (constraintValue.min !== undefined && constraintValue.max !== undefined) {
+                    return `${constraintValue.min}-${constraintValue.max}`;
+                }
+                return '';
+            case CONSTRAINT_TYPES.RANGE_MIN:
+                return constraintValue.min !== undefined ? String(constraintValue.min) : '';
+            case CONSTRAINT_TYPES.RANGE_MAX:
+                return constraintValue.max !== undefined ? String(constraintValue.max) : '';
+            case CONSTRAINT_TYPES.REGEX:
+                return constraintValue.pattern || '';
+            case CONSTRAINT_TYPES.ENUM:
+                return Array.isArray(constraintValue.allowed) ? constraintValue.allowed : [];
+            default:
+                return null;
+        }
+    };
+
+    const parseInputToConstraintValue = (constraintType, value) => {
+        switch (constraintType) {
+            case CONSTRAINT_TYPES.RANGE: {
+                // "min-max" → { min, max }
+                const parts = String(value).split('-');
+                if (parts.length !== 2) {
+                    // invalid format
+                    return null;
+                }
+                const min = parseFloat(parts[0].trim());
+                const max = parseFloat(parts[1].trim());
+                if (Number.isNaN(min) || Number.isNaN(max)) {
+                    // invalid numbers
+                    return null;
+                }
+                return { min, max };
+            }
+            case CONSTRAINT_TYPES.RANGE_MIN: {
+                const numValue = parseFloat(value);
+                if (Number.isNaN(numValue)) {
+                    // invalid number
+                    return null;
+                }
+                return { min: numValue };
+            }
+            case CONSTRAINT_TYPES.RANGE_MAX: {
+                const numValue = parseFloat(value);
+                if (Number.isNaN(numValue)) {
+                    // invalid number
+                    return null;
+                }
+                return { max: numValue };
+            }
+            case CONSTRAINT_TYPES.REGEX: {
+                return { pattern: String(value) };
+            }
+            case CONSTRAINT_TYPES.ENUM: {
+                const allowed = Array.isArray(value)
+                    ? value
+                    : String(value).split(',').map((v) => v.trim());
+                return { allowed };
+            }
+            default:
+                return null;
+        }
+    };
     const formSaveCallback = () => {
         setValidating(true);
         if (!isResidentKeyManager && !isTokenTypeSelected) {
@@ -534,9 +617,42 @@ function AddEditKeyManager(props) {
         } else {
             tokenType = 'DIRECT';
         }
+        // Build constraints object from appConfigConstraints
+        const additionalPropertiesWithConstraints = { ...state.additionalProperties };
+        if (!isEmpty(appConfigConstraints)) {
+            additionalPropertiesWithConstraints.constraints = {};
+            Object.keys(appConfigConstraints).forEach((key) => {
+                const value = appConfigConstraints[key];
+                const constraintConfig = availableAppConfigConstraints.find((c) => c.name === key);
+                if (!constraintConfig) return;
+                const { constraintType } = constraintConfig;
+                // Skip empty/null/N/A values
+                if (value === undefined || value === null || value === '' || value === 'N/A') {
+                    return;
+                }
+                // For ENUM type, if all options are selected, treat as unconstrained and remove
+                if (constraintType === CONSTRAINT_TYPES.ENUM && Array.isArray(value)) {
+                    const availableOptions = constraintConfig.values || [];
+                    const allSelected = availableOptions.length > 0
+                        && value.length === availableOptions.length
+                        && availableOptions.every((option) => value.includes(option));
+                    if (allSelected) {
+                        return;
+                    }
+                }
+                const constraintValue = parseInputToConstraintValue(constraintType, value);
+                if (constraintValue !== null) {
+                    additionalPropertiesWithConstraints.constraints[key] = {
+                        type: constraintType,
+                        value: constraintValue,
+                    };
+                }
+            });
+        }
 
         const keymanager = {
             ...state,
+            additionalProperties: additionalPropertiesWithConstraints,
             tokenValidation: newTokenValidation,
             allowedOrganizations: validOrgs,
             tokenType,
@@ -598,6 +714,56 @@ function AddEditKeyManager(props) {
         }
         dispatch({ field: 'additionalProperties', value: clonedAdditionalProperties });
     };
+    // Fetch constraints from additionalProperties of the KM
+    const getAppConfigConstraints = () => {
+        const savedConstraints = additionalProperties?.constraints || {};
+        const constraints = {};
+        availableAppConfigConstraints.forEach((constraintConfig) => {
+            const key = constraintConfig.name;
+            const savedConstraint = savedConstraints[key];
+            if (savedConstraint?.type && savedConstraint?.value) {
+                // already saved in additional properties = already constrained by the user
+                constraints[key] = parseConstraintValueToInput(
+                    savedConstraint.type,
+                    savedConstraint.value,
+                );
+            } else if (!id && constraintConfig.default) {
+                // New KM with default constraint defined in the config = show default constraint value in the input
+                constraints[key] = parseConstraintValueToInput(
+                    constraintConfig.constraintType,
+                    constraintConfig.default,
+                );
+            } else if (id && constraintConfig.constraintType === CONSTRAINT_TYPES.ENUM) {
+                // Saved KM with no saved values = unconstrained,
+                // other fields can be null but for ENUM type that means all values are allowed,
+                // so we set it to the list of allowed values defined in the config
+                constraints[key] = constraintConfig.values || [];
+            } else {
+                constraints[key] = parseConstraintValueToInput(
+                    constraintConfig.type,
+                    null,
+                );
+            }
+        });
+        return constraints;
+    };
+
+    const updateAppConfigConstraint = (key, value) => {
+        // Update display state immediately for UI
+        setAppConfigConstraints((prev) => ({
+            ...prev,
+            [key]: value,
+        }));
+    };
+
+    useEffect(() => {
+        if (!isEmpty(availableAppConfigConstraints)) {
+            const constraints = getAppConfigConstraints();
+            if (!isEmpty(constraints)) {
+                setAppConfigConstraints(constraints);
+            }
+        }
+    }, [availableAppConfigConstraints, id]);
     const setTokenValidations = (value) => {
         dispatch({ field: 'tokenValidation', value });
     };
@@ -2266,6 +2432,35 @@ function AddEditKeyManager(props) {
                                             />
                                         ))}
                                 </Box>
+                                {!isEmpty(availableAppConfigConstraints) && (
+                                    <>
+                                        <Box display='flex' marginTop={3} marginBottom={2}>
+                                            <Typography
+                                                color='inherit'
+                                                variant='subtitle2'
+                                                component='div'
+                                                id='KeyManagers.AddEditKeyManager.app.config.constraints.header'
+                                            >
+                                                <FormattedMessage
+                                                    id='KeyManagers.AddEditKeyManager.app.config.constraints'
+                                                    defaultMessage='Application Configuration Constraints'
+                                                />
+                                            </Typography>
+                                        </Box>
+                                        <Box mt={0.5}>
+                                            <KeyManagerConfiguration
+                                                keymanagerConnectorConfigurations={availableAppConfigConstraints}
+                                                additionalProperties={
+                                                    cloneDeep(appConfigConstraints || {})
+                                                }
+                                                keyManagerId={cloneDeep(id)}
+                                                setAdditionalProperties={updateAppConfigConstraint}
+                                                hasErrors={hasErrors}
+                                                validating={validating}
+                                            />
+                                        </Box>
+                                    </>
+                                )}
                                 <Box display='flex' marginTop={3} marginBottom={2}>
                                     <Typography
                                         color='inherit'
