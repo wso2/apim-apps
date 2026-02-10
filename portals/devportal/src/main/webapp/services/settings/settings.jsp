@@ -16,16 +16,20 @@
   ~ under the License.
 --%>
 
+<%@page import="org.apache.commons.logging.LogFactory"%>
+<%@page import="org.apache.commons.logging.Log"%>
 <%@page import="com.google.gson.GsonBuilder"%>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="com.google.gson.JsonObject"%>
 <%@page import="org.wso2.carbon.apimgt.ui.devportal.Util"%>
+<%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
 
 <%@ page trimDirectiveWhitespaces="true" %>
 
 <%
+    Log log = LogFactory.getLog(this.getClass());
     ServletContext sc = request.getServletContext();
     Map settings = Util.readJsonFile("site/public/theme/settings.json", sc);
     String context = Util.getTenantBaseStoreContext(request, (String) Util.readJsonObj(settings, "app.context"));
@@ -34,14 +38,47 @@
     String serverUrl = "";
     String forwarded_for = request.getHeader((String) Util.readJsonObj(settings, "app.customUrl.forwardedHeader"));
     boolean customUrlEnabled = (boolean) Util.readJsonObj(settings, "app.customUrl.enabled");
-    if (customUrlEnabled && !forwarded_for.isEmpty()) {
+       // Host validation against app.customUrl.allowedHosts
+    boolean isHostValid = true;
+    if (customUrlEnabled && forwarded_for != null && !forwarded_for.isEmpty()) {
+        // Check if allowedHosts is configured
+        List<String> allowedHosts = (List<String>) Util.readJsonObj(settings, "app.customUrl.allowedHosts");
+
+        if (allowedHosts != null && !allowedHosts.isEmpty()) {
+            // Extract hostname from forwarded_for (remove port if present)
+            String forwardedHost = forwarded_for;
+            if (forwardedHost.contains(":")) {
+                forwardedHost = forwardedHost.substring(0, forwardedHost.indexOf(":"));
+            }
+
+            isHostValid = false;
+            for (String allowedHost : allowedHosts) {
+                if (allowedHost != null && allowedHost.equalsIgnoreCase(forwardedHost)) {
+                    isHostValid = true;
+                    break;
+                }
+            }
+
+            if (!isHostValid) {
+                log.warn("Blocked request with untrusted host header: " + forwarded_for.replaceAll("[\r\n]", ""));
+                response.setStatus(400);
+                response.setContentType("text/html");
+                out.println("<html><head></head><body><h2>Error 400 : Bad Request</h2><br/><p>"+
+                    "<h4>Host validation failed for the request</h4></body></html>");
+                return;
+            }
+        }
+    }
+
+    // Only use custom URL if host validation passes
+    if (customUrlEnabled && forwarded_for != null && !forwarded_for.isEmpty() && isHostValid) {
         serverUrl = "https://" + forwarded_for;
     } else {
         serverUrl = Util.getIDPOrigin();
     }
 
     String customIDPCheckSessionEndpoint = "";
-    if (customUrlEnabled && !forwarded_for.isEmpty()) {
+    if (customUrlEnabled && forwarded_for != null && !forwarded_for.isEmpty() && isHostValid) {
         customIDPCheckSessionEndpoint = "https://" + forwarded_for + "/oidc/checksession";
     } else {
         customIDPCheckSessionEndpoint = Util.getIDPCheckSessionEndpoint();
