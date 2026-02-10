@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useEffect, useState, useContext, useRef} from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import cloneDeep from 'lodash.clonedeep';
@@ -159,6 +159,21 @@ const KeyConfiguration = (props) => {
     const [isOrgWideAppUpdateEnabled, setIsOrgWideAppUpdateEnabled] = useState(false);
     const settingsContext = useContext(ContextSettings);
     const [subscriptionScopes, setSubscriptionScopes] = useState([]);
+    const configErrorsRef = useRef({});
+    const [hasCallbackError, setHasCallbackError] = useState(false);
+
+    /**
+     * Callback passed to AppConfiguration to track per-config constraint validation errors.
+     * Updates the parent's hasError state when any config has a validation error.
+     * @param {string} configName - The name of the config field.
+     * @param {boolean} hasValidationError - Whether the field currently has a validation error.
+     */
+    const handleConfigValidationError = (configName, hasValidationError) => {
+        configErrorsRef.current[configName] = hasValidationError;
+        const anyConstraintError = Object.values(configErrorsRef.current).some((v) => v === true);
+        // Combine constraint errors with callback errors
+        updateHasError(anyConstraintError || hasCallbackError);
+    };
 
     useEffect(() => {
         if (selectedApp) {
@@ -201,15 +216,20 @@ const KeyConfiguration = (props) => {
         return modifiedGrantTypes;
     };
     const callBackHasErrors = (callbackUrlLocal) => {
+        const anyConstraintError = Object.values(configErrorsRef.current).some((v) => v === true);
         if (callbackUrlLocal === '') {
-            updateHasError(true);
+            setHasCallbackError(true);
+            // Combine callback error with constraint errors
+            updateHasError(true || anyConstraintError);
             setCallbackHelper(intl.formatMessage({
                 defaultMessage: 'Call back URL can not be empty when Implicit or Authorization Code grants are selected.',
                 id: 'Shared.AppsAndKeys.KeyConfCiguration.Invalid.callback.empty.error.text',
             }));
         } else {
+            setHasCallbackError(false);
             setCallbackHelper(false);
-            updateHasError(false);
+            // Only constraint errors remain (if any)
+            updateHasError(anyConstraintError);
         }
     };
     /**
@@ -239,7 +259,10 @@ const KeyConfiguration = (props) => {
                     if (currentTarget.id === 'implicit' || currentTarget.id === 'authorization_code') {
                         newRequest.callbackUrl = '';
                         setCallbackHelper(false);
-                        updateHasError(false);
+                        setHasCallbackError(false);
+                        // Only keep constraint errors
+                        const anyConstraintError = Object.values(configErrorsRef.current).some((v) => v === true);
+                        updateHasError(anyConstraintError);
                     }
                 }
                 newRequest.selectedGrantTypes = newGrantTypes;
@@ -493,7 +516,7 @@ const KeyConfiguration = (props) => {
                                         disabled={(!isOrgWideAppUpdateEnabled && !isUserOwner)
                                             || (selectedGrantTypes && !selectedGrantTypes.includes('authorization_code')
                                                 && !selectedGrantTypes.includes('implicit'))}
-                                        error={callbackError}
+                                        error={hasCallbackError}
                                         placeholder={intl.formatMessage({
                                             defaultMessage: 'http://url-to-webapp',
                                             id: 'Shared.AppsAndKeys.KeyConfiguration.url.to.webapp',
@@ -510,6 +533,7 @@ const KeyConfiguration = (props) => {
                                 isUserOwner={isUserOwner}
                                 handleChange={handleChange}
                                 subscriptionScopes={subscriptionScopes}
+                                onValidationError={handleConfigValidationError}
                             />
                         ))}
                         </>)}
