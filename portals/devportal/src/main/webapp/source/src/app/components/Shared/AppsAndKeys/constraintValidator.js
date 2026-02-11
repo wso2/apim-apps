@@ -115,7 +115,7 @@ const validateConstraint = (inputValue, constraint, intl, messages) => {
             if (Array.isArray(inputValue)) {
                 // For multi-select, check if all selected values are in the allowed list
                 const invalidValues = inputValue.filter((val) => !allowed.includes(val));
-                if (invalidValues.length > 0) {
+                if (invalidValues.length > 0 || (inputValue.length === 0 && allowed.length > 0)) {
                     return {
                         valid: false,
                         message: intl && messages
