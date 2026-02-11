@@ -546,13 +546,12 @@ function AddEditKeyManager(props) {
         switch (constraintType) {
             case CONSTRAINT_TYPES.RANGE: {
                 // "min-max" → { min, max }
-                const parts = String(value).split('-');
-                if (parts.length !== 2) {
-                    // invalid format
+                const match = String(value).match(/^\s*(-?\d+(?:\.\d+)?)\s*-\s*(-?\d+(?:\.\d+)?)\s*$/);
+                if (!match) {
                     return null;
                 }
-                const min = parseFloat(parts[0].trim());
-                const max = parseFloat(parts[1].trim());
+                const min = parseFloat(match[1]);
+                const max = parseFloat(match[2]);
                 if (Number.isNaN(min) || Number.isNaN(max)) {
                     // invalid numbers
                     return null;
