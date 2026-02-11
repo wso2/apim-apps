@@ -525,18 +525,18 @@ function AddEditKeyManager(props) {
     const parseConstraintValueToInput = (constraintType, constraintValue) => {
         switch (constraintType) {
             case CONSTRAINT_TYPES.RANGE:
-                if (constraintValue.min !== undefined && constraintValue.max !== undefined) {
+                if (constraintValue && (constraintValue.min !== undefined && constraintValue.max !== undefined)) {
                     return `${constraintValue.min}-${constraintValue.max}`;
                 }
                 return '';
             case CONSTRAINT_TYPES.RANGE_MIN:
-                return constraintValue.min !== undefined ? String(constraintValue.min) : '';
+                return constraintValue && (constraintValue.min !== undefined) ? String(constraintValue.min) : '';
             case CONSTRAINT_TYPES.RANGE_MAX:
-                return constraintValue.max !== undefined ? String(constraintValue.max) : '';
+                return constraintValue && (constraintValue.max !== undefined) ? String(constraintValue.max) : '';
             case CONSTRAINT_TYPES.REGEX:
-                return constraintValue.pattern || '';
+                return constraintValue && (constraintValue.pattern !== undefined) ? constraintValue.pattern : '';
             case CONSTRAINT_TYPES.ENUM:
-                return Array.isArray(constraintValue.allowed) ? constraintValue.allowed : [];
+                return constraintValue && Array.isArray(constraintValue.allowed) ? constraintValue.allowed : [];
             default:
                 return null;
         }
