@@ -27,6 +27,7 @@ import IconButton from '@mui/material/IconButton';
 import Alert from 'AppComponents/Shared/Alert';
 import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
+import PolicyHub from 'AppData/PolicyHub';
 import type { Policy, PolicySpec } from './Types';
 import ApiContext from '../components/ApiContext';
 import PolicyViewForm from './PolicyForm/PolicyViewForm';
@@ -52,9 +53,31 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
     const { api } = useContext<any>(ApiContext);
     const [policySpec, setPolicySpec] = useState<PolicySpec | null>(null);
     const [loading, setLoading] = useState(false);
+    const isPlatformGateway = api.gatewayType === 'platform-gateway' || api.gatewayType === 'PlatformGateway';
 
     useEffect(() => {
-        if (dialogOpen && isLocalToAPI) {
+        if (dialogOpen && isPlatformGateway) {
+            setLoading(true);
+            PolicyHub.getPolicySpec({
+                name: policyObj.name,
+                version: policyObj.version,
+                displayName: policyObj.displayName,
+            })
+                .then((policyResponse) => {
+                    if (policyResponse) {
+                        setPolicySpec(policyResponse);
+                    } else {
+                        setPolicySpec(PolicyHub.toPolicySpec(policyObj));
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                    Alert.error('Something went wrong while retrieving policy details');
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        } else if (dialogOpen && isLocalToAPI) {
             setLoading(true);
             const promisedPolicyGet = API.getOperationPolicy(
                 policyObj.id,

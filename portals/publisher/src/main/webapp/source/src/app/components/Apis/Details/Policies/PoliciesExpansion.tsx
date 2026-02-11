@@ -27,6 +27,7 @@ import { Theme } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
+import PolicyHub from 'AppData/PolicyHub';
 import PolicyDropzone from './PolicyDropzone';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 import FlowArrow from './components/FlowArrow';
@@ -90,6 +91,42 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     const { apiLevelPolicies } = useContext<any>(ApiOperationContext);
     const { api } = useContext<any>(APIContext);
     const [listOriginatedFromCommonPolicies, setListOriginatedFromCommonPolicies] = useState<string[]>([]);
+    const isPlatformGateway = api.gatewayType === 'platform-gateway' || api.gatewayType === 'PlatformGateway';
+
+    const resolvePolicySpec = async (policyId: string, policyName?: string, policyVersion?: string) => {
+        const policyById = allPolicies?.find((policy: PolicySpec) => policy.id === policyId);
+        if (policyById) {
+            return policyById;
+        }
+
+        if (isPlatformGateway) {
+            const policyByName = allPolicies?.find(
+                (policy: PolicySpec) => policy.name === policyName && policy.version === policyVersion,
+            );
+            if (policyByName) {
+                return policyByName;
+            }
+
+            if (policyName && policyVersion) {
+                return PolicyHub.getPolicySpec({
+                    name: policyName,
+                    version: policyVersion,
+                    displayName: policyName,
+                });
+            }
+
+            return null;
+        }
+
+        if (policyId) {
+            const policyResponse = await API.getOperationPolicy(
+                policyId,
+                api.id,
+            );
+            return policyResponse?.body || null;
+        }
+        return null;
+    };
 
     useEffect(() => {
         const requestList = [];
@@ -127,7 +164,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             const requestFlowList: AttachedPolicy[] = [];
             const requestFlow = (isAPILevelPolicy) ? apiPolicies.request : operationInAction.operationPolicies.request;
             for (const requestFlowAttachedPolicy of requestFlow) {
-                const { policyId, policyName, uuid } =
+                const { policyId, policyName, policyVersion, uuid } =
                     requestFlowAttachedPolicy;
                 if (policyId === null) {
                     // Handling migration flow
@@ -139,25 +176,20 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                         uniqueKey: uuid,
                     });
                 } else {
-                    const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId);
-                    if (policyObj) {
-                        requestFlowList.push({ ...policyObj, uniqueKey: uuid });
-                    } else {
-                        originatedFromCommonPolicies.push(policyId);
-                        try {
-                            // eslint-disable-next-line no-await-in-loop
-                            const policyResponse = await API.getOperationPolicy(
-                                policyId,
-                                api.id,
-                            );
-                            if (policyResponse)
-                                requestFlowList.push({
-                                    ...policyResponse.body,
-                                    uniqueKey: uuid,
-                                });
-                        } catch (error) {
-                            console.error(error);
+                    try {
+                        let policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId) || null;
+                        if (!policyObj && !isPlatformGateway && policyId) {
+                            originatedFromCommonPolicies.push(policyId);
                         }
+                        if (!policyObj) {
+                            // eslint-disable-next-line no-await-in-loop
+                            policyObj = await resolvePolicySpec(policyId, policyName, policyVersion);
+                        }
+                        if (policyObj) {
+                            requestFlowList.push({ ...policyObj, uniqueKey: uuid });
+                        }
+                    } catch (error) {
+                        console.error(error);
                     }
                 }
             }
@@ -167,7 +199,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             const responseFlowList: AttachedPolicy[] = [];
             const responseFlow = isAPILevelPolicy ? apiPolicies.response : operationInAction.operationPolicies.response;
             for (const responseFlowAttachedPolicy of responseFlow) {
-                const { policyId, policyName, uuid } =
+                const { policyId, policyName, policyVersion, uuid } =
                     responseFlowAttachedPolicy;
                 if (policyId === null) {
                     // Handling migration flow
@@ -179,26 +211,21 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                         uniqueKey: uuid,
                     });
                 } else {
-                    const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId);
-                    if (policyObj) {
-                        responseFlowList.push({ ...policyObj, uniqueKey: uuid });
-                    } else {
-                        originatedFromCommonPolicies.push(policyId);
-                        try {
-                            // eslint-disable-next-line no-await-in-loop
-                            const policyResponse = await API.getOperationPolicy(
-                                policyId,
-                                api.id,
-                            );
-                            if (policyResponse)
-                                responseFlowList.push({
-                                    ...policyResponse.body,
-                                    uniqueKey: uuid,
-                                });
-                        } catch (error) {
-                            console.error(error);
+                    try {
+                        let policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId) || null;
+                        if (!policyObj && !isPlatformGateway && policyId) {
+                            originatedFromCommonPolicies.push(policyId);
                         }
-                    }   
+                        if (!policyObj) {
+                            // eslint-disable-next-line no-await-in-loop
+                            policyObj = await resolvePolicySpec(policyId, policyName, policyVersion);
+                        }
+                        if (policyObj) {
+                            responseFlowList.push({ ...policyObj, uniqueKey: uuid });
+                        }
+                    } catch (error) {
+                        console.error(error);
+                    }
                 }
             }
             setResponseFlowPolicyList(responseFlowList);
@@ -208,7 +235,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                 const faultFlowList: AttachedPolicy[] = [];
                 const faultFlow = isAPILevelPolicy ? apiPolicies.fault : operationInAction.operationPolicies.fault;
                 for (const faultFlowAttachedPolicy of faultFlow) {
-                    const { policyId, policyName, uuid } =
+                    const { policyId, policyName, policyVersion, uuid } =
                         faultFlowAttachedPolicy;
                     if (policyId === null) {
                         // Handling migration flow
@@ -220,25 +247,20 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                             uniqueKey: uuid,
                         });
                     } else {
-                        const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId);
-                        if (policyObj) {
-                            faultFlowList.push({ ...policyObj, uniqueKey: uuid });
-                        } else {
-                            originatedFromCommonPolicies.push(policyId);
-                            try {
-                                // eslint-disable-next-line no-await-in-loop
-                                const policyResponse = await API.getOperationPolicy(
-                                    policyId,
-                                    api.id,
-                                );
-                                if (policyResponse)
-                                    faultFlowList.push({
-                                        ...policyResponse.body,
-                                        uniqueKey: uuid,
-                                    });
-                            } catch (error) {
-                                console.error(error);
+                        try {
+                            let policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId) || null;
+                            if (!policyObj && !isPlatformGateway && policyId) {
+                                originatedFromCommonPolicies.push(policyId);
                             }
+                            if (!policyObj) {
+                                // eslint-disable-next-line no-await-in-loop
+                                policyObj = await resolvePolicySpec(policyId, policyName, policyVersion);
+                            }
+                            if (policyObj) {
+                                faultFlowList.push({ ...policyObj, uniqueKey: uuid });
+                            }
+                        } catch (error) {
+                            console.error(error);
                         }
                     }
                 }

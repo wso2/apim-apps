@@ -34,6 +34,7 @@ import type { PolicySpec, ApiPolicy, AttachedPolicy } from './Types';
 import ApiContext from '../components/ApiContext';
 import ApiOperationContext from './ApiOperationContext';
 import API from 'AppData/api';
+import PolicyHub from 'AppData/PolicyHub';
 
 const PREFIX = 'PolicyConfigurationEditDrawer';
 
@@ -90,6 +91,8 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
     useEffect(() => {
         (async () => {
             if (policyObj) {
+                const isPlatformGateway =
+                    api.gatewayType === 'platform-gateway' || api.gatewayType === 'PlatformGateway';
                 let policySpecVal = allPolicies?.find(
                     (policy: PolicySpec) =>
                         policy.name === policyObj.name &&
@@ -98,11 +101,19 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
 
                 // If this policy is a deleted common policy we need to do an API call to get the policy specification
                 if (!policySpecVal) {
-                    const policyResponse = await API.getOperationPolicy(
-                        policyObj.id,
-                        api.id,
-                    );
-                    policySpecVal = policyResponse.body;
+                    if (isPlatformGateway) {
+                        policySpecVal = await PolicyHub.getPolicySpec({
+                            name: policyObj.name,
+                            version: policyObj.version,
+                            displayName: policyObj.displayName,
+                        });
+                    } else {
+                        const policyResponse = await API.getOperationPolicy(
+                            policyObj.id,
+                            api.id,
+                        );
+                        policySpecVal = policyResponse.body;
+                    }
                 }
 
                 setPolicySpec(policySpecVal);

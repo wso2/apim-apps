@@ -63,6 +63,7 @@ interface AttachedPolicyCardSharedProps {
     handleDelete: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     setDrawerOpen: React.Dispatch<React.SetStateAction<any>>;
     PolicyConfigurationEditDrawer: any;
+    showDownload?: boolean;
 }
 
 /**
@@ -84,7 +85,8 @@ const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = ({
     handlePolicyDownload,
     handleDelete,
     setDrawerOpen,
-    PolicyConfigurationEditDrawer
+    PolicyConfigurationEditDrawer,
+    showDownload = true,
 }) => {
 
     const policyColor = Utils.stringToColor(policyObj.displayName);
@@ -159,17 +161,19 @@ const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = ({
                         </Avatar>
                     </Tooltip>
                     <Box className={classes.actionsBox}>
-                        <IconButton
-                            key={`${policyObj.id}-download`}
-                            aria-label='Download policy'
-                            size='small'
-                            onClick={handlePolicyDownload}
-                            disableFocusRipple
-                            disableRipple
-                            disabled={policyObj.id === ''} // Disabling policy download for migrated policy
-                        >
-                            <CloudDownloadIcon />
-                        </IconButton>
+                        {showDownload && (
+                            <IconButton
+                                key={`${policyObj.id}-download`}
+                                aria-label='Download policy'
+                                size='small'
+                                onClick={handlePolicyDownload}
+                                disableFocusRipple
+                                disableRipple
+                                disabled={policyObj.id === ''} // Disabling policy download for migrated policy
+                            >
+                                <CloudDownloadIcon />
+                            </IconButton>
+                        )}
                         <IconButton
                             key={`${policyObj.id}-delete`}
                             aria-label='delete attached policy'
@@ -226,17 +230,19 @@ const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = ({
                         </Avatar>
                     </Tooltip>
                     <Box className={classes.actionsBox}>
-                        <IconButton
-                            key={`${policyObj.id}-download`}
-                            aria-label='Download policy'
-                            size='small'
-                            onClick={handlePolicyDownload}
-                            disableFocusRipple
-                            disableRipple
-                            disabled={policyObj.id === ''} // Disabling policy download for migrated policy
-                        >
-                            <CloudDownloadIcon />
-                        </IconButton>
+                        {showDownload && (
+                            <IconButton
+                                key={`${policyObj.id}-download`}
+                                aria-label='Download policy'
+                                size='small'
+                                onClick={handlePolicyDownload}
+                                disableFocusRipple
+                                disableRipple
+                                disabled={policyObj.id === ''} // Disabling policy download for migrated policy
+                            >
+                                <CloudDownloadIcon />
+                            </IconButton>
+                        )}
                         <IconButton
                             key={`${policyObj.id}-delete`}
                             aria-label='delete attached policy'

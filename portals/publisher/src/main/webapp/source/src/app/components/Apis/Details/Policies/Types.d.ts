@@ -37,6 +37,7 @@ export type AttachedPolicy = {
     uniqueKey: string;
     attributes?: any;
     isAPISpecific?: boolean;
+    supportedGateways?: string[];
 };
 
 export type PolicySpecAttribute = {

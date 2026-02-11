@@ -177,7 +177,13 @@ function MetaData(props) {
                                 <Typography component='p' variant='body1'>
                                     {api.gatewayType === 'wso2/synapse' && 'Regular'}
                                     {api.gatewayType === 'wso2/apk' && 'APK'}
-                                    {api.gatewayType !== 'wso2/synapse' && api.gatewayType !== 'wso2/apk' 
+                                    {(api.gatewayType === 'platform-gateway'
+                                        || api.gatewayType === 'PlatformGateway')
+                                        && 'Platform Gateway'}
+                                    {api.gatewayType !== 'wso2/synapse'
+                                        && api.gatewayType !== 'wso2/apk'
+                                        && api.gatewayType !== 'platform-gateway'
+                                        && api.gatewayType !== 'PlatformGateway'
                                         && api.gatewayType}
                                 </Typography>
                             </Grid>

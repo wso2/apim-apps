@@ -29,6 +29,7 @@ import { DndProvider } from 'react-dnd';
 import { FormattedMessage } from 'react-intl';
 import { mapAPIOperations } from 'AppComponents/Apis/Details/Resources/operationUtils';
 import API from 'AppData/api';
+import PolicyHub from 'AppData/PolicyHub';
 import { Progress } from 'AppComponents/Shared';
 import { arrayMove } from '@dnd-kit/sortable';
 import Tabs from '@mui/material/Tabs';
@@ -100,6 +101,7 @@ const Policies: React.FC = () => {
     const { showMultiVersionPolicies } = Configurations.apis;
     const [selectedTab, setSelectedTab] = useState(api.type === 'GRAPHQL' || api.apiPolicies != null ? 0 : 1);
     const [gateway, setGateway] = useState<string>("");
+    const isPlatformGateway = api.gatewayType === 'platform-gateway' || api.gatewayType === 'PlatformGateway';
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
@@ -174,6 +176,33 @@ const Policies: React.FC = () => {
      * Sets the policies state: policy state is used to display the available policies that are draggable.
      */
     const fetchPolicies = () => {
+        if (isPlatformGateway) {
+            setGateway('PlatformGateway');
+            PolicyHub.listAllPolicySpecs()
+                .then((policySpecs) => {
+                    const filteredPolicies = policySpecs.filter((policy) =>
+                        policy.supportedApiTypes.some((item: any) => {
+                            if (typeof item === 'string') {
+                                return item === api.type;
+                            } else if (typeof item === 'object') {
+                                return item.apiType === api.type && item.subType === api.subtypeConfiguration?.subtype;
+                            }
+                            return false;
+                        }),
+                    );
+
+                    setAllPolicies(policySpecs);
+                    setApiPolicies([]);
+                    setCommonPolicies(filteredPolicies);
+                    setPolicies(filteredPolicies);
+                })
+                .catch((error) => {
+                    console.error(error);
+                    Alert.error('Error occurred while retrieving the policy list');
+                });
+            return;
+        }
+
         const apiPoliciesPromise = API.getOperationPolicies(api.id);
         const commonPoliciesPromise = API.getCommonOperationPolicies();
         Promise.all([apiPoliciesPromise, commonPoliciesPromise]).then((response) => {
@@ -208,6 +237,8 @@ const Policies: React.FC = () => {
             if (api.gatewayType === "wso2/apk") {
                 // Get CC gateway supported policies
                 gatewayType = 'ChoreoConnect';
+            } else if (api.gatewayType === "platform-gateway" || api.gatewayType === "PlatformGateway") {
+                gatewayType = 'PlatformGateway';
             } else if (api.gatewayType === "AWS") {
                 // Get AWS gateway supported policies
                 gatewayType = 'AWS';
@@ -292,7 +323,7 @@ const Policies: React.FC = () => {
         if (isChoreoConnectEnabled) {
             setSelectedTab(1);
         }
-    }, [isChoreoConnectEnabled]);
+    }, [isChoreoConnectEnabled, api.gatewayType, api.type]);
 
     useEffect(() => {
         // Update the Swagger spec object when API object gets changed

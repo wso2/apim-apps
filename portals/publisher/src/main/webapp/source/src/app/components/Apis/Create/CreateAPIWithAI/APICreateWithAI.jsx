@@ -89,6 +89,12 @@ const ApiCreateWithAI = () => {
             name: 'Azure Gateway',
             description: 'API gateway offered by Azure cloud.',
             isNew: false
+        },
+        'platform-gateway': {
+            value: 'platform-gateway',
+            name: 'Platform Gateway',
+            description: 'API gateway for platform-managed policies.',
+            isNew: false,
         }
     };
 
