@@ -51,7 +51,7 @@ const validateConstraint = (inputValue, constraint, intl, messages) => {
         case VALIDATOR_TYPES.RANGE_MIN: {
             const { min } = value || {};
             const numericInput = Number(inputValue);
-            if (Number.isNaN(numericInput) || numericInput < min) {
+            if (inputValue.trim() === '' || Number.isNaN(numericInput) || numericInput < min) {
                 return {
                     valid: false,
                     message: intl && messages
@@ -65,7 +65,7 @@ const validateConstraint = (inputValue, constraint, intl, messages) => {
         case VALIDATOR_TYPES.RANGE_MAX: {
             const { max } = value || {};
             const numericInput = Number(inputValue);
-            if (Number.isNaN(numericInput) || numericInput > max) {
+            if (inputValue.trim() === '' || Number.isNaN(numericInput) || numericInput > max) {
                 return {
                     valid: false,
                     message: intl && messages
@@ -79,7 +79,7 @@ const validateConstraint = (inputValue, constraint, intl, messages) => {
         case VALIDATOR_TYPES.RANGE: {
             const { min, max } = value || {};
             const numericInput = Number(inputValue);
-            if (Number.isNaN(numericInput)) {
+            if (inputValue.trim() === '' || Number.isNaN(numericInput)) {
                 return {
                     valid: false,
                     message: intl && messages
@@ -108,6 +108,9 @@ const validateConstraint = (inputValue, constraint, intl, messages) => {
 
         case VALIDATOR_TYPES.ENUM: {
             const { allowed } = value || {};
+            if (!Array.isArray(allowed)) {
+                return { valid: true, message: '' };
+            }
             // Handle both single values and arrays (for multi-select)
             if (Array.isArray(inputValue)) {
                 // For multi-select, check if all selected values are in the allowed list

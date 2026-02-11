@@ -219,8 +219,7 @@ const KeyConfiguration = (props) => {
         const anyConstraintError = Object.values(configErrorsRef.current).some((v) => v === true);
         if (callbackUrlLocal === '') {
             setHasCallbackError(true);
-            // Combine callback error with constraint errors
-            updateHasError(true || anyConstraintError);
+            updateHasError(true);
             setCallbackHelper(intl.formatMessage({
                 defaultMessage: 'Call back URL can not be empty when Implicit or Authorization Code grants are selected.',
                 id: 'Shared.AppsAndKeys.KeyConfCiguration.Invalid.callback.empty.error.text',

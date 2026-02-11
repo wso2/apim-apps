@@ -740,7 +740,7 @@ function AddEditKeyManager(props) {
                 constraints[key] = constraintConfig.values || [];
             } else {
                 constraints[key] = parseConstraintValueToInput(
-                    constraintConfig.type,
+                    constraintConfig.constraintType,
                     null,
                 );
             }
