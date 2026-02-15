@@ -78,7 +78,7 @@ export default function OperationGovernance(props) {
                         control={(
                             <Switch
                                 disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                                checked={operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none'}
+                                checked={!operation['x-auth-type'] || operation['x-auth-type'].toLowerCase() !== 'none'}
                                 onChange={({ target: { checked } }) => operationsDispatcher({
                                     action: 'authType',
                                     data: { target, verb, value: checked },
@@ -115,7 +115,7 @@ export default function OperationGovernance(props) {
             </Grid>
             <Grid item md={1} />
             <Grid item md={7}>
-                {operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none' ? (
+                {!operation['x-auth-type'] || operation['x-auth-type'].toLowerCase() !== 'none' ? (
                     <Autocomplete
                         multiple
                         limitTags={5}
@@ -177,7 +177,8 @@ export default function OperationGovernance(props) {
             </Grid>
             <Grid item md={3} style={{ marginTop: '14px' }}>
                 {
-                    operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none' ? !disableUpdate && (
+                    // security is enabled if x-auth-type is not present or not set to 'none'
+                    !operation['x-auth-type'] || operation['x-auth-type'].toLowerCase() !== 'none' ? !disableUpdate && (
                         <Link
                             to={`/apis/${api.id}/scopes/create`}
                             target='_blank'
