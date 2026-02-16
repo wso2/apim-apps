@@ -173,7 +173,7 @@ const validateConstraint = (inputValue, constraint, intl, messages) => {
                         valid: false,
                         message: intl && messages
                             ? intl.formatMessage(messages.regexInvalid, { pattern })
-                            : `Value does not match the required pattern: ${pattern}`,
+                            : `Value must match the required pattern: ${pattern}`,
                     };
                 }
             } catch (e) {

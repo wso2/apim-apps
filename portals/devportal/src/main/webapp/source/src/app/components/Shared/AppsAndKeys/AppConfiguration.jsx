@@ -196,7 +196,7 @@ const AppConfiguration = (props) => {
         },
         regexInvalid: {
             id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.regexInvalid',
-            defaultMessage: 'Value does not match the required pattern: {pattern}',
+            defaultMessage: 'Value must match the required pattern: {pattern}',
         },
     });
 
