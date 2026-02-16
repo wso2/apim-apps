@@ -123,7 +123,9 @@ const validateConstraint = (inputValue, constraint, intl, messages) => {
         case VALIDATOR_TYPES.RANGE: {
             const { min, max } = value || {};
             const numericInput = Number(inputValue);
-            if (inputValue.trim() === '' || Number.isNaN(numericInput)) {
+            if (inputValue.trim() === '' || Number.isNaN(numericInput)
+                || (min !== undefined && numericInput < min)
+                || (max !== undefined && numericInput > max)) {
                 return {
                     valid: false,
                     message: intl && messages

@@ -22,6 +22,7 @@ import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
 import FormGroup from '@mui/material/FormGroup';
 import TextField from '@mui/material/TextField';
 
@@ -369,6 +370,11 @@ function Constraints(props) {
                                 }}
                                 disabled={disabled || !isOn}
                             />
+                            {(c.tooltip || c.toolTip) && (
+                                <FormHelperText>
+                                    {c.tooltip || c.toolTip}
+                                </FormHelperText>
+                            )}
                         </Box>
                     </Box>
                 );
@@ -384,6 +390,7 @@ Constraints.propTypes = {
         label: PropTypes.string,
         constraintType: PropTypes.oneOf(Object.values(CONSTRAINT_TYPES)).isRequired,
         values: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.shape({})])),
+        tooltip: PropTypes.string,
         toolTip: PropTypes.string,
         type: PropTypes.string,
         multiple: PropTypes.bool,
