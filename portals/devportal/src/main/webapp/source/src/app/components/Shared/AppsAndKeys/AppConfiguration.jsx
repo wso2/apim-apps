@@ -37,7 +37,7 @@ import Box from '@mui/material/Box';
 import ChipInput from 'AppComponents/Shared/ChipInput';
 import Autocomplete from '@mui/material/Autocomplete';
 import Settings from 'AppComponents/Shared/SettingsContext';
-import validateConstraint from './constraintValidator';
+import validateConstraint, { getConstraintHint } from './constraintValidator';
 
 
 const PREFIX = 'AppConfiguration';
@@ -177,7 +177,7 @@ const AppConfiguration = (props) => {
         }
     });
 
-    const ConstraintErrorMessages = defineMessages({
+    const constraintMessages = defineMessages({
         rangeMin: {
             id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.range.min',
             defaultMessage: 'Value must be at least {min}',
@@ -186,42 +186,28 @@ const AppConfiguration = (props) => {
             id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.range.max',
             defaultMessage: 'Value must be at most {max}',
         },
-        rangeMinInRange: {
-            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.range.min.in.range',
-            defaultMessage: 'Value must be at least {min} (allowed range: {min} - {max})',
-        },
-        rangeMaxInRange: {
-            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.range.max.in.range',
-            defaultMessage: 'Value must be at most {max} (allowed range: {min} - {max})',
-        },
         rangeInvalid: {
             id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.range.invalid',
             defaultMessage: 'Value must be a number between {min} and {max}',
         },
         enumInvalid: {
-            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.enum',
-            defaultMessage: 'Value must be one of: {allowed}',
+            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.enumInvalid',
+            defaultMessage: 'Value(s) must be from: {allowed}',
         },
         regexInvalid: {
-            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.regex',
+            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.regexInvalid',
             defaultMessage: 'Value does not match the required pattern: {pattern}',
         },
     });
 
-    /**
-     * This method is used to handle the updating of key generation
-     * request object.
-     * @param {*} field field that should be updated in key request
-     * @param {*} event event fired
-     */
-    const handleAppRequestChange = (event) => {
+        const handleAppRequestChange = (event) => {
         const { target: currentTarget } = event;
         const newValue = currentTarget.type === 'checkbox' ? currentTarget.checked : currentTarget.value;
         setSelectedValue(newValue);
 
         // Validate against constraint if present
         const { constraint } = config;
-        const result = validateConstraint(newValue, constraint, props.intl, ConstraintErrorMessages);
+        const result = validateConstraint(newValue, constraint, props.intl, constraintMessages);
         setConstraintError(result.valid ? '' : result.message);
         if (onValidationError) {
             onValidationError(config.name, !result.valid);
@@ -235,11 +221,17 @@ const AppConfiguration = (props) => {
             ? props.intl.formatMessage(AppConfigLabels[config.name])
             : config.label
     }
-
     const getAppConfigToolTip = () => {
-        return AppConfigToolTips[config.name]
+        let tooltip = AppConfigToolTips[config.name]
             ? props.intl.formatMessage(AppConfigToolTips[config.name])
-            : config.tooltip
+            : config.tooltip;
+
+        const { constraint } = config;
+        const constraintText = getConstraintHint(constraint, props.intl, constraintMessages);
+        if (constraintText) {
+            tooltip = tooltip ? `${tooltip} (${constraintText})` : constraintText;
+        }
+        return tooltip;
     }
 
     /**
@@ -249,16 +241,6 @@ const AppConfiguration = (props) => {
         setSelectedValue(previousValue);
         const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
         setIsOrgWideAppUpdateEnabled(orgWideAppUpdateEnabled);
-
-        // Validate on initial load
-        if (previousValue !== undefined && previousValue !== null && previousValue !== '') {
-            const { constraint } = config;
-            const result = validateConstraint(previousValue, constraint, props.intl, ConstraintErrorMessages);
-            setConstraintError(result.valid ? '' : result.message);
-            if (onValidationError) {
-                onValidationError(config.name, !result.valid);
-            }
-        }
     }, [previousValue, settingsContext]);
 
     const setCheckboxValue = () => {
