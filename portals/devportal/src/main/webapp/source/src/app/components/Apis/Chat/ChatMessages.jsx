@@ -73,7 +73,7 @@ function ChatMessages(props) {
                 marketplaceAssistantDocLink: (
                     <a
                         id='marketplace-assistant-doc-link'
-                        href='https://apim.docs.wso2.com/en/4.6.0/consume/discover-apis/marketplace-assistant/'
+                        href='https://apim.docs.wso2.com/en/4.7.0/consume/discover-apis/marketplace-assistant/'
                         target='_blank'
                         rel='noopener noreferrer'
                     >
