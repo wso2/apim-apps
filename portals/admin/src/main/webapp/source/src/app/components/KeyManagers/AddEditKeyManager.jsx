@@ -2331,6 +2331,54 @@ function AddEditKeyManager(props) {
                                             />
                                         ))}
                                 </Box>
+                                <Box display='flex' marginTop={3} marginBottom={2}>
+                                    <Typography
+                                        color='inherit'
+                                        variant='subtitle2'
+                                        component='a'
+                                        onClick={handleExpandClick}
+                                        style={{ cursor: 'pointer' }}
+                                        id='KeyManagers.AddEditKeyManager.claim.mappings.header'
+                                    >
+                                        <FormattedMessage
+                                            id='KeyManagers.AddEditKeyManager.claim.mappings.title'
+                                            defaultMessage='Claim Mappings'
+                                        />
+                                    </Typography>
+                                    <IconButton
+                                        sx={{ marginLeft: 'auto' }}
+                                        onClick={handleExpandClick}
+                                        aria-expanded={expanded}
+                                        aria-label='show more'
+                                        size='large'
+                                    >
+                                        <StyledExpandMoreIcon
+                                            className={expanded ? 'expandOpen' : 'expand'}
+                                        />
+                                    </IconButton>
+                                </Box>
+                                <Box>
+                                    <Collapse in={expanded} timeout='auto' unmountOnExit>
+                                        <ClaimMappings
+                                            claimMappings={cloneDeep(claimMapping)}
+                                            setClaimMapping={setClaimMapping}
+                                        />
+                                    </Collapse>
+                                    {!expanded && (
+                                        <Typography
+                                            color='inherit'
+                                            variant='caption'
+                                            component='div'
+                                            style={{ paddingLeft: 16 }}
+                                            id='KeyManagers.AddEditKeyManager.claim.mappings.hidden.help.body'
+                                        >
+                                            <FormattedMessage
+                                                id='KeyManagers.AddEditKeyManager.claim.mappings.hidden.help'
+                                                defaultMessage='Expand to add edit claim mappings'
+                                            />
+                                        </Typography>
+                                    )}
+                                </Box>
                                 {!isEmpty(constraintConfigurations) && (
                                     <>
                                         <Box display='flex' marginTop={3} marginBottom={2}>
@@ -2392,54 +2440,6 @@ function AddEditKeyManager(props) {
                                         </Box>
                                     </>
                                 )}
-                                <Box display='flex' marginTop={3} marginBottom={2}>
-                                    <Typography
-                                        color='inherit'
-                                        variant='subtitle2'
-                                        component='a'
-                                        onClick={handleExpandClick}
-                                        style={{ cursor: 'pointer' }}
-                                        id='KeyManagers.AddEditKeyManager.claim.mappings.header'
-                                    >
-                                        <FormattedMessage
-                                            id='KeyManagers.AddEditKeyManager.claim.mappings.title'
-                                            defaultMessage='Claim Mappings'
-                                        />
-                                    </Typography>
-                                    <IconButton
-                                        sx={{ marginLeft: 'auto' }}
-                                        onClick={handleExpandClick}
-                                        aria-expanded={expanded}
-                                        aria-label='show more'
-                                        size='large'
-                                    >
-                                        <StyledExpandMoreIcon
-                                            className={expanded ? 'expandOpen' : 'expand'}
-                                        />
-                                    </IconButton>
-                                </Box>
-                                <Box>
-                                    <Collapse in={expanded} timeout='auto' unmountOnExit>
-                                        <ClaimMappings
-                                            claimMappings={cloneDeep(claimMapping)}
-                                            setClaimMapping={setClaimMapping}
-                                        />
-                                    </Collapse>
-                                    {!expanded && (
-                                        <Typography
-                                            color='inherit'
-                                            variant='caption'
-                                            component='div'
-                                            style={{ paddingLeft: 16 }}
-                                            id='KeyManagers.AddEditKeyManager.claim.mappings.hidden.help.body'
-                                        >
-                                            <FormattedMessage
-                                                id='KeyManagers.AddEditKeyManager.claim.mappings.hidden.help'
-                                                defaultMessage='Expand to add edit claim mappings'
-                                            />
-                                        </Typography>
-                                    )}
-                                </Box>
                             </Box>
                         </Grid>
                     )}
