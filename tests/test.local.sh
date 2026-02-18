@@ -1,1 +1,1 @@
-./node_modules/.bin/cypress run --headed --spec cypress/integration/admin/08-add-api-categories.spec.js
+./node_modules/.bin/cypress run --headed --spec cypress/e2e/admin/08-add-api-categories.cy.js
