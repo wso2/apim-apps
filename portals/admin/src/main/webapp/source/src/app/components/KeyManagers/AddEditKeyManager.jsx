@@ -60,6 +60,7 @@ import { red } from '@mui/material/colors/';
 import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import Constraints from 'AppComponents/KeyManagers/Constraints';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
@@ -246,6 +247,9 @@ function AddEditKeyManager(props) {
     const [enableExchangeToken, setEnableExchangeToken] = useState(false);
     const [enableDirectToken, setEnableDirectToken] = useState(true);
     const [organizations, setOrganizations] = useState([]);
+    const [constraintConfigurations, setConstraintConfigurations] = useState([]);
+    const [constraints, setConstraints] = useState({});
+    const [constraintSectionExpaneded, setConstraintSectionExpaneded] = useState(false);
 
     const restApi = new API();
     const handleRoleAddition = (role) => {
@@ -287,6 +291,7 @@ function AddEditKeyManager(props) {
         if (settings.keyManagerConfiguration) {
             settings.keyManagerConfiguration.map(({
                 type: key, defaultConsumerKeyClaim, defaultScopesClaim, configurations, authConfigurations,
+                configurationConstraints: constraintsConfigurations,
             }) => {
                 if (key === keyManagerType) {
                     if (!id) {
@@ -302,6 +307,11 @@ function AddEditKeyManager(props) {
                         ...(Array.isArray(authConfigurations) ? authConfigurations : []),
                         ...configurations,
                     ]);
+                    setConstraintConfigurations(constraintsConfigurations || []);
+                    return true;
+                } else if (key === 'WSO2-IS' && keyManagerType === 'default') {
+                    // since Application properties are same for default(resident key manager) and WSO2-IS Key managers
+                    setConstraintConfigurations(constraintsConfigurations || []);
                     return true;
                 } else {
                     return false;
@@ -537,6 +547,10 @@ function AddEditKeyManager(props) {
 
         const keymanager = {
             ...state,
+            additionalProperties: {
+                ...state.additionalProperties,
+                constraints: !isEmpty(constraints) ? constraints : undefined,
+            },
             tokenValidation: newTokenValidation,
             allowedOrganizations: validOrgs,
             tokenType,
@@ -598,6 +612,57 @@ function AddEditKeyManager(props) {
         }
         dispatch({ field: 'additionalProperties', value: clonedAdditionalProperties });
     };
+
+    const getConstraintsData = () => {
+        const savedConstraints = additionalProperties?.constraints || {};
+        const constraintsData = {};
+        constraintConfigurations.forEach((constraintConfig) => {
+            const key = constraintConfig.name;
+            const savedConstraint = savedConstraints[key];
+            if (savedConstraint?.type && savedConstraint?.value) {
+                constraintsData[key] = savedConstraint;
+            } else if (!id && constraintConfig.default) {
+                constraintsData[key] = {
+                    type: constraintConfig.constraintType,
+                    value: constraintConfig.default,
+                };
+            }
+        });
+        return { constraintsData };
+    };
+
+    const handleConstraintUpdate = (configName, value) => {
+        setConstraints((prev) => {
+            const newConstraints = { ...prev };
+            if (value === null || isEmpty(value)) {
+                delete newConstraints[configName];
+            } else {
+                const config = constraintConfigurations.find((c) => c.name === configName);
+                if (config) {
+                    newConstraints[configName] = { type: config.constraintType, value };
+                }
+            }
+            return newConstraints;
+        });
+    };
+
+    const handleConstraintsExpandClick = () => {
+        setConstraintSectionExpaneded(!constraintSectionExpaneded);
+    };
+
+    useEffect(() => {
+        if (!isEmpty(constraintConfigurations)) {
+            const { constraintsData } = getConstraintsData();
+            if (!isEmpty(constraintsData)) {
+                setConstraints(constraintsData);
+            }
+            // Auto-expand if any field is already constrained (value is not null)
+            if (Object.values(constraintsData).some((c) => c.value !== null)) {
+                setConstraintSectionExpaneded(true);
+            }
+        }
+    }, [constraintConfigurations, id]);
+
     const setTokenValidations = (value) => {
         dispatch({ field: 'tokenValidation', value });
     };
@@ -2314,6 +2379,67 @@ function AddEditKeyManager(props) {
                                         </Typography>
                                     )}
                                 </Box>
+                                {!isEmpty(constraintConfigurations) && (
+                                    <>
+                                        <Box display='flex' marginTop={3} marginBottom={2}>
+                                            <Typography
+                                                color='inherit'
+                                                variant='subtitle2'
+                                                component='a'
+                                                onClick={handleConstraintsExpandClick}
+                                                style={{ cursor: 'pointer' }}
+                                                id='KeyManagers.AddEditKeyManager.app.config.constraints.header'
+                                            >
+                                                <FormattedMessage
+                                                    id='KeyManagers.AddEditKeyManager.app.config.constraints'
+                                                    defaultMessage='Application Configuration Constraints'
+                                                />
+                                            </Typography>
+                                            <IconButton
+                                                sx={{ marginLeft: 'auto' }}
+                                                onClick={handleConstraintsExpandClick}
+                                                aria-expanded={constraintSectionExpaneded}
+                                                aria-label='show more'
+                                                size='large'
+                                            >
+                                                <StyledExpandMoreIcon
+                                                    className={
+                                                        constraintSectionExpaneded
+                                                            ? 'expandOpen' : 'expand'
+                                                    }
+                                                />
+                                            </IconButton>
+                                        </Box>
+                                        <Box>
+                                            <Collapse
+                                                in={constraintSectionExpaneded}
+                                                timeout='auto'
+                                                unmountOnExit
+                                            >
+                                                <Constraints
+                                                    items={constraintConfigurations}
+                                                    constraintsData={constraints}
+                                                    onChange={handleConstraintUpdate}
+                                                    disabled={false}
+                                                />
+                                            </Collapse>
+                                            {!constraintSectionExpaneded && (
+                                                <Typography
+                                                    color='inherit'
+                                                    variant='caption'
+                                                    component='div'
+                                                    style={{ paddingLeft: 16 }}
+                                                    id='KeyManagers.AddEditKeyManager.constraints.hidden.help.body'
+                                                >
+                                                    <FormattedMessage
+                                                        id='KeyManagers.AddEditKeyManager.constraints.hidden.help'
+                                                        defaultMessage='Expand to configure constraints'
+                                                    />
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                    </>
+                                )}
                             </Box>
                         </Grid>
                     )}
