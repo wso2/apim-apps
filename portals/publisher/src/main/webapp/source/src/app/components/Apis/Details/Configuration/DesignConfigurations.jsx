@@ -919,7 +919,7 @@ export default function DesignConfigurations() {
                             <div>
                                 <Box px={8} py={5}>
                                     <Box py={1}>
-                                        <Grid container spacing={0}>
+                                        <Grid container spacing={0} alignItems='center'>
                                             <Grid item xs={12} md={2.5} id='edit-api-thumbnail-btn'>
                                                 <ThumbnailView
                                                     api={api}
