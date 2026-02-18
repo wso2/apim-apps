@@ -15,9 +15,9 @@ jobs:
   build-product:
     runs-on: ubuntu-latest
     env:
-      APIM_VERSION: 4.6.0-SNAPSHOT
-      APIM_DIR: wso2am-4.6.0-SNAPSHOT
-      APIM_DOWNLOAD_URL: https://wso2.org/jenkins/job/products/job/product_apim/job/product-apim/lastStableBuild/org.wso2.am$wso2am/artifact/org.wso2.am/wso2am/4.6.0-SNAPSHOT/wso2am-4.6.0-SNAPSHOT.zip
+      APIM_VERSION: 4.7.0-SNAPSHOT
+      APIM_DIR: wso2am-4.7.0-SNAPSHOT
+      APIM_DOWNLOAD_URL: https://wso2.org/jenkins/job/products/job/product_apim/job/product-apim/lastStableBuild/org.wso2.am$wso2am/artifact/org.wso2.am/wso2am/4.7.0-SNAPSHOT/wso2am-4.7.0-SNAPSHOT.zip
 
     steps:
       - name: Run hostname
