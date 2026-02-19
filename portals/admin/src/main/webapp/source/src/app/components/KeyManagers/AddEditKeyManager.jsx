@@ -392,8 +392,6 @@ function AddEditKeyManager(props) {
             case 'introspectionEndpoint':
             case 'tokenEndpoint':
             case 'revokeEndpoint':
-            case 'userInfoEndpoint':
-            case 'scopeManagementEndpoint':
                 if (fieldValue === '') {
                     error = intl.formatMessage({
                         id: 'KeyManagers.AddEditKeyManager.is.empty.error.key.config',
@@ -494,8 +492,6 @@ function AddEditKeyManager(props) {
                 || hasErrors('tokenEndpoint', tokenEndpoint, validatingActive)
                 || hasErrors('revokeEndpoint', revokeEndpoint, validatingActive)
                 || hasErrors('enableDirectToken', enableDirectToken, validatingActive)
-                || hasErrors('userInfoEndpoint', userInfoEndpoint, validatingActive)
-                || hasErrors('scopeManagementEndpoint', scopeManagementEndpoint, validatingActive)
                 || hasErrors('selectOrgs', validOrgs, validatingActive);
         } else {
             return hasErrors('name', name, validatingActive)
@@ -1265,21 +1261,16 @@ function AddEditKeyManager(props) {
                                                 margin='dense'
                                                 name='userInfoEndpoint'
                                                 label={(
-                                                    <span>
-                                                        <FormattedMessage
-                                                            id='KeyManagers.AddEditKeyManager.form.userInfoEndpoint'
-                                                            defaultMessage='UserInfo Endpoint'
-                                                        />
-                                                        <StyledSpan>*</StyledSpan>
-                                                    </span>
+                                                    <FormattedMessage
+                                                        id='KeyManagers.AddEditKeyManager.form.userInfoEndpoint'
+                                                        defaultMessage='UserInfo Endpoint'
+                                                    />
                                                 )}
                                                 fullWidth
                                                 variant='outlined'
                                                 value={userInfoEndpoint}
                                                 onChange={onChange}
-                                                error={hasErrors('userInfoEndpoint', userInfoEndpoint, validating)}
-                                                helperText={hasErrors('userInfoEndpoint', userInfoEndpoint, validating)
-                                                || intl.formatMessage({
+                                                helperText={intl.formatMessage({
                                                     id: 'KeyManagers.AddEditKeyManager.form.userInfoEndpoint.help',
                                                     defaultMessage: 'E.g., https://localhost:9443/oauth2/userInfo',
                                                 })}
@@ -1308,24 +1299,17 @@ function AddEditKeyManager(props) {
                                                 margin='dense'
                                                 name='scopeManagementEndpoint'
                                                 label={(
-                                                    <span>
-                                                        <FormattedMessage
-                                                            id={'KeyManagers.AddEditKeyManager.'
-                                                                + 'form.scopeManagementEndpoint'}
-                                                            defaultMessage='Scope Management Endpoint'
-                                                        />
-                                                        <StyledSpan>*</StyledSpan>
-                                                    </span>
+                                                    <FormattedMessage
+                                                        id={'KeyManagers.AddEditKeyManager.'
+                                                            + 'form.scopeManagementEndpoint'}
+                                                        defaultMessage='Scope Management Endpoint'
+                                                    />
                                                 )}
                                                 fullWidth
                                                 variant='outlined'
                                                 value={scopeManagementEndpoint}
                                                 onChange={onChange}
-                                                error={hasErrors('scopeManagementEndpoint',
-                                                    scopeManagementEndpoint, validating)}
-                                                helperText={hasErrors('scopeManagementEndpoint',
-                                                    scopeManagementEndpoint, validating)
-                                                || intl.formatMessage({
+                                                helperText={intl.formatMessage({
                                                     id: 'KeyManagers.AddEditKeyManager.form.scopeManagementEndpoint'
                                                         + '.help',
                                                     defaultMessage: 'E.g, https://localhost:9443/oauth2/scope',
