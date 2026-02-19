@@ -182,6 +182,7 @@ export default function OperationGovernance(props) {
                         <Link
                             to={`/apis/${api.id}/scopes/create`}
                             target='_blank'
+                            rel='noopener noreferrer'
                         >
                             <Typography
                                 style={{ marginLeft: '10px' }}

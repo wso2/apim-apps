@@ -226,6 +226,7 @@ function ListLabels() {
                                 + 'consume/manage-subscription/advanced-topics/'
                                 + 'adding-an-api-subscription-workflow'}
                             underline='hover'
+                            rel='noopener noreferrer'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage

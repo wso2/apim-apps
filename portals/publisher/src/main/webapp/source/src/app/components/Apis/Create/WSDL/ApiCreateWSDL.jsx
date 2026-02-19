@@ -200,7 +200,7 @@ export default function ApiCreateWSDL(props) {
                                 <MUILink
                                     // eslint-disable-next-line
                                     href={`https://mi.docs.wso2.com/en/latest/develop/creating-artifacts/creating-an-api/`}
-                                    target='_blank'>
+                                    target='_blank' rel='noopener noreferrer'>
                                     WSO2 Integration Studio Documentation
                                 </MUILink>
                             </MUIAlert>
