@@ -255,6 +255,28 @@ export default function StoreVisibility(props) {
                                         type: getTypeToDisplay(api.apiType)
                                     }}
                                 />
+                                {tenants !== 0 && (
+                                    <>
+                                        <br />
+                                        <br />
+                                        <strong>
+                                            <FormattedMessage
+                                                id='Apis.Details.Configuration.components.StoreVisibility.tooltip.private'
+                                                defaultMessage='Visible to my domain :'
+                                            />
+                                        </strong>
+                                        {'  '}
+                                        <FormattedMessage
+                                            id='Apis.Details.Configuration.components.StoreVisibility.tooltip.private.desc'
+                                            defaultMessage={
+                                                'The {type} is visible to all users who are registered to the {type}\'s tenant domain.'
+                                            }
+                                            values={{
+                                                type: getTypeToDisplay(api.apiType)
+                                            }}
+                                        />
+                                    </>
+                                )}
                             </p>
                         </>
                     )}
