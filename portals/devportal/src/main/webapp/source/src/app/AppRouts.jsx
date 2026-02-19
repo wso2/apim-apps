@@ -26,6 +26,7 @@ import RedirectToLogin from 'AppComponents/Login/RedirectToLogin';
 import Progress from 'AppComponents/Shared/Progress';
 import PortalModeRouteGuard from 'AppComponents/Shared/PortalModeRouteGuard';
 import { useTheme } from '@mui/material';
+import SessionTimeout from 'AppComponents/SessionTimeout';
 import { usePortalMode, PORTAL_MODES } from './utils/PortalModeUtils';
 
 const Apis = lazy(() => import('AppComponents/Apis/Apis' /* webpackChunkName: "Apis" */));
@@ -71,6 +72,7 @@ function AppRouts(props) {
 
     return (
         <Suspense fallback={<Progress />}>
+            {isAuthenticated && <SessionTimeout />}
             <Switch>
                 <Redirect exact from='/' to={getRedirectingPath(theme, portalMode)} />
                 <Route path='/home' component={Landing} />
