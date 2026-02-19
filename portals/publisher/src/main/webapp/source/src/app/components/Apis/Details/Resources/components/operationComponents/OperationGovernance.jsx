@@ -56,6 +56,16 @@ export default function OperationGovernance(props) {
         operation, operationsDispatcher, operationRateLimits, api, disableUpdate, spec, target, verb, sharedScopes,
         setFocusOperationLevel, componentValidator, isMCPServer
     } = props;
+    
+    // Check if any governance features are supported
+    const supportsOperationSecurity = componentValidator.includes('operationSecurity');
+    const supportsOpLevelRateLimiting = componentValidator.includes('operationLevelRateLimiting');
+    
+    // Early return if no governance features are supported
+    if (!supportsOperationSecurity && !supportsOpLevelRateLimiting) {
+        return null;
+    }
+    
     // Get operation scopes - handle MCP servers differently since they store scopes directly
     const operationScopes = isMCPServer && operation.scopes 
         ? operation.scopes 
@@ -63,12 +73,12 @@ export default function OperationGovernance(props) {
     const isOperationRateLimiting = api.apiThrottlingPolicy === null || 
         !componentValidator.includes('apiLevelRateLimiting');
     const filteredApiScopes = api.scopes.filter((sharedScope) => !sharedScope.shared);
-
     const intl = useIntl();
     const scrollToTop = () => {
         setFocusOperationLevel(true);
         window.scrollTo({ top: 195, behavior: 'smooth' });
     };
+
     return (
         <>
             <Grid item xs={12} md={12}>
@@ -87,7 +97,7 @@ export default function OperationGovernance(props) {
                 </Typography>
             </Grid>
             <Grid item xs={1} />
-            {componentValidator.includes('operationSecurity') &&
+            {supportsOperationSecurity &&
                 <Grid item xs={11}>
                     <FormControl disabled={disableUpdate} component='fieldset'>
                         <FormControlLabel
@@ -133,7 +143,7 @@ export default function OperationGovernance(props) {
             }
             <Grid item md={1} />
             <Grid item md={5}>
-                {componentValidator.includes('operationLevelRateLimiting') &&
+                {supportsOpLevelRateLimiting &&
                     <Box display='flex' flexDirection='row' alignItems='flex-start'>
                         <TextField
                             select
@@ -260,7 +270,7 @@ export default function OperationGovernance(props) {
             </Grid>
             <Grid item md={6} />
             <Grid item md={1} />
-            {componentValidator.includes('operationSecurity') &&
+            {supportsOperationSecurity &&
                 <>
                     <Grid item md={7}>
                         {operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none' ? (
