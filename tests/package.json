@@ -4,7 +4,7 @@
   "description": "Integration tests written in cypress.io for WSO2 API Manager 4.x versions",
   "main": "index.js",
   "scripts": {
-    "test": "cypress run --spec **/*.spec.js",
+    "test": "cypress run --e2e",
     "test:local": "./test.local.sh",
     "test:gui": "cypress run --headed",
     "test:dev": "cypress open",
@@ -16,8 +16,8 @@
     "report:merge": "mochawesome-merge ./cypress/reports/html/.jsons/*.json > ./cypress/reports/mochawesome-bundle.json",
     "report:generate": "marge --inline --saveHtml --charts ./cypress/reports/mochawesome-bundle.json -o ./cypress/reports/html",
     "merge-junit-reports": "jrm ./cypress/reports/junit/combined.xml \"./cypress/reports/junit/*.xml\"",
-    "test:admin": "cypress run --spec cypress/integration/admin/*.spec.js",
-    "test:publisher": "cypress run --spec cypress/integration/publisher/013-api-product/*.spec.js"
+    "test:admin": "cypress run --e2e --spec \"cypress/e2e/admin/*.cy.js\"",
+    "test:publisher": "cypress run --e2e --spec \"cypress/e2e/publisher/013-api-product/*.cy.js\""
   },
   "keywords": [
     "cypress.io"
@@ -27,7 +27,7 @@
   "devDependencies": {
     "@cypress/browserify-preprocessor": "^3.0.1",
     "babel-plugin-module-resolver": "^4.1.0",
-    "cypress": "^9.7.0",
+    "cypress": "14.3.2",
     "cypress-mochawesome-reporter": "^2.2.0",
     "cypress-multi-reporters": "^1.5.0",
     "eslint-plugin-cypress": "^2.11.2",
@@ -39,13 +39,12 @@
     "mochawesome-report-generator": "^5.2.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.942.0",
+    "@aws-sdk/client-s3": "^3.808.0",
+    "archiver": "^7.0.1",
     "cypress-file-upload": "^5.0.8",
-    "html-pdf": "^3.0.1",
+    "nodemailer": "^7.0.3",
     "require-text": "0.0.1",
     "styliner": "^1.1.0",
-    "wdio": "^4.0.0",
-    "wdio-junit-to-html": "^3.1.2",
     "yamljs": "^0.3.0"
   }
 }
