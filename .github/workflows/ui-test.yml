@@ -73,13 +73,13 @@ jobs:
           nc -zv localhost 9443
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
       - name: Cypress run
         uses: cypress-io/github-action@v4
         with:
           record: false
           working-directory: 'apim-apps/tests'
-          spec: '**/*.spec.js'
+          spec: 'cypress/e2e/**/*.cy.js'
       - name: Upload Screenshots
         uses: actions/upload-artifact@v4
         if: failure()
