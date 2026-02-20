@@ -30,7 +30,7 @@ describe("Change the password from devportal", () => {
   it.only("Change the password from devportal", () => {
     cy.carbonLogin(carbonUsername, carbonPassword);
     cy.addNewUser(username, ["Internal/subscriber"], password);
-    cy.get(".ui-dialog-buttonset", { timeout: Cypress.config().largeTimeout });
+    cy.get(".ui-dialog-buttonset", { timeout: Cypress.env('largeTimeout') });
     cy.get("button").contains("OK").click();
     cy.get("#userTable").contains("td", "newuser").should("exist");
     cy.carbonLogout();
@@ -52,7 +52,7 @@ describe("Change the password from devportal", () => {
     cy.get("input#repeated-new-password").click();
     cy.get("input#repeated-new-password").type(newPassword);
 
-    cy.get("[data-testid='change-password-save-button']").debug().contains("Save").click();
+    cy.get("[data-testid='change-password-save-button']").contains("Save").click();
 
     cy.logoutFromDevportal();
     devportalComonPage.waitUntillDevportalLoaderSpinnerExit();

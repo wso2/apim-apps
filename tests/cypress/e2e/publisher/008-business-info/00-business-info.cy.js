@@ -31,7 +31,7 @@ describe("Add business information", () => {
 
         Utils.addAPI({}).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
-            cy.get('#itest-api-details-portal-config-acc', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('#itest-api-details-portal-config-acc', {timeout: Cypress.env('largeTimeout')}).click();
             cy.get('#left-menu-itembusinessinfo').click();
             cy.get('#name').click().type(ownerName);
             cy.get('#Email').click().type(ownerEmail);

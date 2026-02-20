@@ -37,7 +37,7 @@ describe("Mock the api response and test it", () => {
             // failing the test
             return false
         });
-        cy.visit(`/publisher/apis/create/openapi`, {timeout: Cypress.config().largeTimeout}).wait(5000);
+        cy.visit(`/publisher/apis/create/openapi`, {timeout: Cypress.env('largeTimeout')}).wait(5000);
         cy.get('#open-api-file-select-radio').click();
         cy.wait(5000);
         // upload the swagger
@@ -48,7 +48,7 @@ describe("Mock the api response and test it", () => {
 
         cy.get('#open-api-create-next-btn').click();
         cy.wait(3000);
-        cy.get('#itest-id-apiversion-input', {timeout: Cypress.config().largeTimeout});
+        cy.get('#itest-id-apiversion-input', {timeout: Cypress.env('largeTimeout')});
         cy.document().then((doc) => {
             cy.get('#itest-id-apicontext-input').clear();
             cy.get('#itest-id-apicontext-input').type(apiName);
@@ -61,7 +61,7 @@ describe("Mock the api response and test it", () => {
                 cy.log("API ID", testApiID);
 
                 // validate
-                cy.get('#itest-api-name-version', {timeout: Cypress.config().largeTimeout});
+                cy.get('#itest-api-name-version', {timeout: Cypress.env('largeTimeout')});
                 cy.get('#itest-api-name-version').contains(version);
                 
                 // Go to api product create page
@@ -76,7 +76,7 @@ describe("Mock the api response and test it", () => {
                 cy.intercept('**/swagger').as('swaggerGet');
 
                 cy.get('#api-product-next-btn').click();
-                cy.wait('@swaggerGet', { timeout: Cypress.config().largeTimeout }).then(() => {
+                cy.wait('@swaggerGet', { timeout: Cypress.env('largeTimeout') }).then(() => {
                     cy.intercept('GET', '**/swagger').as('getSwagger');
                     cy.get(`#checkbox-list-label-${testApiID}`).click();
                     cy.wait('@getSwagger');
@@ -91,7 +91,7 @@ describe("Mock the api response and test it", () => {
                         const productID = /api-products\/(.*?)\/overview/.exec(urlProduct)[1];
                         cy.log("API Product ID", productID);
 
-                        cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout });
+                        cy.get('#itest-api-name-version', { timeout: Cypress.env('largeTimeout') });
                         cy.get('#itest-api-name-version').contains(productName);
 
                         // Going to deployments page
@@ -108,7 +108,7 @@ describe("Mock the api response and test it", () => {
 
                         // Deleting the api and api product
                         cy.visit(`/publisher/api-products/${productID}/overview`);
-                        cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout });
+                        cy.get('#itest-api-name-version', { timeout: Cypress.env('largeTimeout') });
                         cy.get(`#itest-id-deleteapi-icon-button`).click({ force: true });
                         cy.get(`#itest-id-deleteconf`).click();
                     })

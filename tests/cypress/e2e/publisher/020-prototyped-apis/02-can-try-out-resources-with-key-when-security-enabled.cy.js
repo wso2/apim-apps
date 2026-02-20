@@ -41,7 +41,7 @@ describe("prototype apis with security enabled", () => {
                 if (apiId !== undefined) {
                     testApiId = apiId;
                     cy.visit(`/publisher/apis/${apiId}/overview`);
-                    cy.get('#itest-api-details-api-config-acc', { timeout: Cypress.config().largeTimeout }).click();
+                    cy.get('#itest-api-details-api-config-acc', { timeout: Cypress.env('largeTimeout') }).click();
                     cy.get('#left-menu-itemendpoints').click();
                     cy.get('[data-testid="http/restendpoint-add-btn"]').click({ force: true });
 
@@ -62,17 +62,17 @@ describe("prototype apis with security enabled", () => {
 
                     //by default security enabled for resources
                     cy.get("#left-menu-itemresources").click();
-                    cy.get('button[aria-label="disable security for all"]', { timeout: Cypress.config().largeTimeout }).should('exist');
+                    cy.get('button[aria-label="disable security for all"]', { timeout: Cypress.env('largeTimeout') }).should('exist');
 
                     //deploy API
                     cy.get("#left-menu-itemdeployments").click();
                     cy.wait(2000);
-                    cy.get("#deploy-btn", { timeout: Cypress.config().largeTimeout }).should('not.have.class', 'Mui-disabled').click({ force: true });
+                    cy.get("#deploy-btn", { timeout: Cypress.env('largeTimeout') }).should('not.have.class', 'Mui-disabled').click({ force: true });
                     cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
 
                     cy.get("#left-menu-itemlifecycle").click();
                     cy.wait(2000);
-                    cy.get('[data-testid="Deploy as a Prototype-btn"]', { timeout: Cypress.config().largeTimeout }).click();
+                    cy.get('[data-testid="Deploy as a Prototype-btn"]', { timeout: Cypress.env('largeTimeout') }).click();
 
                     cy.logoutFromPublisher();
 
@@ -80,11 +80,11 @@ describe("prototype apis with security enabled", () => {
                     cy.loginToDevportal(userName, password);
 
                     cy.createApplication(applicationName, "50PerMin", "Sample Description");
-                    cy.get('[data-testid="itest-link-to-apis"]', { timeout: Cypress.config().largeTimeout }).click();
+                    cy.get('[data-testid="itest-link-to-apis"]', { timeout: Cypress.env('largeTimeout') }).click();
 
                     cy.get('input[placeholder="Search APIs & MCP Servers"]').click().type(apiName + "{enter}");
-                    cy.get('table > tbody > tr', { timeout: Cypress.config().largeTimeout }).get(`[area-label="Go to ${apiName}"]`).should('contain.text', 'PRE-RELEASED');
-                    cy.get('table > tbody > tr', { timeout: Cypress.config().largeTimeout }).get(`[area-label="Go to ${apiName}"]`).click();
+                    cy.get('table > tbody > tr', { timeout: Cypress.env('largeTimeout') }).get(`[area-label="Go to ${apiName}"]`).should('contain.text', 'PRE-RELEASED');
+                    cy.get('table > tbody > tr', { timeout: Cypress.env('largeTimeout') }).get(`[area-label="Go to ${apiName}"]`).click();
 
                     // Go to application subscription page
                     cy.get("#left-menu-credentials").click();
@@ -92,24 +92,24 @@ describe("prototype apis with security enabled", () => {
                     cy.get('ul').contains('li', applicationName).click();
                     cy.get("#subscribe-to-api-btn").click();
 
-                    cy.get("#left-menu-test", { timeout: Cypress.config().largeTimeout }).click();
+                    cy.get("#left-menu-test", { timeout: Cypress.env('largeTimeout') }).click();
 
                     cy.intercept('**/applications/').then((res) => {
                         // Check if the application exists
-                        cy.get("#selected-application", { timeout: Cypress.config().largeTimeout }).should('exist');
+                        cy.get("#selected-application", { timeout: Cypress.env('largeTimeout') }).should('exist');
                     });
 
                     //it takes some time to generate the key
                     cy.intercept('**/generate-token').as('getToken');
 
-                    cy.get('#gen-test-key', { timeout: Cypress.config().largeTimeout }).click();
+                    cy.get('#gen-test-key', { timeout: Cypress.env('largeTimeout') }).click();
 
-                    cy.wait('@getToken', { timeout: Cypress.config().largeTimeout }).its('response.statusCode').should('eq', 200);
+                    cy.wait('@getToken', { timeout: Cypress.env('largeTimeout') }).its('response.statusCode').should('eq', 200);
 
-                    cy.get('.opblock-summary-get > .opblock-summary-control', { timeout: Cypress.config().largeTimeout }).click();
+                    cy.get('.opblock-summary-get > .opblock-summary-control', { timeout: Cypress.env('largeTimeout') }).click();
                     cy.get('.try-out__btn').click();
                     cy.get('.execute').click();
-                    cy.contains('.live-responses-table .response > .response-col_status', '200', { timeout: Cypress.config().largeTimeout }).should('exist');
+                    cy.contains('.live-responses-table .response > .response-col_status', '200', { timeout: Cypress.env('largeTimeout') }).should('exist');
                 } else if (retryCount > 0) {
                     retryCount--;
                     testAPISecurityEnabled();

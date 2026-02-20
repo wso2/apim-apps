@@ -39,7 +39,7 @@ describe("Upload thumbnail", () => {
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             testApiID = apiId;
-            cy.get('#itest-api-details-portal-config-acc', { timeout: Cypress.config().largeTimeout }).click();
+            cy.get('#itest-api-details-portal-config-acc', { timeout: Cypress.env('largeTimeout') }).click();
             cy.get('#left-menu-itemDesignConfigurations').click();
             cy.get('#edit-api-thumbnail-btn').find('button').click({ force: true });
 

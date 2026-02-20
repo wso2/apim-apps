@@ -43,7 +43,7 @@ describe("Publish thirdparty api", () => {
         publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
             // cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/asyncapi`);
             // publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
-            // cy.get('#outlined-full-width', {timeout: Cypress.config().largeTimeout}).invoke('val',
+            // cy.get('#outlined-full-width', {timeout: Cypress.env('largeTimeout')}).invoke('val',
             //'https://raw.githubusercontent.com/asyncapi/spec/v2.0.0/examples/2.0.0/streetlights.ym');
             // cy.get('#outlined-full-width').type('l');
             // cy.get('#outlined-full-width').click(0,0);
@@ -56,7 +56,7 @@ describe("Publish thirdparty api", () => {
             cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/rest`);
             publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
             apiName = Utils.generateName();
-            cy.get('#itest-id-apiname-input', {timeout: Cypress.config().largeTimeout}).type(apiName);
+            cy.get('#itest-id-apiname-input', {timeout: Cypress.env('largeTimeout')}).type(apiName);
             cy.get('#itest-id-apicontext-input').type('/' + apiName);
             cy.get('#itest-id-apiversion-input').type('1.0.0');
             cy.get('#itest-id-apiendpoint-input').type(`${Utils.getAppOrigin()}/am/sample/${apiName}/v1/api`);
@@ -64,7 +64,7 @@ describe("Publish thirdparty api", () => {
             cy.get('body').click(0,0);
             cy.get('#itest-create-default-api-button').click();
             //Mark as third party api
-            cy.get('#itest-api-details-portal-config-acc', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('#itest-api-details-portal-config-acc', {timeout: Cypress.env('largeTimeout')}).click();
             cy.url().then(url => {
                 apiId = /apis\/(.*?)\/overview/.exec(url)[1];
                 cy.get('#left-menu-itemDesignConfigurations').click();
@@ -87,10 +87,10 @@ describe("Publish thirdparty api", () => {
                 //publish
                 cy.get('#left-menu-itemlifecycle').click();
                 cy.wait(1000);
-                cy.get('[data-testid="Publish-btn"]', {timeout: Cypress.config().largeTimeout}).should('exist');
+                cy.get('[data-testid="Publish-btn"]', {timeout: Cypress.env('largeTimeout')}).should('exist');
                 cy.get('[data-testid="Deploy as a Prototype-btn"]').should('exist');
                 cy.wait(1000);
-                cy.get('[data-testid="Publish-btn"]', {timeout: Cypress.config().largeTimeout}).click();
+                cy.get('[data-testid="Publish-btn"]', {timeout: Cypress.env('largeTimeout')}).click();
         
                 //check if the api is third-party and published
                 cy.get('[data-testid="itest-api-state"]').contains('PUBLISHED').should('exist');
@@ -128,7 +128,7 @@ describe("Publish thirdparty api", () => {
                 
                 // Commented out because the modal is no longer appearing due to a behavioral change.
                 // TODO: Update this test once the issue is resolved.
-                // cy.get('[data-testid="itest-update-api-confirmation"]', {timeout: Cypress.config().largeTimeout}).
+                // cy.get('[data-testid="itest-update-api-confirmation"]', {timeout: Cypress.env('largeTimeout')}).
                 //     should('exist');
         
                 cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
@@ -138,7 +138,7 @@ describe("Publish thirdparty api", () => {
                 cy.wait(5000)
             
 
-                cy.get(`div[data-testid="card-${apiName}1.0.0"]`, { timeout: Cypress.config().largeTimeout })
+                cy.get(`div[data-testid="card-${apiName}1.0.0"]`, { timeout: Cypress.env('largeTimeout') })
                     .should('contain.text', 'PUBLISHED')
                     .click();
                     

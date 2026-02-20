@@ -49,7 +49,7 @@ describe("Mock the api response and test it", () => {
 
         cy.get('#open-api-create-next-btn').click();
         cy.wait(3000)
-        cy.get('#itest-id-apiversion-input', { timeout: Cypress.config().largeTimeout });
+        cy.get('#itest-id-apiversion-input', { timeout: Cypress.env('largeTimeout') });
         cy.document().then((doc) => {
             cy.get('#itest-id-apicontext-input').clear();
             cy.get('#itest-id-apicontext-input').type('petstore3');

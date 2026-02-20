@@ -35,7 +35,7 @@ describe("Add API Categories and assign via publisher portal", () => {
         const category = Utils.generateName();
         const categoryDescription = 'Weather related apis';
 
-        cy.get('[data-testid="API Categories"]', { timeout: Cypress.config().largeTimeout }).click();
+        cy.get('[data-testid="API Categories"]', { timeout: Cypress.env('largeTimeout') }).click();
         cy.get('[data-testid="form-dialog-base-trigger-btn"]').contains('Add API Category').click();
         cy.get('input[name="name"]').type(category);
         cy.get('textarea[name="description"]').type(categoryDescription);
@@ -48,7 +48,7 @@ describe("Add API Categories and assign via publisher portal", () => {
         Utils.addAPI({}).then((apiId) => {
             testApiId = apiId;
             cy.visit(`/publisher/apis/${apiId}/configuration`);
-            cy.get('#APICategories-autocomplete', { timeout: Cypress.config().largeTimeout }).click();
+            cy.get('#APICategories-autocomplete', { timeout: Cypress.env('largeTimeout') }).click();
             cy.get('li').contains(category).click();
             cy.get('#design-config-save-btn').click();
             cy.contains('API updated successfully').should('be.visible');
@@ -61,14 +61,14 @@ describe("Add API Categories and assign via publisher portal", () => {
                 // Delete
                 cy.visit(`/admin/settings/api-categories`);
                 cy.wait(7000);
-                cy.get('[data-testid="MuiDataTableBodyCell-4-0"] > div > div > span:nth-child(2)', { timeout: Cypress.config().largeTimeout })
+                cy.get('[data-testid="MuiDataTableBodyCell-4-0"] > div > div > span:nth-child(2)', { timeout: Cypress.env('largeTimeout') })
                     .should('be.visible')    
                     .click();
                 cy.get('[data-testid="form-dialog-base-save-btn"]').contains("Delete")
                     .should('be.visible')
                     .click();
                 cy.contains('API Category deleted successfully').should('be.visible');
-                //cy.get('div[role="status"]', {timeout: Cypress.config().largeTimeout}).should('have.text', 'API Category deleted successfully');
+                //cy.get('div[role="status"]', {timeout: Cypress.env('largeTimeout')}).should('have.text', 'API Category deleted successfully');
             });
         }
     })

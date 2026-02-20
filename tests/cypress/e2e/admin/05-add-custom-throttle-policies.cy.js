@@ -31,7 +31,7 @@ describe("Add custom throttle policies", () => {
       }, () => {
         const policyName = '5reqPerMin';
         const secondDesc = 'For an Admin users allow 5 requests per minute';
-        cy.get('[data-testid="Custom Policies-child-link"]', {timeout: Cypress.config().largeTimeout}).click();
+        cy.get('[data-testid="Custom Policies-child-link"]', {timeout: Cypress.env('largeTimeout')}).click();
         cy.get('[data-testid="throttling-custom-add-button"]').contains('Define Policy').click();
         cy.get('input[name="policyName"]').type(policyName);
         cy.get('input[name="description"]').type('Allow 5 requests per minute for an Admin user');
@@ -46,7 +46,7 @@ describe("Add custom throttle policies", () => {
 
         cy.intercept('GET', '**/throttling/policies/custom').as('getCustomPolicies');
         cy.get('[data-testid="throttling-custom-save-button"]').contains('Edit').click();
-        cy.wait('@getCustomPolicies', {timeout: Cypress.config().largeTimeout}).then(() => {
+        cy.wait('@getCustomPolicies', {timeout: Cypress.env('largeTimeout')}).then(() => {
             cy.get('td').contains(secondDesc).should('exist');
         });
 

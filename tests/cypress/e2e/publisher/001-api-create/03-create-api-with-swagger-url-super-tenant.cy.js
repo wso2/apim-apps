@@ -25,13 +25,13 @@ describe("Create api with swagger file super tenant", () => {
     cy.visit(`/publisher/apis/create/openapi`);
     cy.wait(5000)
     // upload the swagger
-    cy.get('[data-testid="swagger-url-endpoint"]', { timeout: Cypress.config().largeTimeout }).type(url)
+    cy.get('[data-testid="swagger-url-endpoint"]', { timeout: Cypress.env('largeTimeout') }).type(url)
     cy.get('body').click(0, 0);
     // go to the next step
     cy.get('#url-validated', { timeout: 30000 });
     cy.get('#open-api-create-next-btn').click();
     cy.wait(2000);
-    cy.get('#itest-id-apiversion-input', { timeout: Cypress.config().largeTimeout });
+    cy.get('#itest-id-apiversion-input', { timeout: Cypress.env('largeTimeout') });
 
     cy.get('#itest-id-apicontext-input').type('petstore3');
     cy.get('#itest-id-apiversion-input').click();
@@ -43,7 +43,7 @@ describe("Create api with swagger file super tenant", () => {
     cy.get('#open-api-create-btn').click({ force: true });
 
     // validate
-    cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout });
+    cy.get('#itest-api-name-version', { timeout: Cypress.env('largeTimeout') });
     cy.get('#itest-api-name-version').contains("SwaggerPetstore");
     cy.url().then(url => {
       testApiID = /apis\/(.*?)\/overview/.exec(url)[1];

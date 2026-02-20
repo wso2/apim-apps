@@ -36,7 +36,7 @@ describe("Lifecycle changes", () => {
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion }).then((apiId) => {
             testApiId = apiId;
             cy.visit(`/publisher/apis/${apiId}/overview`);
-            cy.get('#itest-api-details-portal-config-acc', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('#itest-api-details-portal-config-acc', {timeout: Cypress.env('largeTimeout')}).click();
             cy.get('#left-menu-itemsubscriptions').click();
             cy.get('[data-testid="policy-checkbox-silver"]').click();
             cy.get('#subscriptions-save-btn').click();
@@ -65,31 +65,31 @@ describe("Lifecycle changes", () => {
             // Deploying
             cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').scrollIntoView().click({force:true});
             cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
-            cy.contains("Create revisions and deploy in Gateway Environments", {timeout: Cypress.config().largeTimeout})
+            cy.contains("Create revisions and deploy in Gateway Environments", {timeout: Cypress.env('largeTimeout')})
             // Going to lifecycle page
             cy.get('#left-menu-itemlifecycle').click();
 
             // Publishing
             cy.wait(3000);
-            cy.get('[data-testid="Publish-btn"]', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('[data-testid="Publish-btn"]', {timeout: Cypress.env('largeTimeout')}).click();
 
             cy.wait(2000);
-            cy.contains("LC has changed from CREATED to PUBLISHED", {timeout: Cypress.config().largeTimeout})
+            cy.contains("LC has changed from CREATED to PUBLISHED", {timeout: Cypress.env('largeTimeout')})
             cy.get('button[data-testid="Demote to Created-btn"]').should('exist');
-            cy.contains("CREATED", {timeout: Cypress.config().largeTimeout})
+            cy.contains("CREATED", {timeout: Cypress.env('largeTimeout')})
             cy.get('#left-menu-itemlifecycle').click();
             cy.wait(2000);
 
             // Demote to created
             cy.get('button[data-testid="Demote to Created-btn"]').click();
             cy.wait(2000);
-            cy.get('[data-testid="Publish-btn"]', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('[data-testid="Publish-btn"]', {timeout: Cypress.env('largeTimeout')}).click();
             //cy.get('button[data-testid="Demote to Created-btn"]').should('exist');
             cy.get('#left-menu-itemlifecycle').click();
             cy.wait(2000);
 
             // Block
-            cy.get('[data-testid="Block-btn"]', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('[data-testid="Block-btn"]', {timeout: Cypress.env('largeTimeout')}).click();
             cy.wait(2000);
             cy.get('button[data-testid="Re-Publish-btn"]').should('exist');
             cy.get('#left-menu-itemlifecycle').click();
@@ -97,20 +97,20 @@ describe("Lifecycle changes", () => {
 
             // Re-Publish
 
-            cy.get('button[data-testid="Re-Publish-btn"]', {timeout: Cypress.config().largeTimeout}).click();
-            cy.get('button[data-testid="Deprecate-btn"]', {timeout: Cypress.config().largeTimeout}).should('exist');
+            cy.get('button[data-testid="Re-Publish-btn"]', {timeout: Cypress.env('largeTimeout')}).click();
+            cy.get('button[data-testid="Deprecate-btn"]', {timeout: Cypress.env('largeTimeout')}).should('exist');
             cy.get('#left-menu-itemlifecycle').click();
             cy.wait(2000);
 
             // Deprecate
 
-            cy.get('button[data-testid="Deprecate-btn"]', {timeout: Cypress.config().largeTimeout}).click();
-            cy.get('#itest-id-conf', {timeout: Cypress.config().largeTimeout}).contains('DEPRECATE').click();
+            cy.get('button[data-testid="Deprecate-btn"]', {timeout: Cypress.env('largeTimeout')}).click();
+            cy.get('#itest-id-conf', {timeout: Cypress.env('largeTimeout')}).contains('DEPRECATE').click();
 
             cy.get('button[data-testid="Retire-btn"]').should('exist');
             cy.wait(2000);
-            cy.get('button[data-testid="Retire-btn"]', {timeout: Cypress.config().largeTimeout}).click(); 
-            cy.get('#itest-id-conf', {timeout: Cypress.config().largeTimeout}).contains('RETIRE').click();
+            cy.get('button[data-testid="Retire-btn"]', {timeout: Cypress.env('largeTimeout')}).click(); 
+            cy.get('#itest-id-conf', {timeout: Cypress.env('largeTimeout')}).contains('RETIRE').click();
         });
     });
     afterEach(() => {

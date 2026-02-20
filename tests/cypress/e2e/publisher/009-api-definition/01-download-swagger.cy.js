@@ -31,7 +31,7 @@ describe("Download swagger", () => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemAPIdefinition').click();
-            cy.get('.lines-content.monaco-editor-background div.view-lines div.view-line', {timeout: Cypress.config().largeTimeout});
+            cy.get('.lines-content.monaco-editor-background div.view-lines div.view-line', {timeout: Cypress.env('largeTimeout')});
             cy.wait(2000);
             cy.get('#download-definition-btn').click();
 

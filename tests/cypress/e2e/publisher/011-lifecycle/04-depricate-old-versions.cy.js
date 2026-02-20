@@ -36,7 +36,7 @@ describe("Depricate old versions of api before publishing", () => {
     cy.get("#add-description").click();
     cy.get("#add-description").type("test");
     cy.wait(2000);
-    cy.get("#deploy-btn", { timeout: Cypress.config().largeTimeout })
+    cy.get("#deploy-btn", { timeout: Cypress.env('largeTimeout') })
       .should("not.have.class", "Mui-disabled")
       .click();
     cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
@@ -53,7 +53,7 @@ describe("Depricate old versions of api before publishing", () => {
     Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion }).then(
       (apiId) => {
         cy.visit(`/publisher/apis/${apiId}/overview`, {
-          timeout: Cypress.config().largeTimeout,
+          timeout: Cypress.env('largeTimeout'),
         });
         cy.get("#itest-api-details-portal-config-acc").click();
         cy.get("#left-menu-itemsubscriptions").click();
@@ -95,13 +95,13 @@ describe("Depricate old versions of api before publishing", () => {
           cy.get('[data-testid="Publish-btn"]').click();
 
           cy.visit(`/publisher/apis`, {
-            timeout: Cypress.config().largeTimeout,
+            timeout: Cypress.env('largeTimeout'),
           });
           publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
           cy.get("#searchQuery").type(`"${apiName}"`).type("{enter}");
           cy.wait(10000);
           cy.get(`div[data-testid="card-${apiName}1.0.0"]`, {
-            timeout: Cypress.config().largeTimeout,
+            timeout: Cypress.env('largeTimeout'),
           })
             .should('contain.text', 'DEPRECATED');
           cy.wait(5000);

@@ -71,8 +71,8 @@ describe("Invoke API Product", () => {
 
             //Create Users in Devportal
             cy.visit(`/devportal/apis?tenant=carbon.super`);
-            cy.get('#itest-devportal-sign-in', { timeout: Cypress.config().largeTimeout }).click({ force: true });
-            cy.get('#registerLink', { timeout: Cypress.config().largeTimeout }).click();
+            cy.get('#itest-devportal-sign-in', { timeout: Cypress.env('largeTimeout') }).click({ force: true });
+            cy.get('#registerLink', { timeout: Cypress.env('largeTimeout') }).click();
 
             //Creating user 1
             cy.get('#username').type(user1);
@@ -83,7 +83,7 @@ describe("Invoke API Product", () => {
                 // returning false here prevents Cypress from failing the test
                 return false
             });
-            cy.get('input[name="http://wso2.org/claims/givenname"]', { timeout: Cypress.config().largeTimeout }).type(user1);
+            cy.get('input[name="http://wso2.org/claims/givenname"]', { timeout: Cypress.env('largeTimeout') }).type(user1);
             cy.get('input[name="http://wso2.org/claims/lastname"]').type('test');
             cy.get('#password').type(password);
             cy.get('#password2').type(password);
@@ -91,11 +91,11 @@ describe("Invoke API Product", () => {
             cy.get('input[name="http://wso2.org/claims/organization"]').type('org1');
             cy.get('#termsCheckbox').check().should('be.checked');
             cy.get('#registrationSubmit').click();
-            cy.get('button.cancel', { timeout: Cypress.config().largeTimeout }).click()
+            cy.get('button.cancel', { timeout: Cypress.env('largeTimeout') }).click()
 
             //Creating user 2
             cy.get('#registerLink').click();
-            cy.get('#username', { timeout: Cypress.config().largeTimeout }).type(user2);
+            cy.get('#username', { timeout: Cypress.env('largeTimeout') }).type(user2);
             cy.get('#registrationSubmit').click();
             cy.get('input[name="http://wso2.org/claims/givenname"]').type(user2);
             cy.get('input[name="http://wso2.org/claims/lastname"]').type('test');
@@ -105,7 +105,7 @@ describe("Invoke API Product", () => {
             cy.get('input[name="http://wso2.org/claims/organization"]').type('org1');
             cy.get('#termsCheckbox').check().should('be.checked');
             cy.get('#registrationSubmit').click();
-            cy.get('button.cancel', { timeout: Cypress.config().largeTimeout }).click();
+            cy.get('button.cancel', { timeout: Cypress.env('largeTimeout') }).click();
 
 
             //Log into developer portal as user 1
@@ -113,7 +113,7 @@ describe("Invoke API Product", () => {
 
             //Test with OAuth2 Token
             cy.visit(`/devportal/applications/create`);
-            cy.get('#application-name', { timeout: Cypress.config().largeTimeout }).click();
+            cy.get('#application-name', { timeout: Cypress.env('largeTimeout') }).click();
             cy.get('#application-name').wait(2000).type(appName);
             cy.get('#application-group-id').click();
             cy.get('#application-group-id').wait(2000).type(groupId).type('{enter}');
@@ -127,7 +127,7 @@ describe("Invoke API Product", () => {
             //Log into developer portal as user 2
             cy.loginToDevportal(user2, password);
             cy.visit(`/devportal/applications`);
-            cy.contains(appName, { timeout: Cypress.config().largeTimeout }).click();
+            cy.contains(appName, { timeout: Cypress.env('largeTimeout') }).click();
             cy.location('pathname').then((pathName) => {
                 const pathSegments = pathName.split('/');
                 const uuidApp = pathSegments[pathSegments.length - 2];
@@ -145,7 +145,7 @@ describe("Invoke API Product", () => {
                 cy.loginToDevportal(user1, password);
                 cy.visit(`/devportal/applications/${uuidApp}/subscriptions`);
                 cy.visit(`/devportal/applications`);
-                cy.get(`#delete-${appName}-btn`, { timeout: Cypress.config().largeTimeout });
+                cy.get(`#delete-${appName}-btn`, { timeout: Cypress.env('largeTimeout') });
                 cy.get(`#delete-${appName}-btn`).click();
                 cy.get(`#itest-confirm-application-delete`).click();
                 cy.logoutFromDevportal();

@@ -37,7 +37,7 @@ describe("Common Policies", () => {
             cy.visit(`/publisher/apis/${apiId}/policies`);
 
             // Create API Specific Policy
-            cy.get('[data-testid="add-new-api-specific-policy"]', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('[data-testid="add-new-api-specific-policy"]', {timeout: Cypress.env('largeTimeout')}).click();
             cy.get('#name').type('API Specific Policy Sample');
             cy.get('#version').type('1');
             cy.get('input[name="description"]').type('Sample API specific policy description');
@@ -69,7 +69,7 @@ describe("Common Policies", () => {
 
             // Drag and drop the policy to attach it
             const dataTransfer = new DataTransfer();
-            cy.contains('API Specific Policy Sample', { timeout: Cypress.config().largeTimeout }).trigger('dragstart', {
+            cy.contains('API Specific Policy Sample', { timeout: Cypress.env('largeTimeout') }).trigger('dragstart', {
                 dataTransfer
             });
             cy.get('#operation-level-tabpanel').contains('Drag and drop policies here').trigger('drop', {
@@ -133,7 +133,7 @@ describe("Common Policies", () => {
 
             // Drag and drop version 2 policy
             const dataTransferV2 = new DataTransfer();
-            cy.contains('API Specific Policy Sample', { timeout: Cypress.config().largeTimeout }).trigger('dragstart', {
+            cy.contains('API Specific Policy Sample', { timeout: Cypress.env('largeTimeout') }).trigger('dragstart', {
                 dataTransfer: dataTransferV2
             });
             cy.get('#operation-level-tabpanel').contains('Drag and drop policies here').trigger('drop', {

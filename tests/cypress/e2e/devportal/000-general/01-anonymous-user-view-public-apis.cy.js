@@ -50,7 +50,7 @@ describe("Anonymous view apis", () => {
                         let remainingAttempts = 15;
                         let attemptCount = 0;
                         for (; attemptCount < remainingAttempts; attemptCount++) {
-                            let $apis = Cypress.$('a', apiName, { timeout: Cypress.config().largeTimeout });
+                            let $apis = Cypress.$('a', apiName, { timeout: Cypress.env('largeTimeout') });
                             if ($apis.length) {
                                 // At least one with api name was found.
                                 // Return a jQuery object.

@@ -80,7 +80,7 @@ describe("Tryout API invocations", () => {
                 cy.get('#gen-test-key').click({force:true});
                 cy.wait(5000);
                 cy.get('#gen-test-key').click({force:true});
-                cy.wait('@genToken', {timeout: Cypress.config().largeTimeout})
+                cy.wait('@genToken', {timeout: Cypress.env('largeTimeout')})
                 cy.get('#accessTokenInput').invoke('val').should('not.be.empty');;
                 // Test the console
                 cy.get('#operations-default-get__').find('.opblock-summary-control').click();

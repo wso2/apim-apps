@@ -51,15 +51,15 @@ describe("Anonymous view apis", () => {
                 cy.get('#application-name').type(appName);
                 cy.get('#wizard-next-0-btn').click();
             
-                cy.get('#wizard-next-1-btn', {timeout: Cypress.config().largeTimeout})
+                cy.get('#wizard-next-1-btn', {timeout: Cypress.env('largeTimeout')})
                 cy.get('#wizard-next-1-btn').click();
             
-                cy.get('#wizard-next-2-btn', {timeout: Cypress.config().largeTimeout});
+                cy.get('#wizard-next-2-btn', {timeout: Cypress.env('largeTimeout')});
                 cy.get('#wizard-next-2-btn').click();
             
                 cy.intercept('GET','**/oauth-keys').as('oauthKeys');
-                cy.wait('@oauthKeys', {timeout: Cypress.config().largeTimeout}).then(() => {
-                    cy.get('#wizard-next-3-btn', {timeout: Cypress.config().largeTimeout});
+                cy.wait('@oauthKeys', {timeout: Cypress.env('largeTimeout')}).then(() => {
+                    cy.get('#wizard-next-3-btn', {timeout: Cypress.env('largeTimeout')});
                     cy.get('#wizard-next-3-btn').click();
                 });
             
