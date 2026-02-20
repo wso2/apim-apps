@@ -32,13 +32,13 @@ describe("Create and and publish api from scratch", () => {
 
   it.only("Create and and publish api from scratch", () => {
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis/create/rest`, {
-      timeout: Cypress.config().largeTimeout,
+      timeout: Cypress.env('largeTimeout'),
     });
     publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
     apiName = Utils.generateName().replace("-", "_");
 
     cy.get("#itest-id-apiname-input", {
-      timeout: Cypress.config().largeTimeout,
+      timeout: Cypress.env('largeTimeout'),
     }).type(apiName);
     cy.get("#itest-id-apicontext-input").type("/" + apiName);
     cy.get("#itest-id-apiversion-input").type("1.0.0");

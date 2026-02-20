@@ -28,14 +28,14 @@ describe("Gateway Policies", () => {
 
     it("Global Policy Operations", () => {
         // Add policy mapping
-        cy.visit(`publisher/global-policies/create`, { timeout: Cypress.config().largeTimeout });
+        cy.visit(`publisher/global-policies/create`, { timeout: Cypress.env('largeTimeout') });
         cy.get('#outlined-required').click();
         cy.get('#outlined-required').type('Global policy mapping 1');
         cy.get('#outlined-multiline-static').click();
         cy.get('#outlined-multiline-static').type('Global policy mapping 1 description');
         cy.get('#request-tab').click();
         const dataTransfer = new DataTransfer();
-        cy.contains('Add Header', { timeout: Cypress.config().largeTimeout }).trigger('dragstart', {
+        cy.contains('Add Header', { timeout: Cypress.env('largeTimeout') }).trigger('dragstart', {
             dataTransfer
         });
         cy.contains('Drag and drop policies here').trigger('drop', {
@@ -53,7 +53,7 @@ describe("Gateway Policies", () => {
         cy.wait(2000);
 
         // deploy policy mapping to a gateway
-        cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
+        cy.visit(`publisher/global-policies`, { timeout: Cypress.env('largeTimeout') });
         cy.get('td button') // Get all buttons within <td> elements
             .first() // Select the first button found
             .click();
@@ -61,16 +61,16 @@ describe("Gateway Policies", () => {
         cy.get('#multi-select').click();
         cy.contains('Default').click();
         cy.get('[data-testid=policy-mapping-deploy-button]').click();
-        cy.get('[data-testid=deploy-to-gateway-button]', { timeout: Cypress.config().largeTimeout }).click();
+        cy.get('[data-testid=deploy-to-gateway-button]', { timeout: Cypress.env('largeTimeout') }).click();
 
         // update policy mapping
-        cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
+        cy.visit(`publisher/global-policies`, { timeout: Cypress.env('largeTimeout') });
         cy.get('[data-testid=policy-mapping-edit-button]').click({force : true});
         cy.wait(10000);
         cy.get('[data-testid=drop-policy-zone-request]').within(() => {
             cy.contains('div', 'AH').click();
         });
-        cy.get('#headerValue', { timeout: Cypress.config().largeTimeout }).click();
+        cy.get('#headerValue', { timeout: Cypress.env('largeTimeout') }).click();
         cy.get('[data-testid=policy-attached-details-save]').should('be.disabled');
         const newText = 'RequestHeaderValueNew';
         cy.get('#headerValue').clear().type(newText).should('have.value', newText);
@@ -81,33 +81,33 @@ describe("Gateway Policies", () => {
             .scrollIntoView()
             .click();
         cy.wait(2000);
-        cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
+        cy.visit(`publisher/global-policies`, { timeout: Cypress.env('largeTimeout') });
         cy.get('[data-testid=policy-mapping-edit-button]').click({force : true});
         cy.wait(10000);
         cy.get('[data-testid=drop-policy-zone-request]').within(() => {
             cy.contains('div', 'AH').click();
         });
-        cy.get('#headerValue', { timeout: Cypress.config().largeTimeout }).click();
+        cy.get('#headerValue', { timeout: Cypress.env('largeTimeout') }).click();
         cy.get('#headerValue').should('have.value', newText);
 
 
         // undeploy policy mapping
-        cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
+        cy.visit(`publisher/global-policies`, { timeout: Cypress.env('largeTimeout') });
         const gateway = 'Default';
         cy.get(`#gateway-chip-${gateway} svg[class*=MuiChip-deleteIcon]`)
             .should('be.visible')
             .click();
-        cy.get('[data-testid=undeploy-from-gateway-button]', { timeout: Cypress.config().largeTimeout })
+        cy.get('[data-testid=undeploy-from-gateway-button]', { timeout: Cypress.env('largeTimeout') })
             .should('be.visible')
             .click();
         cy.contains('Policy undeployed successfully').should('be.visible');
 
         //Successful deletion of policy mapping
-        cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
+        cy.visit(`publisher/global-policies`, { timeout: Cypress.env('largeTimeout') });
         cy.get('[data-testid=policy-mapping-delete-button]').click();
-        cy.get('[data-testid=policy-mapping-delete-confirmation-button]', { timeout: Cypress.config().largeTimeout }).click();
+        cy.get('[data-testid=policy-mapping-delete-confirmation-button]', { timeout: Cypress.env('largeTimeout') }).click();
         cy.contains('Policy deleted successfully').should('be.visible');
-        cy.visit(`publisher/global-policies`, { timeout: Cypress.config().largeTimeout });
+        cy.visit(`publisher/global-policies`, { timeout: Cypress.env('largeTimeout') });
         cy.contains('Global policy mapping 1').should('not.exist');
 
         cy.logoutFromPublisher();

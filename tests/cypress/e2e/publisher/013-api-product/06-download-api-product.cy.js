@@ -39,7 +39,7 @@ describe("Download API Product", () => {
         },
     }, () => {
         // create a new API
-        cy.visit(`/publisher/apis/create/openapi`, { timeout: Cypress.config().largeTimeout }).wait(5000);
+        cy.visit(`/publisher/apis/create/openapi`, { timeout: Cypress.env('largeTimeout') }).wait(5000);
         cy.get('#open-api-file-select-radio').click();
         cy.wait(5000);
         // upload the swagger
@@ -49,7 +49,7 @@ describe("Download API Product", () => {
         });
         cy.get('#open-api-create-next-btn').click();
         cy.wait(3000);
-        cy.get('#itest-id-apiversion-input', { timeout: Cypress.config().largeTimeout });
+        cy.get('#itest-id-apiversion-input', { timeout: Cypress.env('largeTimeout') });
         cy.document().then((doc) => {
             cy.get('#itest-id-apiname-input').clear().type(apiName);
             cy.get('#itest-id-apicontext-input').clear().type(apiName);
@@ -61,7 +61,7 @@ describe("Download API Product", () => {
                 testApiID = /apis\/(.*?)\/overview/.exec(url)[1];
                 cy.log("API ID", testApiID);
                 // validate
-                cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout });
+                cy.get('#itest-api-name-version', { timeout: Cypress.env('largeTimeout') });
                 cy.get('#itest-api-name-version').contains(version);
 
                 // go to API product create page
@@ -75,7 +75,7 @@ describe("Download API Product", () => {
 
                 cy.intercept('**/swagger').as('swaggerGet');
                 cy.get('#api-product-next-btn').should('not.have.class', 'Mui-disabled').click({ force: true });
-                cy.wait('@swaggerGet', { timeout: Cypress.config().largeTimeout }).then(() => {
+                cy.wait('@swaggerGet', { timeout: Cypress.env('largeTimeout') }).then(() => {
                     cy.intercept('GET', '**/swagger').as('getSwagger');
                     cy.get(`#checkbox-list-label-${testApiID}`).click();
                     cy.wait('@getSwagger');
@@ -90,7 +90,7 @@ describe("Download API Product", () => {
                     cy.url().should('contains', 'overview').then(urlProduct => {
                         const productID = /api-products\/(.*?)\/overview/.exec(urlProduct)[1];
                         cy.log("API Product ID", productID);
-                        cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout });
+                        cy.get('#itest-api-name-version', { timeout: Cypress.env('largeTimeout') });
                         cy.get('#itest-api-name-version').contains(productName);
 
                         // download API product

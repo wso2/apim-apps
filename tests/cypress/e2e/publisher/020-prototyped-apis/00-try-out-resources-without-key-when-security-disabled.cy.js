@@ -38,7 +38,7 @@ describe("prototype apis with security disabled", () => {
             testApiId = apiId;
             cy.visit(`/publisher/apis/${apiId}/overview`);
             publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
-            cy.get('#itest-api-details-api-config-acc', { timeout: Cypress.config().largeTimeout }).click();
+            cy.get('#itest-api-details-api-config-acc', { timeout: Cypress.env('largeTimeout') }).click();
             cy.get('#left-menu-itemendpoints').click();
             cy.get('[data-testid="http/restendpoint-add-btn"]').click({ force: true });
 
@@ -72,7 +72,7 @@ describe("prototype apis with security disabled", () => {
             cy.wait(5000)
 
 
-            //cy.get('[data-testid="Defaultgateway-select-btn"]', {timeout: Cypress.config().largeTimeout}).click();
+            //cy.get('[data-testid="Defaultgateway-select-btn"]', {timeout: Cypress.env('largeTimeout')}).click();
             // NOTE: Seems when running on server configuration, we donlt get Defaultgateway dialog box option, instead getting
             // production and sandbox option
             cy.get('[data-testid="btn-deploy"]').click();
@@ -82,7 +82,7 @@ describe("prototype apis with security disabled", () => {
             cy.intercept('GET', '**/revisions?query=deployed**').as('revisionDeployed2');
             cy.get("#left-menu-itemlifecycle").click();
             cy.wait('@revisionDeployed2', { timeout: 15000 }).its('response.statusCode').should('equal', 200)
-            cy.get('[data-testid="Deploy as a Prototype-btn"]', { timeout: Cypress.config().largeTimeout }).click();
+            cy.get('[data-testid="Deploy as a Prototype-btn"]', { timeout: Cypress.env('largeTimeout') }).click();
 
 
             cy.logoutFromPublisher();
@@ -90,10 +90,10 @@ describe("prototype apis with security disabled", () => {
             //login to dev portal as Developer
             cy.loginToDevportal(userName, password);
             cy.get('input[placeholder="Search APIs & MCP Servers"]').click().type(apiName + "{enter}");
-            cy.get('table > tbody > tr', { timeout: Cypress.config().largeTimeout }).get(`[area-label="Go to ${apiName}"]`).should('contain.text', 'PRE-RELEASED');
-            cy.get('table > tbody > tr', { timeout: Cypress.config().largeTimeout }).get(`[area-label="Go to ${apiName}"]`).click();
-            cy.contains('button', "Try Out", { timeout: Cypress.config().largeTimeout }).click();
-            cy.get('.opblock-summary-get > .opblock-summary-control', { timeout: Cypress.config().largeTimeout }).click();
+            cy.get('table > tbody > tr', { timeout: Cypress.env('largeTimeout') }).get(`[area-label="Go to ${apiName}"]`).should('contain.text', 'PRE-RELEASED');
+            cy.get('table > tbody > tr', { timeout: Cypress.env('largeTimeout') }).get(`[area-label="Go to ${apiName}"]`).click();
+            cy.contains('button', "Try Out", { timeout: Cypress.env('largeTimeout') }).click();
+            cy.get('.opblock-summary-get > .opblock-summary-control', { timeout: Cypress.env('largeTimeout') }).click();
             cy.get('.try-out__btn').click();
             cy.get('.execute').click();
             // cy.contains('.live-responses-table .response > td.response-col_status','200').should('exist');

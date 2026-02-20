@@ -60,7 +60,7 @@ describe("publisher-012-02 :View generated document for graphql apis", () => {
     it.only("Viewing generated document in devportal", () => {
         const { developer, password, } = Utils.getUserInfo();
         cy.loginToDevportal(developer, password);
-        cy.get(`[area-label="Go to ${genApiName}"]`, { timeout: Cypress.config().largeTimeout }).click();
+        cy.get(`[area-label="Go to ${genApiName}"]`, { timeout: Cypress.env('largeTimeout') }).click();
         cy.get('#left-menu-documents').click();
         cy.get('#apim_elements').should('not.exist');
         cy.logoutFromDevportal()

@@ -31,7 +31,7 @@ describe("Add tags for the api", () => {
   it("Add tags for the api", () => {
     Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
       cy.visit(`/publisher/apis/${apiId}/overview`, {
-        timeout: Cypress.config().largeTimeout,
+        timeout: Cypress.env('largeTimeout'),
       });
       cy.get("#itest-api-details-portal-config-acc").click();
       cy.get("#left-menu-itemDesignConfigurations").click();

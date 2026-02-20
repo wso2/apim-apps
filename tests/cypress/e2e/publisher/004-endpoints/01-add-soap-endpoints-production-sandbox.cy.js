@@ -29,9 +29,9 @@ describe("Add production sandbox endpoints for SOAP", () => {
     it.only("Add production sandbox endpoints for SOAP", () => {
         Utils.addAPI({}).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
-            cy.get('#itest-api-details-api-config-acc', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('#itest-api-details-api-config-acc', {timeout: Cypress.env('largeTimeout')}).click();
             cy.get('#left-menu-itemendpoints').click();
-            cy.get('[data-testid="http/soapendpoint-add-btn"]', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('[data-testid="http/soapendpoint-add-btn"]', {timeout: Cypress.env('largeTimeout')}).click();
 
             // Add the prod and sandbox endpoints
             cy.get('#production-endpoint-checkbox').click();
@@ -43,7 +43,7 @@ describe("Add production sandbox endpoints for SOAP", () => {
             // Save
             cy.get('body').click();
             cy.get('#endpoint-save-btn').scrollIntoView();
-            cy.get('#endpoint-save-btn', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('#endpoint-save-btn', {timeout: Cypress.env('largeTimeout')}).click();
 
             // Check the values
             cy.get('#production_endpoints').should('have.value', endpoint);

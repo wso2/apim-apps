@@ -35,7 +35,7 @@ describe("add nested comments", () => {
       cy.visit(`/publisher/apis/${apiId}/comments`);
       cy.wait("@commentsGet", { timeout: 50000 }).then(() => {
         cy.get("#standard-multiline-flexible", {
-          timeout: Cypress.config().largeTimeout,
+          timeout: Cypress.env('largeTimeout'),
         }).click({ force: true });
         cy.wait(3000);
         cy.get("#standard-multiline-flexible").type(comment);

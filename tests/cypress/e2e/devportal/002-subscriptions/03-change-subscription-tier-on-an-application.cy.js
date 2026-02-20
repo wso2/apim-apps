@@ -32,7 +32,7 @@ describe("Change subscription tier of an application", () => {
             Utils.publishAPI(apiId).then(() => {
 
                 cy.visit(`/publisher/apis/${apiId}/subscriptions`);
-                cy.get('[data-testid="policy-checkbox-silver"]', { timeout: Cypress.config().largeTimeout });
+                cy.get('[data-testid="policy-checkbox-silver"]', { timeout: Cypress.env('largeTimeout') });
                 cy.get('[data-testid="policy-checkbox-silver"]').click();
                 cy.get('#subscriptions-save-btn').click();
                 // TODO: Proper error handling here instead of cypress wait

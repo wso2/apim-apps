@@ -110,7 +110,7 @@ describe("Invoke API Product", () => {
                         cy.get('[data-testid="Publish-btn"]').click({force:true});
                         cy.get('[data-testid="itest-api-state"]').contains('PUBLISHED');
                         cy.visit(`/publisher/api-products/${uuidProduct}/runtime-configuration`);
-                        cy.get('#applicationLevel', {timeout: Cypress.config().largeTimeout}).children('[role="button"]').click({force:true});
+                        cy.get('#applicationLevel', {timeout: Cypress.env('largeTimeout')}).children('[role="button"]').click({force:true});
                         cy.wait(2000);
                         cy.get('#api-security-api-key-checkbox').check().should('be.checked');
 

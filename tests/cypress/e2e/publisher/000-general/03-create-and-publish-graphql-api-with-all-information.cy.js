@@ -137,7 +137,7 @@ describe("Create GraphQl API from file", () => {
       cy.modifyGraphqlSchemaDefinition(modifiedFilepath);
 
       //localscopes
-      cy.get('#left-menu-itemLocalScopes', { timeout: Cypress.config().largeTimeout }).should('have.attr', 'href')
+      cy.get('#left-menu-itemLocalScopes', { timeout: Cypress.env('largeTimeout') }).should('have.attr', 'href')
         .then((href) => {
           cy.visit(`${Utils.getAppOrigin()}${href}/create`);
           let adminScope = `adminScope${Utils.generateRandomNumber()}`
@@ -150,7 +150,7 @@ describe("Create GraphQl API from file", () => {
                 "sample description", ['FilmSubscriber']);
 
 
-              cy.get('#left-menu-operations', { timeout: Cypress.config().largeTimeout }).click();
+              cy.get('#left-menu-operations', { timeout: Cypress.env('largeTimeout') }).click();
 
               cy.get('table').get('[data-testid="allCharacters-tbl-row"]')
                 .find('td').eq(2).click().get('ul').contains('li', 'Unlimited').click();
@@ -173,15 +173,15 @@ describe("Create GraphQl API from file", () => {
                 const uuid = pathSegments[pathSegments.length - 2];
                 cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/deployments`);
 
-                cy.get('#deploy-btn', { timeout: Cypress.config().largeTimeout })
+                cy.get('#deploy-btn', { timeout: Cypress.env('largeTimeout') })
                   .should('not.have.class', 'Mui-disabled').click({ force: true });
                 cy.contains('Revision Created Successfully');
                 cy.contains('Revision Deployed Successfully');
                 cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
 
                 //publish
-                cy.get("#left-menu-overview", { timeout: Cypress.config().largeTimeout }).click();
-                cy.get('[data-testid="publish-state-button"]', { timeout: Cypress.config().largeTimeout })
+                cy.get("#left-menu-overview", { timeout: Cypress.env('largeTimeout') }).click();
+                cy.get('[data-testid="publish-state-button"]', { timeout: Cypress.env('largeTimeout') })
                   .should('not.be.disabled').click({ force: true });
 
                 //visit dev portal and view API
@@ -193,12 +193,12 @@ describe("Create GraphQl API from file", () => {
 
                 //go to apis
                 cy.get('[data-testid="itest-link-to-apis"]',
-                  { timeout: Cypress.config().largeTimeout }).click();
+                  { timeout: Cypress.env('largeTimeout') }).click();
 
                 cy.visit(`/devportal/apis/${apiId}/overview`)
 
                 //should contain two urls : HTTP URL and Websocket URL
-                cy.get('#gateway-envirounment', { timeout: Cypress.config().largeTimeout })
+                cy.get('#gateway-envirounment', { timeout: Cypress.env('largeTimeout') })
                   .get('[data-testid="http-url"]').should('exist');
                 cy.get('#gateway-envirounment').get('[data-testid="websocket-url"]').should('exist');
 
@@ -208,16 +208,16 @@ describe("Create GraphQl API from file", () => {
                 cy.get('ul').contains('li', applicationName).click();
                 cy.get("#subscribe-to-api-btn").click();
 
-                cy.get("#left-menu-test", { timeout: Cypress.config().largeTimeout }).click();
+                cy.get("#left-menu-test", { timeout: Cypress.env('largeTimeout') }).click();
 
                 cy.intercept('**/applications/').then((res) => {
                   // Check if the application exists
-                  cy.get("#selected-application", { timeout: Cypress.config().largeTimeout })
+                  cy.get("#selected-application", { timeout: Cypress.env('largeTimeout') })
                     .should('exist');
                 });
 
                 cy.intercept('**/generate-token').as('getToken');
-                cy.get('#gen-test-key', { timeout: Cypress.config().largeTimeout }).click();
+                cy.get('#gen-test-key', { timeout: Cypress.env('largeTimeout') }).click();
                 // Handle the consumer secret dialog if it appears (multiple secrets mode)
                 cy.get('body').then(($body) => {
                   if ($body.find('#consumerSecretInput').length > 0) {
@@ -228,7 +228,7 @@ describe("Create GraphQl API from file", () => {
                     cy.get('[role="dialog"]').contains('button', 'Generate').should('not.be.disabled').click();
                   }
                 });
-                cy.wait('@getToken', { timeout: Cypress.config().largeTimeout })
+                cy.wait('@getToken', { timeout: Cypress.env('largeTimeout') })
                   .its('response.statusCode').should('eq', 200);
 
                 cy.get('[aria-label="Operation Editor"]').wait(3000).type(starWarsQueryRequest);
@@ -241,12 +241,12 @@ describe("Create GraphQl API from file", () => {
                 cy.reload();
                 cy.intercept('**/applications/').then((res) => {
                   // Check if the application exists
-                  cy.get("#selected-application", { timeout: Cypress.config().largeTimeout })
+                  cy.get("#selected-application", { timeout: Cypress.env('largeTimeout') })
                     .should('exist');
                 });
 
                 cy.intercept('**/generate-token').as('getToken');
-                cy.get('#gen-test-key', { timeout: Cypress.config().largeTimeout }).click();
+                cy.get('#gen-test-key', { timeout: Cypress.env('largeTimeout') }).click();
                 // Handle the consumer secret dialog if it appears (multiple secrets mode)
                 cy.get('body').then(($body) => {
                   if ($body.find('#consumerSecretInput').length > 0) {
@@ -257,7 +257,7 @@ describe("Create GraphQl API from file", () => {
                     cy.get('[role="dialog"]').contains('button', 'Generate').should('not.be.disabled').click();
                   }
                 });
-                cy.wait('@getToken', { timeout: Cypress.config().largeTimeout })
+                cy.wait('@getToken', { timeout: Cypress.env('largeTimeout') })
                   .its('response.statusCode').should('eq', 200);
 
                 cy.get('[aria-label="Operation Editor"]').wait(2000).type('{backspace}' + starWarsSubscriptionRequest);

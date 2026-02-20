@@ -49,7 +49,7 @@ describe("Endpoint certificate usage testing", () => {
             // Visiting endpoints tab of selected API
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.wait(5000);
-            cy.get('[data-testid="itest-api-config"]', { timeout: Cypress.config().largeTimeout }).click();
+            cy.get('[data-testid="itest-api-config"]', { timeout: Cypress.env('largeTimeout') }).click();
             cy.get('#left-menu-itemendpoints').click();
 
             // Expand the general config section to upload certificate
@@ -85,7 +85,7 @@ describe("Endpoint certificate usage testing", () => {
 
         // Visiting endpoints tab of selected API
         cy.visit(`/publisher/apis/${apiId}/overview`);
-        cy.get('[data-testid="itest-api-config"]', { timeout: Cypress.config().largeTimeout }).click();
+        cy.get('[data-testid="itest-api-config"]', { timeout: Cypress.env('largeTimeout') }).click();
         cy.get('#left-menu-itemendpoints').click();
 
         // Expand the general config section to upload certificate

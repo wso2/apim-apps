@@ -33,7 +33,7 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
 
     const getLocalScopeRow = (scopeName) => (
         cy.contains('table tbody tr td', scopeName, {
-            timeout: Cypress.config().largeTimeout,
+            timeout: Cypress.env('largeTimeout'),
         }).parents('tr')
     );
 
@@ -100,7 +100,7 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
 
             const dataTransfer = new DataTransfer();
             cy.get('#tabPanel-common-policies').click();
-            cy.contains('Add Header', { timeout: Cypress.config().largeTimeout }).trigger('dragstart', {
+            cy.contains('Add Header', { timeout: Cypress.env('largeTimeout') }).trigger('dragstart', {
                 dataTransfer
             });
 
@@ -141,13 +141,13 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
         //2. click on API tile and select design config (basic info)
         cy.wait(2000);
         cy.get('#searchQuery').click().type(`"${apiName}"` + "{enter}");
-        cy.get('a').get(`[aria-label="${apiName} Thumbnail"]`, { timeout: Cypress.config().largeTimeout }).click();
+        cy.get('a').get(`[aria-label="${apiName} Thumbnail"]`, { timeout: Cypress.env('largeTimeout') }).click();
         cy.get('#itest-api-details-portal-config-acc').click();
         cy.get('#left-menu-itemDesignConfigurations').click();
 
         //2 -a. should not be able to update thumbnail
         cy.get('#edit-api-thumbnail-btn').click();
-        cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout }).should('be.visible');
+        cy.get('#itest-api-name-version', { timeout: Cypress.env('largeTimeout') }).should('be.visible');
         cy.get('#itest-api-name-version').contains(apiVersion);
 
         //2 -b. rest of the form field should not be editable
@@ -182,14 +182,14 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
 
         //5. should not be able to add documents
         cy.get('#left-menu-itemdocuments').click();
-        cy.get('[data-testid="add-document-btn"]', { timeout: Cypress.config().largeTimeout })
+        cy.get('[data-testid="add-document-btn"]', { timeout: Cypress.env('largeTimeout') })
             .get('[aria-disabled="true"]').should('exist');
 
         //6. should not be able to comments
         cy.get('#left-menu-itemcomments').click();
-        cy.get('#standard-multiline-flexible', { timeout: Cypress.config().largeTimeout }).should('be.disabled');
+        cy.get('#standard-multiline-flexible', { timeout: Cypress.env('largeTimeout') }).should('be.disabled');
         cy.contains('button', 'Reply').click();
-        cy.get('#standard-multiline-flexible', { timeout: Cypress.config().largeTimeout }).should('be.disabled');
+        cy.get('#standard-multiline-flexible', { timeout: Cypress.env('largeTimeout') }).should('be.disabled');
 
         //7. Runtime Configurations
         cy.get('#itest-api-details-api-config-acc').click();
@@ -290,7 +290,7 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
         cy.get('#itest-api-details-api-config-acc').click();
         cy.get("#left-menu-policies").click();
         cy.get('[data-testid="add-new-api-specific-policy"]', {
-            timeout: Cypress.config().largeTimeout,
+            timeout: Cypress.env('largeTimeout'),
         }).should('be.disabled');
 
         //13. monetization ,lifecycle menus are not visible to observer
@@ -299,7 +299,7 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
 
         //14. Properties
         cy.get('#left-menu-itemproperties').click();
-        cy.get('#add-new-property', { timeout: Cypress.config().largeTimeout }).should('be.disabled');
+        cy.get('#add-new-property', { timeout: Cypress.env('largeTimeout') }).should('be.disabled');
         cy.get('table').get('tbody').get('tr').contains('td', 'property1').should('be.visible');
         cy.get('table').get('tbody').get('tr').get('[aria-label="Edit property1"]').should('be.disabled');
         cy.get('table').get('tbody').get('tr').get('[aria-label="Remove property1"]').should('be.disabled');
@@ -323,8 +323,8 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
         // Ensure we are logged in as admin before cleanup (test may fail before admin login)
         cy.loginToPublisher(carbonUsername, carbonPassword);
         cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
-        cy.get('#searchQuery', { timeout: Cypress.config().largeTimeout }).click().type(`"${apiName}"` + "{enter}");
-        cy.get("#itest-id-deleteapi-icon-button", { timeout: Cypress.config().largeTimeout }).click();
+        cy.get('#searchQuery', { timeout: Cypress.env('largeTimeout') }).click().type(`"${apiName}"` + "{enter}");
+        cy.get("#itest-id-deleteapi-icon-button", { timeout: Cypress.env('largeTimeout') }).click();
         cy.get('#itest-id-deleteconf').click();
         // delete observer user.
 

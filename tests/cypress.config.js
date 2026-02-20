@@ -4,10 +4,8 @@ module.exports = defineConfig({
   chromeWebSecurity: false,
   pageLoadTimeout: 100000,
   defaultCommandTimeout: 100000,
-  largeTimeout: 100000,
   screenshotsFolder: 'cypress/screenshots',
   screenshotOnRunFailure: true,
-  experimentalInteractiveRunEvents: true,
   reporter: 'cypress-multi-reporters',
   reporterOptions: {
     inlineAssets: true,
@@ -25,6 +23,9 @@ module.exports = defineConfig({
   retries: {
     runMode: 2,
     openMode: 0,
+  },
+  env: {
+    largeTimeout: 100000,
   },
   e2e: {
     setupNodeEvents(on, config) {

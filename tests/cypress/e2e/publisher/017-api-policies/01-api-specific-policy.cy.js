@@ -35,7 +35,7 @@ describe("Common Policies", () => {
 
     const getApiSpecificPolicyCard = (version) => {
         return cy.get('#tabPanel-api-policies .MuiListItem-root', {
-            timeout: Cypress.config().largeTimeout,
+            timeout: Cypress.env('largeTimeout'),
         }).should(($items) => {
             const matchedCard = [...$items].find((item) => {
                 const cardText = item.textContent || '';
@@ -72,7 +72,7 @@ describe("Common Policies", () => {
             cy.visit(`/publisher/apis/${apiId}/policies`);
 
             // Create API Specific Policy
-            cy.get('[data-testid="add-new-api-specific-policy"]', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('[data-testid="add-new-api-specific-policy"]', {timeout: Cypress.env('largeTimeout')}).click();
             cy.get('#name').type(policyName);
             cy.get('#version').type('1');
             cy.get('input[name="description"]').type('Sample API specific policy description');

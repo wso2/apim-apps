@@ -40,12 +40,12 @@ describe("Endpoint testing", () => {
       }, () => {
         Utils.addAPI({}).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
-            cy.get('#itest-api-details-api-config-acc', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('#itest-api-details-api-config-acc', {timeout: Cypress.env('largeTimeout')}).click();
             cy.get('#left-menu-itemendpoints').click();
             cy.get('[data-testid="http/restendpoint-add-btn"]').click();
 
             // Add the prod and sandbox endpoints
-            cy.get('#production-endpoint-checkbox', {timeout: Cypress.config().largeTimeout}).click({force:true});
+            cy.get('#production-endpoint-checkbox', {timeout: Cypress.env('largeTimeout')}).click({force:true});
             cy.get('#sandbox-endpoint-checkbox').click({force:true});
             cy.get('#production_endpoints').focus().type(endpoint);
             cy.get('#sandbox_endpoints').focus().type(endpoint);

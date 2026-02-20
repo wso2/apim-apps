@@ -139,7 +139,7 @@ describe("Add key manager", () => {
                 cy.get(`#${km}`).should('not.exist');
 
                 cy.visit(`/devportal/applications?tenant=carbon.super`);
-                cy.get(`#itest-application-list-table td a`, {timeout: Cypress.config().largeTimeout}).contains(appName).click();
+                cy.get(`#itest-application-list-table td a`, {timeout: Cypress.env('largeTimeout')}).contains(appName).click();
                 cy.get('#production-keys').click();
                 cy.get(`#${km}`).should('not.exist');
                 cy.get('#sandbox-keys').click();

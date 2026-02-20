@@ -95,7 +95,7 @@ describe("Tryout API invocations", () => {
                         cy.get('[role="dialog"]').contains('button', 'Generate').should('not.be.disabled').click();
                     }
                 });
-                cy.wait('@genToken', { timeout: Cypress.config().largeTimeout });
+                cy.wait('@genToken', { timeout: Cypress.env('largeTimeout') });
                 cy.get('#accessTokenInput').should('not.have.value', '');
                 // Test the console
                 cy.get('#operations-default-get__').find('.opblock-summary-control').click();

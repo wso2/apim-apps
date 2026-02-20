@@ -40,7 +40,7 @@ describe("Create new API product version", () => {
         },
     }, () => {
         // create a new api
-        cy.visit(`/publisher/apis/create/openapi`, { timeout: Cypress.config().largeTimeout }).wait(5000);
+        cy.visit(`/publisher/apis/create/openapi`, { timeout: Cypress.env('largeTimeout') }).wait(5000);
         cy.get('#open-api-file-select-radio').click();
         cy.wait(5000);
         // upload the swagger
@@ -51,7 +51,7 @@ describe("Create new API product version", () => {
 
         cy.get('#open-api-create-next-btn').click();
         cy.wait(3000);
-        cy.get('#itest-id-apiversion-input', { timeout: Cypress.config().largeTimeout });
+        cy.get('#itest-id-apiversion-input', { timeout: Cypress.env('largeTimeout') });
         cy.document().then((doc) => {
             cy.get('#itest-id-apiname-input').clear().type(apiName);
             cy.get('#itest-id-apicontext-input').clear();
@@ -64,7 +64,7 @@ describe("Create new API product version", () => {
                 testApiID = /apis\/(.*?)\/overview/.exec(url)[1];
                 cy.log("API ID", testApiID);
                 // validate
-                cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout });
+                cy.get('#itest-api-name-version', { timeout: Cypress.env('largeTimeout') });
                 cy.get('#itest-api-name-version').contains(version);
 
                 // Go to api product create page
@@ -81,7 +81,7 @@ describe("Create new API product version", () => {
 
                 cy.get('#api-product-next-btn').should('not.have.class', 'Mui-disabled').click({ force: true });
 
-                cy.wait('@swaggerGet', { timeout: Cypress.config().largeTimeout }).then(() => {
+                cy.wait('@swaggerGet', { timeout: Cypress.env('largeTimeout') }).then(() => {
                     cy.intercept('GET', '**/swagger').as('getSwagger');
                     cy.get(`#checkbox-list-label-${testApiID}`).click();
                     cy.wait('@getSwagger');
@@ -95,7 +95,7 @@ describe("Create new API product version", () => {
                     cy.url().should('contains', 'overview').then(urlProduct => {
                         const productID = /api-products\/(.*?)\/overview/.exec(urlProduct)[1];
                         cy.log("API Product ID", productID);
-                        cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout });
+                        cy.get('#itest-api-name-version', { timeout: Cypress.env('largeTimeout') });
                         cy.get('#itest-api-name-version').contains(productName);
 
                         // create new version of the api product
@@ -117,7 +117,7 @@ describe("Create new API product version", () => {
                         cy.get(`#itest-id-deleteconf`).click();
 
                         cy.visit(`/publisher/api-products/${productID}/overview`);
-                        cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout });
+                        cy.get('#itest-api-name-version', { timeout: Cypress.env('largeTimeout') });
                         cy.get(`#itest-id-deleteapi-icon-button`).click();
                         cy.get(`#itest-id-deleteconf`).click();
                     });

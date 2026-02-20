@@ -30,7 +30,7 @@ describe("Add Edit Delete Microgateway Environments", () => {
         cy.visit('/admin/settings/environments');
         cy.contains('[role="tab"]', 'WSO2 Gateways').click();
         cy.get('[data-testid="add-wso2-gateway-btn"]', {
-            timeout: Cypress.config().largeTimeout,
+            timeout: Cypress.env('largeTimeout'),
         }).click();
 
         cy.contains('[role="radio"]', 'Universal Gateway - Classic').click();
@@ -44,7 +44,7 @@ describe("Add Edit Delete Microgateway Environments", () => {
 
         cy.intercept('GET', '**/environments').as('environmentsGet');
         cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Add').click();
-        cy.wait('@environmentsGet', { timeout: Cypress.config().largeTimeout }).then(() => {
+        cy.wait('@environmentsGet', { timeout: Cypress.env('largeTimeout') }).then(() => {
             cy.contains('table tr td', gatewayName).should('exist');
         });
 
@@ -57,7 +57,7 @@ describe("Add Edit Delete Microgateway Environments", () => {
 
         cy.intercept('GET', '**/environments').as('environmentsGetAfterEdit');
         cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Update').click();
-        cy.wait('@environmentsGetAfterEdit', { timeout: Cypress.config().largeTimeout }).then(() => {
+        cy.wait('@environmentsGetAfterEdit', { timeout: Cypress.env('largeTimeout') }).then(() => {
             cy.contains('table tr td', gatewayName).should('exist');
         });
 

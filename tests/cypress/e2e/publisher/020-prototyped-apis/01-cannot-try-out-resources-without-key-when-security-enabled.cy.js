@@ -40,7 +40,7 @@ describe("prototype apis with security enabled", () => {
         Utils.addAPI({name: apiName, version: apiVersion}).then((apiId) => {
             testApiId = apiId;
             cy.visit(`/publisher/apis/${apiId}/overview`);
-            cy.get('#itest-api-details-api-config-acc', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('#itest-api-details-api-config-acc', {timeout: Cypress.env('largeTimeout')}).click();
             cy.get('#left-menu-itemendpoints').click();
             cy.get('[data-testid="http/restendpoint-add-btn"]').click({force:true});
 
@@ -66,34 +66,34 @@ describe("prototype apis with security enabled", () => {
             //deploy API
             cy.get("#left-menu-itemdeployments").click();
             cy.wait(5000);
-            cy.get("#deploy-btn",{timeout: Cypress.config().largeTimeout}).should('not.have.class', 'Mui-disabled').click({force:true});
+            cy.get("#deploy-btn",{timeout: Cypress.env('largeTimeout')}).should('not.have.class', 'Mui-disabled').click({force:true});
             cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
 
             cy.get("#left-menu-itemlifecycle").click();
             cy.wait(5000);
-            cy.get('[data-testid="Deploy as a Prototype-btn"]', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('[data-testid="Deploy as a Prototype-btn"]', {timeout: Cypress.env('largeTimeout')}).click();
 
             cy.logoutFromPublisher();
 
             //login to dev portal as Developer
             cy.loginToDevportal(userName, password);
             cy.get('input[placeholder="Search APIs & MCP Servers"]').click().type(apiName + "{enter}");
-            cy.get('table > tbody > tr', { timeout: Cypress.config().largeTimeout }).get(`[area-label="Go to ${apiName}"]`).should('contain.text', 'PRE-RELEASED');
-            cy.get('table > tbody > tr',{timeout: Cypress.config().largeTimeout}).get(`[area-label="Go to ${apiName}"]`).click();
-            cy.contains('button', "Try Out", { timeout: Cypress.config().largeTimeout }).click();
-            cy.get('.opblock-summary-get > .opblock-summary-control', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('table > tbody > tr', { timeout: Cypress.env('largeTimeout') }).get(`[area-label="Go to ${apiName}"]`).should('contain.text', 'PRE-RELEASED');
+            cy.get('table > tbody > tr',{timeout: Cypress.env('largeTimeout')}).get(`[area-label="Go to ${apiName}"]`).click();
+            cy.contains('button', "Try Out", { timeout: Cypress.env('largeTimeout') }).click();
+            cy.get('.opblock-summary-get > .opblock-summary-control', {timeout: Cypress.env('largeTimeout')}).click();
             cy.wait(3000)
             cy.get('.try-out__btn').wait(3000).click();
             cy.intercept('GET','**/Prototyped_sample2/1.0.0').as("getExecute");
             cy.get('.execute').click({force:true});
-            //cy.contains('.live-responses-table .response > .response-col_status','401',  {timeout: Cypress.config().largeTimeout}).should('exist');
+            //cy.contains('.live-responses-table .response > .response-col_status','401',  {timeout: Cypress.env('largeTimeout')}).should('exist');
             cy.wait(5000)
             cy.wait('@getExecute').then(() => {
                 cy.get('.live-responses-table .response > td.response-col_status').then(element => {
                     cy.log(element.text());
                })
-                //cy.contains('.live-responses-table .response > .response-col_status','401',  {timeout: Cypress.config().largeTimeout}).should('exist');
-                cy.get('.live-responses-table .response > td.response-col_status',{timeout: Cypress.config().largeTimeout}).should("contain.text",'401')
+                //cy.contains('.live-responses-table .response > .response-col_status','401',  {timeout: Cypress.env('largeTimeout')}).should('exist');
+                cy.get('.live-responses-table .response > td.response-col_status',{timeout: Cypress.env('largeTimeout')}).should("contain.text",'401')
                 cy.logoutFromDevportal();
             });
         });

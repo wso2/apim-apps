@@ -32,7 +32,7 @@ describe("Life cycle support for API Products", () => {
             openMode: 0,
         },
     }, () => {
-        cy.visit(`/publisher/apis/create/openapi`, {timeout: Cypress.config().largeTimeout}).wait(5000);
+        cy.visit(`/publisher/apis/create/openapi`, {timeout: Cypress.env('largeTimeout')}).wait(5000);
         cy.get('#open-api-file-select-radio').click();
         cy.wait(5000);
 
@@ -43,7 +43,7 @@ describe("Life cycle support for API Products", () => {
         });
         cy.get('#open-api-create-next-btn').click();
         cy.wait(3000);
-        cy.get('#itest-id-apiversion-input', {timeout: Cypress.config().largeTimeout});
+        cy.get('#itest-id-apiversion-input', {timeout: Cypress.env('largeTimeout')});
 
         cy.document().then((doc) => {
             cy.get('#itest-id-apicontext-input').clear();
@@ -57,7 +57,7 @@ describe("Life cycle support for API Products", () => {
             cy.get('#open-api-create-btn').should('not.have.class', 'Mui-disabled').click({force:true});
 
             // validate
-            cy.get('#itest-api-name-version', {timeout: Cypress.config().largeTimeout});
+            cy.get('#itest-api-name-version', {timeout: Cypress.env('largeTimeout')});
             cy.get('#itest-api-name-version').contains(version);
 
             // Get the api id
@@ -77,7 +77,7 @@ describe("Life cycle support for API Products", () => {
 
                 cy.intercept('**/swagger').as('swaggerGet');
                 cy.get('#api-product-next-btn').click();
-                cy.wait('@swaggerGet', { timeout: Cypress.config().largeTimeout }).then(() => {
+                cy.wait('@swaggerGet', { timeout: Cypress.env('largeTimeout') }).then(() => {
                     cy.intercept('GET', '**/swagger').as('getSwagger');
                     cy.get(`#checkbox-list-label-${uuid}`).click();
                     cy.wait('@getSwagger');
@@ -87,7 +87,7 @@ describe("Life cycle support for API Products", () => {
                     // add all resources
                     cy.get('#add-all-resources-btn').click();
                     cy.get('#create-api-product-btn').scrollIntoView().click();
-                    cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout });
+                    cy.get('#itest-api-name-version', { timeout: Cypress.env('largeTimeout') });
                     cy.get('#itest-api-name-version').contains(productName);
 
                     //Get the api product id
@@ -100,7 +100,7 @@ describe("Life cycle support for API Products", () => {
                         cy.get('#left-menu-itemdeployments').click();
 
                         // Deploying
-                        cy.get('#deploy-btn', { timeout: Cypress.config().largeTimeout }).should('not.have.class', 'Mui-disabled').click({ force: true });
+                        cy.get('#deploy-btn', { timeout: Cypress.env('largeTimeout') }).should('not.have.class', 'Mui-disabled').click({ force: true });
                         cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
 
                         cy.get('#left-menu-itemlifecycle').click();
@@ -120,7 +120,7 @@ describe("Life cycle support for API Products", () => {
                         cy.get('#itest-id-deleteconf').click();
 
                         cy.visit(`/publisher/apis/${uuid}/overview`);
-                        cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout });
+                        cy.get('#itest-api-name-version', { timeout: Cypress.env('largeTimeout') });
                         cy.get(`#itest-id-deleteapi-icon-button`).click();
                         cy.get(`#itest-id-deleteconf`).click();
 
