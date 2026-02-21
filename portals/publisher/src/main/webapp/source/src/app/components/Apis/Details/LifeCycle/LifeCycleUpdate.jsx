@@ -265,7 +265,6 @@ class LifeCycleUpdate extends Component {
                             isMandatoryPropertiesAvailable = true;
                         }
                         this.setState({ isMandatoryPropertiesAvailable, loading: false });
-                        this.setState({ loading: false });
                     })
                     .catch((error) => {
                         console.error('Error fetching settings:', error);

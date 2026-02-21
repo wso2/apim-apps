@@ -300,7 +300,7 @@ export default function CustomizedStepper() {
                 const customProperties = response?.customProperties ?? response?.body?.customProperties ?? [];
                 if (Array.isArray(customProperties) && customProperties.length > 0) {
                     const requiredPropertyNames = customProperties
-                        .filter(property => property &&  property.Required)
+                        .filter(property => property && property.Required)
                         .map(property => property.Name)
                         .filter(Boolean);
                     if (requiredPropertyNames.length > 0) {
