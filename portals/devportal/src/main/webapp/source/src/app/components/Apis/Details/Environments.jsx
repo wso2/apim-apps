@@ -118,6 +118,30 @@ function Environments(props) {
 
     const intl = useIntl();
 
+    const pickFirstEnabledUrl = (urls) => {
+        if (!urls || typeof urls !== 'object') {
+            return '';
+        }
+        // Get all truthy values and return the first one, or '' if none are found.
+        const firstUrl = Object.values(urls).find(
+            (val) => typeof val === 'string' && val.trim() !== '',
+        );
+        return firstUrl || '';
+    };
+    const pickFirstEnabledWSUrl = (urls) => {
+        if (!urls || typeof urls !== 'object') {
+            return '';
+        }
+        const keys = ['ws', 'wss'];
+        for (const key of keys) {
+            const val = urls[key];
+            if (typeof val === 'string' && val.trim() !== '') {
+                return val;
+            }
+        }
+        return '';
+    };
+
     const onCopy = () => {
         setUrlCopied(true);
         const caller = function () {
@@ -128,11 +152,8 @@ function Environments(props) {
 
     const getDefaultVersionUrl = () => {
         const { defaultVersionURLs } = selectedEndpoint;
-        if (defaultVersionURLs
-            && (defaultVersionURLs.https
-                || defaultVersionURLs.http
-                || defaultVersionURLs.ws
-                || defaultVersionURLs.wss)) {
+        const firstEnabledDefaultUrl = pickFirstEnabledUrl(defaultVersionURLs);
+        if (firstEnabledDefaultUrl) {
             return (
                 <>
                     {`
@@ -140,7 +161,7 @@ function Environments(props) {
                     id: 'Apis.Details.Environments.default.url',
                     defaultMessage: '( Default Version ) ',
                 })}
-            ${(defaultVersionURLs.https || defaultVersionURLs.http || defaultVersionURLs.ws || defaultVersionURLs.wss)}`}
+            ${(firstEnabledDefaultUrl)}`}
                     <Tooltip
                         title={
                             urlCopied
@@ -161,10 +182,7 @@ function Environments(props) {
                             aria-label='Copy the Default Version URL to clipboard'
                             size='large'
                             onClick={() => {
-                                navigator.clipboard.writeText(defaultVersionURLs.https
-                                || defaultVersionURLs.http
-                                || defaultVersionURLs.ws
-                                || defaultVersionURLs.wss).then(onCopy('urlCopied'));
+                                navigator.clipboard.writeText(firstEnabledDefaultUrl).then(onCopy);
                             }}
                         >
                             <Icon color='secondary'>file_copy</Icon>
@@ -243,10 +261,7 @@ function Environments(props) {
                                         <InputBase
                                             className={classes.input}
                                             inputProps={{ 'aria-label': 'api url' }}
-                                            value={selectedEndpoint.URLs.https
-                                            || selectedEndpoint.URLs.http
-                                            || selectedEndpoint.URLs.wss
-                                            || selectedEndpoint.URLs.ws}
+                                            value={pickFirstEnabledUrl(selectedEndpoint.URLs)}
                                             data-testid='http-url'
                                         />
                                     </Tooltip>
@@ -271,10 +286,7 @@ function Environments(props) {
                                                 aria-label='Copy the API URL to clipboard'
                                                 size='large'
                                                 onClick={() => {
-                                                    navigator.clipboard.writeText(selectedEndpoint.URLs.https
-                                                    || selectedEndpoint.URLs.http
-                                                    || selectedEndpoint.URLs.wss
-                                                    || selectedEndpoint.URLs.ws).then(onCopy('urlCopied'));
+                                                    navigator.clipboard.writeText(pickFirstEnabledUrl(selectedEndpoint.URLs)).then(onCopy);
                                                 }}
                                             >
                                                 <Icon color='secondary'>file_copy</Icon>
@@ -303,8 +315,7 @@ function Environments(props) {
                                                 <InputBase
                                                     className={classes.input}
                                                     inputProps={{ 'aria-label': 'api url' }}
-                                                    value={selectedEndpoint.URLs.wss
-                                                    || selectedEndpoint.URLs.ws}
+                                                    value={pickFirstEnabledWSUrl(selectedEndpoint.URLs)}
                                                     data-testid='websocket-url'
                                                 />
                                             </Tooltip>
@@ -327,8 +338,9 @@ function Environments(props) {
                                                         aria-label='Copy the API URL to clipboard'
                                                         size='large'
                                                         onClick={() => {
-                                                            navigator.clipboard.writeText(selectedEndpoint.URLs.wss
-                                                            || selectedEndpoint.URLs.ws).then(onCopy('urlCopied'));
+                                                            navigator.clipboard.writeText(pickFirstEnabledUrl(
+                                                                selectedEndpoint.URLs,
+                                                            )).then(onCopy);
                                                         }}
                                                     >
                                                         <Icon color='secondary'>file_copy</Icon>
@@ -405,7 +417,7 @@ function Environments(props) {
                                                     navigator.clipboard.writeText(
                                                         advertiseInfo.apiExternalProductionEndpoint,
                                                     )
-                                                        .then(onCopy('urlCopied'));
+                                                        .then(onCopy);
                                                 }}
                                             >
                                                 <Icon color='secondary'>file_copy</Icon>
@@ -458,7 +470,7 @@ function Environments(props) {
                                                                 navigator.clipboard.writeText(
                                                                     advertiseInfo.apiExternalSandboxEndpoint,
                                                                 )
-                                                                    .then(onCopy('urlCopied'));
+                                                                    .then(onCopy);
                                                             }}
                                                         >
                                                             <Icon color='secondary'>file_copy</Icon>
@@ -500,6 +512,23 @@ function Environments(props) {
 Environments.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     intl: PropTypes.shape({}).isRequired,
+    selectedEndpoint: PropTypes.shape({
+        environmentName: PropTypes.string,
+        environmentDisplayName: PropTypes.string,
+        environmentType: PropTypes.string,
+        URLs: PropTypes.shape({
+            http: PropTypes.string,
+            https: PropTypes.string,
+            ws: PropTypes.string,
+            wss: PropTypes.string,
+        }).isRequired,
+        defaultVersionURLs: PropTypes.shape({
+            http: PropTypes.string,
+            https: PropTypes.string,
+            ws: PropTypes.string,
+            wss: PropTypes.string,
+        }),
+    }).isRequired,
 };
 
 export default Environments;
