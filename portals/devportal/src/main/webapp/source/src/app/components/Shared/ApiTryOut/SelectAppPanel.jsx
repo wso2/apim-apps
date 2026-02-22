@@ -211,32 +211,6 @@ const SelectAppPanel = (props) => {
                                 )}
                             />
                         </RadioGroup>
-                        {isMultipleSecretsAllowed && (
-                            <TextField
-                                fullWidth
-                                variant="outlined"
-                                margin="normal"
-                                type={showSecret ? "text" : "password"}
-                                label={(
-                                    <FormattedMessage
-                                        id='Shared.AppsAndKeys.Tokens.consumer.secret'
-                                        defaultMessage='Consumer Secret'
-                                    />
-                                )}
-                                name="consumerSecret"
-                                value={consumerSecret}
-                                onChange={(e) => onConsumerSecretChange(e.target.value)}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton onClick={toggleVisibility} edge="end">
-                                                {showSecret ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                    )}
                 </FormControl>
                 )}
             </Grid>
