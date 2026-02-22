@@ -368,13 +368,6 @@ export default class Application extends Resource {
         return promisedSecret.then((secretResponse) => {
             const secret = secretResponse.obj;
             return secret;
-            // if (keyType === 'PRODUCTION') {
-            //     this.productionKeys.set(keyManager, keysResponse.obj);
-            //     return this.productionKeys.get(keyManager);
-            // } else {
-            //     this.sandboxKeys.set(keyManager, keysResponse.obj);
-            //     return this.sandboxKeys.get(keyManager);
-            // }
         });
     }
 
@@ -384,13 +377,6 @@ export default class Application extends Resource {
             .then((secretsResponse) => {
                 const secrets = secretsResponse.obj.list;
                 return secrets;
-                // this._setKeys(keys);
-                // this._setTokens(keys);
-                // if (keyType === 'PRODUCTION') {
-                //     return this.productionKeys;
-                // } else {
-                //     return this.sandboxKeys;
-                // }
             });
     }
 
