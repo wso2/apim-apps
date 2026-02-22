@@ -50,7 +50,7 @@ describe("Self SignUp", () => {
     const internalSubscriberRole = 'Internal/subscriber';
     const internalTestRole = 'Internal/testRole';
     const selfSignupDisabledConfigJson = JSON.parse(JSON.stringify(tenantConfigJson));
-    delete selfSignupDisabledConfigJson.SelfSignUp;
+    selfSignupDisabledConfigJson.SelfSignUp = { "SignUpRoles": [] };
     const customUserRoleAddedConfigJson = JSON.parse(JSON.stringify(tenantConfigJson));
     customUserRoleAddedConfigJson.SelfSignUp.SignUpRoles.push(internalTestRole);
 

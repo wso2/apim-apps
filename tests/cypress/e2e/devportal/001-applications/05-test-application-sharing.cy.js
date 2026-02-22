@@ -155,8 +155,14 @@ describe("Invoke API Product", () => {
     });
 
     afterEach(function () {
+        // Force clear cookies/sessions so SSO doesn't bypass the login screen
+        cy.clearCookies();
+        cy.clearLocalStorage();
+        cy.window().then((win) => {
+            win.sessionStorage.clear();
+        });
 
-        //Delete Users
+        // Delete Users
         cy.loginToPublisher(publisher, password);
         cy.deleteApi(apiName, apiVersion);
         cy.carbonLogin(carbonUsername, carbonPassword);
@@ -164,6 +170,5 @@ describe("Invoke API Product", () => {
         cy.deleteUser(user1);
         cy.visit(`/carbon/user/user-mgt.jsp`);
         cy.deleteUser(user2);
-
     })
 })
