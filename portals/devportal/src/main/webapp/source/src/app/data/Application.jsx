@@ -103,11 +103,12 @@ export default class Application extends Resource {
      * @param {string} selectedScopes token scopes
      * @param {boolean} isTokenExchange is token exchange flow
      * @param {string} externalToken token from external identity provider
+     * @param {string} consumerSecret consumer secret of the application
      * @returns {promise} Set the generated token into current
      * instance and return tokenObject received as Promise object
      */
     generateToken(selectedTab, type, validityPeriod, selectedScopes, isTokenExchange,
-        externalToken) {
+        externalToken, consumerSecret = null) {
         if (isTokenExchange) {
             const defaultKMTab = 'Resident Key Manager';
             const promiseToken = this.getKeys()
@@ -166,13 +167,23 @@ export default class Application extends Resource {
                     } else {
                         accessToken = this.sandboxTokens.get(selectedTab);
                     }
-                    const requestContent = {
-                        consumerSecret: keys.consumerSecret,
-                        validityPeriod,
-                        revokeToken: accessToken.accessToken,
-                        scopes: selectedScopes,
-                        additionalProperties: keys.additionalProperties,
-                    };
+                    let requestContent;
+                    if (consumerSecret) {
+                        requestContent = {
+                            consumerSecret: consumerSecret,
+                            validityPeriod,
+                            scopes: selectedScopes,
+                            additionalProperties: keys.additionalProperties,
+                        };
+                    } else {
+                        requestContent = {
+                            consumerSecret: keys.consumerSecret,
+                            validityPeriod,
+                            revokeToken: accessToken.accessToken,
+                            scopes: selectedScopes,
+                            additionalProperties: keys.additionalProperties,
+                        };
+                    }
                     const payload = { applicationId: this.id, keyMappingId };
                     const body = { requestBody: requestContent };
                     return client.apis['Application Tokens']
@@ -343,6 +354,43 @@ export default class Application extends Resource {
             }
             return secret;
         });
+    }
+
+    generateSecret(keyMappingId, additionalProperties) {
+        const promisedSecret = this.client.then((client) => {
+            const requestContent = {
+                additionalProperties,
+            };
+            const payload = { applicationId: this.id, keyMappingId };
+            const body = { requestBody: requestContent };
+            return client.apis['Application Secrets'].generateConsumerSecret(payload, body);
+        });
+        return promisedSecret.then((secretResponse) => {
+            const secret = secretResponse.obj;
+            return secret;
+        });
+    }
+
+    getSecrets(keyMappingId) {
+        return this.client.then((client) => client.apis['Application Secrets']
+            .getConsumerSecrets({ applicationId: this.id, keyMappingId }))
+            .then((secretsResponse) => {
+                const secrets = secretsResponse.obj.list;
+                return secrets;
+            });
+    }
+
+    deleteSecret(keyMappingId, secretId, additionalProperties) {
+        const promisedDelete = this.client.then((client) => {
+            const requestContent = {
+                secretId,
+                additionalProperties,
+            };
+            const payload = { applicationId: this.id, keyMappingId };
+            const body = { requestBody: requestContent };
+            return client.apis['Application Secrets'].revokeConsumerSecret(payload, body);
+        });
+        return promisedDelete.then((response) => response.status);
     }
 
     /**

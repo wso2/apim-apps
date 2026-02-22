@@ -211,7 +211,7 @@ const SelectAppPanel = (props) => {
                                 )}
                             />
                         </RadioGroup>
-                    </FormControl>
+                </FormControl>
                 )}
             </Grid>
         </Root>

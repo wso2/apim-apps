@@ -47,6 +47,8 @@ import Api from '../../../data/api';
 import Application from '../../../data/Application';
 import CONSTANTS from '../../../data/Constants';
 import SelectAppPanel from './SelectAppPanel';
+import { isMultipleClientSecretsEnabled } from 'AppComponents/Shared/AppsAndKeys/Secrets/util';
+import Alert from 'AppComponents/Shared/Alert';
 
 const PREFIX = 'TryOutController';
 
@@ -185,6 +187,8 @@ function TryOutController(props) {
     const [ksGenerated, setKSGenerated] = useState(false);
     const [showMoreGWUrls, setShowMoreGWUrls] = useState(false);
     const [tokenValue, setTokenValue] = useState('');
+    const [consumerSecret, setConsumerSecret] = useState('');
+    const [showSecret, setShowSecret] = useState(false);
     const apiID = api.id;
     const restApi = new Api();
     const user = AuthManager.getUser();
@@ -357,6 +361,9 @@ function TryOutController(props) {
                     selectedKeyType,
                     3600,
                     scopes,
+                    undefined,
+                    undefined,
+                    consumerSecret
                 ))
                 .then((response) => {
                     console.log('token generated successfully ' + response);
@@ -376,6 +383,10 @@ function TryOutController(props) {
                         setNotFound(true);
                     }
                     setIsUpdating(false);
+                    const { response } = error;
+                    if (response && response.body && response.body.message && response.body.description) {
+                        Alert.error(`${response.body.message}: ${response.body.description}`);
+                    }
                 });
         }
     }
@@ -554,6 +565,9 @@ function TryOutController(props) {
             case 'selectedEndpoint':
                 setSelectedEndpoint(value);
                 break;
+            case 'consumerSecret':
+                setConsumerSecret(value);
+                break;
             default:
         }
     }
@@ -589,6 +603,18 @@ function TryOutController(props) {
     const showSecurityType = isPublished || isPrototypedAPI;
 
     const authHeader = `${authorizationHeader}: ${prefix}`;
+
+    const isMultipleClientSecretsAllowed = isMultipleClientSecretsEnabled(selectedKMObject?.additionalProperties);
+
+    // When multiple client secrets are allowed, for OAuth security scheme, the consumer secret should
+    // be available for the Get Test Key button to be enabled.
+    let enableGetTestKeyButton = true; // default
+    if (securitySchemeType === 'OAUTH' && isMultipleClientSecretsAllowed) {
+        enableGetTestKeyButton = !!consumerSecret?.trim(); // must provide consumer secret
+    }
+
+    const isConsumerSecretRequired = isMultipleClientSecretsAllowed && securitySchemeType === 'OAUTH' &&
+        selectedKMObject && !selectedKMObject.enableTokenHashing;
 
     useEffect(() => {
         if (securitySchemeType === 'API-KEY') {
@@ -768,6 +794,51 @@ function TryOutController(props) {
                                 </Grid>
                             )
                         )}
+                    {/* New Consumer Secret Field - Only shows for OAUTH */}
+                    <Box display='block' justifyContent='center'>
+                        <Grid x={8} md={6} className={classes.tokenType} item>
+                            {isConsumerSecretRequired && (
+                            <TextField
+                                fullWidth
+                                margin='normal'
+                                variant='outlined'
+                                label={(
+                                    <FormattedMessage
+                                        id='Apis.Details.ApiConsole.consumer.secret.text.field'
+                                        defaultMessage='Consumer Secret'
+                                    />
+                                )}
+                                name='consumerSecret'
+                                onChange={handleChanges}
+                                type={showSecret ? 'text' : 'password'}
+                                value={consumerSecret || ''}
+                                id='consumerSecretInput'
+                                helperText={
+                                    isConsumerSecretRequired && !consumerSecret?.trim()
+                                        ? <FormattedMessage
+                                            id='Apis.Details.TryOutConsole.consumerSecret.required.helper'
+                                            defaultMessage='Consumer Secret is required to generate a new Test Key.'
+                                        />
+                                        : null
+                                }
+                                InputProps={{
+                                    autoComplete: 'new-password',
+                                    endAdornment: (
+                                        <InputAdornment position='end'>
+                                            <IconButton
+                                                edge='end'
+                                                onClick={() => setShowSecret(!showSecret)}
+                                                size='large'
+                                            >
+                                                {showSecret ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        )}
+                        </Grid>
+                    </Box>
                     {((!api.advertiseInfo || !api.advertiseInfo.advertised) 
                         && (api.gatewayVendor === 'wso2' || !api.gatewayVendor)) ? (
                         <Box display='block' justifyContent='center'>
@@ -824,7 +895,6 @@ function TryOutController(props) {
                                         </Grid>
                                     </>
                                 )}
-
                                 {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST' && (
                                     <TextField
                                         fullWidth
@@ -886,7 +956,8 @@ function TryOutController(props) {
                                             className={classes.genKeyButton}
                                             disabled={!user
                                                 || (subscriptions && subscriptions.length === 0 && !isSubValidationDisabled)
-                                                || (!ksGenerated && securitySchemeType === 'OAUTH')}
+                                                || (!ksGenerated && securitySchemeType === 'OAUTH')
+                                                        || !enableGetTestKeyButton}
                                             id='gen-test-key'
                                         >
                                             {isUpdating && (
@@ -901,13 +972,20 @@ function TryOutController(props) {
                                             placement='right'
                                             interactive
                                             title={(
-                                                <FormattedMessage
-                                                    id='Apis.Details.TryOutConsole.access.token.tooltip'
-                                                    defaultMessage={
-                                                        'You can use your existing Access Token or '
-                                                                + 'you can generate a new Test Key.'
-                                                    }
-                                                />
+                                                <>
+                                                    <FormattedMessage
+                                                        id='Apis.Details.TryOutConsole.access.token.tooltip'
+                                                        defaultMessage='You can use your existing Access Token or generate a new Test Key.'
+                                                    />
+                                                    {!enableGetTestKeyButton && securitySchemeType === 'OAUTH' && isMultipleClientSecretsAllowed && (
+                                                        <div style={{ marginTop: 4, fontWeight: 500 }}>
+                                                            <FormattedMessage
+                                                                id='Apis.Details.TryOutConsole.consumer.secret.required'
+                                                                defaultMessage='Consumer Secret is required to generate a new Test Key.'
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </>
                                             )}
                                         >
                                             <Box m={1} mt={2}>
