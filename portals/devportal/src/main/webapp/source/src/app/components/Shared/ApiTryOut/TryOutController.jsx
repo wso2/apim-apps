@@ -804,7 +804,7 @@ function TryOutController(props) {
                                 variant='outlined'
                                 label={(
                                     <FormattedMessage
-                                        id='consumer.secret'
+                                        id='Apis.Details.ApiConsole.consumer.secret.text.field'
                                         defaultMessage='Consumer Secret'
                                     />
                                 )}

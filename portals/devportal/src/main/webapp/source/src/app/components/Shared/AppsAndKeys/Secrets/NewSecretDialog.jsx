@@ -35,7 +35,7 @@ import CONSTS from 'AppData/Constants';
 const NewSecretDialog = ({ open, onClose, onCreate, mode }) => {
     const initialFormState = {
         description: "",
-        expiryOption: "30",
+        expiryOption: "90",
         customDays: "",
     };
 
