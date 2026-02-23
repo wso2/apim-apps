@@ -236,26 +236,25 @@ class LifeCycleUpdate extends Component {
                         let isMandatoryPropertiesAvailable;
                         if (customProperties && customProperties.length > 0) {
                             const requiredPropertyNames = customProperties
-                                .filter((property) => property.Required)
-                                .map((property) => property.Name);
+                                .filter(property => property.Required)
+                                .map(property => property.Name);
                             if (requiredPropertyNames.length > 0) {
                                 this.setState({ isMandatoryPropertiesConfigured: true });
                                 if (api.additionalProperties !== undefined) {
-                                    isMandatoryPropertiesAvailable = requiredPropertyNames.every((propertyName) => {
+                                    isMandatoryPropertiesAvailable = requiredPropertyNames.every(propertyName => {
                                         const property = api.additionalProperties.find(
                                             (prop) => prop.name === propertyName);
                                         return !!(property && property.value !== '');
                                     });
                                 } else {
                                     const addPropsMap = api.additionalPropertiesMap || {};
-                                    isMandatoryPropertiesAvailable = requiredPropertyNames.every((propertyName) => {
+                                    isMandatoryPropertiesAvailable = requiredPropertyNames.every(propertyName => {
                                         const property = addPropsMap[propertyName];
                                         return !!(property && property.value !== '');
                                     });
                                 }
                             }
                         }
-
                         this.setState({ isMandatoryPropertiesAvailable });
                         this.setState({ loading: false });
                     })

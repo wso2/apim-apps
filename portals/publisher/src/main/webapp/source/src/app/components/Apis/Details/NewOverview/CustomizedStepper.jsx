@@ -301,17 +301,17 @@ export default function CustomizedStepper() {
                 if (customProperties && customProperties.length > 0) {
                     const requiredPropertyNames = customProperties
                         .filter(property => property.Required)
-                        .map(property => property.Name)
+                        .map(property => property.Name);
                     if (requiredPropertyNames.length > 0) {
                         if (api.additionalProperties !== undefined) {
-                            setIsMandatoryPropertiesAvailable(requiredPropertyNames.every((propertyName) => {
+                            setIsMandatoryPropertiesAvailable(requiredPropertyNames.every(propertyName => {
                                 const property = api.additionalProperties.find(
-                                    (prop) => prop.name === propertyName);
+                                    prop => prop.name === propertyName);
                                 return !!(property && property.value !== '');
                             }));
                         } else {
                             const addPropsMap = api.additionalPropertiesMap || {};
-                            setIsMandatoryPropertiesAvailable(requiredPropertyNames.every((propertyName) => {
+                            setIsMandatoryPropertiesAvailable(requiredPropertyNames.every(propertyName => {
                                 const property = addPropsMap[propertyName];
                                 return !!(property && property.value !== '');
                             }));
