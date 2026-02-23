@@ -79,10 +79,30 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
         cy.location('pathname').then((pathName) => {
             const pathSegments = pathName.split('/');
             const uuid = pathSegments[pathSegments.length - 2];
-            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/policies`);
-            cy.wait(5000);
 
-            cy.get("[id='post/testuri']").click()
+            // Resource save is async. Wait until the new operation is persisted in swagger
+            // before opening the policies page.
+            const waitForOperationInSwagger = (retries = 6) => {
+                return cy.request(`/api/am/publisher/v4/apis/${uuid}/swagger`).then(({ body }) => {
+                    const swaggerBody = typeof body === "string" ? body : JSON.stringify(body);
+                    if (swaggerBody.includes("/testuri")) {
+                        return;
+                    }
+                    if (retries === 0) {
+                        throw new Error(`POST /testuri was not persisted for API ${uuid} before policies step`);
+                    }
+                    cy.wait(2000);
+                    return waitForOperationInSwagger(retries - 1);
+                });
+            };
+
+            waitForOperationInSwagger();
+            cy.intercept("GET", `**/api/am/publisher/v4/apis/${uuid}/operation-policies?limit=500`).as("getOperationPolicies");
+            cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/policies`);
+            cy.wait("@getOperationPolicies", { timeout: Cypress.env("largeTimeout") });
+            cy.wait(2000);
+
+            cy.get("[id='post/testuri']", { timeout: Cypress.env("largeTimeout") }).should("be.visible").click();
 
             const dataTransfer = new DataTransfer();
             cy.get('#tabPanel-common-policies').click();
