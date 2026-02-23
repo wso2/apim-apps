@@ -253,7 +253,11 @@ class LifeCycleUpdate extends Component {
                                         return !!(property && property.value !== '');
                                     });
                                 }
+                            } else {
+                                isMandatoryPropertiesAvailable = true;
                             }
+                        } else {
+                            isMandatoryPropertiesAvailable = true;
                         }
                         this.setState({ isMandatoryPropertiesAvailable });
                         this.setState({ loading: false });
