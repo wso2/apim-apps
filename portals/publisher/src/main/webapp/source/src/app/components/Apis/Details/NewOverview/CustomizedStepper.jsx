@@ -303,10 +303,19 @@ export default function CustomizedStepper() {
                         .filter(property => property.Required)
                         .map(property => property.Name);
                     if (requiredPropertyNames.length > 0) {
-                        setIsMandatoryPropertiesAvailable(requiredPropertyNames.every(propertyName => {
-                            const property = api.additionalProperties.find(prop => prop.name === propertyName);
-                            return property && property.value !== '';
-                        }));
+                        if (api.additionalProperties !== undefined) {
+                            setIsMandatoryPropertiesAvailable(requiredPropertyNames.every(propertyName => {
+                                const property = api.additionalProperties.find(
+                                    prop => prop.name === propertyName);
+                                return !!(property && property.value !== '');
+                            }));
+                        } else {
+                            const addPropsMap = api.additionalPropertiesMap || {};
+                            setIsMandatoryPropertiesAvailable(requiredPropertyNames.every(propertyName => {
+                                const property = addPropsMap[propertyName];
+                                return !!(property && property.value !== '');
+                            }));
+                        }
                     } else {
                         setIsMandatoryPropertiesAvailable(true);
                     }
