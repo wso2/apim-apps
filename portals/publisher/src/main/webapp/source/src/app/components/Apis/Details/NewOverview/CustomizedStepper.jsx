@@ -297,28 +297,25 @@ export default function CustomizedStepper() {
     function validateMandatoryCustomProperties() {
         api.getSettings()
             .then((response) => {
-                const customProperties = response?.customProperties ?? response?.body?.customProperties ?? [];
-                if (Array.isArray(customProperties) && customProperties.length > 0) {
+                const { customProperties } = response;
+                if (customProperties && customProperties.length > 0) {
                     const requiredPropertyNames = customProperties
-                        .filter(property => property && property.Required)
+                        .filter(property => property.Required)
                         .map(property => property.Name)
-                        .filter(Boolean);
                     if (requiredPropertyNames.length > 0) {
-                        setIsMandatoryPropertiesAvailable(requiredPropertyNames.every((propertyName) => {
-                            // APIs: additionalProperties is an array of { name, value }
-                            if (Array.isArray(api.additionalProperties)) {
-                                const property = api.additionalProperties.find((prop)=>prop&&prop.name===propertyName);
+                        if (api.additionalProperties !== undefined) {
+                            setIsMandatoryPropertiesAvailable(requiredPropertyNames.every((propertyName) => {
+                                const property = api.additionalProperties.find(
+                                    (prop) => prop.name === propertyName);
                                 return !!(property && property.value !== '');
-                            }
-
-                            // MCP Servers: properties are stored in additionalPropertiesMap keyed by propertyName
-                            if (api.additionalPropertiesMap && typeof api.additionalPropertiesMap === 'object') {
-                                const property = api.additionalPropertiesMap[propertyName];
+                            }));
+                        } else {
+                            const addPropsMap = api.additionalPropertiesMap || {};
+                            setIsMandatoryPropertiesAvailable(requiredPropertyNames.every((propertyName) => {
+                                const property = addPropsMap[propertyName];
                                 return !!(property && property.value !== '');
-                            }
-
-                            return false;
-                        }));
+                            }));
+                        }
                     } else {
                         setIsMandatoryPropertiesAvailable(true);
                     }

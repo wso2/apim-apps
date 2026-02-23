@@ -232,39 +232,32 @@ class LifeCycleUpdate extends Component {
 
                 API.getSettings()
                     .then((response) => {
-                        const customProperties = response?.customProperties ?? response?.body?.customProperties ?? [];
-                        let isMandatoryPropertiesAvailable = true;
+                        const { customProperties } = response;
+                        let isMandatoryPropertiesAvailable;
                         if (customProperties && customProperties.length > 0) {
                             const requiredPropertyNames = customProperties
-                                .filter(property => property && property.Required)
-                                .map(property => property.Name)
-                                .filter(Boolean);
+                                .filter((property) => property.Required)
+                                .map((property) => property.Name);
                             if (requiredPropertyNames.length > 0) {
-                                this.setState({ isMandatoryPropertiesConfigured: true })
-                                isMandatoryPropertiesAvailable = requiredPropertyNames.every((propertyName) => {
-                                    // APIs keep additionalProperties as an array: [{ name, value }, ...]
-                                    const addProps = api.additionalProperties;
-                                    if (Array.isArray(addProps)) {
-                                        const property = addProps.find((prop) => prop && prop.name === propertyName);
+                                this.setState({ isMandatoryPropertiesConfigured: true });
+                                if (api.additionalProperties !== undefined) {
+                                    isMandatoryPropertiesAvailable = requiredPropertyNames.every((propertyName) => {
+                                        const property = api.additionalProperties.find(
+                                            (prop) => prop.name === propertyName);
                                         return !!(property && property.value !== '');
-                                    }
-
-                                    // MCP Servers keep additionalPropertiesMap as an object keyed by name.
-                                    const addPropsMap = api.additionalPropertiesMap;
-                                    if (addPropsMap && typeof addPropsMap === 'object') {
+                                    });
+                                } else {
+                                    const addPropsMap = api.additionalPropertiesMap || {};
+                                    isMandatoryPropertiesAvailable = requiredPropertyNames.every((propertyName) => {
                                         const property = addPropsMap[propertyName];
                                         return !!(property && property.value !== '');
-                                    }
-
-                                    return false;
-                                });
-                            } else {
-                                isMandatoryPropertiesAvailable = true;
+                                    });
+                                }
                             }
-                        } else {
-                            isMandatoryPropertiesAvailable = true;
                         }
-                        this.setState({ isMandatoryPropertiesAvailable, loading: false });
+
+                        this.setState({ isMandatoryPropertiesAvailable });
+                        this.setState({ loading: false });
                     })
                     .catch((error) => {
                         console.error('Error fetching settings:', error);
