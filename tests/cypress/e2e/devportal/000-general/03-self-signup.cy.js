@@ -54,7 +54,7 @@ describe("Self SignUp", () => {
     const customUserRoleAddedConfigJson = JSON.parse(JSON.stringify(tenantConfigJson));
     customUserRoleAddedConfigJson.SelfSignUp.SignUpRoles.push(internalTestRole);
 
-    it.only("Test - Default self-signup behaviour of the super tenant", () => {
+    it("Test - Default self-signup behaviour of the super tenant", () => {
         cy.addNewUserUsingSelfSignUp(superTenant1Username, password, firstName, lastName,
             getSuperTenantEmail(superTenant1Username), superTenant);
         cy.addExistingUserUsingSelfSignUp(superTenant1Username, superTenant);
@@ -62,7 +62,7 @@ describe("Self SignUp", () => {
         cy.logoutFromDevportal();
     });
 
-    it.only("Test - Default self-signup behaviour of the wso2 tenant", () => {
+    it("Test - Default self-signup behaviour of the wso2 tenant", () => {
         cy.addNewUserUsingSelfSignUp(Utils.getTenantUser(tenant1Username, testTenant), password, firstName, lastName,
             Utils.getTenantUser(tenant1Username, testTenant), testTenant);
         cy.addExistingUserUsingSelfSignUp(Utils.getTenantUser(tenant1Username, testTenant), testTenant);
@@ -70,38 +70,38 @@ describe("Self SignUp", () => {
         cy.logoutFromDevportal();
     });
 
-    it.only("Test - Login to the devPortal using incorrect user credentials", () => {
+    it("Test - Login to the devPortal using incorrect user credentials", () => {
         cy.portalLoginUsingIncorrectUserCredentials(incorrectUsername, incorrectPassword, devPortal, testTenant);
     });
 
-    it.only("Test - Login to the publisher portal using incorrect user credentials", () => {
+    it("Test - Login to the publisher portal using incorrect user credentials", () => {
         cy.portalLoginUsingIncorrectUserCredentials(incorrectUsername, incorrectPassword, publisher, superTenant);
     });
 
-    it.only("Test - Login to the admin portal using incorrect user credentials", () => {
+    it("Test - Login to the admin portal using incorrect user credentials", () => {
         cy.portalLoginUsingIncorrectUserCredentials(incorrectUsername, incorrectPassword, adminPortal, superTenant);
     });
 
-    it.only("Test - Login to the carbon using incorrect user credentials", () => {
+    it("Test - Login to the carbon using incorrect user credentials", () => {
         cy.carbonLogin(incorrectUsername, incorrectPassword);
         cy.contains('Login failed! Please recheck the username and password and try again.').should('exist');
     });
 
-    it.only("Test - Login to the publisher using newly created user(superTenant1) credentials", () => {
+    it("Test - Login to the publisher using newly created user(superTenant1) credentials", () => {
         cy.portalLogin(superTenant1Username, password, publisher, superTenant);
         cy.contains('Error 403 : Forbidden').should('exist');
         cy.contains('The server could not verify that you are authorized to access the requested resource.').should('exist');
         cy.logoutFromPublisher();
     });
 
-    it.only("Test - Login to the admin portal using newly created user(superTenant1) credentials", () => {
+    it("Test - Login to the admin portal using newly created user(superTenant1) credentials", () => {
         cy.portalLogin(superTenant1Username, password, adminPortal, superTenant);
         cy.contains('Error 403 : Forbidden').should('exist');
         cy.contains('The server could not verify that you are authorized to access the requested resource.').should('exist');
         cy.logoutFromAdminPortal();
     });
 
-    it.only("Test - Login to the carbon using newly created user(superTenant1) credentials", () => {
+    it("Test - Login to the carbon using newly created user(superTenant1) credentials", () => {
         cy.carbonLogin(superTenant1Username, password);
         cy.get('#region1_dashboard_main_menu').should('not.exist');
         cy.get('#region3_registry_menu').should('not.exist');
@@ -109,7 +109,7 @@ describe("Self SignUp", () => {
         cy.carbonLogout();
     });
 
-    it.only("Test - Remove self signup config from the advance configuration and create a new user for the super tenant", () => {
+    it("Test - Remove self signup config from the advance configuration and create a new user for the super tenant", () => {
         cy.updateTenantConfig(carbonUsername, carbonPassword, superTenant, selfSignupDisabledConfigJson);
         cy.addNewUserUsingSelfSignUp(superTenant2Username, password, firstName, lastName,
             getSuperTenantEmail(superTenant2Username), superTenant);
@@ -119,7 +119,7 @@ describe("Self SignUp", () => {
         cy.contains('Logout').click();
     });
 
-    it.only("Test - Remove self signup config from the advance configuration and create a new user for the wso2 tenant", () => {
+    it("Test - Remove self signup config from the advance configuration and create a new user for the wso2 tenant", () => {
         cy.updateTenantConfig(tenantAdminUsername, tenantAdminPassword, testTenant, selfSignupDisabledConfigJson);
         cy.addNewUserUsingSelfSignUp(Utils.getTenantUser(tenant2Username, testTenant), password, firstName, lastName,
             Utils.getTenantUser(tenant2Username, testTenant), testTenant);
@@ -129,7 +129,7 @@ describe("Self SignUp", () => {
         cy.contains('Logout').click();
     });
 
-    it.only("Test - Disable self signup from the carbon portal for the super tenant", () => {
+    it("Test - Disable self signup from the carbon portal for the super tenant", () => {
         cy.disableSelfSignUpInCarbonPortal(carbonUsername, carbonPassword, superTenant);
         cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${superTenant}`);
         cy.get('#itest-devportal-sign-in').click({ force: true });
@@ -139,7 +139,7 @@ describe("Self SignUp", () => {
         cy.contains(`Self registration is disabled for tenant - ${superTenant}`).should('exist');
     });
 
-    it.only("Test - Disable self signup from the carbon portal for the wso2 tenant", () => {
+    it("Test - Disable self signup from the carbon portal for the wso2 tenant", () => {
         cy.disableSelfSignUpInCarbonPortal(tenantAdminUsername, tenantAdminPassword, testTenant);
         cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${testTenant}`);
         cy.get('#itest-devportal-sign-in').click({ force: true });
@@ -149,7 +149,7 @@ describe("Self SignUp", () => {
         cy.contains(`Self registration is disabled for tenant - ${testTenant}`).should('exist');
     });
 
-    it.only("Test - Enable self signup back for the super tenant", () => {
+    it("Test - Enable self signup back for the super tenant", () => {
         cy.updateTenantConfig(carbonUsername, carbonPassword, superTenant, tenantConfigJson);
         cy.enableSelfSignUpInCarbonPortal(carbonUsername, carbonPassword, superTenant);
         cy.addNewUserUsingSelfSignUp(superTenant4Username, password, firstName, lastName,
@@ -158,7 +158,7 @@ describe("Self SignUp", () => {
         cy.logoutFromDevportal();
     });
 
-    it.only("Test - Enable self signup back for the wso2 tenant", () => {
+    it("Test - Enable self signup back for the wso2 tenant", () => {
         cy.updateTenantConfig(tenantAdminUsername, tenantAdminPassword, testTenant, tenantConfigJson);
         cy.enableSelfSignUpInCarbonPortal(tenantAdminUsername, tenantAdminPassword, testTenant);
         cy.addNewUserUsingSelfSignUp(Utils.getTenantUser(tenant4Username, testTenant), password, firstName, lastName,
@@ -167,7 +167,7 @@ describe("Self SignUp", () => {
         cy.logoutFromDevportal();
     });
 
-    it.only("Test - Assign custom user roles to a super tenant user", () => {
+    it("Test - Assign custom user roles to a super tenant user", () => {
         cy.carbonLogin(carbonUsername, carbonPassword);
         cy.addNewRole(userRole, domain);
         cy.carbonLogout();
@@ -178,7 +178,7 @@ describe("Self SignUp", () => {
             [internalSubscriberRole, internalTestRole]);
     });
 
-    it.only("Test - Assign custom user roles to a tenant user", () => {
+    it("Test - Assign custom user roles to a tenant user", () => {
         cy.carbonLogin(tenantAdminUsername, tenantAdminPassword);
         cy.addNewRole(userRole, domain);
         cy.carbonLogout();
@@ -189,7 +189,7 @@ describe("Self SignUp", () => {
             [internalSubscriberRole, internalTestRole]);
     });
 
-    it.only("Test - Create a user for a unregistered tenant", () => {
+    it("Test - Create a user for a unregistered tenant", () => {
         cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${testTenant}`);
         cy.get('#itest-devportal-sign-in').click({ force: true });
         cy.get('#registerLink').click();
@@ -199,6 +199,12 @@ describe("Self SignUp", () => {
     });
 
     after(function () {
+        // Reset tenant configs first so self-signup no longer depends on Internal/testRole.
+        cy.updateTenantConfig(carbonUsername, carbonPassword, superTenant, tenantConfigJson);
+        cy.enableSelfSignUpInCarbonPortal(carbonUsername, carbonPassword, superTenant);
+        cy.updateTenantConfig(tenantAdminUsername, tenantAdminPassword, testTenant, tenantConfigJson);
+        cy.enableSelfSignUpInCarbonPortal(tenantAdminUsername, tenantAdminPassword, testTenant);
+
         cy.carbonLogin(carbonUsername, carbonPassword);
         // delete all the created users for super tenant
         cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
@@ -206,8 +212,8 @@ describe("Self SignUp", () => {
         cy.deleteUser(superTenant2Username);
         cy.deleteUser(superTenant4Username);
         cy.deleteUser(superTenant5Username);
-        // Remove created user roles
-        cy.deleteRole(internalTestRole);
+        // Remove created user role
+        cy.searchAndDeleteRoleIfExist(internalTestRole);
         cy.carbonLogout();
 
         cy.carbonLogin(tenantAdminUsername, tenantAdminPassword);
@@ -217,15 +223,8 @@ describe("Self SignUp", () => {
         cy.deleteUser(tenant2Username);
         cy.deleteUser(tenant4Username);
         cy.deleteUser(tenant5Username);
-        // Remove created user roles
-        cy.deleteRole(internalTestRole);
+        // Remove created user role
+        cy.searchAndDeleteRoleIfExist(internalTestRole);
         cy.carbonLogout();
-
-        // Reset all the configs back to ensure default behaviour
-        cy.updateTenantConfig(carbonUsername, carbonPassword, superTenant, tenantConfigJson);
-        cy.enableSelfSignUpInCarbonPortal(carbonUsername, carbonPassword, superTenant);
-
-        cy.updateTenantConfig(tenantAdminUsername, tenantAdminPassword, testTenant, tenantConfigJson);
-        cy.enableSelfSignUpInCarbonPortal(tenantAdminUsername, tenantAdminPassword, testTenant);
     })
 });

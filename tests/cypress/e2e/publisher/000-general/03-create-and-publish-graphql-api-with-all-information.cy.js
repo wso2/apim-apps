@@ -22,9 +22,10 @@ describe("Create GraphQl API from file", () => {
   const filepath = 'api_artifacts/schema_graphql.graphql';
   const modifiedFilepath = 'api_artifacts/modified_schema_graphql.graphql';
   const apiVersion = '1.0.0';
-  const apiContext = `/swapi${Utils.generateRandomNumber()}`;
-  const apiName = `StarWarsAPIGQL${Utils.generateRandomNumber()}`;
-  const applicationName = 'Graphql Client App';
+  let apiContext;
+  let apiName;
+  let applicationName;
+  let filmSubscriberRole;
   const starWarsQueryRequest = `query{
       human(id:1000){\n
          id\n
@@ -93,9 +94,10 @@ describe("Create GraphQl API from file", () => {
 
   beforeEach(function () {
     //add role filmsubscriber
+    filmSubscriberRole = `FilmSubscriber${Utils.generateRandomNumber()}`;
     cy.carbonLogin(username, password);
     cy.visit('/carbon/role/add-step1.jsp');
-    cy.get('input[name="roleName"]').type('FilmSubscriber');
+    cy.get('input[name="roleName"]').type(filmSubscriberRole);
     cy.get('td.buttonRow').find('input').eq(0).click();
     cy.get('#ygtvcheck2 > .ygtvspacer').click();
     cy.get('#ygtvcheck34 > .ygtvspacer').click();
@@ -116,6 +118,9 @@ describe("Create GraphQl API from file", () => {
   })
 
   it("Verify GraphQl API Capabilities", () => {
+    apiContext = `/swapi${Utils.generateRandomNumber()}`;
+    apiName = `StarWarsAPIGQL${Utils.generateRandomNumber()}`;
+    applicationName = `Graphql Client App ${Utils.generateRandomNumber()}`;
 
     //create a graphql API
     cy.createGraphqlAPIfromFile(apiName, apiVersion, apiContext, filepath).then(value => {
@@ -147,7 +152,7 @@ describe("Create GraphQl API from file", () => {
               let filmSubscriberScope = `filmSubscriberScope${Utils.generateRandomNumber()}`
               cy.visit(`${Utils.getAppOrigin()}${href}/create`);
               cy.createLocalScope(filmSubscriberScope, 'filmSubscriber scope',
-                "sample description", ['FilmSubscriber']);
+                "sample description", [filmSubscriberRole]);
 
 
               cy.get('#left-menu-operations', { timeout: Cypress.env('largeTimeout') }).click();
@@ -276,8 +281,10 @@ expect(JSON.stringify(resp.body)).to.include(starWarsSubscriptionResponse);
 
 
   after(function () {
-    cy.deleteApplication(applicationName);
-    cy.logoutFromDevportal();
+    if (applicationName) {
+      cy.deleteApplication(applicationName);
+      cy.logoutFromDevportal();
+    }
     cy.loginToPublisher(username, password);
     cy.log("app id " + apiId);
     // Test is done. Now delete the api

@@ -21,6 +21,7 @@ enable_application_sharing = true
 application_sharing_type = "default"
 */
 import Utils from "@support/utils";
+import tenantConfigJson from "../../../fixtures/api_artifacts/tenant-conf.json";
 
 describe("Invoke API Product", () => {
     let user1;
@@ -38,6 +39,9 @@ describe("Invoke API Product", () => {
     let apiId;
 
     before(() => {
+        // Ensure self-signup defaults are in place for carbon.super before registration flow.
+        cy.updateTenantConfig(carbonUsername, carbonPassword, 'carbon.super', tenantConfigJson);
+
         // Enable Supported by Default for Local Claim http://wso2.org/claims/organization
         cy.carbonLogin(carbonUsername, carbonPassword);
         cy.visit(`/carbon/identity-claim-mgt/update-local-claim.jsp?localClaimURI=http%3A%2F%2Fwso2.org%2Fclaims%2Forganization`);
