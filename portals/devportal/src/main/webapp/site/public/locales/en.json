@@ -318,7 +318,6 @@
   "Apis.Details.TryOutConsole.access.token.tooltip": "You can use your existing Access Token or you can generate a new Test Key.",
   "Apis.Details.WSDL.URL.copied": "Copied",
   "Apis.Details.WSDL.URL.copy.url": "Copy URL",
-  "Apis.Details.WSDL.URL.not.available.for.archives": "Not available for WSDL archives",
   "Apis.Details.WSDL.view.error": "Something went wrong while retrieving the WSDL.",
   "Apis.Details.index.comments": "Comments",
   "Apis.Details.index.definition": "Definition",

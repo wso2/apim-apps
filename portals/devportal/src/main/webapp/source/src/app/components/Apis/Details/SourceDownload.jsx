@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { Link } from '@mui/material';
@@ -57,9 +57,6 @@ function SourceDownload(props) {
             tenantDomain = tenant;
         }
     }
-    useEffect(() => {
-        console.log(api.wsdlUri);
-    }, [api]);
 
     const onCopy = () => {
         setUrlCopied(true);
@@ -78,7 +75,7 @@ function SourceDownload(props) {
         return wsdlClient.downloadWSDLForEnvironment(api.id, selectedEndpoint.environmentName)
             .then((res) => {
                 const contentType = res.headers['content-type'];
-                const blob = new Blob([res.data], { type: contentType });
+                const blob = new Blob([res.body], { type: contentType });
                 const url = window.URL.createObjectURL(blob);
 
                 const a = document.createElement('a');
@@ -107,7 +104,7 @@ function SourceDownload(props) {
         const wsdlClient = apiClient.getWsdlClient();
         return wsdlClient.generateUrlForDownload('wsdl', api.id, selectedEndpoint.environmentName)
             .then((res) => {
-                return res.body.url;
+                return res.body?.url ?? null;
             })
             .catch((error) => {
                 console.log(error);
@@ -115,6 +112,7 @@ function SourceDownload(props) {
                     id: 'Apis.Details.WSDL.view.error',
                     defaultMessage: 'Something went wrong while retrieving the WSDL.',
                 }));
+                return null;
             });
     };
 
@@ -160,31 +158,6 @@ function SourceDownload(props) {
                 defaultMessage: 'Error downloading the Swagger',
             }));
         });
-    };
-
-    const getTooltipMessage = () => {
-        if (api.wsdlUri?.endsWith('.zip')) {
-            return (
-                <FormattedMessage
-                    id='Apis.Details.WSDL.URL.not.available.for.archives'
-                    defaultMessage='Not available for WSDL archives'
-                />
-            );
-        }
-        if (urlCopied) {
-            return (
-                <FormattedMessage
-                    id='Apis.Details.WSDL.URL.copied'
-                    defaultMessage='Copied'
-                />
-            );
-        }
-        return (
-            <FormattedMessage
-                id='Apis.Details.WSDL.URL.copy.url'
-                defaultMessage='Copy URL'
-            />
-        );
     };
 
     /**
@@ -251,27 +224,43 @@ function SourceDownload(props) {
                             />
                         </Link>
                     </Tooltip>
-                    <Tooltip
-                        title={getTooltipMessage()}
-                        placement='top'
-                    >
-                        <span>
-                            <Button
-                                aria-label='Copy URL'
-                                size='small'
-                                color='grey'
-                                disabled={api.wsdlUri?.endsWith('.zip')}
-                                onClick={() => {
-                                    showWSDL().then((wsdlUrl) => {
-                                        navigator.clipboard.writeText(wsdlUrl).then(() => onCopy());
-                                    });
-                                }}
-                                sx={{ minWidth: 'auto', ml: 1 }}
-                            >
-                                <FileCopyIcon />
-                            </Button>
-                        </span>
-                    </Tooltip>
+                    {!api.wsdlUri.endsWith('.zip') && (
+                        <Tooltip
+                            title={
+                                urlCopied ? (
+                                    <FormattedMessage
+                                        id='Apis.Details.WSDL.URL.copied'
+                                        defaultMessage='Copied'
+                                    />
+                                ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.WSDL.URL.copy.url'
+                                        defaultMessage='Copy URL'
+                                    />
+                                )
+                            }
+                            placement='top'
+                        >
+                            <span>
+                                <Button
+                                    aria-label='Copy URL'
+                                    size='small'
+                                    color='grey'
+                                    onClick={() => {
+                                        showWSDL().then((wsdlUrl) => {
+                                            if (!wsdlUrl) {
+                                                return;
+                                            }
+                                            navigator.clipboard.writeText(wsdlUrl).then(() => onCopy());
+                                        });
+                                    }}
+                                    sx={{ minWidth: 'auto', ml: 1 }}
+                                >
+                                    <FileCopyIcon />
+                                </Button>
+                            </span>
+                        </Tooltip>
+                    )}
                 </div>
             </>
         );

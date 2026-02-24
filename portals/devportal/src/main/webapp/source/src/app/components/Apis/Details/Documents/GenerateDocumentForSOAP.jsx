@@ -141,6 +141,7 @@ const Root = styled('div')(({ theme }) => ({
 
 const SOAP_NS = 'http://schemas.xmlsoap.org/wsdl/soap/';
 const SOAP12_NS = 'http://schemas.xmlsoap.org/wsdl/soap12/';
+const WSDL_NS = 'http://schemas.xmlsoap.org/wsdl/';
 
 /**
  * Detects SOAP binding type from a WSDL <binding> element.
@@ -163,9 +164,13 @@ function parseWSDLToOperations(xmlString) {
     const parseError = doc.querySelector('parsererror');
     if (parseError) throw new Error('Invalid WSDL XML');
 
+    // Resolve the WSDL namespace URI dynamically
+    // lookupNamespaceURI('wsdl') walks up from the document element to find the xmlns:wsdl declaration
+    const wsdlNs = doc.documentElement.lookupNamespaceURI('wsdl') ?? WSDL_NS;
+
     const operations = [];
 
-    [...doc.querySelectorAll('binding')].forEach((bindingEl) => {
+    [...doc.getElementsByTagNameNS(wsdlNs, 'binding')].forEach((bindingEl) => {
         const bindingType = detectBindingType(bindingEl);
         if (!bindingType) return;
 
@@ -379,14 +384,14 @@ const GenerateDocumentForSOAP = ({ apiName, apiVersion, wsdlData }) => {
 };
 
 GenerateDocumentForSOAP.propTypes = {
-    api: PropTypes.shape({
-        name: PropTypes.string,
-        version: PropTypes.string,
-    }).isRequired,
+    apiName: PropTypes.string,
+    apiVersion: PropTypes.string,
     wsdlData: PropTypes.string,
 };
 
 GenerateDocumentForSOAP.defaultProps = {
+    apiName: null,
+    apiVersion: null,
     wsdlData: null,
 };
 
