@@ -8,11 +8,12 @@ import {
     Chip,
     Divider,
     List,
-    ListItem,
+    ListItemButton,
     ListItemText,
     CircularProgress,
     Alert,
 } from '@mui/material';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const PREFIX = 'GenerateDocumentForSOAP';
 
@@ -218,6 +219,7 @@ const GenerateDocumentForSOAP = ({ apiName, apiVersion, wsdlData }) => {
     const [operations, setOperations] = useState([]);
     const [selectedOperation, setSelectedOperation] = useState(null);
     const [error, setError] = useState(null);
+    const intl = useIntl();
 
     useEffect(() => {
         if (!wsdlData) {
@@ -233,7 +235,10 @@ const GenerateDocumentForSOAP = ({ apiName, apiVersion, wsdlData }) => {
             setError(null);
         } catch (err) {
             console.error('Error parsing WSDL', err);
-            setError('Failed to parse WSDL.');
+            setError(intl.formatMessage({
+                id: 'Apis.Details.WSDL.view.error',
+                defaultMessage: 'Something went wrong while retrieving the WSDL.',
+            }));
             setOperations([]);
             setSelectedOperation(null);
         }
@@ -260,7 +265,12 @@ const GenerateDocumentForSOAP = ({ apiName, apiVersion, wsdlData }) => {
                 </Box>
 
                 {/* Section label */}
-                <Typography className={classes.sectionTitle}>Operations</Typography>
+                <Typography className={classes.sectionTitle}>
+                    <FormattedMessage
+                        id='Apis.Details.Documents.wsdl.no.operations.error'
+                        defaultMessage='No SOAP operations found.'
+                    />
+                </Typography>
 
                 {loading && (
                     <Box display='flex' justifyContent='center' py={4}>
@@ -279,15 +289,17 @@ const GenerateDocumentForSOAP = ({ apiName, apiVersion, wsdlData }) => {
                     <List className={classes.operationList} disablePadding>
                         {operations.length === 0 && (
                             <Typography variant='body2' color='text.secondary' px={1} py={2}>
-                                No SOAP operations found.
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.wsdl.operations'
+                                    defaultMessage='Operations'
+                                />
                             </Typography>
                         )}
                         {operations.map((op) => {
                             const isActive = selectedOperation === op;
                             return (
-                                <ListItem
+                                <ListItemButton
                                     key={`${op.binding}::${op.name}`}
-                                    disablePadding
                                     className={`${classes.operationItem} ${isActive ? classes.operationItemActive : ''}`}
                                     onClick={() => setSelectedOperation(op)}
                                 >
@@ -311,7 +323,7 @@ const GenerateDocumentForSOAP = ({ apiName, apiVersion, wsdlData }) => {
                                             </Box>
                                         )}
                                     />
-                                </ListItem>
+                                </ListItemButton>
                             );
                         })}
                     </List>
@@ -348,13 +360,23 @@ const GenerateDocumentForSOAP = ({ apiName, apiVersion, wsdlData }) => {
                         <Divider sx={{ mb: 2 }} />
 
                         <Box className={classes.metadataRow}>
-                            <Typography className={classes.metadataLabel}>HTTP Method:</Typography>
+                            <Typography className={classes.metadataLabel}>
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.wsdl.http.method'
+                                    defaultMessage='HTTP Method:'
+                                />
+                            </Typography>
                             <Typography className={classes.metadataValue}>POST</Typography>
                         </Box>
 
                         {selectedOperation.soapAction !== null && (
                             <Box className={classes.metadataRow}>
-                                <Typography className={classes.metadataLabel}>SOAP Action:</Typography>
+                                <Typography className={classes.metadataLabel}>
+                                    <FormattedMessage
+                                        id='Apis.Details.Documents.wsdl.soap.action'
+                                        defaultMessage='SOAP Action:'
+                                    />
+                                </Typography>
                                 <Typography className={classes.metadataValue}>
                                     {selectedOperation.soapAction || '""'}
                                 </Typography>
@@ -362,7 +384,12 @@ const GenerateDocumentForSOAP = ({ apiName, apiVersion, wsdlData }) => {
                         )}
 
                         <Box className={classes.metadataRow}>
-                            <Typography className={classes.metadataLabel}>Binding:</Typography>
+                            <Typography className={classes.metadataLabel}>
+                                <FormattedMessage
+                                    id='Apis.Details.Documents.wsdl.binding'
+                                    defaultMessage='Binding:'
+                                />
+                            </Typography>
                             <Typography className={classes.metadataValue}>
                                 {selectedOperation.binding}
                             </Typography>
@@ -374,7 +401,18 @@ const GenerateDocumentForSOAP = ({ apiName, apiVersion, wsdlData }) => {
                 {!loading && !selectedOperation && (
                     <Paper className={classes.detailBox} elevation={0}>
                         <Typography color='text.secondary'>
-                            {error ? 'Unable to load operations.' : 'Select an operation to view details.'}
+                            {error
+                                ? (
+                                    <FormattedMessage
+                                        id='Apis.Details.Documents.wsdl.load.error'
+                                        defaultMessage='Unable to load SOAP operations.'
+                                    />
+                                ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.Documents.wsdl.select.operation'
+                                        defaultMessage='Select an operation to view details.'
+                                    />
+                                )}
                         </Typography>
                     </Paper>
                 )}
