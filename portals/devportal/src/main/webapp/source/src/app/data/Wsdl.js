@@ -44,9 +44,15 @@ class Wsdl extends Resource {
      * @returns {*} WSDL validation response
      * @memberof Wsdl
      */
-    downloadWSDLForEnvironment(apiId, environmentName = null) {
+    downloadWSDLForEnvironment(apiId, environmentName = null, includeMainWSDLContent = false) {
         return this.apiClient.then((client) => {
-            return client.apis.APIs.getWSDLOfAPI({ apiId, environmentName });
+            return client.apis.APIs.getWSDLOfAPI({ apiId, environmentName, includeMainWSDLContent });
+        });
+    }
+
+    generateUrlForDownload(type, apiId, environmentName = null) {
+        return this.apiClient.then((client) => {
+            return client.apis.Resources.generateUrlToDownloadResource({ type, apiId, environmentName });
         });
     }
 }

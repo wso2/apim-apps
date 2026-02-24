@@ -55,6 +55,20 @@ function Documents(props) {
     let documentId = match ? match.params.documentId : null;
     const [documentList, changeDocumentList] = useState(null);
     const [selectedDoc, setSelectedDoc] = useState(null);
+    const [wsdlContent, setWsdlContent] = useState(null);
+
+    const fetchWsdlContent = (id) => {
+        const wsdlClient = new API().getWsdlClient();
+        return wsdlClient.downloadWSDLForEnvironment(id, api.environmentList[0], api.wsdlUri?.endsWith('.zip'))
+            .then((res) => {
+                setWsdlContent(res.body || null);
+            })
+            .catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.error('Error fetching SOAP operations:', error);
+                }
+            });
+    };
 
     useEffect(() => {
         if (selectedDoc) {
@@ -74,6 +88,11 @@ function Documents(props) {
                 if (api.type === 'HTTP') {
                     const swaggerDoc = { documentId: 'default', name: 'Default', type: '' };
                     overviewDoc.unshift(swaggerDoc);
+                }
+                if (api.type === 'SOAP') {
+                    const soapOperationDoc = { documentId: 'default', name: 'Default', type: '' };
+                    overviewDoc.unshift(soapOperationDoc);
+                    fetchWsdlContent(apiId);
                 }
                 if (!documentId && overviewDoc.length > 0) {
                     setSelectedDoc(overviewDoc[0]);
@@ -209,6 +228,10 @@ function Documents(props) {
                             selectedDoc={selectedDoc}
                             apiId={apiId}
                             setbreadcrumbDocument={setbreadcrumbDocument}
+                            apiType={api.type}
+                            wsdlData={wsdlContent}
+                            apiName={api.name}
+                            apiVersion={api.version}
                         />
                     )}
                 />

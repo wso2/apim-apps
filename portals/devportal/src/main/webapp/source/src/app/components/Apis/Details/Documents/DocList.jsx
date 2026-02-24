@@ -28,6 +28,7 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import Details from 'AppComponents/Apis/Details/Documents/Details';
 import GenerateDocument from './GenerateDocument';
+import GenerateDocumentForSOAP from './GenerateDocumentForSOAP';
 
 const PREFIX = 'DocList';
 
@@ -232,7 +233,7 @@ const Root = styled('div')((
  */
 function DocList(props) {
     const {
-        documentList, apiId, selectedDoc, setbreadcrumbDocument, intl,
+        documentList, apiId, selectedDoc, setbreadcrumbDocument, intl, apiType, wsdlData, apiName, apiVersion,
     } = props;
 
     const documentTypeOrder = ['HOWTO', 'SAMPLES', 'PUBLIC_FORUM', 'SUPPORT_FORUM', 'OTHER'];
@@ -332,7 +333,9 @@ function DocList(props) {
                 />
             </div>
             <div className={classes.docView}>
-                {viewDocument.name === 'Default' && <GenerateDocument />}
+                {viewDocument.name === 'Default' && (apiType === 'SOAP'
+                    ? <GenerateDocumentForSOAP apiName={apiName} apiVersion={apiVersion} wsdlData={wsdlData} />
+                    : <GenerateDocument />)}
                 {viewDocument.name !== 'Default'
                     && <Details documentList={documentList} selectedDoc={viewDocument} apiId={apiId} />}
             </div>
