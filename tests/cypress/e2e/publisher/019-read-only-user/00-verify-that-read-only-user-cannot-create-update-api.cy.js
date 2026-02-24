@@ -88,8 +88,12 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
             cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/policies`);
             cy.wait("@getOperationPolicies", { timeout: Cypress.env("largeTimeout") });
             cy.wait(2000);
+            APIMenuPage.waitUntillLoadingComponentsExit();
 
-            cy.get("[id='post/testuri']", { timeout: Cypress.env("largeTimeout") }).should("be.visible").click();
+            cy.get("[id='post/testuri']", { timeout: Cypress.env("largeTimeout") })
+                .scrollIntoView({ block: "center", inline: "nearest" })
+                .should("exist")
+                .click({ force: true });
 
             const dataTransfer = new DataTransfer();
             cy.get('#tabPanel-common-policies').click();
