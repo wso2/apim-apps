@@ -240,7 +240,7 @@ class LifeCycleUpdate extends Component {
                                 .map(property => property.Name);
                             if (requiredPropertyNames.length > 0) {
                                 this.setState({ isMandatoryPropertiesConfigured: true });
-                                if (api.additionalProperties !== undefined) {
+                                if (Array.isArray(api.additionalProperties)) {
                                     isMandatoryPropertiesAvailable = requiredPropertyNames.every(propertyName => {
                                         const property = api.additionalProperties.find(
                                             (prop) => prop.name === propertyName);

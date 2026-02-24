@@ -303,7 +303,7 @@ export default function CustomizedStepper() {
                         .filter(property => property.Required)
                         .map(property => property.Name);
                     if (requiredPropertyNames.length > 0) {
-                        if (api.additionalProperties !== undefined) {
+                        if (Array.isArray(api.additionalProperties)) {
                             setIsMandatoryPropertiesAvailable(requiredPropertyNames.every(propertyName => {
                                 const property = api.additionalProperties.find(
                                     prop => prop.name === propertyName);
