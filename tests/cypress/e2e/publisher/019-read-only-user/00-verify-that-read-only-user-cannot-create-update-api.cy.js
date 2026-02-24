@@ -72,31 +72,18 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
 
         //set resources
         cy.get('#left-menu-itemresources').click().wait(2000);
+        // Wait for the resource save calls triggered from the UI.
+        cy.intercept('PUT', '**/api/am/publisher/v4/apis/*').as('updateApiDefinition');
+        cy.intercept('PUT', '**/api/am/publisher/v4/apis/*/swagger').as('updateApiSwagger');
         cy.createResource('api', '20KPerMin', "POST", 'testuri', 'sampledesc', 'sample summary',
             false, 'creatorscope', 'tname', 'Query', 'Number', true);
+        cy.wait('@updateApiDefinition', { timeout: Cypress.env('largeTimeout') });
+        cy.wait('@updateApiSwagger', { timeout: Cypress.env('largeTimeout') });
 
         //set policy
         cy.location('pathname').then((pathName) => {
             const pathSegments = pathName.split('/');
             const uuid = pathSegments[pathSegments.length - 2];
-
-            // Resource save is async. Wait until the new operation is persisted in swagger
-            // before opening the policies page.
-            const waitForOperationInSwagger = (retries = 6) => {
-                return cy.request(`/api/am/publisher/v4/apis/${uuid}/swagger`).then(({ body }) => {
-                    const swaggerBody = typeof body === "string" ? body : JSON.stringify(body);
-                    if (swaggerBody.includes("/testuri")) {
-                        return;
-                    }
-                    if (retries === 0) {
-                        throw new Error(`POST /testuri was not persisted for API ${uuid} before policies step`);
-                    }
-                    cy.wait(2000);
-                    return waitForOperationInSwagger(retries - 1);
-                });
-            };
-
-            waitForOperationInSwagger();
             cy.intercept("GET", `**/api/am/publisher/v4/apis/${uuid}/operation-policies?limit=500`).as("getOperationPolicies");
             cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/policies`);
             cy.wait("@getOperationPolicies", { timeout: Cypress.env("largeTimeout") });
