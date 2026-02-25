@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2026, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
@@ -215,7 +233,7 @@ const getBindingLabel = (bindingType) => {
     }
 };
 
-const GenerateDocumentForSOAP = ({ apiName, apiVersion, wsdlData }) => {
+const GenerateDocumentForSOAP = ({ apiDisplayName, apiVersion, wsdlData }) => {
     const [operations, setOperations] = useState([]);
     const [selectedOperation, setSelectedOperation] = useState(null);
     const [error, setError] = useState(null);
@@ -236,7 +254,7 @@ const GenerateDocumentForSOAP = ({ apiName, apiVersion, wsdlData }) => {
         } catch (err) {
             console.error('Error parsing WSDL', err);
             setError(intl.formatMessage({
-                id: 'Apis.Details.WSDL.view.error',
+                id: 'Apis.Details.Documents.wsdl.view.error',
                 defaultMessage: 'Something went wrong while retrieving the WSDL.',
             }));
             setOperations([]);
@@ -255,7 +273,7 @@ const GenerateDocumentForSOAP = ({ apiName, apiVersion, wsdlData }) => {
                 {/* API name / version header */}
                 <Box className={classes.apiHeader}>
                     <Typography variant='h6' fontWeight={700} noWrap>
-                        {apiName}
+                        {apiDisplayName}
                     </Typography>
                     {apiVersion && (
                         <Typography variant='caption' color='text.secondary'>
@@ -422,13 +440,13 @@ const GenerateDocumentForSOAP = ({ apiName, apiVersion, wsdlData }) => {
 };
 
 GenerateDocumentForSOAP.propTypes = {
-    apiName: PropTypes.string,
+    apiDisplayName: PropTypes.string,
     apiVersion: PropTypes.string,
     wsdlData: PropTypes.string,
 };
 
 GenerateDocumentForSOAP.defaultProps = {
-    apiName: null,
+    apiDisplayName: null,
     apiVersion: null,
     wsdlData: null,
 };

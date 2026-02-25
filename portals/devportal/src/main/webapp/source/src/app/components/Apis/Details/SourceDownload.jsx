@@ -75,6 +75,10 @@ function SourceDownload(props) {
         return wsdlClient.downloadWSDLForEnvironment(api.id, selectedEndpoint.environmentName)
             .then((res) => {
                 const contentType = res.headers['content-type'];
+                const allowedMimeTypes = ['application/wsdl', 'application/xml', 'application/zip'];
+                if (!allowedMimeTypes.some((type) => contentType?.includes(type))) {
+                    throw new Error(`Invalid content type. Expected one of ${allowedMimeTypes.join(', ')}, received ${contentType}`);
+                }
                 const blob = new Blob([res.body], { type: contentType });
                 const url = window.URL.createObjectURL(blob);
 
@@ -82,7 +86,8 @@ function SourceDownload(props) {
                 a.href = url;
 
                 const contentDisposition = res.headers['content-disposition'];
-                a.download = contentDisposition?.match(/filename="(.+)"/)?.[1] || 'wsdlDefinition.wsdl';
+                const filename = contentDisposition?.match(/filename="(.+)"/)?.[1] || 'wsdlDefinition.wsdl';
+                a.download = filename.split(/[\\/]/).pop().replace(/[/\\:*?"<>|]/g, '_');
 
                 document.body.appendChild(a);
                 a.click();

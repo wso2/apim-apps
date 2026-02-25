@@ -59,7 +59,7 @@ function Documents(props) {
 
     const fetchWsdlContent = (id) => {
         const wsdlClient = new API().getWsdlClient();
-        return wsdlClient.downloadWSDLForEnvironment(id, api.environmentList[0], api.wsdlUri?.endsWith('.zip'))
+        return wsdlClient.downloadWSDLForEnvironment(id, api.environmentList[0], api.wsdlUri?.endsWith('.zip') ? 'wsdl' : null)
             .then((res) => {
                 setWsdlContent(res.body || null);
             })
@@ -230,7 +230,7 @@ function Documents(props) {
                             setbreadcrumbDocument={setbreadcrumbDocument}
                             apiType={api.type}
                             wsdlData={wsdlContent}
-                            apiName={api.name}
+                            apiDisplayName={api.displayName}
                             apiVersion={api.version}
                         />
                     )}

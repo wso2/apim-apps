@@ -233,7 +233,7 @@ const Root = styled('div')((
  */
 function DocList(props) {
     const {
-        documentList, apiId, selectedDoc, setbreadcrumbDocument, intl, apiType, wsdlData, apiName, apiVersion,
+        documentList, apiId, selectedDoc, setbreadcrumbDocument, intl, apiType, wsdlData, apiDisplayName, apiVersion,
     } = props;
 
     const documentTypeOrder = ['HOWTO', 'SAMPLES', 'PUBLIC_FORUM', 'SUPPORT_FORUM', 'OTHER'];
@@ -334,7 +334,7 @@ function DocList(props) {
             </div>
             <div className={classes.docView}>
                 {viewDocument.name === 'Default' && (apiType === 'SOAP'
-                    ? <GenerateDocumentForSOAP apiName={apiName} apiVersion={apiVersion} wsdlData={wsdlData} />
+                    ? <GenerateDocumentForSOAP apiDisplayName={apiDisplayName} apiVersion={apiVersion} wsdlData={wsdlData} />
                     : <GenerateDocument />)}
                 {viewDocument.name !== 'Default'
                     && <Details documentList={documentList} selectedDoc={viewDocument} apiId={apiId} />}

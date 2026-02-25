@@ -223,6 +223,7 @@
   "Apis.Details.Documents.wsdl.operations": "Operations",
   "Apis.Details.Documents.wsdl.select.operation": "Select an operation to view details.",
   "Apis.Details.Documents.wsdl.soap.action": "SOAP Action:",
+  "Apis.Details.Documents.wsdl.view.error": "Something went wrong while retrieving the WSDL.",
   "Apis.Details.Environments.Gateway.URL": "Gateway URL",
   "Apis.Details.Environments.GraphQL.HTTP.Gateway.URL": "Gateway HTTP URL for GraphQL Queries and Mutations",
   "Apis.Details.Environments.GraphQL.WS.Gateway.URL": "Gateway Websocket URL for GraphQL Subscriptions",
