@@ -104,10 +104,10 @@ function SourceDownload(props) {
         const wsdlClient = apiClient.getWsdlClient();
         return wsdlClient.generateUrlForDownload('wsdl', api.id, selectedEndpoint.environmentName)
             .then((res) => {
-                return res.body?.url ?? null;
+                return res.data ?? null;
             })
             .catch((error) => {
-                console.log(error);
+                console.error(error);
                 Alert.error(intl.formatMessage({
                     id: 'Apis.Details.WSDL.view.error',
                     defaultMessage: 'Something went wrong while retrieving the WSDL.',

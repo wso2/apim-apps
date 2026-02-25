@@ -52,7 +52,7 @@ class Wsdl extends Resource {
 
     generateUrlForDownload(type, apiId, environmentName = null) {
         return this.apiClient.then((client) => {
-            return client.apis.Resources.generateUrlToDownloadResource({ type, apiId, environmentName });
+            return client.apis.APIs.generateUrlToDownloadResource({ type, apiId, environmentName });
         });
     }
 }

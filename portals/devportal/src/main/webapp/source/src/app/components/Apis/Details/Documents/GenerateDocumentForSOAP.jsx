@@ -267,8 +267,8 @@ const GenerateDocumentForSOAP = ({ apiName, apiVersion, wsdlData }) => {
                 {/* Section label */}
                 <Typography className={classes.sectionTitle}>
                     <FormattedMessage
-                        id='Apis.Details.Documents.wsdl.no.operations.error'
-                        defaultMessage='No SOAP operations found.'
+                        id='Apis.Details.Documents.wsdl.operations'
+                        defaultMessage='Operations'
                     />
                 </Typography>
 
@@ -290,8 +290,8 @@ const GenerateDocumentForSOAP = ({ apiName, apiVersion, wsdlData }) => {
                         {operations.length === 0 && (
                             <Typography variant='body2' color='text.secondary' px={1} py={2}>
                                 <FormattedMessage
-                                    id='Apis.Details.Documents.wsdl.operations'
-                                    defaultMessage='Operations'
+                                    id='Apis.Details.Documents.wsdl.no.operations.error'
+                                    defaultMessage='No SOAP operations found.'
                                 />
                             </Typography>
                         )}
