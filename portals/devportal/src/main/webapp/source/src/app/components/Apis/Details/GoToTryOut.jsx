@@ -450,9 +450,14 @@ export default function GoToTryOut() {
                                                 size='small'
                                                 variant='outlined'
                                                 onClick={() => {
-                                                    navigator.clipboard.writeText(consumerSecretValue);
-                                                    setCopied(true);
-                                                    setTimeout(() => setCopied(false), 2000);
+                                                    navigator.clipboard.writeText(consumerSecretValue)
+                                                        .then(() => {
+                                                            setCopied(true);
+                                                            setTimeout(() => setCopied(false), 2000);
+                                                        })
+                                                        .catch(() => {
+                                                            Alert.error('Failed to copy to clipboard');
+                                                        });
                                                 }}
                                             >
                                                 {copied ? (
