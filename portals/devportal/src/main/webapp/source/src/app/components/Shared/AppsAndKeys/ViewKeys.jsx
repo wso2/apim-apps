@@ -334,7 +334,7 @@ class ViewKeys extends React.Component {
      * Generate access token
      * */
     generateAccessToken = (multipleSecretsAllowed) => {
-        const { accessTokenRequest, isUpdating, consumerSecret } = this.state;
+        const { accessTokenRequest, consumerSecret } = this.state;
         const { selectedTab, intl } = this.props;
         this.setState({ isUpdating: true });
         this.applicationPromise
@@ -590,10 +590,10 @@ class ViewKeys extends React.Component {
             }
         }
 
-        const multipleSecretsAllowed = isMultipleClientSecretsEnabled(keyManagerConfig.additionalProperties);
+        const multipleSecretsAllowed = isMultipleClientSecretsEnabled(keyManagerConfig?.additionalProperties);
         let secretCount;
         if (multipleSecretsAllowed) {
-            secretCount = getClientSecretCount(keyManagerConfig.additionalProperties);
+            secretCount = getClientSecretCount(keyManagerConfig?.additionalProperties);
         }
 
         let dialogHead;

@@ -212,7 +212,11 @@ export default function GoToTryOut() {
         }
         setShowStatus(true);
         // Get the request for key generation using the key managers.
-        const { keyRequest, isMultipleSecretsAllowed } = await taskManager(getKeyRequest(), 'prepare');
+        const prepareResult = await taskManager(getKeyRequest(), 'prepare');
+        if (!prepareResult) {
+            return;
+        }
+        const { keyRequest, isMultipleSecretsAllowed } = prepareResult;
         setMultipleSecretsEnabled(isMultipleSecretsAllowed);
         // Generate consumer key and secret
         const generatedKeys = await taskManager(generateKeys(keyRequest, defaultApplication.value), 'generate');

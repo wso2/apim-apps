@@ -97,7 +97,12 @@ const NewSecretDialog = ({ open, onClose, onCreate, mode }) => {
     };
 
     const handleCustomDaysChange = (e) => {
-        const newValue = e.target.value;
+        let newValue = e.target.value;
+        // Remove leading zeros: Change "05" to "5".
+        // But allow "0" temporarily if the user is typing, or handle as empty.
+        if (newValue.length > 1 && newValue.startsWith("0")) {
+            newValue = newValue.replace(/^0+/, '');
+        }
         setForm({ ...form, customDays: newValue });
         if (newValue === "" || /^[1-9][0-9]*$/.test(newValue)) {
             setError(false);
@@ -125,7 +130,7 @@ const NewSecretDialog = ({ open, onClose, onCreate, mode }) => {
 
     const handleClose = () => {
         setForm(initialFormState);
-        setIsValid(true); // Reset validity when closing
+        setIsValid(false); // Reset validity when closing
         onClose();
     };
 

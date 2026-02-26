@@ -349,7 +349,7 @@ const KeyConfiguration = (props) => {
                                             aria-label='Copy to clipboard'
                                             classes={{ root: classes.iconButton }}
                                             size="large"
-                                            onClick={() => { navigator.clipboard.writeText(tokenEndpoint).then(onCopy()) }}
+                                            onClick={() => {navigator.clipboard.writeText(tokenEndpoint).then(onCopy())}}
                                         >
                                             <Icon color='secondary'>file_copy</Icon>
                                         </IconButton>
@@ -386,7 +386,7 @@ const KeyConfiguration = (props) => {
                                             aria-label='Copy to clipboard'
                                             classes={{ root: classes.iconButton }}
                                             size="large"
-                                            onClick={() => { navigator.clipboard.writeText(revokeEndpoint).then(onCopy()) }}
+                                            onClick={() => {navigator.clipboard.writeText(revokeEndpoint).then(onCopy())}}
                                         >
                                             <Icon color='secondary'>file_copy</Icon>
                                         </IconButton>
@@ -423,7 +423,7 @@ const KeyConfiguration = (props) => {
                                             aria-label='Copy to clipboard'
                                             classes={{ root: classes.iconButton }}
                                             size="large"
-                                            onClick={() => { navigator.clipboard.writeText(userInfoEndpoint).then(onCopy()) }}
+                                            onClick={() => {navigator.clipboard.writeText(userInfoEndpoint).then(onCopy())}}
                                         >
                                             <Icon color='secondary'>file_copy</Icon>
                                         </IconButton>

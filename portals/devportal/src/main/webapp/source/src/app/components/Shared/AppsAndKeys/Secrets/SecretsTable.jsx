@@ -107,7 +107,7 @@ const SecretsTable = (props) => {
                     const updated = prev.filter((s) => s.secretId !== secretId);
 
                     // Adjust pagination if current page is now invalid
-                    const maxPage = Math.ceil(updated.length / rowsPerPage) - 1;
+                    const maxPage = Math.max(Math.ceil(updated.length / rowsPerPage) - 1, 0);
                     if (page > maxPage) {
                         setPage(maxPage);
                     }
@@ -132,15 +132,15 @@ const SecretsTable = (props) => {
     };
 
     const handleCreateSecret = async (newSecret) => {
-        const application = await applicationPromise;
-
-        // Build payload as expected by your API
-        const payload = {
-            expiresIn: newSecret.expiresInSeconds,
-            description: newSecret.description
-        };
-
         try {
+            const application = await applicationPromise;
+
+            // Build payload as expected by your API
+            const payload = {
+                description: newSecret.description,
+                ...(newSecret.expiresInSeconds !== undefined && { expiresIn: newSecret.expiresInSeconds })
+            };
+
             const response = await application.generateSecret(props.keyMappingId, payload);
 
             let successMessage = intl.formatMessage({
@@ -614,6 +614,8 @@ const SecretsTable = (props) => {
 SecretsTable.propTypes = {
     appId: PropTypes.string,
     keyMappingId: PropTypes.string,
+    secretCount: PropTypes.number,
+    hashEnabled: PropTypes.bool,
 };
 
 export default SecretsTable;

@@ -524,9 +524,11 @@ function TryOutController(props) {
                 setProductionApiKey('');
                 setSandboxApiKey('');
                 setSelectedApplication(value);
+                setConsumerSecret('');
                 break;
             case 'selectedKeyManager':
                 setSelectedKeyManager(value, true, selectedApplication);
+                setConsumerSecret('');
                 break;
             case 'selectedKeyType':
                 if (!productionAccessToken || !sandboxAccessToken) {
@@ -606,15 +608,15 @@ function TryOutController(props) {
 
     const isMultipleClientSecretsAllowed = isMultipleClientSecretsEnabled(selectedKMObject?.additionalProperties);
 
+    const isConsumerSecretRequired = isMultipleClientSecretsAllowed && securitySchemeType === 'OAUTH' &&
+        selectedKMObject && !selectedKMObject.enableTokenHashing;
+
     // When multiple client secrets are allowed, for OAuth security scheme, the consumer secret should
     // be available for the Get Test Key button to be enabled.
     let enableGetTestKeyButton = true; // default
     if (securitySchemeType === 'OAUTH' && isMultipleClientSecretsAllowed) {
-        enableGetTestKeyButton = !!consumerSecret?.trim(); // must provide consumer secret
+        enableGetTestKeyButton = isConsumerSecretRequired ? !!consumerSecret?.trim() : true; // must provide consumer secret
     }
-
-    const isConsumerSecretRequired = isMultipleClientSecretsAllowed && securitySchemeType === 'OAUTH' &&
-        selectedKMObject && !selectedKMObject.enableTokenHashing;
 
     useEffect(() => {
         if (securitySchemeType === 'API-KEY') {
@@ -814,7 +816,7 @@ function TryOutController(props) {
                                 value={consumerSecret || ''}
                                 id='consumerSecretInput'
                                 helperText={
-                                    isConsumerSecretRequired && !consumerSecret?.trim()
+                                    !consumerSecret?.trim()
                                         ? <FormattedMessage
                                             id='Apis.Details.TryOutConsole.consumerSecret.required.helper'
                                             defaultMessage='Consumer Secret is required to generate a new Test Key.'
@@ -827,6 +829,7 @@ function TryOutController(props) {
                                         <InputAdornment position='end'>
                                             <IconButton
                                                 edge='end'
+                                                aria-label='toggle consumer secret visibility'
                                                 onClick={() => setShowSecret(!showSecret)}
                                                 size='large'
                                             >
