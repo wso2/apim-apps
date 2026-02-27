@@ -134,7 +134,7 @@ const NewSecretDialog = ({ open, onClose, onCreate, mode }) => {
         onClose();
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         let expiryDays = 0;
 
         if (form.expiryOption === "custom") {
@@ -150,10 +150,14 @@ const NewSecretDialog = ({ open, onClose, onCreate, mode }) => {
                 expiresInSeconds: expiryDays > 0 ? expiryDays * 24 * 60 * 60 : 0,
             }),
         };
-        onCreate(payload);
-        // Reset form after creation
-        setForm(initialFormState);
-        onClose();
+        try {
+            await onCreate(payload);
+            // Reset form after creation
+            setForm(initialFormState);
+            onClose();
+        } catch (e) {
+            // Keep dialog open so user can correct/retry.
+        }
     };
 
     // determine if Create button should be disabled

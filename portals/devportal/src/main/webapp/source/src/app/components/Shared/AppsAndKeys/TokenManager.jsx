@@ -1160,17 +1160,6 @@ class TokenManager extends React.Component {
                                             </ScopeValidation>
                                         </div>
                                     </Box>
-                                    <NewSecretDialog
-                                        open={this.state.openSecretCreateDialog}
-                                        onClose={this.handleCloseSecretCreateDialog}
-                                        onCreate={this.handleCreateSecret}
-                                        mode={CONSTS.SECRET_DIALOG_MODES.KEY_GENERATION}
-                                    />
-                                    <SecretValueDialog
-                                        open={this.state.openSecretValueDialog}
-                                        onClose={this.handleCloseSecretValueDialog}
-                                        secret={this.state.generatedSecret}
-                                    />
                                 </TabPanel>
                             )}
                             {keymanager.tokenType === 'EXCHANGED' && (
@@ -1364,7 +1353,7 @@ class TokenManager extends React.Component {
                                                                         variant='contained'
                                                                         color='primary'
                                                                         className={classes.button}
-                                                                        onClick={key ? this.updateKeys : this.generateKeys}
+                                                                        onClick={key ? this.updateKeys : this.handleGenerateKeysClick}
 
                                                                     >
                                                                         {key ? 'Update' : 'Generate Keys'}
@@ -1426,6 +1415,17 @@ class TokenManager extends React.Component {
                                     </Box>
                                 </TabPanel>
                             )}
+                            <NewSecretDialog
+                                open={this.state.openSecretCreateDialog}
+                                onClose={this.handleCloseSecretCreateDialog}
+                                onCreate={this.handleCreateSecret}
+                                mode={CONSTS.SECRET_DIALOG_MODES.KEY_GENERATION}
+                            />
+                            <SecretValueDialog
+                                open={this.state.openSecretValueDialog}
+                                onClose={this.handleCloseSecretValueDialog}
+                                secret={this.state.generatedSecret}
+                            />
                         </div>
                     ))}
 

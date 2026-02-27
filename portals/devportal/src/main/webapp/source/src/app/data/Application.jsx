@@ -129,7 +129,7 @@ export default class Application extends Resource {
                         accessToken = this.sandboxTokens.get(defaultKMTab);
                     }
                     const requestContent = {
-                        consumerSecret: keys.consumerSecret,
+                        consumerSecret: consumerSecret || keys.consumerSecret,
                         validityPeriod,
                         revokeToken: accessToken.accessToken,
                         scopes: selectedScopes,
