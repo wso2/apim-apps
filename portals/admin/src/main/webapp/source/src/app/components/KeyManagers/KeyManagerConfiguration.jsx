@@ -300,7 +300,8 @@ export default function KeyManagerConfiguration(props) {
                     )}
                     fullWidth
                     error={keymanagerConnectorConfiguration.required && hasErrors('keyconfig', value, validating)}
-                    helperText={hasErrors('keyconfig', value, validating) || keymanagerConnectorConfiguration.tooltip}
+                    helperText={(keymanagerConnectorConfiguration.required && hasErrors('keyconfig', value, validating))
+                        || keymanagerConnectorConfiguration.tooltip}
                     variant='outlined'
                     value={value}
                     defaultValue={
