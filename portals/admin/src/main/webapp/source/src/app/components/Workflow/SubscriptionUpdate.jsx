@@ -10,7 +10,7 @@ function ListLabels() {
         <WorkflowApprovalTasks
             workflowTypes={['AM_SUBSCRIPTION_UPDATE']}
             title={intl.formatMessage({
-                id: 'Workflow.SubscriptionCreation.title.subscriptionupdate',
+                id: 'Workflow.SubscriptionUpdate.title.subscriptionupdate',
                 defaultMessage: 'Subscription Tier Update - Approval Tasks',
             })}
             helpLink={Configurations.app.docUrl

@@ -180,7 +180,9 @@ const getUnionObjectKeys = (arr = []) => {
 
     arr.forEach((obj) => {
         if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
-            Object.keys(obj).forEach((k) => keys.add(k));
+            Object.keys(obj).forEach((k) => {
+                keys.add(k);
+            });
         }
     });
 
@@ -238,6 +240,7 @@ function WorkflowApprovalTasks({
     const [buttonValue, setButtonValue] = useState('');
     const [hasListPermission, setHasListPermission] = useState(true);
     const [errorMessage, setError] = useState(null);
+    const [activeReferenceId, setActiveReferenceId] = useState(null);
 
     /**
      * Fetch workflows for all requested types and normalize into UI-friendly structure.
@@ -321,9 +324,10 @@ function WorkflowApprovalTasks({
     */
     const updateStatus = (referenceId, value) => {
         setButtonValue(value);
-        setIsUpdating(true);
+        setActiveReferenceId(referenceId);
 
         const body = { status: value, attributes: {}, description: '' };
+        setIsUpdating(true);
 
         if (value === 'APPROVED') {
             body.description = 'Approve workflow request.';
@@ -332,34 +336,31 @@ function WorkflowApprovalTasks({
             body.description = 'Reject workflow request.';
         }
 
-        const promisedUpdateWorkflow = restApi.updateWorkflow(referenceId, body);
-
-        return promisedUpdateWorkflow
+        return restApi.updateWorkflow(referenceId, body)
             .then(() => {
                 Alert.success(intl.formatMessage({
-                    id: 'Workflow.Common.update.success', // Using Common ID from new style
+                    id: 'Workflow.Common.update.success',
                     defaultMessage: 'Workflow status is updated successfully',
                 }));
             })
             .catch((error) => {
-                const { response, status } = error;
-                const description = response?.body?.description;
+                const status = error?.status;
+                const description = error?.response?.body?.description;
 
                 if (status === 401 && description) {
                     Alert.error(description);
                 } else {
                     Alert.error(intl.formatMessage({
                         id: 'Workflow.Common.updateStatus.has.errors',
-                        defaultMessage: 'Unable to complete approve/reject process. ',
+                        defaultMessage: 'Unable to complete approve/reject process.',
                     }));
-
-                    if (description) {
-                        throw description;
-                    }
                 }
+
+                return null;
             })
             .finally(() => {
                 setIsUpdating(false);
+                setActiveReferenceId(null);
                 fetchData();
             });
     };
@@ -432,7 +433,8 @@ function WorkflowApprovalTasks({
                     id='Workflow.Common.table.button.approve'
                     defaultMessage='Approve'
                 />
-                {(isUpdating && buttonValue === 'APPROVED') && <CircularProgress size={15} />}
+                {(isUpdating && activeReferenceId === referenceId && buttonValue === 'APPROVED')
+                    && <CircularProgress size={15} />}
             </Button>
 
             <Button
@@ -447,7 +449,8 @@ function WorkflowApprovalTasks({
                     id='Workflow.Common.table.button.reject'
                     defaultMessage='Reject'
                 />
-                {(isUpdating && buttonValue === 'REJECTED') && <CircularProgress size={15} />}
+                {(isUpdating && activeReferenceId === referenceId && buttonValue === 'REJECTED')
+                    && <CircularProgress size={15} />}
             </Button>
         </Box>
     );
@@ -834,10 +837,8 @@ function WorkflowApprovalTasks({
                 content={(
                     <FormattedMessage
                         id='Workflow.Common.permission.denied.content'
-                        defaultMessage={
-                            'You dont have enough permission to view Approval Tasks. '
-                            + 'Please contact the site administrator.'
-                        }
+                        defaultMessage={`You don't have enough permission to view Approval Tasks.
+                            Please contact the site administrator.`}
                     />
                 )}
             />
