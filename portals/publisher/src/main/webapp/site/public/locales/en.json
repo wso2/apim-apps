@@ -2508,7 +2508,7 @@
   "Workflow.Common.expand.no.data": "No data to display.",
   "Workflow.Common.expand.title": "Request Details",
   "Workflow.Common.help.link.one": "Learn more about workflows",
-  "Workflow.Common.permission.denied.content": "You don't have enough permission to view Approval Tasks. Please contact the site administrator.",
+  "Workflow.Common.permission.denied.content": "You don't have enough permissions to view Approval Tasks. Please contact the site administrator.",
   "Workflow.Common.permission.denied.title": "Permission Denied",
   "Workflow.Common.table.button.approve": "Approve",
   "Workflow.Common.table.button.reject": "Reject",

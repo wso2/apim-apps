@@ -59,7 +59,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 
 // Third-party libraries
 import MUIDataTable from 'mui-datatables';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import startCase from 'lodash/startCase';
@@ -280,7 +280,7 @@ function WorkflowApprovalTasks({
                 } else {
                     Alert.error(intl.formatMessage({
                         id: 'Workflow.Common.apicall.has.errors',
-                        defaultMessage: 'Unable to get workflow pending requests',
+                        defaultMessage: 'Unable to retrieve pending workflow requests',
                     }));
                 }
                 throw error;
@@ -679,7 +679,12 @@ function WorkflowApprovalTasks({
                         <ListItemIcon>
                             <DescriptionIcon />
                         </ListItemIcon>
-                        <Link target='_blank' href={helpLink} underline='hover'>
+                        <Link
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            href={helpLink}
+                            underline='hover'
+                        >
                             <ListItemText
                                 primary={(
                                     <FormattedMessage
@@ -837,7 +842,7 @@ function WorkflowApprovalTasks({
                 content={(
                     <FormattedMessage
                         id='Workflow.Common.permission.denied.content'
-                        defaultMessage={`You don't have enough permission to view Approval Tasks.
+                        defaultMessage={`You don't have enough permissions to view Approval Tasks.
                             Please contact the site administrator.`}
                     />
                 )}
