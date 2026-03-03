@@ -1285,7 +1285,7 @@
   "Workflow.ApplicationDeletion.title.applicationdeletion": "Application Deletion - Approval Tasks",
   "Workflow.ApplicationUpdate.title.applicationupdate": "Application Update - Approval Tasks",
   "Workflow.Common.List.empty.content": "There are no pending workflow requests.",
-  "Workflow.Common.apicall.has.errors": "Unable to get workflow pending requests",
+  "Workflow.Common.apicall.has.errors": "Unable to retrieve pending workflow requests",
   "Workflow.Common.expand.no.data": "No data to display.",
   "Workflow.Common.expand.title": "Request Details",
   "Workflow.Common.help.link.one": "Learn more about workflows",
