@@ -32,7 +32,6 @@ import Alert from 'AppComponents/Shared/Alert';
 import ImportExternalApp from 'AppComponents/Shared/AppsAndKeys/ImportExternalApp';
 import Application from 'AppData/Application';
 import AuthManager from 'AppData/AuthManager';
-import CONSTS from 'AppData/Constants';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import WarningIcon from '@mui/icons-material/Warning';
 import API from 'AppData/api';
@@ -59,9 +58,6 @@ import Progress from '../Progress';
 import RemoveKeys from './RemoveKeys';
 import CleanKeys from './CleanKeys';
 import Settings from 'AppComponents/Shared/SettingsContext';
-import { isMultipleClientSecretsEnabled } from './Secrets/util';
-import NewSecretDialog from './Secrets/NewSecretDialog';
-import SecretValueDialog from './Secrets/SecretValueDialog';
 
 const PREFIX = 'TokenManager';
 
@@ -242,14 +238,6 @@ class TokenManager extends React.Component {
             mode: null,
             tokenType: 'DIRECT',
             isOrgWideAppUpdateEnabled: false,
-            isAccordionExpanded: true,
-            urlCopied: false,
-            openSecretValueDialog: false,
-            generatedSecret: null,
-            isMultipleSecretsAllowed: false,
-            openSecretCreateDialog: false,
-            pendingGenerate: false,
-            secretMeta: null, // { description, expiresInSeconds }
         };
         this.keyStates = {
             COMPLETED: 'COMPLETED',
@@ -295,13 +283,6 @@ class TokenManager extends React.Component {
         const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
         this.setState({ isOrgWideAppUpdateEnabled: orgWideAppUpdateEnabled });
     }
-
-    handleCloseSecretValueDialog = () => {
-        this.setState({
-            openSecretValueDialog: false,
-            generatedSecret: null,
-        })
-    };
 
     /**
      * Handle onCLick of remove keys
@@ -352,10 +333,6 @@ class TokenManager extends React.Component {
         return isEnabled;
     }
 
-    getMultipleSecretsAllowed = (keyManager) => {
-        return isMultipleClientSecretsEnabled(keyManager?.additionalProperties);
-    };
-
     handleTabChange = (event, newSelectedTab) => {
         const { keys, keyManagers, keyRequest } = this.state;
         const { keyType } = this.props;
@@ -368,7 +345,6 @@ class TokenManager extends React.Component {
         if (availableGrantTypes.find((gt) => gt === 'client_credentials')) {
             selectedGrantsByDefault.push('client_credentials');
         }
-        const isMultipleSecretsAllowed = this.getMultipleSecretsAllowed(selectedKM);
 
         if (keys.size > 0 && keys.get(newSelectedTab) && keys.get(newSelectedTab).keyType === keyType) {
             const {
@@ -386,7 +362,6 @@ class TokenManager extends React.Component {
                 selectedTab: newSelectedTab,
                 mode,
                 importDisabled: (mode === 'MAPPED' || mode === 'CREATED'),
-                isMultipleSecretsAllowed,
             });
         } else {
             // Fill the keyRequest.additionalProperties from the selectedKM.applicationConfiguration defaultValues.
@@ -399,7 +374,6 @@ class TokenManager extends React.Component {
                 selectedTab: newSelectedTab,
                 mode: null,
                 importDisabled: false,
-                isMultipleSecretsAllowed,
             });
         }
     };
@@ -433,7 +407,6 @@ class TokenManager extends React.Component {
                             : responseKeyManagerList[0].name;
                     }
                     const selectdKM = responseKeyManagerList.find((x) => x.name === selectedTab);
-                    const isMultipleSecretsAllowed = this.getMultipleSecretsAllowed(selectdKM);
                     // processing promisedGetKeys response
                     const keys = response[1];
                     const { keyRequest } = this.state;
@@ -455,7 +428,6 @@ class TokenManager extends React.Component {
                             selectedTab,
                             importDisabled: (mode === 'MAPPED' || mode === 'CREATED'),
                             mode,
-                            isMultipleSecretsAllowed,
                         });
                     } else {
                         const selectedGrantTypes = [];
@@ -477,7 +449,6 @@ class TokenManager extends React.Component {
                             selectedTab,
                             importDisabled: false, 
                             mode: null,            
-                            isMultipleSecretsAllowed,
                         });
                     }
                 })
@@ -510,7 +481,7 @@ class TokenManager extends React.Component {
      * @memberof KeyConfiguration
      */
     generateKeys() {
-        const { keyRequest, keys, selectedTab, isMultipleSecretsAllowed } = this.state;
+        const { keyRequest, keys, selectedTab } = this.state;
         const {
             keyType, updateSubscriptionData, selectedApp: { tokenType, hashEnabled }, intl,
         } = this.props;
@@ -550,14 +521,6 @@ class TokenManager extends React.Component {
                 this.setState({
                     keys: newKeys, isKeyJWT, initialToken, initialValidityTime, initialScopes,
                 });
-                const keyStateCompleted = response.keyState !== this.keyStates.CREATED && response.keyState !== this.keyStates.REJECTED;
-                if (isMultipleSecretsAllowed) {
-                    if (keyStateCompleted) {
-                        this.setState({
-                            generatedSecret: response.consumerSecret, openSecretValueDialog: true,
-                        });
-                    }
-                }
                 if (response.keyState === this.keyStates.CREATED || response.keyState === this.keyStates.REJECTED) {
                     Alert.info(intl.formatMessage({
                         id: 'Shared.AppsAndKeys.TokenManager.key.generate.success.blocked',
@@ -588,54 +551,6 @@ class TokenManager extends React.Component {
                     })}, ${error.response.body.message}`);
             }).finally(() => this.setState({ isLoading: false }));
     }
-
-    handleGenerateKeysClick = () => {
-        const { isMultipleSecretsAllowed } = this.state;
-
-        if (isMultipleSecretsAllowed) {
-            this.setState({
-                openSecretCreateDialog: true,
-                pendingGenerate: true,
-            });
-        } else {
-            this.generateKeys(); // existing flow unchanged
-        }
-    };
-
-    handleCloseSecretCreateDialog = () => {
-        this.setState({
-            openSecretCreateDialog: false,
-            pendingGenerate: false,
-            secretMeta: null,
-        });
-    };
-
-    handleCreateSecret = ({ description, expiresInSeconds }) => {
-        const { keyRequest } = this.state;
-
-        const updatedKeyRequest = {
-            ...keyRequest,
-            additionalProperties: {
-                ...keyRequest.additionalProperties,
-                client_secret_description: description,
-                ...(expiresInSeconds !== undefined && {
-                    client_secret_expires_in: expiresInSeconds,
-                }),
-            },
-        };
-
-        this.setState(
-            {
-                keyRequest: updatedKeyRequest,
-                openSecretCreateDialog: false,
-                pendingGenerate: false,
-                secretMeta: { description, expiresInSeconds },
-            },
-            () => {
-                this.generateKeys(); // 🔥 actual API call happens HERE
-            }
-        );
-    };
 
     /**
      *
@@ -813,7 +728,7 @@ class TokenManager extends React.Component {
         this.setState({ tokenType: e.target.defaultValue });
     }
 
-    handleClose = () => {
+    handleClose=() => {
         this.setState({ tokenType: 'DIRECT' });
     }
 
@@ -828,7 +743,7 @@ class TokenManager extends React.Component {
         const {
             keys, keyRequest, isLoading, isKeyJWT, providedConsumerKey,
             providedConsumerSecret, selectedTab, keyManagers, validating, hasError, initialToken,
-            initialValidityTime, initialScopes, importDisabled, mode, tokenType, isOrgWideAppUpdateEnabled, isAccordionExpanded,
+            initialValidityTime, initialScopes, importDisabled, mode, tokenType, isOrgWideAppUpdateEnabled,
         } = this.state;
 
         if (keyManagers && keyManagers.length === 0) {
@@ -907,12 +822,10 @@ class TokenManager extends React.Component {
         }
 
         let defaultTokenEndpoint;
-        let multipleSecretsAllowedForResidentKM = false;
 
         if (keyManagers.length > 0) {
             const residentKMs = keyManagers.filter((item) => item.name === 'Resident Key Manager');
             defaultTokenEndpoint = residentKMs.length > 0 ? (residentKMs)[0].tokenEndpoint : null;
-            multipleSecretsAllowedForResidentKM = this.getMultipleSecretsAllowed(residentKMs.length > 0 ? (residentKMs)[0] : null);
         }
 
         if (key && key.keyState === 'APPROVED' && !key.consumerKey) {
@@ -960,9 +873,9 @@ class TokenManager extends React.Component {
                                     label={keymanager.displayName || keymanager.name}
                                     value={keymanager.name}
                                     disabled={!keymanager.enabled || (isKeyManagerAllowed
-                                        && !isKeyManagerAllowed(keymanager.name)
-                                        && ((keymanager.name !== 'Resident Key Manager')
-                                            || (!this.isTokenExchangeEnabled() && keymanager.name === 'Resident Key Manager')))}
+                                    && !isKeyManagerAllowed(keymanager.name)
+                                    && ((keymanager.name !== 'Resident Key Manager')
+                                    || (!this.isTokenExchangeEnabled() && keymanager.name === 'Resident Key Manager')))}
                                     id={keymanager.name.replace(/\s/g, '')}
                                 />
                             ))}
@@ -1043,23 +956,27 @@ class TokenManager extends React.Component {
                                             loadApplication={this.loadApplication}
                                         />
                                     </Box>
-                                    <Typography className={classes.subTitle} variant="h6" component="h6">
-                                        {key ? (
-                                            <FormattedMessage
-                                                defaultMessage="Key Configurations"
-                                                id="Shared.AppsAndKeys.TokenManager.update.configuration"
-                                            />
-                                        ) : (
-                                            <FormattedMessage
-                                                defaultMessage="Key Configuration"
-                                                id="Shared.AppsAndKeys.TokenManager.key.configuration"
-                                            />
-                                        )}
+                                    <Typography className={classes.subTitle} variant='h6' component='h6'>
+                                        {
+                                            key
+                                                ? (
+                                                    <FormattedMessage
+                                                        defaultMessage='Key Configurations'
+                                                        id='Shared.AppsAndKeys.TokenManager.update.configuration'
+                                                    />
+                                                )
+                                                : (
+                                                    <FormattedMessage
+                                                        defaultMessage='Key Configuration'
+                                                        id='Shared.AppsAndKeys.TokenManager.key.configuration'
+                                                    />
+                                                )
+                                        }
                                     </Typography>
                                     <Box m={2}>
                                         <KeyConfiguration
                                             keys={keys}
-                                            keyValue={key}
+                                            key={key}
                                             selectedApp={selectedApp}
                                             selectedTab={selectedTab}
                                             keyType={keyType}
@@ -1080,7 +997,7 @@ class TokenManager extends React.Component {
                                                 resourcePath={resourcePaths.APPLICATION_GENERATE_KEYS}
                                                 resourceMethod={resourceMethods.POST}
                                             >
-                                                {!isUserOwner ? (
+                                                {!isOrgWideAppUpdateEnabled && !isUserOwner ? (
                                                     <>
                                                         <Button
                                                             id='generate-keys'
@@ -1090,12 +1007,12 @@ class TokenManager extends React.Component {
                                                             onClick={
                                                                 key ? this.updateKeys : this.generateKeys
                                                             }
-                                                            disabled={!isUserOwner || isLoading || !keymanager.enableOAuthAppCreation
+                                                            disabled={(!isOrgWideAppUpdateEnabled && !isUserOwner) || isLoading || !keymanager.enableOAuthAppCreation
                                                                 || (isKeyManagerAllowed
                                                                     && !isKeyManagerAllowed(keymanager.name)
                                                                     && ((keymanager.name !== 'Resident Key Manager')
-                                                                        || (!this.isTokenExchangeEnabled()
-                                                                            && keymanager.name === 'Resident Key Manager')))}
+                                                                    || (!this.isTokenExchangeEnabled()
+                                                                    && keymanager.name === 'Resident Key Manager')))}
                                                         >
                                                             {key
                                                                 ? this.props.intl.formatMessage({
@@ -1122,14 +1039,14 @@ class TokenManager extends React.Component {
                                                             variant='contained'
                                                             color='primary'
                                                             className={classes.button}
-                                                            onClick={key ? this.updateKeys : this.handleGenerateKeysClick}
+                                                            onClick={key ? this.updateKeys : this.generateKeys}
                                                             disabled={hasError || (isLoading || !keymanager.enableOAuthAppCreation)
                                                                 || (mode && mode === 'MAPPED')
-                                                                || (isKeyManagerAllowed
-                                                                    && !isKeyManagerAllowed(keymanager.name)
-                                                                    && ((keymanager.name !== 'Resident Key Manager')
-                                                                        || (!this.isTokenExchangeEnabled()
-                                                                            && keymanager.name === 'Resident Key Manager')))}
+                                                            || (isKeyManagerAllowed
+                                                                && !isKeyManagerAllowed(keymanager.name)
+                                                                && ((keymanager.name !== 'Resident Key Manager')
+                                                                || (!this.isTokenExchangeEnabled()
+                                                                && keymanager.name === 'Resident Key Manager')))}
                                                         >
                                                             {key
                                                                 ? this.props.intl.formatMessage({
@@ -1159,6 +1076,7 @@ class TokenManager extends React.Component {
                                                 )}
                                             </ScopeValidation>
                                         </div>
+
                                     </Box>
                                 </TabPanel>
                             )}
@@ -1197,7 +1115,6 @@ class TokenManager extends React.Component {
                                             callbackError={hasError}
                                             setValidating={this.setValidating}
                                             defaultTokenEndpoint={defaultTokenEndpoint}
-                                            multipleSecretsAllowed={multipleSecretsAllowedForResidentKM}
                                         />
                                     </Box>
                                 </TabPanel>
@@ -1353,7 +1270,7 @@ class TokenManager extends React.Component {
                                                                         variant='contained'
                                                                         color='primary'
                                                                         className={classes.button}
-                                                                        onClick={key ? this.updateKeys : this.handleGenerateKeysClick}
+                                                                        onClick={key ? this.updateKeys : this.generateKeys}
 
                                                                     >
                                                                         {key ? 'Update' : 'Generate Keys'}
@@ -1407,7 +1324,6 @@ class TokenManager extends React.Component {
                                                         callbackError={hasError}
                                                         setValidating={this.setValidating}
                                                         defaultTokenEndpoint={defaultTokenEndpoint}
-                                                        multipleSecretsAllowed={multipleSecretsAllowedForResidentKM}
                                                     />
                                                 </Box>
                                             </TabPanel>
@@ -1415,17 +1331,6 @@ class TokenManager extends React.Component {
                                     </Box>
                                 </TabPanel>
                             )}
-                            <NewSecretDialog
-                                open={this.state.openSecretCreateDialog}
-                                onClose={this.handleCloseSecretCreateDialog}
-                                onCreate={this.handleCreateSecret}
-                                mode={CONSTS.SECRET_DIALOG_MODES.KEY_GENERATION}
-                            />
-                            <SecretValueDialog
-                                open={this.state.openSecretValueDialog}
-                                onClose={this.handleCloseSecretValueDialog}
-                                secret={this.state.generatedSecret}
-                            />
                         </div>
                     ))}
 

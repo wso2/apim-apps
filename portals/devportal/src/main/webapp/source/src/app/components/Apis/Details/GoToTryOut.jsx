@@ -35,7 +35,6 @@ import Application from 'AppData/Application';
 import Alert from 'AppComponents/Shared/Alert';
 import AuthManager from 'AppData/AuthManager';
 import CONSTANTS from 'AppData/Constants';
-import { isMultipleClientSecretsEnabled } from 'AppComponents/Shared/AppsAndKeys/Secrets/util';
 import { ApiContext } from './ApiContext';
 import TaskState from './TaskState';
 
@@ -74,12 +73,9 @@ export default function GoToTryOut() {
     const defaultApplication = defaultApplications.length > 0 ? defaultApplications[0] : null;
     const [tasksStatus, tasksStatusDispatcher] = useReducer(tasksReducer, initialTaskStates);
     const [showStatus, setShowStatus] = useState(false);
-    const [consumerSecretValue, setConsumerSecretValue] = useState('');
-    const [multipleSecretsEnabled, setMultipleSecretsEnabled] = useState(false);
     const intl = useIntl();
     const history = useHistory();
     const theme = useTheme();
-    const [copied, setCopied] = useState(false);
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('sm'));
     const isAsyncAPI = (api
         && (api.type === CONSTANTS.API_TYPES.WS
@@ -109,7 +105,6 @@ export default function GoToTryOut() {
                     selectedKeyManager = responseKeyManagerListDefault.length > 0 ? responseKeyManagerListDefault[0]
                         : responseKeyManagerList[0];
                 }
-                let isMultipleSecretsAllowed = false;
 
                 // Setting key request
                 try {
@@ -121,14 +116,13 @@ export default function GoToTryOut() {
                         || selectedKeyManager.availableGrantTypes.includes('authorization_code')) {
                         keyRequest.callbackUrl = 'http://localhost';
                     }
-                    isMultipleSecretsAllowed = isMultipleClientSecretsEnabled(selectedKeyManager.additionalProperties);
                 } catch (e) {
                     Alert.error(intl.formatMessage({
                         id: 'Apis.Details.Credentials.Wizard.GenerateKeysStep.error.keymanager',
                         defaultMessage: 'Error while selecting the key manager',
                     }));
                 }
-                return { keyRequest, isMultipleSecretsAllowed };
+                return keyRequest;
             })
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
@@ -140,17 +134,13 @@ export default function GoToTryOut() {
         const application = await Application.get(applicationId);
         const keys = await application.getKeys(keyRequest.keyType);
         if (keys.size > 0) {
-            return null;
+            return;
         }
-        try {
-            const response = await application.generateKeys(
-                keyRequest.keyType,
-                keyRequest.supportedGrantTypes,
-                keyRequest.callbackUrl,
-                keyRequest.additionalProperties,
-                keyRequest.keyManager,
-            );
-
+        application.generateKeys(
+            keyRequest.keyType, keyRequest.supportedGrantTypes,
+            keyRequest.callbackUrl,
+            keyRequest.additionalProperties, keyRequest.keyManager,
+        ).then((response) => {
             if (response.keyState === keyStates.CREATED || response.keyState === keyStates.REJECTED) {
                 Alert.error(intl.formatMessage({
                     id: 'Apis.Details.GoToTryOut.error.keymanager',
@@ -160,7 +150,7 @@ export default function GoToTryOut() {
                 console.log('Keys generated successfully with ID : ' + response);
             }
             return response;
-        } catch (error) {
+        }).catch((error) => {
             if (process.env.NODE_ENV !== 'production') {
                 console.log(error);
             }
@@ -171,8 +161,7 @@ export default function GoToTryOut() {
                     defaultMessage: 'Resource not found.',
                 }));
             }
-            throw error;
-        }
+        });
     };
 
     const taskManager = async (promisedTask, name) => {
@@ -212,15 +201,9 @@ export default function GoToTryOut() {
         }
         setShowStatus(true);
         // Get the request for key generation using the key managers.
-        const prepareResult = await taskManager(getKeyRequest(), 'prepare');
-        if (!prepareResult) {
-            return;
-        }
-        const { keyRequest, isMultipleSecretsAllowed } = prepareResult;
-        setMultipleSecretsEnabled(isMultipleSecretsAllowed);
+        const keyRequest = await taskManager(getKeyRequest(), 'prepare');
         // Generate consumer key and secret
-        const generatedKeys = await taskManager(generateKeys(keyRequest, defaultApplication.value), 'generate');
-        setConsumerSecretValue(generatedKeys?.consumerSecret);
+        await taskManager(generateKeys(keyRequest, defaultApplication.value), 'generate');
         // Subscribe this API to the default application
         await taskManager(restApi.subscribe(
             api.id,
@@ -401,99 +384,12 @@ export default function GoToTryOut() {
                                     defaultMessage='Consumer key and secret'
                                 />
                             </TaskState>
-                            {/* Consumer secret display when multiple secrets allowed */}
-                            {multipleSecretsEnabled && consumerSecretValue && !anyErrors && (
-                                <Grid item xs={12}>
-                                    <Box
-                                        display='flex'
-                                        flexDirection='column'
-                                        alignItems='flex-start'
-                                        sx={{
-                                            border: '1px solid',
-                                            borderColor: 'divider',
-                                            borderRadius: 2,
-                                            p: 2,
-                                            mt: 2,
-                                            mb: 2,
-                                            bgcolor: 'background.default',
-                                        }}
-                                    >
-                                        <Typography
-                                            variant='subtitle2'
-                                            color='textPrimary'
-                                            gutterBottom
-                                        >
-                                            <FormattedMessage
-                                                id='Apis.Details.GoToTryOut.consumerSecret.title'
-                                                defaultMessage='Consumer Secret'
-                                            />
-                                        </Typography>
-
-                                        <Box
-                                            display='flex'
-                                            alignItems='center'
-                                            width='100%'
-                                            sx={{ mb: 1 }}
-                                        >
-                                            <Typography
-                                                variant='body2'
-                                                sx={{
-                                                    wordBreak: 'break-all',
-                                                    flex: 1,
-                                                    mr: 2,
-                                                }}
-                                            >
-                                                {consumerSecretValue}
-                                            </Typography>
-
-                                            <Button
-                                                size='small'
-                                                variant='outlined'
-                                                onClick={() => {
-                                                    navigator.clipboard.writeText(consumerSecretValue)
-                                                        .then(() => {
-                                                            setCopied(true);
-                                                            setTimeout(() => setCopied(false), 2000);
-                                                        })
-                                                        .catch(() => {
-                                                            Alert.error('Failed to copy to clipboard');
-                                                        });
-                                                }}
-                                            >
-                                                {copied ? (
-                                                    <FormattedMessage
-                                                        id='Apis.Details.GoToTryOut.consumerSecret.copied'
-                                                        defaultMessage='Copied!'
-                                                    />
-                                                ) : (
-                                                    <FormattedMessage
-                                                        id='Apis.Details.GoToTryOut.consumerSecret.copy'
-                                                        defaultMessage='Copy'
-                                                    />
-                                                )}
-                                            </Button>
-                                        </Box>
-
-                                        <Typography
-                                            variant='caption'
-                                            color='textSecondary'
-                                        >
-                                            <FormattedMessage
-                                                id='Apis.Details.GoToTryOut.consumerSecret.notice'
-                                                defaultMessage='Please make a note of the generated consumer secret
-                                                value as it will be displayed only once.'
-                                            />
-                                        </Typography>
-                                    </Box>
-                                </Grid>
-                            )}
                             {anyErrors ? (
                                 <Grid item xs={12}>
                                     <Button
                                         onClick={() => {
                                             setShowStatus(false);
                                             tasksStatusDispatcher({ name: 'reset' });
-                                            setConsumerSecretValue('');
                                         }}
                                         variant='outlined'
                                     >
