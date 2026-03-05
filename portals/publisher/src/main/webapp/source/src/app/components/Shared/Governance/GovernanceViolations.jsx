@@ -27,12 +27,15 @@ import {
     Box,
     Tooltip,
     Button,
+    Link,
 } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
 import RuleIcon from '@mui/icons-material/Rule';
 import DownloadIcon from '@mui/icons-material/Download';
+import LaunchIcon from '@mui/icons-material/Launch';
 import ListBase from 'AppComponents/Addons/Addons/ListBase';
 import Utils from 'AppData/Utils';
+import AuthManager from 'AppData/AuthManager';
 import GovernanceViolationsSummary, { violationSeverityMap } from './GovernanceViolationsSummary';
 
 const renderEmptyContent = (message) => (
@@ -61,6 +64,92 @@ const renderEmptyContent = (message) => (
         </Typography>
     </Box>
 );
+
+/**
+ * Parse a GENERIC ruleset's violatedPath to extract API UUID, name, similarity, and creator info.
+ * Expected format: "Similarity: 85.5% | Matched API: PetStore v1.0 | API_UUID:xxx-yyy-zzz | API_CREATOR:admin"
+ */
+const parseApiLinkFromViolatedPath = (text) => {
+    if (!text || typeof text !== 'string') return null;
+    const newFormatMatch = text.match(
+        /API_UUID:([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i,
+    );
+    const legacyFormatMatch = text.match(
+        /UUID:\s*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i,
+    );
+    const uuidMatch = newFormatMatch || legacyFormatMatch;
+    if (!uuidMatch) return null;
+    const uuid = uuidMatch[1];
+    const nameMatch = text.match(/Matched API:\s*([^|]+?)(?:\s*\||\s*$)/);
+    const apiName = nameMatch ? nameMatch[1].trim() : uuid;
+    const simMatch = text.match(/Similarity:\s*([\d.]+%)/);
+    const similarity = simMatch ? simMatch[1] : null;
+    const creatorMatch = text.match(/API_CREATOR:([^|]+?)(?:\s*\||\s*$)/);
+    const creator = creatorMatch ? creatorMatch[1].trim() : null;
+    return { uuid, apiName, similarity, creator };
+};
+
+/**
+ * Render violatedPath with clickable API link for GENERIC dedup rulesets.
+ * Links are only clickable if the matched API was created by the current user (cross-user privacy).
+ */
+const renderViolatedPath = (value) => {
+    const text = typeof value === 'object' && value !== null
+        ? (value.path || String(value))
+        : String(value || '');
+    const parsed = parseApiLinkFromViolatedPath(text);
+    if (parsed) {
+        // Check if the matched API belongs to the current user
+        let isOwnApi = false;
+        try {
+            const user = AuthManager.getUser();
+            if (user && user.name && parsed.creator) {
+                const currentUsername = user.name.includes('@')
+                    ? user.name.split('@')[0]
+                    : user.name;
+                isOwnApi = currentUsername === parsed.creator;
+            }
+        } catch (e) {
+            // If user info unavailable, default to non-clickable for safety
+            isOwnApi = false;
+        }
+
+        return (
+            <Box>
+                {parsed.similarity && (
+                    <Typography variant='body2' component='span'>
+                        {`Similarity: ${parsed.similarity} \u2014 Matched: `}
+                    </Typography>
+                )}
+                {isOwnApi ? (
+                    <Link
+                        href={`/publisher/apis/${parsed.uuid}/overview`}
+                        underline='hover'
+                        color='primary'
+                        sx={{
+                            fontWeight: 500,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 0.5,
+                        }}
+                    >
+                        {parsed.apiName}
+                        <LaunchIcon sx={{ fontSize: 14 }} />
+                    </Link>
+                ) : (
+                    <Typography
+                        variant='body2'
+                        component='span'
+                        sx={{ fontWeight: 500 }}
+                    >
+                        {parsed.apiName}
+                    </Typography>
+                )}
+            </Box>
+        );
+    }
+    return <Typography variant='body2'>{text}</Typography>;
+};
 
 export default function GovernanceViolations({ violations }) {
     const intl = useIntl();
@@ -152,6 +241,7 @@ export default function GovernanceViolations({ violations }) {
             }),
             options: {
                 sort: false,
+                customBodyRender: (value) => renderViolatedPath(value),
                 setCellProps: () => ({
                     style: {
                         width: '30%',

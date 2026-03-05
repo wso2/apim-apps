@@ -391,6 +391,7 @@
   "Apis.Details.Compliance.RuleViolation.column.description": "Description",
   "Apis.Details.Compliance.RuleViolation.column.message": "Message",
   "Apis.Details.Compliance.RuleViolation.column.path": "Path",
+  "Apis.Details.Compliance.RuleViolation.column.reason": "Reason",
   "Apis.Details.Compliance.RuleViolation.column.rule": "Rule",
   "Apis.Details.Compliance.RuleViolation.documentation": "View Documentation",
   "Apis.Details.Compliance.RuleViolation.empty.errors": "No Error violations found",

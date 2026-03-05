@@ -1359,15 +1359,20 @@ class API extends Resource {
      * Update the life cycle state of an API given its id (UUID)
      * @param id {string} UUID of the api
      * @param state {string} Target state which need to be transferred
+     * @param checkedItems {string} Lifecycle checklist items
+     * @param successorUuid {string} Optional UUID of user-selected successor API
      * @param callback {function} Callback function which needs to be executed in the success call
      */
-    updateLcState(id, state, checkedItems, callback = null) {
+    updateLcState(id, state, checkedItems, successorUuid = null, callback = null) {
         const payload = {
             action: state,
             apiId: id,
             lifecycleChecklist: checkedItems,
             'Content-Type': 'application/json',
         };
+        if (successorUuid) {
+            payload.successorUuid = successorUuid;
+        }
         const promise_lc_update = this.client.then(client => {
             return client.apis['API Lifecycle'].changeAPILifecycle(payload, this._requestMetaData());
         });
@@ -1376,6 +1381,20 @@ class API extends Resource {
         } else {
             return promise_lc_update;
         }
+    }
+
+    /**
+     * Get Deprecation Guide (structural successor recommendation) for an API
+     * @param {string} apiId UUID of the API
+     * @returns {Promise} Promise resolving to the deprecation guide result
+     */
+    getDeprecationGuide(apiId) {
+        return this.client.then(client => {
+            return client.apis['API Lifecycle'].getDeprecationGuide(
+                { apiId },
+                this._requestMetaData(),
+            );
+        });
     }
 
     /**

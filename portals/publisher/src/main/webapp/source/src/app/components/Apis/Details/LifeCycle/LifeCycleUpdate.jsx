@@ -127,6 +127,9 @@ class LifeCycleUpdate extends Component {
             isGovernanceViolation: false,
             governanceError: null,
             isEndpointAvailable: false,
+            // Deprecation / Retirement Guide state
+            deprecationGuide: null,
+            deprecationGuideLoading: false,
         };
         this.setIsOpen = this.setIsOpen.bind(this);
         this.handleClick = this.handleClick.bind(this);
@@ -148,17 +151,78 @@ class LifeCycleUpdate extends Component {
      * @param {*} event event
      */
     handleRequestOpen(event) {
+        const selectedState = event.currentTarget.getAttribute('data-value');
         this.setState({
             openMenu: true,
-            selectedTransitionState: event.currentTarget.getAttribute('data-value'),
+            selectedTransitionState: selectedState,
+            deprecationGuide: null,
+            deprecationGuideLoading: false,
         });
+
+        // Fetch Deprecation / Retirement Guide for both transitions
+        if (selectedState === 'Deprecate' || selectedState === 'Retire') {
+            const { api: { id: apiUUID } } = this.props;
+            this.setState({ deprecationGuideLoading: true });
+            // Build URL with ?action= query parameter
+            const actionParam = selectedState === 'Retire' ? 'Retire' : 'Deprecate';
+            const guideUrl = `/apis/${apiUUID}/deprecation-guide?action=${actionParam}`;
+            const restApi = new API();
+            restApi.client.then((client) => {
+                const baseUrl = client.spec.servers
+                    ? client.spec.servers[0].url
+                    : client.url || '';
+                // eslint-disable-next-line no-underscore-dangle
+                const meta = restApi._requestMetaData();
+                return fetch(baseUrl + guideUrl, {
+                    headers: {
+                        Authorization: `Bearer ${meta.headers.Authorization || ''}`,
+                    },
+                    credentials: 'same-origin',
+                });
+            }).then((resp) => resp.json())
+                .then((data) => {
+                    this.setState({
+                        deprecationGuide: data,
+                        deprecationGuideLoading: false,
+                    });
+                })
+                .catch((error) => {
+                    console.error('Deprecation guide fetch error:', error);
+                    // Fallback — use the Swagger client method which was working before
+                    this.api.getDeprecationGuide(apiUUID)
+                        .then((response) => {
+                            const guideData = response.body || response.obj;
+                            this.setState({
+                                deprecationGuide: guideData,
+                                deprecationGuideLoading: false,
+                            });
+                        })
+                        .catch((fallbackErr) => {
+                            console.error('Deprecation guide fallback error:', fallbackErr);
+                            this.setState({
+                                deprecationGuide: {
+                                    successorFound: false,
+                                    migrationRisk: true,
+                                    lifecycleAction: actionParam,
+                                    enforcementMode: 'warn',
+                                    message: 'Could not retrieve deprecation guide. Proceed with caution.',
+                                },
+                                deprecationGuideLoading: false,
+                            });
+                        });
+                });
+        }
     }
 
     /**
      * Set the openMenu state
      */
     handleRequestClose() {
-        this.setState({ openMenu: false });
+        this.setState({
+            openMenu: false,
+            deprecationGuide: null,
+            deprecationGuideLoading: false,
+        });
     }
 
     /**
@@ -277,6 +341,11 @@ class LifeCycleUpdate extends Component {
         const lifecycleChecklist = this.props.checkList.map((item) => item.value + ':' + item.checked);
         const { isAPIProduct } = this.props;
         const isMCPServer = type === MCPServer.CONSTS.MCP;
+
+        // [DORMANT] Successor UUID selection is no longer passed during lifecycle transitions.
+        // The successor is displayed informational-only in the UI.
+        // const { selectedSuccessorUuid } = this.state;
+
         if (isAPIProduct) {
             promisedUpdate = this.apiProduct.updateLcState(apiUUID, action, lifecycleChecklist.length > 0
                 ? lifecycleChecklist.toString() : lifecycleChecklist );
@@ -285,9 +354,15 @@ class LifeCycleUpdate extends Component {
                 ? MCPServer.updateLcState(apiUUID, action, lifecycleChecklist.toString())
                 : MCPServer.updateLcState(apiUUID, action);
         } else {
-            promisedUpdate = (lifecycleChecklist.length > 0)
-                ? this.api.updateLcState(apiUUID, action, lifecycleChecklist.toString())
-                : this.api.updateLcState(apiUUID, action);
+            const checklist = lifecycleChecklist.length > 0
+                ? lifecycleChecklist.toString() : undefined;
+            // [DORMANT] successorUuid no longer passed — kept for future integration
+            // promisedUpdate = this.api.updateLcState(
+            //     apiUUID, action, checklist, selectedSuccessorUuid || undefined,
+            // );
+            promisedUpdate = this.api.updateLcState(
+                apiUUID, action, checklist, undefined,
+            );
         }
         promisedUpdate
             .then((response) => {
@@ -441,6 +516,260 @@ class LifeCycleUpdate extends Component {
         }
       
         return false; // No status with APPROVED found
+    }
+
+    /**
+     * Render the deprecation / retirement guide panel.
+     * Shown when transitioning to Deprecate or Retire state.
+     *
+     * Informational-only display:
+     * - Shows successor candidates as a read-only list (no selection required)
+     * - Consistent styling between "Successors Found" and "Migration Risk" panels
+     * - Enforcement mode indicator (block/warn/audit)
+     *
+     * @returns {JSX.Element|null} panel or null
+     */
+    renderDeprecationGuide() {
+        const {
+            deprecationGuideLoading,
+            deprecationGuide,
+        } = this.state;
+
+        if (deprecationGuideLoading) {
+            return (
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    p: 2,
+                }}
+                >
+                    <CircularProgress size={20} />
+                    <Typography
+                        variant='body2'
+                        color='textSecondary'
+                    >
+                        Analyzing structural successors...
+                    </Typography>
+                </Box>
+            );
+        }
+
+        if (!deprecationGuide) return null;
+
+        const {
+            lifecycleAction = 'Deprecate',
+            enforcementMode = 'warn',
+            successorCarriedOver = false,
+            allCandidates = [],
+        } = deprecationGuide;
+
+        const isBlock = enforcementMode === 'block';
+        const actionLabel = lifecycleAction === 'Retire' ? 'Retire' : 'Deprecate';
+
+        // Common panel styling for both scenarios
+        let panelBorder = 'success.main';
+        let panelBgColor = 'background.paper';
+        if (!deprecationGuide.successorFound) {
+            panelBorder = isBlock ? 'error.main' : 'warning.main';
+            panelBgColor = isBlock
+                ? 'rgba(211, 47, 47, 0.03)'
+                : 'rgba(237, 108, 2, 0.03)';
+        }
+
+        // ── Scenario A: Successor Found — informational list ─────────────
+        if (deprecationGuide.successorFound) {
+            const sType = deprecationGuide.successorType;
+            const isOfficial = sType === 'OFFICIAL_VERSION';
+            const typeLabel = isOfficial
+                ? 'Official New Version'
+                : 'Semantic Neighbor';
+
+            const similarity = deprecationGuide.similarityPercentage || 0;
+            let impactLevel = 'High';
+            let impactColor = 'error.main';
+            if (similarity >= 80) {
+                impactLevel = 'Low';
+                impactColor = 'success.main';
+            } else if (similarity >= 60) {
+                impactLevel = 'Medium';
+                impactColor = 'warning.main';
+            }
+
+            return (
+                <Box sx={{
+                    p: 2.5,
+                    borderRadius: 1,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderLeft: '4px solid',
+                    borderLeftColor: panelBorder,
+                    bgcolor: panelBgColor,
+                    boxShadow: '0px 2px 8px rgba(0,0,0,0.04)',
+                }}
+                >
+                    <Typography
+                        variant='subtitle2'
+                        sx={{
+                            fontWeight: 600,
+                            color: 'text.primary',
+                            mb: 1.5,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                        }}
+                    >
+                        <Box component='span' sx={{ color: 'success.main', fontWeight: 'bold' }}>✓</Box>
+                        {(() => {
+                            if (successorCarriedOver) return 'Successor Carried Over from Deprecation';
+                            if (isOfficial) return 'Official Version Successor Found';
+                            return 'Semantic Neighbor Successor Found';
+                        })()}
+                    </Typography>
+
+                    {/* Primary successor summary */}
+                    <Box sx={{ mb: 1 }}>
+                        <Typography variant='body2' sx={{ mb: 0.5 }}>
+                            <b>Recommended Successor:</b>{' '}
+                            {deprecationGuide.successorApiName}{' '}
+                            v{deprecationGuide.successorApiVersion}
+                        </Typography>
+                        <Typography variant='body2' sx={{ mb: 0.5 }}>
+                            <b>Type:</b> {typeLabel}
+                        </Typography>
+                        <Typography variant='body2' sx={{ mb: 0.5 }}>
+                            <b>Migration Impact:</b>{' '}
+                            <Box
+                                component='span'
+                                sx={{ color: impactColor, fontWeight: 600 }}
+                            >
+                                {impactLevel}
+                            </Box>
+                            {` (${similarity.toFixed(0)}% structural match)`}
+                        </Typography>
+                    </Box>
+
+                    {/* Enforcement mode badge */}
+                    {isBlock && (
+                        <Box sx={{ mt: 1.5 }}>
+                            <Typography
+                                variant='caption'
+                                sx={{
+                                    display: 'inline-flex',
+                                    px: 1.5,
+                                    py: 0.5,
+                                    borderRadius: 4,
+                                    border: '1px solid',
+                                    borderColor: 'error.main',
+                                    bgcolor: 'rgba(211, 47, 47, 0.05)',
+                                    color: 'error.main',
+                                    fontWeight: 700,
+                                    letterSpacing: 0.5,
+                                    textTransform: 'uppercase',
+                                }}
+                            >
+                                Enforcement: Block
+                            </Typography>
+                        </Box>
+                    )}
+
+                    {/* Read-only candidate list (informational only) */}
+                    {allCandidates && allCandidates.length > 1 && (
+                        <Box sx={{ mt: 2 }}>
+                            <Typography
+                                variant='caption'
+                                sx={{ fontWeight: 600, color: 'text.secondary', mb: 0.5, display: 'block' }}
+                            >
+                                All Detected Candidates ({allCandidates.length})
+                            </Typography>
+                            {allCandidates.map((cand) => {
+                                const candIsOfficial = cand.successorType === 'OFFICIAL_VERSION';
+                                return (
+                                    <Box
+                                        key={cand.apiUuid}
+                                        sx={{
+                                            p: 1,
+                                            mb: 0.5,
+                                            borderRadius: 0.5,
+                                            border: '1px solid',
+                                            borderColor: 'divider',
+                                            bgcolor: 'transparent',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                        }}
+                                    >
+                                        <Box>
+                                            <Typography variant='body2'>
+                                                {cand.apiName} v{cand.apiVersion}
+                                            </Typography>
+                                            <Typography variant='caption' color='textSecondary'>
+                                                {candIsOfficial ? 'Official Version' : 'Semantic Neighbor'}
+                                                {' · '}
+                                                {(cand.similarityPercentage || 0).toFixed(0)}% match
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                );
+                            })}
+                        </Box>
+                    )}
+                </Box>
+            );
+        }
+
+        // ── Scenario B: No Successor — Migration Risk ───────────────────
+        const riskMsg = deprecationGuide.message
+            || 'API deprecated without an identified successor. '
+            + 'This creates a migration risk for consumers.';
+
+        return (
+            <Box sx={{
+                p: 2.5,
+                borderRadius: 1,
+                border: '1px solid',
+                borderColor: 'divider',
+                borderLeft: '4px solid',
+                borderLeftColor: panelBorder,
+                bgcolor: panelBgColor,
+                boxShadow: '0px 2px 8px rgba(0,0,0,0.04)',
+            }}
+            >
+                <Typography
+                    variant='subtitle2'
+                    sx={{
+                        fontWeight: 600,
+                        color: 'text.primary',
+                        mb: 1.5,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                    }}
+                >
+                    <Box
+                        component='span'
+                        sx={{ color: isBlock ? 'error.main' : 'warning.main', fontWeight: 'bold' }}
+                    >
+                        {isBlock ? '✗' : '⚠'}
+                    </Box>
+                    {isBlock
+                        ? 'Transition Blocked — No Successor Detected'
+                        : 'Migration Risk — No Successor Detected'}
+                </Typography>
+                <Typography variant='body2' sx={{ mb: 1 }}>
+                    {riskMsg}
+                </Typography>
+                {isBlock && (
+                    <Typography
+                        variant='body2'
+                        sx={{ fontWeight: 600, color: 'error.dark' }}
+                    >
+                        A valid PUBLISHED successor must be assigned
+                        before this API can be {actionLabel.toLowerCase()}d.
+                    </Typography>
+                )}
+            </Box>
+        );
     }
 
     /**
@@ -639,7 +968,7 @@ class LifeCycleUpdate extends Component {
                                 );
                             })}
                         </div>
-                        <Dialog open={this.state.openMenu}>
+                        <Dialog open={this.state.openMenu} maxWidth='sm' fullWidth>
                             <DialogTitle>
                                 <FormattedMessage
                                     id='Apis.Details.components.TransitionStateApiButton.title'
@@ -666,6 +995,14 @@ class LifeCycleUpdate extends Component {
                                         }}
                                     />
                                 </DialogContentText>
+
+                                {/* Deprecation / Retirement Guide Panel */}
+                                {(this.state.selectedTransitionState === 'Deprecate'
+                                    || this.state.selectedTransitionState === 'Retire') && (
+                                    <Box sx={{ mt: 2 }}>
+                                        {this.renderDeprecationGuide()}
+                                    </Box>
+                                )}
                             </DialogContent>
                             <DialogActions>
                                 <Button dense onClick={this.handleRequestClose}>
@@ -678,6 +1015,16 @@ class LifeCycleUpdate extends Component {
                                     id='itest-id-conf'
                                     key={this.state.selectedTransitionState}
                                     data-value={this.state.selectedTransitionState}
+                                    disabled={
+                                        this.state.deprecationGuideLoading
+                                        || (
+                                            (this.state.selectedTransitionState === 'Deprecate'
+                                                || this.state.selectedTransitionState === 'Retire')
+                                            && this.state.deprecationGuide
+                                            && !this.state.deprecationGuide.successorFound
+                                            && this.state.deprecationGuide.enforcementMode === 'block'
+                                        )
+                                    }
                                     onClick={(event) => {
                                         this.updateLifeCycleState(event);
                                         this.handleRequestClose();
