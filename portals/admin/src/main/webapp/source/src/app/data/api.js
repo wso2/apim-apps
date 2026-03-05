@@ -1371,6 +1371,9 @@ class API extends Resource {
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
     revokeAPIKeyFromAdmin(keyUUID) {
+        if (!keyUUID) {
+            return Promise.reject(new Error('keyUUID is required'));
+        }
         const promiseRevokeKeys = this.client.then((client) => {
             return client.apis.APIKeys.revokeAPIKeyFromAdmin(
                 { 'Content-Type': 'application/json' },

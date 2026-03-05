@@ -519,6 +519,13 @@ export default class API extends Resource {
     }
 
     /**
+     * `@deprecated` Use generateAppBoundAPIKey(...)
+     */
+    generateApiKey(applicationId, keyType, validityPeriod, restrictions = {}, keyName = 'default') {
+        return this.generateAppBoundAPIKey(applicationId, keyName, keyType, validityPeriod, restrictions);
+    }
+    
+    /**
      * Generate API key for a given API
      * @param apiId Id of the API that needs to generate the key for
      * @param keyName Name of the key to be generated

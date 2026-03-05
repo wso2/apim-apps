@@ -57,8 +57,6 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
     const [apikey, setApikey] = React.useState(null);
     const [showToken, setShowToken] = React.useState(false);
     const [notFound, setNotFound] = React.useState(false);
-    const [ipList, setIpList] = React.useState([]);
-    const [refererList, setRefererList] = React.useState([]);
 
     // Regenerate modal state
     const [regenerateModalOpen, setRegenerateModalOpen] = React.useState(false);
@@ -112,8 +110,11 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
             return;
         }
         if (validityPeriod === 'custom' && !customValidityDays) {
-            alert('Please enter the number of days for custom validity period.');
-            return;
+            const customDays = Number(customValidityDays);
+            if (!Number.isInteger(customDays) || customDays <= 0) {
+                alert('Please enter a valid positive number of days for custom validity period.');
+                return;
+            }
         }
         // API key generation logic
         const validityOption = validityOptions.find((option) => option.value === validityPeriod);
@@ -124,10 +125,10 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
             validityInSeconds = -1;
         } else if (validityPeriod === 'custom') {
             validity = `${customValidityDays} Days`;
-            validityInSeconds = parseInt(customValidityDays, 10) * 24 * 60 * 60;
+            validityInSeconds = Number(customValidityDays) * 24 * 60 * 60;
         } else {
             validity = validityOption ? validityOption.label : '';
-            const days = parseInt(validityPeriod, 10);
+            const days = Number(validityPeriod);
             validityInSeconds = days * 24 * 60 * 60;
         }
         setIsGenerating(true);
@@ -140,8 +141,8 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
         });
         const client = new API();
         const restrictions = {
-            permittedIP: ipList.join(','),
-            permittedReferer: refererList.join(','),
+            permittedIP: restrictionType === 'ip' ? restrictionValue.trim() : '',
+            permittedReferer: restrictionType === 'referrer' ? restrictionValue.trim() : '',
         };
         console.log('Using restrictions:', restrictions);
         const promisedKey = client.generateApiApiKey(apiUUID, displayName, keyType, validityInSeconds, restrictions);
@@ -156,8 +157,6 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
                 };
                 setApikey(generatedApiKey);
                 setShowToken(true);
-                setIpList([]);
-                setRefererList([]);
                 setIsGenerating(false);
             })
             .catch((error) => {
@@ -168,8 +167,6 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
                 if (status === 404) {
                     setNotFound(true);
                     console.log('API not found, notFound state:', notFound);
-                    setIpList([]);
-                    setRefererList([]);
                 }
                 setIsGenerating(false);
             });

@@ -140,14 +140,14 @@ class ApiKeyManager extends React.Component {
 
 ApiKeyManager.propTypes = {
   intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
-  keyType: PropTypes.string,
+  keyType: PropTypes.string.isRequired,
   selectedApp: PropTypes.shape({
-    appId: PropTypes.string,
+    appId: PropTypes.string.isRequired,
     label: PropTypes.string,
     tokenType: PropTypes.string,
     owner: PropTypes.string,
     hashEnabled: PropTypes.bool,
-  }),
+  }).isRequired,
 };
 
 export default injectIntl((ApiKeyManager));

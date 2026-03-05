@@ -46,6 +46,7 @@ const typeChipSx = {
 };
 
 export default function ApiKeysView() {
+    const [isRevoking, setIsRevoking] = useState(false);
     const [apiKeys, setApiKeys] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -90,7 +91,16 @@ export default function ApiKeysView() {
     };
 
     const handleConfirmRevoke = () => {
+        if (!selectedKeyForRevoke?.keyUUID || isRevoking) {
+            return;
+        }
+        if (!selectedKeyForRevoke?.keyUUID) {
+            setRevokeErrorMessage('No API key selected for revoke.');
+            setRevokeErrorOpen(true);
+            return;
+        }
         setRevokeConfirmOpen(false);
+        setIsRevoking(true);
         const restApi = new API();
         restApi.revokeAPIKeyFromAdmin(selectedKeyForRevoke.keyUUID)
             .then(() => {
@@ -105,6 +115,9 @@ export default function ApiKeysView() {
                         || 'Failed to revoke API key. Please try again.',
                 );
                 setRevokeErrorOpen(true);
+            })
+            .finally(() => {
+                setIsRevoking(false);
             });
     };
 
@@ -346,7 +359,7 @@ export default function ApiKeysView() {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCancelRevoke}>Cancel</Button>
-                    <Button onClick={handleConfirmRevoke} variant='contained' color='error'>
+                    <Button onClick={handleConfirmRevoke} variant='contained' color='error' disabled={isRevoking}>
                         Revoke
                     </Button>
                 </DialogActions>

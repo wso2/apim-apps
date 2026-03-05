@@ -161,17 +161,20 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
             return;
         }
         if (validityPeriod === 'custom' && !customValidityDays) {
-            alert('Please enter the number of days for custom validity period.');
-            return;
+            const customDays = Number(customValidityDays);
+            if (!Number.isInteger(customDays) || customDays <= 0) {
+                alert('Please enter a valid positive number of days for custom validity period.');
+                return;
+            }
         }
 
         let validityInSeconds;
         if (validityPeriod === 'never') {
             validityInSeconds = -1;
         } else if (validityPeriod === 'custom') {
-            validityInSeconds = parseInt(customValidityDays, 10) * 24 * 60 * 60;
+            validityInSeconds = Number(customValidityDays) * 24 * 60 * 60;
         } else {
-            validityInSeconds = parseInt(validityPeriod, 10) * 24 * 60 * 60;
+            validityInSeconds = Number(validityPeriod) * 24 * 60 * 60;
         }
 
         const restrictions = {

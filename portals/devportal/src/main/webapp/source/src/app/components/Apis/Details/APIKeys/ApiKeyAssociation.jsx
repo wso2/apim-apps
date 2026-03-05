@@ -68,11 +68,15 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
         setSelectedAppForAssociation('');
     };
 
+    const [isAssociating, setIsAssociating] = React.useState(false);
+    const [isDissociating, setIsDissociating] = React.useState(false);
+
     const handleAssociateKey = () => {
-        if (!selectedAppForAssociation) {
+        if (!selectedAppForAssociation || !selectedKeyForAssociation || isAssociating) {
             alert('Please select an application.');
             return;
         }
+        setIsAssociating(true);
         const restApi = new API();
         const { keyUUID } = selectedKeyForAssociation;
         const applicationUUID = selectedAppForAssociation;
@@ -93,7 +97,8 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                     error.response?.body?.description || 'Failed to associate API key. Please try again.',
                 );
                 setAssociateErrorOpen(true);
-            });
+            })
+            .finally(() => setIsAssociating(false));
     };
 
     const handleCloseAssociateSuccess = () => {
@@ -112,6 +117,10 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
     };
 
     const handleConfirmDissociate = () => {
+        if (!selectedKeyForDissociate || isDissociating) {
+            return;
+        }
+        setIsDissociating(true);
         setDissociateConfirmOpen(false);
         const restApi = new API();
         restApi.dissociateApiApiKey(apiUUID, selectedKeyForDissociate.keyUUID)
@@ -128,7 +137,8 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                     error.response?.body?.description || 'Failed to remove association. Please try again.',
                 );
                 setDissociateErrorOpen(true);
-            });
+            })
+            .finally(() => setIsDissociating(false));
     };
 
     const handleCancelDissociate = () => {
@@ -185,7 +195,7 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                     <Button
                         onClick={handleAssociateKey}
                         variant='contained'
-                        disabled={!selectedAppForAssociation}
+                        disabled={!selectedAppForAssociation || isAssociating}
                     >
                         Associate
                     </Button>
@@ -265,6 +275,7 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                         onClick={handleConfirmDissociate}
                         variant='contained'
                         color='error'
+                        disabled={isDissociating}
                     >
                         Remove Association
                     </Button>

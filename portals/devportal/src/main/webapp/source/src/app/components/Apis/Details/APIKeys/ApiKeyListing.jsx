@@ -86,7 +86,7 @@ export default function ApiKeyListing() {
                     console.log(error);
                 }
             });
-    }, []);
+    }, [apiUUID]);
 
     /**
      * Load subscribed applications for this API
@@ -114,7 +114,7 @@ export default function ApiKeyListing() {
                 }
                 setSubscribedApps([]);
             });
-    }, []);
+    }, [apiUUID]);
 
     // Function to refresh API keys list
     const refreshApiKeys = () => {
