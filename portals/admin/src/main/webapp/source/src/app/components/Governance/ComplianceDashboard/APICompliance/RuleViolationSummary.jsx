@@ -19,7 +19,7 @@
 import React, { useEffect, useState } from 'react';
 import {
     Grid, Card, CardContent, Typography, Box, Tabs, Tab, Collapse, IconButton,
-    TablePagination, Chip,
+    TablePagination, Chip, Link,
 } from '@mui/material';
 import ReportIcon from '@mui/icons-material/Report';
 import WarningIcon from '@mui/icons-material/Warning';
@@ -29,6 +29,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import LabelIcon from '@mui/icons-material/Label';
 import RuleIcon from '@mui/icons-material/Rule';
+import LaunchIcon from '@mui/icons-material/Launch';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import { useIntl } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -56,6 +57,7 @@ export default function RuleViolationSummary({ complianceData }) {
             id: ruleset.id,
             rulesetName: ruleset.name,
             ruleType: ruleset.ruleType,
+            ruleCategory: ruleset.ruleCategory,
             documentationLink: ruleset.documentationLink,
             error: ruleset.violatedRules.filter((rule) => rule.severity === 'ERROR'),
             warn: ruleset.violatedRules.filter((rule) => rule.severity === 'WARN'),
@@ -78,6 +80,7 @@ export default function RuleViolationSummary({ complianceData }) {
                     rulesetName: ruleset.rulesetName,
                     documentationLink: ruleset.documentationLink,
                     ruleType: ruleset.ruleType,
+                    ruleCategory: ruleset.ruleCategory,
                     rules: ruleset.error,
                 });
             }
@@ -87,6 +90,7 @@ export default function RuleViolationSummary({ complianceData }) {
                     rulesetName: ruleset.rulesetName,
                     documentationLink: ruleset.documentationLink,
                     ruleType: ruleset.ruleType,
+                    ruleCategory: ruleset.ruleCategory,
                     rules: ruleset.warn,
                 });
             }
@@ -96,6 +100,7 @@ export default function RuleViolationSummary({ complianceData }) {
                     rulesetName: ruleset.rulesetName,
                     documentationLink: ruleset.documentationLink,
                     ruleType: ruleset.ruleType,
+                    ruleCategory: ruleset.ruleCategory,
                     rules: ruleset.info,
                 });
             }
@@ -105,6 +110,7 @@ export default function RuleViolationSummary({ complianceData }) {
                     rulesetName: ruleset.rulesetName,
                     documentationLink: ruleset.documentationLink,
                     ruleType: ruleset.ruleType,
+                    ruleCategory: ruleset.ruleCategory,
                     rules: ruleset.passed,
                 });
             }
@@ -158,7 +164,67 @@ export default function RuleViolationSummary({ complianceData }) {
         );
     };
 
-    const ruleColumProps = [
+    /**
+     * Parse a GENERIC ruleset's violatedPath to extract API UUID, name, and similarity info.
+     * Expected format: "Similarity: 85.5% | Matched API: PetStore v1.0 | API_UUID:xxx-yyy-zzz"
+     * Also supports legacy format: "UUID: xxx-yyy-zzz" in the text
+     */
+    const parseApiLinkFromViolatedPath = (text) => {
+        if (!text || typeof text !== 'string') return null;
+
+        // Try new format: API_UUID:xxx-yyy-zzz
+        const newFormatMatch = text.match(/API_UUID:([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
+        // Try legacy format: UUID: xxx-yyy-zzz
+        const legacyFormatMatch = text.match(/UUID:\s*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
+
+        const uuidMatch = newFormatMatch || legacyFormatMatch;
+        if (!uuidMatch) return null;
+
+        const uuid = uuidMatch[1];
+
+        // Try to extract API name from "Matched API: NAME vVER" or "Matched API: NAME"
+        const nameMatch = text.match(/Matched API:\s*([^|]+?)(?:\s*\||\s*$)/);
+        const apiName = nameMatch ? nameMatch[1].trim() : uuid;
+
+        // Extract similarity
+        const simMatch = text.match(/Similarity:\s*([\d.]+%)/);
+        const similarity = simMatch ? simMatch[1] : null;
+
+        return { uuid, apiName, similarity };
+    };
+
+    /**
+     * Render violatedPath content for GENERIC rulesets as static text (no clickable links).
+     * Displays similarity percentage and matched API name/version as plain text.
+     */
+    const renderGenericViolatedPath = (value) => {
+        const text = typeof value === 'object' && value !== null ? (value.path || String(value)) : String(value || '');
+        const parsed = parseApiLinkFromViolatedPath(text);
+
+        if (parsed) {
+            return (
+                <Box>
+                    {parsed.similarity && (
+                        <Typography variant='body2' component='span'>
+                            {`Similarity: ${parsed.similarity} — Matched: `}
+                        </Typography>
+                    )}
+                    <Typography
+                        variant='body2'
+                        component='span'
+                        sx={{ fontWeight: 500 }}
+                    >
+                        {parsed.apiName}
+                    </Typography>
+                </Box>
+            );
+        }
+
+        // Fallback: render as plain text
+        return <Typography variant='body2'>{text}</Typography>;
+    };
+
+    const getRuleColumProps = (ruleCategory) => [
         {
             name: 'name',
             label: intl.formatMessage({
@@ -173,15 +239,26 @@ export default function RuleViolationSummary({ complianceData }) {
         },
         {
             name: 'violatedPath',
-            label: intl.formatMessage({
-                id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.column.path',
-                defaultMessage: 'Path',
-            }),
+            label: ruleCategory === 'GENERIC'
+                ? intl.formatMessage({
+                    id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.column.reason',
+                    defaultMessage: 'Reason',
+                })
+                : intl.formatMessage({
+                    id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.column.path',
+                    defaultMessage: 'Path',
+                }),
             options: {
                 sort: false,
-                customBodyRender: (value) => (
-                    <Typography variant='body2'>{value.path}</Typography>
-                ),
+                customBodyRender: (value) => {
+                    if (ruleCategory === 'GENERIC') {
+                        return renderGenericViolatedPath(value);
+                    }
+                    const text = typeof value === 'object' && value !== null
+                        ? (value.path || String(value))
+                        : String(value || '');
+                    return <Typography variant='body2'>{text}</Typography>;
+                },
             },
         },
         {
@@ -260,7 +337,9 @@ export default function RuleViolationSummary({ complianceData }) {
                                                 )
                                             </Typography>
                                             <Chip
-                                                label={Utils.mapRuleTypeToLabel(item.ruleType)}
+                                                label={item.ruleCategory === 'GENERIC'
+                                                    ? Utils.mapRuleTypeToLabel(item.ruleCategory)
+                                                    : Utils.mapRuleTypeToLabel(item.ruleType)}
                                                 size='small'
                                                 color='primary'
                                                 variant='outlined'
@@ -273,6 +352,21 @@ export default function RuleViolationSummary({ complianceData }) {
                                                     },
                                                 }}
                                             />
+                                            {item.documentationLink && (
+                                                <Link
+                                                    href={item.documentationLink}
+                                                    target='_blank'
+                                                    rel='noopener noreferrer'
+                                                    sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: 0.5,
+                                                        fontSize: '0.75rem',
+                                                    }}
+                                                >
+                                                    <LaunchIcon sx={{ fontSize: 14 }} />
+                                                </Link>
+                                            )}
                                         </Box>
                                         <IconButton
                                             onClick={(e) => {
@@ -296,7 +390,9 @@ export default function RuleViolationSummary({ complianceData }) {
                                     }}
                                     >
                                         <ListBase
-                                            columProps={isPassed ? passedRuleColumnProps : ruleColumProps}
+                                            columProps={isPassed
+                                                ? passedRuleColumnProps
+                                                : getRuleColumProps(item.ruleCategory)}
                                             apiCall={() => (isPassed
                                                 ? getPassedRuleData(item.rules) : getRuleData(item.rules))}
                                             searchProps={false}

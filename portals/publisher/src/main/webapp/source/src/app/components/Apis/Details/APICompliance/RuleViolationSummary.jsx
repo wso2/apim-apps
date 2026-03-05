@@ -57,6 +57,7 @@ export default function RuleViolationSummary({ complianceData }) {
             id: ruleset.id,
             rulesetName: ruleset.name,
             ruleType: ruleset.ruleType,
+            ruleCategory: ruleset.ruleCategory,
             documentationLink: ruleset.documentationLink,
             error: ruleset.violatedRules.filter(rule => rule.severity === 'ERROR'),
             warn: ruleset.violatedRules.filter(rule => rule.severity === 'WARN'),
@@ -79,6 +80,7 @@ export default function RuleViolationSummary({ complianceData }) {
                     rulesetName: ruleset.rulesetName,
                     documentationLink: ruleset.documentationLink,
                     ruleType: ruleset.ruleType,
+                    ruleCategory: ruleset.ruleCategory,
                     rules: ruleset.error
                 });
             }
@@ -88,6 +90,7 @@ export default function RuleViolationSummary({ complianceData }) {
                     rulesetName: ruleset.rulesetName,
                     documentationLink: ruleset.documentationLink,
                     ruleType: ruleset.ruleType,
+                    ruleCategory: ruleset.ruleCategory,
                     rules: ruleset.warn
                 });
             }
@@ -97,6 +100,7 @@ export default function RuleViolationSummary({ complianceData }) {
                     rulesetName: ruleset.rulesetName,
                     documentationLink: ruleset.documentationLink,
                     ruleType: ruleset.ruleType,
+                    ruleCategory: ruleset.ruleCategory,
                     rules: ruleset.info
                 });
             }
@@ -106,6 +110,7 @@ export default function RuleViolationSummary({ complianceData }) {
                     rulesetName: ruleset.rulesetName,
                     documentationLink: ruleset.documentationLink,
                     ruleType: ruleset.ruleType,
+                    ruleCategory: ruleset.ruleCategory,
                     rules: ruleset.passed
                 });
             }
@@ -152,6 +157,73 @@ export default function RuleViolationSummary({ complianceData }) {
         );
     };
 
+    /**
+     * Parse a GENERIC ruleset's violatedPath to extract API UUID, name, and similarity info.
+     * Expected format: "Similarity: 85.5% | Matched API: PetStore v1.0 | API_UUID:xxx-yyy-zzz"
+     * Also supports legacy format: "UUID: xxx-yyy-zzz" in the text
+     */
+    const parseApiLinkFromViolatedPath = (text) => {
+        if (!text || typeof text !== 'string') return null;
+
+        // Try new format: API_UUID:xxx-yyy-zzz
+        const newFormatMatch = text.match(/API_UUID:([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
+        // Try legacy format: UUID: xxx-yyy-zzz
+        const legacyFormatMatch = text.match(/UUID:\s*([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
+
+        const uuidMatch = newFormatMatch || legacyFormatMatch;
+        if (!uuidMatch) return null;
+
+        const uuid = uuidMatch[1];
+
+        // Try to extract API name from "Matched API: NAME vVER" or "Matched API: NAME"
+        const nameMatch = text.match(/Matched API:\s*([^|]+?)(?:\s*\||\s*$)/);
+        const apiName = nameMatch ? nameMatch[1].trim() : uuid;
+
+        // Extract similarity
+        const simMatch = text.match(/Similarity:\s*([\d.]+%)/);
+        const similarity = simMatch ? simMatch[1] : null;
+
+        return { uuid, apiName, similarity };
+    };
+
+    /**
+     * Render violatedPath content for GENERIC rulesets with conditional clickability.
+     * If the matched API is in the current user's scope (UUID present), render as a
+     * clickable link to the API overview. If the backend has masked the API as
+     * "[Access Restricted]" (user lacks scope/tenant access), render as static text.
+     */
+    const renderGenericViolatedPath = (value) => {
+        const text = typeof value === 'object' && value !== null ? (value.path || String(value)) : String(value || '');
+        const parsed = parseApiLinkFromViolatedPath(text);
+
+        if (parsed) {
+            // User has access to this matched API — render as clickable link
+            const href = `/publisher/apis/${parsed.uuid}/overview`;
+            return (
+                <Box>
+                    {parsed.similarity && (
+                        <Typography variant='body2' component='span'>
+                            {`Similarity: ${parsed.similarity} — Matched: `}
+                        </Typography>
+                    )}
+                    <Link
+                        href={href}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        underline='hover'
+                        sx={{ fontWeight: 500 }}
+                    >
+                        {parsed.apiName}
+                        <LaunchIcon sx={{ fontSize: 12, ml: 0.5 }} />
+                    </Link>
+                </Box>
+            );
+        }
+
+        // No UUID — API is either restricted or plain text. Render as static text.
+        return <Typography variant='body2'>{text}</Typography>;
+    };
+
     // Add new function for passed rules data
     const getPassedRuleData = (rules) => {
         return Promise.resolve(
@@ -159,7 +231,7 @@ export default function RuleViolationSummary({ complianceData }) {
         );
     };
 
-    const ruleColumnProps = [
+    const getRuleColumnProps = (ruleCategory) => [
         {
             name: 'name',
             label: intl.formatMessage({
@@ -174,15 +246,26 @@ export default function RuleViolationSummary({ complianceData }) {
         },
         {
             name: 'violatedPath',
-            label: intl.formatMessage({
-                id: 'Apis.Details.Compliance.RuleViolation.column.path',
-                defaultMessage: 'Path',
-            }),
+            label: ruleCategory === 'GENERIC'
+                ? intl.formatMessage({
+                    id: 'Apis.Details.Compliance.RuleViolation.column.reason',
+                    defaultMessage: 'Reason',
+                })
+                : intl.formatMessage({
+                    id: 'Apis.Details.Compliance.RuleViolation.column.path',
+                    defaultMessage: 'Path',
+                }),
             options: {
                 sort: false,
-                customBodyRender: (value) => (
-                    <Typography variant='body2'>{value.path}</Typography>
-                ),
+                customBodyRender: (value) => {
+                    if (ruleCategory === 'GENERIC') {
+                        return renderGenericViolatedPath(value);
+                    }
+                    const text = typeof value === 'object' && value !== null
+                        ? (value.path || String(value))
+                        : String(value || '');
+                    return <Typography variant='body2'>{text}</Typography>;
+                },
             },
         },
         {
@@ -256,7 +339,9 @@ export default function RuleViolationSummary({ complianceData }) {
                                                 {item.rulesetName} ({item.rules.length})
                                             </Typography>
                                             <Chip
-                                                label={Utils.mapRuleTypeToLabel(item.ruleType)}
+                                                label={item.ruleCategory === 'GENERIC'
+                                                    ? Utils.mapRuleTypeToLabel(item.ruleCategory)
+                                                    : Utils.mapRuleTypeToLabel(item.ruleType)}
                                                 size='small'
                                                 color='primary'
                                                 variant='outlined'
@@ -320,7 +405,9 @@ export default function RuleViolationSummary({ complianceData }) {
                                         },
                                     }}>
                                         <ListBase
-                                            columnProps={isPassed ? passedRuleColumnProps : ruleColumnProps}
+                                            columnProps={isPassed
+                                                ? passedRuleColumnProps
+                                                : getRuleColumnProps(item.ruleCategory)}
                                             apiCall={() => isPassed ?
                                                 getPassedRuleData(item.rules) : getRuleData(item.rules)}
                                             searchProps={false}
