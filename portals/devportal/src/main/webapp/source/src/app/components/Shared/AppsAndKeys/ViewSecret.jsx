@@ -136,7 +136,7 @@ class ViewSecret extends React.Component {
      * @memberof ViewSecret
      */
     render() {
-        const { secret, intl, isGenerated = false } = this.props;
+        const {  secret, intl } = this.props;
         const { secretCopied } = this.state;
         return (
             <Root className={classes.root}>
@@ -148,19 +148,11 @@ class ViewSecret extends React.Component {
                         />
                     </Typography>
                     <Typography component='p'>
-                        {isGenerated ? (
-                            <FormattedMessage
-                                id='Shared.AppsAndKeys.ViewSecret.please.copy.generated.secret.help'
-                                defaultMessage={`Please make a note of the generated consumer
-                                secret value as it will be displayed only once.`}
-                            />
-                        ) : (
-                            <FormattedMessage
-                                id='Shared.AppsAndKeys.ViewSecret.please.copy.secret.help'
-                                defaultMessage={`Please make a note of the regenerated consumer
-                                secret value as it will be displayed only once.`}
-                            />
-                        )}
+                        <FormattedMessage
+                            id='Shared.AppsAndKeys.ViewSecret.please.copy.secret.help'
+                            defaultMessage={`Please make a note of the regenerated consumer 
+                            secret value as it will be displayed only once.`}
+                        />
                     </Typography>
                 </InlineMessage>
                 <div className={classes.epWrapper}>
@@ -224,7 +216,6 @@ ViewSecret.propTypes = {
     secret: PropTypes.shape({
         consumerSecret: PropTypes.string.isRequired,
     }).isRequired,
-    isGenerated: PropTypes.bool,
 };
 
 export default injectIntl((ViewSecret));

@@ -300,7 +300,7 @@ const TokenExchangeKeyConfiguration = (props) => {
     const [notFound, setNotFound] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [isResidenceTokenAvailable, setIsResidenceTokenAvailable] = useState(true);
-    const [residentKMConsumerSecret, setResidentKMConsumerSecret] = useState('');
+
 
     const [initialState] = useState({
         tokenResponse: '',
@@ -329,8 +329,7 @@ const TokenExchangeKeyConfiguration = (props) => {
     const intl = useIntl();
 
     const {
-        keyManagerConfig, defaultTokenEndpoint, selectedApp, selectedTab, selectedApp: {hashEnabled}, keys, fullScreen, keyType,
-        multipleSecretsAllowed,
+        keyManagerConfig, defaultTokenEndpoint, selectedApp, selectedTab, selectedApp: {hashEnabled}, keys, fullScreen, keyType
     } = props;
 
     let appId;
@@ -375,7 +374,6 @@ const TokenExchangeKeyConfiguration = (props) => {
             accessTokenRequest.scopesSelected,
             true,
             externalIDPToken,
-            residentKMConsumerSecret,
         ))
             .then((response) => {
                 console.log('token generated successfully ' + response);
@@ -472,8 +470,8 @@ const TokenExchangeKeyConfiguration = (props) => {
         setOpen(false);
         setShowCurl(false);
         setShowSecretGen(false);
-        dispatch({field: "isKeyJWT", value: false});
-        setResidentKMConsumerSecret('');
+        dispatch({field: "isKeyJWT", value: false})
+
     };
 
     /**
@@ -488,10 +486,6 @@ const TokenExchangeKeyConfiguration = (props) => {
     const handleClickOpenCurl = () => {
         setOpen(true);
         setShowCurl(true)
-    };
-
-    const handleConsumerSecretChange = (secret) => {
-        setResidentKMConsumerSecret(secret);
     };
 
 
@@ -643,8 +637,6 @@ const TokenExchangeKeyConfiguration = (props) => {
                                                             updateAccessTokenRequest={updateAccessTokenRequest}
                                                             accessTokenRequest={accessTokenRequest}
                                                             subscriptionScopes={subscriptionScopes}
-                                                            multipleSecretsAllowed={multipleSecretsAllowed}
-                                                            onConsumerSecretChange={handleConsumerSecretChange}
                                                         />
                                                     )}
                                                     {(!showToken && !isResidenceTokenAvailable) && (
@@ -670,7 +662,6 @@ const TokenExchangeKeyConfiguration = (props) => {
                                                         jwtToken={externalIDPToken}
                                                         keyManagerConfig={keyManagerConfig}
                                                         defaultTokenEndpoint={defaultTokenEndpoint}
-                                                        consumerSecretMasked={multipleSecretsAllowed}
                                                     />
                                                 </DialogContentText>
                                             )}
@@ -679,7 +670,7 @@ const TokenExchangeKeyConfiguration = (props) => {
                                             {isUpdating && <CircularProgress size={24}/>}
                                             {(!showToken && !showCurl && !showSecretGen && isResidenceTokenAvailable) && (
                                                 <Button onClick={generateAccessToken} color='primary'
-                                                        disabled={isUpdating || (multipleSecretsAllowed && !residentKMConsumerSecret)}>
+                                                        disabled={isUpdating}>
                                                     <FormattedMessage
                                                         id='Shared.AppsAndKeys.ViewKeys.consumer.generate.btn'
                                                         defaultMessage='Generate'
@@ -743,7 +734,6 @@ TokenExchangeKeyConfiguration.defaultProps = {
     validating: false,
     fullScreen: false,
     summary: false,
-    multipleSecretsAllowed: false,
 };
 TokenExchangeKeyConfiguration.propTypes = {
     classes: PropTypes.instanceOf(Object).isRequired,
@@ -766,7 +756,6 @@ TokenExchangeKeyConfiguration.propTypes = {
         owner: PropTypes.string,
         hashEnabled: PropTypes.bool,
     }),
-    multipleSecretsAllowed: PropTypes.bool,
 };
 
 

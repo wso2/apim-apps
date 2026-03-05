@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, {useEffect, useState, useContext, useRef} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import cloneDeep from 'lodash.clonedeep';
@@ -30,11 +30,6 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Typography from '@mui/material/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Settings from 'Settings';
 import PropTypes from 'prop-types';
@@ -42,7 +37,6 @@ import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import AppConfiguration from './AppConfiguration';
 import ContextSettings from 'AppComponents/Shared/SettingsContext';
 import Application from 'AppData/Application';
-import { isMultipleClientSecretsEnabled } from './Secrets/util';
 
 const PREFIX = 'KeyConfiguration';
 
@@ -152,7 +146,7 @@ const KeyConfiguration = (props) => {
     const intl = useIntl();
     const {
         notFound, isUserOwner, keyManagerConfig, updateKeyRequest, keyRequest, updateHasError, callbackError, mode,
-        selectedApp, keyValue,
+        selectedApp
     } = props;
     const {
         selectedGrantTypes, callbackUrl,
@@ -165,21 +159,6 @@ const KeyConfiguration = (props) => {
     const [isOrgWideAppUpdateEnabled, setIsOrgWideAppUpdateEnabled] = useState(false);
     const settingsContext = useContext(ContextSettings);
     const [subscriptionScopes, setSubscriptionScopes] = useState([]);
-    const configErrorsRef = useRef({});
-    const [hasCallbackError, setHasCallbackError] = useState(false);
-
-    /**
-     * Callback passed to AppConfiguration to track per-config constraint validation errors.
-     * Updates the parent's hasError state when any config has a validation error.
-     * @param {string} configName - The name of the config field.
-     * @param {boolean} hasValidationError - Whether the field currently has a validation error.
-     */
-    const handleConfigValidationError = (configName, hasValidationError) => {
-        configErrorsRef.current[configName] = hasValidationError;
-        const anyConstraintError = Object.values(configErrorsRef.current).some((v) => v === true);
-        // Combine constraint errors with callback errors
-        updateHasError(anyConstraintError || hasCallbackError);
-    };
 
     useEffect(() => {
         if (selectedApp) {
@@ -205,16 +184,6 @@ const KeyConfiguration = (props) => {
         const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
         setIsOrgWideAppUpdateEnabled(orgWideAppUpdateEnabled);
     }, [settingsContext]);
-    const isMultipleSecretsAllowed = isMultipleClientSecretsEnabled(additionalProperties);
-    const [expanded, setExpanded] = useState(!keyValue);
-
-    const handleAccordionChange = (event, isExpanded) => {
-        setExpanded(isExpanded);
-    };
-
-    useEffect(() => {
-        setExpanded(!keyValue);
-    }, [keyValue]);
 
     /**
      * Get the display names for the supported grant types
@@ -232,19 +201,15 @@ const KeyConfiguration = (props) => {
         return modifiedGrantTypes;
     };
     const callBackHasErrors = (callbackUrlLocal) => {
-        const anyConstraintError = Object.values(configErrorsRef.current).some((v) => v === true);
         if (callbackUrlLocal === '') {
-            setHasCallbackError(true);
             updateHasError(true);
             setCallbackHelper(intl.formatMessage({
                 defaultMessage: 'Call back URL can not be empty when Implicit or Authorization Code grants are selected.',
                 id: 'Shared.AppsAndKeys.KeyConfCiguration.Invalid.callback.empty.error.text',
             }));
         } else {
-            setHasCallbackError(false);
             setCallbackHelper(false);
-            // Only constraint errors remain (if any)
-            updateHasError(anyConstraintError);
+            updateHasError(false);
         }
     };
     /**
@@ -274,10 +239,7 @@ const KeyConfiguration = (props) => {
                     if (currentTarget.id === 'implicit' || currentTarget.id === 'authorization_code') {
                         newRequest.callbackUrl = '';
                         setCallbackHelper(false);
-                        setHasCallbackError(false);
-                        // Only keep constraint errors
-                        const anyConstraintError = Object.values(configErrorsRef.current).some((v) => v === true);
-                        updateHasError(anyConstraintError);
+                        updateHasError(false);
                     }
                 }
                 newRequest.selectedGrantTypes = newGrantTypes;
@@ -453,141 +415,104 @@ const KeyConfiguration = (props) => {
                                 </TableCell>
                             </TableRow>
                         )}
-                        {mode !== 'MAPPED' && (() => {
-                            const advancedConfigurations = (
-                                <>
-                                    {/* Grant Types */}
-                                    <TableRow>
-                                        <TableCell component='th' scope='row' className={classes.leftCol}>
-                                            <FormattedMessage
-                                                id='Shared.AppsAndKeys.KeyConfiguration.grant.types'
-                                                defaultMessage='Grant Types'
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className={classes.checkboxWrapperColumn} id='grant-types'>
-                                                {Object.keys(grantTypeDisplayListMap).map((key) => {
-                                                    const value = grantTypeDisplayListMap[key];
-                                                    return (
-                                                        <FormControlLabel
-                                                            control={(
-                                                                <Checkbox
-                                                                    id={key}
-                                                                    checked={!!(selectedGrantTypes &&
-                                                                        selectedGrantTypes.includes(key))}
-                                                                    onChange={(e) => handleChange('grantType', e)}
-                                                                    value={value}
-                                                                    disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
-                                                                    color='grey'
-                                                                    data-testid={key}
-                                                                />
-                                                            )}
-                                                            label={value}
-                                                            key={key}
-                                                        />
-                                                    );
-                                                })}
-                                            </div>
-                                            <FormHelperText>
-                                                <FormattedMessage
-                                                    defaultMessage={`The application can use the following grant types to generate 
-                                    Access Tokens. Based on the application requirement, you can enable or disable 
-                                    grant types for this application.`}
-                                                    id='Shared.AppsAndKeys.KeyConfiguration.the.application.can'
-                                                />
-                                            </FormHelperText>
-                                        </TableCell>
-                                    </TableRow>
+                        {mode !== 'MAPPED' && (<><TableRow>
+                            <TableCell component='th' scope='row' className={classes.leftCol}>
+                                <FormattedMessage
+                                    id='Shared.AppsAndKeys.KeyConfiguration.grant.types'
+                                    defaultMessage='Grant Types'
+                                />
 
-                                    {/* Callback URL */}
-                                    <TableRow>
-                                        <TableCell component='th' scope='row' className={classes.leftCol}>
+                            </TableCell>
+                            <TableCell>
+                                <div className={classes.checkboxWrapperColumn} id='grant-types'>
+                                    {Object.keys(grantTypeDisplayListMap).map((key) => {
+                                        const value = grantTypeDisplayListMap[key];
+                                        return (
+                                            <FormControlLabel
+                                                control={(
+                                                    <Checkbox
+                                                        id={key}
+                                                        checked={!!(selectedGrantTypes
+                                                                && selectedGrantTypes.includes(key))}
+                                                        onChange={(e) => handleChange('grantType', e)}
+                                                        value={value}
+                                                        disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
+                                                        color='grey'
+                                                        data-testid={key}
+                                                    />
+                                                )}
+                                                label={value}
+                                                key={key}
+                                            />
+                                        );
+                                    })}
+                                </div>
+                                <FormHelperText>
+                                    <FormattedMessage
+                                        defaultMessage={`The application can use the following grant types to generate 
+                            Access Tokens. Based on the application requirement,you can enable or disable 
+                            grant types for this application.`}
+                                        id='Shared.AppsAndKeys.KeyConfiguration.the.application.can'
+                                    />
+                                </FormHelperText>
+
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell component='th' scope='row' className={classes.leftCol}>
+                                <FormattedMessage
+                                    defaultMessage='Callback URL'
+                                    id='Shared.AppsAndKeys.KeyConfiguration.callback.url.label'
+                                />
+
+                            </TableCell>
+                            <TableCell>
+                                <Box maxWidth={600}>
+                                    <TextField
+                                        margin='dense'
+                                        id='callbackURL'
+                                        size='small'
+                                        label={(
                                             <FormattedMessage
                                                 defaultMessage='Callback URL'
                                                 id='Shared.AppsAndKeys.KeyConfiguration.callback.url.label'
                                             />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Box maxWidth={600}>
-                                                <TextField
-                                                    margin='dense'
-                                                    id='callbackURL'
-                                                    size='small'
-                                                    label={(
-                                                        <FormattedMessage
-                                                            defaultMessage='Callback URL'
-                                                            id='Shared.AppsAndKeys.KeyConfiguration.callback.url.label'
-                                                        />
-                                                    )}
-                                                    value={callbackUrl}
-                                                    name='callbackURL'
-                                                    onChange={(e) => handleChange('callbackUrl', e)}
-                                                    helperText={callbackHelper || (
-                                                        <FormattedMessage
-                                                            defaultMessage={`Callback URL is a redirection URI in the client
-                                            application which is used by the authorization server to send the
-                                            client's user-agent back after granting access.`}
-                                                            id='Shared.AppsAndKeys.KeyConfCiguration.callback.url.helper.text'
-                                                        />
-                                                    )}
-                                                    variant='outlined'
-                                                    disabled={(!isOrgWideAppUpdateEnabled && !isUserOwner) ||
-                                                        (selectedGrantTypes &&
-                                                            !selectedGrantTypes.includes('authorization_code') &&
-                                                            !selectedGrantTypes.includes('implicit'))}
-                                                    error={hasCallbackError}
-                                                    placeholder={intl.formatMessage({
-                                                        defaultMessage: 'http://url-to-webapp',
-                                                        id: 'Shared.AppsAndKeys.KeyConfiguration.url.to.webapp',
-                                                    })}
-                                                    fullWidth
-                                                />
-                                            </Box>
-                                        </TableCell>
-                                    </TableRow>
-
-                                    {/* App Configurations */}
-                                    {applicationConfiguration.length > 0 && applicationConfiguration.map((config) => (
-                                        <AppConfiguration
-                                            config={config}
-                                            previousValue={getPreviousValue(config)}
-                                            isUserOwner={isUserOwner}
-                                            handleChange={handleChange}
-                                            subscriptionScopes={subscriptionScopes}
-                                            onValidationError={handleConfigValidationError}
-                                        />
-                                    ))}
-                                </>
-                            );
-
-                            // Wrap in accordion if multipleSecretsAllowed
-                            return isMultipleSecretsAllowed ? (
-                                <TableRow>
-                                    <TableCell colSpan={2} sx={{ p: 0, border: 'none' }}>
-                                        <Accordion
-                                            expanded={expanded}
-                                            onChange={handleAccordionChange}
-                                        >
-                                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                                                    <FormattedMessage
-                                                        id="Shared.AppsAndKeys.KeyConfiguration.advanced.configurations"
-                                                        defaultMessage="Advanced Configurations"
-                                                    />
-                                                </Typography>
-                                            </AccordionSummary>
-                                            <AccordionDetails sx={{ p: 0 }}>
-                                                <Table size="small">
-                                                    <TableBody>
-                                                        {advancedConfigurations}
-                                                    </TableBody>
-                                                </Table>
-                                            </AccordionDetails>
-                                        </Accordion>
-                                    </TableCell>
-                                </TableRow>
-                            ) : advancedConfigurations;
-                        })()}
+                                        )}
+                                        value={callbackUrl}
+                                        name='callbackURL'
+                                        onChange={(e) => handleChange('callbackUrl', e)}
+                                        helperText={callbackHelper || (
+                                            <FormattedMessage
+                                                defaultMessage={`Callback URL is a redirection URI in the client
+                            application which is used by the authorization server to send the
+                            client's user-agent (usually web browser) back after granting access.`}
+                                                id='Shared.AppsAndKeys.KeyConfCiguration.callback.url.helper.text'
+                                            />
+                                        )}
+                                        variant='outlined'
+                                        disabled={(!isOrgWideAppUpdateEnabled && !isUserOwner)
+                                            || (selectedGrantTypes && !selectedGrantTypes.includes('authorization_code')
+                                                && !selectedGrantTypes.includes('implicit'))}
+                                        error={callbackError}
+                                        placeholder={intl.formatMessage({
+                                            defaultMessage: 'http://url-to-webapp',
+                                            id: 'Shared.AppsAndKeys.KeyConfiguration.url.to.webapp',
+                                        })}
+                                        fullWidth
+                                    />
+                                </Box>
+                            </TableCell>
+                        </TableRow>
+                        {applicationConfiguration.length > 0 && applicationConfiguration.map((config) => (
+                            <AppConfiguration
+                                config={config}
+                                previousValue={getPreviousValue(config)}
+                                isUserOwner={isUserOwner}
+                                handleChange={handleChange}
+                                subscriptionScopes={subscriptionScopes}
+                            />
+                        ))}
+                        </>)}
                     </TableBody>
                 </Table>
             </Box>

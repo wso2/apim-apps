@@ -61,7 +61,6 @@ const generateAccessTokenStep = (props) => {
     });
     const {
         currentStep, createdApp, setCreatedToken, incrementStep, createdKeyType, createdSelectedTab,
-        generatedConsumerSecret,
     } = props;
 
     useEffect(() => {
@@ -102,9 +101,6 @@ const generateAccessTokenStep = (props) => {
                     accessTokenRequest.keyType,
                     accessTokenRequest.timeout,
                     accessTokenRequest.scopesSelected,
-                    false,
-                    null,
-                    generatedConsumerSecret || null,
                 );
             })
             .then((response) => {

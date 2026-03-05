@@ -23,7 +23,6 @@ import FileCopy from '@mui/icons-material/FileCopy';
 import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import IconButton from "@mui/material/IconButton";
-import { isMultipleClientSecretsEnabled } from './Secrets/util';
 
 const PREFIX = 'ViewCurl';
 
@@ -74,7 +73,6 @@ function ViewCurl(props) {
         keyManagerConfig,
         jwtToken,
         defaultTokenEndpoint,
-        consumerSecretMasked,
     } = props;
     const bas64Encoded = window.btoa(consumerKey + ':' + consumerSecret);
     const [showReal, setShowReal] = useState(false);
@@ -94,21 +92,7 @@ function ViewCurl(props) {
     let { tokenEndpoint } = keyManagerConfig;
     const isAzureAD = keyManagerConfig.type === 'AzureAD';
     const azureScope = isAzureAD ? ` -d "scope=api://${consumerKey}/.default"` : '';
-    const isConsumerSecretRequired = isMultipleClientSecretsEnabled(keyManagerConfig.additionalProperties) || consumerSecretMasked;
-    const consumerSecretRequiredSnippet =
-        <div>
-            <span className={classes.command}> -u </span>
-            {'"consumerKey:<CONSUMER_SECRET>" '}
-        </div>;
-
-    // Returns the authorization part for the curl command
-    const getAuthSnippetString = () => {
-        return isConsumerSecretRequired
-            ? `-u "${consumerKey}:<CONSUMER_SECRET>"`
-            : `-H "Authorization: Basic ${bas64Encoded}"`
-    };
-
-    if (keyManagerConfig.alias === null) {
+    if (keyManagerConfig.alias === null ) {
         return (
             <Root>
                 <Typography>
@@ -126,16 +110,14 @@ function ViewCurl(props) {
                             <span className={classes.command}> -d </span>{' '}
                             {'"grant_type=password&username=Username&password=Password"'}
                         </div>
-                        {isConsumerSecretRequired ? (consumerSecretRequiredSnippet) : (
-                            <div>
-                                <span className={classes.command}> -H </span>
-                                {'"Authorization: Basic'}
-                                <a onClick={applyReal} className={classes.encodeVisible}>
-                                    {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
-                                </a>
-                                {'"'}
-                            </div>
-                        )}
+                        <div>
+                            <span className={classes.command}> -H </span>
+                            {'"Authorization: Basic'}
+                            <a onClick={applyReal} className={classes.encodeVisible}>
+                                {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
+                            </a>
+                            {'"'}
+                        </div>
                     </div>
                     <div>
                         <Tooltip
@@ -156,11 +138,9 @@ function ViewCurl(props) {
                                 id = 'copy-to-clipbord-icon'
                                 aria-label='Copy to clipboard'
                                 size="large"
-                                onClick={() => {
-                                    navigator.clipboard.writeText(`curl -k -X POST ${tokenEndpoint} -d ` +
-                                        '"grant_type=password&username=Username&password=Password" ' +
-                                        `${getAuthSnippetString()}`).then(onCopy)
-                                }}
+                                onClick={() => {navigator.clipboard.writeText(`curl -k -X POST ${tokenEndpoint} -d ` +
+                                    '"grant_type=password&username=Username&password=Password" -H ' +
+                                    `"Authorization: Basic ${bas64Encoded}"`).then(onCopy())}}
                             >
                                 <FileCopy color='secondary'/>
                             </IconButton>
@@ -188,16 +168,14 @@ function ViewCurl(props) {
                               </>
                             )}
                         </div>
-                        {isConsumerSecretRequired ? (consumerSecretRequiredSnippet) : (
-                            <div>
-                                <span className={classes.command}> -H </span>
-                                {'"Authorization: Basic'}
-                                <a onClick={applyReal} className={classes.encodeVisible}>
-                                    {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
-                                </a>
-                                {'"'}
-                            </div>
-                        )}
+                        <div>
+                            <span className={classes.command}> -H </span>
+                            {'"Authorization: Basic'}
+                            <a onClick={applyReal} className={classes.encodeVisible}>
+                                {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
+                            </a>
+                            {'"'}
+                        </div>
                     </div>
                     <div>
                         <Tooltip
@@ -219,9 +197,8 @@ function ViewCurl(props) {
                                 aria-label='Copy to clipboard'
                                 size="large"
                                 onClick={() => {navigator.clipboard.writeText(`curl -k -X POST ${tokenEndpoint} -d ` +
-                                  '"grant_type=client_credentials"' + azureScope + ' ' +
-                                    `${getAuthSnippetString()}`).then(onCopy)
-                                }}
+                                  '"grant_type=client_credentials"' + azureScope + ' -H ' +
+                                    `"Authorization: Basic ${bas64Encoded}"`).then(onCopy())}}
                             >
                                 <FileCopy color='secondary'/>
                             </IconButton>
@@ -270,16 +247,14 @@ function ViewCurl(props) {
                                     {showReal ? ' ' + jwtToken : 'jwtToken'}
                                 </a>
                             </div>
-                            {isConsumerSecretRequired ? (consumerSecretRequiredSnippet) : (
-                                <div>
-                                    <span className={classes.command}> -H </span>
-                                    {'"Authorization: Basic'}
-                                    <a onClick={applyReal} className={classes.encodeVisible}>
-                                        {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
-                                    </a>
-                                    {'"'}
-                                </div>
-                            )}
+                            <div>
+                                <span className={classes.command}> -H </span>
+                                {'"Authorization: Basic'}
+                                <a onClick={applyReal} className={classes.encodeVisible}>
+                                    {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
+                                </a>
+                                {'"'}
+                            </div>
                         </div>
                         <div>
                             <Tooltip
@@ -304,8 +279,8 @@ function ViewCurl(props) {
                                         '"grant_type=urn:ietf:params:oauth:grant-type:token-exchange" -d ' +
                                         '"subject_token_type=urn:ietf:params:oauth:token-type:jwt" -d ' +
                                         '"requested_token_type=urn:ietf:params:oauth:token-type:jwt" -d ' +
-                                        `"subject_token=${jwtToken}" ` +
-                                        `${getAuthSnippetString()}`).then(onCopy)}}
+                                        `"subject_token=${jwtToken}"  -H ` +
+                                        `"Authorization: Basic ${bas64Encoded}"`).then(onCopy())}}
                                 >
                                     <FileCopy color='secondary'/>
                                 </IconButton>
