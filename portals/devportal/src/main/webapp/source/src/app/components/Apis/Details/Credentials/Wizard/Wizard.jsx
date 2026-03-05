@@ -113,6 +113,7 @@ class Wizard extends Component {
             createdKeyType: '',
             createdSelectedTab: '',
             stepStatus: 'PROCEED',
+            generatedConsumerSecret: null,
         };
     }
 
@@ -156,6 +157,10 @@ class Wizard extends Component {
     setCreatedSelectedTab = (createdSelectedTab) => {
         this.setState({ createdSelectedTab });
     }
+
+    setGeneratedConsumerSecret = (secret) => {
+        this.setState({ generatedConsumerSecret: secret });
+    };
 
     /**
      * Increment the current step or next step by 1
@@ -218,6 +223,7 @@ class Wizard extends Component {
                                     setCreatedSelectedTab={this.setCreatedSelectedTab}
                                     setCreatedToken={this.setCreatedToken}
                                     handleReset={this.handleReset}
+                                    setGeneratedConsumerSecret={this.setGeneratedConsumerSecret}
                                 />
                             </>
                         )}
