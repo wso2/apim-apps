@@ -32,7 +32,7 @@ describe("Deploy sample api", () => {
         },
     }, () => {
         cy.visit(`/publisher/apis`);
-        cy.contains('WSO2 API-M v4.6.0');
+        cy.contains('WSO2 API-M v4.7.0');
         cy.wait(5000);
         cy.get("body").then($body => {
             if ($body.find("#itest-apis-welcome-msg").length > 0) {
