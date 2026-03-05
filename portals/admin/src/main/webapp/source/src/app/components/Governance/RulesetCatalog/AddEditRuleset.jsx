@@ -251,11 +251,11 @@ function AddEditRuleset(props) {
                         id: 'Governance.Rulesets.AddEdit.form.name.too.long',
                         defaultMessage: 'Ruleset name cannot exceed 255 characters',
                     });
-                } else if (!/^[a-zA-Z0-9-_ ]+$/.test(fieldValue)) {
+                } else if (!/^[a-zA-Z0-9-_ &]+$/.test(fieldValue)) {
                     error = intl.formatMessage({
                         id: 'Governance.Rulesets.AddEdit.form.name.invalid',
                         defaultMessage: 'Ruleset name can only contain alphanumeric characters,'
-                            + ' spaces, hyphens and underscores.',
+                            + ' spaces, hyphens, underscores and ampersands.',
                     });
                 }
                 break;
@@ -607,6 +607,7 @@ function AddEditRuleset(props) {
                                 <GenericRulesetForm
                                     rulesetContent={rulesetContent}
                                     onContentChange={handleEditorChange}
+                                    rulesetName={name}
                                 />
                             ) : (
                                 <Paper variant='outlined'>

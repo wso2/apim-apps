@@ -38,7 +38,6 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TuneIcon from '@mui/icons-material/Tune';
 import SecurityIcon from '@mui/icons-material/Security';
-import SpeedIcon from '@mui/icons-material/Speed';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import PropTypes from 'prop-types';
 
@@ -47,7 +46,7 @@ import PropTypes from 'prop-types';
  * Handles the well-known flat structure without requiring js-yaml dependency.
  */
 function parseSimpleYaml(yamlStr) {
-    const result = { deduplication: {}, rules: {} };
+    const result = { deduplication: {}, rules: {}, sectionName: 'deduplication' };
     if (!yamlStr) return result;
 
     let currentSection = null;
@@ -73,8 +72,18 @@ function parseSimpleYaml(yamlStr) {
                     multiLineValue = '';
                 }
                 currentSection = trimmed.slice(0, -1);
+                // Track original section name for lifecycle_retirement support
+                if (currentSection === 'lifecycle_retirement') {
+                    result.sectionName = 'lifecycle_retirement';
+                } else if (currentSection === 'deduplication') {
+                    result.sectionName = 'deduplication';
+                }
                 currentRule = null;
-            } else if (currentSection === 'deduplication' && indent >= 2) {
+            } else if (
+                (currentSection === 'deduplication'
+                    || currentSection === 'lifecycle_retirement')
+                && indent >= 2
+            ) {
                 const match = trimmed.match(/^([\w_]+):\s*(.*)$/);
                 if (match) {
                     const key = match[1];
@@ -83,7 +92,10 @@ function parseSimpleYaml(yamlStr) {
                     else if (value === 'false') value = false;
                     else if (/^\d+\.\d+$/.test(value)) value = parseFloat(value);
                     else if (/^\d+$/.test(value)) value = parseInt(value, 10);
-                    result.deduplication[key] = value;
+                    // Map lifecycle_retirement keys to deduplication keys for the form
+                    const normalizedKey = key === 'successor_similarity_threshold'
+                        ? 'similarity_threshold' : key;
+                    result.deduplication[normalizedKey] = value;
                 }
             } else if (currentSection === 'rules') {
                 // Flush multi-line if we're back at rule-key indent
@@ -128,11 +140,52 @@ function parseSimpleYaml(yamlStr) {
 
 /**
  * Serialize dedup config to YAML string without js-yaml dependency.
+ * Algorithm tuning parameters (num_hash_functions, num_bands, shingle_size)
+ * are now managed in deployment.toml and are NOT included in the ruleset YAML.
  */
 function toSimpleYaml(cfg) {
     const d = cfg.deduplication;
-    const ruleKey = Object.keys(cfg.rules)[0] || 'api-deduplication-check';
+    const sectionName = cfg.sectionName || 'deduplication';
+    const isLifecycle = sectionName === 'lifecycle_retirement';
+    const ruleKey = Object.keys(cfg.rules)[0]
+        || (isLifecycle ? 'successor-linkage-check' : 'api-deduplication-check');
     const rule = cfg.rules[ruleKey] || {};
+
+    // Escape YAML values that contain special characters (colons, etc.)
+    const escapeYaml = (val) => {
+        if (!val) return '""';
+        const s = String(val);
+        if (s.includes(':') || s.includes('#') || s.includes('{') || s.includes('}')
+            || s.includes('[') || s.includes(']') || s.includes(',') || s.includes('&')
+            || s.includes('*') || s.includes('!') || s.includes('|') || s.includes('>')
+            || s.includes("'") || s.includes('"') || s.startsWith(' ') || s.endsWith(' ')) {
+            return `"${s.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+        }
+        return s;
+    };
+
+    // Lifecycle rulesets use lifecycle_retirement: section with different keys
+    if (isLifecycle) {
+        return [
+            'lifecycle_retirement:',
+            `  enabled: ${d.enabled}`,
+            `  mode: ${d.mode}`,
+            `  successor_similarity_threshold: ${d.similarity_threshold}`,
+            `  sunset_period_days: ${d.sunset_period_days || 90}`,
+            '  required_successor_status: PUBLISHED',
+            '  applicable_transitions:',
+            '    - DEPRECATED',
+            '    - RETIRED',
+            '  compliance_exclusion: true',
+            'rules:',
+            `  ${ruleKey}:`,
+            `    description: ${escapeYaml(rule.description)}`,
+            `    severity: ${rule.severity || 'error'}`,
+            '    message: >-',
+            `      ${rule.message || ''}`,
+            '',
+        ].join('\n');
+    }
 
     return [
         'deduplication:',
@@ -140,12 +193,9 @@ function toSimpleYaml(cfg) {
         `  similarity_threshold: ${d.similarity_threshold}`,
         `  high_confidence_threshold: ${d.high_confidence_threshold}`,
         `  mode: ${d.mode}`,
-        `  num_hash_functions: ${d.num_hash_functions}`,
-        `  num_bands: ${d.num_bands}`,
-        `  shingle_size: ${d.shingle_size}`,
         'rules:',
         `  ${ruleKey}:`,
-        `    description: ${rule.description || ''}`,
+        `    description: ${escapeYaml(rule.description)}`,
         `    severity: ${rule.severity || 'error'}`,
         '    message: >-',
         `      ${rule.message || ''}`,
@@ -158,20 +208,32 @@ function toSimpleYaml(cfg) {
  * Replaces the raw Monaco YAML editor with a user-friendly accordion form
  * containing sliders, toggles, and dropdowns for all dedup configuration.
  */
-function GenericRulesetForm({ rulesetContent, onContentChange }) {
+function GenericRulesetForm({ rulesetContent, onContentChange, rulesetName }) {
     const intl = useIntl();
 
+    // Detect lifecycle-type ruleset by name or content structure
+    const isLifecycleRuleset = (() => {
+        if (rulesetName && /lifecycle|retirement/i.test(rulesetName)) return true;
+        if (rulesetContent && /lifecycle_retirement:/i.test(rulesetContent)) return true;
+        return false;
+    })();
+
     const defaultConfig = {
+        sectionName: isLifecycleRuleset ? 'lifecycle_retirement' : 'deduplication',
         deduplication: {
             enabled: true,
-            similarity_threshold: 0.50,
-            high_confidence_threshold: 0.99,
+            similarity_threshold: isLifecycleRuleset ? 0.50 : 0.50,
+            high_confidence_threshold: isLifecycleRuleset ? undefined : 0.99,
+            sunset_period_days: isLifecycleRuleset ? 90 : undefined,
             mode: 'audit',
-            num_hash_functions: 256,
-            num_bands: 32,
-            shingle_size: 5,
         },
-        rules: {
+        rules: isLifecycleRuleset ? {
+            'successor-linkage-check': {
+                description: 'Validates successor API linkage during lifecycle transitions',
+                severity: 'error',
+                message: 'API lifecycle transition requires a valid successor API to be linked.',
+            },
+        } : {
             'api-deduplication-check': {
                 description: 'Detects structurally similar APIs using MinHash/LSH algorithm',
                 severity: 'error',
@@ -194,8 +256,16 @@ function GenericRulesetForm({ rulesetContent, onContentChange }) {
                 const parsed = parseSimpleYaml(rulesetContent);
                 if (parsed && parsed.deduplication
                     && Object.keys(parsed.deduplication).length > 0) {
+                    // If the ruleset is lifecycle-type (detected by name), force
+                    // sectionName to 'lifecycle_retirement' even if the stored
+                    // YAML was corrupted to 'deduplication:'. This self-heals
+                    // the YAML on the next save.
+                    const resolvedSection = isLifecycleRuleset
+                        ? 'lifecycle_retirement'
+                        : (parsed.sectionName || 'deduplication');
                     setConfig((prev) => ({
                         ...prev,
+                        sectionName: resolvedSection,
                         deduplication: { ...prev.deduplication, ...parsed.deduplication },
                         rules: (parsed.rules
                             && Object.keys(parsed.rules).length > 0)
@@ -255,15 +325,6 @@ function GenericRulesetForm({ rulesetContent, onContentChange }) {
     const ruleKey = Object.keys(config.rules)[0] || 'api-deduplication-check';
     const rule = config.rules[ruleKey] || {};
 
-    // Compute the LSH probability threshold: 1-(1-t^r)^b where r=rows, b=bands
-    const computeLSHProbability = () => {
-        const t = dedup.similarity_threshold;
-        const b = dedup.num_bands;
-        const r = Math.floor(dedup.num_hash_functions / b);
-        const prob = 1 - ((1 - (t ** r)) ** b);
-        return (prob * 100).toFixed(1);
-    };
-
     return (
         <Box sx={{ width: '100%' }}>
             {/* Header with enable toggle */}
@@ -282,10 +343,17 @@ function GenericRulesetForm({ rulesetContent, onContentChange }) {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <SecurityIcon color={dedup.enabled ? 'primary' : 'disabled'} />
                     <Typography variant='subtitle1' fontWeight='bold'>
-                        <FormattedMessage
-                            id='Governance.Rulesets.GenericForm.dedup.title'
-                            defaultMessage='API Deduplication Engine'
-                        />
+                        {isLifecycleRuleset ? (
+                            <FormattedMessage
+                                id='Governance.Rulesets.GenericForm.lifecycle.title'
+                                defaultMessage='API Lifecycle & Retirement Standards'
+                            />
+                        ) : (
+                            <FormattedMessage
+                                id='Governance.Rulesets.GenericForm.dedup.title'
+                                defaultMessage='GENERIC Ruleset Engine'
+                            />
+                        )}
                     </Typography>
                     <Chip
                         label={dedup.enabled ? intl.formatMessage({
@@ -378,49 +446,51 @@ function GenericRulesetForm({ rulesetContent, onContentChange }) {
                             />
                         </Grid>
 
-                        {/* High Confidence Threshold */}
-                        <Grid item xs={12}>
-                            <Box sx={{
-                                display: 'flex', alignItems: 'center', gap: 0.5, mb: 1,
-                            }}
-                            >
-                                <Typography variant='body2' fontWeight='medium'>
-                                    <FormattedMessage
-                                        id='Governance.Rulesets.GenericForm.highconf.label'
-                                        defaultMessage='High Confidence Threshold'
-                                    />
-                                </Typography>
-                                <Tooltip title={intl.formatMessage({
-                                    id: 'Governance.Rulesets.GenericForm.highconf.tooltip',
-                                    defaultMessage: 'APIs exceeding this higher threshold are flagged as'
-                                        + ' near-certain duplicates with CRITICAL severity.',
-                                })}
+                        {/* High Confidence Threshold — only for deduplication rulesets */}
+                        {!isLifecycleRuleset && (
+                            <Grid item xs={12}>
+                                <Box sx={{
+                                    display: 'flex', alignItems: 'center', gap: 0.5, mb: 1,
+                                }}
                                 >
-                                    <InfoOutlinedIcon fontSize='small' color='action' />
-                                </Tooltip>
-                                <Chip
-                                    label={`${(dedup.high_confidence_threshold * 100).toFixed(0)}%`}
-                                    size='small'
-                                    color='error'
-                                    sx={{ ml: 'auto' }}
+                                    <Typography variant='body2' fontWeight='medium'>
+                                        <FormattedMessage
+                                            id='Governance.Rulesets.GenericForm.highconf.label'
+                                            defaultMessage='High Confidence Threshold'
+                                        />
+                                    </Typography>
+                                    <Tooltip title={intl.formatMessage({
+                                        id: 'Governance.Rulesets.GenericForm.highconf.tooltip',
+                                        defaultMessage: 'APIs exceeding this higher threshold are flagged as'
+                                            + ' near-certain duplicates with CRITICAL severity.',
+                                    })}
+                                    >
+                                        <InfoOutlinedIcon fontSize='small' color='action' />
+                                    </Tooltip>
+                                    <Chip
+                                        label={`${(dedup.high_confidence_threshold * 100).toFixed(0)}%`}
+                                        size='small'
+                                        color='error'
+                                        sx={{ ml: 'auto' }}
+                                    />
+                                </Box>
+                                <Slider
+                                    value={dedup.high_confidence_threshold}
+                                    onChange={(e, val) => updateDedup('high_confidence_threshold', val)}
+                                    min={0.80}
+                                    max={1.00}
+                                    step={0.01}
+                                    marks={[
+                                        { value: 0.80, label: '80%' },
+                                        { value: 0.90, label: '90%' },
+                                        { value: 0.95, label: '95%' },
+                                        { value: 1.00, label: '100%' },
+                                    ]}
+                                    valueLabelDisplay='auto'
+                                    valueLabelFormat={(v) => `${(v * 100).toFixed(0)}%`}
                                 />
-                            </Box>
-                            <Slider
-                                value={dedup.high_confidence_threshold}
-                                onChange={(e, val) => updateDedup('high_confidence_threshold', val)}
-                                min={0.80}
-                                max={1.00}
-                                step={0.01}
-                                marks={[
-                                    { value: 0.80, label: '80%' },
-                                    { value: 0.90, label: '90%' },
-                                    { value: 0.95, label: '95%' },
-                                    { value: 1.00, label: '100%' },
-                                ]}
-                                valueLabelDisplay='auto'
-                                valueLabelFormat={(v) => `${(v * 100).toFixed(0)}%`}
-                            />
-                        </Grid>
+                            </Grid>
+                        )}
 
                         {/* Mode selector */}
                         <Grid item xs={12} sm={6}>
@@ -447,7 +517,7 @@ function GenericRulesetForm({ rulesetContent, onContentChange }) {
                                     Warn - Log, alert &amp; add warning
                                 </MenuItem>
                                 <MenuItem value='block'>
-                                    Block - Reject API creation
+                                    Block - Reject API Deploying
                                 </MenuItem>
                             </TextField>
                         </Grid>
@@ -479,228 +549,53 @@ function GenericRulesetForm({ rulesetContent, onContentChange }) {
                 </AccordionDetails>
             </Accordion>
 
-            {/* Algorithm Tuning */}
-            <Accordion
-                expanded={expanded === 'algorithm'}
-                onChange={handleAccordionChange('algorithm')}
-                variant='outlined'
-                sx={{ mb: 1 }}
-            >
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <SpeedIcon fontSize='small' color='primary' />
+            {/* Note: Algorithm tuning parameters (hash functions, bands, shingle size)
+               are configured via deployment.toml under [apim.governance.deduplication] */}
+
+            {/* Violation Message — only for deduplication rulesets */}
+            {!isLifecycleRuleset && (
+                <Accordion
+                    expanded={expanded === 'message'}
+                    onChange={handleAccordionChange('message')}
+                    variant='outlined'
+                >
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <Typography variant='subtitle2'>
                             <FormattedMessage
-                                id='Governance.Rulesets.GenericForm.algorithm.title'
-                                defaultMessage='Algorithm Tuning (Advanced)'
+                                id='Governance.Rulesets.GenericForm.message.title'
+                                defaultMessage='Violation Message'
                             />
                         </Typography>
-                    </Box>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Grid container spacing={3}>
-                        {/* Hash Functions */}
-                        <Grid item xs={12} sm={6}>
-                            <Box sx={{
-                                display: 'flex', alignItems: 'center', gap: 0.5, mb: 1,
-                            }}
-                            >
-                                <Typography variant='body2' fontWeight='medium'>
-                                    <FormattedMessage
-                                        id='Governance.Rulesets.GenericForm.hash.label'
-                                        defaultMessage='Hash Functions'
-                                    />
-                                </Typography>
-                                <Tooltip title={intl.formatMessage({
-                                    id: 'Governance.Rulesets.GenericForm.hash.tooltip',
-                                    defaultMessage: 'Number of MinHash permutations. More = higher accuracy'
-                                        + ' but more memory. Must be divisible by number of bands.',
-                                })}
-                                >
-                                    <InfoOutlinedIcon fontSize='small' color='action' />
-                                </Tooltip>
-                                <Chip
-                                    label={dedup.num_hash_functions}
-                                    size='small'
-                                    variant='outlined'
-                                    sx={{ ml: 'auto' }}
-                                />
-                            </Box>
-                            <Slider
-                                value={dedup.num_hash_functions}
-                                onChange={(e, val) => updateDedup('num_hash_functions', val)}
-                                min={64}
-                                max={512}
-                                step={null}
-                                marks={[
-                                    { value: 64, label: '64' },
-                                    { value: 128, label: '128' },
-                                    { value: 256, label: '256' },
-                                    { value: 512, label: '512' },
-                                ]}
-                            />
-                        </Grid>
-
-                        {/* Bands */}
-                        <Grid item xs={12} sm={6}>
-                            <Box sx={{
-                                display: 'flex', alignItems: 'center', gap: 0.5, mb: 1,
-                            }}
-                            >
-                                <Typography variant='body2' fontWeight='medium'>
-                                    <FormattedMessage
-                                        id='Governance.Rulesets.GenericForm.bands.label'
-                                        defaultMessage='LSH Bands'
-                                    />
-                                </Typography>
-                                <Tooltip title={intl.formatMessage({
-                                    id: 'Governance.Rulesets.GenericForm.bands.tooltip',
-                                    defaultMessage: 'Number of LSH bands. More bands = higher recall'
-                                        + ' (finds more candidates). Must divide hash functions evenly.',
-                                })}
-                                >
-                                    <InfoOutlinedIcon fontSize='small' color='action' />
-                                </Tooltip>
-                                <Chip
-                                    label={dedup.num_bands}
-                                    size='small'
-                                    variant='outlined'
-                                    sx={{ ml: 'auto' }}
-                                />
-                            </Box>
-                            <Slider
-                                value={dedup.num_bands}
-                                onChange={(e, val) => updateDedup('num_bands', val)}
-                                min={4}
-                                max={64}
-                                step={null}
-                                marks={[
-                                    { value: 4, label: '4' },
-                                    { value: 8, label: '8' },
-                                    { value: 16, label: '16' },
-                                    { value: 32, label: '32' },
-                                    { value: 64, label: '64' },
-                                ]}
-                            />
-                        </Grid>
-
-                        {/* Shingle Size */}
-                        <Grid item xs={12} sm={6}>
-                            <Box sx={{
-                                display: 'flex', alignItems: 'center', gap: 0.5, mb: 1,
-                            }}
-                            >
-                                <Typography variant='body2' fontWeight='medium'>
-                                    <FormattedMessage
-                                        id='Governance.Rulesets.GenericForm.shingle.label'
-                                        defaultMessage='Shingle Size (N-gram)'
-                                    />
-                                </Typography>
-                                <Tooltip title={intl.formatMessage({
-                                    id: 'Governance.Rulesets.GenericForm.shingle.tooltip',
-                                    defaultMessage: 'Size of character n-grams for shingling. Larger values'
-                                        + ' capture more context but may miss small variations.',
-                                })}
-                                >
-                                    <InfoOutlinedIcon fontSize='small' color='action' />
-                                </Tooltip>
-                                <Chip
-                                    label={dedup.shingle_size}
-                                    size='small'
-                                    variant='outlined'
-                                    sx={{ ml: 'auto' }}
-                                />
-                            </Box>
-                            <Slider
-                                value={dedup.shingle_size}
-                                onChange={(e, val) => updateDedup('shingle_size', val)}
-                                min={2}
-                                max={7}
-                                step={1}
-                                marks={[
-                                    { value: 2, label: '2' },
-                                    { value: 3, label: '3' },
-                                    { value: 5, label: '5' },
-                                    { value: 7, label: '7' },
-                                ]}
-                            />
-                        </Grid>
-
-                        {/* LSH Detection Probability Info */}
-                        <Grid item xs={12} sm={6}>
-                            <Box sx={{
-                                p: 2,
-                                bgcolor: 'info.lighter',
-                                borderRadius: 1,
-                                border: '1px solid',
-                                borderColor: 'info.light',
-                            }}
-                            >
-                                <Typography variant='body2' color='info.dark' fontWeight='medium'>
-                                    <FormattedMessage
-                                        id='Governance.Rulesets.GenericForm.lsh.probability'
-                                        defaultMessage='LSH Detection Probability'
-                                    />
-                                </Typography>
-                                <Typography variant='h5' color='info.dark' sx={{ mt: 0.5 }}>
-                                    {computeLSHProbability()}
-                                    %
-                                </Typography>
-                                <Typography variant='caption' color='text.secondary'>
-                                    <FormattedMessage
-                                        id='Governance.Rulesets.GenericForm.lsh.probability.desc'
-                                        defaultMessage='Probability that a pair at the similarity threshold
-                                            will be detected as candidates'
-                                    />
-                                </Typography>
-                            </Box>
-                        </Grid>
-                    </Grid>
-                </AccordionDetails>
-            </Accordion>
-
-            {/* Rule Message */}
-            <Accordion
-                expanded={expanded === 'message'}
-                onChange={handleAccordionChange('message')}
-                variant='outlined'
-            >
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography variant='subtitle2'>
-                        <FormattedMessage
-                            id='Governance.Rulesets.GenericForm.message.title'
-                            defaultMessage='Violation Message'
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <TextField
+                            fullWidth
+                            multiline
+                            rows={3}
+                            value={rule.message || ''}
+                            onChange={(e) => updateRule('message', e.target.value)}
+                            label={intl.formatMessage({
+                                id: 'Governance.Rulesets.GenericForm.message.label',
+                                defaultMessage: 'Message shown when a duplicate is detected',
+                            })}
+                            variant='outlined'
+                            size='small'
                         />
-                    </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <TextField
-                        fullWidth
-                        multiline
-                        rows={3}
-                        value={rule.message || ''}
-                        onChange={(e) => updateRule('message', e.target.value)}
-                        label={intl.formatMessage({
-                            id: 'Governance.Rulesets.GenericForm.message.label',
-                            defaultMessage: 'Message shown when a duplicate is detected',
-                        })}
-                        variant='outlined'
-                        size='small'
-                    />
-                    <TextField
-                        fullWidth
-                        value={rule.description || ''}
-                        onChange={(e) => updateRule('description', e.target.value)}
-                        label={intl.formatMessage({
-                            id: 'Governance.Rulesets.GenericForm.ruledesc.label',
-                            defaultMessage: 'Rule Description',
-                        })}
-                        variant='outlined'
-                        size='small'
-                        sx={{ mt: 2 }}
-                    />
-                </AccordionDetails>
-            </Accordion>
+                        <TextField
+                            fullWidth
+                            value={rule.description || ''}
+                            onChange={(e) => updateRule('description', e.target.value)}
+                            label={intl.formatMessage({
+                                id: 'Governance.Rulesets.GenericForm.ruledesc.label',
+                                defaultMessage: 'Rule Description',
+                            })}
+                            variant='outlined'
+                            size='small'
+                            sx={{ mt: 2 }}
+                        />
+                    </AccordionDetails>
+                </Accordion>
+            )}
         </Box>
     );
 }
@@ -708,6 +603,11 @@ function GenericRulesetForm({ rulesetContent, onContentChange }) {
 GenericRulesetForm.propTypes = {
     rulesetContent: PropTypes.string.isRequired,
     onContentChange: PropTypes.func.isRequired,
+    rulesetName: PropTypes.string,
+};
+
+GenericRulesetForm.defaultProps = {
+    rulesetName: '',
 };
 
 export default GenericRulesetForm;

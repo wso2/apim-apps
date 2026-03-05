@@ -1031,15 +1031,15 @@ function AddEditPolicy(props) {
                                     <Typography variant='subtitle2' color='primary'>
                                         <FormattedMessage
                                             id='Governance.Policies.AddEdit.rulesets.dedup.title'
-                                            defaultMessage='API Deduplication'
+                                            defaultMessage='GENERIC Rulesets'
                                         />
                                     </Typography>
                                 </Box>
                                 <Typography variant='caption' color='text.secondary' sx={{ display: 'block', mb: 1.5 }}>
                                     <FormattedMessage
                                         id='Governance.Policies.AddEdit.rulesets.dedup.description'
-                                        defaultMessage={'Toggle deduplication rulesets to enable '
-                                            + 'duplicate API detection for this policy.'}
+                                        defaultMessage={'Toggle GENERIC rulesets to enable '
+                                            + 'deduplication and lifecycle checks for this policy.'}
                                     />
                                 </Typography>
                                 {availableRulesets

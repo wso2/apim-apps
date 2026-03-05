@@ -146,6 +146,7 @@ export default function Compliance(props) {
                     return {
                         ...validationResult.body,
                         ruleType: rulesetMap.get(rulesetId).ruleType,
+                        ruleCategory: rulesetResult.body.ruleCategory,
                         documentationLink: rulesetResult.body.documentationLink,
                     };
                 });
