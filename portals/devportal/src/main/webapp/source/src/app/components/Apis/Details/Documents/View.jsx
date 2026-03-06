@@ -261,7 +261,7 @@ function View(props) {
             )}
             {doc.sourceType === 'INLINE' && <HTMLRender html={code} />}
             {doc.sourceType === 'URL' && (
-                <a className={classes.displayURL} href={doc.sourceUrl} target='_blank' rel='noreferrer'>
+                <a className={classes.displayURL} href={doc.sourceUrl} target='_blank' rel='noopener noreferrer'>
                     {doc.sourceUrl}
                     <Icon className={classes.displayURLLink}>open_in_new</Icon>
                 </a>

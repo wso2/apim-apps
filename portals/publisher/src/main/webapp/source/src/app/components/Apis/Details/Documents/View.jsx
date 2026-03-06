@@ -325,7 +325,7 @@ function View(props) {
                                     </TableCell>
                                     <TableCell>
                                         <a className={classes.displayURL} href={doc.sourceUrl} target='_blank' 
-                                            rel='noreferrer'>
+                                            rel='noopener noreferrer'>
                                             {doc.sourceUrl}
                                             <Icon className={classes.displayURLLink}>open_in_new</Icon>
                                         </a>
