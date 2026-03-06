@@ -42,6 +42,7 @@ import {
 } from '@mui/material';
 import { LinkOff } from '@mui/icons-material';
 import LegacyApiKeys from 'AppComponents/Shared/AppsAndKeys/LegacyApiKeys';
+import Settings from 'Settings';
 import MUIDataTable from 'mui-datatables';
 import API from 'AppData/api';
 import { getBasePath } from 'AppUtils/utils';
@@ -49,6 +50,7 @@ import { mdiOpenInNew } from '@mdi/js';
 import { Icon as MDIcon } from '@mdi/react';
 
 export default function ApiKeyListing({ keyType, selectedApp }) {
+    const legacyApiKeysEnabled = Settings.app?.legacyApiKeys?.enabled ?? false;
     const [currentTab, setCurrentTab] = React.useState(0);
     const [selectedAPI, setSelectedAPI] = React.useState('');
     const [selectedExistingKey, setSelectedExistingKey] = React.useState('');
@@ -384,16 +386,18 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
 
     return (
         <Box>
-            {/* Tab Navigation */}
-            <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-                <Tabs value={currentTab} onChange={handleTabChange}>
-                    <Tab label='API Keys' />
-                    <Tab label='Legacy API Keys' />
-                </Tabs>
-            </Box>
+            {/* Tab Navigation - only shown when legacy API keys are enabled */}
+            {legacyApiKeysEnabled && (
+                <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+                    <Tabs value={currentTab} onChange={handleTabChange}>
+                        <Tab label='API Keys' />
+                        <Tab label='Legacy API Keys' />
+                    </Tabs>
+                </Box>
+            )}
 
             {/* Tab Content */}
-            {currentTab === 0 && (
+            {(!legacyApiKeysEnabled || currentTab === 0) && (
                 <Stack spacing={4}>
                     {/* Loading state while fetching from API */}
                     {associatedApiKeysData === null ? (
@@ -571,7 +575,7 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
                 </Stack>
             )}
 
-            {currentTab === 1 && (
+            {legacyApiKeysEnabled && currentTab === 1 && (
                 <LegacyApiKeys keyType={keyType} selectedApp={selectedApp} />
             )}
 
