@@ -671,7 +671,7 @@ export default class API extends Resource {
                 applicationId: applicationId,
                 keyType: keyType
             };
-            return client.apis.APIKeys.generateAppBoundAPIKey(
+            return client.apis.APIKeys.applicationsApplicationIdApiKeysKeyTypeGeneratePost(
                 payload,
                 {
                     requestBody: {
@@ -742,7 +742,7 @@ export default class API extends Resource {
                 applicationId: applicationId,
                 keyType: keyType
             };
-            return client.apis.APIKeys.revokeAppBoundAPIKey(
+            return client.apis.APIKeys.applicationsApplicationIdApiKeysKeyTypeRevokePost(
                 payload,
                 {
                     requestBody: {
