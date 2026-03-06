@@ -127,6 +127,7 @@ export default {
     custom: {
         wrapperBackground: '#f9f9f9',
         disableColor: '#D3D3D3',
+        drawerWidth: 230,
         leftMenuWidth: 230,
         contentAreaWidth: 1240,
         logo: '/site/public/images/logo.svg',
@@ -192,7 +193,7 @@ export default {
         globalNavBar: {
             active: '#46a3ca',
             opened: {
-                drawerWidth: 180,
+                drawerWidth: 230,
             },
             collapsed: {
             },
