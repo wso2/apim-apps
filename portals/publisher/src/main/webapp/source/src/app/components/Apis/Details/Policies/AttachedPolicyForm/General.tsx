@@ -45,6 +45,7 @@ import ApiOperationContext from "../ApiOperationContext";
 import ModelRoundRobin from '../CustomPolicies/ModelRoundRobin';
 import ModelWeightedRoundRobin from '../CustomPolicies/ModelWeightedRoundRobin';
 import ModelFailover from '../CustomPolicies/ModelFailover';
+import ContentBasedRouter from '../CustomPolicies/ContentBasedRouter';
 import { Editor } from '@monaco-editor/react';
 
 const PREFIX = 'General';
@@ -136,7 +137,8 @@ const General: FC<GeneralProps> = ({
         if (
             (policyObj && policyObj.name === 'modelRoundRobin') ||
             (policyObj && policyObj.name === 'modelWeightedRoundRobin') ||
-            (policyObj && policyObj.name === 'modelFailover')
+            (policyObj && policyObj.name === 'modelFailover') ||
+            (policyObj && policyObj.name === 'ContentBasedModelRouter')
         ) {
             setManual(true);
         }
@@ -250,8 +252,12 @@ const General: FC<GeneralProps> = ({
             }
         });
 
-        if (policyObj.name === 'modelRoundRobin' || policyObj.name === 'modelWeightedRoundRobin' || policyObj.name === 'modelFailover') {
-            updateCandidates[policySpec.policyAttributes[0].name] = manualPolicyConfig;
+        if (policyObj.name === 'modelRoundRobin' || policyObj.name === 'modelWeightedRoundRobin' || policyObj.name === 'modelFailover'
+            || policyObj.name === 'ContentBasedModelRouter'
+        ) {
+            if (policySpec.policyAttributes?.length) {
+                updateCandidates[policySpec.policyAttributes[0].name] = manualPolicyConfig;
+            }
         }
 
         // Saving field changes to backend
@@ -480,6 +486,12 @@ const General: FC<GeneralProps> = ({
                     )}
                     {(isManual && policyObj.name === 'modelFailover') && (
                         <ModelFailover
+                            setManualPolicyConfig={setManualPolicyConfig}
+                            manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
+                        />
+                    )}
+                    {(isManual && policyObj.name === 'ContentBasedModelRouter') && (
+                        <ContentBasedRouter
                             setManualPolicyConfig={setManualPolicyConfig}
                             manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
                         />
