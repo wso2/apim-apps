@@ -24,26 +24,26 @@ class PublisherMenu {
     static goToBasicInfoByURL(apiID){
         cy.intercept('GET', `**/apis/${apiID}/documents?limit=1000`).as('documents');
         cy.visit(`/publisher/apis/${apiID}/configuration`);
-        cy.wait('@documents',{timeout: Cypress.config().largeTimeout}).its('response.statusCode').should('equal', 200)
+        cy.wait('@documents',{timeout: Cypress.env('largeTimeout')}).its('response.statusCode').should('equal', 200)
         PublisherComonPage.waitUntillLoadingComponentsExit();
     }
     static goToDeploymentsByURL(apiID){
         cy.intercept('GET', `**/apis/${apiID}/deployments`).as('deployments');
         cy.visit(`/publisher/apis/${apiID}/deployments`);
-        cy.wait('@deployments',{timeout: Cypress.config().largeTimeout}).its('response.statusCode').should('equal', 200)
+        cy.wait('@deployments',{timeout: Cypress.env('largeTimeout')}).its('response.statusCode').should('equal', 200)
         PublisherComonPage.waitUntillLoadingComponentsExit();
     }
     static goTolifecycleByURL(apiID){
         cy.intercept('GET', `**/apis/${apiID}/revisions?query=deployed**`).as('revisions');
         cy.visit(`/publisher/apis/${apiID}/lifecycle`);
-        cy.wait('@revisions',{timeout: Cypress.config().largeTimeout}).its('response.statusCode').should('equal', 200)
+        cy.wait('@revisions',{timeout: Cypress.env('largeTimeout')}).its('response.statusCode').should('equal', 200)
         PublisherComonPage.waitUntillLoadingComponentsExit();
     }
     static goToAPIDefinitionByUI(apiID){
         cy.get('#itest-api-details-api-config-acc').click();
         cy.intercept('GET', '**/swagger').as('swagger');
         cy.get('#left-menu-itemAPIdefinition').click();
-        cy.wait('@swagger',{timeout: Cypress.config().largeTimeout}).its('response.statusCode').should('equal', 200)
+        cy.wait('@swagger',{timeout: Cypress.env('largeTimeout')}).its('response.statusCode').should('equal', 200)
         PublisherComonPage.waitUntillLoadingComponentsExit();
     }
 }
