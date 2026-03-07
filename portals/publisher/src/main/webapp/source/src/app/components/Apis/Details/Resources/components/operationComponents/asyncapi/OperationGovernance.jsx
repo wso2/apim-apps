@@ -181,7 +181,7 @@ export default function OperationGovernance(props) {
                     !operation['x-auth-type'] || operation['x-auth-type'].toLowerCase() !== 'none' ? !disableUpdate && (
                         <Link
                             to={`/apis/${api.id}/scopes/create`}
-                            target='_blank'
+                            target='_blank' rel='noopener noreferrer'
                         >
                             <Typography
                                 style={{ marginLeft: '10px' }}
