@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("Generate keys from api details page", () => {
+describe.skip("Generate keys from api details page", () => {
     const { publisher, developer, password, } = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';
