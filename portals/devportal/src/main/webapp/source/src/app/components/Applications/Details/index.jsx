@@ -448,7 +448,7 @@ class Details extends Component {
                     display: 'flex',
                     flex: 1,
                     flexDirection: 'column',
-                    marginLeft: (theme.custom.leftMenu.position === 'vertical-left' ? (theme.custom.leftMenu.width - 4) : 0),
+                    marginLeft: (theme.custom.leftMenu.position === 'vertical-left' ? (theme.custom.leftMenu.width - 158) : 0),
                     paddingBottom: theme.spacing(3),
                     overflowX: 'hidden',
                     [theme.breakpoints.down('md')]: {
