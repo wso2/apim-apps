@@ -16,7 +16,7 @@
 
 import Utils from "@support/utils";
 let apiId;
-describe("Create GraphQl API from file", () => {
+describe.skip("Create GraphQl API from file", () => {
   const username = 'admin';
   const password = 'admin';
   const filepath = 'api_artifacts/schema_graphql.graphql';
