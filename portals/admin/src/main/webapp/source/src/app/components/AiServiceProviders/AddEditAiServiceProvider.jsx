@@ -25,6 +25,7 @@ import { Link as RouterLink, useLocation } from 'react-router-dom';
 import {
     MenuItem,
     Typography,
+    Alert as MuiAlert,
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -135,6 +136,7 @@ export default function AddEditAiServiceProvider(props) {
         name: '',
         apiVersion: '',
         description: '',
+        deprecated: false,
         configurations: {
             metadata: [
                 {
@@ -246,6 +248,7 @@ export default function AddEditAiServiceProvider(props) {
                             name: aiVendorBody.name || '',
                             apiVersion: aiVendorBody.apiVersion || '',
                             description: aiVendorBody.description || '',
+                            deprecated: aiVendorBody.deprecated || false,
                             configurations: JSON.parse(aiVendorBody.configurations),
                             apiDefinition: aiVendorBody.apiDefinition || '',
                             modelList,
@@ -546,6 +549,19 @@ export default function AddEditAiServiceProvider(props) {
         >
             <Box component='div' m={2} sx={(theme) => ({ mb: theme.spacing(10) })}>
                 <Grid container spacing={2}>
+                    {state.deprecated && (
+                        <Grid item xs={12}>
+                            <MuiAlert severity='warning' sx={{ mb: 2 }}>
+                                <Typography variant='body1'>
+                                    <FormattedMessage
+                                        id='AiServiceProviders.AddEditAiServiceProvider.warning.deprecated'
+                                        defaultMessage='{name} {version} is deprecated'
+                                        values={{ name: state.name, version: state.apiVersion }}
+                                    />
+                                </Typography>
+                            </MuiAlert>
+                        </Grid>
+                    )}
                     <Grid item xs={12} md={12} lg={3}>
                         <Typography
                             color='inherit'
