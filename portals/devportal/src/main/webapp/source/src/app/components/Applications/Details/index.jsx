@@ -138,9 +138,9 @@ const Root = styled('div')((
         marginRight: (theme.custom.leftMenu.position === 'vertical-right' ? theme.custom.leftMenu.width : 0),
         paddingBottom: theme.spacing(3),
         overflowX: 'hidden',
-        [theme.breakpoints.down('sm')]: {
-            marginLeft: (theme.custom.leftMenu.position === 'vertical-left' ? 50 : 0),
-            marginRight: (theme.custom.leftMenu.position === 'vertical-right' ? 50 : 0),
+        [theme.breakpoints.down('md')]: {
+            marginLeft: (theme.custom.leftMenu.position === 'vertical-left' ? (theme.custom.leftMenu.width - 4) : 0) !== 0 && 50,
+            marginRight: (theme.custom.leftMenu.position === 'vertical-right' ? theme.custom.leftMenu.width : 0) !== 0 && 50,
         },
     },
 
@@ -252,12 +252,12 @@ class Details extends Component {
                 )}
                 {secScheme === 'apikey' && (
                     <div className={classes.root}>
-                        <div className={classes.titleWrapper}>
+                        <div className={classes.titleWrapper} style={{ paddingBottom: 2, paddingTop: 2 }}>
                             <Typography variant='h5' className={classes.keyTitle}>
                                 {this.toTitleCase(keyType)}
                                 <FormattedMessage
                                     id='Applications.Details.api.keys.title'
-                                    defaultMessage=' API Key'
+                                    defaultMessage=' API Keys'
                                 />
                             </Typography>
                         </div>
@@ -379,7 +379,7 @@ class Details extends Component {
                         text={(
                             <FormattedMessage
                                 id='Applications.Details.menu.api.key'
-                                defaultMessage='API Key'
+                                defaultMessage='API Keys'
                             />
                         )}
                         route='productionkeys/apikey'
@@ -420,7 +420,7 @@ class Details extends Component {
                         text={(
                             <FormattedMessage
                                 id='Applications.Details.menu.api.key'
-                                defaultMessage='API Key'
+                                defaultMessage='API Keys'
                             />
                         )}
                         route='sandboxkeys/apikey'
@@ -444,7 +444,19 @@ class Details extends Component {
                         id='left-menu-subscriptions'
                     />
                 </nav>
-                <Box className={classes.content}>
+                <Box sx={(theme) => ({
+                    display: 'flex',
+                    flex: 1,
+                    flexDirection: 'column',
+                    marginLeft: (theme.custom.leftMenu.position === 'vertical-left' ? (theme.custom.leftMenu.width - 4) : 0),
+                    paddingBottom: theme.spacing(3),
+                    overflowX: 'hidden',
+                    [theme.breakpoints.down('md')]: {
+                        marginLeft: (theme.custom.leftMenu.position === 'vertical-left'
+                            ? (theme.custom.leftMenu.width - 4) : 0) !== 0 && 50,
+                    },
+                })}
+                >
                     <InfoBar
                         application={application}
                         applicationId={match.params.application_uuid}

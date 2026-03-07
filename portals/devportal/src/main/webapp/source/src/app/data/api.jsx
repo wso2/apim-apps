@@ -518,15 +518,31 @@ export default class API extends Resource {
         }
     }
 
-    generateApiKey(applicationId, keyType, validityPeriod, restrictions) {
-        const promiseGet = this.client.then((client) => {
-            const payload = {
-                applicationId, keyType,
-            };
-            return client.apis['API Keys'].post_applications__applicationId__api_keys__keyType__generate(
+    /**
+     * `@deprecated` Use generateAppBoundAPIKey(...)
+     */
+    generateApiKey(applicationId, keyType, validityPeriod, restrictions = {}, keyName = 'default') {
+        return this.generateAppBoundAPIKey(applicationId, keyName, keyType, validityPeriod, restrictions);
+    }
+    
+    /**
+     * Generate API key for a given API
+     * @param apiId Id of the API that needs to generate the key for
+     * @param keyName Name of the key to be generated
+     * @param keyType Type of the key to be generated (PRODUCTION/ SANDBOX)
+     * @param validityPeriod Validity period of the key to be generated in seconds
+     * @param restrictions Restrictions to be applied to the key
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    generateApiApiKey(apiId, keyName, keyType, validityPeriod, restrictions) {
+        const promiseGenKeys = this.client.then((client) => {
+            const payload = { apiId };
+            return client.apis.APIKeys.generateApiBoundApiKey(
                 payload,
                 {
                     requestBody: {
+                        keyName: keyName,
+                        keyType: keyType,
                         validityPeriod: validityPeriod,
                         additionalProperties: restrictions
                     }
@@ -534,7 +550,297 @@ export default class API extends Resource {
                 this._requestMetaData(),
             );
         });
-        return promiseGet;
+        return promiseGenKeys;
+    }
+
+    /**
+     * Get API keys for a given API
+     * @param apiId Id of the API that needs to get the keys for
+     * @returns {promise} Promise resolving to the API keys
+     */
+    getApiApiKeys(apiId) {
+        const promiseGetKeys = this.client.then((client) => {
+            const payload = { apiId };
+            return client.apis.APIKeys.getAPIBoundAPIKeys(payload, this._requestMetaData());
+        });
+        return promiseGetKeys;
+    }
+
+    /**
+     * Regenerate API key for a given API
+     * @param apiId Id of the API that needs to generate the key for
+     * @param keyUUID UUID of the key to be regenerated
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    regenerateApiApiKey(apiId, keyUUID) {
+        const promiseRegenKeys = this.client.then((client) => {
+            const payload = { apiId };
+            return client.apis.APIKeys.regenerateAPIBoundAPIKey(
+                payload,
+                {
+                    requestBody: {
+                        keyUUID: keyUUID
+                    }
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promiseRegenKeys;
+    }
+
+    /**
+     * Revoke API key for a given API
+     * @param apiId Id of the API that needs to revoke the key for
+     * @param keyUUID UUID of the key to be revoked
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    revokeAPIBoundAPIKey(apiId, keyUUID) {
+        const promiseRevokeKeys = this.client.then((client) => {
+            const payload = { apiId };
+            return client.apis.APIKeys.revokeAPIBoundAPIKey(
+                payload,
+                {
+                    requestBody: {
+                        keyUUID: keyUUID
+                    }
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promiseRevokeKeys;
+    }
+
+    /**
+     * Associate an API key with a given application
+     * @param apiId Id of the API that needs to associate the key for
+     * @param keyUUID UUID of the key to be associated
+     * @param applicationUUID UUID of the application to associate the key with
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    associateApiApiKey(apiId, keyUUID, applicationUUID) {
+        const promiseAssociateKeys = this.client.then((client) => {
+            const payload = { apiId };
+            return client.apis.APIKeys.associateAPIKey(
+                payload,
+                {
+                    requestBody: {
+                        keyUUID: keyUUID,
+                        applicationUUID: applicationUUID
+                    }
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promiseAssociateKeys;
+    }
+
+    /**
+     * Dissociate an API key for a given application
+     * @param apiId Id of the API that needs to dissociate the key for
+     * @param keyUUID UUID of the key to be dissociated
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    dissociateApiApiKey(apiId, keyUUID) {
+        const promiseDissociateKeys = this.client.then((client) => {
+            const payload = { apiId };
+            return client.apis.APIKeys.dissociateAPIKey(
+                payload,
+                {
+                    requestBody: {
+                        keyUUID: keyUUID
+                    }
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promiseDissociateKeys;
+    }
+
+    /**
+     * Generate legacy API key for a given application
+     * @param applicationId Id of the application that needs to generate the key for
+     * @param keyName Name of the key to be generated
+     * @param keyType Type of the key to be generated (PRODUCTION/ SANDBOX)
+     * @param validityPeriod Validity period of the key to be generated in seconds
+     * @param restrictions Restrictions to be applied to the key
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    generateAppBoundAPIKey(applicationId, keyName, keyType, validityPeriod, restrictions) {
+        const promiseGenKeys = this.client.then((client) => {
+            const payload = {
+                applicationId: applicationId,
+                keyType: keyType
+            };
+            return client.apis.APIKeys.applicationsApplicationIdApiKeysKeyTypeGeneratePost(
+                payload,
+                {
+                    requestBody: {
+                        keyName: keyName,
+                        validityPeriod: validityPeriod,
+                        additionalProperties: restrictions
+                    }
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promiseGenKeys;
+    }
+
+    /**
+     * Regenerate legacy API key for a given application
+     * @param applicationId Id of the application that needs to generate the key for
+     * @param keyType Type of the key to be generated (PRODUCTION/ SANDBOX)
+     * @param keyUUID UUID of the key to be regenerated
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    regenerateAppBoundAPIKey(applicationId, keyType, keyUUID) {
+        const promiseRegenKeys = this.client.then((client) => {
+            const payload = {
+                applicationId: applicationId,
+                keyType: keyType
+            };
+            return client.apis.APIKeys.regenerateAppBoundAPIKey(
+                payload,
+                {
+                    requestBody: {
+                        keyUUID: keyUUID
+                    }
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promiseRegenKeys;
+    }
+
+    /**
+     * Get associated API keys for a given Application
+     * @param applicationId Id of the application that needs to get the keys for
+     * @param keyType Type of the key to be retrieved (PRODUCTION/ SANDBOX)
+     * @returns {promise} Promise resolving to the API keys
+     */
+    getAppApiKeys(applicationId, keyType) {
+        const promiseGetKeys = this.client.then((client) => {
+            const payload = {
+                applicationId: applicationId,
+                keyType: keyType
+            };
+            return client.apis.APIKeys.getAppBoundAPIKeys(payload, this._requestMetaData());
+        });
+        return promiseGetKeys;
+    }
+
+    /**
+     * Revoke App bound API key for a given application
+     * @param applicationId Id of the application that needs to revoke the key for
+     * @param keyType Type of the key to be revoked (PRODUCTION/ SANDBOX)
+     * @param keyUUID UUID of the key to be revoked
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    revokeAppBoundAPIKey(applicationId, keyType, keyUUID) {
+        const promiseRevokeKeys = this.client.then((client) => {
+            const payload = {
+                applicationId: applicationId,
+                keyType: keyType
+            };
+            return client.apis.APIKeys.applicationsApplicationIdApiKeysKeyTypeRevokePost(
+                payload,
+                {
+                    requestBody: {
+                        keyUUID: keyUUID
+                    }
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promiseRevokeKeys;
+    }
+
+    /**
+     * Get associated API keys for a given Application
+     * @param applicationId Id of the application that needs to get the keys for
+     * @param keyType Type of the key to be retrieved (PRODUCTION/ SANDBOX)
+     * @returns {promise} Promise resolving to the API keys
+     */
+    getSubscribedAPIsWithAPIKeys(applicationId, keyType) {
+        const promiseGetKeys = this.client.then((client) => {
+            const payload = {
+                applicationId: applicationId,
+                keyType: keyType
+            };
+            return client.apis.APIKeys.getSubscribedAPIsWithAPIKeys(payload, this._requestMetaData());
+        });
+        return promiseGetKeys;
+    }
+
+    /**
+     * Associate an API key with a given application
+     * @param apiUUID UUID of the API that needs to associate the key for
+     * @param keyUUID UUID of the key to be associated
+     * @param applicationId Id of the application to associate the key with
+     * @param keyType Type of the key to be associated (PRODUCTION/ SANDBOX)
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    associateAPIKeyToApp(apiUUID, keyUUID, applicationId, keyType) {
+        const promiseAssociateKeys = this.client.then((client) => {
+            const payload = {
+                applicationId: applicationId,
+                keyType: keyType
+            };
+            return client.apis.APIKeys.associateAPIKeyToApp(
+                payload,
+                {
+                    requestBody: {
+                        keyUUID: keyUUID,
+                        apiUUID: apiUUID
+                    }
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promiseAssociateKeys;
+    }
+
+    /**
+     * Dissociate an API key for a given application
+     * @param applicationId Id of the application that needs to dissociate the key for
+     * @param keyType Type of the key to be dissociated (PRODUCTION/ SANDBOX)
+     * @param keyUUID UUID of the key to be dissociated
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    dissociateAPIKeyFromApp(applicationId, keyType, keyUUID) {
+        const promiseDissociateKeys = this.client.then((client) => {
+            const payload = {
+                applicationId: applicationId,
+                keyType: keyType
+            };
+            return client.apis.APIKeys.dissociateAPIKeyFromApp(
+                payload,
+                {
+                    requestBody: {
+                        keyUUID: keyUUID
+                    }
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promiseDissociateKeys;
+    }
+
+    /**
+     * Get API key associations for a given application
+     * @param applicationId Id of the application that needs to get the key associations for
+     * @param keyType Type of the key to be retrieved (PRODUCTION/ SANDBOX)
+     * @returns {promise} Promise resolving to the API key associations
+     */
+    getAPIKeyAssociationsForApp(applicationId, keyType) {
+        const promiseGetAssociations = this.client.then((client) => {
+            const payload = {
+                applicationId: applicationId,
+                keyType: keyType
+            };
+            return client.apis.APIKeys.getAPIKeyAssociationsForApp(payload, this._requestMetaData());
+        });
+        return promiseGetAssociations;
     }
 
     /**
@@ -547,7 +853,7 @@ export default class API extends Resource {
     getSubscriptions(apiId, applicationId = undefined, limit = 25, callback = null) {
         const payload = { apiId };
         if (applicationId) {
-            payload[applicationId] = applicationId;
+            payload.applicationId = applicationId;
         }
         payload['limit'] = limit;
         const promisedGet = this.client.then((client) => {
@@ -826,7 +1132,7 @@ export default class API extends Resource {
      */
     getAsyncAPIByAPIIdAndEnvironment(apiId, environmentName, callback = null) {
         const promiseGet = this.client.then((client) => {
-            return client.apis.APIs.get_apis__apiId__asyncapi({apiId, environmentName}, this._requestMetaData());
+            return client.apis.APIs.get_apis__apiId__asyncapi({ apiId, environmentName }, this._requestMetaData());
         });
         if (callback) {
             return promiseGet.then(callback);
@@ -841,7 +1147,7 @@ export default class API extends Resource {
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
     getSubscriptionAdditionalInfo(apiId) {
-        const payload = {apiId};
+        const payload = { apiId };
         const promiseAdditionalInfo = this.client.then((client) => {
             return client.apis.Subscriptions.getAdditionalInfoOfAPISubscriptions(payload, this._requestMetaData());
         });

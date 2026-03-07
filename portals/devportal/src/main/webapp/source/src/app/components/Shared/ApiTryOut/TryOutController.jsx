@@ -949,6 +949,7 @@ function TryOutController(props) {
                                     />
                                 )}
                                 {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
+                                && securitySchemeType !== 'API-KEY'
                                 && selectedKMObject && !selectedKMObject.enableTokenHashing && (
                                     <>
                                         <Button
