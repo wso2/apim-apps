@@ -20,36 +20,38 @@
  */
 import React from 'react'
 import parse from 'html-react-parser';
+import DOMPurify from 'dompurify';
 import Settings from 'Settings';
 
 /**
- * Render html content.
- * @param {int} props Props passing down from parent components.
+ * Render html content with optional sanitization.
+ * @param {object} props Props passing down from parent components.
+ * @param {string} props.html The HTML content to render.
+ * @param {boolean} [props.sanitize=true] Whether to sanitize the HTML content.
  * @returns {JSX} React render output.
  */
 export default function HTMLRender(props) {
-    const {html} = props;
-    // Extract html parser props from settings.json
-    const { tagsNotAllowed } = (Settings.app &&
-        Settings.app.reactHTMLParser) ? Settings.app.reactHTMLParser : {
-        tagsNotAllowed: [],
-    };
-    // Define a custom replace function to filter out script tags
-    const customReplace = (node) => {
-        if (node.type === 'tag' && tagsNotAllowed.find( t => t === node.name)) {
-            // You can handle script tags in any way you want here.
-            // For example, you can replace them with a harmless element like a <div>.
-            return <div>{node.name} tags are not allowed</div>;
-        }
-        // Return the node as is for other tags
-        return node;
-    };
-
-    // Use html-react-parser with the custom replace function
-    const parsedHtml = parse(html, {
-        replace: customReplace,
-    });
-    // Remove tags from html
+    const { html, sanitize = true } = props;
+    
+    // Extract sanitization config from settings.json
+    const sanitizeConfig = Settings.app?.sanitizeHtmlDocs;
+    const isSanitizationEnabled = sanitizeConfig?.enabled === true && sanitize === true;
+    
+    let parsedHtml;
+    
+    if (isSanitizationEnabled) {
+        // Use DOMPurify for sanitization when enabled
+        const sanitizationOptions = {
+            ADD_TAGS: sanitizeConfig.additionalAllowedTags || [],
+            ADD_ATTR: sanitizeConfig.additionalAllowedAttributes || [],
+        };
+        const sanitizedHtml = DOMPurify.sanitize(html, sanitizationOptions);
+        parsedHtml = parse(sanitizedHtml);
+    } else {
+        // Render without sanitization
+        parsedHtml = parse(html);
+    }
+    
     return (
         <>{parsedHtml}</>
     )
