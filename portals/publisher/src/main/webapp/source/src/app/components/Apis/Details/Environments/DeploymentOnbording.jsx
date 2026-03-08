@@ -41,6 +41,11 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { isRestricted } from 'AppData/AuthManager';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { checkEndpointStatus } from 'AppComponents/Shared/Utils';
+import {
+    hasValidWebSocketPorts,
+    hasValidHosts,
+    getHostValue
+} from 'AppComponents/Shared/Environments/Vhosts';
 
 const PREFIX = 'DeploymentOnbording';
 
@@ -211,7 +216,7 @@ export default function DeploymentOnboarding(props) {
                 if (e.vhosts && e.vhosts.length > 0) {
                     return {
                         env: e.name,
-                        vhost: api.isWebSocket() ? e.vhosts[0].wsHost : e.vhosts[0].host
+                        vhost: getHostValue(e.vhosts[0], api.isWebSocket()),
                     };
                 } else {
                     return undefined;
@@ -232,7 +237,7 @@ export default function DeploymentOnboarding(props) {
                     if (e.vhosts && e.vhosts.length > 0) {
                         return {
                             env: e.name,
-                            vhost: api.isWebSocket() ? e.vhosts[0].wsHost : e.vhosts[0].host
+                            vhost: getHostValue(e.vhosts[0], api.isWebSocket()),
                         };
                     } else {
                         return undefined;
@@ -434,6 +439,8 @@ export default function DeploymentOnboarding(props) {
                                                                         value={row.name}
                                                                         checked={selectedEnvironment.includes(row.name)}
                                                                         onChange={handleChange}
+                                                                        disabled={!hasValidHosts(
+                                                                            row, api.isWebSocket())}
                                                                         color='primary'
                                                                         icon={<RadioButtonUncheckedIcon />}
                                                                         checkedIcon=
@@ -524,18 +531,21 @@ export default function DeploymentOnboarding(props) {
                                                                                     },
                                                                                 }}
                                                                             >
-                                                                                {row.vhosts.map(
-                                                                                    (vhost) => (
-                                                                                        <MenuItem value = 
-                                                                                            {api.isWebSocket()
-                                                                                                ? vhost.wsHost 
-                                                                                                : vhost.host}>
-                                                                                            {api.isWebSocket() 
-                                                                                                ? vhost.wsHost 
-                                                                                                : vhost.host}
+                                                                                {row.vhosts.filter((vhost
+                                                                                ) => !api.isWebSocket()
+                                                                                    || hasValidWebSocketPorts(vhost))
+                                                                                    .map((vhost) => {const
+                                                                                        hostValue = getHostValue(vhost,
+                                                                                            api.isWebSocket());
+                                                                                    return (
+                                                                                        <MenuItem
+                                                                                            key={hostValue}
+                                                                                            value={hostValue}
+                                                                                        >
+                                                                                            {hostValue}
                                                                                         </MenuItem>
-                                                                                    ),
-                                                                                )}
+                                                                                    );
+                                                                                    })}
                                                                             </TextField>
                                                                         </Tooltip>
                                                                     </Grid>
@@ -655,7 +665,8 @@ export default function DeploymentOnboarding(props) {
                                                                     value={row.name}
                                                                     checked=
                                                                         {selectedExternalGateway.includes(row.name)}
-                                                                    disabled={isDeployRestricted()}
+                                                                    disabled={isDeployRestricted()
+                                                                        || !hasValidHosts(row, api.isWebSocket())}
                                                                     onChange={handleChange}
                                                                     color='primary'
                                                                     icon={<RadioButtonUncheckedIcon />}
@@ -718,15 +729,21 @@ export default function DeploymentOnboarding(props) {
                                                                         helperText={getVhostHelperText(row.name,
                                                                             selectedVhostDeploy, true)}
                                                                     >
-                                                                        {row.vhosts?.map(
-                                                                            (vhost) => (
-                                                                                <MenuItem value={api.isWebSocket()
-                                                                                    ? vhost.wsHost : vhost.host}>
-                                                                                    {api.isWebSocket()
-                                                                                        ? vhost.wsHost : vhost.host}
-                                                                                </MenuItem>
-                                                                            ),
-                                                                        )}
+                                                                        {row.vhosts
+                                                                            .filter((vhost) => !api.isWebSocket()
+                                                                                || hasValidWebSocketPorts(vhost))
+                                                                            .map((vhost) => {
+                                                                                const hostValue = getHostValue(vhost,
+                                                                                    api.isWebSocket());
+                                                                                return (
+                                                                                    <MenuItem
+                                                                                        key={hostValue}
+                                                                                        value={hostValue}
+                                                                                    >
+                                                                                        {hostValue}
+                                                                                    </MenuItem>
+                                                                                );
+                                                                            })}
                                                                     </TextField>
                                                                 </Tooltip>
                                                             </Grid>
