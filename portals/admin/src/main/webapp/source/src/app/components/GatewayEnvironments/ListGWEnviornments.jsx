@@ -18,18 +18,20 @@
 
 import React, { useState } from 'react';
 import API from 'AppData/api';
+import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import Delete from 'AppComponents/GatewayEnvironments/DeleteGWEnvironment';
-import AddEdit from 'AppComponents/GatewayEnvironments/AddEditGWEnvironment';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import Chip from '@mui/material/Chip';
 import { styled } from '@mui/material/styles';
 import Permission from './Permission';
 import ListGatewayInstances from './ListGatewayInstances';
@@ -48,23 +50,88 @@ const StyledTooltip = styled(({ className, ...props }) => (
     },
 }));
 
+const getAdditionalPropertiesAsMap = (additionalProperties = []) => {
+    return Object.fromEntries(additionalProperties.map((property) => [property.key, property.value]));
+};
+
+const resolvePlatformGatewayStatus = (isPlatformGateway, isActiveProperty) => {
+    if (!isPlatformGateway || typeof isActiveProperty === 'undefined' || isActiveProperty === null) {
+        return null;
+    }
+    return isActiveProperty === 'true' ? 'ACTIVE' : 'INACTIVE';
+};
+
+/**
+ * Custom Edit button for Gateway environments that routes to the correct page
+ * based on whether it's a platform gateway or regular environment.
+ */
+function GatewayEditButton({ dataRow }) {
+    const history = useHistory();
+
+    const handleClick = () => {
+        if (dataRow.isPlatformGateway && dataRow.platformGatewayId) {
+            history.push(`/settings/environments/platform-gateways/${dataRow.platformGatewayId}`);
+            return;
+        }
+        history.push(`/settings/environments/${dataRow.id}`);
+    };
+
+    return (
+        <IconButton
+            color='primary'
+            component='span'
+            size='large'
+            onClick={handleClick}
+            disabled={(dataRow.isReadOnly && !dataRow.isPlatformGateway)
+                || (dataRow.isPlatformGateway && !dataRow.platformGatewayId)}
+        >
+            <EditIcon aria-label={`edit-gateway-${dataRow.id}`} />
+        </IconButton>
+    );
+}
+
 /**
  * API call to get Gateway labels
  * @returns {Promise}.
  */
 function apiCall() {
     const restApi = new API();
-    return restApi
-        .getGatewayEnvironmentList()
-        .then((result) => {
-            return result.body.list.map((item) => {
-                return { ...item, id: Utils.encodeEnvironmentId(item.id) };
+    return restApi.getGatewayEnvironmentList()
+        .then((environmentResult) => {
+            return environmentResult.body.list.map((item) => {
+                const additionalProperties = getAdditionalPropertiesAsMap(item.additionalProperties);
+                const platformGatewayId = additionalProperties.platformGatewayId || null;
+                const isPlatformGateway = item.gatewayType === 'api-platform'
+                    || Boolean(platformGatewayId);
+
+                // Get status from additionalProperties for platform gateways
+                const gatewayStatus = resolvePlatformGatewayStatus(
+                    isPlatformGateway,
+                    additionalProperties.isActive,
+                );
+                return {
+                    ...item,
+                    id: Utils.encodeEnvironmentId(item.id),
+                    platformGatewayId,
+                    isPlatformGateway,
+                    gatewayTypeDisplay: isPlatformGateway ? 'api-platform' : (item.gatewayType || '-'),
+                    gatewayStatus,
+                };
             });
         })
         .catch((error) => {
             throw error;
         });
 }
+
+GatewayEditButton.propTypes = {
+    dataRow: PropTypes.shape({
+        id: PropTypes.string,
+        isReadOnly: PropTypes.bool,
+        isPlatformGateway: PropTypes.bool,
+        platformGatewayId: PropTypes.string,
+    }).isRequired,
+};
 
 /**
  * Render a list
@@ -118,10 +185,44 @@ export default function ListGWEnviornments() {
         );
     };
 
+    const renderGatewayStatus = (status) => {
+        if (!status) {
+            return '-';
+        }
+        const isActive = status === 'ACTIVE';
+        const statusLabel = isActive
+            ? intl.formatMessage({
+                id: 'Gateways.AddEditGateway.platform.status.active',
+                defaultMessage: 'Active',
+            })
+            : intl.formatMessage({
+                id: 'Gateways.AddEditGateway.platform.status.inactive',
+                defaultMessage: 'Inactive',
+            });
+        return (
+            <Chip
+                size='small'
+                label={statusLabel}
+                color={isActive ? 'success' : 'default'}
+                variant={isActive ? 'filled' : 'outlined'}
+            />
+        );
+    };
+
+    const renderGatewayType = (gatewayType) => {
+        if (gatewayType === 'api-platform') {
+            return intl.formatMessage({
+                id: 'Gateways.AddEditGateway.title.platform',
+                defaultMessage: 'Platform Gateway',
+            });
+        }
+        return gatewayType || '-';
+    };
+
     // Helper function to render gateway instances
     const renderGatewayInstances = (value, tableMeta) => {
         if (typeof tableMeta.rowData === 'object') {
-            const envId = tableMeta.rowData[isGatewayTypeAvailable ? 8 : 7];
+            const envId = tableMeta.rowData[isGatewayTypeAvailable ? 9 : 8];
             const envName = tableMeta.rowData[1]; // 'displayName'
             // Default to 'Regular' if no gatewayType column
             const gatewayType = isGatewayTypeAvailable ? tableMeta.rowData[2] : 'Regular';
@@ -168,13 +269,14 @@ export default function ListGWEnviornments() {
         // Conditionally include gatewayType column
         ...(isGatewayTypeAvailable ? [
             {
-                name: 'gatewayType',
+                name: 'gatewayTypeDisplay',
                 label: intl.formatMessage({
                     id: 'AdminPages.Gateways.table.header.gatewayType',
                     defaultMessage: 'Gateway Type',
                 }),
                 options: {
                     sort: false,
+                    customBodyRender: renderGatewayType,
                 },
             },
         ] : []),
@@ -186,6 +288,17 @@ export default function ListGWEnviornments() {
             }),
             options: {
                 sort: false,
+            },
+        },
+        {
+            name: 'gatewayStatus',
+            label: intl.formatMessage({
+                id: 'AdminPages.Gateways.table.header.gatewayStatus',
+                defaultMessage: 'Status',
+            }),
+            options: {
+                sort: false,
+                customBodyRender: renderGatewayStatus,
             },
         },
         {
@@ -284,19 +397,40 @@ export default function ListGWEnviornments() {
 
     const addCreateButton = () => {
         return (
-            <Button
-                component={RouterLink}
-                to='/settings/environments/create'
-                variant='contained'
-                color='primary'
-                size='small'
-                data-testid='form-dialog-base-trigger-btn'
+            <Box
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    mr: 0.5,
+                }}
             >
-                {intl.formatMessage({
-                    id: 'Gateways.ListGatewayEnvironments.addNewGatewayEnvironment',
-                    defaultMessage: 'Add Gateway Environment',
-                })}
-            </Button>
+                <Button
+                    component={RouterLink}
+                    to='/settings/environments/platform-gateways'
+                    variant='outlined'
+                    color='primary'
+                    size='small'
+                >
+                    {intl.formatMessage({
+                        id: 'Gateways.ListGatewayEnvironments.managePlatformGateways',
+                        defaultMessage: 'Manage Platform Gateways',
+                    })}
+                </Button>
+                <Button
+                    component={RouterLink}
+                    to='/settings/environments/create'
+                    variant='contained'
+                    color='primary'
+                    size='small'
+                    data-testid='form-dialog-base-trigger-btn'
+                >
+                    {intl.formatMessage({
+                        id: 'Gateways.ListGatewayEnvironments.addNewGatewayEnvironment',
+                        defaultMessage: 'Add Gateway Environment',
+                    })}
+                </Button>
+            </Box>
         );
     };
 
@@ -309,12 +443,11 @@ export default function ListGWEnviornments() {
                 searchProps={searchProps}
                 emptyBoxProps={emptyBoxProps}
                 apiCall={apiCall}
-                EditComponent={AddEdit}
+                EditComponent={GatewayEditButton}
                 addButtonOverride={addCreateButton()}
                 editComponentProps={{
                     icon: <EditIcon />,
-                    title: 'Edit Gateway Label',
-                    routeTo: '/settings/environments/',
+                    title: 'Edit Gateway',
                 }}
                 DeleteComponent={Delete}
             />

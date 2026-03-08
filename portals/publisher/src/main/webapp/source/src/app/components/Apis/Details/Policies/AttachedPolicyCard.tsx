@@ -16,22 +16,14 @@
  * under the License.
  */
 
-import React, { CSSProperties, FC, useContext, useState } from 'react';
-import { styled } from '@mui/material/styles';
-import Avatar from '@mui/material/Avatar';
-import Box from '@mui/material/Box';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import React, { FC, useContext, useState } from 'react';
 import { Alert } from 'AppComponents/Shared';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import API from 'AppData/api.js';
 import Utils from 'AppData/Utils';
 import { FormattedMessage } from 'react-intl';
 import AttachedPolicyCardShared from 'AppComponents/Shared/PoliciesUI/AttachedPolicyCard';
 import ApiContext from '../components/ApiContext';
+import CONSTS from 'AppData/Constants';
 import type { AttachedPolicy, PolicySpec } from './Types';
 import PolicyConfigurationEditDrawer from './PolicyConfigurationEditDrawer';
 import ApiOperationContext from './ApiOperationContext';
@@ -69,6 +61,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
     const { api } = useContext<any>(ApiContext);
     const { deleteApiOperation } = useContext<any>(ApiOperationContext);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const isPolicyHubGatewayPolicy = api?.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform;
 
     /**
      * Handle policy delete
@@ -161,6 +154,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
             PolicyConfigurationEditDrawer={PolicyConfigurationEditDrawer}
             listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
             isApiRevision={isApiRevision}
+            showDownload={!isPolicyHubGatewayPolicy}
         />
     );
 };

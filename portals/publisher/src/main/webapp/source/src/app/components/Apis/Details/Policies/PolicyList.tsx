@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState, FC } from 'react';
+import React, { useMemo, useState, useEffect, FC } from 'react';
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -24,12 +24,20 @@ import Card from '@mui/material/Card';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import CardContent from '@mui/material/CardContent';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import { isRestricted } from 'AppData/AuthManager';
 import { AddCircle } from '@mui/icons-material';
-import { Button , Theme } from '@mui/material';
-import CONSTS from 'AppData/Constants';
+import {
+    Button,
+    Theme,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    Checkbox,
+    ListItemText,
+} from '@mui/material';
 import type { Policy } from './Types';
 import TabPanel from './components/TabPanel';
 import CreatePolicy from './CreatePolicy';
@@ -75,6 +83,7 @@ interface PolicyListPorps {
     isChoreoConnectEnabled: boolean;
     gatewayType: string;
     apiType: string;
+    apiSubType?: string;
 }
 
 /**
@@ -82,11 +91,68 @@ interface PolicyListPorps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} List of policies local to the API segment.
  */
-const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetchPolicies, isChoreoConnectEnabled, 
-    gatewayType, apiType}) => {
+const PolicyList: FC<PolicyListPorps> = ({
+    apiPolicyList,
+    commonPolicyList,
+    fetchPolicies,
+    isChoreoConnectEnabled,
+    gatewayType,
+    apiType,
+    apiSubType,
+}) => {
+    const intl = useIntl();
 
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
     const [dialogOpen, setDialogOpen] = React.useState(false);
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+    const isAIAPI = apiSubType === 'AIAPI';
+    const isRestAPI = apiType === 'HTTP' && !isAIAPI;
+
+    const getPolicyCategory = (policy: Policy) => {
+        const category = policy.category || policy.categories?.[0];
+        return category || 'Uncategorized';
+    };
+
+    const availableCategories = useMemo(() => {
+        const unique = new Set<string>();
+        [...apiPolicyList, ...commonPolicyList].forEach((policy) => {
+            unique.add(getPolicyCategory(policy));
+        });
+        return Array.from(unique).sort((a, b) => a.localeCompare(b));
+    }, [apiPolicyList, commonPolicyList]);
+
+    useEffect(() => {
+        if (availableCategories.length === 0) {
+            setSelectedCategories((prev) => (prev.length > 0 ? [] : prev));
+            return;
+        }
+        setSelectedCategories((prev) => {
+            const normalizedSelection = prev.filter((category) =>
+                availableCategories.includes(category),
+            );
+            let nextSelection = normalizedSelection;
+
+            // If current selections become invalid, apply API-type defaults when available.
+            if (nextSelection.length === 0) {
+                const defaults = isAIAPI
+                    ? ['AI', 'Guardrails']
+                    : (isRestAPI ? ['Transformation', 'Security'] : []);
+                const matchingDefaults = defaults.filter((category) =>
+                    availableCategories.includes(category),
+                );
+                if (matchingDefaults.length > 0) {
+                    nextSelection = matchingDefaults;
+                }
+            }
+
+            if (nextSelection.length !== prev.length
+                || nextSelection.some((category, index) => category !== prev[index])) {
+                return nextSelection;
+            }
+            return prev;
+        });
+    }, [availableCategories, isAIAPI, isRestAPI]);
 
     const handleAddPolicy = () => {
         setDialogOpen(true);
@@ -96,11 +162,39 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
         setDialogOpen(false);
     };
 
+    const handleCategoryChange = (event: any) => {
+        const value = event.target.value;
+        setSelectedCategories(typeof value === 'string' ? value.split(',') : value);
+    };
+
+    // Empty selection means no filtering; show all categories.
+    const shouldShowPolicy = (policy: Policy) =>
+        selectedCategories.length === 0 || selectedCategories.includes(getPolicyCategory(policy));
+
+    const filterPoliciesForFlow = (policies: Policy[], flow: string) =>
+        policies.filter(
+            (policy) =>
+                policy.applicableFlows.includes(flow)
+                && policy.supportedGateways.includes(gatewayType)
+                && shouldShowPolicy(policy),
+        );
+
+    const renderCategoryValue = (selected: unknown) => {
+        const selectedCategoryList = selected as string[];
+        if (selectedCategoryList.length > 0) {
+            return selectedCategoryList.join(', ');
+        }
+        return intl.formatMessage({
+            id: 'Apis.Details.Policies.All',
+            defaultMessage: 'All',
+        });
+    };
+
     return (
         <StyledPaper className={classes.paperPosition}>
             <Card variant='outlined'>
                 <CardContent>
-                    <Box display='flex'>
+                    <Box display='flex' mb={1}>
                         <Typography variant='subtitle2'>
                             <FormattedMessage
                                 id='Apis.Details.Policies.PolicyList.title'
@@ -124,6 +218,32 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
                                 />
                             </Button>
                         )}
+                    </Box>
+                    <Box mb={2}>
+                        <FormControl fullWidth size='small'>
+                            <InputLabel id='policy-category-select-label'>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.PolicyList.category.filter'
+                                    defaultMessage='Category'
+                                />
+                            </InputLabel>
+                            <Select
+                                labelId='policy-category-select-label'
+                                id='policy-category-select'
+                                multiple
+                                value={selectedCategories}
+                                onChange={handleCategoryChange}
+                                label='Category'
+                                renderValue={renderCategoryValue}
+                            >
+                                {availableCategories.map((category) => (
+                                    <MenuItem key={category} value={category}>
+                                        <Checkbox checked={selectedCategories.includes(category)} />
+                                        <ListItemText primary={category} />
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </Box>
                     <Box>
                         {apiType === 'WS' ? (
@@ -202,24 +322,8 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
                         {apiType === 'WS' ? (
                             <Box height='55vh' pt={1} overflow='scroll'>
                                 <TabPanel
-                                    commonPolicyList={commonPolicyList.filter(
-                                        (policy) =>
-                                            policy.applicableFlows.includes(
-                                                'request',
-                                            ) &&
-                                            policy.supportedGateways.includes(
-                                                gatewayType,
-                                            ),
-                                    )}
-                                    apiPolicyList={apiPolicyList.filter(
-                                        (policy) =>
-                                            policy.applicableFlows.includes(
-                                                'request',
-                                            ) &&
-                                            policy.supportedGateways.includes(
-                                                gatewayType,
-                                            ),
-                                    )}
+                                    commonPolicyList={filterPoliciesForFlow(commonPolicyList, 'request')}
+                                    apiPolicyList={filterPoliciesForFlow(apiPolicyList, 'request')}
                                     index={0}
                                     selectedTab={selectedTab}
                                     fetchPolicies={fetchPolicies}
@@ -229,48 +333,16 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
                         ) : (
                             <Box height='55vh' pt={1} overflow='scroll'>
                                 <TabPanel
-                                    commonPolicyList={commonPolicyList.filter(
-                                        (policy) =>
-                                            policy.applicableFlows.includes(
-                                                'request',
-                                            ) &&
-                                            policy.supportedGateways.includes(
-                                                gatewayType,
-                                            ),
-                                    )}
-                                    apiPolicyList={apiPolicyList.filter(
-                                        (policy) =>
-                                            policy.applicableFlows.includes(
-                                                'request',
-                                            ) &&
-                                            policy.supportedGateways.includes(
-                                                gatewayType,
-                                            ),
-                                    )}
+                                    commonPolicyList={filterPoliciesForFlow(commonPolicyList, 'request')}
+                                    apiPolicyList={filterPoliciesForFlow(apiPolicyList, 'request')}
                                     index={0}
                                     selectedTab={selectedTab}
                                     fetchPolicies={fetchPolicies}
                                     isReadOnly={isRestricted(['apim:api_create', 'apim:api_publish', 'apim:api_manage'])}
                                 />
                                 <TabPanel
-                                    commonPolicyList={commonPolicyList.filter(
-                                        (policy) =>
-                                            policy.applicableFlows.includes(
-                                                'response',
-                                            ) &&
-                                            policy.supportedGateways.includes(
-                                                gatewayType,
-                                            ),
-                                    )}
-                                    apiPolicyList={apiPolicyList.filter(
-                                        (policy) =>
-                                            policy.applicableFlows.includes(
-                                                'response',
-                                            ) &&
-                                            policy.supportedGateways.includes(
-                                                gatewayType,
-                                            ),
-                                    )}
+                                    commonPolicyList={filterPoliciesForFlow(commonPolicyList, 'response')}
+                                    apiPolicyList={filterPoliciesForFlow(apiPolicyList, 'response')}
                                     index={1}
                                     selectedTab={selectedTab}
                                     fetchPolicies={fetchPolicies}
@@ -278,24 +350,8 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
                                 />
                                 {!isChoreoConnectEnabled && (
                                     <TabPanel
-                                        commonPolicyList={commonPolicyList.filter(
-                                            (policy) =>
-                                                policy.applicableFlows.includes(
-                                                    'fault',
-                                                ) &&
-                                                policy.supportedGateways.includes(
-                                                    gatewayType,
-                                                ),
-                                        )}
-                                        apiPolicyList={apiPolicyList.filter(
-                                            (policy) =>
-                                                policy.applicableFlows.includes(
-                                                    'fault',
-                                                ) &&
-                                                policy.supportedGateways.includes(
-                                                    gatewayType,
-                                                ),
-                                            )}
+                                        commonPolicyList={filterPoliciesForFlow(commonPolicyList, 'fault')}
+                                        apiPolicyList={filterPoliciesForFlow(apiPolicyList, 'fault')}
                                         index={2}
                                         selectedTab={selectedTab}
                                         fetchPolicies={fetchPolicies}

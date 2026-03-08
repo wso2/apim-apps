@@ -29,6 +29,8 @@ import { DndProvider } from 'react-dnd';
 import { FormattedMessage } from 'react-intl';
 import { mapAPIOperations } from 'AppComponents/Apis/Details/Resources/operationUtils';
 import API from 'AppData/api';
+import PolicyHub from 'AppData/PolicyHub';
+import CONSTS from 'AppData/Constants';
 import { Progress } from 'AppComponents/Shared';
 import { arrayMove } from '@dnd-kit/sortable';
 import Tabs from '@mui/material/Tabs';
@@ -100,6 +102,7 @@ const Policies: React.FC = () => {
     const { showMultiVersionPolicies } = Configurations.apis;
     const [selectedTab, setSelectedTab] = useState(api.type === 'GRAPHQL' || api.apiPolicies != null ? 0 : 1);
     const [gateway, setGateway] = useState<string>("");
+    const isPolicyHubGateway = api.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform;
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
@@ -129,6 +132,18 @@ const Policies: React.FC = () => {
             }
         }
     }
+
+    const isApiTypeSupported = (supportedApiTypes: any[]) => {
+        return supportedApiTypes.some((item: any) => {
+            if (typeof item === 'string') {
+                return item === api.type;
+            }
+            if (typeof item === 'object') {
+                return item.apiType === api.type && item.subType === api.subtypeConfiguration?.subtype;
+            }
+            return false;
+        });
+    };
 
     /**
      * Function to get the initial state of all the operation policies from the API object.
@@ -174,6 +189,26 @@ const Policies: React.FC = () => {
      * Sets the policies state: policy state is used to display the available policies that are draggable.
      */
     const fetchPolicies = () => {
+        if (isPolicyHubGateway) {
+            setGateway(CONSTS.GATEWAY_TYPE.apiPlatform);
+            PolicyHub.listAllPolicySpecs()
+                .then((policySpecs) => {
+                    const filteredPolicies = policySpecs.filter(
+                        (policy) => isApiTypeSupported(policy.supportedApiTypes),
+                    );
+
+                    setAllPolicies(policySpecs);
+                    setApiPolicies([]);
+                    setCommonPolicies(filteredPolicies);
+                    setPolicies(filteredPolicies);
+                })
+                .catch((error) => {
+                    console.error(error);
+                    Alert.error('Error occurred while retrieving the policy list');
+                });
+            return;
+        }
+
         const apiPoliciesPromise = API.getOperationPolicies(api.id);
         const commonPoliciesPromise = API.getCommonOperationPolicies();
         Promise.all([apiPoliciesPromise, commonPoliciesPromise]).then((response) => {
@@ -208,9 +243,6 @@ const Policies: React.FC = () => {
             if (api.gatewayType === "wso2/apk") {
                 // Get CC gateway supported policies
                 gatewayType = 'ChoreoConnect';
-            } else if (api.gatewayType === "AWS") {
-                // Get AWS gateway supported policies
-                gatewayType = 'AWS';
             } else if (api.gatewayType === "Azure") {
                 gatewayType = 'Azure';
             } else {
@@ -234,24 +266,12 @@ const Policies: React.FC = () => {
             if (api.type === "HTTP" || api.type === "SOAP" || api.type === "SOAPTOREST" || api.type === "GRAPHQL" || api.type === "WS") {
                 // Get API policies based on the API type
                 filteredApiPoliciesByAPITypeList = filteredApiPolicyByGatewayTypeList.filter((policy: Policy) => {
-                    return policy.supportedApiTypes.some((item: any) => {
-                        if (typeof item === 'string') {
-                            return item === api.type;
-                        } else if (typeof item === 'object') {
-                            return item.apiType === api.type && item.subType === api.subtypeConfiguration?.subtype;
-                        }
-                    });
+                    return isApiTypeSupported(policy.supportedApiTypes);
                 });
 
                 // Get common policies based on the API type
                 filteredCommonPoliciesByAPITypeList = filteredCommonPolicyByGatewayTypeList.filter((policy: Policy) => {
-                    return policy.supportedApiTypes.some((item: any) => {
-                        if (typeof item === 'string') {
-                            return item === api.type;
-                        } else if (typeof item === 'object') {
-                            return item.apiType === api.type && item.subType === api.subtypeConfiguration?.subtype;
-                        }
-                    });
+                    return isApiTypeSupported(policy.supportedApiTypes);
                 });
             }
 
@@ -292,7 +312,7 @@ const Policies: React.FC = () => {
         if (isChoreoConnectEnabled) {
             setSelectedTab(1);
         }
-    }, [isChoreoConnectEnabled]);
+    }, [isChoreoConnectEnabled, api.gatewayType, api.type]);
 
     useEffect(() => {
         // Update the Swagger spec object when API object gets changed
@@ -707,6 +727,7 @@ const Policies: React.FC = () => {
                             isChoreoConnectEnabled={isChoreoConnectEnabled}
                             gatewayType={gateway}
                             apiType={api.type}
+                            apiSubType={api.subtypeConfiguration?.subtype}
                         />
                     </Box>
                 </Box>

@@ -27,6 +27,7 @@ import MCPServerLanding from 'AppComponents/MCPServers/Landing';
 import MCPServerCreateDefault from 'AppComponents/MCPServers/Create/MCPServerCreateDefault';
 import MCPServerCreateUsingExistingAPI from 'AppComponents/MCPServers/Create/MCPServerCreateUsingExistingAPI';
 import MCPServerCreateProxy from 'AppComponents/MCPServers/Create/MCPServerCreateProxy';
+import CONSTS from 'AppData/Constants';
 import APICreateDefault from './Default/APICreateDefault';
 import APIProductCreateWrapper from './APIProduct/APIProductCreateWrapper';
 import ApiCreateSwagger from './OpenAPI/ApiCreateOpenAPI';
@@ -73,6 +74,18 @@ let gatewayDetails = {
         name: 'Azure Gateway', 
         description: 'API gateway offered by Azure cloud.', 
         isNew: false 
+    },
+    [CONSTS.GATEWAY_TYPE.apiPlatform]: {
+        value: CONSTS.GATEWAY_TYPE.apiPlatform,
+        name: 'Platform Gateway',
+        description: 'API gateway for platform-managed policies.',
+        isNew: false,
+    },
+    PlatformGateway: {
+        value: CONSTS.GATEWAY_TYPE.apiPlatform,
+        name: 'Platform Gateway',
+        description: 'API gateway for platform-managed policies.',
+        isNew: false,
     }
 };
 

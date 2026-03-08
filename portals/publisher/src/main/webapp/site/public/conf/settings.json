@@ -46,6 +46,11 @@
         "environmentsPolling": {
           "maxDurationMs": 120000,
           "intervalMs": 3000
+        },
+        "policyHub": {
+          "endpoint": "",
+          "limit": 100,
+          "supportedApiTypes": ["HTTP", "SOAP", "SOAPTOREST", "GRAPHQL", "WS", "SSE", "WEBSUB", "WEBHOOK", "ASYNC"]
         }
     },
     "serviceCatalogDefinitionTypes": {
@@ -103,4 +108,3 @@
     "maxScopeCount": 2000
   }
 }
-

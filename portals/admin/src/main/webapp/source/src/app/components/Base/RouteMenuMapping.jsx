@@ -209,6 +209,14 @@ const RouteMenuMapping = (intl) => [
         icon: <GamesIcon />,
         addEditPageDetails: [
             {
+                id: 'Platform Gateways',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.gateways.items.PlatformGateways',
+                    defaultMessage: 'Platform Gateways',
+                }),
+                path: '/settings/environments/platform-gateways',
+            },
+            {
                 id: 'Add Gateway Environment',
                 displayText: intl.formatMessage({
                     id: 'Base.RouteMenuMapping.gateways.items.Adding',

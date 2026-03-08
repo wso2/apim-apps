@@ -85,7 +85,7 @@ const CONSTS = {
     GATEWAY_TYPE: {
         synapse: 'Synapse',
         choreoConnect: 'ChoreoConnect',
-        AWS: 'AWS',
+        apiPlatform: 'api-platform',
     },
     PATH_TEMPLATES: {
         COMMON_POLICIES: '/policies',

@@ -357,7 +357,7 @@ function ListBase(props) {
                                     />
                                 )}
                             </Grid>
-                            <Grid item>
+                            <Grid item sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                 {addButtonOverride || (
                                     EditComponent && (
                                         <EditComponent
