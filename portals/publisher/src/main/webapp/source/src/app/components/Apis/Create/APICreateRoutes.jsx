@@ -36,6 +36,7 @@ import ApiCreateWebSocket from './WebSocket/ApiCreateWebSocket';
 import APICreateStreamingAPI from './StreamingAPI/APICreateStreamingAPI';
 import APICreateAsyncAPI from './AsyncAPI/ApiCreateAsyncAPI';
 import ApiCreateAIAPI from './AIAPI/APICreateAIAPI';
+import CONSTS from 'AppData/Constants';
 
 const PREFIX = 'APICreateRoutes';
 
@@ -74,8 +75,14 @@ let gatewayDetails = {
         description: 'API gateway offered by Azure cloud.', 
         isNew: false 
     },
-    'platform-gateway': {
-        value: 'platform-gateway',
+    [CONSTS.GATEWAY_TYPE.apiPlatform]: {
+        value: CONSTS.GATEWAY_TYPE.apiPlatform,
+        name: 'Platform Gateway',
+        description: 'API gateway for platform-managed policies.',
+        isNew: false,
+    },
+    PlatformGateway: {
+        value: CONSTS.GATEWAY_TYPE.apiPlatform,
         name: 'Platform Gateway',
         description: 'API gateway for platform-managed policies.',
         isNew: false,

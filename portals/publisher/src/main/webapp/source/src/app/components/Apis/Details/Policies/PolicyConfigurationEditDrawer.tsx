@@ -106,7 +106,7 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
                             name: policyObj.name,
                             version: policyObj.version,
                             displayName: policyObj.displayName,
-                        });
+                        }) || PolicyHub.toPolicySpec(policyObj);
                     } else {
                         const policyResponse = await API.getOperationPolicy(
                             policyObj.id,

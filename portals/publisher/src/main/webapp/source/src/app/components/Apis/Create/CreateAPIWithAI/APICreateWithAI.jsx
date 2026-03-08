@@ -36,6 +36,7 @@ import { FormattedMessage } from 'react-intl';
 import LaunchIcon from '@mui/icons-material/Launch';
 import Alert from '@mui/material/Alert';
 import findBestMatchingAnswer from './components/SimilaritySearch';
+import CONSTS from 'AppData/Constants';
 
 /**
  * Renders the Create API with AI UI.
@@ -90,8 +91,14 @@ const ApiCreateWithAI = () => {
             description: 'API gateway offered by Azure cloud.',
             isNew: false
         },
-        'platform-gateway': {
-            value: 'platform-gateway',
+        [CONSTS.GATEWAY_TYPE.apiPlatform]: {
+            value: CONSTS.GATEWAY_TYPE.apiPlatform,
+            name: 'Platform Gateway',
+            description: 'API gateway for platform-managed policies.',
+            isNew: false,
+        },
+        PlatformGateway: {
+            value: CONSTS.GATEWAY_TYPE.apiPlatform,
             name: 'Platform Gateway',
             description: 'API gateway for platform-managed policies.',
             isNew: false,

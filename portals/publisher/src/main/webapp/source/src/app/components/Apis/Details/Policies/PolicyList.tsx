@@ -24,7 +24,7 @@ import Card from '@mui/material/Card';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import CardContent from '@mui/material/CardContent';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import { isRestricted } from 'AppData/AuthManager';
 import { AddCircle } from '@mui/icons-material';
@@ -100,6 +100,7 @@ const PolicyList: FC<PolicyListPorps> = ({
     apiType,
     apiSubType,
 }) => {
+    const intl = useIntl();
 
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
     const [dialogOpen, setDialogOpen] = React.useState(false);
@@ -123,33 +124,33 @@ const PolicyList: FC<PolicyListPorps> = ({
 
     useEffect(() => {
         if (availableCategories.length === 0) {
-            if (selectedCategories.length > 0) {
-                setSelectedCategories([]);
-            }
+            setSelectedCategories((prev) => (prev.length > 0 ? [] : prev));
             return;
         }
-
-        const normalizedSelection = selectedCategories.filter((category) =>
-            availableCategories.includes(category),
-        );
-        let nextSelection = normalizedSelection;
-
-        if (nextSelection.length === 0) {
-            const defaults = isAIAPI
-                ? ['AI', 'Guardrails']
-                : (isRestAPI ? ['Transformation', 'Security'] : []);
-            const matchingDefaults = defaults.filter((category) =>
+        setSelectedCategories((prev) => {
+            const normalizedSelection = prev.filter((category) =>
                 availableCategories.includes(category),
             );
-            if (matchingDefaults.length > 0) {
-                nextSelection = matchingDefaults;
-            }
-        }
+            let nextSelection = normalizedSelection;
 
-        if (nextSelection.length !== selectedCategories.length
-            || nextSelection.some((category, index) => category !== selectedCategories[index])) {
-            setSelectedCategories(nextSelection);
-        }
+            if (nextSelection.length === 0) {
+                const defaults = isAIAPI
+                    ? ['AI', 'Guardrails']
+                    : (isRestAPI ? ['Transformation', 'Security'] : []);
+                const matchingDefaults = defaults.filter((category) =>
+                    availableCategories.includes(category),
+                );
+                if (matchingDefaults.length > 0) {
+                    nextSelection = matchingDefaults;
+                }
+            }
+
+            if (nextSelection.length !== prev.length
+                || nextSelection.some((category, index) => category !== prev[index])) {
+                return nextSelection;
+            }
+            return prev;
+        });
     }, [availableCategories, isAIAPI, isRestAPI]);
 
     const handleAddPolicy = () => {
@@ -223,7 +224,10 @@ const PolicyList: FC<PolicyListPorps> = ({
                                 renderValue={(selected) =>
                                     (selected as string[]).length > 0
                                         ? (selected as string[]).join(', ')
-                                        : 'All'
+                                        : intl.formatMessage({
+                                            id: 'Apis.Details.Policies.All',
+                                            defaultMessage: 'All',
+                                        })
                                 }
                             >
                                 {availableCategories.map((category) => (

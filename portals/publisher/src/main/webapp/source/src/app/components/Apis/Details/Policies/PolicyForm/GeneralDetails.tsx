@@ -270,7 +270,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                     )}
                     {showDescriptionField && (
                         <TextField
-                            id='name'
+                            id='description'
                             data-testid='description'
                             name='description'
                             label={

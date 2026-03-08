@@ -334,10 +334,16 @@ function AddEditGWEnvironment(props) {
             setPlatformGateway(regeneratedGateway);
             setConfirmReconfigureOpen(false);
             setShowPlatformTokenCommands(true);
-            Alert.success('Gateway registration token regenerated successfully.');
+            Alert.success(intl.formatMessage({
+                id: 'Gateways.AddEditGateway.platform.token.regenerate.success',
+                defaultMessage: 'Gateway registration token regenerated successfully.',
+            }));
         } catch (error) {
             const errorMessage = error?.response?.body?.description || error.message
-                || 'Failed to regenerate gateway registration token.';
+                || intl.formatMessage({
+                    id: 'Gateways.AddEditGateway.platform.token.regenerate.error',
+                    defaultMessage: 'Failed to regenerate gateway registration token.',
+                });
             Alert.error(errorMessage);
         } finally {
             setPlatformTokenRegenerating(false);
@@ -360,7 +366,10 @@ function AddEditGWEnvironment(props) {
         const trimmedDisplayName = platformDisplayNameDraft.trim();
         const trimmedDescription = platformDescriptionDraft.trim();
         if (!trimmedDisplayName) {
-            Alert.error('Gateway name is required.');
+            Alert.error(intl.formatMessage({
+                id: 'Gateways.AddEditGateway.platform.name.required',
+                defaultMessage: 'Gateway name is required.',
+            }));
             return;
         }
 
@@ -382,6 +391,8 @@ function AddEditGWEnvironment(props) {
             httpPort: vhost.httpPort,
             httpsPort: vhost.httpsPort,
         }));
+        const gatewaysProvidedByWSO2 = ['Regular', 'APK'];
+        const provider = gatewaysProvidedByWSO2.includes(gatewayType) ? 'wso2' : 'external';
 
         setPlatformHeaderSaving(true);
         try {
@@ -397,14 +408,21 @@ function AddEditGWEnvironment(props) {
                 vhostDTO,
                 permissionsDTO,
                 additionalPropertiesArrayDTO,
+                provider,
             );
             dispatch({ field: 'displayName', value: trimmedDisplayName });
             dispatch({ field: 'description', value: trimmedDescription });
             setPlatformHeaderEditMode(false);
-            Alert.success('Gateway details updated successfully.');
+            Alert.success(intl.formatMessage({
+                id: 'Gateways.AddEditGateway.platform.details.update.success',
+                defaultMessage: 'Gateway details updated successfully.',
+            }));
         } catch (error) {
             const errorMessage = error?.response?.body?.description || error.message
-                || 'Failed to update gateway details.';
+                || intl.formatMessage({
+                    id: 'Gateways.AddEditGateway.platform.details.update.error',
+                    defaultMessage: 'Failed to update gateway details.',
+                });
             Alert.error(errorMessage);
         } finally {
             setPlatformHeaderSaving(false);
@@ -825,7 +843,12 @@ function AddEditGWEnvironment(props) {
             >
                 <Box component='div' m={2} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <CircularProgress size={20} />
-                    <Typography variant='body2'>Loading gateway details...</Typography>
+                    <Typography variant='body2'>
+                        {intl.formatMessage({
+                            id: 'Gateways.AddEditGateway.loading.gateway.details',
+                            defaultMessage: 'Loading gateway details...',
+                        })}
+                    </Typography>
                 </Box>
             </StyledContentBase>
         );
@@ -837,7 +860,15 @@ function AddEditGWEnvironment(props) {
                 id: 'Gateways.AddEditGateway.title.platform',
                 defaultMessage: 'Platform Gateway',
             });
-        const platformGatewayStatus = platformGateway?.isActive ? 'Active' : 'Inactive';
+        const platformGatewayStatus = platformGateway?.isActive
+            ? intl.formatMessage({
+                id: 'Gateways.AddEditGateway.platform.status.active',
+                defaultMessage: 'Active',
+            })
+            : intl.formatMessage({
+                id: 'Gateways.AddEditGateway.platform.status.inactive',
+                defaultMessage: 'Inactive',
+            });
         const platformGatewayUrl = platformGateway?.properties?.gatewayController?.baseUrl || '-';
         const gatewayInitials = (title || 'PG')
             .split(' ')
@@ -856,7 +887,12 @@ function AddEditGWEnvironment(props) {
                     {platformGatewayLoading ? (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             <CircularProgress size={20} />
-                            <Typography variant='body2'>Loading platform gateway details...</Typography>
+                            <Typography variant='body2'>
+                                {intl.formatMessage({
+                                    id: 'Gateways.AddEditGateway.loading.platform.gateway.details',
+                                    defaultMessage: 'Loading platform gateway details...',
+                                })}
+                            </Typography>
                         </Box>
                     ) : (
                         <>
@@ -866,7 +902,10 @@ function AddEditGWEnvironment(props) {
                                 startIcon={<ArrowBackIcon />}
                                 sx={{ mb: 3, px: 0.5 }}
                             >
-                                Back to Gateways
+                                <FormattedMessage
+                                    id='Gateways.AddEditGateway.back.to.gateways'
+                                    defaultMessage='Back to Gateways'
+                                />
                             </Button>
 
                             <Box
@@ -918,8 +957,22 @@ function AddEditGWEnvironment(props) {
                                                 mb: 1.5,
                                             }}
                                         >
-                                            <Chip label='Self-Hosted Gateway' variant='outlined' color='primary' />
-                                            <Chip label='API Gateway' variant='outlined' color='primary' />
+                                            <Chip
+                                                label={intl.formatMessage({
+                                                    id: 'Gateways.AddEditGateway.platform.tag.selfHosted',
+                                                    defaultMessage: 'Self-Hosted Gateway',
+                                                })}
+                                                variant='outlined'
+                                                color='primary'
+                                            />
+                                            <Chip
+                                                label={intl.formatMessage({
+                                                    id: 'Gateways.AddEditGateway.platform.tag.apiGateway',
+                                                    defaultMessage: 'API Gateway',
+                                                })}
+                                                variant='outlined'
+                                                color='primary'
+                                            />
                                         </Box>
 
                                         {platformHeaderEditMode ? (
@@ -943,7 +996,10 @@ function AddEditGWEnvironment(props) {
                                                     <TextField
                                                         fullWidth
                                                         size='small'
-                                                        label='Gateway Name'
+                                                        label={intl.formatMessage({
+                                                            id: 'Gateways.AddEditGateway.platform.field.gateway.name',
+                                                            defaultMessage: 'Gateway Name',
+                                                        })}
                                                         value={platformDisplayNameDraft}
                                                         onChange={(event) => (
                                                             setPlatformDisplayNameDraft(event.target.value)
@@ -954,7 +1010,10 @@ function AddEditGWEnvironment(props) {
                                                         fullWidth
                                                         multiline
                                                         minRows={3}
-                                                        label='Description'
+                                                        label={intl.formatMessage({
+                                                            id: 'Gateways.AddEditGateway.platform.field.description',
+                                                            defaultMessage: 'Description',
+                                                        })}
                                                         value={platformDescriptionDraft}
                                                         onChange={(event) => (
                                                             setPlatformDescriptionDraft(event.target.value)
@@ -1012,7 +1071,11 @@ function AddEditGWEnvironment(props) {
                                                 </Box>
                                                 <Typography variant='body1' color='text.secondary'>
                                                     {state.description
-                                                        || 'No description provided for this gateway yet.'}
+                                                        || intl.formatMessage({
+                                                            id: 'Gateways.AddEditGateway.platform.description.empty',
+                                                            defaultMessage:
+                                                                'No description provided for this gateway yet.',
+                                                        })}
                                                 </Typography>
                                             </>
                                         )}
@@ -1022,14 +1085,20 @@ function AddEditGWEnvironment(props) {
                                 <Divider sx={{ my: 3 }} />
 
                                 <Typography variant='h6' sx={{ mb: 2 }}>
-                                    Configurations
+                                    <FormattedMessage
+                                        id='Gateways.AddEditGateway.platform.configurations.title'
+                                        defaultMessage='Configurations'
+                                    />
                                 </Typography>
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} md={6}>
                                         <TextField
                                             fullWidth
                                             size='small'
-                                            label='URL'
+                                            label={intl.formatMessage({
+                                                id: 'Gateways.AddEditGateway.platform.field.url',
+                                                defaultMessage: 'URL',
+                                            })}
                                             value={platformGatewayUrl}
                                             InputProps={{ readOnly: true }}
                                         />
@@ -1038,7 +1107,10 @@ function AddEditGWEnvironment(props) {
                                         <TextField
                                             fullWidth
                                             size='small'
-                                            label='Associated Environment'
+                                            label={intl.formatMessage({
+                                                id: 'Gateways.AddEditGateway.platform.field.associated.environment',
+                                                defaultMessage: 'Associated Environment',
+                                            })}
                                             value={state.displayName || '-'}
                                             InputProps={{ readOnly: true }}
                                         />
@@ -1062,17 +1134,29 @@ function AddEditGWEnvironment(props) {
                     aria-labelledby='reconfigure-gateway-dialog-title'
                 >
                     <DialogTitle id='reconfigure-gateway-dialog-title'>
-                        Generate New Registration Token?
+                        <FormattedMessage
+                            id='Gateways.AddEditGateway.platform.token.dialog.title'
+                            defaultMessage='Generate New Registration Token?'
+                        />
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            The older registration key will be revoked immediately and the connected gateway will be
-                            disconnected from the control plane. You must reconfigure the gateway with the new key.
+                            <FormattedMessage
+                                id='Gateways.AddEditGateway.platform.token.dialog.content'
+                                defaultMessage={
+                                    'The older registration key will be revoked immediately and the connected gateway '
+                                    + 'will be disconnected from the control plane. You must reconfigure the gateway '
+                                    + 'with the new key.'
+                                }
+                            />
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={closeReconfigureConfirm} disabled={platformTokenRegenerating}>
-                            Cancel
+                            <FormattedMessage
+                                id='Gateways.AddEditGateway.platform.token.dialog.cancel'
+                                defaultMessage='Cancel'
+                            />
                         </Button>
                         <Button
                             onClick={handleRegeneratePlatformKey}
@@ -1080,7 +1164,15 @@ function AddEditGWEnvironment(props) {
                             color='warning'
                             disabled={platformTokenRegenerating}
                         >
-                            {platformTokenRegenerating ? 'Generating...' : 'Generate Key'}
+                            {platformTokenRegenerating
+                                ? intl.formatMessage({
+                                    id: 'Gateways.AddEditGateway.platform.token.generating',
+                                    defaultMessage: 'Generating...',
+                                })
+                                : intl.formatMessage({
+                                    id: 'Gateways.AddEditGateway.platform.token.generate.key',
+                                    defaultMessage: 'Generate Key',
+                                })}
                         </Button>
                     </DialogActions>
                 </Dialog>

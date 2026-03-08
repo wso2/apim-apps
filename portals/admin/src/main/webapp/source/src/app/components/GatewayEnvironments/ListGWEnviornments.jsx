@@ -61,15 +61,11 @@ function GatewayEditButton({ dataRow }) {
     const history = useHistory();
 
     const handleClick = () => {
-        if (dataRow.isPlatformGateway) {
-            // For platform gateways, navigate to the quick start guide
-            const additionalProperties = getAdditionalPropertiesAsMap(dataRow.additionalProperties);
-            const platformGatewayId = additionalProperties.platformGatewayId || dataRow.id;
-            history.push(`/settings/environments/platform-gateways/${platformGatewayId}`);
-        } else {
-            // For regular environments, navigate to the edit page
-            history.push(`/settings/environments/${dataRow.id}`);
+        if (dataRow.isPlatformGateway && dataRow.platformGatewayId) {
+            history.push(`/settings/environments/platform-gateways/${dataRow.platformGatewayId}`);
+            return;
         }
+        history.push(`/settings/environments/${dataRow.id}`);
     };
 
     return (
@@ -78,7 +74,8 @@ function GatewayEditButton({ dataRow }) {
             component='span'
             size='large'
             onClick={handleClick}
-            disabled={dataRow.isReadOnly && !dataRow.isPlatformGateway}
+            disabled={(dataRow.isReadOnly && !dataRow.isPlatformGateway)
+                || (dataRow.isPlatformGateway && !dataRow.platformGatewayId)}
         >
             <EditIcon aria-label={`edit-gateway-${dataRow.id}`} />
         </IconButton>
@@ -95,17 +92,18 @@ function apiCall() {
         .then((environmentResult) => {
             return environmentResult.body.list.map((item) => {
                 const additionalProperties = getAdditionalPropertiesAsMap(item.additionalProperties);
+                const platformGatewayId = additionalProperties.platformGatewayId || null;
                 const isPlatformGateway = item.gatewayType === 'api-platform'
-                    || Boolean(additionalProperties.platformGatewayId);
+                    || Boolean(platformGatewayId);
 
                 // Get status from additionalProperties for platform gateways
-                let gatewayStatus = 'Active';
-                if (isPlatformGateway) {
-                    gatewayStatus = additionalProperties.isActive === 'true' ? 'Active' : 'Inactive';
-                }
+                const gatewayStatus = isPlatformGateway && additionalProperties.isActive
+                    ? (additionalProperties.isActive === 'true' ? 'Active' : 'Inactive')
+                    : null;
                 return {
                     ...item,
                     id: Utils.encodeEnvironmentId(item.id),
+                    platformGatewayId,
                     isPlatformGateway,
                     gatewayTypeDisplay: isPlatformGateway ? 'Platform Gateway' : (item.gatewayType || '-'),
                     gatewayStatus,
@@ -170,11 +168,14 @@ export default function ListGWEnviornments() {
     };
 
     const renderGatewayStatus = (status) => {
+        if (!status) {
+            return '-';
+        }
         const isActive = status === 'Active';
         return (
             <Chip
                 size='small'
-                label={status || 'Inactive'}
+                label={status}
                 color={isActive ? 'success' : 'default'}
                 variant={isActive ? 'filled' : 'outlined'}
             />

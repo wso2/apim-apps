@@ -238,8 +238,6 @@ const Policies: React.FC = () => {
             if (api.gatewayType === "wso2/apk") {
                 // Get CC gateway supported policies
                 gatewayType = 'ChoreoConnect';
-            } else if (api.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform) {
-                gatewayType = CONSTS.GATEWAY_TYPE.apiPlatform;
             } else if (api.gatewayType === "Azure") {
                 gatewayType = 'Azure';
             } else {

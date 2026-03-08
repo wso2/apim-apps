@@ -58,6 +58,7 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
 
     useEffect(() => {
         if (dialogOpen && isPolicyHubGateway) {
+            setPolicySpec(null);
             setLoading(true);
             PolicyHub.getPolicySpec({
                 name: policyObj.name,
@@ -73,6 +74,7 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
                 })
                 .catch((error) => {
                     console.error(error);
+                    setPolicySpec(PolicyHub.toPolicySpec(policyObj));
                     Alert.error('Something went wrong while retrieving policy details');
                 })
                 .finally(() => {
