@@ -13,10 +13,14 @@ const DEFAULT_POLICY_HUB_ENDPOINT =
     'https://db720294-98fd-40f4-85a1-cc6a3b65bc9a-dev.e1-us-east-azure.choreoapis.dev' +
     '/api-platform/policy-hub-api/policy-hub-public/v1.0';
 const DEFAULT_POLICY_HUB_LIMIT = 100;
+const DEFAULT_POLICY_HUB_CACHE_TTL_MS = 5 * 60 * 1000;
 const POLICY_ID_SEPARATOR = '::';
 
 const policyDefinitionCache = new Map();
 const policySpecCache = new Map();
+let cachedPolicySpecs = null;
+let cachedPolicySpecsAt = 0;
+let policySpecsInFlightPromise = null;
 
 const getPolicyHubEndpoint = () => {
     const configuredEndpoint = Configurations?.app?.policyHub?.endpoint;
@@ -27,6 +31,15 @@ const getPolicyHubEndpoint = () => {
 const getPolicyHubLimit = () => (
     Configurations?.app?.policyHub?.limit || DEFAULT_POLICY_HUB_LIMIT
 );
+
+const getPolicyHubCacheTTL = () => {
+    const configuredTTL = Configurations?.app?.policyHub?.cacheTTL;
+    const ttl = Number(configuredTTL);
+    if (Number.isFinite(ttl) && ttl > 0) {
+        return ttl;
+    }
+    return DEFAULT_POLICY_HUB_CACHE_TTL_MS;
+};
 
 const buildPolicyId = (name, version) => `${name}${POLICY_ID_SEPARATOR}${version}`;
 
@@ -385,12 +398,38 @@ const getPolicySpec = async (policy) => {
     return policySpec;
 };
 
-const listAllPolicySpecs = async () => {
-    const policies = await listAllPolicies();
-    const policySpecs = await Promise.all(
-        policies.map(async (policy) => getPolicySpec(policy)),
-    );
-    return policySpecs.filter(Boolean);
+const listAllPolicySpecs = async ({ forceRefresh = false } = {}) => {
+    const ttl = getPolicyHubCacheTTL();
+    const hasValidCache = cachedPolicySpecs && ((Date.now() - cachedPolicySpecsAt) < ttl);
+
+    if (!forceRefresh && hasValidCache) {
+        return cachedPolicySpecs;
+    }
+
+    if (!forceRefresh && policySpecsInFlightPromise) {
+        return policySpecsInFlightPromise;
+    }
+
+    const fetchPromise = (async () => {
+        const policies = await listAllPolicies();
+        const policySpecs = await Promise.all(
+            policies.map(async (policy) => getPolicySpec(policy)),
+        );
+        const filteredPolicySpecs = policySpecs.filter(Boolean);
+        cachedPolicySpecs = filteredPolicySpecs;
+        cachedPolicySpecsAt = Date.now();
+        return filteredPolicySpecs;
+    })();
+
+    policySpecsInFlightPromise = fetchPromise;
+
+    try {
+        return await fetchPromise;
+    } finally {
+        if (policySpecsInFlightPromise === fetchPromise) {
+            policySpecsInFlightPromise = null;
+        }
+    }
 };
 
 export default {

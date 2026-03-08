@@ -98,7 +98,10 @@ const Policies: React.FC = () => {
     const [policies, setPolicies] = useState<Policy[]>([]);
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState<string | null>(null);
-    const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType !== 'wso2/synapse');
+    const isChoreoConnectGateway = (gatewayType: string) => (
+        gatewayType === 'wso2/apk' || gatewayType === CONSTS.GATEWAY_TYPE.choreoConnect
+    );
+    const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(isChoreoConnectGateway(api.gatewayType));
     const { showMultiVersionPolicies } = Configurations.apis;
     const [selectedTab, setSelectedTab] = useState(api.type === 'GRAPHQL' || api.apiPolicies != null ? 0 : 1);
     const [gateway, setGateway] = useState<string>("");
@@ -192,10 +195,10 @@ const Policies: React.FC = () => {
         if (isPolicyHubGateway) {
             setGateway(CONSTS.GATEWAY_TYPE.apiPlatform);
             PolicyHub.listAllPolicySpecs()
-                .then((policySpecs) => {
+                .then((policySpecs: PolicySpec[]) => {
                     const filteredPolicies = policySpecs.filter(
-                        (policy) => isApiTypeSupported(policy.supportedApiTypes),
-                    );
+                        (policy: PolicySpec) => isApiTypeSupported(policy.supportedApiTypes),
+                    ) as unknown as Policy[];
 
                     setAllPolicies(policySpecs);
                     setApiPolicies([]);
@@ -313,6 +316,10 @@ const Policies: React.FC = () => {
             setSelectedTab(1);
         }
     }, [isChoreoConnectEnabled, api.gatewayType, api.type]);
+
+    useEffect(() => {
+        setIsChoreoConnectEnabled(isChoreoConnectGateway(api.gatewayType));
+    }, [api.gatewayType]);
 
     useEffect(() => {
         // Update the Swagger spec object when API object gets changed
