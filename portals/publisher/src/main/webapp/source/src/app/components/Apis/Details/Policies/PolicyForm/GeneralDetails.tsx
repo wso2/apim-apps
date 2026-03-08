@@ -60,6 +60,7 @@ interface GeneralDetailsProps {
     dispatch?: React.Dispatch<any>;
     isViewMode: boolean;
     isLocalToAPI: boolean;
+    hideFlowsAndApiTypes?: boolean;
 }
 
 /**
@@ -75,7 +76,8 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
     supportedApiTypes,
     dispatch,
     isViewMode,
-    isLocalToAPI
+    isLocalToAPI,
+    hideFlowsAndApiTypes = false,
 }) => {
 
     const intl = useIntl();
@@ -92,6 +94,14 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
 
     // Version validation
     const versionError = version === '';
+
+    const hasDescription = Boolean(description && description.trim() !== '');
+    const showVersionField = !isViewMode || (version !== null && version !== '');
+    const showDescriptionField = !isViewMode || hasDescription;
+    const showApplicableFlows = !hideFlowsAndApiTypes
+        && (!isViewMode || (applicableFlows && applicableFlows.length > 0));
+    const showSupportedApiTypes = !hideFlowsAndApiTypes
+        && (!isViewMode || (supportedApiTypes && supportedApiTypes.length > 0));
 
     /**
      * Function to handle text field inputs
@@ -212,106 +222,111 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                             style: isViewMode ? { cursor: 'auto' } : {},
                         }}
                     />
-                    <TextField
-                        fullWidth
-                        type='number'
-                        id='version'
-                        data-testid='version'
-                        name='version'
-                        required
-                        label={
-                            <>
+                    {showVersionField && (
+                        <TextField
+                            fullWidth
+                            type='number'
+                            id='version'
+                            data-testid='version'
+                            name='version'
+                            required
+                            label={
+                                <>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.version.label'
+                                        defaultMessage='Version'
+                                    />
+                                </>
+                            }
+                            error={versionError}
+                            helperText={
+                                versionError ? (
+                                    'Version is Empty'
+                                ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.version.helperText'
+                                        defaultMessage='Enter Policy Version ( E.g.: v1 )'
+                                    />
+                                )
+                            }
+                            margin='dense'
+                            variant='outlined'
+                            value={
+                                isViewMode && version ? (
+                                    version.replace('v', '')
+                                ) : (
+                                    version
+                                )
+                            }
+                            onChange={handleInputChange}
+                            inputProps={{
+                                readOnly: isViewMode,
+                                style: isViewMode ? { cursor: 'auto' } : {},
+                            }}
+                            InputProps={{
+                                startAdornment: <InputAdornment position='start'>v</InputAdornment>,
+                            }}
+                        />
+                    )}
+                    {showDescriptionField && (
+                        <TextField
+                            id='name'
+                            data-testid='description'
+                            name='description'
+                            label={
+                                <>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.description.label'
+                                        defaultMessage='Description'
+                                    />
+                                </>
+                            }
+                            helperText={
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.version.label'
-                                    defaultMessage='Version'
+                                    id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.description.helperText'
+                                    defaultMessage='Short description about the policy'
                                 />
-                            </>
-                        }
-                        error={versionError}
-                        helperText={
-                            versionError ? (
-                                'Version is Empty'
-                            ) : (
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.version.helperText'
-                                    defaultMessage='Enter Policy Version ( E.g.: v1 )'
-                                />
-                            )
-                        }
-                        margin='dense'
-                        variant='outlined'
-                        value={
-                            isViewMode && version ? (
-                                version.replace('v', '')
-                            ) : (
-                                version
-                            )
-                        }
-                        onChange={handleInputChange}
-                        inputProps={{
-                            readOnly: isViewMode,
-                            style: isViewMode ? { cursor: 'auto' } : {},
-                        }}
-                        InputProps={{
-                            startAdornment: <InputAdornment position='start'>v</InputAdornment>,
-                        }}
-                    />
-                    <TextField
-                        id='name'
-                        data-testid='description'
-                        name='description'
-                        label={
-                            <>
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.description.label'
-                                    defaultMessage='Description'
-                                />
-                            </>
-                        }
-                        helperText={
-                            <FormattedMessage
-                                id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.description.helperText'
-                                defaultMessage='Short description about the policy'
-                            />
-                        }
-                        fullWidth
-                        margin='dense'
-                        variant='outlined'
-                        value={description}
-                        onChange={handleInputChange}
-                        inputProps={{
-                            readOnly: isViewMode,
-                            style: isViewMode ? { cursor: 'auto' } : {},
-                        }}
-                    />
-                    <Box display='flex' flexDirection='row' alignItems='center'>
-                        <Typography
-                            color='inherit'
-                            variant='body1'
-                            component='div'
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.applicable.flows.label'
-                                defaultMessage='Applicable Flows'
-                            />
-                            <sup className={classes.mandatoryStar}>*</sup>
-                        </Typography>
-                        <Box
-                            flex='1'
-                            display='flex'
-                            flexDirection='row-reverse'
-                            justifyContent='space-around'
-                        >
-                            <FormControl
-                                required
-                                component='fieldset'
-                                variant='standard'
-                                margin='normal'
-                                error={applicableFlowsError}
+                            }
+                            fullWidth
+                            margin='dense'
+                            variant='outlined'
+                            value={description}
+                            onChange={handleInputChange}
+                            inputProps={{
+                                readOnly: isViewMode,
+                                style: isViewMode ? { cursor: 'auto' } : {},
+                            }}
+                        />
+                    )}
+                    {showApplicableFlows && (
+                        <Box display='flex' flexDirection='row' alignItems='center'>
+                            <Typography
+                                color='inherit'
+                                variant='body1'
+                                component='div'
                             >
-                                <FormGroup className={classes.formGroup}>
-                                    {!isWebsocketSelected ? (
-                                        <>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.PolicyForm.GeneralDetails.form.applicable.flows.label'
+                                    defaultMessage='Applicable Flows'
+                                />
+                                <sup className={classes.mandatoryStar}>*</sup>
+                            </Typography>
+                            <Box
+                                flex='1'
+                                display='flex'
+                                flexDirection='row-reverse'
+                                justifyContent='space-around'
+                            >
+                                <FormControl
+                                    required
+                                    component='fieldset'
+                                    variant='standard'
+                                    margin='normal'
+                                    error={applicableFlowsError}
+                                >
+                                    <FormGroup className={classes.formGroup}>
+                                        {!isWebsocketSelected ? (
+                                            <>
                                             <FormControlLabel
                                                 control={
                                                     <Checkbox
@@ -393,7 +408,8 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                             </FormControl>
                         </Box>
                     </Box>
-                    {!isLocalToAPI && (
+                    )}
+                    {!isLocalToAPI && showSupportedApiTypes && (
                         <Box display='flex' flexDirection='row' alignItems='center'>
                             <Typography
                                 color='inherit'

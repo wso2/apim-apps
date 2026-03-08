@@ -30,6 +30,7 @@ import { FormattedMessage } from 'react-intl';
 import { mapAPIOperations } from 'AppComponents/Apis/Details/Resources/operationUtils';
 import API from 'AppData/api';
 import PolicyHub from 'AppData/PolicyHub';
+import CONSTS from 'AppData/Constants';
 import { Progress } from 'AppComponents/Shared';
 import { arrayMove } from '@dnd-kit/sortable';
 import Tabs from '@mui/material/Tabs';
@@ -101,7 +102,7 @@ const Policies: React.FC = () => {
     const { showMultiVersionPolicies } = Configurations.apis;
     const [selectedTab, setSelectedTab] = useState(api.type === 'GRAPHQL' || api.apiPolicies != null ? 0 : 1);
     const [gateway, setGateway] = useState<string>("");
-    const isPlatformGateway = api.gatewayType === 'platform-gateway' || api.gatewayType === 'PlatformGateway';
+    const isPolicyHubGateway = api.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform;
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
@@ -176,8 +177,8 @@ const Policies: React.FC = () => {
      * Sets the policies state: policy state is used to display the available policies that are draggable.
      */
     const fetchPolicies = () => {
-        if (isPlatformGateway) {
-            setGateway('PlatformGateway');
+        if (isPolicyHubGateway) {
+            setGateway(CONSTS.GATEWAY_TYPE.apiPlatform);
             PolicyHub.listAllPolicySpecs()
                 .then((policySpecs) => {
                     const filteredPolicies = policySpecs.filter((policy) =>
@@ -237,11 +238,8 @@ const Policies: React.FC = () => {
             if (api.gatewayType === "wso2/apk") {
                 // Get CC gateway supported policies
                 gatewayType = 'ChoreoConnect';
-            } else if (api.gatewayType === "platform-gateway" || api.gatewayType === "PlatformGateway") {
-                gatewayType = 'PlatformGateway';
-            } else if (api.gatewayType === "AWS") {
-                // Get AWS gateway supported policies
-                gatewayType = 'AWS';
+            } else if (api.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform) {
+                gatewayType = CONSTS.GATEWAY_TYPE.apiPlatform;
             } else if (api.gatewayType === "Azure") {
                 gatewayType = 'Azure';
             } else {
@@ -738,6 +736,7 @@ const Policies: React.FC = () => {
                             isChoreoConnectEnabled={isChoreoConnectEnabled}
                             gatewayType={gateway}
                             apiType={api.type}
+                            apiSubType={api.subtypeConfiguration?.subtype}
                         />
                     </Box>
                 </Box>

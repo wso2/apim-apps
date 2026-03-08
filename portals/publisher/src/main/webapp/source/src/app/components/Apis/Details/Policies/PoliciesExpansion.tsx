@@ -28,6 +28,7 @@ import { FormattedMessage } from 'react-intl';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
 import PolicyHub from 'AppData/PolicyHub';
+import CONSTS from 'AppData/Constants';
 import PolicyDropzone from './PolicyDropzone';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 import FlowArrow from './components/FlowArrow';
@@ -91,7 +92,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     const { apiLevelPolicies } = useContext<any>(ApiOperationContext);
     const { api } = useContext<any>(APIContext);
     const [listOriginatedFromCommonPolicies, setListOriginatedFromCommonPolicies] = useState<string[]>([]);
-    const isPlatformGateway = api.gatewayType === 'platform-gateway' || api.gatewayType === 'PlatformGateway';
+    const isPolicyHubGateway = api.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform;
 
     const resolvePolicySpec = async (policyId: string, policyName?: string, policyVersion?: string) => {
         const policyById = allPolicies?.find((policy: PolicySpec) => policy.id === policyId);
@@ -99,7 +100,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             return policyById;
         }
 
-        if (isPlatformGateway) {
+        if (isPolicyHubGateway) {
             const policyByName = allPolicies?.find(
                 (policy: PolicySpec) => policy.name === policyName && policy.version === policyVersion,
             );
@@ -178,7 +179,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                 } else {
                     try {
                         let policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId) || null;
-                        if (!policyObj && !isPlatformGateway && policyId) {
+                        if (!policyObj && !isPolicyHubGateway && policyId) {
                             originatedFromCommonPolicies.push(policyId);
                         }
                         if (!policyObj) {
@@ -213,7 +214,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                 } else {
                     try {
                         let policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId) || null;
-                        if (!policyObj && !isPlatformGateway && policyId) {
+                        if (!policyObj && !isPolicyHubGateway && policyId) {
                             originatedFromCommonPolicies.push(policyId);
                         }
                         if (!policyObj) {
@@ -249,7 +250,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                     } else {
                         try {
                             let policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId) || null;
-                            if (!policyObj && !isPlatformGateway && policyId) {
+                            if (!policyObj && !isPolicyHubGateway && policyId) {
                                 originatedFromCommonPolicies.push(policyId);
                             }
                             if (!policyObj) {

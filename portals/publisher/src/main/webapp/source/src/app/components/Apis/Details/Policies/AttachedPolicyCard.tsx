@@ -61,7 +61,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
     const { api } = useContext<any>(ApiContext);
     const { deleteApiOperation } = useContext<any>(ApiOperationContext);
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const isPlatformGatewayPolicy = policyObj.supportedGateways?.includes(CONSTS.GATEWAY_TYPE.platformGateway);
+    const isPolicyHubGatewayPolicy = policyObj.supportedGateways?.includes(CONSTS.GATEWAY_TYPE.apiPlatform);
 
     /**
      * Handle policy delete
@@ -154,7 +154,7 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
             PolicyConfigurationEditDrawer={PolicyConfigurationEditDrawer}
             listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
             isApiRevision={isApiRevision}
-            showDownload={!isPlatformGatewayPolicy}
+            showDownload={!isPolicyHubGatewayPolicy}
         />
     );
 };

@@ -87,7 +87,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
 }) => {
 
     const { api } = useContext<any>(ApiContext);
-    const isPlatformGatewayPolicy = supportedGateways.includes(CONSTS.GATEWAY_TYPE.platformGateway);
+    const isPolicyHubGatewayPolicy = supportedGateways.includes(CONSTS.GATEWAY_TYPE.apiPlatform);
 
     // Validates whether atleast one gateway type (i.e. synapse, or CC ) is selected
     // True if none of the available gateways are selected.
@@ -177,7 +177,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
      * @returns {TSX} Policy download section
      */
     const renderPolicyDownload = () => {
-        if (isPlatformGatewayPolicy) {
+        if (isPolicyHubGatewayPolicy) {
             return null;
         }
         return <>

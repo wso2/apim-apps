@@ -1183,6 +1183,60 @@ class API extends Resource {
     }
 
     /**
+     * Get registered platform gateways.
+     */
+    getPlatformGatewayList() {
+        return this.client.then((client) => {
+            return client.execute({
+                pathName: '/gateways',
+                method: 'get',
+            });
+        });
+    }
+
+    /**
+     * Register a platform gateway.
+     */
+    createPlatformGateway(body) {
+        return this.client.then((client) => {
+            return client.execute({
+                pathName: '/gateways',
+                method: 'post',
+                requestBody: body,
+                requestContentType: 'application/json',
+            });
+        });
+    }
+
+    /**
+     * Delete a platform gateway by ID.
+     * @param {string} gatewayId - The ID of the gateway to delete.
+     */
+    deletePlatformGateway(gatewayId) {
+        return this.client.then((client) => {
+            return client.execute({
+                pathName: '/gateways/{gatewayId}',
+                method: 'delete',
+                parameters: { gatewayId },
+            });
+        });
+    }
+
+    /**
+     * Regenerate a platform gateway registration token.
+     * @param {string} gatewayId - The ID of the gateway.
+     */
+    regeneratePlatformGatewayToken(gatewayId) {
+        return this.client.then((client) => {
+            return client.execute({
+                pathName: '/gateways/{gatewayId}/regenerate-token',
+                method: 'post',
+                parameters: { gatewayId },
+            });
+        });
+    }
+
+    /**
      * Get AI Service Provider Configuration by id
      * @param aiServiceProviderId AI Service Provider id
      * @returns {*}

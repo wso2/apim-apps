@@ -16,7 +16,9 @@
  * under the License.
  */
 
-import React, { useEffect, useReducer, useState } from 'react';
+import React, {
+    useEffect, useMemo, useReducer, useState,
+} from 'react';
 import { styled } from '@mui/material/styles';
 import API from 'AppData/api';
 import base64url from 'base64url';
@@ -26,16 +28,28 @@ import { useAppContext } from 'AppComponents/Shared/AppContext';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Chip from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Select from '@mui/material//Select';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import IconButton from '@mui/material/IconButton';
 import { MenuItem, Typography } from '@mui/material';
 import Alert from 'AppComponents/Shared/Alert';
 import { Link as RouterLink } from 'react-router-dom';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import { MuiChipsInput } from 'mui-chips-input';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import Error from '@mui/icons-material/Error';
 import InputAdornment from '@mui/material/InputAdornment';
 import { red } from '@mui/material/colors/';
@@ -43,6 +57,7 @@ import AddEditVhost from 'AppComponents/GatewayEnvironments/AddEditVhost';
 import GatewayConfiguration from 'AppComponents/GatewayEnvironments/GatewayConfiguration';
 import cloneDeep from 'lodash.clonedeep';
 import CircularProgress from '@mui/material/CircularProgress';
+import { QuickStartGuide } from './PlatformGatewayManagement';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
@@ -134,9 +149,11 @@ function AddEditGWEnvironment(props) {
         };
     };
     const { match: { params: { id } }, history } = props;
-    const initialPermissions = dataRow && dataRow.permissions
-        ? dataRow.permissions
-        : { roles: [], permissionType: 'PUBLIC' };
+    const initialPermissions = useMemo(() => {
+        return dataRow && dataRow.permissions
+            ? dataRow.permissions
+            : { roles: [], permissionType: 'PUBLIC' };
+    }, [dataRow]);
     const initialGatewayType = gatewayTypes && gatewayTypes.length > 1 && gatewayTypes.includes('Regular') ? 'Regular'
         : gatewayTypes[0];
     const [initialState, setInitialState] = useState({
@@ -153,6 +170,17 @@ function AddEditGWEnvironment(props) {
     });
     const [editMode, setIsEditMode] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(dataRow?.isReadOnly || false);
+    const [isPlatformGatewayEdit, setIsPlatformGatewayEdit] = useState(false);
+    const [isGatewayEditTypeResolved, setIsGatewayEditTypeResolved] = useState(!id);
+    const [platformGateway, setPlatformGateway] = useState(null);
+    const [platformGatewayLoading, setPlatformGatewayLoading] = useState(false);
+    const [platformTokenRegenerating, setPlatformTokenRegenerating] = useState(false);
+    const [confirmReconfigureOpen, setConfirmReconfigureOpen] = useState(false);
+    const [showPlatformTokenCommands, setShowPlatformTokenCommands] = useState(false);
+    const [platformHeaderEditMode, setPlatformHeaderEditMode] = useState(false);
+    const [platformHeaderSaving, setPlatformHeaderSaving] = useState(false);
+    const [platformDisplayNameDraft, setPlatformDisplayNameDraft] = useState('');
+    const [platformDescriptionDraft, setPlatformDescriptionDraft] = useState('');
 
     const [state, dispatch] = useReducer(reducer, initialState);
     const {
@@ -161,15 +189,23 @@ function AddEditGWEnvironment(props) {
     } = state;
 
     const [roles, setRoles] = useState([]);
+    const restApi = useMemo(() => new API(), []);
 
     useEffect(() => {
         if (id) {
-            new API().getGatewayEnvironment(id).then((result) => {
+            setIsGatewayEditTypeResolved(false);
+            setPlatformGatewayLoading(true);
+            setIsPlatformGatewayEdit(false);
+            setPlatformGateway(null);
+            setPlatformHeaderEditMode(false);
+            setShowPlatformTokenCommands(false);
+            restApi.getGatewayEnvironment(id).then(async (result) => {
                 const { body } = result;
                 const tempAdditionalProperties = {};
-                body.additionalProperties.forEach((property) => {
+                (body.additionalProperties || []).forEach((property) => {
                     tempAdditionalProperties[property.key] = property.value;
                 });
+                const { platformGatewayId } = tempAdditionalProperties;
                 const newState = {
                     name: body.name || '',
                     displayName: body.displayName || '',
@@ -182,11 +218,38 @@ function AddEditGWEnvironment(props) {
                     permissions: body.permissions || initialPermissions,
                     additionalProperties: tempAdditionalProperties || {},
                 };
+                if (platformGatewayId) {
+                    dispatch({ field: 'editDetails', value: newState });
+                    setIsPlatformGatewayEdit(true);
+                    setIsReadOnly(true);
+                    const platformGatewayResponse = await restApi.getPlatformGatewayList();
+                    const platformGateways = platformGatewayResponse?.body?.list || [];
+                    const matchedGateway = platformGateways.find((gateway) => gateway.id === platformGatewayId);
+                    if (matchedGateway) {
+                        setPlatformGateway(matchedGateway);
+                    } else {
+                        setPlatformGateway({
+                            id: platformGatewayId,
+                            name: body.name,
+                            displayName: body.displayName,
+                        });
+                    }
+                    return;
+                }
                 setIsReadOnly(body.isReadOnly || false);
                 dispatch({ field: 'editDetails', value: newState });
-            });
+            })
+                .catch((error) => {
+                    const errorMessage = error?.response?.body?.description || error.message;
+                    Alert.error(errorMessage);
+                })
+                .finally(() => {
+                    setPlatformGatewayLoading(false);
+                    setIsGatewayEditTypeResolved(true);
+                });
             setIsEditMode(true);
         } else {
+            setIsGatewayEditTypeResolved(true);
             setInitialState({
                 name: '',
                 displayName: '',
@@ -202,7 +265,7 @@ function AddEditGWEnvironment(props) {
                 },
             });
         }
-    }, []);
+    }, [id, initialPermissions, restApi]);
 
     useEffect(() => {
         if (permissions && permissions.roles) {
@@ -211,17 +274,25 @@ function AddEditGWEnvironment(props) {
     }, [permissions]);
 
     useEffect(() => {
+        if (!platformHeaderEditMode) {
+            setPlatformDisplayNameDraft(state.displayName || platformGateway?.displayName || '');
+            setPlatformDescriptionDraft(state.description || '');
+        }
+    }, [platformHeaderEditMode, platformGateway, state.description, state.displayName]);
+
+    useEffect(() => {
         const config = settings.gatewayConfiguration.filter((t) => t.type === gatewayType)[0];
-        if (gatewayType === 'other') {
+        if (gatewayType === 'other' || gatewayType === 'api-platform' || !config) {
             setGatewayConfiguration([]);
+            setSupportedModes([]);
         } else {
             setGatewayConfiguration(
-                config.configurations,
+                config.configurations || [],
+            );
+            setSupportedModes(
+                config.supportedModes || [],
             );
         }
-        setSupportedModes(
-            config.supportedModes,
-        );
     }, [gatewayType]);
 
     let permissionType = '';
@@ -242,7 +313,104 @@ function AddEditGWEnvironment(props) {
         }
     };
 
-    const restApi = new API();
+    const openReconfigureConfirm = () => {
+        setConfirmReconfigureOpen(true);
+    };
+
+    const closeReconfigureConfirm = () => {
+        if (!platformTokenRegenerating) {
+            setConfirmReconfigureOpen(false);
+        }
+    };
+
+    const handleRegeneratePlatformKey = async () => {
+        if (!platformGateway?.id) {
+            return;
+        }
+        setPlatformTokenRegenerating(true);
+        try {
+            const result = await restApi.regeneratePlatformGatewayToken(platformGateway.id);
+            const regeneratedGateway = result?.body || result;
+            setPlatformGateway(regeneratedGateway);
+            setConfirmReconfigureOpen(false);
+            setShowPlatformTokenCommands(true);
+            Alert.success('Gateway registration token regenerated successfully.');
+        } catch (error) {
+            const errorMessage = error?.response?.body?.description || error.message
+                || 'Failed to regenerate gateway registration token.';
+            Alert.error(errorMessage);
+        } finally {
+            setPlatformTokenRegenerating(false);
+        }
+    };
+
+    const handleEditPlatformHeader = () => {
+        setPlatformDisplayNameDraft(state.displayName || platformGateway?.displayName || '');
+        setPlatformDescriptionDraft(state.description || '');
+        setPlatformHeaderEditMode(true);
+    };
+
+    const handleCancelPlatformHeaderEdit = () => {
+        setPlatformDisplayNameDraft(state.displayName || platformGateway?.displayName || '');
+        setPlatformDescriptionDraft(state.description || '');
+        setPlatformHeaderEditMode(false);
+    };
+
+    const handleSavePlatformHeader = async () => {
+        const trimmedDisplayName = platformDisplayNameDraft.trim();
+        const trimmedDescription = platformDescriptionDraft.trim();
+        if (!trimmedDisplayName) {
+            Alert.error('Gateway name is required.');
+            return;
+        }
+
+        const additionalPropertiesArrayDTO = [];
+        Object.keys(additionalProperties || {}).forEach((key) => {
+            additionalPropertiesArrayDTO.push({ key, value: additionalProperties[key] });
+        });
+
+        const permissionsDTO = {
+            permissionType: permissions?.permissionType || 'PUBLIC',
+            roles: permissions?.roles || [],
+        };
+
+        const vhostDTO = (vhosts || []).map((vhost) => ({
+            host: vhost.host,
+            wsPort: vhost.wsPort,
+            wssPort: vhost.wssPort,
+            httpContext: vhost.httpContext,
+            httpPort: vhost.httpPort,
+            httpsPort: vhost.httpsPort,
+        }));
+
+        setPlatformHeaderSaving(true);
+        try {
+            await restApi.updateGatewayEnvironment(
+                id,
+                name.trim(),
+                trimmedDisplayName,
+                type,
+                trimmedDescription,
+                gatewayType,
+                gatewayMode,
+                scheduledInterval,
+                vhostDTO,
+                permissionsDTO,
+                additionalPropertiesArrayDTO,
+            );
+            dispatch({ field: 'displayName', value: trimmedDisplayName });
+            dispatch({ field: 'description', value: trimmedDescription });
+            setPlatformHeaderEditMode(false);
+            Alert.success('Gateway details updated successfully.');
+        } catch (error) {
+            const errorMessage = error?.response?.body?.description || error.message
+                || 'Failed to update gateway details.';
+            Alert.error(errorMessage);
+        } finally {
+            setPlatformHeaderSaving(false);
+        }
+    };
+
     const handleRoleAddition = (role) => {
         const promise = restApi.validateSystemRole(base64url.encode(role));
         promise
@@ -644,6 +812,281 @@ function AddEditGWEnvironment(props) {
             helperText: 'APIs can be both deployed to and discovered from the Gateway',
         },
     };
+
+    if (id && !isGatewayEditTypeResolved) {
+        return (
+            <StyledContentBase
+                pageStyle='half'
+                title={intl.formatMessage({
+                    id: 'Gateways.AddEditGateway.title.loading',
+                    defaultMessage: 'Gateway Environment',
+                })}
+                help={<div />}
+            >
+                <Box component='div' m={2} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <CircularProgress size={20} />
+                    <Typography variant='body2'>Loading gateway details...</Typography>
+                </Box>
+            </StyledContentBase>
+        );
+    }
+
+    if (isPlatformGatewayEdit) {
+        const title = state.displayName || platformGateway?.displayName || platformGateway?.name || state.name
+            || intl.formatMessage({
+                id: 'Gateways.AddEditGateway.title.platform',
+                defaultMessage: 'Platform Gateway',
+            });
+        const platformGatewayStatus = platformGateway?.isActive ? 'Active' : 'Inactive';
+        const platformGatewayUrl = platformGateway?.properties?.gatewayController?.baseUrl || '-';
+        const gatewayInitials = (title || 'PG')
+            .split(' ')
+            .filter(Boolean)
+            .slice(0, 2)
+            .map((word) => word[0])
+            .join('')
+            .toUpperCase();
+        return (
+            <StyledContentBase
+                pageStyle='half'
+                title={title}
+                help={<div />}
+            >
+                <Box component='div' m={2} sx={(theme) => ({ mb: theme.spacing(10) })}>
+                    {platformGatewayLoading ? (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <CircularProgress size={20} />
+                            <Typography variant='body2'>Loading platform gateway details...</Typography>
+                        </Box>
+                    ) : (
+                        <>
+                            <Button
+                                component={RouterLink}
+                                to='/settings/environments/'
+                                startIcon={<ArrowBackIcon />}
+                                sx={{ mb: 3, px: 0.5 }}
+                            >
+                                Back to Gateways
+                            </Button>
+
+                            <Box
+                                sx={{
+                                    border: '1px solid',
+                                    borderColor: 'divider',
+                                    borderRadius: 2,
+                                    p: { xs: 2, md: 3 },
+                                    bgcolor: 'background.paper',
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'flex-start',
+                                        gap: 2,
+                                        flexDirection: { xs: 'column', md: 'row' },
+                                    }}
+                                >
+                                    <Box
+                                        sx={{
+                                            width: 96,
+                                            height: 96,
+                                            borderRadius: 2,
+                                            bgcolor: 'primary.dark',
+                                            color: 'primary.contrastText',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '2rem',
+                                            fontWeight: 700,
+                                            flexShrink: 0,
+                                        }}
+                                    >
+                                        {gatewayInitials}
+                                    </Box>
+
+                                    <Box
+                                        sx={{
+                                            flex: 1,
+                                            minWidth: 0,
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                display: 'flex',
+                                                gap: 1,
+                                                flexWrap: 'wrap',
+                                                mb: 1.5,
+                                            }}
+                                        >
+                                            <Chip label='Self-Hosted Gateway' variant='outlined' color='primary' />
+                                            <Chip label='API Gateway' variant='outlined' color='primary' />
+                                        </Box>
+
+                                        {platformHeaderEditMode ? (
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    gap: 1.5,
+                                                    alignItems: 'flex-start',
+                                                    flexDirection: { xs: 'column', md: 'row' },
+                                                }}
+                                            >
+                                                <Box
+                                                    sx={{
+                                                        flex: 1,
+                                                        width: '100%',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        gap: 1.5,
+                                                    }}
+                                                >
+                                                    <TextField
+                                                        fullWidth
+                                                        size='small'
+                                                        label='Gateway Name'
+                                                        value={platformDisplayNameDraft}
+                                                        onChange={(event) => (
+                                                            setPlatformDisplayNameDraft(event.target.value)
+                                                        )}
+                                                        disabled={platformHeaderSaving}
+                                                    />
+                                                    <TextField
+                                                        fullWidth
+                                                        multiline
+                                                        minRows={3}
+                                                        label='Description'
+                                                        value={platformDescriptionDraft}
+                                                        onChange={(event) => (
+                                                            setPlatformDescriptionDraft(event.target.value)
+                                                        )}
+                                                        disabled={platformHeaderSaving}
+                                                    />
+                                                </Box>
+                                                <Box sx={{ display: 'flex', gap: 1, pt: 0.5 }}>
+                                                    <IconButton
+                                                        color='primary'
+                                                        onClick={handleSavePlatformHeader}
+                                                        disabled={platformHeaderSaving}
+                                                        aria-label='save gateway details'
+                                                    >
+                                                        {platformHeaderSaving
+                                                            ? <CircularProgress size={18} />
+                                                            : <CheckIcon />}
+                                                    </IconButton>
+                                                    <IconButton
+                                                        onClick={handleCancelPlatformHeaderEdit}
+                                                        disabled={platformHeaderSaving}
+                                                        aria-label='cancel gateway details edit'
+                                                    >
+                                                        <CloseIcon />
+                                                    </IconButton>
+                                                </Box>
+                                            </Box>
+                                        ) : (
+                                            <>
+                                                <Box
+                                                    sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: 1,
+                                                        flexWrap: 'wrap',
+                                                        mb: 1,
+                                                    }}
+                                                >
+                                                    <Typography variant='h4' sx={{ fontWeight: 700 }}>
+                                                        {title}
+                                                    </Typography>
+                                                    <IconButton
+                                                        size='small'
+                                                        onClick={handleEditPlatformHeader}
+                                                        aria-label='edit gateway details'
+                                                    >
+                                                        <EditOutlinedIcon fontSize='small' />
+                                                    </IconButton>
+                                                    <Chip
+                                                        size='small'
+                                                        label={platformGatewayStatus}
+                                                        color={platformGateway?.isActive ? 'success' : 'default'}
+                                                        variant={platformGateway?.isActive ? 'filled' : 'outlined'}
+                                                    />
+                                                </Box>
+                                                <Typography variant='body1' color='text.secondary'>
+                                                    {state.description
+                                                        || 'No description provided for this gateway yet.'}
+                                                </Typography>
+                                            </>
+                                        )}
+                                    </Box>
+                                </Box>
+
+                                <Divider sx={{ my: 3 }} />
+
+                                <Typography variant='h6' sx={{ mb: 2 }}>
+                                    Configurations
+                                </Typography>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} md={6}>
+                                        <TextField
+                                            fullWidth
+                                            size='small'
+                                            label='URL'
+                                            value={platformGatewayUrl}
+                                            InputProps={{ readOnly: true }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <TextField
+                                            fullWidth
+                                            size='small'
+                                            label='Associated Environment'
+                                            value={state.displayName || '-'}
+                                            InputProps={{ readOnly: true }}
+                                        />
+                                    </Grid>
+                                </Grid>
+
+                                <QuickStartGuide
+                                    gateway={platformGateway}
+                                    showReconfigureAction
+                                    onReconfigureRequested={openReconfigureConfirm}
+                                    reconfigureLoading={platformTokenRegenerating}
+                                    showTokenCommands={showPlatformTokenCommands}
+                                />
+                            </Box>
+                        </>
+                    )}
+                </Box>
+                <Dialog
+                    open={confirmReconfigureOpen}
+                    onClose={closeReconfigureConfirm}
+                    aria-labelledby='reconfigure-gateway-dialog-title'
+                >
+                    <DialogTitle id='reconfigure-gateway-dialog-title'>
+                        Generate New Registration Token?
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            The older registration key will be revoked immediately and the connected gateway will be
+                            disconnected from the control plane. You must reconfigure the gateway with the new key.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={closeReconfigureConfirm} disabled={platformTokenRegenerating}>
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handleRegeneratePlatformKey}
+                            variant='contained'
+                            color='warning'
+                            disabled={platformTokenRegenerating}
+                        >
+                            {platformTokenRegenerating ? 'Generating...' : 'Generate Key'}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </StyledContentBase>
+        );
+    }
 
     return (
         <StyledContentBase

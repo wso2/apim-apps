@@ -1492,6 +1492,7 @@
   "Apis.Details.Policies.PolicyList.add.new.policy": "Add New Policy",
   "Apis.Details.Policies.PolicyList.add.request.tab": "Request",
   "Apis.Details.Policies.PolicyList.add.response.tab": "Response",
+  "Apis.Details.Policies.PolicyList.category.filter": "Category",
   "Apis.Details.Policies.PolicyList.title": "Policy List",
   "Apis.Details.Policies.SaveOperationPolicies.save": "Save",
   "Apis.Details.ProductResources.ProductResourcesEdit.api.resources": "Select API Resources",

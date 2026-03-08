@@ -26,6 +26,8 @@ export type Policy = {
     supportedApiTypes: string[] | Map<string, string>[];
     isAPISpecific: boolean;
     supportedGateways: string[];
+    category?: string;
+    categories?: string[];
 };
 
 export type AttachedPolicy = {

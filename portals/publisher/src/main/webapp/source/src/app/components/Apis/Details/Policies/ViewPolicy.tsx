@@ -28,6 +28,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
 import PolicyHub from 'AppData/PolicyHub';
+import CONSTS from 'AppData/Constants';
 import type { Policy, PolicySpec } from './Types';
 import ApiContext from '../components/ApiContext';
 import PolicyViewForm from './PolicyForm/PolicyViewForm';
@@ -53,10 +54,10 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
     const { api } = useContext<any>(ApiContext);
     const [policySpec, setPolicySpec] = useState<PolicySpec | null>(null);
     const [loading, setLoading] = useState(false);
-    const isPlatformGateway = api.gatewayType === 'platform-gateway' || api.gatewayType === 'PlatformGateway';
+    const isPolicyHubGateway = api.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform;
 
     useEffect(() => {
-        if (dialogOpen && isPlatformGateway) {
+        if (dialogOpen && isPolicyHubGateway) {
             setLoading(true);
             PolicyHub.getPolicySpec({
                 name: policyObj.name,
