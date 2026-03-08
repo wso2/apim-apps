@@ -99,12 +99,19 @@ const getPlatformGatewayReleaseConfig = () => {
 };
 
 const slugifyName = (value) => {
-    return (value || '')
+    const normalized = (value || '')
         .toLowerCase()
         .trim()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '')
-        .slice(0, 64);
+        .replace(/[^a-z0-9]+/g, '-');
+    let start = 0;
+    let end = normalized.length;
+    while (start < end && normalized.charCodeAt(start) === 45) {
+        start += 1;
+    }
+    while (end > start && normalized.charCodeAt(end - 1) === 45) {
+        end -= 1;
+    }
+    return normalized.slice(start, end).slice(0, 64);
 };
 
 const normalizeBaseUrl = (value) => {

@@ -11,6 +11,8 @@ const CONSTS = ConstantsModule.default || ConstantsModule;
 
 const DEFAULT_POLICY_HUB_LIMIT = 100;
 const DEFAULT_POLICY_HUB_CACHE_TTL_MS = 5 * 60 * 1000;
+const DEFAULT_POLICY_HUB_TIMEOUT_MS = 15000;
+const DEFAULT_POLICY_HUB_CACHE_MAX_ENTRIES = 500;
 const POLICY_ID_SEPARATOR = '::';
 
 const policyDefinitionCache = new Map();
@@ -39,6 +41,36 @@ const getPolicyHubCacheTTL = () => {
         return ttl;
     }
     return DEFAULT_POLICY_HUB_CACHE_TTL_MS;
+};
+
+const getPolicyHubTimeout = () => {
+    const configuredTimeout = Configurations?.app?.policyHub?.timeoutMs;
+    const timeout = Number(configuredTimeout);
+    if (Number.isFinite(timeout) && timeout > 0) {
+        return timeout;
+    }
+    return DEFAULT_POLICY_HUB_TIMEOUT_MS;
+};
+
+const getPolicyHubCacheMaxEntries = () => {
+    const configuredMaxEntries = Configurations?.app?.policyHub?.cacheMaxEntries;
+    const maxEntries = Number(configuredMaxEntries);
+    if (Number.isFinite(maxEntries) && maxEntries > 0) {
+        return Math.floor(maxEntries);
+    }
+    return DEFAULT_POLICY_HUB_CACHE_MAX_ENTRIES;
+};
+
+const setCacheEntry = (cacheMap, key, value) => {
+    if (cacheMap.has(key)) {
+        cacheMap.delete(key);
+    }
+    cacheMap.set(key, value);
+    const maxEntries = getPolicyHubCacheMaxEntries();
+    while (cacheMap.size > maxEntries) {
+        const firstKey = cacheMap.keys().next().value;
+        cacheMap.delete(firstKey);
+    }
 };
 
 const buildPolicyId = (name, version) => `${name}${POLICY_ID_SEPARATOR}${version}`;
@@ -280,6 +312,11 @@ const toPolicySpec = (policy, policyDefinitionText) => {
 const request = async (path, { method = 'GET', params, headers, body } = {}) => {
     const endpoint = getPolicyHubEndpoint();
     const url = new URL(`${endpoint}${path}`);
+    const timeoutMs = getPolicyHubTimeout();
+    const abortController = new AbortController();
+    const timeoutId = setTimeout(() => {
+        abortController.abort();
+    }, timeoutMs);
 
     if (params) {
         Object.entries(params).forEach(([key, value]) => {
@@ -289,14 +326,27 @@ const request = async (path, { method = 'GET', params, headers, body } = {}) => 
         });
     }
 
-    const response = await fetch(url.toString(), {
-        method,
-        headers: {
-            Accept: 'application/json',
-            ...(headers || {}),
-        },
-        body,
-    });
+    let response;
+    try {
+        response = await fetch(url.toString(), {
+            method,
+            headers: {
+                Accept: 'application/json',
+                ...(headers || {}),
+            },
+            body,
+            signal: abortController.signal,
+        });
+    } catch (error) {
+        if (error?.name === 'AbortError') {
+            const timeoutError = new Error(`Policy Hub request timed out after ${timeoutMs}ms`);
+            timeoutError.name = 'PolicyHubTimeoutError';
+            throw timeoutError;
+        }
+        throw error;
+    } finally {
+        clearTimeout(timeoutId);
+    }
 
     if (!response.ok) {
         const errorText = await response.text().catch(() => '');
@@ -373,7 +423,7 @@ const getPolicyDefinitionCached = async (name, version) => {
     }
     const definition = await getPolicyDefinition(name, version);
     if (definition) {
-        policyDefinitionCache.set(cacheKey, definition);
+        setCacheEntry(policyDefinitionCache, cacheKey, definition);
     }
     return definition;
 };
@@ -394,7 +444,7 @@ const getPolicySpec = async (policy) => {
         console.error(error);
     }
     const policySpec = toPolicySpec(policy, definitionText);
-    policySpecCache.set(cacheKey, policySpec);
+    setCacheEntry(policySpecCache, cacheKey, policySpec);
     return policySpec;
 };
 

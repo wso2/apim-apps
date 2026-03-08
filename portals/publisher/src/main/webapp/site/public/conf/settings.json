@@ -51,6 +51,8 @@
           "endpoint": "https://db720294-98fd-40f4-85a1-cc6a3b65bc9a-dev.e1-us-east-azure.choreoapis.dev/api-platform/policy-hub-api/policy-hub-public/v1.0",
           "limit": 100,
           "cacheTTL": 300000,
+          "cacheMaxEntries": 500,
+          "timeoutMs": 15000,
           "supportedApiTypes": ["HTTP"]
         }
     },
