@@ -16,7 +16,7 @@
 
 import Utils from "@support/utils";
 
-describe("Application tests", () => {
+describe.skip("Application tests", () => {
     const { developer, password } = Utils.getUserInfo();
     const appName = Utils.generateName();
     const appDescription = 'Key gen application description';

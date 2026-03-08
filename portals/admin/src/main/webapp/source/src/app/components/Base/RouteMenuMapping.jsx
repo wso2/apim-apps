@@ -36,6 +36,7 @@ import CustomThrottlingPolicies from 'AppComponents/Throttling/Custom';
 import TenantTheme from 'AppComponents/TenantTheme/UploadTheme';
 import KeyManagers from 'AppComponents/KeyManagers';
 import AiServiceProviders from 'AppComponents/AiServiceProviders';
+import ListApiKeys from 'AppComponents/APIKeys/ListApiKeys';
 import ListRoles from 'AppComponents//RolePermissions/ListRoles.jsx';
 import TenantConfSave from 'AppComponents/AdvancedSettings/TenantConfSave';
 import Policies from 'AppComponents/Governance/Policies';
@@ -308,6 +309,16 @@ const RouteMenuMapping = (intl) => [
                 path: '/settings/ai-service-providers/(.*?)$',
             },
         ],
+    },
+    {
+        id: 'API Keys',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.apiKeys',
+            defaultMessage: 'API Keys',
+        }),
+        path: '/settings/api-keys',
+        component: ListApiKeys,
+        icon: <VpnKeyIcon />,
     },
     {
         id: 'Labels',

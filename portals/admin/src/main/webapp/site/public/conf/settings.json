@@ -20,7 +20,7 @@
       "timeout": 2000
     },
     "logoutSessionStateAppender" : "" ,
-    "docUrl": "https://apim.docs.wso2.com/en/4.6.0/",
+    "docUrl": "https://apim.docs.wso2.com/en/4.7.0/",
     "platformGateway": {
       "releasesUrl": "https://github.com/wso2/api-platform/releases",
       "version": "v0.9.0",

@@ -31,6 +31,9 @@
         "reactHTMLParser": {
             "decodeEntries": true,
             "tagsNotAllowed": []
+        },
+        "legacyApiKeys": {
+            "enabled": false
         }
     },
     "grantTypes": {
