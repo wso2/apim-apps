@@ -137,8 +137,12 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
      */
     const handleApiTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, checked } = event.target;
-        if (dispatch) {
-            if (name === 'WS' && checked) {
+        if (!dispatch) {
+            return;
+        }
+
+        if (name === 'WS') {
+            if (checked) {
                 dispatch({
                     type: ACTIONS.SET_SUPPORTED_API_TYPES,
                     payload: ['WS'],
@@ -147,22 +151,25 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                     type: ACTIONS.SET_APPLICABLE_FLOWS,
                     payload: ['request']
                 });
-            } else if (name === 'WS' && !checked) {
-                dispatch({
-                    type: ACTIONS.REMOVE_SUPPORTED_API_TYPE,
-                    payload: 'WS',
-                });
-            } else if (isWebsocketSelected) {
-                // Don't allow other types to be selected while WS is selected
                 return;
-            } else {
-                dispatch({
-                    type: ACTIONS.UPDATE_SUPPORTED_API_TYPES,
-                    name,
-                    checked,
-                });
             }
+            dispatch({
+                type: ACTIONS.REMOVE_SUPPORTED_API_TYPE,
+                payload: 'WS',
+            });
+            return;
         }
+
+        if (isWebsocketSelected) {
+            // Don't allow other types to be selected while WS is selected
+            return;
+        }
+
+        dispatch({
+            type: ACTIONS.UPDATE_SUPPORTED_API_TYPES,
+            name,
+            checked,
+        });
     };
 
     const isWebsocketSelected =
@@ -180,10 +187,17 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                     />
                 </Typography>
                 <Typography color='inherit' variant='caption' component='p'>
-                    <FormattedMessage
-                        id='Apis.Details.Policies.PolicyForm.GeneralDetails.description'
-                        defaultMessage='Provide the name, description and applicable flows of the policy.'
-                    />
+                    {hideFlowsAndApiTypes ? (
+                        <FormattedMessage
+                            id='Apis.Details.Policies.PolicyForm.GeneralDetails.description.noFlows'
+                            defaultMessage='Provide the name and description of the policy.'
+                        />
+                    ) : (
+                        <FormattedMessage
+                            id='Apis.Details.Policies.PolicyForm.GeneralDetails.description'
+                            defaultMessage='Provide the name, description and applicable flows of the policy.'
+                        />
+                    )}
                 </Typography>
             </Box>
             <Box width='60%'>

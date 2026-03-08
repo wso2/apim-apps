@@ -133,6 +133,7 @@ const PolicyList: FC<PolicyListPorps> = ({
             );
             let nextSelection = normalizedSelection;
 
+            // If current selections become invalid, apply API-type defaults when available.
             if (nextSelection.length === 0) {
                 const defaults = isAIAPI
                     ? ['AI', 'Guardrails']
@@ -166,6 +167,7 @@ const PolicyList: FC<PolicyListPorps> = ({
         setSelectedCategories(typeof value === 'string' ? value.split(',') : value);
     };
 
+    // Empty selection means no filtering; show all categories.
     const shouldShowPolicy = (policy: Policy) =>
         selectedCategories.length === 0 || selectedCategories.includes(getPolicyCategory(policy));
 
@@ -176,6 +178,17 @@ const PolicyList: FC<PolicyListPorps> = ({
                 && policy.supportedGateways.includes(gatewayType)
                 && shouldShowPolicy(policy),
         );
+
+    const renderCategoryValue = (selected: unknown) => {
+        const selectedCategoryList = selected as string[];
+        if (selectedCategoryList.length > 0) {
+            return selectedCategoryList.join(', ');
+        }
+        return intl.formatMessage({
+            id: 'Apis.Details.Policies.All',
+            defaultMessage: 'All',
+        });
+    };
 
     return (
         <StyledPaper className={classes.paperPosition}>
@@ -221,18 +234,11 @@ const PolicyList: FC<PolicyListPorps> = ({
                                 value={selectedCategories}
                                 onChange={handleCategoryChange}
                                 label='Category'
-                                renderValue={(selected) =>
-                                    (selected as string[]).length > 0
-                                        ? (selected as string[]).join(', ')
-                                        : intl.formatMessage({
-                                            id: 'Apis.Details.Policies.All',
-                                            defaultMessage: 'All',
-                                        })
-                                }
+                                renderValue={renderCategoryValue}
                             >
                                 {availableCategories.map((category) => (
                                     <MenuItem key={category} value={category}>
-                                        <Checkbox checked={selectedCategories.indexOf(category) > -1} />
+                                        <Checkbox checked={selectedCategories.includes(category)} />
                                         <ListItemText primary={category} />
                                     </MenuItem>
                                 ))}

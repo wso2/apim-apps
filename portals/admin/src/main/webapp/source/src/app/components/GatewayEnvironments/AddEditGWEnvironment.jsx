@@ -150,7 +150,7 @@ function AddEditGWEnvironment(props) {
     };
     const { match: { params: { id } }, history } = props;
     const initialPermissions = useMemo(() => {
-        return dataRow && dataRow.permissions
+        return dataRow?.permissions
             ? dataRow.permissions
             : { roles: [], permissionType: 'PUBLIC' };
     }, [dataRow]);
@@ -232,6 +232,7 @@ function AddEditGWEnvironment(props) {
                             id: platformGatewayId,
                             name: body.name,
                             displayName: body.displayName,
+                            isActive: null,
                         });
                     }
                     return;
@@ -860,7 +861,12 @@ function AddEditGWEnvironment(props) {
                 id: 'Gateways.AddEditGateway.title.platform',
                 defaultMessage: 'Platform Gateway',
             });
-        const platformGatewayStatus = platformGateway?.isActive
+        const isPlatformGatewayActive = platformGateway?.isActive === true || platformGateway?.isActive === 'true';
+        const hasPlatformGatewayStatus = platformGateway?.isActive === true
+            || platformGateway?.isActive === false
+            || platformGateway?.isActive === 'true'
+            || platformGateway?.isActive === 'false';
+        const platformGatewayStatus = isPlatformGatewayActive
             ? intl.formatMessage({
                 id: 'Gateways.AddEditGateway.platform.status.active',
                 defaultMessage: 'Active',
@@ -1062,12 +1068,14 @@ function AddEditGWEnvironment(props) {
                                                     >
                                                         <EditOutlinedIcon fontSize='small' />
                                                     </IconButton>
-                                                    <Chip
-                                                        size='small'
-                                                        label={platformGatewayStatus}
-                                                        color={platformGateway?.isActive ? 'success' : 'default'}
-                                                        variant={platformGateway?.isActive ? 'filled' : 'outlined'}
-                                                    />
+                                                    {hasPlatformGatewayStatus && (
+                                                        <Chip
+                                                            size='small'
+                                                            label={platformGatewayStatus}
+                                                            color={isPlatformGatewayActive ? 'success' : 'default'}
+                                                            variant={isPlatformGatewayActive ? 'filled' : 'outlined'}
+                                                        />
+                                                    )}
                                                 </Box>
                                                 <Typography variant='body1' color='text.secondary'>
                                                     {state.description
@@ -1880,6 +1888,10 @@ AddEditGWEnvironment.propTypes = {
         displayName: PropTypes.string.isRequired,
         description: PropTypes.string.isRequired,
         isReadOnly: PropTypes.bool.isRequired,
+        permissions: PropTypes.shape({
+            roles: PropTypes.arrayOf(PropTypes.string),
+            permissionType: PropTypes.string,
+        }),
         vhosts: PropTypes.shape([]),
     }),
     triggerButtonText: PropTypes.shape({}).isRequired,

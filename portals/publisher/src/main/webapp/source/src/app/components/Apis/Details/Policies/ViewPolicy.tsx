@@ -121,7 +121,7 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
                     setLoading(false);
                 });
         }
-    }, [dialogOpen]);
+    }, [dialogOpen, isLocalToAPI, isPolicyHubGateway, policyObj, api.id]);
 
     const stopPropagation = (
         e: React.MouseEvent<HTMLDivElement, MouseEvent>,

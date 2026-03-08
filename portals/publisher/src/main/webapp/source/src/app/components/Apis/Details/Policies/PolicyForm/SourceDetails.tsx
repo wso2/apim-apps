@@ -90,10 +90,6 @@ const SourceDetails: FC<SourceDetailsProps> = ({
     const normalizedSupportedGateways = Array.isArray(supportedGateways) ? supportedGateways : [];
     const isPolicyHubGatewayPolicy = normalizedSupportedGateways.includes(CONSTS.GATEWAY_TYPE.apiPlatform);
 
-    // Validates whether atleast one gateway type (i.e. synapse, or CC ) is selected
-    // True if none of the available gateways are selected.
-    const supportedGatewaysError = normalizedSupportedGateways.length === 0;
-
     /**
      * Function to handle supported gateways related checkbox changes
      * @param {React.ChangeEvent<HTMLInputElement>} event event

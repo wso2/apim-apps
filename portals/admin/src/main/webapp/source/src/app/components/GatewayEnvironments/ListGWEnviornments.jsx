@@ -18,6 +18,7 @@
 
 import React, { useState } from 'react';
 import API from 'AppData/api';
+import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
@@ -51,6 +52,13 @@ const StyledTooltip = styled(({ className, ...props }) => (
 
 const getAdditionalPropertiesAsMap = (additionalProperties = []) => {
     return Object.fromEntries(additionalProperties.map((property) => [property.key, property.value]));
+};
+
+const resolvePlatformGatewayStatus = (isPlatformGateway, isActiveProperty) => {
+    if (!isPlatformGateway || typeof isActiveProperty === 'undefined' || isActiveProperty === null) {
+        return null;
+    }
+    return isActiveProperty === 'true' ? 'ACTIVE' : 'INACTIVE';
 };
 
 /**
@@ -97,15 +105,16 @@ function apiCall() {
                     || Boolean(platformGatewayId);
 
                 // Get status from additionalProperties for platform gateways
-                const gatewayStatus = isPlatformGateway && additionalProperties.isActive
-                    ? (additionalProperties.isActive === 'true' ? 'Active' : 'Inactive')
-                    : null;
+                const gatewayStatus = resolvePlatformGatewayStatus(
+                    isPlatformGateway,
+                    additionalProperties.isActive,
+                );
                 return {
                     ...item,
                     id: Utils.encodeEnvironmentId(item.id),
                     platformGatewayId,
                     isPlatformGateway,
-                    gatewayTypeDisplay: isPlatformGateway ? 'Platform Gateway' : (item.gatewayType || '-'),
+                    gatewayTypeDisplay: isPlatformGateway ? 'api-platform' : (item.gatewayType || '-'),
                     gatewayStatus,
                 };
             });
@@ -114,6 +123,15 @@ function apiCall() {
             throw error;
         });
 }
+
+GatewayEditButton.propTypes = {
+    dataRow: PropTypes.shape({
+        id: PropTypes.string,
+        isReadOnly: PropTypes.bool,
+        isPlatformGateway: PropTypes.bool,
+        platformGatewayId: PropTypes.string,
+    }).isRequired,
+};
 
 /**
  * Render a list
@@ -171,15 +189,34 @@ export default function ListGWEnviornments() {
         if (!status) {
             return '-';
         }
-        const isActive = status === 'Active';
+        const isActive = status === 'ACTIVE';
+        const statusLabel = isActive
+            ? intl.formatMessage({
+                id: 'Gateways.AddEditGateway.platform.status.active',
+                defaultMessage: 'Active',
+            })
+            : intl.formatMessage({
+                id: 'Gateways.AddEditGateway.platform.status.inactive',
+                defaultMessage: 'Inactive',
+            });
         return (
             <Chip
                 size='small'
-                label={status}
+                label={statusLabel}
                 color={isActive ? 'success' : 'default'}
                 variant={isActive ? 'filled' : 'outlined'}
             />
         );
+    };
+
+    const renderGatewayType = (gatewayType) => {
+        if (gatewayType === 'api-platform') {
+            return intl.formatMessage({
+                id: 'Gateways.AddEditGateway.title.platform',
+                defaultMessage: 'Platform Gateway',
+            });
+        }
+        return gatewayType || '-';
     };
 
     // Helper function to render gateway instances
@@ -239,6 +276,7 @@ export default function ListGWEnviornments() {
                 }),
                 options: {
                     sort: false,
+                    customBodyRender: renderGatewayType,
                 },
             },
         ] : []),

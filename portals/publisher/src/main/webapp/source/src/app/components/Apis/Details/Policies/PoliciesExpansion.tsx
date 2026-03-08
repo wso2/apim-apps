@@ -152,6 +152,49 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
         return null;
     };
 
+    const buildAttachedPoliciesForFlow = async (
+        attachedPolicies: any[],
+        flowName: 'request' | 'response' | 'fault',
+        originatedFromCommonPolicies: string[],
+    ) => {
+        const flowPolicies: AttachedPolicy[] = [];
+        for (const attachedPolicy of attachedPolicies) {
+            const { policyId, policyName, policyVersion, uuid } = attachedPolicy;
+            if (policyId === null) {
+                flowPolicies.push({
+                    ...defaultPolicyForMigration,
+                    name: policyName,
+                    displayName: policyName,
+                    applicableFlows: [flowName],
+                    uniqueKey: uuid,
+                });
+                continue;
+            }
+            try {
+                let policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId) || null;
+                const isCommonPolicy = Boolean(!policyObj && !isPolicyHubGateway && policyId);
+                if (isCommonPolicy) {
+                    originatedFromCommonPolicies.push(policyId);
+                }
+                if (!policyObj) {
+                    // eslint-disable-next-line no-await-in-loop
+                    policyObj = await resolvePolicySpec(
+                        policyId,
+                        policyName,
+                        policyVersion,
+                        isCommonPolicy,
+                    );
+                }
+                if (policyObj) {
+                    flowPolicies.push({ ...policyObj, uniqueKey: uuid });
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        return flowPolicies;
+    };
+
     useEffect(() => {
         const requestList = [];
         const responseList = [];
@@ -174,7 +217,6 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
 
     useEffect(() => {
         (async () => {
-            
             const operationInAction = (!isAPILevelPolicy) ? apiOperations.find(
                 (op: any) =>
                     api.type === 'WS'
@@ -183,129 +225,28 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             ) : null;
             const apiPolicies = (isAPILevelPolicy) ? apiLevelPolicies : null;
             const originatedFromCommonPolicies : string[] = [];
-
-            // Populate request flow attached policy list
-            const requestFlowList: AttachedPolicy[] = [];
             const requestFlow = (isAPILevelPolicy) ? apiPolicies.request : operationInAction.operationPolicies.request;
-            for (const requestFlowAttachedPolicy of requestFlow) {
-                const { policyId, policyName, policyVersion, uuid } =
-                    requestFlowAttachedPolicy;
-                if (policyId === null) {
-                    // Handling migration flow
-                    requestFlowList.push({
-                        ...defaultPolicyForMigration,
-                        name: policyName,
-                        displayName: policyName,
-                        applicableFlows: ['request'],
-                        uniqueKey: uuid,
-                    });
-                } else {
-                    try {
-                        let policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId) || null;
-                        const isCommonPolicy = (!policyObj && !isPolicyHubGateway && policyId);
-                        if (isCommonPolicy) {
-                            originatedFromCommonPolicies.push(policyId);
-                        }
-                        if (!policyObj) {
-                            // eslint-disable-next-line no-await-in-loop
-                            policyObj = await resolvePolicySpec(
-                                policyId,
-                                policyName,
-                                policyVersion,
-                                isCommonPolicy,
-                            );
-                        }
-                        if (policyObj) {
-                            requestFlowList.push({ ...policyObj, uniqueKey: uuid });
-                        }
-                    } catch (error) {
-                        console.error(error);
-                    }
-                }
-            }
+            const requestFlowList = await buildAttachedPoliciesForFlow(
+                requestFlow,
+                'request',
+                originatedFromCommonPolicies,
+            );
             setRequestFlowPolicyList(requestFlowList);
-
-            // Populate response flow attached policy list
-            const responseFlowList: AttachedPolicy[] = [];
             const responseFlow = isAPILevelPolicy ? apiPolicies.response : operationInAction.operationPolicies.response;
-            for (const responseFlowAttachedPolicy of responseFlow) {
-                const { policyId, policyName, policyVersion, uuid } =
-                    responseFlowAttachedPolicy;
-                if (policyId === null) {
-                    // Handling migration flow
-                    responseFlowList.push({
-                        ...defaultPolicyForMigration,
-                        name: policyName,
-                        displayName: policyName,
-                        applicableFlows: ['response'],
-                        uniqueKey: uuid,
-                    });
-                } else {
-                    try {
-                        let policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId) || null;
-                        const isCommonPolicy = (!policyObj && !isPolicyHubGateway && policyId);
-                        if (isCommonPolicy) {
-                            originatedFromCommonPolicies.push(policyId);
-                        }
-                        if (!policyObj) {
-                            // eslint-disable-next-line no-await-in-loop
-                            policyObj = await resolvePolicySpec(
-                                policyId,
-                                policyName,
-                                policyVersion,
-                                isCommonPolicy,
-                            );
-                        }
-                        if (policyObj) {
-                            responseFlowList.push({ ...policyObj, uniqueKey: uuid });
-                        }
-                    } catch (error) {
-                        console.error(error);
-                    }
-                }
-            }
+            const responseFlowList = await buildAttachedPoliciesForFlow(
+                responseFlow,
+                'response',
+                originatedFromCommonPolicies,
+            );
             setResponseFlowPolicyList(responseFlowList);
 
             if (!isChoreoConnectEnabled) {
-                // Populate fault flow attached policy list
-                const faultFlowList: AttachedPolicy[] = [];
                 const faultFlow = isAPILevelPolicy ? apiPolicies.fault : operationInAction.operationPolicies.fault;
-                for (const faultFlowAttachedPolicy of faultFlow) {
-                    const { policyId, policyName, policyVersion, uuid } =
-                        faultFlowAttachedPolicy;
-                    if (policyId === null) {
-                        // Handling migration flow
-                        faultFlowList.push({
-                            ...defaultPolicyForMigration,
-                            name: policyName,
-                            displayName: policyName,
-                            applicableFlows: ['fault'],
-                            uniqueKey: uuid,
-                        });
-                    } else {
-                        try {
-                            let policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId) || null;
-                            const isCommonPolicy = (!policyObj && !isPolicyHubGateway && policyId);
-                            if (isCommonPolicy) {
-                                originatedFromCommonPolicies.push(policyId);
-                            }
-                            if (!policyObj) {
-                                // eslint-disable-next-line no-await-in-loop
-                                policyObj = await resolvePolicySpec(
-                                    policyId,
-                                    policyName,
-                                    policyVersion,
-                                    isCommonPolicy,
-                                );
-                            }
-                            if (policyObj) {
-                                faultFlowList.push({ ...policyObj, uniqueKey: uuid });
-                            }
-                        } catch (error) {
-                            console.error(error);
-                        }
-                    }
-                }
+                const faultFlowList = await buildAttachedPoliciesForFlow(
+                    faultFlow,
+                    'fault',
+                    originatedFromCommonPolicies,
+                );
                 setFaultFlowPolicyList(faultFlowList);
             }
             setListOriginatedFromCommonPolicies(originatedFromCommonPolicies);
