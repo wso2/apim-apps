@@ -171,6 +171,7 @@ class APIDefinition extends React.Component {
             linterSelectedSeverity: null,
             linterSelectedLine: null,
             isImporting: false,
+            closeImportDialog: null,
         };
         this.handleNo = this.handleNo.bind(this);
         this.handleSave = this.handleSave.bind(this);
@@ -187,6 +188,7 @@ class APIDefinition extends React.Component {
         this.updateSwaggerDefinition = this.updateSwaggerDefinition.bind(this);
         this.updateAsyncAPIDefinitionAndDeploy = this.updateAsyncAPIDefinitionAndDeploy.bind(this);
         this.onChangeSwaggerContent = this.onChangeSwaggerContent.bind(this);
+        this.setImportDialogClose = this.setImportDialogClose.bind(this);
         this.updateAsyncAPIDefinition = this.updateAsyncAPIDefinition.bind(this);
         this.onChangeAsyncAPIContent = this.onChangeAsyncAPIContent.bind(this);
         this.setErrors = this.setErrors.bind(this);
@@ -522,6 +524,14 @@ class APIDefinition extends React.Component {
     }
 
     /**
+     * Stores the function to close the import dialog from child component.
+     * @param {function} closeFn Function to close the import dialog
+     * */
+    setImportDialogClose(closeFn) {
+        this.setState({ closeImportDialog: closeFn });
+    }
+
+    /**
      * Handles the transition of the drawer.
      * @param {object} props list of props
      * @return {object} The Slide transition component
@@ -597,6 +607,14 @@ class APIDefinition extends React.Component {
                              */
                             updateAPI();
                             this.setState({ isUpdating: false });
+
+                            // Close editor and import dialog after successful import
+                            if (this.state.isImporting) {
+                                this.setState({ openEditor: false, isImporting: false });
+                                if (this.state.closeImportDialog) {
+                                    this.state.closeImportDialog();
+                                }
+                            }
                         })
                         .catch((err) => {
                             console.log(err);
@@ -850,8 +868,9 @@ class APIDefinition extends React.Component {
                         )
                     )}
                     {(!api.initiatedFromGateway && !isApiProduct) && (
-                        <ImportDefinition setSchemaDefinition={this.setSchemaDefinition} 
-                            editAndImport={this.openEditorToImport}/>
+                        <ImportDefinition setSchemaDefinition={this.setSchemaDefinition}
+                            editAndImport={this.openEditorToImport}
+                            onImportDialogClose={this.setImportDialogClose}/>
                     )}
                     {(api.serviceInfo && api.serviceInfo.outdated && api.type !== 'SOAP') && (
                         <DefinitionOutdated
