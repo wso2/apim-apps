@@ -9,9 +9,6 @@ const ConstantsModule = require('AppData/Constants');
 
 const CONSTS = ConstantsModule.default || ConstantsModule;
 
-const DEFAULT_POLICY_HUB_ENDPOINT =
-    'https://db720294-98fd-40f4-85a1-cc6a3b65bc9a-dev.e1-us-east-azure.choreoapis.dev' +
-    '/api-platform/policy-hub-api/policy-hub-public/v1.0';
 const DEFAULT_POLICY_HUB_LIMIT = 100;
 const DEFAULT_POLICY_HUB_CACHE_TTL_MS = 5 * 60 * 1000;
 const POLICY_ID_SEPARATOR = '::';
@@ -24,8 +21,11 @@ let policySpecsInFlightPromise = null;
 
 const getPolicyHubEndpoint = () => {
     const configuredEndpoint = Configurations?.app?.policyHub?.endpoint;
-    const endpoint = configuredEndpoint || DEFAULT_POLICY_HUB_ENDPOINT;
-    return endpoint.replace(/\/$/, '');
+    const endpoint = typeof configuredEndpoint === 'string' ? configuredEndpoint.trim() : '';
+    if (!endpoint) {
+        throw new Error('Policy Hub endpoint is not configured in settings (app.policyHub.endpoint).');
+    }
+    return endpoint.endsWith('/') ? endpoint.slice(0, -1) : endpoint;
 };
 
 const getPolicyHubLimit = () => (
@@ -400,7 +400,7 @@ const getPolicySpec = async (policy) => {
 
 const listAllPolicySpecs = async ({ forceRefresh = false } = {}) => {
     const ttl = getPolicyHubCacheTTL();
-    const hasValidCache = cachedPolicySpecs && ((Date.now() - cachedPolicySpecsAt) < ttl);
+    const hasValidCache = Array.isArray(cachedPolicySpecs) && ((Date.now() - cachedPolicySpecsAt) < ttl);
 
     if (!forceRefresh && hasValidCache) {
         return cachedPolicySpecs;
@@ -413,7 +413,7 @@ const listAllPolicySpecs = async ({ forceRefresh = false } = {}) => {
     const fetchPromise = (async () => {
         const policies = await listAllPolicies();
         const policySpecs = await Promise.all(
-            policies.map(async (policy) => getPolicySpec(policy)),
+            policies.map((policy) => getPolicySpec(policy)),
         );
         const filteredPolicySpecs = policySpecs.filter(Boolean);
         cachedPolicySpecs = filteredPolicySpecs;

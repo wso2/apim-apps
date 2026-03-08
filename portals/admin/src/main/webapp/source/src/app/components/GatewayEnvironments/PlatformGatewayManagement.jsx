@@ -63,12 +63,21 @@ const PERMISSION_TYPE_OPTIONS = [
 const DEFAULT_PLATFORM_GATEWAY_RELEASES_URL = 'https://github.com/wso2/api-platform/releases';
 const DEFAULT_PLATFORM_GATEWAY_VERSION = 'v0.9.0';
 
+const trimTrailingSlashes = (value) => {
+    const normalized = (value || '').trim();
+    let end = normalized.length;
+    while (end > 0 && normalized.charCodeAt(end - 1) === 47) {
+        end -= 1;
+    }
+    return normalized.slice(0, end);
+};
+
 const normalizeReleaseBaseUrl = (value) => {
     const trimmed = (value || '').trim();
     if (!trimmed) {
         return DEFAULT_PLATFORM_GATEWAY_RELEASES_URL;
     }
-    return trimmed.replace(/\/+$/, '');
+    return trimTrailingSlashes(trimmed);
 };
 
 const getPlatformGatewayReleaseConfig = () => {
@@ -104,9 +113,9 @@ const normalizeBaseUrl = (value) => {
         return '';
     }
     if (/^https?:\/\//i.test(trimmed)) {
-        return trimmed.replace(/\/+$/, '');
+        return trimTrailingSlashes(trimmed);
     }
-    return `https://${trimmed}`.replace(/\/+$/, '');
+    return trimTrailingSlashes(`https://${trimmed}`);
 };
 
 const getVhostFromBaseUrl = (baseUrl) => {

@@ -196,9 +196,14 @@ const Policies: React.FC = () => {
             setGateway(CONSTS.GATEWAY_TYPE.apiPlatform);
             PolicyHub.listAllPolicySpecs()
                 .then((policySpecs: PolicySpec[]) => {
-                    const filteredPolicies = policySpecs.filter(
+                    const filteredPolicySpecs = policySpecs.filter(
                         (policy: PolicySpec) => isApiTypeSupported(policy.supportedApiTypes),
-                    ) as unknown as Policy[];
+                    );
+                    const filteredPolicies: Policy[] = filteredPolicySpecs.map((policySpec: PolicySpec) => ({
+                        ...policySpec,
+                        isAPISpecific: Boolean(policySpec.isAPISpecific),
+                        supportedApiTypes: policySpec.supportedApiTypes as Policy['supportedApiTypes'],
+                    }));
 
                     setAllPolicies(policySpecs);
                     setApiPolicies([]);
