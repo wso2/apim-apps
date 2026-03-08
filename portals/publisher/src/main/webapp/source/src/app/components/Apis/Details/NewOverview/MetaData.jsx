@@ -25,6 +25,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import API from 'AppData/api';
+import CONSTS from 'AppData/Constants';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { capitalizeFirstLetter } from 'AppData/stringFormatter';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
@@ -177,13 +178,11 @@ function MetaData(props) {
                                 <Typography component='p' variant='body1'>
                                     {api.gatewayType === 'wso2/synapse' && 'Regular'}
                                     {api.gatewayType === 'wso2/apk' && 'APK'}
-                                    {(api.gatewayType === API.CONSTS.GATEWAY_TYPE.apiPlatform
-                                        || api.gatewayType === 'PlatformGateway')
+                                    {api.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform
                                         && 'Platform Gateway'}
                                     {api.gatewayType !== 'wso2/synapse'
                                         && api.gatewayType !== 'wso2/apk'
-                                        && api.gatewayType !== API.CONSTS.GATEWAY_TYPE.apiPlatform
-                                        && api.gatewayType !== 'PlatformGateway'
+                                        && api.gatewayType !== CONSTS.GATEWAY_TYPE.apiPlatform
                                         && api.gatewayType}
                                 </Typography>
                             </Grid>

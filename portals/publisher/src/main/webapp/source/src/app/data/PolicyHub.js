@@ -5,7 +5,9 @@
 
 const Configurations = require('Config');
 const YAML = require('js-yaml');
-const CONSTS = require('AppData/Constants');
+const ConstantsModule = require('AppData/Constants');
+
+const CONSTS = ConstantsModule.default || ConstantsModule;
 
 const DEFAULT_POLICY_HUB_ENDPOINT =
     'https://db720294-98fd-40f4-85a1-cc6a3b65bc9a-dev.e1-us-east-azure.choreoapis.dev' +
