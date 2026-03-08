@@ -1449,6 +1449,7 @@
   "Apis.Details.Policies.PolicyConfigurationEditDrawer.title": "Configure {policy}",
   "Apis.Details.Policies.PolicyConfiguringDrawer.title": "Configure {policy}",
   "Apis.Details.Policies.PolicyForm.GeneralDetails.description": "Provide the name, description and applicable flows of the policy.",
+  "Apis.Details.Policies.PolicyForm.GeneralDetails.description.noFlows": "Provide the name and description of the policy.",
   "Apis.Details.Policies.PolicyForm.GeneralDetails.form.applicable.flows.label": "Applicable Flows",
   "Apis.Details.Policies.PolicyForm.GeneralDetails.form.description.helperText": "Short description about the policy",
   "Apis.Details.Policies.PolicyForm.GeneralDetails.form.description.label": "Description",

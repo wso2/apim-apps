@@ -27,6 +27,7 @@ import MCPServerLanding from 'AppComponents/MCPServers/Landing';
 import MCPServerCreateDefault from 'AppComponents/MCPServers/Create/MCPServerCreateDefault';
 import MCPServerCreateUsingExistingAPI from 'AppComponents/MCPServers/Create/MCPServerCreateUsingExistingAPI';
 import MCPServerCreateProxy from 'AppComponents/MCPServers/Create/MCPServerCreateProxy';
+import CONSTS from 'AppData/Constants';
 import APICreateDefault from './Default/APICreateDefault';
 import APIProductCreateWrapper from './APIProduct/APIProductCreateWrapper';
 import ApiCreateSwagger from './OpenAPI/ApiCreateOpenAPI';
@@ -36,7 +37,6 @@ import ApiCreateWebSocket from './WebSocket/ApiCreateWebSocket';
 import APICreateStreamingAPI from './StreamingAPI/APICreateStreamingAPI';
 import APICreateAsyncAPI from './AsyncAPI/ApiCreateAsyncAPI';
 import ApiCreateAIAPI from './AIAPI/APICreateAIAPI';
-import CONSTS from 'AppData/Constants';
 
 const PREFIX = 'APICreateRoutes';
 
