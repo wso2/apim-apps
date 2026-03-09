@@ -21,5 +21,10 @@
     },
     "logoutSessionStateAppender" : "" ,
     "docUrl": "https://apim.docs.wso2.com/en/4.6.0/"
+  },
+  "sessionTimeout": {
+    "enable": true,
+    "idleWarningTimeout": 160,
+    "idleTimeout": 180
   }
 }
