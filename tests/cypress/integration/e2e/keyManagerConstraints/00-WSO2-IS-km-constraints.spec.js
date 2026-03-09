@@ -20,7 +20,7 @@ import Utils from '@support/utils';
 
 describe('Key Manager Constraints (Admin & DevPortal)', () => {
     const { carbonUsername, carbonPassword } = Utils.getUserInfo();
-    const kmName = 'ConstraintsTestKM';
+    const kmName = `ConstraintsTestKM-${Utils.generateName()}`;
     const appName = Utils.generateName();
     const wellKnownUrl = 'https://localhost:9443/oauth2/token/.well-known/openid-configuration';
     const kmUsername = 'admin';
@@ -160,17 +160,21 @@ describe('Key Manager Constraints (Admin & DevPortal)', () => {
 
     after(() => {
         cy.visit('/admin/settings/key-managers/');
-        cy.get('td > div', { timeout: Cypress.config().largeTimeout })
-            .contains(kmName)
-            .scrollIntoView({ offset: { top: -100, left: 0 } })
-            .should('be.visible');
-        cy.contains('tr', kmName).within(() => {
-            cy.get('[aria-label="key-manager-delete-icon"]').click({ force: true });
+        // Guard deletion: only delete when the KM row is actually present so a
+        // failed creation test does not mask its own error with a teardown failure.
+        cy.get('td > div', { timeout: Cypress.config().largeTimeout }).then(($els) => {
+            const kmExists = Array.from($els).some((el) => el.textContent.includes(kmName));
+            if (kmExists) {
+                // Register the intercept before triggering the click to avoid a race condition.
+                cy.intercept('DELETE', '**/key-managers/**').as('deleteKM');
+                cy.contains('tr', kmName).within(() => {
+                    cy.get('[aria-label="key-manager-delete-icon"]').click({ force: true });
+                });
+                cy.get('[data-testid="form-dialog-base-save-btn"]', { timeout: 10000 })
+                    .should('be.visible')
+                    .click({ force: true });
+                cy.wait('@deleteKM', { timeout: 15000 }).its('response.statusCode').should('eq', 200);
+            }
         });
-        cy.intercept('DELETE', '**/key-managers/**').as('deleteKM');
-        cy.get('[data-testid="form-dialog-base-save-btn"]', { timeout: 10000 })
-            .should('be.visible')
-            .click({ force: true });
-        cy.wait('@deleteKM', { timeout: 15000 }).its('response.statusCode').should('eq', 200);
     });
 });
