@@ -56,9 +56,6 @@ describe('Key Manager Constraints (Admin & DevPortal)', () => {
         return getConstraintWrapper(label).find('input[type="text"]');
     };
     const expandConstraintsSection = () => {
-        cy.get('#KeyManagers\\.AddEditKeyManager\\.claim\\.mappings\\.header', {
-            timeout: Cypress.config().largeTimeout,
-        }).scrollIntoView({ offset: { top: -100, left: 0 } }).should('be.visible');
         cy.get('#KeyManagers\\.AddEditKeyManager\\.app\\.config\\.constraints\\.header', {
             timeout: Cypress.config().largeTimeout,
         }).scrollIntoView({ offset: { top: -100, left: 0 } }).click();
