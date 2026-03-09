@@ -103,7 +103,6 @@ function CustomPadLock(props) {
                 </Grid>
                 <Grid item justifyContent='flex-end' alignItems='right'>
                     <Tooltip
-                        interactive
                         title={(
                             <Table size='small'>
                                 <TableBody>
