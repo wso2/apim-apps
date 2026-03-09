@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Alert,
     Box,
@@ -50,6 +51,8 @@ import MUIDataTable from 'mui-datatables';
 import API from 'AppData/api';
 
 export default function LegacyApiKeys({ keyType, selectedApp }) {
+    const intl = useIntl();
+
     // API keys state
     const [apiKeys, setApiKeys] = React.useState(null);
 
@@ -113,19 +116,19 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
 
     // Validity period options
     const validityOptions = [
-        { value: '30', label: '30 Days' },
-        { value: '90', label: '90 Days' },
-        { value: '180', label: '6 Months' },
-        { value: '365', label: '1 Year' },
-        { value: 'never', label: 'Never Expires' },
-        { value: 'custom', label: 'Custom' },
+        { value: '30', label: intl.formatMessage({ id: 'LegacyApiKeys.validity.30days', defaultMessage: '30 Days' }) },
+        { value: '90', label: intl.formatMessage({ id: 'LegacyApiKeys.validity.90days', defaultMessage: '90 Days' }) },
+        { value: '180', label: intl.formatMessage({ id: 'LegacyApiKeys.validity.6months', defaultMessage: '6 Months' }) },
+        { value: '365', label: intl.formatMessage({ id: 'LegacyApiKeys.validity.1year', defaultMessage: '1 Year' }) },
+        { value: 'never', label: intl.formatMessage({ id: 'LegacyApiKeys.validity.never', defaultMessage: 'Never Expires' }) },
+        { value: 'custom', label: intl.formatMessage({ id: 'LegacyApiKeys.validity.custom', defaultMessage: 'Custom' }) },
     ];
 
     // Restriction options
     const restrictionOptions = [
-        { value: 'none', label: 'None', description: 'No restrictions applied' },
-        { value: 'ip', label: 'Preferred IP', description: 'Restrict by IP address' },
-        { value: 'referrer', label: 'Preferred Referrer', description: 'Restrict by HTTP referrer' },
+        { value: 'none', label: intl.formatMessage({ id: 'LegacyApiKeys.restriction.none.label', defaultMessage: 'None' }), description: intl.formatMessage({ id: 'LegacyApiKeys.restriction.none.description', defaultMessage: 'No restrictions applied' }) },
+        { value: 'ip', label: intl.formatMessage({ id: 'LegacyApiKeys.restriction.ip.label', defaultMessage: 'Preferred IP' }), description: intl.formatMessage({ id: 'LegacyApiKeys.restriction.ip.description', defaultMessage: 'Restrict by IP address' }) },
+        { value: 'referrer', label: intl.formatMessage({ id: 'LegacyApiKeys.restriction.referrer.label', defaultMessage: 'Preferred Referrer' }), description: intl.formatMessage({ id: 'LegacyApiKeys.restriction.referrer.description', defaultMessage: 'Restrict by HTTP referrer' }) },
     ];
 
     // ── Generate handlers ──────────────────────────────────────────────────
@@ -151,19 +154,19 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
 
     const handleLegacyGenerateKey = () => {
         if (!displayName.trim()) {
-            alert('Please enter a name for the API key.');
+            alert(intl.formatMessage({ id: 'LegacyApiKeys.alert.enterName', defaultMessage: 'Please enter a name for the API key.' }));
             return;
         }
         if (restrictionType !== 'none' && !restrictionValue.trim()) {
             const restrictionOption = restrictionOptions.find((option) => option.value === restrictionType);
             const restrictionLabel = restrictionOption ? restrictionOption.label : '';
-            alert(`Please enter a ${restrictionLabel.toLowerCase()} value.`);
+            alert(intl.formatMessage({ id: 'LegacyApiKeys.alert.enterRestrictionValue', defaultMessage: 'Please enter a {restrictionLabel} value.' }, { restrictionLabel: restrictionLabel.toLowerCase() }));
             return;
         }
         if (validityPeriod === 'custom' && !customValidityDays) {
             const customDays = Number(customValidityDays);
             if (!Number.isInteger(customDays) || customDays <= 0) {
-                alert('Please enter a valid positive number of days for custom validity period.');
+                alert(intl.formatMessage({ id: 'LegacyApiKeys.alert.invalidCustomDays', defaultMessage: 'Please enter a valid positive number of days for custom validity period.' }));
                 return;
             }
         }
@@ -200,7 +203,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                 if (process.env.NODE_ENV !== 'production') {
                     console.error('Error generating legacy API key:', error);
                 }
-                alert('Failed to generate API key. Please try again.');
+                alert(intl.formatMessage({ id: 'LegacyApiKeys.alert.generateFailed', defaultMessage: 'Failed to generate API key. Please try again.' }));
             });
     };
 
@@ -221,7 +224,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
             })
             .catch((error) => {
                 console.error('Error revoking legacy key:', error);
-                setRevokeErrorMessage(error.message || 'Failed to revoke API key. Please try again.');
+                setRevokeErrorMessage(error.message || intl.formatMessage({ id: 'LegacyApiKeys.error.revokeFailed', defaultMessage: 'Failed to revoke API key. Please try again.' }));
                 setRevokeErrorOpen(true);
             });
     };
@@ -258,7 +261,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
             })
             .catch((error) => {
                 console.error('Error regenerating legacy key:', error);
-                setRegenerateErrorMessage(error.message || 'Failed to regenerate API key. Please try again.');
+                setRegenerateErrorMessage(error.message || intl.formatMessage({ id: 'LegacyApiKeys.error.regenerateFailed', defaultMessage: 'Failed to regenerate API key. Please try again.' }));
                 setRegenerateErrorOpen(true);
             });
     };
@@ -280,11 +283,11 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
     const legacyKeysColumns = [
         {
             name: 'keyName',
-            label: 'Key Name',
+            label: intl.formatMessage({ id: 'LegacyApiKeys.column.keyName', defaultMessage: 'Key Name' }),
         },
         {
             name: 'issuedOn',
-            label: 'Issued On',
+            label: intl.formatMessage({ id: 'LegacyApiKeys.column.issuedOn', defaultMessage: 'Issued On' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const keyData = legacyKeysData[dataIndex];
@@ -307,7 +310,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
         },
         {
             name: 'validityPeriod',
-            label: 'Expires On',
+            label: intl.formatMessage({ id: 'LegacyApiKeys.column.expiresOn', defaultMessage: 'Expires On' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const keyData = legacyKeysData[dataIndex];
@@ -315,7 +318,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                     if (vp === -1) {
                         return (
                             <Typography variant='body2' color='text.secondary'>
-                                Never
+                                <FormattedMessage id='LegacyApiKeys.table.never' defaultMessage='Never' />
                             </Typography>
                         );
                     }
@@ -337,7 +340,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
         },
         {
             name: 'lastUsed',
-            label: 'Last Used On',
+            label: intl.formatMessage({ id: 'LegacyApiKeys.column.lastUsedOn', defaultMessage: 'Last Used On' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const keyData = legacyKeysData[dataIndex];
@@ -345,7 +348,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                     if (lastUsed === 'NOT_USED') {
                         return (
                             <Typography variant='body2' color='text.secondary'>
-                                Never
+                                <FormattedMessage id='LegacyApiKeys.table.never' defaultMessage='Never' />
                             </Typography>
                         );
                     }
@@ -367,7 +370,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
         },
         {
             name: 'actions',
-            label: 'Actions',
+            label: intl.formatMessage({ id: 'LegacyApiKeys.column.actions', defaultMessage: 'Actions' }),
             options: {
                 sort: false,
                 filter: false,
@@ -375,7 +378,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                 setCellProps: () => ({ align: 'right' }),
                 customHeadRender: () => (
                     <TableCell align='right' className='keys-header'>
-                        Actions
+                        <FormattedMessage id='LegacyApiKeys.column.actions' defaultMessage='Actions' />
                     </TableCell>
                 ),
                 customBodyRenderLite: (dataIndex) => {
@@ -389,7 +392,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                                 startIcon={<Block />}
                                 onClick={() => handleRevokeKey(keyData)}
                             >
-                                Revoke
+                                <FormattedMessage id='LegacyApiKeys.button.revoke' defaultMessage='Revoke' />
                             </Button>
                             <Button
                                 variant='outlined'
@@ -397,7 +400,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                                 startIcon={<Refresh />}
                                 onClick={() => handleRegenerateKey(keyData)}
                             >
-                                Regenerate
+                                <FormattedMessage id='LegacyApiKeys.button.regenerate' defaultMessage='Regenerate' />
                             </Button>
                         </Stack>
                     );
@@ -429,7 +432,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                     <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 4, gap: 2 }}>
                         <CircularProgress size={24} />
                         <Typography variant='body1' color='text.secondary'>
-                            Loading legacy API keys...
+                            <FormattedMessage id='LegacyApiKeys.loading' defaultMessage='Loading legacy API keys...' />
                         </Typography>
                     </Grid>
                 </Grid>
@@ -438,10 +441,10 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                 <Grid container spacing={3}>
                     <Grid item xs={12} sx={{ textAlign: 'center', mt: 4, p: 2, color: 'text.secondary' }}>
                         <Typography variant='h5' gutterBottom>
-                            No Legacy API Keys Found
+                            <FormattedMessage id='LegacyApiKeys.empty.title' defaultMessage='No Legacy API Keys Found' />
                         </Typography>
                         <Typography variant='subtitle1' gutterBottom sx={{ mb: 3 }}>
-                            Generate your first legacy API key to access your subscribed APIs from this application.
+                            <FormattedMessage id='LegacyApiKeys.empty.subtitle' defaultMessage='Generate your first legacy API key to access your subscribed APIs from this application.' />
                         </Typography>
                         <Button
                             variant='contained'
@@ -455,7 +458,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                                 fontSize: '1.1rem',
                             }}
                         >
-                            Generate Legacy API Key
+                            <FormattedMessage id='LegacyApiKeys.button.generate' defaultMessage='Generate Legacy API Key' />
                         </Button>
                     </Grid>
                 </Grid>
@@ -469,10 +472,10 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                         <Box display='flex' justifyContent='space-between' alignItems='center'>
                             <Box>
                                 <Typography variant='h5' sx={{ fontWeight: 600 }}>
-                                    Legacy API Keys
+                                    <FormattedMessage id='LegacyApiKeys.title' defaultMessage='Legacy API Keys' />
                                 </Typography>
                                 <Typography variant='body2' color='text.secondary' sx={{ mt: 0.5 }}>
-                                    Manage legacy API keys generated for your APIs.
+                                    <FormattedMessage id='LegacyApiKeys.subtitle' defaultMessage='Manage legacy API keys generated for your Applications.' />
                                 </Typography>
                             </Box>
                             <Button
@@ -481,7 +484,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                                 onClick={handleOpenLegacyModal}
                                 sx={{ borderRadius: '999px', textTransform: 'none', px: 3 }}
                             >
-                                Generate Legacy API Key
+                                <FormattedMessage id='LegacyApiKeys.button.generate' defaultMessage='Generate Legacy API Key' />
                             </Button>
                         </Box>
                         <MUIDataTable
@@ -501,9 +504,9 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                 fullWidth
             >
                 <DialogTitle>
-                    Generate Legacy API Key
+                    <FormattedMessage id='LegacyApiKeys.modal.generate.title' defaultMessage='Generate Legacy API Key' />
                     <Typography variant='body2' color='text.secondary'>
-                        Create a new legacy API key for this application to access your subscribed APIs.
+                        <FormattedMessage id='LegacyApiKeys.modal.generate.subtitle' defaultMessage='Create a new legacy API key for this application to access your subscribed APIs.' />
                     </Typography>
                 </DialogTitle>
                 <DialogContent>
@@ -512,19 +515,19 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                             <Grid item xs={12}>
                                 <TextField
                                     size='small'
-                                    label='Name'
+                                    label={intl.formatMessage({ id: 'LegacyApiKeys.field.name.label', defaultMessage: 'Name' })}
                                     value={displayName}
                                     onChange={(e) => setDisplayName(e.target.value)}
-                                    placeholder='Enter a name for this API key'
+                                    placeholder={intl.formatMessage({ id: 'LegacyApiKeys.field.name.placeholder', defaultMessage: 'Enter a name for this API key' })}
                                     fullWidth
                                 />
                             </Grid>
                             <Grid item xs={6}>
                                 <FormControl size='small' fullWidth>
-                                    <InputLabel>Validity Period</InputLabel>
+                                    <InputLabel><FormattedMessage id='LegacyApiKeys.field.validityPeriod.label' defaultMessage='Validity Period' /></InputLabel>
                                     <Select
                                         value={validityPeriod}
-                                        label='Validity Period'
+                                        label={intl.formatMessage({ id: 'LegacyApiKeys.field.validityPeriod.label', defaultMessage: 'Validity Period' })}
                                         onChange={(e) => setValidityPeriod(e.target.value)}
                                     >
                                         {validityOptions.map((option) => (
@@ -540,20 +543,20 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                                     <TextField
                                         size='small'
                                         fullWidth
-                                        label='Days'
+                                        label={intl.formatMessage({ id: 'LegacyApiKeys.field.days.label', defaultMessage: 'Days' })}
                                         type='number'
                                         value={customValidityDays}
                                         onChange={(e) => setCustomValidityDays(e.target.value)}
-                                        placeholder='Enter days'
+                                        placeholder={intl.formatMessage({ id: 'LegacyApiKeys.field.days.placeholder', defaultMessage: 'Enter days' })}
                                     />
                                 </Grid>
                             )}
                             <Grid item xs={validityPeriod === 'custom' ? 6 : 6}>
                                 <FormControl size='small' fullWidth>
-                                    <InputLabel>Security Restriction</InputLabel>
+                                    <InputLabel><FormattedMessage id='LegacyApiKeys.field.securityRestriction.label' defaultMessage='Security Restriction' /></InputLabel>
                                     <Select
                                         value={restrictionType}
-                                        label='Security Restriction'
+                                        label={intl.formatMessage({ id: 'LegacyApiKeys.field.securityRestriction.label', defaultMessage: 'Security Restriction' })}
                                         onChange={(e) => {
                                             setRestrictionType(e.target.value);
                                             setRestrictionValue('');
@@ -572,10 +575,14 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                                     <TextField
                                         size='small'
                                         fullWidth
-                                        label={restrictionType === 'ip' ? 'IP Address' : 'Referrer URL'}
+                                        label={restrictionType === 'ip'
+                                            ? intl.formatMessage({ id: 'LegacyApiKeys.field.ipAddress.label', defaultMessage: 'IP Address' })
+                                            : intl.formatMessage({ id: 'LegacyApiKeys.field.referrerUrl.label', defaultMessage: 'Referrer URL' })}
                                         value={restrictionValue}
                                         onChange={(e) => setRestrictionValue(e.target.value)}
-                                        placeholder={restrictionType === 'ip' ? 'e.g. 192.168.1.100' : 'e.g. https://example.com'}
+                                        placeholder={restrictionType === 'ip'
+                                            ? intl.formatMessage({ id: 'LegacyApiKeys.field.ipAddress.placeholder', defaultMessage: 'e.g. 192.168.1.100' })
+                                            : intl.formatMessage({ id: 'LegacyApiKeys.field.referrerUrl.placeholder', defaultMessage: 'e.g. https://example.com' })}
                                     />
                                 </Grid>
                             )}
@@ -594,14 +601,14 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseLegacyModal}>
-                        Cancel
+                        <FormattedMessage id='LegacyApiKeys.button.cancel' defaultMessage='Cancel' />
                     </Button>
                     <Button
                         onClick={handleLegacyGenerateKey}
                         variant='contained'
                         disabled={!displayName.trim()}
                     >
-                        Generate Legacy API Key
+                        <FormattedMessage id='LegacyApiKeys.button.generate' defaultMessage='Generate Legacy API Key' />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -613,19 +620,17 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                 maxWidth='sm'
                 fullWidth
             >
-                <DialogTitle>API Key Generated Successfully</DialogTitle>
+                <DialogTitle><FormattedMessage id='LegacyApiKeys.generatedKey.title' defaultMessage='API Key Generated Successfully' /></DialogTitle>
                 <DialogContent>
                     <Stack spacing={2} sx={{ pt: 1 }}>
                         {showToken && generatedApiKey && (
                             <>
                                 <Alert severity='warning' sx={{ mb: 0.5 }}>
                                     <Typography variant='h6' component='h3' sx={{ mb: 0.5, fontSize: '0.95rem' }}>
-                                        Please Copy the API Key
+                                        <FormattedMessage id='LegacyApiKeys.copyAlert.title' defaultMessage='Please Copy the API Key' />
                                     </Typography>
                                     <Typography component='p' variant='body2' sx={{ fontSize: '0.875rem' }}>
-                                        Please copy this generated API Key value as it will be displayed only for
-                                        the current browser session. (The API Key will not be visible in the UI
-                                        after the page is refreshed.)
+                                        <FormattedMessage id='LegacyApiKeys.generatedKey.alert.message' defaultMessage='Please copy this generated API Key value as it will be displayed only for the current browser session. (The API Key will not be visible in the UI after the page is refreshed.)' />
                                     </Typography>
                                 </Alert>
                                 <Box sx={{ mt: 1 }}>
@@ -635,8 +640,8 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                                         htmlFor='generated-api-key-value'
                                         sx={{ fontWeight: 600, mb: 1, display: 'block', fontSize: '0.875rem' }}
                                     >
-                                        API Key -
-                                        {' '}
+                                        <FormattedMessage id='LegacyApiKeys.keyLabel' defaultMessage='API Key' />
+                                        {' - '}
                                         <Typography
                                             component='span'
                                             variant='subtitle2'
@@ -656,9 +661,9 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                                             readOnly: true,
                                             endAdornment: (
                                                 <InputAdornment position='end'>
-                                                    <Tooltip title='Copy to clipboard' placement='top'>
+                                                    <Tooltip title={intl.formatMessage({ id: 'LegacyApiKeys.tooltip.copyToClipboard', defaultMessage: 'Copy to clipboard' })} placement='top'>
                                                         <IconButton
-                                                            aria-label='Copy to clipboard'
+                                                            aria-label={intl.formatMessage({ id: 'LegacyApiKeys.tooltip.copyToClipboard', defaultMessage: 'Copy to clipboard' })}
                                                             onClick={() => {
                                                                 navigator.clipboard.writeText(generatedApiKey.apikey);
                                                             }}
@@ -677,12 +682,12 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                                         }}
                                     />
                                     <FormHelperText sx={{ mt: 0.75, fontSize: '0.75rem' }}>
-                                        Above API Key has a validity period of
+                                        <FormattedMessage id='LegacyApiKeys.validityHelperText' defaultMessage='Above API Key has a validity period of' />
                                         {' '}
                                         <strong>
                                             {generatedApiKey.validityPeriod === -1
-                                                ? 'Never Expires'
-                                                : `${generatedApiKey.validityPeriod} seconds`}
+                                                ? <FormattedMessage id='LegacyApiKeys.validity.neverExpires' defaultMessage='Never Expires' />
+                                                : <FormattedMessage id='LegacyApiKeys.validity.seconds' defaultMessage='{seconds} seconds' values={{ seconds: generatedApiKey.validityPeriod }} />}
                                         </strong>
                                         .
                                     </FormHelperText>
@@ -693,49 +698,50 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseGeneratedKeyModal} variant='contained'>
-                        Close
+                        <FormattedMessage id='LegacyApiKeys.button.close' defaultMessage='Close' />
                     </Button>
                 </DialogActions>
             </Dialog>
 
             {/* Revoke Confirmation Dialog */}
             <Dialog open={revokeConfirmOpen} onClose={handleCancelRevoke} maxWidth='xs' fullWidth>
-                <DialogTitle>Confirm Revoke</DialogTitle>
+                <DialogTitle><FormattedMessage id='LegacyApiKeys.revokeConfirm.title' defaultMessage='Confirm Revoke' /></DialogTitle>
                 <DialogContent>
                     <Typography>
-                        Are you sure you want to revoke the API key
-                        {' '}
-                        <strong>{selectedKeyForRevoke?.keyName}</strong>
-                        ? This action cannot be undone.
+                        <FormattedMessage
+                            id='LegacyApiKeys.revokeConfirm.message'
+                            defaultMessage='Are you sure you want to revoke the API key {keyName}? This action cannot be undone.'
+                            values={{ keyName: <strong>{selectedKeyForRevoke?.keyName}</strong> }}
+                        />
                     </Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCancelRevoke}>Cancel</Button>
+                    <Button onClick={handleCancelRevoke}><FormattedMessage id='LegacyApiKeys.button.cancel' defaultMessage='Cancel' /></Button>
                     <Button onClick={handleConfirmRevoke} variant='contained' color='error'>
-                        Revoke
+                        <FormattedMessage id='LegacyApiKeys.button.revoke' defaultMessage='Revoke' />
                     </Button>
                 </DialogActions>
             </Dialog>
 
             {/* Revoke Success Dialog */}
             <Dialog open={revokeSuccessOpen} onClose={handleCloseRevokeSuccess} maxWidth='xs' fullWidth>
-                <DialogTitle>API Key Revoked</DialogTitle>
+                <DialogTitle><FormattedMessage id='LegacyApiKeys.revokeSuccess.title' defaultMessage='API Key Revoked' /></DialogTitle>
                 <DialogContent>
-                    <Typography>The API key has been successfully revoked.</Typography>
+                    <Typography><FormattedMessage id='LegacyApiKeys.revokeSuccess.message' defaultMessage='The API key has been successfully revoked.' /></Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseRevokeSuccess} variant='contained'>OK</Button>
+                    <Button onClick={handleCloseRevokeSuccess} variant='contained'><FormattedMessage id='LegacyApiKeys.button.ok' defaultMessage='OK' /></Button>
                 </DialogActions>
             </Dialog>
 
             {/* Revoke Error Dialog */}
             <Dialog open={revokeErrorOpen} onClose={handleCloseRevokeError} maxWidth='xs' fullWidth>
-                <DialogTitle>Revoke Failed</DialogTitle>
+                <DialogTitle><FormattedMessage id='LegacyApiKeys.revokeError.title' defaultMessage='Revoke Failed' /></DialogTitle>
                 <DialogContent>
                     <Typography>{revokeErrorMessage}</Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseRevokeError} variant='contained'>OK</Button>
+                    <Button onClick={handleCloseRevokeError} variant='contained'><FormattedMessage id='LegacyApiKeys.button.ok' defaultMessage='OK' /></Button>
                 </DialogActions>
             </Dialog>
 
@@ -746,19 +752,17 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                 maxWidth='sm'
                 fullWidth
             >
-                <DialogTitle>API Key Regenerated Successfully</DialogTitle>
+                <DialogTitle><FormattedMessage id='LegacyApiKeys.regenerateKey.title' defaultMessage='API Key Regenerated Successfully' /></DialogTitle>
                 <DialogContent>
                     <Stack spacing={2} sx={{ pt: 1 }}>
                         {regeneratedApiKey && (
                             <>
                                 <Alert severity='warning' sx={{ mb: 0.5 }}>
                                     <Typography variant='h6' component='h3' sx={{ mb: 0.5, fontSize: '0.95rem' }}>
-                                        Please Copy the API Key
+                                        <FormattedMessage id='LegacyApiKeys.copyAlert.title' defaultMessage='Please Copy the API Key' />
                                     </Typography>
                                     <Typography component='p' variant='body2' sx={{ fontSize: '0.875rem' }}>
-                                        Please copy this regenerated API Key value as it will be displayed only for
-                                        the current browser session. (The API Key will not be visible in the UI
-                                        after the page is refreshed.)
+                                        <FormattedMessage id='LegacyApiKeys.regenerateKey.alert.message' defaultMessage='Please copy this regenerated API Key value as it will be displayed only for the current browser session. (The API Key will not be visible in the UI after the page is refreshed.)' />
                                     </Typography>
                                 </Alert>
                                 <Box sx={{ mt: 1 }}>
@@ -768,8 +772,8 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                                         htmlFor='legacy-regenerated-api-key-value'
                                         sx={{ fontWeight: 600, mb: 1, display: 'block', fontSize: '0.875rem' }}
                                     >
-                                        API Key -
-                                        {' '}
+                                        <FormattedMessage id='LegacyApiKeys.keyLabel' defaultMessage='API Key' />
+                                        {' - '}
                                         <Typography
                                             component='span'
                                             variant='subtitle2'
@@ -789,9 +793,9 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                                             readOnly: true,
                                             endAdornment: (
                                                 <InputAdornment position='end'>
-                                                    <Tooltip title='Copy to clipboard' placement='top'>
+                                                    <Tooltip title={intl.formatMessage({ id: 'LegacyApiKeys.tooltip.copyToClipboard', defaultMessage: 'Copy to clipboard' })} placement='top'>
                                                         <IconButton
-                                                            aria-label='Copy to clipboard'
+                                                            aria-label={intl.formatMessage({ id: 'LegacyApiKeys.tooltip.copyToClipboard', defaultMessage: 'Copy to clipboard' })}
                                                             onClick={() => {
                                                                 navigator.clipboard.writeText(regeneratedApiKey.apikey);
                                                             }}
@@ -810,12 +814,12 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                                         }}
                                     />
                                     <FormHelperText sx={{ mt: 0.75, fontSize: '0.75rem' }}>
-                                        Above API Key has a validity period of
+                                        <FormattedMessage id='LegacyApiKeys.validityHelperText' defaultMessage='Above API Key has a validity period of' />
                                         {' '}
                                         <strong>
                                             {regeneratedApiKey.validityPeriod === -1
-                                                ? 'Never Expires'
-                                                : `${regeneratedApiKey.validityPeriod} seconds`}
+                                                ? <FormattedMessage id='LegacyApiKeys.validity.neverExpires' defaultMessage='Never Expires' />
+                                                : <FormattedMessage id='LegacyApiKeys.validity.seconds' defaultMessage='{seconds} seconds' values={{ seconds: regeneratedApiKey.validityPeriod }} />}
                                         </strong>
                                         .
                                     </FormHelperText>
@@ -825,18 +829,18 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                     </Stack>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseRegenerateModal} variant='contained'>Close</Button>
+                    <Button onClick={handleCloseRegenerateModal} variant='contained'><FormattedMessage id='LegacyApiKeys.button.close' defaultMessage='Close' /></Button>
                 </DialogActions>
             </Dialog>
 
             {/* Regenerate Error Dialog */}
             <Dialog open={regenerateErrorOpen} onClose={handleCloseRegenerateError} maxWidth='xs' fullWidth>
-                <DialogTitle>Regenerate Failed</DialogTitle>
+                <DialogTitle><FormattedMessage id='LegacyApiKeys.regenerateError.title' defaultMessage='Regenerate Failed' /></DialogTitle>
                 <DialogContent>
                     <Typography>{regenerateErrorMessage}</Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseRegenerateError} variant='contained'>OK</Button>
+                    <Button onClick={handleCloseRegenerateError} variant='contained'><FormattedMessage id='LegacyApiKeys.button.ok' defaultMessage='OK' /></Button>
                 </DialogActions>
             </Dialog>
         </Stack>

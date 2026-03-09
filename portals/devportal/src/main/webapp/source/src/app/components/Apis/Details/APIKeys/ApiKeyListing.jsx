@@ -50,12 +50,14 @@ import {
 import MUIDataTable from 'mui-datatables';
 import API from 'AppData/api';
 import { useParams } from 'react-router-dom';
+import { FormattedMessage, useIntl } from 'react-intl';
 import ApiKeyAssociation from './ApiKeyAssociation';
 import ApiKeyGenerate from './ApiKeyGenerate';
 
 export default function ApiKeyListing() {
     const params = useParams();
     const apiUUID = params.apiUuid;
+    const intl = useIntl();
 
     // API keys state for dynamic updates
     const [apiKeys, setApiKeys] = React.useState(null);
@@ -184,7 +186,7 @@ export default function ApiKeyListing() {
             })
             .catch((error) => {
                 console.error('Error revoking key:', error);
-                setRevokeErrorMessage(error.message || 'Failed to revoke API key. Please try again.');
+                setRevokeErrorMessage(error.message || intl.formatMessage({ id: 'ApiKeyListing.error.revokeFailed', defaultMessage: 'Failed to revoke API key. Please try again.' }));
                 setRevokeErrorOpen(true);
             });
     };
@@ -205,10 +207,10 @@ export default function ApiKeyListing() {
     };
 
     const columns = [
-        { name: 'keyName', label: 'API Key' },
+        { name: 'keyName', label: intl.formatMessage({ id: 'ApiKeyListing.column.apiKey', defaultMessage: 'API Key' }) },
         {
             name: 'associatedApp',
-            label: 'Application',
+            label: intl.formatMessage({ id: 'ApiKeyListing.column.application', defaultMessage: 'Application' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const keyData = apiKeys[dataIndex];
@@ -225,7 +227,7 @@ export default function ApiKeyListing() {
         },
         {
             name: 'issuedOn',
-            label: 'Issued On',
+            label: intl.formatMessage({ id: 'ApiKeyListing.column.issuedOn', defaultMessage: 'Issued On' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const keyData = apiKeys[dataIndex];
@@ -248,7 +250,7 @@ export default function ApiKeyListing() {
         },
         {
             name: 'validityPeriod',
-            label: 'Expires On',
+            label: intl.formatMessage({ id: 'ApiKeyListing.column.expiresOn', defaultMessage: 'Expires On' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const keyData = apiKeys[dataIndex];
@@ -257,7 +259,7 @@ export default function ApiKeyListing() {
                     if (keyValidityPeriod === -1) {
                         return (
                             <Typography variant='body2' color='text.secondary'>
-                                Never
+                                <FormattedMessage id='ApiKeyListing.table.never' defaultMessage='Never' />
                             </Typography>
                         );
                     }
@@ -274,7 +276,7 @@ export default function ApiKeyListing() {
         },
         {
             name: 'lastUsed',
-            label: 'Last Used On',
+            label: intl.formatMessage({ id: 'ApiKeyListing.column.lastUsedOn', defaultMessage: 'Last Used On' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const keyData = apiKeys[dataIndex];
@@ -282,7 +284,7 @@ export default function ApiKeyListing() {
                     if (lastUsed === 'NOT_USED') {
                         return (
                             <Typography variant='body2' color='text.secondary'>
-                                Never
+                                <FormattedMessage id='ApiKeyListing.table.never' defaultMessage='Never' />
                             </Typography>
                         );
                     }
@@ -304,7 +306,7 @@ export default function ApiKeyListing() {
         },
         {
             name: 'actions',
-            label: 'Actions',
+            label: intl.formatMessage({ id: 'ApiKeyListing.column.actions', defaultMessage: 'Actions' }),
             options: {
                 sort: false,
                 filter: false,
@@ -312,7 +314,7 @@ export default function ApiKeyListing() {
                 setCellProps: () => ({ align: 'right' }),
                 customHeadRender: () => (
                     <TableCell align='right' className='keys-header'>
-                        Actions
+                        <FormattedMessage id='ApiKeyListing.column.actions' defaultMessage='Actions' />
                     </TableCell>
                 ),
                 customBodyRenderLite: (dataIndex) => {
@@ -331,7 +333,7 @@ export default function ApiKeyListing() {
                                     startIcon={<Link />}
                                     onClick={() => handleOpenAssociationModal(keyData)}
                                 >
-                                    Associate
+                                    <FormattedMessage id='ApiKeyListing.button.associate' defaultMessage='Associate' />
                                 </Button>
                             ) : (
                                 <Button
@@ -341,7 +343,7 @@ export default function ApiKeyListing() {
                                     startIcon={<LinkOff />}
                                     onClick={() => handleRemoveAssociation(keyData)}
                                 >
-                                    Remove Association
+                                    <FormattedMessage id='ApiKeyListing.button.removeAssociation' defaultMessage='Remove Association' />
                                 </Button>
                             )}
                             <Button
@@ -351,7 +353,7 @@ export default function ApiKeyListing() {
                                 startIcon={<Block />}
                                 onClick={() => handleRevokeKey(keyData)}
                             >
-                                Revoke
+                                <FormattedMessage id='ApiKeyListing.button.revoke' defaultMessage='Revoke' />
                             </Button>
                             {renderRegenerateButton(keyData)}
                         </Stack>
@@ -388,10 +390,10 @@ export default function ApiKeyListing() {
                         }}
                     >
                         <Typography variant='h5' gutterBottom>
-                            No API Keys Found
+                            <FormattedMessage id='ApiKeyListing.emptyState.title' defaultMessage='No API Keys Found' />
                         </Typography>
                         <Typography variant='subtitle1' gutterBottom sx={{ mb: 3 }}>
-                            Get started by generating your first API key to access this API from your applications.
+                            <FormattedMessage id='ApiKeyListing.emptyState.description' defaultMessage='Get started by generating your first API key to access this API from your applications.' />
                         </Typography>
                         <Button
                             variant='contained'
@@ -405,7 +407,7 @@ export default function ApiKeyListing() {
                                 fontSize: '1.1rem',
                             }}
                         >
-                            Generate API Key
+                            <FormattedMessage id='ApiKeyListing.button.generateApiKey' defaultMessage='Generate API Key' />
                         </Button>
                     </Grid>
                 </Grid>
@@ -423,10 +425,10 @@ export default function ApiKeyListing() {
                         <Box display='flex' justifyContent='space-between' alignItems='center'>
                             <Box>
                                 <Typography variant='h5' sx={{ fontWeight: 600 }}>
-                                    API Keys
+                                    <FormattedMessage id='ApiKeyListing.section.title' defaultMessage='API Keys' />
                                 </Typography>
                                 <Typography variant='body2' color='text.secondary' sx={{ mt: 0.5 }}>
-                                    View and manage your current API keys for this API across all applications.
+                                    <FormattedMessage id='ApiKeyListing.section.description' defaultMessage='View and manage your current API keys for this API across all applications.' />
                                 </Typography>
                             </Box>
                             <Button
@@ -435,7 +437,7 @@ export default function ApiKeyListing() {
                                 onClick={handleOpenGenerationModal}
                                 sx={{ borderRadius: '999px', textTransform: 'none', px: 3 }}
                             >
-                                Generate API Key
+                                <FormattedMessage id='ApiKeyListing.button.generateApiKey' defaultMessage='Generate API Key' />
                             </Button>
                         </Box>
                         {apiKeys && apiKeys.length > 0 && (
@@ -458,11 +460,21 @@ export default function ApiKeyListing() {
                 fullWidth
             >
                 <DialogTitle>
-                    {showToken ? 'API Key Generated Successfully' : 'Generate New API Key'}
+                    {showToken
+                        ? <FormattedMessage id='ApiKeyListing.dialog.generate.successTitle' defaultMessage='API Key Generated Successfully' />
+                        : <FormattedMessage id='ApiKeyListing.dialog.generate.title' defaultMessage='Generate New API Key' />}
                     <Typography variant='body2' color='text.secondary'>
-                        {showToken
-                            ? 'Your API key has been generated. Copy it now as it will not be shown again.'
-                            : 'Create a new API key for one of your subscribed applications with custom settings.'}
+                        {showToken ? (
+                            <FormattedMessage
+                                id='ApiKeyListing.dialog.generate.successSubtitle'
+                                defaultMessage='Your API key has been generated. Copy it now as it will not be shown again.'
+                            />
+                        ) : (
+                            <FormattedMessage
+                                id='ApiKeyListing.dialog.generate.subtitle'
+                                defaultMessage='Create a new API key for one of your subscribed applications with custom settings.'
+                            />
+                        )}
                     </Typography>
                 </DialogTitle>
                 <DialogContent>
@@ -472,32 +484,40 @@ export default function ApiKeyListing() {
                                 <Grid item xs={12}>
                                     <TextField
                                         size='small'
-                                        label='Name'
+                                        label={intl.formatMessage({ id: 'ApiKeyListing.input.name.label', defaultMessage: 'Name' })}
                                         value={displayName}
                                         onChange={(e) => setDisplayName(e.target.value)}
-                                        placeholder='Enter a name for this API key'
+                                        placeholder={intl.formatMessage({ id: 'ApiKeyListing.input.name.placeholder', defaultMessage: 'Enter a name for this API key' })}
                                         fullWidth
                                     />
                                 </Grid>
                                 <Grid item xs={4}>
                                     <FormControl size='small' fullWidth>
-                                        <InputLabel>Key Type</InputLabel>
+                                        <InputLabel>
+                                            <FormattedMessage id='ApiKeyListing.input.keyType.label' defaultMessage='Key Type' />
+                                        </InputLabel>
                                         <Select
                                             value={keyType}
-                                            label='Key Type'
+                                            label={intl.formatMessage({ id: 'ApiKeyListing.input.keyType.label', defaultMessage: 'Key Type' })}
                                             onChange={(e) => setKeyType(e.target.value)}
                                         >
-                                            <MenuItem value='PRODUCTION'>Production</MenuItem>
-                                            <MenuItem value='SANDBOX'>Sandbox</MenuItem>
+                                            <MenuItem value='PRODUCTION'>
+                                                <FormattedMessage id='ApiKeyListing.keyType.production' defaultMessage='Production' />
+                                            </MenuItem>
+                                            <MenuItem value='SANDBOX'>
+                                                <FormattedMessage id='ApiKeyListing.keyType.sandbox' defaultMessage='Sandbox' />
+                                            </MenuItem>
                                         </Select>
                                     </FormControl>
                                 </Grid>
                                 <Grid item xs={4}>
                                     <FormControl size='small' fullWidth>
-                                        <InputLabel>Validity Period</InputLabel>
+                                        <InputLabel>
+                                            <FormattedMessage id='ApiKeyListing.input.validityPeriod.label' defaultMessage='Validity Period' />
+                                        </InputLabel>
                                         <Select
                                             value={validityPeriod}
-                                            label='Validity Period'
+                                            label={intl.formatMessage({ id: 'ApiKeyListing.input.validityPeriod.label', defaultMessage: 'Validity Period' })}
                                             onChange={(e) => setValidityPeriod(e.target.value)}
                                         >
                                             {validityOptions.map((option) => (
@@ -513,20 +533,22 @@ export default function ApiKeyListing() {
                                         <TextField
                                             size='small'
                                             fullWidth
-                                            label='Days'
+                                            label={intl.formatMessage({ id: 'ApiKeyListing.input.days.label', defaultMessage: 'Days' })}
                                             type='number'
                                             value={customValidityDays}
                                             onChange={(e) => setCustomValidityDays(e.target.value)}
-                                            placeholder='Enter days'
+                                            placeholder={intl.formatMessage({ id: 'ApiKeyListing.input.days.placeholder', defaultMessage: 'Enter days' })}
                                         />
                                     </Grid>
                                 )}
                                 <Grid item xs={validityPeriod === 'custom' ? 4 : 4}>
                                     <FormControl size='small' fullWidth>
-                                        <InputLabel>Security Restriction</InputLabel>
+                                        <InputLabel>
+                                            <FormattedMessage id='ApiKeyListing.input.securityRestriction.label' defaultMessage='Security Restriction' />
+                                        </InputLabel>
                                         <Select
                                             value={restrictionType}
-                                            label='Security Restriction'
+                                            label={intl.formatMessage({ id: 'ApiKeyListing.input.securityRestriction.label', defaultMessage: 'Security Restriction' })}
                                             onChange={(e) => {
                                                 setRestrictionType(e.target.value);
                                                 setRestrictionValue('');
@@ -545,12 +567,14 @@ export default function ApiKeyListing() {
                                         <TextField
                                             size='small'
                                             fullWidth
-                                            label={restrictionType === 'ip' ? 'IP Address' : 'Referrer URL'}
-                                            value={restrictionValue}
-                                            onChange={(e) => setRestrictionValue(e.target.value)}
-                                            placeholder={restrictionType === 'ip'
-                                                ? 'e.g. 192.168.1.100'
-                                                : 'e.g. https://example.com'}
+                                        label={restrictionType === 'ip'
+                                            ? intl.formatMessage({ id: 'ApiKeyListing.input.ipAddress.label', defaultMessage: 'IP Address' })
+                                            : intl.formatMessage({ id: 'ApiKeyListing.input.referrerUrl.label', defaultMessage: 'Referrer URL' })}
+                                        value={restrictionValue}
+                                        onChange={(e) => setRestrictionValue(e.target.value)}
+                                        placeholder={restrictionType === 'ip'
+                                            ? intl.formatMessage({ id: 'ApiKeyListing.input.ipAddress.placeholder', defaultMessage: 'e.g. 192.168.1.100' })
+                                            : intl.formatMessage({ id: 'ApiKeyListing.input.referrerUrl.placeholder', defaultMessage: 'e.g. https://example.com' })}
                                             sx={{ minWidth: 200 }}
                                         />
                                     </Grid>
@@ -579,12 +603,16 @@ export default function ApiKeyListing() {
                                 <>
                                     <Alert severity='warning' sx={{ mb: 0.5 }}>
                                         <Typography variant='h6' component='h3' sx={{ mb: 0.5, fontSize: '0.95rem' }}>
-                                            Please Copy the API Key
+                                            <FormattedMessage
+                                                id='ApiKeyListing.alert.copyKey.title'
+                                                defaultMessage='Please Copy the API Key'
+                                            />
                                         </Typography>
                                         <Typography component='p' variant='body2' sx={{ fontSize: '0.875rem' }}>
-                                            Please copy this generated API Key value as it will be displayed only for
-                                            the current browser session. (The API Key will not be visible in the UI
-                                            after the page is refreshed.)
+                                            <FormattedMessage
+                                                id='ApiKeyListing.alert.copyKey.description'
+                                                defaultMessage='Please copy this generated API Key value as it will be displayed only for the current browser session. (The API Key will not be visible in the UI after the page is refreshed.)'
+                                            />
                                         </Typography>
                                     </Alert>
                                     <Box sx={{ mt: 1 }}>
@@ -599,7 +627,7 @@ export default function ApiKeyListing() {
                                                 fontSize: '0.875rem',
                                             }}
                                         >
-                                            API Key -
+                                            <FormattedMessage id='ApiKeyListing.label.apiKeyPrefix' defaultMessage='API Key -' />
                                             {' '}
                                             <Typography
                                                 component='span'
@@ -624,9 +652,9 @@ export default function ApiKeyListing() {
                                                 readOnly: true,
                                                 endAdornment: (
                                                     <InputAdornment position='end'>
-                                                        <Tooltip title='Copy to clipboard' placement='top'>
+                                                        <Tooltip title={intl.formatMessage({ id: 'ApiKeyListing.tooltip.copyToClipboard', defaultMessage: 'Copy to clipboard' })} placement='top'>
                                                             <IconButton
-                                                                aria-label='Copy to clipboard'
+                                                                aria-label={intl.formatMessage({ id: 'ApiKeyListing.tooltip.copyToClipboard', defaultMessage: 'Copy to clipboard' })}
                                                                 onClick={() => {
                                                                     navigator.clipboard.writeText(apikey.apikey);
                                                                 }}
@@ -645,12 +673,19 @@ export default function ApiKeyListing() {
                                             }}
                                         />
                                         <FormHelperText sx={{ mt: 0.75, fontSize: '0.75rem' }}>
-                                            Above API Key has a validity period of
-                                            {' '}
-                                            <strong>
-                                                {apikey.validityPeriod === -1 ? 'Never Expires' : `${apikey.validityPeriod} seconds`}
-                                            </strong>
-                                            .
+                                            <FormattedMessage
+                                                id='ApiKeyListing.helperText.validityPeriod'
+                                                defaultMessage='Above API Key has a validity period of {validity}.'
+                                                values={{
+                                                    validity: (
+                                                        <strong>
+                                                            {apikey.validityPeriod === -1
+                                                                ? <FormattedMessage id='ApiKeyListing.validity.neverExpires' defaultMessage='Never Expires' />
+                                                                : <FormattedMessage id='ApiKeyListing.validity.seconds' defaultMessage='{seconds} seconds' values={{ seconds: apikey.validityPeriod }} />}
+                                                        </strong>
+                                                    ),
+                                                }}
+                                            />
                                         </FormHelperText>
                                     </Box>
                                 </>
@@ -662,14 +697,16 @@ export default function ApiKeyListing() {
                     {!showToken ? (
                         <>
                             <Button onClick={handleCloseGenerationModal}>
-                                Cancel
+                                <FormattedMessage id='ApiKeyListing.button.cancel' defaultMessage='Cancel' />
                             </Button>
                             <Button
                                 onClick={handleGenerateKey}
                                 variant='contained'
                                 disabled={!displayName.trim() || isGenerating}
                             >
-                                {isGenerating ? 'Generating...' : 'Generate API Key'}
+                                {isGenerating
+                                    ? <FormattedMessage id='ApiKeyListing.button.generating' defaultMessage='Generating...' />
+                                    : <FormattedMessage id='ApiKeyListing.button.generateApiKey' defaultMessage='Generate API Key' />}
                             </Button>
                         </>
                     ) : (
@@ -677,7 +714,7 @@ export default function ApiKeyListing() {
                             onClick={handleCloseGenerationModal}
                             variant='contained'
                         >
-                            Close
+                            <FormattedMessage id='ApiKeyListing.button.close' defaultMessage='Close' />
                         </Button>
                     )}
                 </DialogActions>
@@ -691,26 +728,27 @@ export default function ApiKeyListing() {
                 fullWidth
             >
                 <DialogTitle>
-                    Confirm Revoke
+                    <FormattedMessage id='ApiKeyListing.revokeDialog.confirm.title' defaultMessage='Confirm Revoke' />
                 </DialogTitle>
                 <DialogContent>
                     <Typography>
-                        Are you sure you want to revoke the API key
-                        {' '}
-                        <strong>{selectedKeyForRevoke?.keyName}</strong>
-                        ? This action cannot be undone.
+                        <FormattedMessage
+                            id='ApiKeyListing.revokeDialog.confirm.message'
+                            defaultMessage='Are you sure you want to revoke the API key {keyName}? This action cannot be undone.'
+                            values={{ keyName: <strong>{selectedKeyForRevoke?.keyName}</strong> }}
+                        />
                     </Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCancelRevoke}>
-                        Cancel
+                        <FormattedMessage id='ApiKeyListing.button.cancel' defaultMessage='Cancel' />
                     </Button>
                     <Button
                         onClick={handleConfirmRevoke}
                         variant='contained'
                         color='error'
                     >
-                        Revoke
+                        <FormattedMessage id='ApiKeyListing.button.revoke' defaultMessage='Revoke' />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -723,11 +761,11 @@ export default function ApiKeyListing() {
                 fullWidth
             >
                 <DialogTitle>
-                    API Key Revoked
+                    <FormattedMessage id='ApiKeyListing.revokeDialog.success.title' defaultMessage='API Key Revoked' />
                 </DialogTitle>
                 <DialogContent>
                     <Typography>
-                        The API key has been successfully revoked.
+                        <FormattedMessage id='ApiKeyListing.revokeDialog.success.message' defaultMessage='The API key has been successfully revoked.' />
                     </Typography>
                 </DialogContent>
                 <DialogActions>
@@ -735,7 +773,7 @@ export default function ApiKeyListing() {
                         onClick={handleCloseRevokeSuccess}
                         variant='contained'
                     >
-                        OK
+                        <FormattedMessage id='ApiKeyListing.button.ok' defaultMessage='OK' />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -748,7 +786,7 @@ export default function ApiKeyListing() {
                 fullWidth
             >
                 <DialogTitle>
-                    Revoke Failed
+                    <FormattedMessage id='ApiKeyListing.revokeDialog.error.title' defaultMessage='Revoke Failed' />
                 </DialogTitle>
                 <DialogContent>
                     <Typography>
@@ -760,7 +798,7 @@ export default function ApiKeyListing() {
                         onClick={handleCloseRevokeError}
                         variant='contained'
                     >
-                        OK
+                        <FormattedMessage id='ApiKeyListing.button.ok' defaultMessage='OK' />
                     </Button>
                 </DialogActions>
             </Dialog>
