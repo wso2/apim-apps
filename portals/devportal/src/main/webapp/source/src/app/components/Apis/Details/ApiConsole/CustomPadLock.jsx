@@ -45,6 +45,13 @@ const StyledScopeCell = styled(TableCell)(() => ({
     whiteSpace: 'normal',
 }));
 
+const ScrollContainer = styled('div')(() => ({
+    maxHeight: '150px',
+    overflowY: 'scroll',
+    display: 'block',
+    width: '100%',
+}));
+
 /**
  *
  *
@@ -139,14 +146,22 @@ function CustomPadLock(props) {
                                             </StyledTableCell>
                                             <StyledTableCell style={{ maxWidth: 250, paddingRight: 0 }}>
                                                 {scopes.length > 0 && (
-                                                    scopes.map((scope, index) => (
-                                                    // eslint-disable-next-line react/no-array-index-key
-                                                        <TableRow key={index}>
-                                                            <StyledScopeCell style={{ maxWidth: 250 }}>
-                                                                {scope}
-                                                            </StyledScopeCell>
-                                                        </TableRow>
-                                                    ))
+                                                    <ScrollContainer
+                                                        style={scopes.length <= 5 ? { overflowY: 'visible', maxHeight: 'none' } : {}}
+                                                    >
+                                                        <Table>
+                                                            <TableBody>
+                                                                {scopes.map((scope, index) => (
+                                                                    // eslint-disable-next-line react/no-array-index-key
+                                                                    <TableRow key={index}>
+                                                                        <StyledScopeCell style={{ maxWidth: 240 }}>
+                                                                            {scope}
+                                                                        </StyledScopeCell>
+                                                                    </TableRow>
+                                                                ))}
+                                                            </TableBody>
+                                                        </Table>
+                                                    </ScrollContainer>
                                                 )}
                                             </StyledTableCell>
                                         </TableRow>
