@@ -84,7 +84,7 @@ describe("Create new API product version", () => {
                 cy.wait('@swaggerGet', { timeout: Cypress.env('largeTimeout') }).then(() => {
                     cy.intercept('GET', '**/swagger').as('getSwagger');
                     cy.get(`#checkbox-list-label-${testApiID}`).click();
-                    cy.wait('@getSwagger');
+                    cy.wait('@getSwagger', { timeout: Cypress.env('largeTimeout') });
                     // wait until the api is saved
                     cy.get('#resource-wrapper').children().should('have.length.gte', 1);
 

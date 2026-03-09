@@ -742,7 +742,7 @@ Cypress.Commands.add('logoutFromAdminPortal', () => {
 })
 
 Cypress.Commands.add('viewThirdPartyApi', (apiName = null) => {
-    cy.get(`[area-label="Go to ${apiName}"]`, { timeout: Cypress.env('largeTimeout') }).click();
+    cy.get(`[area-label="Go to ${apiName}"], [aria-label="Go to ${apiName}"]`, { timeout: Cypress.env('largeTimeout') }).click();
 
     //Check if the subscriptions, tryout, comments and SDKs sections are present
     cy.get('#left-menu-test').should('exist');
@@ -867,7 +867,7 @@ Cypress.Commands.add('viewSolaceApi', (apiName = null) => {
 
     cy.wait('@publishedApis', { timeout: 10000 }).then(() => {
         cy.get('[data-testid="solace-label"]').should('exist');
-        cy.get('[area-label="Go to APIConsumption"]').click();
+        cy.get('[area-label="Go to APIConsumption"], [aria-label="Go to APIConsumption"]').click();
     });
     cy.wait('@mockSolaceApi', { timeout: 10000 }).then(() => {
         cy.get('#left-menu-overview').click();

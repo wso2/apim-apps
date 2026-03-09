@@ -83,8 +83,9 @@ describe("prototype apis with security enabled", () => {
                     cy.get('[data-testid="itest-link-to-apis"]', { timeout: Cypress.env('largeTimeout') }).click();
 
                     cy.get('input[placeholder="Search APIs & MCP Servers"]').click().type(apiName + "{enter}");
-                    cy.get('table > tbody > tr', { timeout: Cypress.env('largeTimeout') }).get(`[area-label="Go to ${apiName}"]`).should('contain.text', 'PRE-RELEASED');
-                    cy.get('table > tbody > tr', { timeout: Cypress.env('largeTimeout') }).get(`[area-label="Go to ${apiName}"]`).click();
+                    cy.get(`[area-label="Go to ${apiName}"], [aria-label="Go to ${apiName}"]`, { timeout: Cypress.env('largeTimeout') })
+                        .should('contain.text', 'PRE-RELEASED')
+                        .click();
 
                     // Go to application subscription page
                     cy.get("#left-menu-credentials").click();

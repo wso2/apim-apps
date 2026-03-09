@@ -25,6 +25,7 @@ describe("Create GraphQl API from file", () => {
   let apiContext;
   let apiName;
   let applicationName;
+  let applicationCreated = false;
   let filmSubscriberRole;
   const starWarsQueryRequest = `query{
       human(id:1000){\n
@@ -195,6 +196,9 @@ describe("Create GraphQl API from file", () => {
 
                 // create an application
                 cy.createApplication(applicationName, "50PerMin", "Sample Description");
+                cy.then(() => {
+                  applicationCreated = true;
+                });
 
                 //go to apis
                 cy.get('[data-testid="itest-link-to-apis"]',
@@ -301,7 +305,7 @@ expect(JSON.stringify(resp.body)).to.include(starWarsSubscriptionResponse);
 
 
   after(function () {
-    if (applicationName) {
+    if (applicationCreated) {
       cy.deleteApplication(applicationName);
       cy.logoutFromDevportal();
     }

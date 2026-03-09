@@ -27,7 +27,7 @@ describe("Change the password from devportal", () => {
 
   const { carbonUsername, carbonPassword } = Utils.getUserInfo();
 
-  it.only("Change the password from devportal", () => {
+  it("Change the password from devportal", () => {
     cy.carbonLogin(carbonUsername, carbonPassword);
     cy.addNewUser(username, ["Internal/subscriber"], password);
     cy.get(".ui-dialog-buttonset", { timeout: Cypress.env('largeTimeout') });
