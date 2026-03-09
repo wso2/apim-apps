@@ -72,6 +72,12 @@ import HelpBase from 'AppComponents/Addons/Addons/HelpBase';
 import WarningBase from 'AppComponents/Addons/Addons/WarningBase';
 import API from 'AppData/api';
 
+// MUI Dialog
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+
 // Enable dayjs plugins used in expandable view (relative time + localized date format)
 dayjs.extend(relativeTime);
 dayjs.extend(localizedFormat);
@@ -81,6 +87,12 @@ const DEFAULT_MAX_COLUMNS_INCLUDING_ACTION = 5;
 
 /**
  * Converts property keys to readable labels using Lodash.
+ * - CamelCase to Title Case: apiName → Api Name
+ * - Snake_Case to Title Case: tenant_domain → Tenant Domain
+ * - Kebab-Case to Title Case: api-version → Api Version
+ * - Lowercased Spaced to Title Case: api name → Api Name
+ * - All Lowercase to Capitalized: description → Description
+ * - Edge Cases: Returns an empty string for null, undefined, or empty inputs.
  * @param {string} key The property key (e.g., 'apiName', 'tenant_domain', or 'api name')
  * @returns {string} The formatted label (e.g., 'Api Name', 'Tenant Domain')
  */
@@ -186,7 +198,7 @@ const getUnionObjectKeys = (arr = []) => {
         }
     });
 
-    return Array.from(keys);
+    return Array.from(keys).sort((a, b) => toTitleCase(a).localeCompare(toTitleCase(b)));
 };
 
 /**
@@ -215,7 +227,6 @@ const stableKey = (propKey, item, idx) => {
 };
 
 /**
- * WorkflowApprovalTasks
  * A reusable component to list pending workflow approval tasks for multiple workflow types.
  * - Fetches workflow requests for provided workflow types.
  * - Shows a table with limited dynamic columns (simpleProperties).
@@ -241,6 +252,9 @@ function WorkflowApprovalTasks({
     const [hasListPermission, setHasListPermission] = useState(true);
     const [errorMessage, setError] = useState(null);
     const [activeReferenceId, setActiveReferenceId] = useState(null);
+    const [open, setOpen] = useState(false);
+    const [selectedReferenceId, setSelectedReferenceId] = useState(null);
+    const [rejecting, setRejecting] = useState(false);
 
     /**
      * Fetch workflows for all requested types and normalize into UI-friendly structure.
@@ -252,11 +266,18 @@ function WorkflowApprovalTasks({
     function apiCall() {
         const types = Array.isArray(workflowTypes) ? workflowTypes : [];
 
-        // Map each type to a request, then wait for all to resolve
-        return Promise.all(types.map((t) => restApi.workflowsGet(t)))
+        return Promise.allSettled(types.map((t) => restApi.workflowsGet(t)))
             .then((results) => {
-                // Combine multiple workflow lists into a single array for the table
-                const combined = results.flatMap((r) => r?.body?.list || []);
+                const fulfilled = results
+                    .filter((r) => r.status === 'fulfilled')
+                    .map((r) => r.value);
+                const rejected = results.filter((r) => r.status === 'rejected');
+
+                if (fulfilled.length === 0) {
+                    throw rejected[0]?.reason || new Error('Unable to retrieve workflow requests');
+                }
+
+                const combined = fulfilled.flatMap((r) => r?.body?.list || []);
 
                 const workflowList = combined.map((obj) => {
                     const { simpleProperties, jsonProperties } = splitProps(obj?.properties || {});
@@ -298,6 +319,7 @@ function WorkflowApprovalTasks({
 
         apiCall()
             .then((localData) => {
+                setHasListPermission(true);
                 setData(localData);
             })
             .catch((e) => {
@@ -366,6 +388,46 @@ function WorkflowApprovalTasks({
     };
 
     /**
+     * Open the reject confirmation dialog for a specific workflow request.
+     * Stores the selected referenceId so the request can be rejected
+     * after the user confirms the action.
+     * @param {string} referenceId Workflow reference ID.
+     */
+    const handleRejectClickOpen = (referenceId) => {
+        setSelectedReferenceId(referenceId);
+        setOpen(true);
+    };
+
+    /**
+     * Close the reject confirmation dialog.
+     * Clears the selected referenceId to avoid stale selections.
+     */
+    const handleRejectClose = () => {
+        setOpen(false);
+        setSelectedReferenceId(null);
+    };
+
+    /**
+     * Confirm rejection of the selected workflow request.
+     * Calls updateStatus with REJECTED status after user confirmation.
+     */
+    const handleRejectConfirm = () => {
+        if (!selectedReferenceId) {
+            handleRejectClose();
+            return;
+        }
+        setRejecting(true);
+
+        Promise.resolve(updateStatus(selectedReferenceId, 'REJECTED'))
+            .then(() => {
+                handleRejectClose();
+            })
+            .finally(() => {
+                setRejecting(false);
+            });
+    };
+
+    /**
      * Client-side filtering based on searchText.
      * If search is empty -> returns original data.
      * If search has text -> matches against description/referenceId/simple/json properties.
@@ -404,7 +466,8 @@ function WorkflowApprovalTasks({
             maxColumnsIncludingAction ?? DEFAULT_MAX_COLUMNS_INCLUDING_ACTION,
         );
         const maxSimple = Math.max(0, max - 1);
-        return Array.from(keys).slice(0, maxSimple);
+        const sorted = Array.from(keys).sort((a, b) => toTitleCase(a).localeCompare(toTitleCase(b)));
+        return sorted.slice(0, maxSimple);
     }, [filteredData, maxColumnsIncludingAction]);
 
     /**
@@ -441,8 +504,9 @@ function WorkflowApprovalTasks({
                 color='error'
                 variant='contained'
                 size='small'
-                onClick={() => updateStatus(referenceId, 'REJECTED')}
+                onClick={() => handleRejectClickOpen(referenceId)}
                 disabled={isUpdating}
+                sx={{ minWidth: 0, whiteSpace: 'nowrap', flexShrink: 0 }}
             >
                 <ClearIcon />
                 <FormattedMessage
@@ -457,142 +521,208 @@ function WorkflowApprovalTasks({
 
     /**
      * Render a JSON property value (from jsonProperties).
-     * Handles:
-     * 1) Array values
-     *    - Array of objects -> render as table, columns = union of keys
-     *    - Array of primitives -> render as single-column table
-     * 2) Object values -> render as 1-row table (keys as headers)
-     * 3) Primitive values -> render as plain text
-     * @param {string} propKey - The name/label of the property being rendered.
-     * @param {any} value - The data value to render (can be a nested object, array, or primitive).
+     *
+     * Expected inputs:
+     *  - Arrays: rendered as table (array of objects) or list (array of primitives)
+     *  - Objects: rendered as a 2-column "Attribute Name / Value" table
+     *  - Primitive fallback: rendered as plain text
+     *
+     * @param {string} propKey - JSON property key.
+     * @param {*} value - JSON property value.
+     * @returns {JSX.Element} Rendered section.
      */
     const renderJsonValue = (propKey, value) => {
-        // Case 1: Arrays (either array of objects or primitives)
-        if (Array.isArray(value)) {
-            let headers = getUnionObjectKeys(value);
-            if (propKey === 'updates') {
-                headers = ['attributeName', 'current', 'expected'];
-            }
-            const isArrayOfObjects = headers.length > 0;
-            const headerRow = isArrayOfObjects ? headers : [propKey];
+        /**
+         * Renders the standard section header ("propKey" as a title).
+         * @param {string} key - Property key.
+         * @returns {JSX.Element}
+         */
+        const renderSectionTitle = (key) => (
+            <Typography variant='h6' component='div'>
+                {toTitleCase(key)}
+            </Typography>
+        );
+
+        /**
+         * Renders "No data to display" message.
+         * @returns {JSX.Element}
+         */
+        const renderNoData = () => (
+            <Typography
+                variant='body2'
+                component='div'
+                sx={(theme) => ({ mt: theme.spacing(1) })}
+            >
+                <FormattedMessage
+                    id='Workflow.Common.expand.no.data'
+                    defaultMessage='No data to display.'
+                />
+            </Typography>
+        );
+
+        /**
+         * Renders a simple bullet list for primitive arrays.
+         * @param {string} key - Property key.
+         * @param {Array} arr - Primitive array.
+         * @returns {JSX.Element}
+         */
+        const renderPrimitiveList = (key, arr) => (
+            <Box key={key} sx={(theme) => ({ mt: theme.spacing(2) })}>
+                {renderSectionTitle(key)}
+                <Box sx={{ mt: 1 }}>
+                    {arr.map((item, idx) => (
+                        <Typography
+                            key={stableKey(key, item, idx)}
+                            variant='body2'
+                        >
+                            •
+                            {' '}
+                            {toText(item)}
+                        </Typography>
+                    ))}
+                </Box>
+            </Box>
+        );
+
+        /**
+         * Renders a 2-column table: Attribute Name / Value for object maps.
+         * Example:
+         *  { a: 1, b: 2 } => rows: (a,1), (b,2)
+         * @param {string} key - Property key.
+         * @param {object} obj - Object map.
+         * @returns {JSX.Element}
+         */
+        const renderObjectAsKeyValueTable = (key, obj) => {
+            const entries = Object.entries(obj || {})
+                .sort(([a], [b]) => toTitleCase(a).localeCompare(toTitleCase(b)));
 
             return (
-                <Box key={propKey} sx={(theme) => ({ mt: theme.spacing(2) })}>
-                    <Typography variant='h6' component='div'>
-                        {toTitleCase(propKey)}
-                    </Typography>
+                <Box key={key} sx={(theme) => ({ mt: theme.spacing(2) })}>
+                    {renderSectionTitle(key)}
 
-                    {value.length === 0 ? (
-                        <Typography
-                            variant='body2'
-                            component='div'
-                            sx={(theme) => ({ mt: theme.spacing(1) })}
-                        >
-                            <FormattedMessage
-                                id='Workflow.Common.expand.no.data'
-                                defaultMessage='No data to display.'
-                            />
-                        </Typography>
-                    ) : (
-                        <>
-                            {/* If array of objects → show in table */}
-                            {isArrayOfObjects ? (
-                                <TableContainer sx={(theme) => ({ mt: theme.spacing(1) })}>
-                                    <Table size='small' aria-label={propKey}>
-                                        <TableHead>
-                                            <TableRow>
-                                                {headerRow.map((h) => (
-                                                    <TableCell key={`${propKey}:hdr:${h}`}>
-                                                        <strong>{toTitleCase(h)}</strong>
-                                                    </TableCell>
-                                                ))}
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {value.map((item, idx) => {
-                                                const rowKey = stableKey(propKey, item, idx);
-                                                return (
-                                                    <TableRow key={rowKey}>
-                                                        {headerRow.map((h) => (
-                                                            <TableCell
-                                                                key={`${rowKey}:${h}`}
-                                                                sx={{
-                                                                    color: propKey === 'updates' && h === 'current'
-                                                                        ? 'text.disabled'
-                                                                        : 'inherit',
-                                                                }}
-                                                            >
-                                                                {toText(item ? item[h] : null)}
-                                                            </TableCell>
-                                                        ))}
-                                                    </TableRow>
-                                                );
-                                            })}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            ) : (
-                                /* Primitive array → show as a list */
-                                <Box sx={{ mt: 1 }}>
-                                    {value.map((item, idx) => (
-                                        <Typography
-                                            key={stableKey(propKey, item, idx)}
-                                            variant='body2'
-                                        >
-                                            •
-                                            {' '}
-                                            {toText(item)}
-                                        </Typography>
+                    {entries.length === 0 ? renderNoData() : (
+                        <TableContainer sx={(theme) => ({ mt: theme.spacing(1) })}>
+                            <Table size='small' aria-label={key}>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>
+                                            <strong>
+                                                <FormattedMessage
+                                                    id='Workflow.Common.expand.attribute.name'
+                                                    defaultMessage='Attribute Name'
+                                                />
+                                            </strong>
+                                        </TableCell>
+                                        <TableCell>
+                                            <strong>
+                                                <FormattedMessage
+                                                    id='Workflow.Common.expand.attribute.value'
+                                                    defaultMessage='Value'
+                                                />
+                                            </strong>
+                                        </TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {entries.map(([k, v]) => (
+                                        <TableRow key={`${key}:${k}`}>
+                                            <TableCell>{toText(k)}</TableCell>
+                                            <TableCell>{toText(v)}</TableCell>
+                                        </TableRow>
                                     ))}
-                                </Box>
-                            )}
-                        </>
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     )}
                 </Box>
             );
-        }
+        };
 
-        // Case 2: Plain object -> display as a 1-row table (keys are headers)
-        if (value && typeof value === 'object') {
-            const keys = Object.keys(value);
+        /**
+         * Renders an array-of-objects as a table.
+         * Headers are computed as union of keys across items and sorted.
+         * @param {string} key - Property key.
+         * @param {Array<object>} arr - Array of objects.
+         * @returns {JSX.Element}
+         */
+        const renderArrayOfObjectsTable = (key, arr) => {
+            const headers = getUnionObjectKeys(arr);
 
             return (
-                <Box key={propKey} sx={(theme) => ({ mt: theme.spacing(2) })}>
-                    <Typography variant='h6' component='div'>
-                        {toTitleCase(propKey)}
-                    </Typography>
-                    <TableContainer sx={(theme) => ({ mt: theme.spacing(1) })}>
-                        <Table size='small' aria-label={propKey}>
-                            <TableHead>
-                                <TableRow>
-                                    {keys.map((k) => (
-                                        <TableCell key={`${propKey}:hdr:${k}`}>
-                                            <strong>{toTitleCase(k)}</strong>
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                <TableRow>
-                                    {keys.map((k) => (
-                                        <TableCell key={`${propKey}:cell:${k}`}>
-                                            {toText(value[k])}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                <Box key={key} sx={(theme) => ({ mt: theme.spacing(2) })}>
+                    {renderSectionTitle(key)}
+
+                    {arr.length === 0 ? renderNoData() : (
+                        <TableContainer sx={(theme) => ({ mt: theme.spacing(1) })}>
+                            <Table size='small' aria-label={key}>
+                                <TableHead>
+                                    <TableRow>
+                                        {headers.map((h) => (
+                                            <TableCell key={`${key}:hdr:${h}`}>
+                                                <strong>{toTitleCase(h)}</strong>
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {arr.map((item, idx) => {
+                                        const rowKey = stableKey(key, item, idx);
+                                        return (
+                                            <TableRow key={rowKey}>
+                                                {headers.map((h) => (
+                                                    <TableCell
+                                                        key={`${rowKey}:${h}`}
+                                                        sx={{
+                                                            color: (key === 'updates' && h === 'current')
+                                                                ? 'text.disabled'
+                                                                : 'inherit',
+                                                        }}
+                                                    >
+                                                        {toText(item ? item[h] : null)}
+                                                    </TableCell>
+                                                ))}
+                                            </TableRow>
+                                        );
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    )}
                 </Box>
             );
+        };
+
+        // Case 1: Arrays
+        if (Array.isArray(value)) {
+            // Array of objects => union keys will be non-empty (and items are objects)
+            const headers = getUnionObjectKeys(value);
+            const isArrayOfObjects = headers.length > 0;
+
+            if (value.length === 0) {
+                return (
+                    <Box key={propKey} sx={(theme) => ({ mt: theme.spacing(2) })}>
+                        {renderSectionTitle(propKey)}
+                        {renderNoData()}
+                    </Box>
+                );
+            }
+
+            return isArrayOfObjects
+                ? renderArrayOfObjectsTable(propKey, value)
+                : renderPrimitiveList(propKey, value);
         }
 
-        // Case 3: Primitive -> display as plain text
+        // Case 2: Plain object -> show as key/value table (Attribute Name / Value)
+        if (value && typeof value === 'object') {
+            return renderObjectAsKeyValueTable(propKey, value);
+        }
+
+        // Case 3: Primitives
+        // Normally jsonProperties contains objects/arrays only, but this avoids UI from breaking
+        // if a workflow type returns a primitive JSON value.
         return (
             <Box key={propKey} sx={(theme) => ({ mt: theme.spacing(2) })}>
-                <Typography variant='h6' component='div'>
-                    {toTitleCase(propKey)}
-                </Typography>
+                {renderSectionTitle(propKey)}
                 <Typography
                     variant='body2'
                     component='div'
@@ -749,12 +879,24 @@ function WorkflowApprovalTasks({
                             <Box sx={(theme) => ({ mt: theme.spacing(1) })}>
 
                                 <Typography variant='body2' sx={{ mt: 1 }}>
-                                    <strong>Description: </strong>
+                                    <strong>
+                                        <FormattedMessage
+                                            id='Workflow.Common.expand.description'
+                                            defaultMessage='Description:'
+                                        />
+                                        {' '}
+                                    </strong>
                                     {toText(row?.description)}
                                 </Typography>
 
                                 <Typography variant='body2' sx={{ mt: 1 }}>
-                                    <strong>Created: </strong>
+                                    <strong>
+                                        <FormattedMessage
+                                            id='Workflow.Common.expand.created'
+                                            defaultMessage='Created:'
+                                        />
+                                        {' '}
+                                    </strong>
                                     {row?.createdTime ? (
                                         <Tooltip title={createdFormat}>
                                             <span>{createdFromNow}</span>
@@ -889,6 +1031,12 @@ function WorkflowApprovalTasks({
                                 InputProps={{
                                     disableUnderline: true,
                                     className: 'search-input',
+                                    inputProps: {
+                                        'aria-label': intl.formatMessage({
+                                            id: 'Workflow.Common.search.aria.label',
+                                            defaultMessage: 'Search workflow approval tasks',
+                                        }),
+                                    },
                                 }}
                                 onChange={(e) => setSearchText(e.target.value)}
                             />
@@ -931,6 +1079,63 @@ function WorkflowApprovalTasks({
                     </Typography>
                 </div>
             )}
+
+            <Dialog
+                fullWidth
+                maxWidth='xs'
+                open={open}
+                onClose={() => {
+                    if (rejecting) {
+                        return;
+                    }
+                    handleRejectClose();
+                }}
+                aria-labelledby='reject-confirmation'
+            >
+                <DialogTitle id='reject-confirmation'>
+                    <FormattedMessage
+                        id='Workflow.Common.reject.dialog.title'
+                        defaultMessage='Reject workflow request?'
+                    />
+                </DialogTitle>
+
+                <DialogContent dividers>
+                    <Box mt={2} mb={2} ml={1}>
+                        <FormattedMessage
+                            id='Workflow.Common.reject.dialog.content'
+                            defaultMessage='Are you sure you want to reject this workflow request?'
+                        />
+                    </Box>
+                </DialogContent>
+
+                <DialogActions>
+                    <Button
+                        onClick={handleRejectClose}
+                        variant='outlined'
+                        disabled={rejecting}
+                    >
+                        <FormattedMessage
+                            id='Workflow.Common.reject.dialog.cancel'
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
+
+                    <Button
+                        size='small'
+                        variant='contained'
+                        color='error'
+                        onClick={handleRejectConfirm}
+                        disabled={rejecting}
+                    >
+                        {rejecting && <CircularProgress size={16} />}
+                        <FormattedMessage
+                            id='Workflow.Common.reject.dialog.confirm'
+                            defaultMessage='Reject'
+                        />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
         </ContentBase>
     );
 }
