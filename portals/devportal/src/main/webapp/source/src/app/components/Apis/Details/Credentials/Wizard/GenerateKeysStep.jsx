@@ -25,7 +25,11 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import FormHelperText from '@mui/material/FormHelperText';
 import Alert from 'AppComponents/Shared/Alert';
+import SecretValueDialog from 'AppComponents/Shared/AppsAndKeys/Secrets/SecretValueDialog';
+import NewSecretDialog from 'AppComponents/Shared/AppsAndKeys/Secrets/NewSecretDialog';
+import { isMultipleClientSecretsEnabled } from 'AppComponents/Shared/AppsAndKeys/Secrets/util';
 import Application from 'AppData/Application';
+import CONSTS from 'AppData/Constants';
 import API from 'AppData/api';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
@@ -156,9 +160,15 @@ const generateKeysStep = (props) => {
         keyManager: '',
     });
 
+    // State to handle the consumer secret dialog
+    const [secretValueDialogOpen, setSecretValueDialogOpen] = useState(false);
+    const [generatedSecret, setGeneratedSecret] = useState(null);
+    const [isMultipleSecretsAllowed, setIsMultipleSecretsAllowed] = useState(false);
+    const [secretCreateDialogOpen, setSecretCreateDialogOpen] = useState(false);
+
     const {
         currentStep, createdApp, incrementStep, setCreatedKeyType,
-        setStepStatus, stepStatuses, setCreatedSelectedTab,
+        setStepStatus, stepStatuses, setCreatedSelectedTab, setGeneratedConsumerSecret,
     } = props;
 
     useEffect(() => {
@@ -171,11 +181,14 @@ const generateKeysStep = (props) => {
 
                 // Selecting a key manager from the list of key managers.
                 let selectedKeyManager;
+                let multipleSecretsAllowed = false;
                 if (responseKeyManagerList.length > 0) {
                     const responseKeyManagerListDefault = responseKeyManagerList.filter((x) => x.name === 'Resident Key Manager');
                     selectedKeyManager = responseKeyManagerListDefault.length > 0 ? responseKeyManagerListDefault[0]
                         : responseKeyManagerList[0];
+                    multipleSecretsAllowed = isMultipleClientSecretsEnabled(selectedKeyManager.additionalProperties);
                 }
+                setIsMultipleSecretsAllowed(multipleSecretsAllowed);
 
                 // Filtering Grant Types for Token Exchange
                 const filteredGrantTypes = selectedKeyManager.availableGrantTypes
@@ -209,22 +222,42 @@ const generateKeysStep = (props) => {
             });
     }, []);
 
-    const generateKeys = () => {
+    const proceedToNextStep = () => {
+        incrementStep();
+        setCreatedKeyType(keyRequest.keyType);
+        setCreatedSelectedTab(selectedTab);
+        setStepStatus(stepStatuses.PROCEED);
+    };
+
+    const generateKeys = (metadata = null) => {
+        const mergedAdditionalProps = {
+            ...keyRequest.additionalProperties,
+            ...(metadata && {
+                client_secret_description: metadata.description,
+                ...(metadata.expiresInSeconds !== undefined && {
+                    client_secret_expires_in: metadata.expiresInSeconds,
+                }),
+            }),
+        };
         Application.get(createdApp.value).then((application) => {
             return application.generateKeys(
                 keyRequest.keyType, keyRequest.supportedGrantTypes
                     .filter((k) => (k !== 'urn:ietf:params:oauth:grant-type:token-exchange')),
                 keyRequest.callbackUrl,
-                keyRequest.additionalProperties, keyRequest.keyManager,
+                mergedAdditionalProps, keyRequest.keyManager,
             );
         }).then((response) => {
             if (response.keyState === keyStates.CREATED || response.keyState === keyStates.REJECTED) {
                 setStepStatus(stepStatuses.BLOCKED);
             } else {
-                incrementStep();
-                setCreatedKeyType(keyRequest.keyType);
-                setCreatedSelectedTab(selectedTab);
-                setStepStatus(stepStatuses.PROCEED);
+                // Show the consumer secret in the dialog before advancing
+                if (isMultipleSecretsAllowed && response?.consumerSecret) {
+                    setGeneratedSecret(response.consumerSecret);
+                    setGeneratedConsumerSecret(response.consumerSecret);
+                    setSecretValueDialogOpen(true);
+                } else {
+                    proceedToNextStep();
+                }
                 console.log('Keys generated successfully with ID : ' + response);
             }
         }).catch((error) => {
@@ -239,6 +272,17 @@ const generateKeysStep = (props) => {
                 }));
             }
         });
+    };
+
+    const handleCloseSecretDialog = () => {
+        setSecretValueDialogOpen(false);
+        proceedToNextStep();
+    };
+
+    const handleCreateSecret = ({ description, expiresInSeconds }) => {
+        setSecretCreateDialogOpen(false);
+        // Call generateKeys with metadata
+        generateKeys({ description, expiresInSeconds });
     };
 
     return (
@@ -345,7 +389,13 @@ const generateKeysStep = (props) => {
                             <ButtonPanel
                                 classes={classes}
                                 currentStep={currentStep}
-                                handleCurrentStep={generateKeys}
+                                handleCurrentStep={() => {
+                                    if (isMultipleSecretsAllowed) {
+                                        setSecretCreateDialogOpen(true);
+                                    } else {
+                                        generateKeys(); // Legacy behavior (backward compatible)
+                                    }
+                                }}
                                 nextActive={nextActive}
                             />
                         </Box>
@@ -353,6 +403,17 @@ const generateKeysStep = (props) => {
                     </Grid>
                 </Grid>
             </Box>
+            <NewSecretDialog
+                open={secretCreateDialogOpen}
+                onClose={() => setSecretCreateDialogOpen(false)}
+                onCreate={handleCreateSecret}
+                mode={CONSTS.SECRET_DIALOG_MODES.KEY_GENERATION}
+            />
+            <SecretValueDialog
+                open={secretValueDialogOpen}
+                onClose={handleCloseSecretDialog}
+                secret={generatedSecret}
+            />
         </Root>
     );
 };

@@ -1353,6 +1353,36 @@ class API extends Resource {
             return client.apis['Environments'].get_environments__environmentId__gateways({ environmentId }, this._requestMetaData(),);
         });
     }
+
+    /**
+     * Get all API keys
+     * @returns {promise} Promise resolving to the API keys
+     */
+    getAllAPIKeys() {
+        const promiseGetAllKeys = this.client.then((client) => {
+            return client.apis.APIKeys.getAllAPIKeys(this._requestMetaData());
+        });
+        return promiseGetAllKeys;
+    }
+
+    /**
+     * Revoke a given API key
+     * @param keyUUID UUID of the key to be revoked
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    revokeAPIKeyFromAdmin(keyUUID) {
+        if (!keyUUID) {
+            return Promise.reject(new Error('keyUUID is required'));
+        }
+        const promiseRevokeKeys = this.client.then((client) => {
+            return client.apis.APIKeys.revokeAPIKeyFromAdmin(
+                { 'Content-Type': 'application/json' },
+                { requestBody: { keyUUID } },
+                this._requestMetaData(),
+            );
+        });
+        return promiseRevokeKeys;
+    }
 }
 
 API.CONSTS = {

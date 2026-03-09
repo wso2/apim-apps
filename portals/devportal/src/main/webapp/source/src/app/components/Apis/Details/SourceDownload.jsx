@@ -43,6 +43,7 @@ function SourceDownload(props) {
     const intl = useIntl();
     const accessTokenPart = Utils.getCookieWithoutEnvironment('WSO2_AM_TOKEN_1_Default');
     const [isTokenCopied, setIsTokenCopied] = useState(false);
+    const [urlCopied, setUrlCopied] = useState(false);
 
     const { location } = window;
 
@@ -56,19 +57,42 @@ function SourceDownload(props) {
             tenantDomain = tenant;
         }
     }
+
+    const onCopy = () => {
+        setUrlCopied(true);
+        const caller = function () {
+            setUrlCopied(false);
+        };
+        setTimeout(caller, 2000);
+    };
+
     const tenant = tenantDomain;
     /**
      * Downloads the WSDL of the api for the provided environment
-     *
-     * @param {EventListener} e element click event
      */
-    const downloadWSDL = (e) => {
-        e.preventDefault();
+    const downloadWSDL = () => {
         const wsdlClient = apiClient.getWsdlClient();
-        const promisedGet = wsdlClient.downloadWSDLForEnvironment(api.id, selectedEndpoint.environmentName);
-        promisedGet
-            .then((done) => {
-                Utils.downloadFile(done);
+        return wsdlClient.downloadWSDLForEnvironment(api.id, selectedEndpoint.environmentName)
+            .then((res) => {
+                const contentType = res.headers['content-type'];
+                const allowedMimeTypes = ['application/wsdl', 'application/xml', 'application/zip'];
+                if (!allowedMimeTypes.some((type) => contentType?.includes(type))) {
+                    throw new Error(`Invalid content type. Expected one of ${allowedMimeTypes.join(', ')}, received ${contentType}`);
+                }
+                const blob = new Blob([res.body], { type: contentType });
+                const url = window.URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+
+                const contentDisposition = res.headers['content-disposition'];
+                const filename = contentDisposition?.match(/filename="(.+)"/)?.[1] || 'wsdlDefinition.wsdl';
+                a.download = filename.split(/[\\/]/).pop().replace(/[/\\:*?"<>|]/g, '_');
+
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
             })
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
@@ -78,6 +102,22 @@ function SourceDownload(props) {
                         defaultMessage: 'Error downloading the WSDL',
                     }));
                 }
+            });
+    };
+
+    const showWSDL = () => {
+        const wsdlClient = apiClient.getWsdlClient();
+        return wsdlClient.generateUrlForDownload('wsdl', api.id, selectedEndpoint.environmentName)
+            .then((res) => {
+                return res.data ?? null;
+            })
+            .catch((error) => {
+                console.error(error);
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.WSDL.view.error',
+                    defaultMessage: 'Something went wrong while retrieving the WSDL.',
+                }));
+                return null;
             });
     };
 
@@ -150,43 +190,84 @@ function SourceDownload(props) {
     if (
         api.type === 'SOAP') {
         return (
-            <Tooltip
-                title={(
-                    <FormattedMessage
-                        id='Apis.Details.Environments.download.wsdl'
-                        defaultMessage='WSDL'
-                    />
-                )}
-                placement='right'
-                sx={{
-                    cursor: 'pointer',
-                    margin: '-10px 0',
-                    padding: '0 0 0 5px',
-                    '& .material-icons': (theme) => ({
-                        fontSize: 18,
-                        color: theme.palette.secondary.main,
-                    }),
-                }}
-            >
-                <a
-                    onKeyDown={downloadWSDL}
-                    onClick={downloadWSDL}
-                    className={(theme) => ({
-                        fontSize: 14,
-                        color: theme.palette.primary.main,
-                        display: 'flex',
-                    })}
-                >
-                    <CloudDownloadRounded sx={{
-                        marginRight: 1,
-                    }}
-                    />
-                    <FormattedMessage
-                        id='Apis.Details.Environments.download.wsdl.text'
-                        defaultMessage='Download WSDL'
-                    />
-                </a>
-            </Tooltip>
+            <>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Tooltip
+                        title={(
+                            <FormattedMessage
+                                id='Apis.Details.Environments.download.wsdl'
+                                defaultMessage='WSDL'
+                            />
+                        )}
+                        placement='right'
+                        sx={{
+                            cursor: 'pointer',
+                            margin: '-10px 0',
+                            padding: '0 0 0 5px',
+                            '& .material-icons': (theme) => ({
+                                fontSize: 18,
+                                color: theme.palette.secondary.main,
+                            }),
+                        }}
+                    >
+                        <Link
+                            onClick={downloadWSDL}
+                            onKeyDown={downloadWSDL}
+                            sx={(theme) => ({
+                                fontSize: 14,
+                                color: theme.palette.primary.main,
+                                display: 'flex',
+                                textDecoration: 'none',
+                            })}
+                            id='swagger-download-btn'
+                            variant='body2'
+                        >
+                            <CloudDownloadRounded sx={{ mt: 0.5, mr: 1 }} />
+                            <FormattedMessage
+                                id='Apis.Details.Environments.download.wsdl.text'
+                                defaultMessage='Download WSDL'
+                            />
+                        </Link>
+                    </Tooltip>
+                    {!api.wsdlUri.endsWith('.zip') && (
+                        <Tooltip
+                            title={
+                                urlCopied ? (
+                                    <FormattedMessage
+                                        id='Apis.Details.WSDL.URL.copied'
+                                        defaultMessage='Copied'
+                                    />
+                                ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.WSDL.URL.copy.url'
+                                        defaultMessage='Copy URL'
+                                    />
+                                )
+                            }
+                            placement='top'
+                        >
+                            <span>
+                                <Button
+                                    aria-label='Copy URL'
+                                    size='small'
+                                    color='grey'
+                                    onClick={() => {
+                                        showWSDL().then((wsdlUrl) => {
+                                            if (!wsdlUrl) {
+                                                return;
+                                            }
+                                            navigator.clipboard.writeText(wsdlUrl).then(() => onCopy());
+                                        });
+                                    }}
+                                    sx={{ minWidth: 'auto', ml: 1 }}
+                                >
+                                    <FileCopyIcon />
+                                </Button>
+                            </span>
+                        </Tooltip>
+                    )}
+                </div>
+            </>
         );
     }
     if (api.type === 'HTTP' || api.type === 'SOAPTOREST') {

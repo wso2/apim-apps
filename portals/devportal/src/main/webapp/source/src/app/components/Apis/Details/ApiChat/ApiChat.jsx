@@ -362,7 +362,7 @@ const ApiChat = () => {
                 apiChatDocLink: (
                     <a
                         id='api-chat-doc-link'
-                        href='https://apim.docs.wso2.com/en/4.6.0/consume/invoke-apis/invoke-apis-using-tools/test-apis-with-apichat/'
+                        href='https://apim.docs.wso2.com/en/4.7.0/consume/invoke-apis/invoke-apis-using-tools/test-apis-with-apichat/'
                         target='_blank'
                         rel='noopener noreferrer'
                     >

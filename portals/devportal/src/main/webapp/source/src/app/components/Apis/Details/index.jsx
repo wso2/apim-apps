@@ -63,6 +63,7 @@ const Documents = lazy(() => import('./Documents/Documents' /* webpackChunkName:
 const Credentials = lazy(() => import('./Credentials/Credentials' /* webpackChunkName: "APICredentials" */));
 const Comments = lazy(() => import('./Comments/Comments' /* webpackChunkName: "APIComments" */));
 const Sdk = lazy(() => import('./Sdk' /* webpackChunkName: "APISdk" */));
+const ApiKeys = lazy(() => import('./ApiKeys' /* webpackChunkName: "APIKeys" */));
 const AsyncApiDefinition = lazy(() => import('./Definitions/AsyncApi/AsyncApiDefinitionUI'));
 const ApiChat = lazy(() => import('./ApiChat/ApiChat' /* webpackChunkName: "ApiChat" */));
 
@@ -89,6 +90,7 @@ const LoadableSwitch = withRouter((props) => {
     const credentialsWizardPath = isMCPServer ? '/mcp-servers/:serverUuid/credentials/wizard' : '/apis/:apiUuid/credentials/wizard';
     const commentsPath = isMCPServer ? '/mcp-servers/:serverUuid/comments' : '/apis/:apiUuid/comments';
     const credentialsPath = isMCPServer ? '/mcp-servers/:serverUuid/credentials' : '/apis/:apiUuid/credentials';
+    const apiKeysPath = '/apis/:apiUuid/api-keys';
     const apiChatPath = '/apis/:apiUuid/api-chat';
     const sdkPath = '/apis/:apiUuid/sdk';
     const redirectFromPath = isMCPServer ? '/mcp-servers/:serverUuid' : '/apis/:apiUuid';
@@ -119,6 +121,7 @@ const LoadableSwitch = withRouter((props) => {
                 <Route exact path={credentialsWizardPath} component={Wizard} />
                 <Route path={commentsPath} component={Comments} />
                 <Route path={credentialsPath} component={Credentials} />
+                {!isMCPServer && <Route path={apiKeysPath} component={ApiKeys} />}
                 {tryoutRoute}
                 {!isMCPServer && apiChatEnabled && (
                     <Route path={apiChatPath} component={ApiChat} />
@@ -646,6 +649,21 @@ class DetailsLegacy extends React.Component {
                                         open={open}
                                         id='left-menu-credentials'
                                     />
+                                    {api && api.securityScheme && api.securityScheme.includes('api_key') && (
+                                        <LeftMenuItem
+                                            text={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.index.api.keys'
+                                                    defaultMessage='API Keys'
+                                                />
+                                            )}
+                                            route='api-keys'
+                                            iconText='api-keys'
+                                            to={pathPrefix + 'api-keys'}
+                                            open={open}
+                                            id='left-menu-api-keys'
+                                        />
+                                    )}
 
                                 </>
                             )}
