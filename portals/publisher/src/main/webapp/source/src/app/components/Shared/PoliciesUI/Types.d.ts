@@ -62,6 +62,7 @@ export type PolicySpec = {
     supportedGateways: string[];
     supportedApiTypes: string[] | ApiTypeObject[];
     policyAttributes: PolicySpecAttribute[];
+    parametersSchema?: any;
     isAPISpecific?: boolean;
     md5?: string;
 };

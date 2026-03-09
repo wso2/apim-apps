@@ -179,37 +179,23 @@ const findSchemaObject = (obj) => {
     return null;
 };
 
-const getPolicyAttributesFromDefinition = (policyDefinitionText) => {
-    if (!policyDefinitionText || typeof policyDefinitionText !== 'string') {
-        return [];
-    }
-    let definition;
-    try {
-        definition = YAML.load(policyDefinitionText);
-    } catch (error) {
-        console.error('Failed to parse policy definition YAML', error);
-        return [];
-    }
-
-    const attributeArray = findAttributeArray(definition);
-    if (attributeArray) {
-        return attributeArray
-            .map((attribute) => normalizeAttribute(attribute))
-            .filter(Boolean);
-    }
-
-    const getByPath = (source, path) => {
-        let current = source;
-        for (const key of path) {
-            if (!current || typeof current !== 'object') {
-                return null;
-            }
-            current = current[key];
+const getByPath = (source, path) => {
+    let current = source;
+    for (const key of path) {
+        if (!current || typeof current !== 'object') {
+            return null;
         }
-        return current;
-    };
+        current = current[key];
+    }
+    return current;
+};
 
+const getPolicySchemaFromObject = (definition) => {
+    if (!definition || typeof definition !== 'object') {
+        return null;
+    }
     const preferredSchemaPaths = [
+        ['parameters'],
         ['parametersSchema'],
         ['parameterSchema'],
         ['configSchema'],
@@ -233,6 +219,42 @@ const getPolicyAttributesFromDefinition = (policyDefinitionText) => {
         schemaObj = findSchemaObject(definition);
     }
 
+    return schemaObj && schemaObj.properties ? schemaObj : null;
+};
+
+const getPolicySchemaFromDefinition = (policyDefinitionText) => {
+    if (!policyDefinitionText || typeof policyDefinitionText !== 'string') {
+        return null;
+    }
+    try {
+        const definition = YAML.load(policyDefinitionText);
+        return getPolicySchemaFromObject(definition);
+    } catch (error) {
+        console.error('Failed to parse policy definition YAML', error);
+        return null;
+    }
+};
+
+const getPolicyAttributesFromDefinition = (policyDefinitionText) => {
+    if (!policyDefinitionText || typeof policyDefinitionText !== 'string') {
+        return [];
+    }
+    let definition;
+    try {
+        definition = YAML.load(policyDefinitionText);
+    } catch (error) {
+        console.error('Failed to parse policy definition YAML', error);
+        return [];
+    }
+
+    const attributeArray = findAttributeArray(definition);
+    if (attributeArray) {
+        return attributeArray
+            .map((attribute) => normalizeAttribute(attribute))
+            .filter(Boolean);
+    }
+
+    const schemaObj = getPolicySchemaFromObject(definition);
     if (schemaObj && schemaObj.properties) {
         const requiredList = Array.isArray(schemaObj.required) ? schemaObj.required : [];
         return Object.entries(schemaObj.properties)
@@ -305,6 +327,7 @@ const toPolicySpec = (policy, policyDefinitionText) => {
         supportedGateways: [CONSTS.GATEWAY_TYPE.apiPlatform],
         supportedApiTypes,
         policyAttributes: getPolicyAttributesFromDefinition(policyDefinitionText),
+        parametersSchema: getPolicySchemaFromDefinition(policyDefinitionText),
         isAPISpecific: false,
     };
 };
@@ -489,6 +512,7 @@ export default {
     listAllPolicySpecs,
     getPolicySpec,
     getPolicyAttributesFromDefinition,
+    getPolicySchemaFromDefinition,
     listPolicies,
     listAllPolicies,
     getPolicyVersion,

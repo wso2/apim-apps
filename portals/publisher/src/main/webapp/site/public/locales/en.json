@@ -1387,6 +1387,8 @@
   "Apis.Details.Policies.AttachedPolicyForm.General.description.title": "Description",
   "Apis.Details.Policies.AttachedPolicyForm.General.description.value.not.provided": "Oops! Looks like this policy does not have a description",
   "Apis.Details.Policies.AttachedPolicyForm.General.description.value.provided": "{description}",
+  "Apis.Details.Policies.AttachedPolicyForm.General.dynamic.array.add": "Add Item",
+  "Apis.Details.Policies.AttachedPolicyForm.General.dynamic.array.remove": "Remove",
   "Apis.Details.Policies.AttachedPolicyForm.General.regex.error": "Please enter a valid input",
   "Apis.Details.Policies.AttachedPolicyForm.General.required.error": "Required field is empty",
   "Apis.Details.Policies.AttachedPolicyForm.General.reset": "Reset",

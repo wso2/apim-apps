@@ -217,10 +217,12 @@ export function QuickStartGuide({
     const displayKeysCommand = `cat > ${artifactName}/configs/keys.env << 'ENVFILE'
 GATEWAY_CONTROLPLANE_HOST=${controlPlaneHost}
 GATEWAY_REGISTRATION_TOKEN=${displayRegistrationToken}
+GATEWAY_CONTROLPLANE_ON_PREM=true
 ENVFILE`;
     const copyKeysCommand = `cat > ${artifactName}/configs/keys.env << 'ENVFILE'
 GATEWAY_CONTROLPLANE_HOST=${controlPlaneHost}
 GATEWAY_REGISTRATION_TOKEN=${actualRegistrationToken}
+GATEWAY_CONTROLPLANE_ON_PREM=true
 ENVFILE`;
 
     const renderTokenConfigurationStep = () => (
@@ -428,10 +430,12 @@ ENVFILE`;
                 code={'kubectl create secret generic gateway-keys \\\n'
                     + `  --from-literal=GATEWAY_CONTROLPLANE_HOST=${controlPlaneHost} \\\n`
                     + `  --from-literal=GATEWAY_REGISTRATION_TOKEN=${displayRegistrationToken} \\\n`
+                    + `  --from-literal=GATEWAY_CONTROLPLANE_ON_PREM=true \\\n`
                     + '  -n wso2-gateway'}
                 copyCode={'kubectl create secret generic gateway-keys \\\n'
                     + `  --from-literal=GATEWAY_CONTROLPLANE_HOST=${controlPlaneHost} \\\n`
                     + `  --from-literal=GATEWAY_REGISTRATION_TOKEN=${actualRegistrationToken} \\\n`
+                    + `  --from-literal=GATEWAY_CONTROLPLANE_ON_PREM=true \\\n`
                     + '  -n wso2-gateway'}
             />
         </>

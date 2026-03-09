@@ -109,6 +109,154 @@ interface GeneralProps {
     isAPILevelPolicy: boolean;
 }
 
+type SchemaNode = {
+    type?: string;
+    title?: string;
+    description?: string;
+    properties?: Record<string, SchemaNode>;
+    items?: SchemaNode;
+    required?: string[];
+    enum?: Array<string | number>;
+    default?: any;
+};
+
+const parseSchemaValue = (value: any) => {
+    if (value === null || value === undefined) {
+        return value;
+    }
+    if (typeof value !== 'string') {
+        return value;
+    }
+    const normalized = value.replace(/&quot;/g, '"');
+    try {
+        return JSON.parse(normalized);
+    } catch {
+        return value;
+    }
+};
+
+const cloneDefaultValue = (value: any): any => {
+    if (value === null || value === undefined) {
+        return value;
+    }
+    if (Array.isArray(value)) {
+        return value.map((item) => cloneDefaultValue(item));
+    }
+    if (typeof value === 'object') {
+        return Object.entries(value).reduce(
+            (acc: Record<string, any>, [key, nested]: [string, any]) => ({
+                ...acc,
+                [key]: cloneDefaultValue(nested),
+            }),
+            {},
+        );
+    }
+    return value;
+};
+
+const buildInitialValueFromSchema = (schema: SchemaNode, existingValue?: any): any => {
+    const parsedExisting = parseSchemaValue(existingValue);
+    if (parsedExisting !== null && parsedExisting !== undefined && parsedExisting !== '') {
+        return parsedExisting;
+    }
+    if (schema.default !== undefined) {
+        return cloneDefaultValue(schema.default);
+    }
+
+    if (schema.type === 'array') {
+        return [];
+    }
+
+    if (schema.type === 'object') {
+        const initObj: Record<string, any> = {};
+        const requiredFields = Array.isArray(schema.required) ? schema.required : [];
+        Object.entries(schema.properties || {}).forEach(([key, childSchema]) => {
+            const childValue = buildInitialValueFromSchema(childSchema, undefined);
+            if (childValue !== undefined && (requiredFields.includes(key) || childValue !== '')) {
+                initObj[key] = childValue;
+            }
+        });
+        return initObj;
+    }
+
+    if (schema.type === 'boolean') {
+        return false;
+    }
+
+    return '';
+};
+
+const setNestedValue = (source: any, path: Array<string | number>, value: any): any => {
+    if (path.length === 0) {
+        return value;
+    }
+    const [head, ...rest] = path;
+    let base = source;
+    if (source === null || source === undefined) {
+        base = typeof head === 'number' ? [] : {};
+    }
+    const clone = Array.isArray(base) ? [...base] : { ...base };
+    clone[head] = setNestedValue(base[head], rest, value);
+    return clone;
+};
+
+const removeNestedArrayItem = (source: any, path: Array<string | number>, indexToRemove: number): any => {
+    const arrayAtPath = path.reduce((current, key) => (current ? current[key] : undefined), source);
+    const nextArray = Array.isArray(arrayAtPath)
+        ? arrayAtPath.filter((_: any, index: number) => index !== indexToRemove)
+        : [];
+    return setNestedValue(source, path, nextArray);
+};
+
+const hasMissingRequiredFields = (schema: SchemaNode, value: any, isRequired = true): boolean => {
+    if (!isRequired) {
+        return false;
+    }
+    if (schema.type === 'object') {
+        if (!value || typeof value !== 'object') {
+            return true;
+        }
+        const requiredFields = Array.isArray(schema.required) ? schema.required : [];
+        return requiredFields.some((field) =>
+            hasMissingRequiredFields(schema.properties?.[field] || {}, value[field], true)
+        );
+    }
+    if (schema.type === 'array') {
+        return !Array.isArray(value) || value.length === 0;
+    }
+    if (schema.type === 'boolean') {
+        return value === null || value === undefined;
+    }
+    return value === null || value === undefined || value === '';
+};
+
+const toHumanReadableLabel = (key: string): string => {
+    if (!key) {
+        return '';
+    }
+
+    const spaced = key
+        .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+        .replace(/[_-]+/g, ' ')
+        .trim()
+        .replace(/\s+/g, ' ');
+
+    const words = spaced.split(' ').filter(Boolean);
+    if (words.length === 0) {
+        return '';
+    }
+
+    // Display array-like keys in singular form for cleaner labels (e.g., requestHeaders -> Request Header).
+    const lastWord = words[words.length - 1];
+    if (lastWord.length > 1 && /s$/i.test(lastWord) && !/ss$/i.test(lastWord)) {
+        words[words.length - 1] = lastWord.slice(0, -1);
+    }
+
+    return words
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+};
+
 const General: FC<GeneralProps> = ({
     policyObj,
     setDroppedPolicy,
@@ -132,6 +280,9 @@ const General: FC<GeneralProps> = ({
     const [isManual, setManual] = useState(false);
     const [manualPolicyConfig, setManualPolicyConfig] = useState<string>('');
     const [secretVisibility, setSecretVisibility] = useState<Record<string, boolean>>({});
+    const dynamicSchema: SchemaNode | null = (policySpec as any).parametersSchema || null;
+    const hasDynamicSchema = Boolean(dynamicSchema?.type === 'object' && dynamicSchema?.properties);
+    const [dynamicState, setDynamicState] = useState<any>({});
 
     useEffect(() => {
         if (
@@ -143,6 +294,13 @@ const General: FC<GeneralProps> = ({
             setManual(true);
         }
     }, [policyObj]);
+
+    useEffect(() => {
+        if (hasDynamicSchema && dynamicSchema) {
+            const initialDynamicState = buildInitialValueFromSchema(dynamicSchema, apiPolicy.parameters);
+            setDynamicState(initialDynamicState || {});
+        }
+    }, [apiPolicy.parameters, hasDynamicSchema, dynamicSchema]);
 
     if (!policyObj) {
         return <Progress />
@@ -158,7 +316,9 @@ const General: FC<GeneralProps> = ({
         ) {
             setState({ ...state, [event.target.name]: event.target.value });
         } else if (specType.toLowerCase() === 'json') {
-            specName && setState({ ...state, [specName]: event });
+            if (specName) {
+                setState({ ...state, [specName]: event });
+            }
         } else if (specType.toLowerCase() === 'secret') {
             const fieldName = event.target.name;
             let value = event.target.value;
@@ -181,6 +341,23 @@ const General: FC<GeneralProps> = ({
             setState({ ...state, [fieldName]: value });
         }
     }
+
+    const updateDynamicField = (path: Array<string | number>, value: any) => {
+        setDynamicState((prevState: any) => setNestedValue(prevState, path, value));
+    };
+
+    const addDynamicArrayItem = (path: Array<string | number>, itemSchema: SchemaNode = {}) => {
+        setDynamicState((prevState: any) => {
+            const currentArray = path.reduce((current, key) => (current ? current[key] : undefined), prevState);
+            const nextArray = Array.isArray(currentArray) ? [...currentArray] : [];
+            nextArray.push(buildInitialValueFromSchema(itemSchema, undefined));
+            return setNestedValue(prevState, path, nextArray);
+        });
+    };
+
+    const removeDynamicArrayItem = (path: Array<string | number>, indexToRemove: number) => {
+        setDynamicState((prevState: any) => removeNestedArrayItem(prevState, path, indexToRemove));
+    };
 
     const getValueOfPolicyParam = (policyParamName: string) => {
         return apiPolicy.parameters[policyParamName];
@@ -208,53 +385,60 @@ const General: FC<GeneralProps> = ({
     const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setSaving(true);
-        const updateCandidates: any = {};
-        Object.keys(state).forEach((key) => {
-            const value = state[key];
-            const attributeSpec = policySpec.policyAttributes.find(
-                (attribute: PolicySpecAttribute) => attribute.name === key,
-            );
+        let updateCandidates: any = {};
 
-            // Special handling for Secret fields
-            if (attributeSpec?.type.toLowerCase() === 'secret') {
-                const previousValue = getValueOfPolicyParam(key);
+        if (hasDynamicSchema) {
+            updateCandidates = dynamicState;
+        } else {
+            Object.keys(state).forEach((key) => {
+                const value = state[key];
+                const attributeSpec = policySpec.policyAttributes.find(
+                    (attribute: PolicySpecAttribute) => attribute.name === key,
+                );
 
-                // If the value is empty (from masked placeholder), 
-                // or null (if user doesn't do any change),
-                // keep the previous value
-                if (value === null || value === '') {
-                    if (previousValue !== null && previousValue !== undefined) {
-                        updateCandidates[key] = previousValue;
+                // Special handling for Secret fields
+                if (attributeSpec?.type.toLowerCase() === 'secret') {
+                    const previousValue = getValueOfPolicyParam(key);
+
+                    // If the value is empty (from masked placeholder),
+                    // or null (if user doesn't do any change),
+                    // keep the previous value
+                    if (value === null || value === '') {
+                        if (previousValue !== null && previousValue !== undefined) {
+                            updateCandidates[key] = previousValue;
+                        } else {
+                            // If the previous value is also empty, delete it from updateCandidates
+                            delete updateCandidates[key];
+                        }
                     } else {
-                        // If the previous value is also empty, delete it from updateCandidates
-                        delete updateCandidates[key];
+                        // If user has entered a new value, use that
+                        updateCandidates[key] = value;
                     }
+                } else if (value === null && getValueOfPolicyParam(key) && getValueOfPolicyParam(key) !== '') {
+                    updateCandidates[key] = getValueOfPolicyParam(key);
+                } else if (value === null && attributeSpec?.defaultValue && attributeSpec?.defaultValue !== null) {
+                    updateCandidates[key] = attributeSpec.defaultValue;
                 } else {
-                    // If user has entered a new value, use that
                     updateCandidates[key] = value;
                 }
-            } else if (value === null && getValueOfPolicyParam(key) && getValueOfPolicyParam(key) !== '') {
-                updateCandidates[key] = getValueOfPolicyParam(key);
-            } else if (value === null && attributeSpec?.defaultValue && attributeSpec?.defaultValue !== null) {
-                updateCandidates[key] = attributeSpec.defaultValue;
-            } else {
-                updateCandidates[key] = value;
-            }
-            // Escape double quotes in JSON string to HTML-safe equivalent
-            if (attributeSpec && attributeSpec.type.toLowerCase() === 'json') {
-                try {
-                    updateCandidates[key] = updateCandidates[key].replace(/"/g, "&quot;");
-                } catch (e) {
-                    console.error(
-                        `Failed to escape double quotes for key "${key}" of type "json".`, e instanceof Error ? e.message : e
-                    );
+                // Escape double quotes in JSON string to HTML-safe equivalent
+                if (attributeSpec && attributeSpec.type.toLowerCase() === 'json') {
+                    try {
+                        updateCandidates[key] = updateCandidates[key].replace(/"/g, "&quot;");
+                    } catch (e) {
+                        console.error(`Failed to escape double quotes for key "${key}" of type "json".`,
+                            e instanceof Error ? e.message : e);
+                    }
                 }
-            }
-        });
+            });
+        }
 
-        if (policyObj.name === 'modelRoundRobin' || policyObj.name === 'modelWeightedRoundRobin' || policyObj.name === 'modelFailover'
-            || policyObj.name === 'ContentBasedModelRouter'
-        ) {
+        if ([
+            'modelRoundRobin',
+            'modelWeightedRoundRobin',
+            'modelFailover',
+            'ContentBasedModelRouter',
+        ].includes(policyObj.name)) {
             if (policySpec.policyAttributes?.length) {
                 updateCandidates[policySpec.policyAttributes[0].name] = manualPolicyConfig;
             }
@@ -353,11 +537,237 @@ const General: FC<GeneralProps> = ({
         }
     }
 
+    const renderDynamicPrimitiveField = (
+        fieldSchema: SchemaNode,
+        value: any,
+        path: Array<string | number>,
+        label: string,
+        required: boolean,
+    ) => {
+        const schemaType = (fieldSchema.type || 'string').toLowerCase();
+        const description = fieldSchema.description || '';
+
+        if (schemaType === 'boolean') {
+            return (
+                <FormControl variant='outlined' className={classes.formControl}>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={Boolean(value)}
+                                onChange={(event) => updateDynamicField(path, event.target.checked)}
+                                color='primary'
+                            />
+                        }
+                        label={(
+                            <>
+                                {label}
+                                {required && (
+                                    <sup className={classes.mandatoryStar}>*</sup>
+                                )}
+                            </>
+                        )}
+                    />
+                    {description && <FormHelperText>{description}</FormHelperText>}
+                </FormControl>
+            );
+        }
+
+        if (Array.isArray(fieldSchema.enum) && fieldSchema.enum.length > 0) {
+            return (
+                <FormControl variant='outlined' className={classes.formControl}>
+                    <InputLabel htmlFor={`dynamic-enum-${path.join('-')}`}>
+                        <>
+                            {label}
+                            {required && (
+                                <sup className={classes.mandatoryStar}>*</sup>
+                            )}
+                        </>
+                    </InputLabel>
+                    <Select
+                        value={value ?? ''}
+                        onChange={(event) => updateDynamicField(path, event.target.value)}
+                        label={label}
+                        inputProps={{ id: `dynamic-enum-${path.join('-')}` }}
+                    >
+                        <MenuItem aria-label='None' value=''>&nbsp;</MenuItem>
+                        {fieldSchema.enum.map((enumValue) => (
+                            <MenuItem key={`${path.join('-')}-${String(enumValue)}`} value={enumValue}>
+                                {String(enumValue)}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                    {description && <FormHelperText>{description}</FormHelperText>}
+                </FormControl>
+            );
+        }
+
+        const numberType = schemaType === 'integer' || schemaType === 'number';
+        return (
+            <TextField
+                id={`dynamic-${path.join('-')}`}
+                label={(
+                    <>
+                        {label}
+                        {required && (
+                            <sup className={classes.mandatoryStar}>*</sup>
+                        )}
+                    </>
+                )}
+                helperText={description}
+                variant='outlined'
+                type={numberType ? 'number' : 'text'}
+                value={value ?? ''}
+                onChange={(event) => {
+                    if (numberType) {
+                        const parsedValue = event.target.value === '' ? '' : Number(event.target.value);
+                        updateDynamicField(path, parsedValue);
+                    } else {
+                        updateDynamicField(path, event.target.value);
+                    }
+                }}
+                fullWidth
+            />
+        );
+    };
+
+    const renderDynamicField = (
+        fieldName: string,
+        fieldSchema: SchemaNode,
+        value: any,
+        path: Array<string | number>,
+        required: boolean,
+    ): React.ReactNode => {
+        const schemaType = (fieldSchema.type || 'string').toLowerCase();
+        const label = fieldSchema.title || toHumanReadableLabel(fieldName);
+
+        if (schemaType === 'object') {
+            const requiredFields = Array.isArray(fieldSchema.required) ? fieldSchema.required : [];
+            return (
+                <Paper variant='outlined' sx={{ p: 2 }}>
+                    <Typography variant='subtitle2' gutterBottom>
+                        {label}
+                        {required && <sup className={classes.mandatoryStar}>*</sup>}
+                    </Typography>
+                    {fieldSchema.description && (
+                        <Typography variant='caption' color='textSecondary'>
+                            {fieldSchema.description}
+                        </Typography>
+                    )}
+                    <Grid container spacing={2} sx={{ mt: 0.5 }}>
+                        {Object.entries(fieldSchema.properties || {}).map(([childName, childSchema]) => (
+                            <Grid item xs={12} key={`${path.join('-')}-${childName}`}>
+                                {renderDynamicField(
+                                    childName,
+                                    childSchema,
+                                    value?.[childName],
+                                    [...path, childName],
+                                    requiredFields.includes(childName),
+                                )}
+                            </Grid>
+                        ))}
+                    </Grid>
+                </Paper>
+            );
+        }
+
+        if (schemaType === 'array') {
+            const arrayValue = Array.isArray(value) ? value : [];
+            const itemSchema = fieldSchema.items || {};
+            const itemType = (itemSchema.type || 'string').toLowerCase();
+            return (
+                <Paper variant='outlined' sx={{ p: 2 }}>
+                    <Box display='flex' justifyContent='space-between' alignItems='center' mb={1}>
+                        <Typography variant='subtitle2'>
+                            {label}
+                            {required && <sup className={classes.mandatoryStar}>*</sup>}
+                        </Typography>
+                        <Button
+                            size='small'
+                            variant='outlined'
+                            onClick={() => addDynamicArrayItem(path, itemSchema)}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.Policies.AttachedPolicyForm.General.dynamic.array.add'
+                                defaultMessage='Add Item'
+                            />
+                        </Button>
+                    </Box>
+                    {fieldSchema.description && (
+                        <Typography variant='caption' color='textSecondary'>
+                            {fieldSchema.description}
+                        </Typography>
+                    )}
+                    <Grid container spacing={1} sx={{ mt: 0.5 }}>
+                        {arrayValue.map((arrayItem: any, index: number) => {
+                            return (
+                                <Grid item xs={12} key={`${path.join('-')}-${index}`}>
+                                    <Paper variant='outlined' sx={{ p: 2 }}>
+                                    <Box display='flex' justifyContent='space-between' alignItems='center' mb={1}>
+                                        <Typography variant='caption'>
+                                            {`${label} ${index + 1}`}
+                                        </Typography>
+                                        <Button
+                                            size='small'
+                                            color='error'
+                                            onClick={() => removeDynamicArrayItem(path, index)}
+                                        >
+                                            <FormattedMessage
+                                                id='Apis.Details.Policies.AttachedPolicyForm.General.dynamic.array.remove'
+                                                defaultMessage='Remove'
+                                            />
+                                        </Button>
+                                    </Box>
+                                    {itemType === 'object'
+                                        ? (
+                                            <Grid container spacing={2}>
+                                                {Object.entries(itemSchema.properties || {}).map(
+                                                    ([itemProperty, itemPropertySchema]) => {
+                                                        return (
+                                                            <Grid
+                                                                item
+                                                                xs={12}
+                                                                key={`${path.join('-')}-${index}-${itemProperty}`}
+                                                            >
+                                                                {renderDynamicField(
+                                                                    itemProperty,
+                                                                    itemPropertySchema,
+                                                                    arrayItem?.[itemProperty],
+                                                                    [...path, index, itemProperty],
+                                                                    (itemSchema.required || []).includes(itemProperty),
+                                                                )}
+                                                            </Grid>
+                                                        );
+                                                    },
+                                                )}
+                                            </Grid>
+                                        ) : renderDynamicPrimitiveField(
+                                            itemSchema,
+                                            arrayItem,
+                                            [...path, index],
+                                            `${label} ${index + 1}`,
+                                            required,
+                                        )}
+                                    </Paper>
+                                </Grid>
+                            );
+                        })}
+                    </Grid>
+                </Paper>
+            );
+        }
+
+        return renderDynamicPrimitiveField(fieldSchema, value, path, label, required);
+    };
+
     /**
      * Reset the input fields
      */
     const resetAll = () => {
-        setState(initState);
+        if (hasDynamicSchema && dynamicSchema) {
+            setDynamicState(buildInitialValueFromSchema(dynamicSchema, apiPolicy.parameters));
+        } else {
+            setState(initState);
+        }
     }
 
     /**
@@ -366,6 +776,9 @@ const General: FC<GeneralProps> = ({
      * @returns {boolean} Boolean value indicating whether or not the form has any errors.
      */
     const formHasErrors = () => {
+        if (hasDynamicSchema && dynamicSchema) {
+            return hasMissingRequiredFields(dynamicSchema, dynamicState, true);
+        }
         let formHasAnError = false;
         policySpec.policyAttributes.forEach((spec) => {
             if(getError(spec) !== '') {
@@ -380,6 +793,9 @@ const General: FC<GeneralProps> = ({
      * @returns {boolean} Whether or not the save button should be disabled.
      */
     const isSaveDisabled = () => {
+        if (hasDynamicSchema && dynamicSchema) {
+            return hasMissingRequiredFields(dynamicSchema, dynamicState, true);
+        }
         if (!isEditMode) {
             let isDisabled = false;
             policySpec.policyAttributes.forEach((spec) => {
@@ -422,10 +838,15 @@ const General: FC<GeneralProps> = ({
         setApplyToAll(!applyToAll);
     }
 
-    const hasAttributes = policySpec.policyAttributes.length !== 0;
-    const resetDisabled = Object.values(state).filter((value: any) => 
-        (value !== null && (value.toString() !== 'true' || value.toString() !== 'false')) || !!value
-    ).length === 0;
+    const hasAttributes = hasDynamicSchema || policySpec.policyAttributes.length !== 0;
+    const initialDynamicState = hasDynamicSchema
+        ? (buildInitialValueFromSchema(dynamicSchema || {}, apiPolicy.parameters) || {})
+        : {};
+    const resetDisabled = hasDynamicSchema
+        ? JSON.stringify(dynamicState || {}) === JSON.stringify(initialDynamicState)
+        : Object.values(state).filter((value: any) =>
+            (value !== null && (value.toString() !== 'true' || value.toString() !== 'false')) || !!value
+        ).length === 0;
 
     if (!policySpec) {
         return <CircularProgress />
@@ -496,7 +917,21 @@ const General: FC<GeneralProps> = ({
                             manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
                         />
                     )}
-                    {!isManual && policySpec.policyAttributes && policySpec.policyAttributes.map((spec: PolicySpecAttribute) => (
+                    {!isManual && hasDynamicSchema && dynamicSchema
+                        && Object.entries(dynamicSchema.properties || {}).map(
+                            ([fieldName, fieldSchema]) => (
+                                <Grid item xs={12} key={`dynamic-field-${fieldName}`}>
+                                    {renderDynamicField(
+                                        fieldName,
+                                        fieldSchema,
+                                        dynamicState?.[fieldName],
+                                        [fieldName],
+                                        (dynamicSchema.required || []).includes(fieldName),
+                                    )}
+                                </Grid>
+                            ),
+                        )}
+                    {!isManual && !hasDynamicSchema && policySpec.policyAttributes && policySpec.policyAttributes.map((spec: PolicySpecAttribute) => (
                         <Grid item xs={12} key={spec.name}>
 
                             {/* When the attribute type is string or integer */}
