@@ -30,6 +30,7 @@ import Button from '@mui/material/Button';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import { app } from 'Settings';
+import Settings from 'AppComponents/Shared/SettingsContext';
 import ButtonPanel from './ButtonPanel';
 
 const PREFIX = 'CreateAppStep';
@@ -77,6 +78,8 @@ const createAppStep = (props) => {
         currentStep, setCreatedApp, incrementStep, intl, setStepStatus, stepStatuses,
     } = props;
     const { api: apiObject } = useContext(ApiContext);
+    const settingsContext = useContext(Settings);
+    const isApplicationSharingEnabled = Boolean(settingsContext.settings.applicationSharingEnabled);
 
     const validateName = (value) => {
         if (!value || value.trim() === '') {
@@ -281,6 +284,7 @@ const createAppStep = (props) => {
                         getAttributeValue={getAttributeValue}
                         handleDeleteChip={handleDeleteChip}
                         handleAddChip={handleAddChip}
+                        isApplicationSharingEnabled={isApplicationSharingEnabled}
                     />
                 </Grid>
             </Box>
