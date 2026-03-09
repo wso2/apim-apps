@@ -97,7 +97,12 @@ export default function ApiKeysView() {
             return;
         }
         if (!selectedKeyForRevoke?.keyUUID) {
-            setRevokeErrorMessage(intl.formatMessage({ id: 'ListApiKeys.error.noKeySelected', defaultMessage: 'No API key selected for revocation.' }));
+            setRevokeErrorMessage(
+                intl.formatMessage({
+                    id: 'ListApiKeys.error.noKeySelected',
+                    defaultMessage: 'No API key selected for revocation.',
+                }),
+            );
             setRevokeErrorOpen(true);
             return;
         }
@@ -114,7 +119,10 @@ export default function ApiKeysView() {
                 setRevokeErrorMessage(
                     (error.response && error.response.body && error.response.body.description)
                         || error.message
-                        || intl.formatMessage({ id: 'ListApiKeys.error.revokeFailed', defaultMessage: 'Failed to revoke API key. Please try again.' }),
+                        || intl.formatMessage({
+                            id: 'ListApiKeys.error.revokeFailed',
+                            defaultMessage: 'Failed to revoke API key. Please try again.',
+                        }),
                 );
                 setRevokeErrorOpen(true);
             })
@@ -216,7 +224,14 @@ export default function ApiKeysView() {
                 customBodyRenderLite: (dataIndex) => {
                     const { issuedOn, validityPeriod } = filteredKeys[dataIndex];
                     if (validityPeriod === -1) {
-                        return <Typography variant='body2' color='text.secondary'><FormattedMessage id='ListApiKeys.table.never' defaultMessage='Never' /></Typography>;
+                        return (
+                            <Typography variant='body2' color='text.secondary'>
+                                <FormattedMessage
+                                    id='ListApiKeys.table.never'
+                                    defaultMessage='Never'
+                                />
+                            </Typography>
+                        );
                     }
                     try {
                         const expires = new Date(new Date(issuedOn).getTime() + validityPeriod * 1000);
@@ -240,7 +255,14 @@ export default function ApiKeysView() {
                 customBodyRenderLite: (dataIndex) => {
                     const { lastUsed } = filteredKeys[dataIndex];
                     if (!lastUsed || lastUsed === 'NOT_USED') {
-                        return <Typography variant='body2' color='text.secondary'><FormattedMessage id='ListApiKeys.table.never' defaultMessage='Never' /></Typography>;
+                        return (
+                            <Typography variant='body2' color='text.secondary'>
+                                <FormattedMessage
+                                    id='ListApiKeys.table.never'
+                                    defaultMessage='Never'
+                                />
+                            </Typography>
+                        );
                     }
                     try {
                         const date = new Date(lastUsed);
@@ -317,11 +339,17 @@ export default function ApiKeysView() {
                             <FormattedMessage id='ListApiKeys.title' defaultMessage='API Keys' />
                         </Typography>
                         <Typography variant='body2' color='text.secondary' sx={{ mt: 0.5 }}>
-                            <FormattedMessage id='ListApiKeys.subtitle' defaultMessage='Visibility into key usage by application and environment.' />
+                            <FormattedMessage
+                                id='ListApiKeys.subtitle'
+                                defaultMessage='Visibility into key usage by application and environment.'
+                            />
                         </Typography>
                     </Box>
                     <TextField
-                        placeholder={intl.formatMessage({ id: 'ListApiKeys.search.placeholder', defaultMessage: 'Search by key, application, API, type, or user…' })}
+                        placeholder={intl.formatMessage({
+                            id: 'ListApiKeys.search.placeholder',
+                            defaultMessage: 'Search by key, application, API, type, or user…',
+                        })}
                         size='small'
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -350,18 +378,25 @@ export default function ApiKeysView() {
 
             {/* Revoke Confirmation Dialog */}
             <Dialog open={revokeConfirmOpen} onClose={handleCancelRevoke} maxWidth='xs' fullWidth>
-                <DialogTitle><FormattedMessage id='ListApiKeys.revokeConfirm.title' defaultMessage='Confirm Revoke' /></DialogTitle>
+                <DialogTitle>
+                    <FormattedMessage id='ListApiKeys.revokeConfirm.title' defaultMessage='Confirm Revoke' />
+                </DialogTitle>
                 <DialogContent>
                     <Typography>
                         <FormattedMessage
                             id='ListApiKeys.revokeConfirm.message'
-                            defaultMessage='Are you sure you want to revoke the API key {keyName}? This action cannot be undone.'
+                            defaultMessage={
+                                'Are you sure you want to revoke the API key {keyName}? '
+                                + 'This action cannot be undone.'
+                            }
                             values={{ keyName: <strong>{selectedKeyForRevoke?.keyName}</strong> }}
                         />
                     </Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCancelRevoke}><FormattedMessage id='ListApiKeys.button.cancel' defaultMessage='Cancel' /></Button>
+                    <Button onClick={handleCancelRevoke}>
+                        <FormattedMessage id='ListApiKeys.button.cancel' defaultMessage='Cancel' />
+                    </Button>
                     <Button onClick={handleConfirmRevoke} variant='contained' color='error' disabled={isRevoking}>
                         <FormattedMessage id='ListApiKeys.button.revoke' defaultMessage='Revoke' />
                     </Button>
@@ -375,9 +410,19 @@ export default function ApiKeysView() {
                 maxWidth='xs'
                 fullWidth
             >
-                <DialogTitle><FormattedMessage id='ListApiKeys.revokeSuccess.title' defaultMessage='API Key Revoked' /></DialogTitle>
+                <DialogTitle>
+                    <FormattedMessage
+                        id='ListApiKeys.revokeSuccess.title'
+                        defaultMessage='API Key Revoked'
+                    />
+                </DialogTitle>
                 <DialogContent>
-                    <Typography><FormattedMessage id='ListApiKeys.revokeSuccess.message' defaultMessage='The API key has been successfully revoked.' /></Typography>
+                    <Typography>
+                        <FormattedMessage
+                            id='ListApiKeys.revokeSuccess.message'
+                            defaultMessage='The API key has been successfully revoked.'
+                        />
+                    </Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button
@@ -396,7 +441,9 @@ export default function ApiKeysView() {
                 maxWidth='xs'
                 fullWidth
             >
-                <DialogTitle><FormattedMessage id='ListApiKeys.revokeError.title' defaultMessage='Revoke Failed' /></DialogTitle>
+                <DialogTitle>
+                    <FormattedMessage id='ListApiKeys.revokeError.title' defaultMessage='Revoke Failed' />
+                </DialogTitle>
                 <DialogContent>
                     <Typography>{revokeErrorMessage}</Typography>
                 </DialogContent>

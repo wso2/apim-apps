@@ -97,7 +97,11 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                 console.error('Error associating key:', error);
                 handleCloseAssociationModal();
                 setAssociateErrorMessage(
-                    error.response?.body?.description || intl.formatMessage({ id: 'ApiKeyAssociation.error.associateFailed', defaultMessage: 'Failed to associate API key. Please try again.' }),
+                    error.response?.body?.description
+                    || intl.formatMessage({
+                        id: 'ApiKeyAssociation.error.associateFailed',
+                        defaultMessage: 'Failed to associate API key. Please try again.',
+                    }),
                 );
                 setAssociateErrorOpen(true);
             })
@@ -137,7 +141,11 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
             .catch((error) => {
                 console.error('Error dissociating key:', error);
                 setDissociateErrorMessage(
-                    error.response?.body?.description || intl.formatMessage({ id: 'ApiKeyAssociation.error.dissociateFailed', defaultMessage: 'Failed to remove association. Please try again.' }),
+                    error.response?.body?.description
+                    || intl.formatMessage({
+                        id: 'ApiKeyAssociation.error.dissociateFailed',
+                        defaultMessage: 'Failed to remove association. Please try again.',
+                    }),
                 );
                 setDissociateErrorOpen(true);
             })
@@ -174,10 +182,18 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                 </DialogTitle>
                 <DialogContent>
                     <Typography sx={{ mb: 2 }}>
-                        <FormattedMessage id='ApiKeyAssociation.modal.associate.body' defaultMessage='Select an application to associate with API key:' />
+                        <FormattedMessage
+                            id='ApiKeyAssociation.modal.associate.body'
+                            defaultMessage='Select an application to associate with API key:'
+                        />
                     </Typography>
                     <FormControl fullWidth>
-                        <InputLabel><FormattedMessage id='ApiKeyAssociation.field.application.label' defaultMessage='Application' /></InputLabel>
+                        <InputLabel>
+                            <FormattedMessage
+                                id='ApiKeyAssociation.field.application.label'
+                                defaultMessage='Application'
+                            />
+                        </InputLabel>
                         <Select
                             value={selectedAppForAssociation}
                             onChange={(e) => setSelectedAppForAssociation(e.target.value)}
@@ -217,7 +233,10 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                 </DialogTitle>
                 <DialogContent>
                     <Typography>
-                        <FormattedMessage id='ApiKeyAssociation.associateSuccess.message' defaultMessage='API key has been successfully associated with the application.' />
+                        <FormattedMessage
+                            id='ApiKeyAssociation.associateSuccess.message'
+                            defaultMessage='API key has been successfully associated with the application.'
+                        />
                     </Typography>
                 </DialogContent>
                 <DialogActions>
@@ -267,7 +286,10 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                 </DialogTitle>
                 <DialogContent>
                     <Typography>
-                        <FormattedMessage id='ApiKeyAssociation.dissociateConfirm.message' defaultMessage='Are you sure you want to remove this API key association?' />
+                        <FormattedMessage
+                            id='ApiKeyAssociation.dissociateConfirm.message'
+                            defaultMessage='Are you sure you want to remove this API key association?'
+                        />
                     </Typography>
                 </DialogContent>
                 <DialogActions>
@@ -297,7 +319,10 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                 </DialogTitle>
                 <DialogContent>
                     <Typography>
-                        <FormattedMessage id='ApiKeyAssociation.dissociateSuccess.message' defaultMessage='API key association has been successfully removed.' />
+                        <FormattedMessage
+                            id='ApiKeyAssociation.dissociateSuccess.message'
+                            defaultMessage='API key association has been successfully removed.'
+                        />
                     </Typography>
                 </DialogContent>
                 <DialogActions>
