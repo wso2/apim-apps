@@ -32,6 +32,7 @@ const StyledTableCell = styled(TableCell)(() => ({
     paddingLeft: '0',
     paddingTop: '0',
     textAlign: 'left',
+    verticalAlign: 'top',
 }));
 
 const StyledScopeCell = styled(TableCell)(() => ({
@@ -40,8 +41,8 @@ const StyledScopeCell = styled(TableCell)(() => ({
     textAlign: 'left',
     borderBottom: 'none',
     overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    wordBreak: 'break-word',
+    whiteSpace: 'normal',
 }));
 
 /**
@@ -102,6 +103,7 @@ function CustomPadLock(props) {
                 </Grid>
                 <Grid item justifyContent='flex-end' alignItems='right'>
                     <Tooltip
+                        interactive
                         title={(
                             <Table size='small'>
                                 <TableBody>
@@ -136,12 +138,12 @@ function CustomPadLock(props) {
                                                     defaultMessage='Scopes'
                                                 />
                                             </StyledTableCell>
-                                            <StyledTableCell style={{ maxWidth: 100, paddingRight: 0 }}>
+                                            <StyledTableCell style={{ maxWidth: 250, paddingRight: 0 }}>
                                                 {scopes.length > 0 && (
                                                     scopes.map((scope, index) => (
                                                     // eslint-disable-next-line react/no-array-index-key
                                                         <TableRow key={index}>
-                                                            <StyledScopeCell style={{ maxWidth: 100 }}>
+                                                            <StyledScopeCell style={{ maxWidth: 250 }}>
                                                                 {scope}
                                                             </StyledScopeCell>
                                                         </TableRow>
