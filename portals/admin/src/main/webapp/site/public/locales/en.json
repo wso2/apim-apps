@@ -1277,7 +1277,7 @@
   "UnexpectedError.message": "Error occurred due to invalid request",
   "UnexpectedError.title": "Internal Server Error",
   "Workflow.APIProductStateChange.title.apistatechange": "API Product State Change - Approval Tasks",
-  "Workflow.APIRevisionDeployment.search.default": "Search by Revision Id, API Name, Environment etc",
+  "Workflow.APIRevisionDeployment.search.default": "Search by Revision Id, API Name, Environment, etc.",
   "Workflow.APIRevisionDeployment.title.revisiondeployment": "Revision Deployment - Approval Tasks",
   "Workflow.APIStateChange.search.default": "Search by API Name, Requested State, Current State etc",
   "Workflow.APIStateChange.title.apistatechange": "API State Change - Approval Tasks",

@@ -320,10 +320,10 @@ function WorkflowApprovalTasks({
     const fetchData = () => {
         setData(null);
         setError(null);
+        setHasListPermission(true);
 
         apiCall()
             .then((localData) => {
-                setHasListPermission(true);
                 setData(localData);
             })
             .catch((e) => {

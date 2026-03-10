@@ -18,7 +18,7 @@ function ListLabels() {
                 + 'workflows/'}
             searchPlaceholder={intl.formatMessage({
                 id: 'Workflow.APIRevisionDeployment.search.default',
-                defaultMessage: 'Search by Revision Id, API Name, Environment etc',
+                defaultMessage: 'Search by Revision Id, API Name, Environment, etc.',
             })}
             maxColumnsIncludingAction={5}
         />
