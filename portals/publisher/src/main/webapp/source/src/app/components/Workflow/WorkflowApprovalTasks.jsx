@@ -277,6 +277,10 @@ function WorkflowApprovalTasks({
                     throw rejected[0]?.reason || new Error('Unable to retrieve workflow requests');
                 }
 
+                if (rejected.length > 0) {
+                    console.warn('Some workflow types failed to load', rejected.map((r) => r.reason));
+                }
+
                 const combined = fulfilled.flatMap((r) => r?.body?.list || []);
 
                 const workflowList = combined.map((obj) => {
@@ -748,7 +752,15 @@ function WorkflowApprovalTasks({
                     id: 'Workflow.Common.table.header.description',
                     defaultMessage: 'Description',
                 }),
-                options: { sort: false, display: false },
+                options: {
+                    sort: false,
+                    display: visibleKeys.length === 0,
+                    filter: true,
+                    customBodyRender: (value, tableMeta) => {
+                        const row = filteredData[tableMeta.rowIndex];
+                        return toText(row?.description);
+                    },
+                },
             },
         ];
 
@@ -1059,25 +1071,13 @@ function WorkflowApprovalTasks({
                 </Toolbar>
             </AppBar>
 
-            {/* Table */}
-            {filteredData && filteredData.length > 0 && (
+            {filteredData && (
                 <MUIDataTable
                     title={null}
                     data={filteredData}
                     columns={columns}
                     options={options}
                 />
-            )}
-
-            {filteredData && filteredData.length === 0 && (
-                <div>
-                    <Typography color='textSecondary' align='center'>
-                        <FormattedMessage
-                            id='Workflow.SubscriptionCreation.ListBase.nodata.message'
-                            defaultMessage='No items yet'
-                        />
-                    </Typography>
-                </div>
             )}
 
             <Dialog
