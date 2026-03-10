@@ -225,7 +225,7 @@ function ListLabels() {
                             href={Configurations.app.docUrl
                                 + 'consume/manage-subscription/advanced-topics/'
                                 + 'adding-an-api-subscription-workflow'}
-                            underline='hover'
+                            underline='hover' rel='noopener noreferrer'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage
