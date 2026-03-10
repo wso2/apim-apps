@@ -26,6 +26,7 @@ import {
     Button,
     Card,
     CardContent,
+    Chip,
     CircularProgress,
     Divider,
     Dialog,
@@ -38,6 +39,7 @@ import {
     Grid,
     InputAdornment,
     InputLabel,
+    IconButton,
     Link,
     MenuItem,
     Select,
@@ -49,6 +51,7 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import ErrorIcon from '@mui/icons-material/Error';
 import { MuiChipsInput } from 'mui-chips-input';
 import base64url from 'base64url';
@@ -430,12 +433,12 @@ ENVFILE`;
                 code={'kubectl create secret generic gateway-keys \\\n'
                     + `  --from-literal=GATEWAY_CONTROLPLANE_HOST=${controlPlaneHost} \\\n`
                     + `  --from-literal=GATEWAY_REGISTRATION_TOKEN=${displayRegistrationToken} \\\n`
-                    + `  --from-literal=GATEWAY_CONTROLPLANE_ON_PREM=true \\\n`
+                    + '  --from-literal=GATEWAY_CONTROLPLANE_ON_PREM=true \\\n'
                     + '  -n wso2-gateway'}
                 copyCode={'kubectl create secret generic gateway-keys \\\n'
                     + `  --from-literal=GATEWAY_CONTROLPLANE_HOST=${controlPlaneHost} \\\n`
                     + `  --from-literal=GATEWAY_REGISTRATION_TOKEN=${actualRegistrationToken} \\\n`
-                    + `  --from-literal=GATEWAY_CONTROLPLANE_ON_PREM=true \\\n`
+                    + '  --from-literal=GATEWAY_CONTROLPLANE_ON_PREM=true \\\n'
                     + '  -n wso2-gateway'}
             />
         </>
@@ -490,6 +493,7 @@ function GatewaySuccessView({
     reconfigureLoading,
     isViewMode = false,
     showTokenCommands = true,
+    hideHeader = false,
 }) {
     const gatewayUrl = gateway?.properties?.gatewayController?.baseUrl || '-';
     const permissionTypeValue = gateway?.permissions?.permissionType || 'PUBLIC';
@@ -502,29 +506,31 @@ function GatewaySuccessView({
 
     return (
         <>
-            <Box sx={{ mb: 3 }}>
-                <Link
-                    href='/admin/settings/environments'
-                    underline='none'
-                    sx={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        mb: 2,
-                    }}
-                >
-                    <ArrowBackIcon fontSize='small' />
-                    Back to Gateways
-                </Link>
-                <Typography variant='h4' sx={{ fontWeight: 700 }}>
-                    {gateway.displayName || gateway.name}
-                </Typography>
-                {!isViewMode && (
-                    <Typography variant='body2' color='text.secondary' sx={{ mt: 0.5 }}>
-                        Gateway created successfully
+            {!hideHeader && (
+                <Box sx={{ mb: 3 }}>
+                    <Link
+                        href='/admin/settings/environments'
+                        underline='none'
+                        sx={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 1,
+                            mb: 2,
+                        }}
+                    >
+                        <ArrowBackIcon fontSize='small' />
+                        Back to Gateways
+                    </Link>
+                    <Typography variant='h4' sx={{ fontWeight: 700 }}>
+                        {gateway.displayName || gateway.name}
                     </Typography>
-                )}
-            </Box>
+                    {!isViewMode && (
+                        <Typography variant='body2' color='text.secondary' sx={{ mt: 0.5 }}>
+                            Gateway created successfully
+                        </Typography>
+                    )}
+                </Box>
+            )}
 
             {!isViewMode && (
                 <MuiAlert severity='success' sx={{ mb: 3 }}>
@@ -613,7 +619,9 @@ function PlatformGatewayManagement(props) {
     // State for viewing existing gateway
     const [existingGateway, setExistingGateway] = useState(null);
     const [loadingExisting, setLoadingExisting] = useState(false);
+    const [updatingExisting, setUpdatingExisting] = useState(false);
     const [showTokenCommands, setShowTokenCommands] = useState(false);
+    const [existingHeaderEditMode, setExistingHeaderEditMode] = useState(false);
 
     // Load existing gateway if gatewayId is provided
     React.useEffect(() => {
@@ -626,6 +634,9 @@ function PlatformGatewayManagement(props) {
                     const found = gateways.find((gw) => gw.id === gatewayId || gw.name === gatewayId);
                     if (found) {
                         setExistingGateway(found);
+                        setName(found.displayName || found.name || '');
+                        setDescription(found.description || '');
+                        setExistingHeaderEditMode(false);
                     } else {
                         setError('Gateway not found');
                     }
@@ -820,6 +831,56 @@ function PlatformGatewayManagement(props) {
         }
     };
 
+    const isExistingGatewaySaveDisabled = updatingExisting
+        || !name.trim()
+        || (name.trim() === (existingGateway?.displayName || existingGateway?.name || '').trim()
+            && description.trim() === (existingGateway?.description || '').trim());
+
+    const handleUpdateExistingGateway = async () => {
+        if (!existingGateway?.id) {
+            return;
+        }
+
+        setUpdatingExisting(true);
+        setError('');
+        try {
+            const result = await restApi.updatePlatformGateway(existingGateway.id, {
+                name: existingGateway.name,
+                displayName: name.trim(),
+                description: description.trim(),
+                vhost: existingGateway.vhost,
+                functionalityType: existingGateway.functionalityType,
+                isCritical: existingGateway.isCritical,
+                properties: existingGateway.properties,
+                permissions: existingGateway.permissions,
+            });
+            const updatedGateway = result?.body || result;
+            if (updatedGateway) {
+                setExistingGateway(updatedGateway);
+                setName(updatedGateway.displayName || updatedGateway.name || '');
+                setDescription(updatedGateway.description || '');
+            }
+            setExistingHeaderEditMode(false);
+            Alert.success('Gateway updated successfully.');
+        } catch (e) {
+            const errorMessage = e?.response?.body?.description || e.message || 'Failed to update gateway';
+            setError(errorMessage);
+            Alert.error(errorMessage);
+        } finally {
+            setUpdatingExisting(false);
+        }
+    };
+
+    const handleStartExistingGatewayHeaderEdit = () => {
+        setExistingHeaderEditMode(true);
+    };
+
+    const handleCancelExistingGatewayHeaderEdit = () => {
+        setName(existingGateway?.displayName || existingGateway?.name || '');
+        setDescription(existingGateway?.description || '');
+        setExistingHeaderEditMode(false);
+    };
+
     // Show loading state when fetching existing gateway
     if (loadingExisting) {
         return (
@@ -833,8 +894,162 @@ function PlatformGatewayManagement(props) {
 
     // Show existing gateway quick start view
     if (existingGateway) {
+        const gatewayDisplayName = existingGateway.displayName || existingGateway.name || '';
+        const gatewayInitials = gatewayDisplayName
+            .split(/\s+/)
+            .filter(Boolean)
+            .map((part) => part.charAt(0))
+            .join('')
+            .slice(0, 2)
+            .toUpperCase() || 'GW';
+        const isActiveProperty = (existingGateway.additionalProperties || [])
+            .find((property) => property.key === 'isActive')?.value;
+        const hasStatus = typeof isActiveProperty !== 'undefined' && isActiveProperty !== null;
+        const isActive = isActiveProperty === 'true' || isActiveProperty === true;
+
         return (
             <ContentBase {...pageProps}>
+                <Box sx={{ mb: 3 }}>
+                    <Link
+                        href='/admin/settings/environments'
+                        underline='none'
+                        sx={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 1,
+                            mb: 3,
+                        }}
+                    >
+                        <ArrowBackIcon fontSize='small' />
+                        Back to Gateways
+                    </Link>
+
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            gap: 2,
+                            flexDirection: { xs: 'column', md: 'row' },
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                width: 96,
+                                height: 96,
+                                borderRadius: 2,
+                                bgcolor: 'primary.dark',
+                                color: 'primary.contrastText',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '2rem',
+                                fontWeight: 700,
+                                flexShrink: 0,
+                            }}
+                        >
+                            {gatewayInitials}
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                            {existingHeaderEditMode ? (
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                                    <TextField
+                                        fullWidth
+                                        size='small'
+                                        label='Gateway Name'
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        disabled={updatingExisting}
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        size='small'
+                                        multiline
+                                        minRows={2}
+                                        label='Description'
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                        disabled={updatingExisting}
+                                    />
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 1,
+                                            flexWrap: 'wrap',
+                                        }}
+                                    >
+                                        <Button
+                                            variant='contained'
+                                            onClick={handleUpdateExistingGateway}
+                                            disabled={isExistingGatewaySaveDisabled}
+                                            startIcon={updatingExisting && (
+                                                <CircularProgress size={16} color='inherit' />
+                                            )}
+                                        >
+                                            {updatingExisting ? 'Saving...' : 'Save'}
+                                        </Button>
+                                        <Button
+                                            variant='outlined'
+                                            onClick={handleCancelExistingGatewayHeaderEdit}
+                                            disabled={updatingExisting}
+                                        >
+                                            Close
+                                        </Button>
+                                        {hasStatus && (
+                                            <Chip
+                                                size='small'
+                                                label={isActive ? 'Active' : 'Inactive'}
+                                                color={isActive ? 'success' : 'error'}
+                                                variant='outlined'
+                                            />
+                                        )}
+                                    </Box>
+                                </Box>
+                            ) : (
+                                <>
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 1,
+                                            flexWrap: 'wrap',
+                                            mb: 1,
+                                        }}
+                                    >
+                                        <Typography variant='h5' sx={{ fontWeight: 700 }}>
+                                            {gatewayDisplayName}
+                                        </Typography>
+                                        <IconButton
+                                            size='small'
+                                            onClick={handleStartExistingGatewayHeaderEdit}
+                                            aria-label='edit gateway details'
+                                        >
+                                            <EditOutlinedIcon fontSize='small' />
+                                        </IconButton>
+                                        {hasStatus && (
+                                            <Chip
+                                                size='small'
+                                                label={isActive ? 'Active' : 'Inactive'}
+                                                color={isActive ? 'success' : 'error'}
+                                                variant='outlined'
+                                            />
+                                        )}
+                                    </Box>
+                                    <Typography variant='body1' color='text.secondary' sx={{ mt: 1 }}>
+                                        {existingGateway.description
+                                            || 'No description provided for this gateway yet.'}
+                                    </Typography>
+                                </>
+                            )}
+                        </Box>
+                    </Box>
+                </Box>
+
+                {error && (
+                    <MuiAlert severity='error' sx={{ mb: 2 }} onClose={() => setError('')}>
+                        {error}
+                    </MuiAlert>
+                )}
+
                 <GatewaySuccessView
                     gateway={existingGateway}
                     onAddAnother={null}
@@ -842,6 +1057,7 @@ function PlatformGatewayManagement(props) {
                     reconfigureLoading={platformTokenRegenerating}
                     isViewMode
                     showTokenCommands={showTokenCommands}
+                    hideHeader
                 />
                 <Dialog
                     open={confirmReconfigureOpen}

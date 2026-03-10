@@ -1210,6 +1210,23 @@ class API extends Resource {
     }
 
     /**
+     * Update a platform gateway by ID.
+     * @param {string} gatewayId - The ID of the gateway to update.
+     * @param {object} body - Updated gateway payload.
+     */
+    updatePlatformGateway(gatewayId, body) {
+        return this.client.then((client) => {
+            return client.execute({
+                pathName: '/gateways/{gatewayId}',
+                method: 'put',
+                parameters: { gatewayId },
+                requestBody: body,
+                requestContentType: 'application/json',
+            });
+        });
+    }
+
+    /**
      * Delete a platform gateway by ID.
      * @param {string} gatewayId - The ID of the gateway to delete.
      */
