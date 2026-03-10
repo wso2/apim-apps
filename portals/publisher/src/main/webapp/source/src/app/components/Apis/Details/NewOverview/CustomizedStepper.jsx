@@ -392,7 +392,7 @@ export default function CustomizedStepper() {
             })
             .finally(() => setUpdating(false))
             .catch((errorResponse) => {
-                if (errorResponse.response?.body?.code === 903300 && !isMCPServer) {
+                if (errorResponse.response?.body?.code === 903300) {
                     Alert.error(
                         <Box sx={{ width: '100%' }}>
                             <Typography>
@@ -409,7 +409,7 @@ export default function CustomizedStepper() {
                             }}>
                                 <Link
                                     component={RouterLink}
-                                    to={`/apis/${api.id}/lifecycle`}
+                                    to={getBasePath(api.apiType) + api.id + '/lifecycle'}
                                     sx={{
                                         color: 'inherit',
                                         fontWeight: 600,
