@@ -151,8 +151,8 @@ function CustomPadLock(props) {
                                                     >
                                                         <Table>
                                                             <TableBody>
-                                                                {scopes.map((scope, index) => (
-                                                                    <TableRow key={index}>
+                                                                {scopes.map((scope) => (
+                                                                    <TableRow key={scope}>
                                                                         <StyledScopeCell style={{ maxWidth: 240 }}>
                                                                             {scope}
                                                                         </StyledScopeCell>
