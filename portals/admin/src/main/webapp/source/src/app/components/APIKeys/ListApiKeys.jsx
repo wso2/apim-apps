@@ -17,6 +17,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Box,
     Button,
@@ -46,6 +47,7 @@ const typeChipSx = {
 };
 
 export default function ApiKeysView() {
+    const intl = useIntl();
     const [isRevoking, setIsRevoking] = useState(false);
     const [apiKeys, setApiKeys] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -95,7 +97,12 @@ export default function ApiKeysView() {
             return;
         }
         if (!selectedKeyForRevoke?.keyUUID) {
-            setRevokeErrorMessage('No API key selected for revoke.');
+            setRevokeErrorMessage(
+                intl.formatMessage({
+                    id: 'APIKeys.ListApiKeys.error.noKeySelected',
+                    defaultMessage: 'No API key selected for revocation.',
+                }),
+            );
             setRevokeErrorOpen(true);
             return;
         }
@@ -112,7 +119,10 @@ export default function ApiKeysView() {
                 setRevokeErrorMessage(
                     (error.response && error.response.body && error.response.body.description)
                         || error.message
-                        || 'Failed to revoke API key. Please try again.',
+                        || intl.formatMessage({
+                            id: 'APIKeys.ListApiKeys.error.revokeFailed',
+                            defaultMessage: 'Failed to revoke API key. Please try again.',
+                        }),
                 );
                 setRevokeErrorOpen(true);
             })
@@ -138,10 +148,13 @@ export default function ApiKeysView() {
     });
 
     const columns = [
-        { name: 'keyName', label: 'API Key' },
+        {
+            name: 'keyName',
+            label: intl.formatMessage({ id: 'APIKeys.ListApiKeys.column.apiKey', defaultMessage: 'API Key' }),
+        },
         {
             name: 'applicationName',
-            label: 'Application',
+            label: intl.formatMessage({ id: 'APIKeys.ListApiKeys.column.application', defaultMessage: 'Application' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const app = filteredKeys[dataIndex].applicationName;
@@ -153,7 +166,7 @@ export default function ApiKeysView() {
         },
         {
             name: 'apiName',
-            label: 'API',
+            label: intl.formatMessage({ id: 'APIKeys.ListApiKeys.column.api', defaultMessage: 'API' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const api = filteredKeys[dataIndex].apiName;
@@ -165,7 +178,7 @@ export default function ApiKeysView() {
         },
         {
             name: 'keyType',
-            label: 'Type',
+            label: intl.formatMessage({ id: 'APIKeys.ListApiKeys.column.type', defaultMessage: 'Type' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const { keyType } = filteredKeys[dataIndex];
@@ -184,10 +197,10 @@ export default function ApiKeysView() {
                 },
             },
         },
-        { name: 'user', label: 'User' },
+        { name: 'user', label: intl.formatMessage({ id: 'APIKeys.ListApiKeys.column.user', defaultMessage: 'User' }) },
         {
             name: 'issuedOn',
-            label: 'Issued On',
+            label: intl.formatMessage({ id: 'APIKeys.ListApiKeys.column.issuedOn', defaultMessage: 'Issued On' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const { issuedOn } = filteredKeys[dataIndex];
@@ -209,12 +222,19 @@ export default function ApiKeysView() {
         },
         {
             name: 'validityPeriod',
-            label: 'Expires On',
+            label: intl.formatMessage({ id: 'APIKeys.ListApiKeys.column.expiresOn', defaultMessage: 'Expires On' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const { issuedOn, validityPeriod } = filteredKeys[dataIndex];
                     if (validityPeriod === -1) {
-                        return <Typography variant='body2' color='text.secondary'>Never</Typography>;
+                        return (
+                            <Typography variant='body2' color='text.secondary'>
+                                <FormattedMessage
+                                    id='APIKeys.ListApiKeys.table.never'
+                                    defaultMessage='Never'
+                                />
+                            </Typography>
+                        );
                     }
                     try {
                         const expires = new Date(new Date(issuedOn).getTime() + validityPeriod * 1000);
@@ -233,12 +253,19 @@ export default function ApiKeysView() {
         },
         {
             name: 'lastUsed',
-            label: 'Last Used On',
+            label: intl.formatMessage({ id: 'APIKeys.ListApiKeys.column.lastUsedOn', defaultMessage: 'Last Used On' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const { lastUsed } = filteredKeys[dataIndex];
                     if (!lastUsed || lastUsed === 'NOT_USED') {
-                        return <Typography variant='body2' color='text.secondary'>Never</Typography>;
+                        return (
+                            <Typography variant='body2' color='text.secondary'>
+                                <FormattedMessage
+                                    id='APIKeys.ListApiKeys.table.never'
+                                    defaultMessage='Never'
+                                />
+                            </Typography>
+                        );
                     }
                     try {
                         const date = new Date(lastUsed);
@@ -257,7 +284,7 @@ export default function ApiKeysView() {
         },
         {
             name: 'actions',
-            label: 'Actions',
+            label: intl.formatMessage({ id: 'APIKeys.ListApiKeys.column.actions', defaultMessage: 'Actions' }),
             options: {
                 sort: false,
                 filter: false,
@@ -265,7 +292,7 @@ export default function ApiKeysView() {
                 setCellProps: () => ({ align: 'right' }),
                 customHeadRender: () => (
                     <TableCell align='right' className='keys-header'>
-                        Actions
+                        <FormattedMessage id='APIKeys.ListApiKeys.column.actions' defaultMessage='Actions' />
                     </TableCell>
                 ),
                 customBodyRenderLite: (dataIndex) => {
@@ -278,7 +305,7 @@ export default function ApiKeysView() {
                             startIcon={<Block />}
                             onClick={() => handleRevokeKey(keyData)}
                         >
-                            Revoke
+                            <FormattedMessage id='APIKeys.ListApiKeys.button.revoke' defaultMessage='Revoke' />
                         </Button>
                     );
                 },
@@ -312,14 +339,20 @@ export default function ApiKeysView() {
                 <Stack spacing={3}>
                     <Box>
                         <Typography variant='h5' sx={{ fontWeight: 600 }}>
-                            API Keys
+                            <FormattedMessage id='APIKeys.ListApiKeys.title' defaultMessage='API Keys' />
                         </Typography>
                         <Typography variant='body2' color='text.secondary' sx={{ mt: 0.5 }}>
-                            Visibility into key usage by application and environment.
+                            <FormattedMessage
+                                id='APIKeys.ListApiKeys.subtitle'
+                                defaultMessage='Visibility into key usage by application and environment.'
+                            />
                         </Typography>
                     </Box>
                     <TextField
-                        placeholder='Search by key, application, API, type, or user…'
+                        placeholder={intl.formatMessage({
+                            id: 'APIKeys.ListApiKeys.search.placeholder',
+                            defaultMessage: 'Search by key, application, API, type, or user…',
+                        })}
                         size='small'
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -348,19 +381,27 @@ export default function ApiKeysView() {
 
             {/* Revoke Confirmation Dialog */}
             <Dialog open={revokeConfirmOpen} onClose={handleCancelRevoke} maxWidth='xs' fullWidth>
-                <DialogTitle>Confirm Revoke</DialogTitle>
+                <DialogTitle>
+                    <FormattedMessage id='APIKeys.ListApiKeys.revokeConfirm.title' defaultMessage='Confirm Revoke' />
+                </DialogTitle>
                 <DialogContent>
                     <Typography>
-                        Are you sure you want to revoke the API key
-                        {' '}
-                        <strong>{selectedKeyForRevoke?.keyName}</strong>
-                        ? This action cannot be undone.
+                        <FormattedMessage
+                            id='APIKeys.ListApiKeys.revokeConfirm.message'
+                            defaultMessage={
+                                'Are you sure you want to revoke the API key {keyName}? '
+                                + 'This action cannot be undone.'
+                            }
+                            values={{ keyName: <strong>{selectedKeyForRevoke?.keyName}</strong> }}
+                        />
                     </Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCancelRevoke}>Cancel</Button>
+                    <Button onClick={handleCancelRevoke}>
+                        <FormattedMessage id='APIKeys.ListApiKeys.button.cancel' defaultMessage='Cancel' />
+                    </Button>
                     <Button onClick={handleConfirmRevoke} variant='contained' color='error' disabled={isRevoking}>
-                        Revoke
+                        <FormattedMessage id='APIKeys.ListApiKeys.button.revoke' defaultMessage='Revoke' />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -372,16 +413,26 @@ export default function ApiKeysView() {
                 maxWidth='xs'
                 fullWidth
             >
-                <DialogTitle>API Key Revoked</DialogTitle>
+                <DialogTitle>
+                    <FormattedMessage
+                        id='APIKeys.ListApiKeys.revokeSuccess.title'
+                        defaultMessage='API Key Revoked'
+                    />
+                </DialogTitle>
                 <DialogContent>
-                    <Typography>The API key has been successfully revoked.</Typography>
+                    <Typography>
+                        <FormattedMessage
+                            id='APIKeys.ListApiKeys.revokeSuccess.message'
+                            defaultMessage='The API key has been successfully revoked.'
+                        />
+                    </Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button
                         onClick={() => { setRevokeSuccessOpen(false); setSelectedKeyForRevoke(null); }}
                         variant='contained'
                     >
-                        OK
+                        <FormattedMessage id='APIKeys.ListApiKeys.button.ok' defaultMessage='OK' />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -393,7 +444,9 @@ export default function ApiKeysView() {
                 maxWidth='xs'
                 fullWidth
             >
-                <DialogTitle>Revoke Failed</DialogTitle>
+                <DialogTitle>
+                    <FormattedMessage id='APIKeys.ListApiKeys.revokeError.title' defaultMessage='Revoke Failed' />
+                </DialogTitle>
                 <DialogContent>
                     <Typography>{revokeErrorMessage}</Typography>
                 </DialogContent>
@@ -402,7 +455,7 @@ export default function ApiKeysView() {
                         onClick={() => { setRevokeErrorOpen(false); setSelectedKeyForRevoke(null); }}
                         variant='contained'
                     >
-                        OK
+                        <FormattedMessage id='APIKeys.ListApiKeys.button.ok' defaultMessage='OK' />
                     </Button>
                 </DialogActions>
             </Dialog>
