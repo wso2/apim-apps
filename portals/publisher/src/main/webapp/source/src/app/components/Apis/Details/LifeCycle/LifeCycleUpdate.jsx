@@ -381,7 +381,7 @@ class LifeCycleUpdate extends Component {
                 if (workflowStatus === this.WORKFLOW_STATUS.CREATED) {
                     Alert.info(intl.formatMessage({
                         id: 'Apis.Details.LifeCycle.LifeCycleUpdate.success.createStatus',
-                        defaultMessage: 'Lifecycle state change request has been sent',
+                        defaultMessage: 'Lifecycle state change request has been submitted for admin approval',
                     }));
                 } 
                 if (workflowStatus === this.WORKFLOW_STATUS.APPROVED) {
@@ -1005,7 +1005,7 @@ class LifeCycleUpdate extends Component {
                                 )}
                             </DialogContent>
                             <DialogActions>
-                                <Button dense onClick={this.handleRequestClose}>
+                                <Button onClick={this.handleRequestClose}>
                                     <FormattedMessage
                                         id='Apis.Details.components.TransitionStateApiButton.button.cancel'
                                         defaultMessage='CANCEL'
@@ -1013,6 +1013,7 @@ class LifeCycleUpdate extends Component {
                                 </Button>
                                 <Button
                                     id='itest-id-conf'
+                                    variant='contained'
                                     key={this.state.selectedTransitionState}
                                     data-value={this.state.selectedTransitionState}
                                     disabled={

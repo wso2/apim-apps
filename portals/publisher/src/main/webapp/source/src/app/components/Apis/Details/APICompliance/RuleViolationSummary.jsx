@@ -33,6 +33,7 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import ListBase from 'AppComponents/Addons/Addons/ListBase';
 import { useIntl } from 'react-intl';
 import Utils from 'AppData/Utils';
+import AuthManager from 'AppData/AuthManager';
 import CircularProgress from '@mui/material/CircularProgress';
 
 export default function RuleViolationSummary({ complianceData }) {
@@ -183,7 +184,11 @@ export default function RuleViolationSummary({ complianceData }) {
         const simMatch = text.match(/Similarity:\s*([\d.]+%)/);
         const similarity = simMatch ? simMatch[1] : null;
 
-        return { uuid, apiName, similarity };
+        // Extract creator
+        const creatorMatch = text.match(/API_CREATOR:([^|]+?)(?:\s*\||\s*$)/);
+        const creator = creatorMatch ? creatorMatch[1].trim() : null;
+
+        return { uuid, apiName, similarity, creator };
     };
 
     /**
@@ -197,8 +202,21 @@ export default function RuleViolationSummary({ complianceData }) {
         const parsed = parseApiLinkFromViolatedPath(text);
 
         if (parsed) {
-            // User has access to this matched API — render as clickable link
-            const href = `/publisher/apis/${parsed.uuid}/overview`;
+            // Check if the matched API belongs to the current user
+            let isOwnApi = false;
+            try {
+                const user = AuthManager.getUser();
+                if (user && user.name && parsed.creator) {
+                    const currentUsername = user.name.includes('@')
+                        ? user.name.split('@')[0]
+                        : user.name;
+                    isOwnApi = currentUsername === parsed.creator;
+                }
+            } catch (e) {
+                // If user info unavailable, default to non-clickable for safety
+                isOwnApi = false;
+            }
+
             return (
                 <Box>
                     {parsed.similarity && (
@@ -206,16 +224,30 @@ export default function RuleViolationSummary({ complianceData }) {
                             {`Similarity: ${parsed.similarity} — Matched: `}
                         </Typography>
                     )}
-                    <Link
-                        href={href}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        underline='hover'
-                        sx={{ fontWeight: 500 }}
-                    >
-                        {parsed.apiName}
-                        <LaunchIcon sx={{ fontSize: 12, ml: 0.5 }} />
-                    </Link>
+                    {isOwnApi ? (
+                        <Link
+                            href={`/publisher/apis/${parsed.uuid}/overview`}
+                            underline='hover'
+                            color='primary'
+                            sx={{
+                                fontWeight: 500,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 0.5,
+                            }}
+                        >
+                            {parsed.apiName}
+                            <LaunchIcon sx={{ fontSize: 14 }} />
+                        </Link>
+                    ) : (
+                        <Typography
+                            variant='body2'
+                            component='span'
+                            sx={{ fontWeight: 500 }}
+                        >
+                            {parsed.apiName}
+                        </Typography>
+                    )}
                 </Box>
             );
         }

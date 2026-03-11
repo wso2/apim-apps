@@ -68,7 +68,13 @@ const lifecyclePending = (props) => {
                     <Typography variant='h6'>
                         <FormattedMessage
                             id='Apis.Details.LifeCycle.LifeCycleUpdate.LifecyclePending.pending'
-                            defaultMessage='Pending lifecycle state change.'
+                            defaultMessage='Transition Pending Admin Approval'
+                        />
+                    </Typography>
+                    <Typography variant='body2' color='textSecondary' sx={{ mt: 0.5 }}>
+                        <FormattedMessage
+                            id='Apis.Details.LifeCycle.LifeCycleUpdate.LifecyclePending.pending.description'
+                            defaultMessage='The lifecycle state change request is pending admin review and approval.'
                         />
                     </Typography>
                 </Box>
@@ -113,7 +119,7 @@ const lifecyclePending = (props) => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button dense onClick={() => setOpen(false)}>
+                    <Button onClick={() => setOpen(false)}>
                         <FormattedMessage
                             id='Apis.Details.LifeCycle.LifeCycleUpdate.LifecyclePending.dialog.cancel'
                             defaultMessage='Cancel'
@@ -121,7 +127,7 @@ const lifecyclePending = (props) => {
                     </Button>
                     <Button
                         size='small'
-                        variant='text'
+                        variant='contained'
                         color='primary'
                         onClick={deleteTask}
                     >
