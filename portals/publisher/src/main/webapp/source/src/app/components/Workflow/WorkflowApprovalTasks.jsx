@@ -1,6 +1,5 @@
-/* eslint-disable react/jsx-props-no-spreading */
 /*
- * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2026, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -304,7 +303,7 @@ function WorkflowApprovalTasks({
                     setHasListPermission(false);
                 } else {
                     Alert.error(intl.formatMessage({
-                        id: 'Workflow.Common.apicall.has.errors',
+                        id: 'Workflow.WorkflowApprovalTasks.api.error',
                         defaultMessage: 'Unable to retrieve pending workflow requests',
                     }));
                 }
@@ -365,7 +364,7 @@ function WorkflowApprovalTasks({
         return restApi.updateWorkflow(referenceId, body)
             .then(() => {
                 Alert.success(intl.formatMessage({
-                    id: 'Workflow.Common.update.success',
+                    id: 'Workflow.WorkflowApprovalTasks.update.success',
                     defaultMessage: 'Workflow status is updated successfully',
                 }));
             })
@@ -377,7 +376,7 @@ function WorkflowApprovalTasks({
                     Alert.error(description);
                 } else {
                     Alert.error(intl.formatMessage({
-                        id: 'Workflow.Common.updateStatus.has.errors',
+                        id: 'Workflow.WorkflowApprovalTasks.update.error',
                         defaultMessage: 'Unable to complete approve/reject process.',
                     }));
                 }
@@ -497,7 +496,7 @@ function WorkflowApprovalTasks({
             >
                 <CheckIcon />
                 <FormattedMessage
-                    id='Workflow.Common.table.button.approve'
+                    id='Workflow.WorkflowApprovalTasks.table.button.approve'
                     defaultMessage='Approve'
                 />
                 {(isUpdating && activeReferenceId === referenceId && buttonValue === 'APPROVED')
@@ -514,7 +513,7 @@ function WorkflowApprovalTasks({
             >
                 <ClearIcon />
                 <FormattedMessage
-                    id='Workflow.Common.table.button.reject'
+                    id='Workflow.WorkflowApprovalTasks.table.button.reject'
                     defaultMessage='Reject'
                 />
                 {(isUpdating && activeReferenceId === referenceId && buttonValue === 'REJECTED')
@@ -558,7 +557,7 @@ function WorkflowApprovalTasks({
                 sx={(theme) => ({ mt: theme.spacing(1) })}
             >
                 <FormattedMessage
-                    id='Workflow.Common.expand.no.data'
+                    id='Workflow.WorkflowApprovalTasks.expand.no.data'
                     defaultMessage='No data to display.'
                 />
             </Typography>
@@ -612,7 +611,7 @@ function WorkflowApprovalTasks({
                                         <TableCell>
                                             <strong>
                                                 <FormattedMessage
-                                                    id='Workflow.Common.expand.attribute.name'
+                                                    id='Workflow.WorkflowApprovalTasks.expand.attribute.name'
                                                     defaultMessage='Attribute Name'
                                                 />
                                             </strong>
@@ -620,7 +619,7 @@ function WorkflowApprovalTasks({
                                         <TableCell>
                                             <strong>
                                                 <FormattedMessage
-                                                    id='Workflow.Common.expand.attribute.value'
+                                                    id='Workflow.WorkflowApprovalTasks.expand.attribute.value'
                                                     defaultMessage='Value'
                                                 />
                                             </strong>
@@ -749,7 +748,7 @@ function WorkflowApprovalTasks({
             {
                 name: 'description',
                 label: intl.formatMessage({
-                    id: 'Workflow.Common.table.header.description',
+                    id: 'Workflow.WorkflowApprovalTasks.table.header.description',
                     defaultMessage: 'Description',
                 }),
                 options: {
@@ -782,7 +781,7 @@ function WorkflowApprovalTasks({
         cols.push({
             name: 'action',
             label: intl.formatMessage({
-                id: 'Workflow.Common.table.header.action',
+                id: 'Workflow.WorkflowApprovalTasks.table.header.action',
                 defaultMessage: 'Action',
             }),
             options: {
@@ -830,7 +829,7 @@ function WorkflowApprovalTasks({
                             <ListItemText
                                 primary={(
                                     <FormattedMessage
-                                        id='Workflow.Common.help.link.one'
+                                        id='Workflow.WorkflowApprovalTasks.help.link'
                                         defaultMessage='Learn more about workflows'
                                     />
                                 )}
@@ -883,7 +882,7 @@ function WorkflowApprovalTasks({
                         <Box sx={(theme) => ({ py: theme.spacing(1) })}>
                             <Typography variant='h6'>
                                 <FormattedMessage
-                                    id='Workflow.Common.expand.title'
+                                    id='Workflow.WorkflowApprovalTasks.expand.title'
                                     defaultMessage='Request Details'
                                 />
                             </Typography>
@@ -893,7 +892,7 @@ function WorkflowApprovalTasks({
                                 <Typography variant='body2' sx={{ mt: 1 }}>
                                     <strong>
                                         <FormattedMessage
-                                            id='Workflow.Common.expand.description'
+                                            id='Workflow.WorkflowApprovalTasks.expand.description'
                                             defaultMessage='Description:'
                                         />
                                         {' '}
@@ -904,7 +903,7 @@ function WorkflowApprovalTasks({
                                 <Typography variant='body2' sx={{ mt: 1 }}>
                                     <strong>
                                         <FormattedMessage
-                                            id='Workflow.Common.expand.created'
+                                            id='Workflow.WorkflowApprovalTasks.expand.created'
                                             defaultMessage='Created:'
                                         />
                                         {' '}
@@ -970,7 +969,7 @@ function WorkflowApprovalTasks({
                         </Typography>
                         <Typography variant='body2' color='textSecondary' component='p'>
                             <FormattedMessage
-                                id='Workflow.Common.List.empty.content'
+                                id='Workflow.WorkflowApprovalTasks.empty.content'
                                 defaultMessage='There are no pending workflow requests.'
                             />
                         </Typography>
@@ -989,13 +988,13 @@ function WorkflowApprovalTasks({
                 pageProps={pageProps}
                 title={(
                     <FormattedMessage
-                        id='Workflow.Common.permission.denied.title'
+                        id='Workflow.WorkflowApprovalTasks.permission.denied.title'
                         defaultMessage='Permission Denied'
                     />
                 )}
                 content={(
                     <FormattedMessage
-                        id='Workflow.Common.permission.denied.content'
+                        id='Workflow.WorkflowApprovalTasks.permission.denied.content'
                         defaultMessage={`You don't have enough permissions to view Approval Tasks.
                             Please contact the site administrator.`}
                     />
@@ -1045,7 +1044,7 @@ function WorkflowApprovalTasks({
                                     className: 'search-input',
                                     inputProps: {
                                         'aria-label': intl.formatMessage({
-                                            id: 'Workflow.Common.search.aria.label',
+                                            id: 'Workflow.WorkflowApprovalTasks.search.aria.label',
                                             defaultMessage: 'Search workflow approval tasks',
                                         }),
                                     },
@@ -1057,7 +1056,7 @@ function WorkflowApprovalTasks({
                             <Tooltip
                                 title={(
                                     <FormattedMessage
-                                        id='SubscriptionApproval.Addons.ListBase.reload'
+                                        id='Workflow.WorkflowApprovalTasks.reload'
                                         defaultMessage='Reload'
                                     />
                                 )}
@@ -1094,7 +1093,7 @@ function WorkflowApprovalTasks({
             >
                 <DialogTitle id='reject-confirmation'>
                     <FormattedMessage
-                        id='Workflow.Common.reject.dialog.title'
+                        id='Workflow.WorkflowApprovalTasks.reject.dialog.title'
                         defaultMessage='Reject workflow request?'
                     />
                 </DialogTitle>
@@ -1102,7 +1101,7 @@ function WorkflowApprovalTasks({
                 <DialogContent dividers>
                     <Box mt={2} mb={2} ml={1}>
                         <FormattedMessage
-                            id='Workflow.Common.reject.dialog.content'
+                            id='Workflow.WorkflowApprovalTasks.reject.dialog.content'
                             defaultMessage='Are you sure you want to reject this workflow request?'
                         />
                     </Box>
@@ -1115,7 +1114,7 @@ function WorkflowApprovalTasks({
                         disabled={rejecting}
                     >
                         <FormattedMessage
-                            id='Workflow.Common.reject.dialog.cancel'
+                            id='Workflow.WorkflowApprovalTasks.reject.dialog.cancel'
                             defaultMessage='Cancel'
                         />
                     </Button>
@@ -1129,7 +1128,7 @@ function WorkflowApprovalTasks({
                     >
                         {rejecting && <CircularProgress size={16} />}
                         <FormattedMessage
-                            id='Workflow.Common.reject.dialog.confirm'
+                            id='Workflow.WorkflowApprovalTasks.reject.dialog.confirm'
                             defaultMessage='Reject'
                         />
                     </Button>
