@@ -140,6 +140,7 @@
   "AdminPages.Gateways.Delete.form.delete.confirmation.delete.btn": "Delete",
   "AdminPages.Gateways.Delete.form.delete.confirmation.message": "Are you sure you want to delete this Gateway Environment?",
   "AdminPages.Gateways.Delete.form.delete.confirmation.message.title": "Delete Gateway Environment?",
+  "AdminPages.Gateways.Delete.form.delete.error.generic": "Failed to delete gateway.",
   "AdminPages.Gateways.Delete.form.delete.successful": "Gateway Environment deleted successfully",
   "AdminPages.Gateways.GatewayInstances.dialog.close": "Close",
   "AdminPages.Gateways.GatewayInstances.dialog.title": "Gateways in {env} Environment",

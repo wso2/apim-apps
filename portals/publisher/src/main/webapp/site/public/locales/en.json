@@ -1447,6 +1447,7 @@
   "Apis.Details.Policies.PoliciesExpansion.inbound.flow.title": "Inbound Flow",
   "Apis.Details.Policies.PoliciesExpansion.request.flow.title": "Request Flow",
   "Apis.Details.Policies.PoliciesExpansion.response.flow.title": "Response Flow",
+  "Apis.Details.Policies.PoliciesExpansion.unified.flow.title": "Policies",
   "Apis.Details.Policies.PoliciesSection.info": "API level policies will execute before operation level policies",
   "Apis.Details.Policies.PolicyConfigurationEditDrawer.title": "Configure {policy}",
   "Apis.Details.Policies.PolicyConfiguringDrawer.title": "Configure {policy}",

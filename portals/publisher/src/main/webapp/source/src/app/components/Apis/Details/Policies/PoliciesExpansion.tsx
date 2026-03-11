@@ -200,6 +200,10 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
         const responseList = [];
         const faultList = [];
         for (const policy of policyList) {
+            if (isPolicyHubGateway) {
+                requestList.push(`policyCard-${policy.id}`);
+                continue;
+            }
             if (policy.applicableFlows.includes('request')) {
                 requestList.push(`policyCard-${policy.id}`);
             }
@@ -213,7 +217,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
         setRequestFlowDroppablePolicyList(requestList);
         setResponseFlowDroppablePolicyList(responseList);
         setFaultFlowDroppablePolicyList(faultList);
-    }, [policyList]);
+    }, [policyList, isPolicyHubGateway]);
 
     useEffect(() => {
         (async () => {
@@ -274,6 +278,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
             isApiRevision={api.isRevision}
             apiType={api.type}
+            isPolicyHubGateway={isPolicyHubGateway}
         />
     );
 };

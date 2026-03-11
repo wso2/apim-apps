@@ -81,6 +81,7 @@ interface PolicyListPorps {
     commonPolicyList: Policy[];
     fetchPolicies: () => void;
     isChoreoConnectEnabled: boolean;
+    isPolicyHubGateway: boolean;
     gatewayType: string;
     apiType: string;
     apiSubType?: string;
@@ -96,6 +97,7 @@ const PolicyList: FC<PolicyListPorps> = ({
     commonPolicyList,
     fetchPolicies,
     isChoreoConnectEnabled,
+    isPolicyHubGateway,
     gatewayType,
     apiType,
     apiSubType,
@@ -179,6 +181,13 @@ const PolicyList: FC<PolicyListPorps> = ({
                 && shouldShowPolicy(policy),
         );
 
+    const filterPolicies = (policies: Policy[]) =>
+        policies.filter(
+            (policy) =>
+                policy.supportedGateways.includes(gatewayType)
+                && shouldShowPolicy(policy),
+        );
+
     const renderCategoryValue = (selected: unknown) => {
         const selectedCategoryList = selected as string[];
         if (selectedCategoryList.length > 0) {
@@ -246,7 +255,18 @@ const PolicyList: FC<PolicyListPorps> = ({
                         </FormControl>
                     </Box>
                     <Box>
-                        {apiType === 'WS' ? (
+                        {isPolicyHubGateway ? (
+                            <Box height='55vh' pt={1} overflow='scroll'>
+                                <TabPanel
+                                    commonPolicyList={filterPolicies(commonPolicyList)}
+                                    apiPolicyList={filterPolicies(apiPolicyList)}
+                                    index={0}
+                                    selectedTab={0}
+                                    fetchPolicies={fetchPolicies}
+                                    isReadOnly={isRestricted(['apim:api_create', 'apim:api_publish', 'apim:api_manage'])}
+                                />
+                            </Box>
+                        ) : apiType === 'WS' ? (
                             <Tabs
                                 value={selectedTab}
                                 onChange={(event, tab) => setSelectedTab(tab)}

@@ -737,6 +737,7 @@ const Policies: React.FC = () => {
                             commonPolicyList={commonPolicies}
                             fetchPolicies={fetchPolicies}
                             isChoreoConnectEnabled={isChoreoConnectEnabled}
+                            isPolicyHubGateway={isPolicyHubGateway}
                             gatewayType={gateway}
                             apiType={api.type}
                             apiSubType={api.subtypeConfiguration?.subtype}

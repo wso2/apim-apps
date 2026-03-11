@@ -59,6 +59,7 @@ interface PoliciesExpansionSharedProps {
     listOriginatedFromCommonPolicies?: string[];
     isApiRevision?: boolean;
     apiType?: string;
+    isPolicyHubGateway?: boolean;
 }
 
 const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
@@ -80,7 +81,8 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
     PolicyDropzone,
     listOriginatedFromCommonPolicies,
     isApiRevision,
-    apiType
+    apiType,
+    isPolicyHubGateway,
 }) => {
 
 
@@ -94,7 +96,30 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
                 alignItems='flex-start'
             >
                 <Grid item xs={12} md={12}>
-                    {apiType === 'WS' ? (
+                    {isPolicyHubGateway ? (
+                        <Box className={classes.flowSpecificPolicyAttachGrid} data-testid='drop-policy-zone-unified'>
+                            <Typography variant='subtitle2' align='left'>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.PoliciesExpansion.unified.flow.title'
+                                    defaultMessage='Policies'
+                                />
+                            </Typography>
+                            <FlowArrow arrowDirection='left' />
+                            <PolicyDropzone
+                                policyDisplayStartDirection='left'
+                                currentPolicyList={requestFlowPolicyList}
+                                setCurrentPolicyList={setRequestFlowPolicyList}
+                                droppablePolicyList={requestFlowDroppablePolicyList}
+                                currentFlow='request'
+                                target={target}
+                                verb={verb}
+                                allPolicies={allPolicies}
+                                isAPILevelPolicy={isAPILevelPolicy}
+                                listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
+                                isApiRevision={isApiRevision}
+                            />
+                        </Box>
+                    ) : apiType === 'WS' ? (
                         <Box className={classes.flowSpecificPolicyAttachGrid} data-testid='drop-policy-zone-request'>
                             <Typography variant='subtitle2' align='left'>
                                 <FormattedMessage
