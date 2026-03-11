@@ -76,7 +76,10 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
 
     const handleAssociateKey = () => {
         if (!selectedAppForAssociation || !selectedKeyForAssociation || isAssociating) {
-            alert(intl.formatMessage({ id: 'ApiKeyAssociation.alert.selectApplication', defaultMessage: 'Please select an application.' }));
+            alert(intl.formatMessage({
+                id: 'Apis.Details.APIKeys.ApiKeyAssociation.alert.selectApplication',
+                defaultMessage: 'Please select an application.',
+            }));
             return;
         }
         setIsAssociating(true);
@@ -99,7 +102,7 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                 setAssociateErrorMessage(
                     error.response?.body?.description
                     || intl.formatMessage({
-                        id: 'ApiKeyAssociation.error.associateFailed',
+                        id: 'Apis.Details.APIKeys.ApiKeyAssociation.error.associateFailed',
                         defaultMessage: 'Failed to associate API key. Please try again.',
                     }),
                 );
@@ -143,7 +146,7 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                 setDissociateErrorMessage(
                     error.response?.body?.description
                     || intl.formatMessage({
-                        id: 'ApiKeyAssociation.error.dissociateFailed',
+                        id: 'Apis.Details.APIKeys.ApiKeyAssociation.error.dissociateFailed',
                         defaultMessage: 'Failed to remove association. Please try again.',
                     }),
                 );
@@ -178,26 +181,32 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                 fullWidth
             >
                 <DialogTitle>
-                    <FormattedMessage id='ApiKeyAssociation.modal.associate.title' defaultMessage='Associate API Key' />
+                    <FormattedMessage
+                        id='Apis.Details.APIKeys.ApiKeyAssociation.modal.associate.title'
+                        defaultMessage='Associate API Key'
+                    />
                 </DialogTitle>
                 <DialogContent>
                     <Typography sx={{ mb: 2 }}>
                         <FormattedMessage
-                            id='ApiKeyAssociation.modal.associate.body'
+                            id='Apis.Details.APIKeys.ApiKeyAssociation.modal.associate.body'
                             defaultMessage='Select an application to associate with API key:'
                         />
                     </Typography>
                     <FormControl fullWidth>
                         <InputLabel>
                             <FormattedMessage
-                                id='ApiKeyAssociation.field.application.label'
+                                id='Apis.Details.APIKeys.ApiKeyAssociation.field.application.label'
                                 defaultMessage='Application'
                             />
                         </InputLabel>
                         <Select
                             value={selectedAppForAssociation}
                             onChange={(e) => setSelectedAppForAssociation(e.target.value)}
-                            label={intl.formatMessage({ id: 'ApiKeyAssociation.field.application.label', defaultMessage: 'Application' })}
+                            label={intl.formatMessage({
+                                id: 'Apis.Details.APIKeys.ApiKeyAssociation.field.application.label',
+                                defaultMessage: 'Application',
+                            })}
                         >
                             {subscribedApps.map((app) => (
                                 <MenuItem key={app.id} value={app.id}>
@@ -209,14 +218,14 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAssociationModal}>
-                        <FormattedMessage id='ApiKeyAssociation.button.cancel' defaultMessage='Cancel' />
+                        <FormattedMessage id='Apis.Details.APIKeys.ApiKeyAssociation.button.cancel' defaultMessage='Cancel' />
                     </Button>
                     <Button
                         onClick={handleAssociateKey}
                         variant='contained'
                         disabled={!selectedAppForAssociation || isAssociating}
                     >
-                        <FormattedMessage id='ApiKeyAssociation.button.associate' defaultMessage='Associate' />
+                        <FormattedMessage id='Apis.Details.APIKeys.ApiKeyAssociation.button.associate' defaultMessage='Associate' />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -229,12 +238,15 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                 fullWidth
             >
                 <DialogTitle>
-                    <FormattedMessage id='ApiKeyAssociation.associateSuccess.title' defaultMessage='Association Successful' />
+                    <FormattedMessage
+                        id='Apis.Details.APIKeys.ApiKeyAssociation.associateSuccess.title'
+                        defaultMessage='Association Successful'
+                    />
                 </DialogTitle>
                 <DialogContent>
                     <Typography>
                         <FormattedMessage
-                            id='ApiKeyAssociation.associateSuccess.message'
+                            id='Apis.Details.APIKeys.ApiKeyAssociation.associateSuccess.message'
                             defaultMessage='API key has been successfully associated with the application.'
                         />
                     </Typography>
@@ -244,7 +256,7 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                         onClick={handleCloseAssociateSuccess}
                         variant='contained'
                     >
-                        <FormattedMessage id='ApiKeyAssociation.button.ok' defaultMessage='OK' />
+                        <FormattedMessage id='Apis.Details.APIKeys.ApiKeyAssociation.button.ok' defaultMessage='OK' />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -257,7 +269,10 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                 fullWidth
             >
                 <DialogTitle>
-                    <FormattedMessage id='ApiKeyAssociation.associateError.title' defaultMessage='Association Failed' />
+                    <FormattedMessage
+                        id='Apis.Details.APIKeys.ApiKeyAssociation.associateError.title'
+                        defaultMessage='Association Failed'
+                    />
                 </DialogTitle>
                 <DialogContent>
                     <Typography>
@@ -269,7 +284,7 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                         onClick={handleCloseAssociateError}
                         variant='contained'
                     >
-                        <FormattedMessage id='ApiKeyAssociation.button.ok' defaultMessage='OK' />
+                        <FormattedMessage id='Apis.Details.APIKeys.ApiKeyAssociation.button.ok' defaultMessage='OK' />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -282,19 +297,22 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                 fullWidth
             >
                 <DialogTitle>
-                    <FormattedMessage id='ApiKeyAssociation.dissociateConfirm.title' defaultMessage='Confirm Remove Association' />
+                    <FormattedMessage
+                        id='Apis.Details.APIKeys.ApiKeyAssociation.dissociateConfirm.title'
+                        defaultMessage='Confirm Remove Association'
+                    />
                 </DialogTitle>
                 <DialogContent>
                     <Typography>
                         <FormattedMessage
-                            id='ApiKeyAssociation.dissociateConfirm.message'
+                            id='Apis.Details.APIKeys.ApiKeyAssociation.dissociateConfirm.message'
                             defaultMessage='Are you sure you want to remove this API key association?'
                         />
                     </Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCancelDissociate}>
-                        <FormattedMessage id='ApiKeyAssociation.button.cancel' defaultMessage='Cancel' />
+                        <FormattedMessage id='Apis.Details.APIKeys.ApiKeyAssociation.button.cancel' defaultMessage='Cancel' />
                     </Button>
                     <Button
                         onClick={handleConfirmDissociate}
@@ -302,7 +320,10 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                         color='error'
                         disabled={isDissociating}
                     >
-                        <FormattedMessage id='ApiKeyAssociation.button.removeAssociation' defaultMessage='Remove Association' />
+                        <FormattedMessage
+                            id='Apis.Details.APIKeys.ApiKeyAssociation.button.removeAssociation'
+                            defaultMessage='Remove Association'
+                        />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -315,12 +336,15 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                 fullWidth
             >
                 <DialogTitle>
-                    <FormattedMessage id='ApiKeyAssociation.dissociateSuccess.title' defaultMessage='Association Removed' />
+                    <FormattedMessage
+                        id='Apis.Details.APIKeys.ApiKeyAssociation.dissociateSuccess.title'
+                        defaultMessage='Association Removed'
+                    />
                 </DialogTitle>
                 <DialogContent>
                     <Typography>
                         <FormattedMessage
-                            id='ApiKeyAssociation.dissociateSuccess.message'
+                            id='Apis.Details.APIKeys.ApiKeyAssociation.dissociateSuccess.message'
                             defaultMessage='API key association has been successfully removed.'
                         />
                     </Typography>
@@ -330,7 +354,7 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                         onClick={handleCloseDissociateSuccess}
                         variant='contained'
                     >
-                        <FormattedMessage id='ApiKeyAssociation.button.ok' defaultMessage='OK' />
+                        <FormattedMessage id='Apis.Details.APIKeys.ApiKeyAssociation.button.ok' defaultMessage='OK' />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -343,7 +367,10 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                 fullWidth
             >
                 <DialogTitle>
-                    <FormattedMessage id='ApiKeyAssociation.dissociateError.title' defaultMessage='Remove Association Failed' />
+                    <FormattedMessage
+                        id='Apis.Details.APIKeys.ApiKeyAssociation.dissociateError.title'
+                        defaultMessage='Remove Association Failed'
+                    />
                 </DialogTitle>
                 <DialogContent>
                     <Typography>
@@ -355,7 +382,7 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                         onClick={handleCloseDissociateError}
                         variant='contained'
                     >
-                        <FormattedMessage id='ApiKeyAssociation.button.ok' defaultMessage='OK' />
+                        <FormattedMessage id='Apis.Details.APIKeys.ApiKeyAssociation.button.ok' defaultMessage='OK' />
                     </Button>
                 </DialogActions>
             </Dialog>

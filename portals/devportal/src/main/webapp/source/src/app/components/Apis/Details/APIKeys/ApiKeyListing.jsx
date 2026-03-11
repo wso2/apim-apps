@@ -188,7 +188,7 @@ export default function ApiKeyListing() {
                 console.error('Error revoking key:', error);
                 setRevokeErrorMessage(
                     error.message || intl.formatMessage({
-                        id: 'ApiKeyListing.error.revokeFailed',
+                        id: 'Apis.Details.APIKeys.ApiKeyListing.error.revokeFailed',
                         defaultMessage: 'Failed to revoke API key. Please try again.',
                     }),
                 );
@@ -212,10 +212,13 @@ export default function ApiKeyListing() {
     };
 
     const columns = [
-        { name: 'keyName', label: intl.formatMessage({ id: 'ApiKeyListing.column.apiKey', defaultMessage: 'API Key' }) },
+        {
+            name: 'keyName',
+            label: intl.formatMessage({ id: 'Apis.Details.APIKeys.ApiKeyListing.column.apiKey', defaultMessage: 'API Key' }),
+        },
         {
             name: 'associatedApp',
-            label: intl.formatMessage({ id: 'ApiKeyListing.column.application', defaultMessage: 'Application' }),
+            label: intl.formatMessage({ id: 'Apis.Details.APIKeys.ApiKeyListing.column.application', defaultMessage: 'Application' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const keyData = apiKeys[dataIndex];
@@ -232,7 +235,7 @@ export default function ApiKeyListing() {
         },
         {
             name: 'issuedOn',
-            label: intl.formatMessage({ id: 'ApiKeyListing.column.issuedOn', defaultMessage: 'Issued On' }),
+            label: intl.formatMessage({ id: 'Apis.Details.APIKeys.ApiKeyListing.column.issuedOn', defaultMessage: 'Issued On' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const keyData = apiKeys[dataIndex];
@@ -255,7 +258,7 @@ export default function ApiKeyListing() {
         },
         {
             name: 'validityPeriod',
-            label: intl.formatMessage({ id: 'ApiKeyListing.column.expiresOn', defaultMessage: 'Expires On' }),
+            label: intl.formatMessage({ id: 'Apis.Details.APIKeys.ApiKeyListing.column.expiresOn', defaultMessage: 'Expires On' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const keyData = apiKeys[dataIndex];
@@ -264,7 +267,7 @@ export default function ApiKeyListing() {
                     if (keyValidityPeriod === -1) {
                         return (
                             <Typography variant='body2' color='text.secondary'>
-                                <FormattedMessage id='ApiKeyListing.table.never' defaultMessage='Never' />
+                                <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.table.never' defaultMessage='Never' />
                             </Typography>
                         );
                     }
@@ -281,7 +284,7 @@ export default function ApiKeyListing() {
         },
         {
             name: 'lastUsed',
-            label: intl.formatMessage({ id: 'ApiKeyListing.column.lastUsedOn', defaultMessage: 'Last Used On' }),
+            label: intl.formatMessage({ id: 'Apis.Details.APIKeys.ApiKeyListing.column.lastUsedOn', defaultMessage: 'Last Used On' }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const keyData = apiKeys[dataIndex];
@@ -289,7 +292,7 @@ export default function ApiKeyListing() {
                     if (lastUsed === 'NOT_USED') {
                         return (
                             <Typography variant='body2' color='text.secondary'>
-                                <FormattedMessage id='ApiKeyListing.table.never' defaultMessage='Never' />
+                                <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.table.never' defaultMessage='Never' />
                             </Typography>
                         );
                     }
@@ -311,7 +314,7 @@ export default function ApiKeyListing() {
         },
         {
             name: 'actions',
-            label: intl.formatMessage({ id: 'ApiKeyListing.column.actions', defaultMessage: 'Actions' }),
+            label: intl.formatMessage({ id: 'Apis.Details.APIKeys.ApiKeyListing.column.actions', defaultMessage: 'Actions' }),
             options: {
                 sort: false,
                 filter: false,
@@ -319,7 +322,7 @@ export default function ApiKeyListing() {
                 setCellProps: () => ({ align: 'right' }),
                 customHeadRender: () => (
                     <TableCell align='right' className='keys-header'>
-                        <FormattedMessage id='ApiKeyListing.column.actions' defaultMessage='Actions' />
+                        <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.column.actions' defaultMessage='Actions' />
                     </TableCell>
                 ),
                 customBodyRenderLite: (dataIndex) => {
@@ -338,7 +341,7 @@ export default function ApiKeyListing() {
                                     startIcon={<Link />}
                                     onClick={() => handleOpenAssociationModal(keyData)}
                                 >
-                                    <FormattedMessage id='ApiKeyListing.button.associate' defaultMessage='Associate' />
+                                    <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.button.associate' defaultMessage='Associate' />
                                 </Button>
                             ) : (
                                 <Button
@@ -348,7 +351,10 @@ export default function ApiKeyListing() {
                                     startIcon={<LinkOff />}
                                     onClick={() => handleRemoveAssociation(keyData)}
                                 >
-                                    <FormattedMessage id='ApiKeyListing.button.removeAssociation' defaultMessage='Remove Association' />
+                                    <FormattedMessage
+                                        id='Apis.Details.APIKeys.ApiKeyListing.button.removeAssociation'
+                                        defaultMessage='Remove Association'
+                                    />
                                 </Button>
                             )}
                             <Button
@@ -358,7 +364,7 @@ export default function ApiKeyListing() {
                                 startIcon={<Block />}
                                 onClick={() => handleRevokeKey(keyData)}
                             >
-                                <FormattedMessage id='ApiKeyListing.button.revoke' defaultMessage='Revoke' />
+                                <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.button.revoke' defaultMessage='Revoke' />
                             </Button>
                             {renderRegenerateButton(keyData)}
                         </Stack>
@@ -395,11 +401,11 @@ export default function ApiKeyListing() {
                         }}
                     >
                         <Typography variant='h5' gutterBottom>
-                            <FormattedMessage id='ApiKeyListing.emptyState.title' defaultMessage='No API Keys Found' />
+                            <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.emptyState.title' defaultMessage='No API Keys Found' />
                         </Typography>
                         <Typography variant='subtitle1' gutterBottom sx={{ mb: 3 }}>
                             <FormattedMessage
-                                id='ApiKeyListing.emptyState.description'
+                                id='Apis.Details.APIKeys.ApiKeyListing.emptyState.description'
                                 defaultMessage='Get started by generating your first API key to access this API from your applications.'
                             />
                         </Typography>
@@ -415,7 +421,10 @@ export default function ApiKeyListing() {
                                 fontSize: '1.1rem',
                             }}
                         >
-                            <FormattedMessage id='ApiKeyListing.button.generateApiKey' defaultMessage='Generate API Key' />
+                            <FormattedMessage
+                                id='Apis.Details.APIKeys.ApiKeyListing.button.generateApiKey'
+                                defaultMessage='Generate API Key'
+                            />
                         </Button>
                     </Grid>
                 </Grid>
@@ -433,11 +442,11 @@ export default function ApiKeyListing() {
                         <Box display='flex' justifyContent='space-between' alignItems='center'>
                             <Box>
                                 <Typography variant='h5' sx={{ fontWeight: 600 }}>
-                                    <FormattedMessage id='ApiKeyListing.section.title' defaultMessage='API Keys' />
+                                    <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.section.title' defaultMessage='API Keys' />
                                 </Typography>
                                 <Typography variant='body2' color='text.secondary' sx={{ mt: 0.5 }}>
                                     <FormattedMessage
-                                        id='ApiKeyListing.section.description'
+                                        id='Apis.Details.APIKeys.ApiKeyListing.section.description'
                                         defaultMessage='View and manage your current API keys for this API across all applications.'
                                     />
                                 </Typography>
@@ -448,7 +457,10 @@ export default function ApiKeyListing() {
                                 onClick={handleOpenGenerationModal}
                                 sx={{ borderRadius: '999px', textTransform: 'none', px: 3 }}
                             >
-                                <FormattedMessage id='ApiKeyListing.button.generateApiKey' defaultMessage='Generate API Key' />
+                                <FormattedMessage
+                                    id='Apis.Details.APIKeys.ApiKeyListing.button.generateApiKey'
+                                    defaultMessage='Generate API Key'
+                                />
                             </Button>
                         </Box>
                         {apiKeys && apiKeys.length > 0 && (
@@ -474,20 +486,25 @@ export default function ApiKeyListing() {
                     {showToken
                         ? (
                             <FormattedMessage
-                                id='ApiKeyListing.dialog.generate.successTitle'
+                                id='Apis.Details.APIKeys.ApiKeyListing.dialog.generate.successTitle'
                                 defaultMessage='API Key Generated Successfully'
                             />
                         )
-                        : <FormattedMessage id='ApiKeyListing.dialog.generate.title' defaultMessage='Generate New API Key' />}
+                        : (
+                            <FormattedMessage
+                                id='Apis.Details.APIKeys.ApiKeyListing.dialog.generate.title'
+                                defaultMessage='Generate New API Key'
+                            />
+                        )}
                     <Typography variant='body2' color='text.secondary'>
                         {showToken ? (
                             <FormattedMessage
-                                id='ApiKeyListing.dialog.generate.successSubtitle'
+                                id='Apis.Details.APIKeys.ApiKeyListing.dialog.generate.successSubtitle'
                                 defaultMessage='Your API key has been generated. Copy it now as it will not be shown again.'
                             />
                         ) : (
                             <FormattedMessage
-                                id='ApiKeyListing.dialog.generate.subtitle'
+                                id='Apis.Details.APIKeys.ApiKeyListing.dialog.generate.subtitle'
                                 defaultMessage='Create a new API key for one of your subscribed applications with custom settings.'
                             />
                         )}
@@ -500,11 +517,14 @@ export default function ApiKeyListing() {
                                 <Grid item xs={12}>
                                     <TextField
                                         size='small'
-                                        label={intl.formatMessage({ id: 'ApiKeyListing.input.name.label', defaultMessage: 'Name' })}
+                                        label={intl.formatMessage({
+                                            id: 'Apis.Details.APIKeys.ApiKeyListing.input.name.label',
+                                            defaultMessage: 'Name',
+                                        })}
                                         value={displayName}
                                         onChange={(e) => setDisplayName(e.target.value)}
                                         placeholder={intl.formatMessage({
-                                            id: 'ApiKeyListing.input.name.placeholder',
+                                            id: 'Apis.Details.APIKeys.ApiKeyListing.input.name.placeholder',
                                             defaultMessage: 'Enter a name for this API key',
                                         })}
                                         fullWidth
@@ -513,21 +533,30 @@ export default function ApiKeyListing() {
                                 <Grid item xs={4}>
                                     <FormControl size='small' fullWidth>
                                         <InputLabel>
-                                            <FormattedMessage id='ApiKeyListing.input.keyType.label' defaultMessage='Key Type' />
+                                            <FormattedMessage
+                                                id='Apis.Details.APIKeys.ApiKeyListing.input.keyType.label'
+                                                defaultMessage='Key Type'
+                                            />
                                         </InputLabel>
                                         <Select
                                             value={keyType}
                                             label={intl.formatMessage({
-                                                id: 'ApiKeyListing.input.keyType.label',
+                                                id: 'Apis.Details.APIKeys.ApiKeyListing.input.keyType.label',
                                                 defaultMessage: 'Key Type',
                                             })}
                                             onChange={(e) => setKeyType(e.target.value)}
                                         >
                                             <MenuItem value='PRODUCTION'>
-                                                <FormattedMessage id='ApiKeyListing.keyType.production' defaultMessage='Production' />
+                                                <FormattedMessage
+                                                    id='Apis.Details.APIKeys.ApiKeyListing.keyType.production'
+                                                    defaultMessage='Production'
+                                                />
                                             </MenuItem>
                                             <MenuItem value='SANDBOX'>
-                                                <FormattedMessage id='ApiKeyListing.keyType.sandbox' defaultMessage='Sandbox' />
+                                                <FormattedMessage
+                                                    id='Apis.Details.APIKeys.ApiKeyListing.keyType.sandbox'
+                                                    defaultMessage='Sandbox'
+                                                />
                                             </MenuItem>
                                         </Select>
                                     </FormControl>
@@ -536,14 +565,14 @@ export default function ApiKeyListing() {
                                     <FormControl size='small' fullWidth>
                                         <InputLabel>
                                             <FormattedMessage
-                                                id='ApiKeyListing.input.validityPeriod.label'
+                                                id='Apis.Details.APIKeys.ApiKeyListing.input.validityPeriod.label'
                                                 defaultMessage='Validity Period'
                                             />
                                         </InputLabel>
                                         <Select
                                             value={validityPeriod}
                                             label={intl.formatMessage({
-                                                id: 'ApiKeyListing.input.validityPeriod.label',
+                                                id: 'Apis.Details.APIKeys.ApiKeyListing.input.validityPeriod.label',
                                                 defaultMessage: 'Validity Period',
                                             })}
                                             onChange={(e) => setValidityPeriod(e.target.value)}
@@ -561,12 +590,15 @@ export default function ApiKeyListing() {
                                         <TextField
                                             size='small'
                                             fullWidth
-                                            label={intl.formatMessage({ id: 'ApiKeyListing.input.days.label', defaultMessage: 'Days' })}
+                                            label={intl.formatMessage({
+                                                id: 'Apis.Details.APIKeys.ApiKeyListing.input.days.label',
+                                                defaultMessage: 'Days',
+                                            })}
                                             type='number'
                                             value={customValidityDays}
                                             onChange={(e) => setCustomValidityDays(e.target.value)}
                                             placeholder={intl.formatMessage({
-                                                id: 'ApiKeyListing.input.days.placeholder',
+                                                id: 'Apis.Details.APIKeys.ApiKeyListing.input.days.placeholder',
                                                 defaultMessage: 'Enter days',
                                             })}
                                         />
@@ -576,14 +608,14 @@ export default function ApiKeyListing() {
                                     <FormControl size='small' fullWidth>
                                         <InputLabel>
                                             <FormattedMessage
-                                                id='ApiKeyListing.input.securityRestriction.label'
+                                                id='Apis.Details.APIKeys.ApiKeyListing.input.securityRestriction.label'
                                                 defaultMessage='Security Restriction'
                                             />
                                         </InputLabel>
                                         <Select
                                             value={restrictionType}
                                             label={intl.formatMessage({
-                                                id: 'ApiKeyListing.input.securityRestriction.label',
+                                                id: 'Apis.Details.APIKeys.ApiKeyListing.input.securityRestriction.label',
                                                 defaultMessage: 'Security Restriction',
                                             })}
                                             onChange={(e) => {
@@ -606,22 +638,22 @@ export default function ApiKeyListing() {
                                             fullWidth
                                             label={restrictionType === 'ip'
                                                 ? intl.formatMessage({
-                                                    id: 'ApiKeyListing.input.ipAddress.label',
+                                                    id: 'Apis.Details.APIKeys.ApiKeyListing.input.ipAddress.label',
                                                     defaultMessage: 'IP Address',
                                                 })
                                                 : intl.formatMessage({
-                                                    id: 'ApiKeyListing.input.referrerUrl.label',
+                                                    id: 'Apis.Details.APIKeys.ApiKeyListing.input.referrerUrl.label',
                                                     defaultMessage: 'Referrer URL',
                                                 })}
                                             value={restrictionValue}
                                             onChange={(e) => setRestrictionValue(e.target.value)}
                                             placeholder={restrictionType === 'ip'
                                                 ? intl.formatMessage({
-                                                    id: 'ApiKeyListing.input.ipAddress.placeholder',
+                                                    id: 'Apis.Details.APIKeys.ApiKeyListing.input.ipAddress.placeholder',
                                                     defaultMessage: 'e.g. 192.168.1.100',
                                                 })
                                                 : intl.formatMessage({
-                                                    id: 'ApiKeyListing.input.referrerUrl.placeholder',
+                                                    id: 'Apis.Details.APIKeys.ApiKeyListing.input.referrerUrl.placeholder',
                                                     defaultMessage: 'e.g. https://example.com',
                                                 })}
                                             sx={{ minWidth: 200 }}
@@ -653,13 +685,13 @@ export default function ApiKeyListing() {
                                     <Alert severity='warning' sx={{ mb: 0.5 }}>
                                         <Typography variant='h6' component='h3' sx={{ mb: 0.5, fontSize: '0.95rem' }}>
                                             <FormattedMessage
-                                                id='ApiKeyListing.alert.copyKey.title'
+                                                id='Apis.Details.APIKeys.ApiKeyListing.alert.copyKey.title'
                                                 defaultMessage='Please Copy the API Key'
                                             />
                                         </Typography>
                                         <Typography component='p' variant='body2' sx={{ fontSize: '0.875rem' }}>
                                             <FormattedMessage
-                                                id='ApiKeyListing.alert.copyKey.description'
+                                                id='Apis.Details.APIKeys.ApiKeyListing.alert.copyKey.description'
                                                 defaultMessage={
                                                     'Please copy this generated API Key value as it will be'
                                                     + ' displayed only for the current browser session.'
@@ -681,7 +713,10 @@ export default function ApiKeyListing() {
                                                 fontSize: '0.875rem',
                                             }}
                                         >
-                                            <FormattedMessage id='ApiKeyListing.label.apiKeyPrefix' defaultMessage='API Key -' />
+                                            <FormattedMessage
+                                                id='Apis.Details.APIKeys.ApiKeyListing.label.apiKeyPrefix'
+                                                defaultMessage='API Key -'
+                                            />
                                             {' '}
                                             <Typography
                                                 component='span'
@@ -708,14 +743,14 @@ export default function ApiKeyListing() {
                                                     <InputAdornment position='end'>
                                                         <Tooltip
                                                             title={intl.formatMessage({
-                                                                id: 'ApiKeyListing.tooltip.copyToClipboard',
+                                                                id: 'Apis.Details.APIKeys.ApiKeyListing.tooltip.copyToClipboard',
                                                                 defaultMessage: 'Copy to clipboard',
                                                             })}
                                                             placement='top'
                                                         >
                                                             <IconButton
                                                                 aria-label={intl.formatMessage({
-                                                                    id: 'ApiKeyListing.tooltip.copyToClipboard',
+                                                                    id: 'Apis.Details.APIKeys.ApiKeyListing.tooltip.copyToClipboard',
                                                                     defaultMessage: 'Copy to clipboard',
                                                                 })}
                                                                 onClick={() => {
@@ -737,7 +772,7 @@ export default function ApiKeyListing() {
                                         />
                                         <FormHelperText sx={{ mt: 0.75, fontSize: '0.75rem' }}>
                                             <FormattedMessage
-                                                id='ApiKeyListing.helperText.validityPeriod'
+                                                id='Apis.Details.APIKeys.ApiKeyListing.helperText.validityPeriod'
                                                 defaultMessage='Above API Key has a validity period of {validity}.'
                                                 values={{
                                                     validity: (
@@ -745,13 +780,13 @@ export default function ApiKeyListing() {
                                                             {apikey.validityPeriod === -1
                                                                 ? (
                                                                     <FormattedMessage
-                                                                        id='ApiKeyListing.validity.neverExpires'
+                                                                        id='Apis.Details.APIKeys.ApiKeyListing.validity.neverExpires'
                                                                         defaultMessage='Never Expires'
                                                                     />
                                                                 )
                                                                 : (
                                                                     <FormattedMessage
-                                                                        id='ApiKeyListing.validity.seconds'
+                                                                        id='Apis.Details.APIKeys.ApiKeyListing.validity.seconds'
                                                                         defaultMessage='{seconds} seconds'
                                                                         values={{
                                                                             seconds: apikey.validityPeriod,
@@ -773,7 +808,7 @@ export default function ApiKeyListing() {
                     {!showToken ? (
                         <>
                             <Button onClick={handleCloseGenerationModal}>
-                                <FormattedMessage id='ApiKeyListing.button.cancel' defaultMessage='Cancel' />
+                                <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.button.cancel' defaultMessage='Cancel' />
                             </Button>
                             <Button
                                 onClick={handleGenerateKey}
@@ -781,8 +816,18 @@ export default function ApiKeyListing() {
                                 disabled={!displayName.trim() || isGenerating}
                             >
                                 {isGenerating
-                                    ? <FormattedMessage id='ApiKeyListing.button.generating' defaultMessage='Generating...' />
-                                    : <FormattedMessage id='ApiKeyListing.button.generateApiKey' defaultMessage='Generate API Key' />}
+                                    ? (
+                                        <FormattedMessage
+                                            id='Apis.Details.APIKeys.ApiKeyListing.button.generating'
+                                            defaultMessage='Generating...'
+                                        />
+                                    )
+                                    : (
+                                        <FormattedMessage
+                                            id='Apis.Details.APIKeys.ApiKeyListing.button.generateApiKey'
+                                            defaultMessage='Generate API Key'
+                                        />
+                                    )}
                             </Button>
                         </>
                     ) : (
@@ -790,7 +835,7 @@ export default function ApiKeyListing() {
                             onClick={handleCloseGenerationModal}
                             variant='contained'
                         >
-                            <FormattedMessage id='ApiKeyListing.button.close' defaultMessage='Close' />
+                            <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.button.close' defaultMessage='Close' />
                         </Button>
                     )}
                 </DialogActions>
@@ -804,12 +849,12 @@ export default function ApiKeyListing() {
                 fullWidth
             >
                 <DialogTitle>
-                    <FormattedMessage id='ApiKeyListing.revokeDialog.confirm.title' defaultMessage='Confirm Revoke' />
+                    <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.revokeDialog.confirm.title' defaultMessage='Confirm Revoke' />
                 </DialogTitle>
                 <DialogContent>
                     <Typography>
                         <FormattedMessage
-                            id='ApiKeyListing.revokeDialog.confirm.message'
+                            id='Apis.Details.APIKeys.ApiKeyListing.revokeDialog.confirm.message'
                             defaultMessage='Are you sure you want to revoke the API key {keyName}? This action cannot be undone.'
                             values={{ keyName: <strong>{selectedKeyForRevoke?.keyName}</strong> }}
                         />
@@ -817,14 +862,14 @@ export default function ApiKeyListing() {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCancelRevoke}>
-                        <FormattedMessage id='ApiKeyListing.button.cancel' defaultMessage='Cancel' />
+                        <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.button.cancel' defaultMessage='Cancel' />
                     </Button>
                     <Button
                         onClick={handleConfirmRevoke}
                         variant='contained'
                         color='error'
                     >
-                        <FormattedMessage id='ApiKeyListing.button.revoke' defaultMessage='Revoke' />
+                        <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.button.revoke' defaultMessage='Revoke' />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -837,12 +882,12 @@ export default function ApiKeyListing() {
                 fullWidth
             >
                 <DialogTitle>
-                    <FormattedMessage id='ApiKeyListing.revokeDialog.success.title' defaultMessage='API Key Revoked' />
+                    <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.revokeDialog.success.title' defaultMessage='API Key Revoked' />
                 </DialogTitle>
                 <DialogContent>
                     <Typography>
                         <FormattedMessage
-                            id='ApiKeyListing.revokeDialog.success.message'
+                            id='Apis.Details.APIKeys.ApiKeyListing.revokeDialog.success.message'
                             defaultMessage='The API key has been successfully revoked.'
                         />
                     </Typography>
@@ -852,7 +897,7 @@ export default function ApiKeyListing() {
                         onClick={handleCloseRevokeSuccess}
                         variant='contained'
                     >
-                        <FormattedMessage id='ApiKeyListing.button.ok' defaultMessage='OK' />
+                        <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.button.ok' defaultMessage='OK' />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -865,7 +910,7 @@ export default function ApiKeyListing() {
                 fullWidth
             >
                 <DialogTitle>
-                    <FormattedMessage id='ApiKeyListing.revokeDialog.error.title' defaultMessage='Revoke Failed' />
+                    <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.revokeDialog.error.title' defaultMessage='Revoke Failed' />
                 </DialogTitle>
                 <DialogContent>
                     <Typography>
@@ -877,7 +922,7 @@ export default function ApiKeyListing() {
                         onClick={handleCloseRevokeError}
                         variant='contained'
                     >
-                        <FormattedMessage id='ApiKeyListing.button.ok' defaultMessage='OK' />
+                        <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.button.ok' defaultMessage='OK' />
                     </Button>
                 </DialogActions>
             </Dialog>
