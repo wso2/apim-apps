@@ -336,7 +336,7 @@ export default function OperationGovernance(props) {
                             ? !disableUpdate && (
                                 <Link
                                     to={`/${isMCPServer ? 'mcp-servers' : 'apis'}/${api.id}/scopes/create`}
-                                    target='_blank'
+                                    target='_blank' rel='noopener noreferrer'
                                 >
                                     <Typography style={{ marginLeft: '10px' }} color='primary' 
                                         display='inline' variant='caption'>

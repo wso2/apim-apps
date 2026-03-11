@@ -229,7 +229,7 @@ function GlobalNavLinks(props) {
                 {analyticsMenuEnabled && (
                     <>
                         <Divider />
-                        <a href={analyticsMenuLink} target='_blank' rel='noreferrer'>
+                        <a href={analyticsMenuLink} target='_blank' rel='noopener noreferrer'>
                             <GlobalNavLink
                                 isExternalLink
                                 type='analytics'
