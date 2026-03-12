@@ -16,13 +16,13 @@
 
 import Utils from "@support/utils";
 
-describe.skip("Application tests", () => {
+describe("Application tests", () => {
     const { developer, password } = Utils.getUserInfo();
 
     const appName = Utils.generateName();
     const appDescription = 'Key gen application description';
 
-    it.only("Generate and update application production and sandbox keys, show hide keys", () => {
+    it("Generate and update application production and sandbox keys, show hide keys", () => {
         cy.loginToDevportal(developer, password);
         cy.createApp(appName, appDescription);
 
