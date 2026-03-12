@@ -20,11 +20,13 @@ import React, { useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import API from 'AppData/api';
 import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import TabbedContentBase from 'AppComponents/AdminPages/Addons/TabbedContentBase';
 import ChangeAppOwner from 'AppComponents/ApplicationSettings/ChangeAppOwner';
 import UpgradeTokenType from 'AppComponents/ApplicationSettings/UpgradeTokenType';
+import Configurations from 'Config';
 
 export default function ListApplications() {
     const intl = useIntl();
@@ -161,7 +163,7 @@ export default function ListApplications() {
     }
 
     const upgradableApps = applicationList?.filter(
-        (app) => app.tokenType === 'OAUTH' || app.tokenType === 'DEFAULT',
+        (app) => app.tokenType !== 'JWT',
     );
 
     const oldestCreatedTime = upgradableApps?.length
@@ -173,10 +175,26 @@ export default function ListApplications() {
 
     const timeAgo = oldestCreatedTime ? getTimeAgo(oldestCreatedTime) : null;
 
-    const warning = timeAgo
-        ? `You have applications using opaque tokens that were created over ${timeAgo} ago. `
-        + 'Support for opaque tokens will be deprecated. Please upgrade the token type to JWT.'
-        : null;
+    const warning = timeAgo ? (
+        <>
+            You have legacy applications using opaque access tokens that were created over
+            {' '}
+            {timeAgo}
+            {' '}
+            ago.
+            {' '}
+            Support for opaque access tokens will be deprecated. Please upgrade these applications
+            to use JWT-based access tokens.
+            {' '}
+            <Link
+                href={`${Configurations.app.docUrl}api-security/key-management/tokens/jwt-tokens/`}
+                target='_blank'
+                rel='noopener noreferre'
+            >
+                Learn More…
+            </Link>
+        </>
+    ) : null;
 
     const tabs = [
         {
@@ -187,7 +205,7 @@ export default function ListApplications() {
             label: (
                 <Box sx={{ display: 'flex', alignItems: 'center', color: 'warning.main' }}>
                     <WarningAmberIcon sx={{ fontSize: 18, mr: 1 }} />
-                    Upgrade Token Type
+                    Upgrade Legacy Applications
                 </Box>
             ),
             content: <UpgradeTokenType {...childProps} />,

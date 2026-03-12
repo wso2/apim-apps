@@ -17,13 +17,16 @@
  */
 
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
+import { Alert as MuiAlert } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
 
 const UpgradeToJWTDialog = (props) => {
@@ -47,13 +50,17 @@ const UpgradeToJWTDialog = (props) => {
             .then(() => {
                 Alert.success(intl.formatMessage({
                     id: 'AdminPages.ApplicationSettings.Edit.form.edit.successful',
-                    defaultMessage: 'Application upgraded to JWT successfully',
+                    defaultMessage: 'Application {appName} upgraded to JWT successfully',
+                }, {
+                    appName: app.name,
                 }));
             })
             .catch(() => {
                 const upgradeError = intl.formatMessage({
                     id: 'Applications.Listing.Listing.applications.edit.error.subscriber.invalid',
-                    defaultMessage: 'Error while upgrading application to JWT',
+                    defaultMessage: 'Error while upgrading application {appName} to JWT',
+                }, {
+                    appName: app.name,
                 });
                 Alert.error(upgradeError);
             })
@@ -77,11 +84,35 @@ const UpgradeToJWTDialog = (props) => {
                 <DialogTitle>Upgrade Application to JWT</DialogTitle>
 
                 <DialogContent>
-                    Are you sure you want to upgrade the application
-                    {' '}
-                    <b>{app.name}</b>
-                    {' '}
-                    to JWT? This action is irreversible. Learn more...
+                    <Typography variant='body1' gutterBottom>
+                        You are about to upgrade the application
+                        {' '}
+                        <strong>{app.name}</strong>
+                        {' '}
+                        to use
+                        {' '}
+                        <strong>JWT-based access tokens</strong>
+                    </Typography>
+                    <br />
+                    <Typography variant='body2' color='text.secondary' gutterBottom>
+                        This change will
+                        {' '}
+                        <strong>permanently switch</strong>
+                        {' '}
+                        the newly generated access token format from opaque to JWT.
+                    </Typography>
+                    <br />
+                    <MuiAlert severity='warning' sx={{ mb: 2 }}>
+                        <strong>Important</strong>
+                        <ul style={{ margin: '8px 0 0 16px' }}>
+                            <li>This action cannot be undone</li>
+                            <li>Existing opaque tokens will still be supported</li>
+                        </ul>
+                    </MuiAlert>
+
+                    <Typography variant='body1'>
+                        <b>Do you want to proceed with the upgrade?</b>
+                    </Typography>
                 </DialogContent>
 
                 <DialogActions>
@@ -97,6 +128,14 @@ const UpgradeToJWTDialog = (props) => {
             </Dialog>
         </>
     );
+};
+
+UpgradeToJWTDialog.propTypes = {
+    updateList: PropTypes.func.isRequired,
+    app: PropTypes.shape({
+        applicationId: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+    }).isRequired,
 };
 
 export default UpgradeToJWTDialog;

@@ -20,7 +20,6 @@ import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Toolbar from '@mui/material/Toolbar';
 import Alert from '@mui/material/Alert';
-import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -84,20 +83,17 @@ function ContentBase(props) {
                         </Grid>
                     </Toolbar>
                 </Grid>
-                <Grid item xs={11} sm={size}>
-                    {warning && (
+                {warning && (
+                    <Grid item xs={11} sm={size}>
                         <Box sx={{ mt: 4 }}>
                             <Alert severity='warning' sx={{ textAlign: 'center' }}>
                                 <Typography variant='subtitle2'>
-                                    <FormattedMessage
-                                        id='Applications.Listing.Listing.opaque.token.message'
-                                        defaultMessage={warning}
-                                    />
+                                    {warning}
                                 </Typography>
                             </Alert>
                         </Box>
-                    )}
-                </Grid>
+                    </Grid>
+                )}
                 <Grid item xs={11} sm={size}>
                     <Box py={6} position='relative'>
                         {pageStyle === 'paperLess' || paperLess ? children : (
@@ -124,7 +120,7 @@ ContentBase.propTypes = {
     help: PropTypes.element.isRequired,
     title: PropTypes.string.isRequired,
     pageDescription: PropTypes.string,
-    warning: PropTypes.string,
+    warning: PropTypes.node,
     children: PropTypes.element.isRequired,
     width: PropTypes.oneOf(['medium', 'full', 'small']),
     pageStyle: PropTypes.oneOf(['half', 'full', 'small']), // @deprecated
