@@ -155,6 +155,7 @@ export default function Topics(props) {
                                     ...propVal,
                                     'x-operation': opName,
                                     'x-message': msgKey,
+                                    'x-prop-name': propName,
                                 };
                             });
                         });
@@ -240,11 +241,12 @@ export default function Topics(props) {
                 // Wire payload properties AFTER operations exist
                 if (verbInfo.message && verbInfo.message.payload && verbInfo.message.payload.properties) {
                     const byMessage = {};
-                    Object.entries(verbInfo.message.payload.properties).forEach(([propName, propVal]) => {
+                    Object.entries(verbInfo.message.payload.properties).forEach(([compositeKey, propVal]) => {
                         const msgName = propVal['x-message'] || propVal['x-operation'] || '__default__';
                         byMessage[msgName] = byMessage[msgName] || { opName: propVal['x-operation'], props: {} };
-                        const { 'x-operation': _op, 'x-message': _msg, ...cleanProp } = propVal;
-                        byMessage[msgName].props[propName] = cleanProp;
+                        const originalPropName = propVal['x-prop-name'] || compositeKey;
+                        const { 'x-operation': _op, 'x-message': _msg, 'x-prop-name': _pname, ...cleanProp } = propVal;
+                        byMessage[msgName].props[originalPropName] = cleanProp;
                     });
     
                     Object.entries(byMessage).forEach(([msgName, { opName, props: msgProps }]) => {
@@ -480,21 +482,26 @@ export default function Topics(props) {
                 }
                 return { ...currentOperations, [target]: channelCopy };
             }
-            case 'addPayloadProperty':
+            case 'addPayloadProperty': {
                 updatedOperation[verb].message = updatedOperation[verb].message || { };
                 updatedOperation[verb].message.payload = updatedOperation[verb].message.payload || { };
                 updatedOperation[verb].message.payload.type = 'object';
                 updatedOperation[verb].message.payload.properties = updatedOperation[verb].message.payload.properties
                     || { };
-                updatedOperation[verb].message.payload.properties[value.name] = {
+                const propKey = isAsyncV3
+                    ? `${value.message}__${value.name}`
+                    : value.name;   
+                updatedOperation[verb].message.payload.properties[propKey] = {
                     description: value.description,
                     type: value.type,
                     ...(isAsyncV3 && {
                         'x-operation': value.operation,
                         'x-message': value.message,
+                        'x-prop-name': value.name,
                     }),
                 };
                 break;
+            }
             case 'deletePayloadProperty': {
                 const existingProps = updatedOperation[verb]?.message?.payload?.properties || {};
                 const { [value]: _removed, ...remainingProps } = existingProps;

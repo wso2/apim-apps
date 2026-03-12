@@ -79,7 +79,7 @@ const PoliciesSection: FC<PolicySectionProps> = ({
 
     // Derive async api version from spec directly
     const isAsyncV3 = openAPISpec?.asyncapi
-        ? parseInt(openAPISpec.asyncapi.split('.')[0], 10) >= 3
+        ? Number.parseInt(openAPISpec.asyncapi.split('.')[0], 10) >= 3
         : false;
 
     return (

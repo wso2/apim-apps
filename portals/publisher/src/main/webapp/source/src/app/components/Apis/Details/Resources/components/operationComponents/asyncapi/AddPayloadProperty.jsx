@@ -126,15 +126,31 @@ function AddPayloadProperty(props) {
      * Add new property
      */
     function addNewProperty() {
-        if (isAsyncV3 && property.operation && !namedOperations.includes(property.operation)) {
-            Alert.error(intl.formatMessage(
-                {
-                    id: 'Apis.Details.Resources.components.operationComponents.AddParameter.operation.not.found',
-                    defaultMessage: 'Operation "{operation}" does not exist',
-                },
-                { operation: property.operation },
-            ));
-            return;
+        if (isAsyncV3) {
+            if (!property.operation) {
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Resources.components.operationComponents.AddParameter.operation.required',
+                    defaultMessage: 'Operation name is required',
+                }));
+                return;
+            }
+            if (!property.message) {
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Resources.components.operationComponents.AddParameter.message.required',
+                    defaultMessage: 'Message name is required',
+                }));
+                return;
+            }
+            if (!namedOperations.includes(property.operation)) {
+                Alert.error(intl.formatMessage(
+                    {
+                        id: 'Apis.Details.Resources.components.operationComponents.AddParameter.operation.not.found',
+                        defaultMessage: 'Operation "{operation}" does not exist',
+                    },
+                    { operation: property.operation },
+                ));
+                return;
+            }
         }
         operationsDispatcher({
             action: 'addPayloadProperty',
@@ -221,7 +237,7 @@ function AddPayloadProperty(props) {
                         }
                     }}
                 />
-            </Grid>            
+            </Grid>
             <Grid item xs={2} md={2}>
                 <FormControl margin='dense' variant='outlined' className={classes.formControl}>
                     {/* <InputLabel ref={inputLabel} htmlFor='data-type' error={isParameterExist}> */}
@@ -365,7 +381,9 @@ AddPayloadProperty.propTypes = {
     operationsDispatcher: PropTypes.func.isRequired,
     target: PropTypes.string.isRequired,
     verb: PropTypes.string.isRequired,
-    intl: PropTypes.shape({}).isRequired,
+    intl: PropTypes.shape({
+        formatMessage: PropTypes.func.isRequired,
+    }).isRequired,
     isAsyncV3: PropTypes.bool,
     namedOperations: PropTypes.arrayOf(PropTypes.string),
 };

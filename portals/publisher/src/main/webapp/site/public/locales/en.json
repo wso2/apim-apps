@@ -1636,7 +1636,6 @@
   "Apis.Details.Resources.components.AsyncOperation.no.security": "No security",
   "Apis.Details.Resources.components.AsyncOperation.operations.count.label": "Operations ({count})",
   "Apis.Details.Resources.components.AsyncOperation.security.enabled": "Security enabled",
-  "Apis.Details.Resources.components.AsyncOperation.security.operation": "Security",
   "Apis.Details.Resources.components.Operation.Delete": "Delete",
   "Apis.Details.Resources.components.Operation.Name": "Name",
   "Apis.Details.Resources.components.Operation.Schema": "Schema",

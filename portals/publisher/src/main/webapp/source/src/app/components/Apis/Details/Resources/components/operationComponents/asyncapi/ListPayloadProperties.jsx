@@ -133,13 +133,13 @@ export default function ListPayloadProperties(props) {
                         properties && Object.entries(properties).map(([k, v]) => {
                             return (
                                 <TableRow key={k}>
-                                    <TableCell align='left'>{k}</TableCell>
                                     {isAsyncV3 && (
                                         <>
                                             <TableCell align='left'>{v['x-operation'] || '—'}</TableCell>
                                             <TableCell align='left'>{v['x-message'] || '—'}</TableCell>
                                         </>
                                     )}
+                                    <TableCell align='left'>{k}</TableCell>
                                     <TableCell align='left'>{v.type}</TableCell>
                                     <TableCell align='left'>{v.description}</TableCell>
                                     <TableCell align='left'>
