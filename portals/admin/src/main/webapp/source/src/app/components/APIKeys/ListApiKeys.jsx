@@ -93,7 +93,13 @@ export default function ApiKeysView() {
                 setApiKeys(result.body.list || result.body);
             })
             .catch((e) => {
-                setError((e && e.message) || 'Error while retrieving data.');
+                setError(
+                    (e && e.message)
+                    || intl.formatMessage({
+                        id: 'APIKeys.ListApiKeys.error.retrieving.data',
+                        defaultMessage: 'Error while retrieving data.',
+                    }),
+                );
                 setApiKeys([]);
             });
     };
@@ -119,7 +125,10 @@ export default function ApiKeysView() {
             return;
         }
         if (!selectedKeyForRevoke?.keyUUID) {
-            setRevokeErrorMessage('No API key selected for revoke.');
+            setRevokeErrorMessage(intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.error.no.key.selected.for.revoke',
+                defaultMessage: 'No API key selected for revoke.',
+            }));
             setRevokeErrorOpen(true);
             return;
         }
@@ -136,7 +145,10 @@ export default function ApiKeysView() {
                 setRevokeErrorMessage(
                     (e.response && e.response.body && e.response.body.description)
                         || e.message
-                        || 'Failed to revoke API key. Please try again.',
+                        || intl.formatMessage({
+                            id: 'APIKeys.ListApiKeys.error.revoke.failed',
+                            defaultMessage: 'Failed to revoke API key. Please try again.',
+                        }),
                 );
                 setRevokeErrorOpen(true);
             })
@@ -162,10 +174,19 @@ export default function ApiKeysView() {
     });
 
     const columns = [
-        { name: 'keyName', label: 'API Key' },
+        {
+            name: 'keyName',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.api.key',
+                defaultMessage: 'API Key',
+            }),
+        },
         {
             name: 'applicationName',
-            label: 'Application',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.application',
+                defaultMessage: 'Application',
+            }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const app = filteredKeys[dataIndex].applicationName;
@@ -177,7 +198,10 @@ export default function ApiKeysView() {
         },
         {
             name: 'apiName',
-            label: 'API',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.api',
+                defaultMessage: 'API',
+            }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const api = filteredKeys[dataIndex].apiName;
@@ -189,14 +213,29 @@ export default function ApiKeysView() {
         },
         {
             name: 'keyType',
-            label: 'Type',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.type',
+                defaultMessage: 'Type',
+            }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const { keyType } = filteredKeys[dataIndex];
                     const isProduction = keyType === 'PRODUCTION';
+                    let keyTypeLabel = keyType;
+                    if (keyType === 'PRODUCTION') {
+                        keyTypeLabel = intl.formatMessage({
+                            id: 'APIKeys.ListApiKeys.key.type.production',
+                            defaultMessage: 'Production',
+                        });
+                    } else if (keyType === 'SANDBOX') {
+                        keyTypeLabel = intl.formatMessage({
+                            id: 'APIKeys.ListApiKeys.key.type.sandbox',
+                            defaultMessage: 'Sandbox',
+                        });
+                    }
                     return (
                         <Chip
-                            label={keyType}
+                            label={keyTypeLabel}
                             size='small'
                             sx={{
                                 ...typeChipSx,
@@ -208,10 +247,19 @@ export default function ApiKeysView() {
                 },
             },
         },
-        { name: 'user', label: 'User' },
+        {
+            name: 'user',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.user',
+                defaultMessage: 'User',
+            }),
+        },
         {
             name: 'issuedOn',
-            label: 'Issued On',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.issued.on',
+                defaultMessage: 'Issued On',
+            }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const { issuedOn } = filteredKeys[dataIndex];
@@ -233,12 +281,22 @@ export default function ApiKeysView() {
         },
         {
             name: 'validityPeriod',
-            label: 'Expires On',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.expires.on',
+                defaultMessage: 'Expires On',
+            }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const { issuedOn, validityPeriod } = filteredKeys[dataIndex];
                     if (validityPeriod === -1) {
-                        return <Typography variant='body2' color='text.secondary'>Never</Typography>;
+                        return (
+                            <Typography variant='body2' color='text.secondary'>
+                                <FormattedMessage
+                                    id='APIKeys.ListApiKeys.value.never'
+                                    defaultMessage='Never'
+                                />
+                            </Typography>
+                        );
                     }
                     try {
                         const expires = new Date(new Date(issuedOn).getTime() + validityPeriod * 1000);
@@ -257,12 +315,22 @@ export default function ApiKeysView() {
         },
         {
             name: 'lastUsed',
-            label: 'Last Used On',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.last.used.on',
+                defaultMessage: 'Last Used On',
+            }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const { lastUsed } = filteredKeys[dataIndex];
                     if (!lastUsed || lastUsed === 'NOT_USED') {
-                        return <Typography variant='body2' color='text.secondary'>Never</Typography>;
+                        return (
+                            <Typography variant='body2' color='text.secondary'>
+                                <FormattedMessage
+                                    id='APIKeys.ListApiKeys.value.never'
+                                    defaultMessage='Never'
+                                />
+                            </Typography>
+                        );
                     }
                     try {
                         const date = new Date(lastUsed);
@@ -281,7 +349,10 @@ export default function ApiKeysView() {
         },
         {
             name: 'actions',
-            label: 'Actions',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.actions',
+                defaultMessage: 'Actions',
+            }),
             options: {
                 sort: false,
                 filter: false,
@@ -289,7 +360,10 @@ export default function ApiKeysView() {
                 setCellProps: () => ({ align: 'right' }),
                 customHeadRender: () => (
                     <TableCell align='right' className='keys-header'>
-                        Actions
+                        <FormattedMessage
+                            id='APIKeys.ListApiKeys.column.actions'
+                            defaultMessage='Actions'
+                        />
                     </TableCell>
                 ),
                 customBodyRenderLite: (dataIndex) => {
@@ -302,7 +376,10 @@ export default function ApiKeysView() {
                             startIcon={<Block />}
                             onClick={() => handleRevokeKey(keyData)}
                         >
-                            Revoke
+                            <FormattedMessage
+                                id='APIKeys.ListApiKeys.action.revoke'
+                                defaultMessage='Revoke'
+                            />
                         </Button>
                     );
                 },
