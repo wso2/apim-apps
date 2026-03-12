@@ -66,9 +66,7 @@ export default function Topics(props) {
     const [securityDefScopes, setSecurityDefScopes] = useState({});
     const isAsyncAPI = api.type === 'WEBSUB' || api.type === 'WS' || api.type === 'SSE';
     const [markedOperations, setSelectedOperation] = useState({});
-    const isAsyncV3 = asyncAPISpec?.asyncapi
-        ? parseInt(asyncAPISpec.asyncapi.split('.')[0], 10) >= 3
-        : false;
+    const [isAsyncV3, setIsAsyncV3] = useState(false);
 
     const intl = useIntl();
     /**
@@ -614,7 +612,9 @@ export default function Topics(props) {
      * @returns {null}
      */
     function resolveAndUpdateSpec(rawSpec) {
-        if (isAsyncV3) {
+        const asyncSpecVersion = rawSpec?.asyncapi || '2.0.0';
+        const asyncv3 = parseInt(asyncSpecVersion.split('.')[0], 10) >= 3;
+        if (asyncv3) {
             const channelData = buildChannelMap(rawSpec);
             operationsDispatcher({ action: 'init', data: channelData });
             setAsyncAPISpec(rawSpec);
@@ -769,9 +769,10 @@ export default function Topics(props) {
     }, []);
 
     useEffect(() => {
-        // Update the Swagger spec object when API object gets changed
         api.getAsyncAPIDefinition()
             .then((response) => {
+                const asyncSpecVersion = response.body?.asyncapi || '2.0.0';
+                setIsAsyncV3(parseInt(asyncSpecVersion.split('.')[0], 10) >= 3);
                 resolveAndUpdateSpec(response.body);
             })
             .catch((error) => {
