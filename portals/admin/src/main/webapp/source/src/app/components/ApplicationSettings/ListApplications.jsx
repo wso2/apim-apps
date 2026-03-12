@@ -28,6 +28,15 @@ import ChangeAppOwner from 'AppComponents/ApplicationSettings/ChangeAppOwner';
 import UpgradeTokenType from 'AppComponents/ApplicationSettings/UpgradeTokenType';
 import Configurations from 'Config';
 
+/**
+ * Renders the application management view with support for:
+ * - Displaying a paginated and searchable list of applications.
+ * - Filtering applications by name or owner.
+ * - Changing the application owner.
+ * - Upgrading legacy applications from opaque tokens to JWT-based tokens.
+ *
+ * @returns {JSX.Element} The rendered component with tabs for changing owner and upgrading tokens.
+ */
 export default function ListApplications() {
     const intl = useIntl();
     const [loading, setLoading] = useState(false);
@@ -38,9 +47,13 @@ export default function ListApplications() {
     const [searchQuery, setSearchQuery] = useState('');
 
     /**
-    * API call to get application list
-    * @returns {Promise}.
-    */
+     * Fetches a paginated list of applications from the API.
+     *
+     * @param {number} pageNo - The current page number (0-indexed).
+     * @param {string} [user=searchQuery] - Optional filter by application owner.
+     * @param {string} [name=searchQuery] - Optional filter by application name.
+     * @returns {Promise<Array>} A promise resolving to the list of applications.
+     */
     function apiCall(pageNo, user = searchQuery, name = searchQuery) {
         setLoading(true);
         const restApi = new API();
@@ -74,6 +87,12 @@ export default function ListApplications() {
         });
     }, [rowsPerPage]);
 
+    /**
+     * Handles page change in the paginated table.
+     *
+     * @param {React.MouseEvent} event - The page change event.
+     * @param {number} pageNo - The new page number.
+     */
     function handleChangePage(event, pageNo) {
         setPage(pageNo);
         apiCall(pageNo).then((result) => {
@@ -81,6 +100,11 @@ export default function ListApplications() {
         });
     }
 
+    /**
+     * Handles change in rows per page for the paginated table.
+     *
+     * @param {React.ChangeEvent<HTMLInputElement>} event - The change event.
+     */
     function handleChangeRowsPerPage(event) {
         const nextRowsPerPage = event.target.value;
         const rowsPerPageRatio = rowsPerPage / nextRowsPerPage;
@@ -92,6 +116,9 @@ export default function ListApplications() {
         });
     }
 
+    /**
+     * Clears the search input and reloads the full application list.
+     */
     function clearSearch() {
         setPage(0);
         setSearchQuery('');
@@ -100,6 +127,12 @@ export default function ListApplications() {
         });
     }
 
+    /**
+     * Handles search input change.
+     * Clears search if input is empty, otherwise updates search query state.
+     *
+     * @param {React.ChangeEvent<HTMLInputElement>} event - The change event from the search input.
+     */
     function setQuery(event) {
         const newQuery = event.target.value;
         if (newQuery === '') {
@@ -109,6 +142,11 @@ export default function ListApplications() {
         }
     }
 
+    /**
+     * Filters applications based on the current search query.
+     *
+     * @param {React.FormEvent<HTMLFormElement>} e - Form submission event.
+     */
     function filterApps(e) {
         e.preventDefault();
         setPage(0);
@@ -131,6 +169,12 @@ export default function ListApplications() {
         filterApps,
     };
 
+    /**
+     * Calculates the elapsed time between the current date and a given date.
+     *
+     * @param {string|Date} fromTime - The past date to compare with the current date.
+     * @returns {string} Human-readable time difference (e.g., "2 years 3 months").
+     */
     function getTimeAgo(fromTime) {
         const now = new Date();
         const past = new Date(fromTime);
@@ -177,21 +221,22 @@ export default function ListApplications() {
 
     const warning = timeAgo ? (
         <>
-            You have legacy applications using opaque access tokens that were created over
-            {' '}
-            {timeAgo}
-            {' '}
-            ago.
-            {' '}
-            Support for opaque access tokens will be deprecated. Please upgrade these applications
-            to use JWT-based access tokens.
+            {intl.formatMessage({
+                defaultMessage: 'You have legacy applications using opaque access tokens that were created over '
+                + ' {timeAgo} ago. Support for opaque access tokens will be deprecated. Please upgrade these '
+                + ' applications to use JWT-based access tokens.',
+                id: 'ApplicationSettings.ListApplications.opaque.token.warning',
+            }, { timeAgo })}
             {' '}
             <Link
                 href={`${Configurations.app.docUrl}api-security/key-management/tokens/jwt-tokens/`}
                 target='_blank'
                 rel='noopener noreferre'
             >
-                Learn More…
+                {intl.formatMessage({
+                    defaultMessage: 'Learn More…',
+                    id: 'ApplicationSettings.ListApplications.learn.more.link',
+                })}
             </Link>
         </>
     ) : null;
@@ -215,7 +260,10 @@ export default function ListApplications() {
     return (
         upgradableApps?.length ? (
             <TabbedContentBase
-                title='Change Application Settings'
+                title={intl.formatMessage({
+                    defaultMessage: 'Change Application Settings',
+                    id: 'ApplicationSettings.ListApplications.change.app.settings.title',
+                })}
                 tabs={tabs}
                 warning={warning}
             />
@@ -223,7 +271,7 @@ export default function ListApplications() {
             <ContentBase
                 title={intl.formatMessage({
                     defaultMessage: 'Change Application Owner',
-                    id: 'Applications.Listing.Listing.title',
+                    id: 'ApplicationSettings.ListApplications.change.app.owner.title',
                 })}
             >
                 <ChangeAppOwner {...childProps} />

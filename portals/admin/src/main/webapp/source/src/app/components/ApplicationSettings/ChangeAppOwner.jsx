@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2026, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useIntl, FormattedMessage } from 'react-intl';
 import EditApplication from 'AppComponents/ApplicationSettings/EditApplication';
 import AppsTableContent from 'AppComponents/ApplicationSettings/AppsTableContent';
@@ -39,6 +40,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
 
+/**
+ * Renders a searchable, paginated table of applications with the ability to change application owners.
+ *
+ * @param {object} props - Component properties including application data, loading state, search and
+ * pagination handlers.
+ * @returns {JSX.Element} The rendered application table with search, pagination, and edit functionality.
+ */
 export default function ChangeAppOwner(props) {
     const intl = useIntl();
     const {
@@ -62,7 +70,7 @@ export default function ChangeAppOwner(props) {
             numeric: false,
             disablePadding: true,
             label: (<FormattedMessage
-                id='Applications.Listing.ApplicationTableHead.name'
+                id='ApplicationSettings.ChangeAppOwner.column.name'
                 defaultMessage='Name'
             />),
             sorting: true,
@@ -72,7 +80,7 @@ export default function ChangeAppOwner(props) {
             numeric: false,
             disablePadding: false,
             label: (<FormattedMessage
-                id='Applications.Listing.ApplicationTableHead.owner'
+                id='ApplicationSettings.ChangeAppOwner.column.owner'
                 defaultMessage='Owner'
             />),
             sorting: true,
@@ -82,7 +90,7 @@ export default function ChangeAppOwner(props) {
             numeric: false,
             disablePadding: false,
             label: (<FormattedMessage
-                id='Applications.Listing.ApplicationTableHead.actions'
+                id='ApplicationSettings.ChangeAppOwner.column.actions'
                 defaultMessage='Actions'
             />),
             sorting: false,
@@ -132,7 +140,7 @@ export default function ChangeAppOwner(props) {
                                     id='search-label'
                                     placeholder={intl.formatMessage({
                                         defaultMessage: 'Search Application by Name/Owner',
-                                        id: 'Applications.Listing.Listing.search.placeholder',
+                                        id: 'ApplicationSettings.ChangeAppOwner.search.placeholder',
                                     })}
                                     sx={(theme) => ({
                                         '& .search-input': {
@@ -152,7 +160,7 @@ export default function ChangeAppOwner(props) {
                                         title={
                                             intl.formatMessage({
                                                 defaultMessage: 'Clear Search',
-                                                id: 'Applications.Listing.Listing.clear.search',
+                                                id: 'ApplicationSettings.ChangeAppOwner.clear.search',
                                             })
                                         }
                                     >
@@ -175,12 +183,12 @@ export default function ChangeAppOwner(props) {
                                 >
                                     {loading ? (
                                         <FormattedMessage
-                                            id='Applications.Listing.Listing.applications.searching'
+                                            id='ApplicationSettings.ChangeAppOwner.applications.searching'
                                             defaultMessage='Searching'
                                         />
                                     ) : (
                                         <FormattedMessage
-                                            id='Applications.Listing.Listing.applications.search'
+                                            id='ApplicationSettings.ChangeAppOwner.applications.search'
                                             defaultMessage='Search'
                                         />
                                     )}
@@ -202,7 +210,7 @@ export default function ChangeAppOwner(props) {
                             editComponentProps={{
                                 icon: <EditIcon aria-label='edit-application-settings' />,
                                 title: intl.formatMessage({
-                                    id: 'Applications.Listing.Listing.applications.list.title',
+                                    id: 'ApplicationSettings.ChangeAppOwner.applications.list.title',
                                     defaultMessage: 'Change Application Owner',
                                 }),
                                 applicationList,
@@ -221,7 +229,8 @@ export default function ChangeAppOwner(props) {
                                     labelDisplayedRows={({ from, to, count }) => {
                                         if (count !== -1) {
                                             return intl.formatMessage({
-                                                id: 'Applications.Listing.Listing.applications.list.rows.range.label',
+                                                id: 'ApplicationSettings.ChangeAppOwner.applications.'
+                                                    + 'list.rows.range.label',
                                                 defaultMessage: '{from}-{to} of {count}',
                                             },
                                             {
@@ -229,13 +238,14 @@ export default function ChangeAppOwner(props) {
                                             });
                                         }
                                         return intl.formatMessage({
-                                            id: 'Applications.Listing.Listing.applications.list.rows.more.than.label',
+                                            id: 'ApplicationSettings.ChangeAppOwner.applications.'
+                                                + 'list.rows.more.than.label',
                                             defaultMessage: 'more than {to}',
                                         },
                                         { to });
                                     }}
                                     labelRowsPerPage={intl.formatMessage({
-                                        id: 'Applications.Listing.Listing.applications.list.rows.show.label',
+                                        id: 'ApplicationSettings.ChangeAppOwner.applications.list.rows.show.label',
                                         defaultMessage: 'Show',
                                     })}
                                     page={page}
@@ -257,7 +267,7 @@ export default function ChangeAppOwner(props) {
                     <Alert severity='info'>
                         <Typography variant='subtitle2'>
                             <FormattedMessage
-                                id='Applications.Listing.Listing.empty.message'
+                                id='ApplicationSettings.ChangeAppOwner.empty.message'
                                 defaultMessage='No Data to Display'
                             />
                         </Typography>
@@ -267,3 +277,25 @@ export default function ChangeAppOwner(props) {
         </>
     );
 }
+
+ChangeAppOwner.propTypes = {
+    loading: PropTypes.bool.isRequired,
+    applicationList: PropTypes.arrayOf(PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        owner: PropTypes.string.isRequired,
+    })),
+    page: PropTypes.number.isRequired,
+    rowsPerPage: PropTypes.number.isRequired,
+    totalApps: PropTypes.number.isRequired,
+    searchQuery: PropTypes.string.isRequired,
+    handleChangePage: PropTypes.func.isRequired,
+    handleChangeRowsPerPage: PropTypes.func.isRequired,
+    setQuery: PropTypes.func.isRequired,
+    clearSearch: PropTypes.func.isRequired,
+    filterApps: PropTypes.func.isRequired,
+    apiCall: PropTypes.func.isRequired,
+};
+
+ChangeAppOwner.defaultProps = {
+    applicationList: [],
+};

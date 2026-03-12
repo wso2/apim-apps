@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2026, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -49,7 +49,7 @@ const UpgradeToJWTDialog = (props) => {
         return restApi.upgradeApplicationTokenType(app.applicationId)
             .then(() => {
                 Alert.success(intl.formatMessage({
-                    id: 'AdminPages.ApplicationSettings.Edit.form.edit.successful',
+                    id: 'ApplicationSettings.UpgradeToJWTDialog.app.upgrade.successful',
                     defaultMessage: 'Application {appName} upgraded to JWT successfully',
                 }, {
                     appName: app.name,
@@ -57,7 +57,7 @@ const UpgradeToJWTDialog = (props) => {
             })
             .catch(() => {
                 const upgradeError = intl.formatMessage({
-                    id: 'Applications.Listing.Listing.applications.edit.error.subscriber.invalid',
+                    id: 'ApplicationSettings.UpgradeToJWTDialog.app.upgrade.error',
                     defaultMessage: 'Error while upgrading application {appName} to JWT',
                 }, {
                     appName: app.name,
@@ -77,52 +77,86 @@ const UpgradeToJWTDialog = (props) => {
                 variant='outlined'
                 onClick={handleOpen}
             >
-                Upgrade to JWT
+                {intl.formatMessage({
+                    id: 'ApplicationSettings.UpgradeToJWTDialog.button.open',
+                    defaultMessage: 'Upgrade to JWT',
+                })}
             </Button>
 
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Upgrade Application to JWT</DialogTitle>
+                <DialogTitle>
+                    {intl.formatMessage({
+                        id: 'ApplicationSettings.UpgradeToJWTDialog.dialog.title',
+                        defaultMessage: 'Upgrade Application to JWT',
+                    })}
+                </DialogTitle>
 
                 <DialogContent>
                     <Typography variant='body1' gutterBottom>
-                        You are about to upgrade the application
-                        {' '}
-                        <strong>{app.name}</strong>
-                        {' '}
-                        to use
-                        {' '}
-                        <strong>JWT-based access tokens</strong>
+                        {intl.formatMessage({
+                            id: 'ApplicationSettings.UpgradeToJWTDialog.dialog.body1',
+                            defaultMessage: 'You are about to upgrade the application {appName} '
+                                + 'to use JWT-based access tokens.',
+                        }, { appName: <strong>{app.name}</strong> })}
                     </Typography>
                     <br />
                     <Typography variant='body2' color='text.secondary' gutterBottom>
-                        This change will
-                        {' '}
-                        <strong>permanently switch</strong>
-                        {' '}
-                        the newly generated access token format from opaque to JWT.
+                        {intl.formatMessage({
+                            id: 'ApplicationSettings.UpgradeToJWTDialog.dialog.body2',
+                            defaultMessage: 'This change will permanently switch the newly generated '
+                            + 'access token format from opaque to JWT.',
+                        })}
                     </Typography>
                     <br />
                     <MuiAlert severity='warning' sx={{ mb: 2 }}>
-                        <strong>Important</strong>
+                        <strong>
+                            {intl.formatMessage({
+                                id: 'ApplicationSettings.UpgradeToJWTDialog.dialog.important',
+                                defaultMessage: 'Important',
+                            })}
+                        </strong>
                         <ul style={{ margin: '8px 0 0 16px' }}>
-                            <li>This action cannot be undone</li>
-                            <li>Existing opaque tokens will still be supported</li>
+                            <li>
+                                {intl.formatMessage({
+                                    id: 'ApplicationSettings.UpgradeToJWTDialog.dialog.warning1',
+                                    defaultMessage: 'This action cannot be undone',
+                                })}
+                            </li>
+                            <li>
+                                {intl.formatMessage({
+                                    id: 'ApplicationSettings.UpgradeToJWTDialog.dialog.warning2',
+                                    defaultMessage: 'Existing opaque tokens will still be supported',
+                                })}
+                            </li>
                         </ul>
                     </MuiAlert>
 
                     <Typography variant='body1'>
-                        <b>Do you want to proceed with the upgrade?</b>
+                        <b>
+                            {intl.formatMessage({
+                                id: 'ApplicationSettings.UpgradeToJWTDialog.dialog.confirmation',
+                                defaultMessage: 'Do you want to proceed with the upgrade?',
+                            })}
+                        </b>
                     </Typography>
                 </DialogContent>
 
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleClose}>
+                        {intl.formatMessage({
+                            id: 'ApplicationSettings.UpgradeToJWTDialog.button.cancel',
+                            defaultMessage: 'Cancel',
+                        })}
+                    </Button>
                     <Button
                         onClick={handleUpgrade}
                         variant='contained'
                         color='primary'
                     >
-                        Upgrade
+                        {intl.formatMessage({
+                            id: 'ApplicationSettings.UpgradeToJWTDialog.button.upgrade',
+                            defaultMessage: 'Upgrade',
+                        })}
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2026, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -17,11 +17,10 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useIntl, FormattedMessage } from 'react-intl';
 import AppsTableContent from 'AppComponents/ApplicationSettings/AppsTableContent';
-import EditApplication from 'AppComponents/ApplicationSettings/EditApplication';
 import ApplicationTableHead from 'AppComponents/ApplicationSettings/ApplicationTableHead';
-import EditIcon from '@mui/icons-material/Edit';
 import Table from '@mui/material/Table';
 import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
@@ -38,8 +37,15 @@ import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
-import UpgradeToJWTDialog from './UpgradeToJWTDialog';
+import UpgradeToJWTDialog from 'AppComponents/ApplicationSettings/UpgradeToJWTDialog';
 
+/**
+ * Renders a searchable table of applications that can be upgraded to JWT tokens.
+ * Includes pagination, search, and action buttons for upgrading each application.
+ *
+ * @param {object} props - Component props including application data, pagination, search, and API handlers.
+ * @returns {JSX.Element} The table UI with upgrade functionality.
+ */
 export default function UpgradeTokenType(props) {
     const intl = useIntl();
     const {
@@ -63,7 +69,7 @@ export default function UpgradeTokenType(props) {
             numeric: false,
             disablePadding: true,
             label: (<FormattedMessage
-                id='Applications.Listing.ApplicationTableHead.name'
+                id='ApplicationSettings.UpgradeTokeType.column.name'
                 defaultMessage='Name'
             />),
             sorting: true,
@@ -73,7 +79,7 @@ export default function UpgradeTokenType(props) {
             numeric: false,
             disablePadding: false,
             label: (<FormattedMessage
-                id='Applications.Listing.ApplicationTableHead.owner'
+                id='ApplicationSettings.UpgradeTokeType.column.owner'
                 defaultMessage='Owner'
             />),
             sorting: true,
@@ -83,7 +89,7 @@ export default function UpgradeTokenType(props) {
             numeric: false,
             disablePadding: false,
             label: (<FormattedMessage
-                id='Applications.Listing.ApplicationTableHead.createdTime'
+                id='ApplicationSettings.UpgradeTokeType.column.createdTime'
                 defaultMessage='Created Date'
             />),
             sorting: true,
@@ -93,7 +99,7 @@ export default function UpgradeTokenType(props) {
             numeric: false,
             disablePadding: false,
             label: (<FormattedMessage
-                id='Applications.Listing.ApplicationTableHead.actions'
+                id='ApplicationSettings.UpgradeTokeType.column.actions'
                 defaultMessage='Actions'
             />),
             sorting: false,
@@ -146,7 +152,7 @@ export default function UpgradeTokenType(props) {
                                     id='search-label'
                                     placeholder={intl.formatMessage({
                                         defaultMessage: 'Search Application by Name/Owner',
-                                        id: 'Applications.Listing.Listing.search.placeholder',
+                                        id: 'ApplicationSettings.UpgradeTokeType.search.placeholder',
                                     })}
                                     sx={(theme) => ({
                                         '& .search-input': {
@@ -166,7 +172,7 @@ export default function UpgradeTokenType(props) {
                                         title={
                                             intl.formatMessage({
                                                 defaultMessage: 'Clear Search',
-                                                id: 'Applications.Listing.Listing.clear.search',
+                                                id: 'ApplicationSettings.UpgradeTokeType.clear.search',
                                             })
                                         }
                                     >
@@ -189,12 +195,12 @@ export default function UpgradeTokenType(props) {
                                 >
                                     {loading ? (
                                         <FormattedMessage
-                                            id='Applications.Listing.Listing.applications.searching'
+                                            id='ApplicationSettings.UpgradeTokeType.applications.searching'
                                             defaultMessage='Searching'
                                         />
                                     ) : (
                                         <FormattedMessage
-                                            id='Applications.Listing.Listing.applications.search'
+                                            id='ApplicationSettings.UpgradeTokeType.applications.search'
                                             defaultMessage='Search'
                                         />
                                     )}
@@ -213,15 +219,6 @@ export default function UpgradeTokenType(props) {
                             apps={applicationList}
                             page={page}
                             rowsPerPage={rowsPerPage}
-                            editComponentProps={{
-                                icon: <EditIcon aria-label='edit-application-settings' />,
-                                title: intl.formatMessage({
-                                    id: 'Applications.Listing.Listing.applications.list.title',
-                                    defaultMessage: 'Change Application Owner',
-                                }),
-                                applicationList,
-                            }}
-                            EditComponent={EditApplication}
                             apiCall={apiCall}
                             columns={columns}
                             filterTokenTypes={['OAUTH', 'DEFAULT']}
@@ -236,7 +233,8 @@ export default function UpgradeTokenType(props) {
                                     labelDisplayedRows={({ from, to, count }) => {
                                         if (count !== -1) {
                                             return intl.formatMessage({
-                                                id: 'Applications.Listing.Listing.applications.list.rows.range.label',
+                                                id: 'ApplicationSettings.UpgradeTokeType.applications.'
+                                                + 'list.rows.range.label',
                                                 defaultMessage: '{from}-{to} of {count}',
                                             },
                                             {
@@ -244,13 +242,15 @@ export default function UpgradeTokenType(props) {
                                             });
                                         }
                                         return intl.formatMessage({
-                                            id: 'Applications.Listing.Listing.applications.list.rows.more.than.label',
+                                            id: 'ApplicationSettings.UpgradeTokeType.'
+                                            + 'applications.list.rows.more.than.label',
                                             defaultMessage: 'more than {to}',
                                         },
                                         { to });
                                     }}
                                     labelRowsPerPage={intl.formatMessage({
-                                        id: 'Applications.Listing.Listing.applications.list.rows.show.label',
+                                        id: 'ApplicationSettings.UpgradeTokeType.applications.'
+                                        + 'list.rows.show.label',
                                         defaultMessage: 'Show',
                                     })}
                                     page={page}
@@ -272,7 +272,7 @@ export default function UpgradeTokenType(props) {
                     <Alert severity='info'>
                         <Typography variant='subtitle2'>
                             <FormattedMessage
-                                id='Applications.Listing.Listing.empty.message'
+                                id='ApplicationSettings.UpgradeTokeType.empty.message'
                                 defaultMessage='No Data to Display'
                             />
                         </Typography>
@@ -282,3 +282,24 @@ export default function UpgradeTokenType(props) {
         </>
     );
 }
+
+UpgradeTokenType.propTypes = {
+    loading: PropTypes.bool.isRequired,
+    applicationList: PropTypes.arrayOf(PropTypes.shape({
+        applicationId: PropTypes.string,
+        name: PropTypes.string,
+        owner: PropTypes.string,
+        createdTime: PropTypes.string,
+        tokenType: PropTypes.string,
+    })).isRequired,
+    page: PropTypes.number.isRequired,
+    rowsPerPage: PropTypes.number.isRequired,
+    totalApps: PropTypes.number.isRequired,
+    searchQuery: PropTypes.string.isRequired,
+    handleChangePage: PropTypes.func.isRequired,
+    handleChangeRowsPerPage: PropTypes.func.isRequired,
+    setQuery: PropTypes.func.isRequired,
+    clearSearch: PropTypes.func.isRequired,
+    filterApps: PropTypes.func.isRequired,
+    apiCall: PropTypes.func.isRequired,
+};
