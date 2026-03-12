@@ -18,6 +18,7 @@
 
 import React, { useState } from 'react';
 import API from 'AppData/api';
+import Alert from 'AppComponents/Shared/Alert';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -44,21 +45,20 @@ const UpgradeToJWTDialog = (props) => {
     const handleUpgrade = () => {
         return restApi.upgradeApplicationTokenType(app.applicationId)
             .then(() => {
-                return (
-                    intl.formatMessage({
-                        id: 'AdminPages.ApplicationSettings.Edit.form.edit.successful',
-                        defaultMessage: 'Application owner changed successfully',
-                    })
-                );
+                Alert.success(intl.formatMessage({
+                    id: 'AdminPages.ApplicationSettings.Edit.form.edit.successful',
+                    defaultMessage: 'Application upgraded to JWT successfully',
+                }));
             })
             .catch(() => {
                 const upgradeError = intl.formatMessage({
                     id: 'Applications.Listing.Listing.applications.edit.error.subscriber.invalid',
                     defaultMessage: 'Error while upgrading application to JWT',
                 });
-                throw upgradeError;
+                Alert.error(upgradeError);
             })
             .finally(() => {
+                handleClose();
                 updateList();
             });
     };

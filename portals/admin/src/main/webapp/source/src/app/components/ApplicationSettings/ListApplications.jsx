@@ -17,12 +17,15 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 import API from 'AppData/api';
+import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import TabbedContentBase from 'AppComponents/AdminPages/Addons/TabbedContentBase';
 import ChangeAppOwner from 'AppComponents/ApplicationSettings/ChangeAppOwner';
 import UpgradeTokenType from 'AppComponents/ApplicationSettings/UpgradeTokenType';
 
 export default function ListApplications() {
+    const intl = useIntl();
     const [loading, setLoading] = useState(false);
     const [applicationList, setApplicationList] = useState(null);
     const [totalApps, setTotalApps] = useState(0);
@@ -124,6 +127,10 @@ export default function ListApplications() {
         filterApps,
     };
 
+    const hasUpgradableApps = applicationList?.some(
+        (app) => app.tokenType === 'OAUTH' || app.tokenType === 'DEFAULT',
+    );
+
     const tabs = [
         {
             label: 'Change Owner',
@@ -136,9 +143,20 @@ export default function ListApplications() {
     ];
 
     return (
-        <TabbedContentBase
-            title='Change Application Settings'
-            tabs={tabs}
-        />
+        hasUpgradableApps ? (
+            <TabbedContentBase
+                title='Change Application Settings'
+                tabs={tabs}
+            />
+        ) : (
+            <ContentBase
+                title={intl.formatMessage({
+                    defaultMessage: 'Change Application Owner',
+                    id: 'Applications.Listing.Listing.title',
+                })}
+            >
+                <ChangeAppOwner {...childProps} />
+            </ContentBase>
+        )
     );
 }
