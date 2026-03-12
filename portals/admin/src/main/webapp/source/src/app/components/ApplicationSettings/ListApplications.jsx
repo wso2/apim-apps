@@ -195,7 +195,7 @@ export default function ListApplications() {
     ];
 
     return (
-        upgradableApps ? (
+        upgradableApps?.length ? (
             <TabbedContentBase
                 title='Change Application Settings'
                 tabs={tabs}
