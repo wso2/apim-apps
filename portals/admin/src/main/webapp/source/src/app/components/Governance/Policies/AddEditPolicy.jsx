@@ -41,7 +41,6 @@ import {
     RadioGroup,
     FormControlLabel,
     Radio,
-    Switch,
     List,
     ListItemButton,
     ListItemIcon,
@@ -53,7 +52,6 @@ import { styled } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import DescriptionIcon from '@mui/icons-material/Description';
-import SecurityIcon from '@mui/icons-material/Security';
 import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
 import Configurations from 'Config';
 import PropTypes from 'prop-types';
@@ -1008,106 +1006,12 @@ function AddEditPolicy(props) {
                         </Typography>
                     </Grid>
 
-                    {/* GENERIC (Deduplication) Rulesets Section */}
-                    {availableRulesets.filter((r) => r.ruleCategory === 'GENERIC').length > 0 && (
-                        <Grid item xs={12} md={12} lg={12}>
-                            <Box
-                                component='div'
-                                m={1}
-                                sx={{
-                                    p: 2,
-                                    border: '1px solid',
-                                    borderColor: 'divider',
-                                    borderRadius: 1,
-                                    bgcolor: 'grey.50',
-                                    mb: 2,
-                                }}
-                            >
-                                <Box sx={{
-                                    display: 'flex', alignItems: 'center', gap: 1, mb: 1.5,
-                                }}
-                                >
-                                    <SecurityIcon color='primary' fontSize='small' />
-                                    <Typography variant='subtitle2' color='primary'>
-                                        <FormattedMessage
-                                            id='Governance.Policies.AddEdit.rulesets.dedup.title'
-                                            defaultMessage='GENERIC Rulesets'
-                                        />
-                                    </Typography>
-                                </Box>
-                                <Typography variant='caption' color='text.secondary' sx={{ display: 'block', mb: 1.5 }}>
-                                    <FormattedMessage
-                                        id='Governance.Policies.AddEdit.rulesets.dedup.description'
-                                        defaultMessage={'Toggle GENERIC rulesets to enable '
-                                            + 'deduplication and lifecycle checks for this policy.'}
-                                    />
-                                </Typography>
-                                {availableRulesets
-                                    .filter((r) => r.ruleCategory === 'GENERIC')
-                                    .map((genericRuleset) => {
-                                        const isSelected = rulesets.includes(genericRuleset.id);
-                                        return (
-                                            <Box
-                                                key={genericRuleset.id}
-                                                sx={{
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'space-between',
-                                                    p: 1.5,
-                                                    border: '1px solid',
-                                                    borderColor: isSelected ? 'primary.light' : 'divider',
-                                                    borderRadius: 1,
-                                                    bgcolor: isSelected ? 'primary.lighter' : 'background.paper',
-                                                    mb: 0.5,
-                                                }}
-                                            >
-                                                <Box>
-                                                    <Typography variant='body2' fontWeight='medium'>
-                                                        {genericRuleset.name}
-                                                    </Typography>
-                                                    {genericRuleset.description && (
-                                                        <Typography variant='caption' color='text.secondary'>
-                                                            {genericRuleset.description}
-                                                        </Typography>
-                                                    )}
-                                                </Box>
-                                                <FormControlLabel
-                                                    control={(
-                                                        <Switch
-                                                            checked={isSelected}
-                                                            onChange={() => {
-                                                                if (isSelected) {
-                                                                    handleRulesetDeselect(genericRuleset);
-                                                                } else {
-                                                                    handleRulesetSelect(genericRuleset);
-                                                                }
-                                                            }}
-                                                            color='primary'
-                                                        />
-                                                    )}
-                                                    label={isSelected
-                                                        ? intl.formatMessage({
-                                                            id: 'Governance.Policies.AddEdit.rulesets.dedup.enabled',
-                                                            defaultMessage: 'Enabled',
-                                                        })
-                                                        : intl.formatMessage({
-                                                            id: 'Governance.Policies.AddEdit.rulesets.dedup.disabled',
-                                                            defaultMessage: 'Disabled',
-                                                        })}
-                                                />
-                                            </Box>
-                                        );
-                                    })}
-                            </Box>
-                        </Grid>
-                    )}
-
-                    {/* Spectral Rulesets Section */}
+                    {/* Rulesets Section */}
                     <Grid item xs={12} md={12} lg={12}>
                         <Box component='div' m={1}>
                             <RulesetSelector
-                                availableRulesets={availableRulesets.filter((r) => r.ruleCategory !== 'GENERIC')}
-                                selectedRulesets={selectedRulesets.filter((r) => r.ruleCategory !== 'GENERIC')}
+                                availableRulesets={availableRulesets}
+                                selectedRulesets={selectedRulesets}
                                 onRulesetSelect={handleRulesetSelect}
                                 onRulesetDeselect={handleRulesetDeselect}
                             />
