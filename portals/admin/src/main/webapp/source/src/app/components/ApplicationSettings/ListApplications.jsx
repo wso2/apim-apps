@@ -19,6 +19,8 @@
 import React, { useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import API from 'AppData/api';
+import Box from '@mui/material/Box';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import TabbedContentBase from 'AppComponents/AdminPages/Addons/TabbedContentBase';
 import ChangeAppOwner from 'AppComponents/ApplicationSettings/ChangeAppOwner';
@@ -127,9 +129,54 @@ export default function ListApplications() {
         filterApps,
     };
 
-    const hasUpgradableApps = applicationList?.some(
+    function getTimeAgo(fromTime) {
+        const now = new Date();
+        const past = new Date(fromTime);
+
+        let years = now.getFullYear() - past.getFullYear();
+        let months = now.getMonth() - past.getMonth();
+        let days = now.getDate() - past.getDate();
+
+        if (days < 0) {
+            months -= 1;
+            days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+        }
+
+        if (months < 0) {
+            years -= 1;
+            months += 12;
+        }
+
+        if (years > 0) {
+            return months > 0
+                ? `${years} year${years > 1 ? 's' : ''} ${months} month${months > 1 ? 's' : ''}`
+                : `${years} year${years > 1 ? 's' : ''}`;
+        }
+
+        if (months > 0) {
+            return `${months} month${months > 1 ? 's' : ''}`;
+        }
+
+        return `${days} day${days > 1 ? 's' : ''}`;
+    }
+
+    const upgradableApps = applicationList?.filter(
         (app) => app.tokenType === 'OAUTH' || app.tokenType === 'DEFAULT',
     );
+
+    const oldestCreatedTime = upgradableApps?.length
+        ? upgradableApps.reduce(
+            (oldest, app) => (new Date(app.createdTime) < new Date(oldest) ? app.createdTime : oldest),
+            upgradableApps[0].createdTime,
+        )
+        : null;
+
+    const timeAgo = oldestCreatedTime ? getTimeAgo(oldestCreatedTime) : null;
+
+    const warning = timeAgo
+        ? `You have applications using opaque tokens that were created over ${timeAgo} ago. `
+        + 'Support for opaque tokens will be deprecated. Please upgrade the token type to JWT.'
+        : null;
 
     const tabs = [
         {
@@ -137,16 +184,22 @@ export default function ListApplications() {
             content: <ChangeAppOwner {...childProps} />,
         },
         {
-            label: 'Upgrade Token Type',
+            label: (
+                <Box sx={{ display: 'flex', alignItems: 'center', color: 'warning.main' }}>
+                    <WarningAmberIcon sx={{ fontSize: 18, mr: 1 }} />
+                    Upgrade Token Type
+                </Box>
+            ),
             content: <UpgradeTokenType {...childProps} />,
         },
     ];
 
     return (
-        hasUpgradableApps ? (
+        upgradableApps ? (
             <TabbedContentBase
                 title='Change Application Settings'
                 tabs={tabs}
+                warning={warning}
             />
         ) : (
             <ContentBase

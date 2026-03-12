@@ -30,6 +30,7 @@ function TabbedContentBase(props) {
         help,
         pageDescription,
         tabs,
+        warning,
     } = props;
 
     const [value, setValue] = useState(0);
@@ -43,6 +44,7 @@ function TabbedContentBase(props) {
             title={title}
             help={help}
             pageDescription={pageDescription}
+            warning={value === 1 ? warning : null}
         >
             <Grid container>
 
@@ -87,7 +89,6 @@ function TabbedContentBase(props) {
                         ))}
                     </Tabs>
                 </Grid>
-
                 <Grid item xs={12}>
                     <Box sx={{ mt: 0 }}>
                         {tabs[value]?.content}
