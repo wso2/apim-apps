@@ -21,9 +21,13 @@ import Grid from '@mui/material/Grid';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 
-import ContentBase from './ContentBase';
-
+/**
+ * This is a wrapper component around ContentBase used for displaying a tabbed structure.
+ * @param {object} props - The component props.
+ * @returns {JSX.Element} The rendered tabbed content component.
+ */
 function TabbedContentBase(props) {
     const {
         title,
@@ -120,11 +124,13 @@ TabbedContentBase.propTypes = {
         ]),
         className: PropTypes.string,
     }),
+    warning: PropTypes.node,
 };
 
 TabbedContentBase.defaultProps = {
     pageDescription: null,
     PaperProps: { elevation: 1 },
+    warning: null,
 };
 
 export default TabbedContentBase;
