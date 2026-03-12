@@ -80,6 +80,8 @@ function AddPayloadProperty(props) {
         switch (type) {
             case 'name':
             case 'description':
+            case 'type':
+                nextState[type] = value;
                 break;
             // V3 only fields
             case 'operation':
@@ -87,9 +89,6 @@ function AddPayloadProperty(props) {
                 break;
             case 'message':
                 if (isAsyncV3) nextState[type] = value;
-                break;
-            case 'type':
-                nextState[type] = value;
                 break;
             case 'clear':
                 return {
@@ -130,7 +129,7 @@ function AddPayloadProperty(props) {
         if (isAsyncV3 && property.operation && !namedOperations.includes(property.operation)) {
             Alert.error(intl.formatMessage(
                 {
-                    id: 'Apis.Details.Components.async.api.add.property.operation.not.found',
+                    id: 'Apis.Details.Resources.components.operationComponents.AddParameter.operation.not.found',
                     defaultMessage: 'Operation "{operation}" does not exist',
                 },
                 { operation: property.operation },
@@ -148,32 +147,6 @@ function AddPayloadProperty(props) {
 
     return (
         <StyledGrid container direction='row' spacing={1} className={classes.parameterContainer}>
-            <Grid item xs={2} md={2}>
-                <TextField
-                    id='parameter-name'
-                    label={intl.formatMessage({
-                        id: 'Apis.Details.Resources.components.operationComponents.name.label',
-                        defaultMessage: 'Name',
-                    })}
-                    name='name'
-                    disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                    value={property.name}
-                    onChange={({ target: { name, value } }) => newPropertyDispatcher({ type: name, value })}
-                    helperText={intl.formatMessage({
-                        id: 'Apis.Details.Resources.components.operationComponents.name.helper.text',
-                        defaultMessage: 'Enter property name',
-                    })}
-                    margin='dense'
-                    variant='outlined'
-                    onKeyPress={(event) => {
-                        if (event.key === 'Enter') {
-                            // key code 13 is for `Enter` key
-                            event.preventDefault(); // To prevent form submissions
-                            addNewProperty();
-                        }
-                    }}
-                />
-            </Grid>
             {isAsyncV3 && (
                 <>
                     <Grid item xs={2} md={2}>
@@ -222,7 +195,33 @@ function AddPayloadProperty(props) {
                         />
                     </Grid>
                 </>
-            )}            
+            )}
+            <Grid item xs={2} md={2}>
+                <TextField
+                    id='parameter-name'
+                    label={intl.formatMessage({
+                        id: 'Apis.Details.Resources.components.operationComponents.name.label',
+                        defaultMessage: 'Name',
+                    })}
+                    name='name'
+                    disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                    value={property.name}
+                    onChange={({ target: { name, value } }) => newPropertyDispatcher({ type: name, value })}
+                    helperText={intl.formatMessage({
+                        id: 'Apis.Details.Resources.components.operationComponents.name.helper.text',
+                        defaultMessage: 'Enter property name',
+                    })}
+                    margin='dense'
+                    variant='outlined'
+                    onKeyPress={(event) => {
+                        if (event.key === 'Enter') {
+                            // key code 13 is for `Enter` key
+                            event.preventDefault(); // To prevent form submissions
+                            addNewProperty();
+                        }
+                    }}
+                />
+            </Grid>            
             <Grid item xs={2} md={2}>
                 <FormControl margin='dense' variant='outlined' className={classes.formControl}>
                     {/* <InputLabel ref={inputLabel} htmlFor='data-type' error={isParameterExist}> */}

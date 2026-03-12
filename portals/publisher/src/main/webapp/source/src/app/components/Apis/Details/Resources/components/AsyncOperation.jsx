@@ -183,7 +183,7 @@ function AsyncOperation(props) {
                             width='100%'
                         >
                             <Box display='flex' alignItems='center' gap={2} sx={{ flex: 4 }}>
-                                <Badge invisible='false' color='error' variant='dot'>
+                                <Badge invisible={false} color='error' variant='dot'>
                                     <Button
                                         disableFocusRipple
                                         variant='outlined'
@@ -271,7 +271,7 @@ function AsyncOperation(props) {
                     ) : (
                         <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
                             <Grid item md={11}>
-                                <Badge invisible='false' color='error' variant='dot'>
+                                <Badge invisible={false} color='error' variant='dot'>
                                     <Button
                                         disableFocusRipple
                                         variant='outlined'

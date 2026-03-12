@@ -226,13 +226,15 @@ export default function Topics(props) {
                 if (!verbInfo) return;
                 // Build operation entries FIRST so newOperations[opName] exists for message wiring
                 (verbInfo['x-operations'] || []).forEach((opName) => {
+                    const { messages: _oldMessages, ...restOfOriginal } = originalSpec.operations?.[opName] || {};
                     newOperations[opName] = {
-                        ...(originalSpec.operations?.[opName] || {}),
+                        ...restOfOriginal,
                         action,
                         channel: { $ref: `#/channels/${channelName}` },
                         'x-auth-type': verbInfo['x-auth-type'],
                         ...(verbInfo['x-uri-mapping'] && { 'x-uri-mapping': verbInfo['x-uri-mapping'] }),
                         ...(verbInfo['x-scopes'] && { 'x-scopes': verbInfo['x-scopes'] }),
+                        messages: [],             // start fresh, re-wired below from UI state
                     };
                 });
                 // Wire payload properties AFTER operations exist
@@ -245,12 +247,12 @@ export default function Topics(props) {
                         byMessage[msgName].props[propName] = cleanProp;
                     });
     
-                    Object.entries(byMessage).forEach(([msgName, { opName, prop }]) => {
+                    Object.entries(byMessage).forEach(([msgName, { opName, props: msgProps }]) => {
                         // add message schema to components.schemas.{msgName}
                         newComponents.schemas = newComponents.schemas || {};
                         newComponents.schemas[msgName] = {
                             type: 'object',
-                            properties: prop,
+                            properties: msgProps,
                         };
     
                         // refer message schema in components.messages.{msgName}
@@ -493,9 +495,26 @@ export default function Topics(props) {
                     }),
                 };
                 break;
-            case 'deletePayloadProperty':
-                delete updatedOperation[verb].message.payload.properties[value];
-                break;
+            case 'deletePayloadProperty': {
+                const existingProps = updatedOperation[verb]?.message?.payload?.properties || {};
+                const { [value]: _removed, ...remainingProps } = existingProps;
+                return {
+                    ...currentOperations,
+                    [target]: {
+                        ...currentOperations[target],
+                        [verb]: {
+                            ...currentOperations[target][verb],
+                            message: {
+                                ...currentOperations[target][verb]?.message,
+                                payload: {
+                                    ...currentOperations[target][verb]?.message?.payload,
+                                    properties: remainingProps,
+                                },
+                            },
+                        },
+                    },
+                };
+            }
             case 'payloadProperty':
                 updatedOperation[verb].message.payload.properties[value.name] = value;
                 break;

@@ -85,12 +85,6 @@ export default function ListPayloadProperties(props) {
             >
                 <TableHead>
                     <TableRow>
-                        <TableCell>
-                            <FormattedMessage
-                                id='Apis.Details.Topics.components.operationComponents.ListPayloadProps.name'
-                                defaultMessage='Name'
-                            />
-                        </TableCell>
                         {isAsyncV3 && (
                             <>
                                 <TableCell align='left'>
@@ -108,6 +102,12 @@ export default function ListPayloadProperties(props) {
                                 </TableCell>
                             </>
                         )}
+                        <TableCell>
+                            <FormattedMessage
+                                id='Apis.Details.Topics.components.operationComponents.ListPayloadProps.name'
+                                defaultMessage='Name'
+                            />
+                        </TableCell>
                         <TableCell align='left'>
                             <FormattedMessage
                                 id='Apis.Details.Topics.components.operationComponents.ListPayloadProps.data.type'

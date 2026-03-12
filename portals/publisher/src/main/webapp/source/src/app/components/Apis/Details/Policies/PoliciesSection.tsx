@@ -118,7 +118,7 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                                 : (channelItem as { subscribe?: any, publish?: any }).subscribe
                                     ?? (channelItem as { publish?: any }).publish;
                             const target = isAsyncV3
-                                ? (channelItem as { address: string }).address
+                                ? (channelItem as { address?: string }).address ?? channelName
                                 : channelName;
                             return (
                                 <Grid key={channelName} item xs={12}>

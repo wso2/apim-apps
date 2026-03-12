@@ -217,7 +217,7 @@ function AddOperation(props) {
         // For AsyncAPI v3, operationName is required
         if (isAsyncV3 && !newOperations.operationName) {
             Alert.warning(intl.formatMessage({
-                id: 'Apis.Details.Topics.components.AddOperation.operation.name.cannot.be.empty.warning',
+                id: 'Apis.Details.Resources.components.AddOperation.operation.name.cannot.be.empty.warning',
                 defaultMessage: "Operation name can't be empty",
             }));
             return;
@@ -241,7 +241,7 @@ function AddOperation(props) {
         clearInputs();
     }
     const getOperationLabel = () => {
-        if (isAsyncAPI) {
+        if (isAsyncV3 && isAsyncAPI) {
             return intl.formatMessage({
                 id: 'Apis.Details.Resources.components.AddOperation.channel.address.label',
                 defaultMessage: 'Channel Address',
@@ -259,7 +259,7 @@ function AddOperation(props) {
         });
     };
     const getOperationPlaceholder = () => {
-        if (isAsyncAPI) {
+        if (isAsyncV3 && isAsyncAPI) {
             return intl.formatMessage({
                 id: 'Apis.Details.Resources.components.AddOperation.channel.address',
                 defaultMessage: 'Enter Channel Address',
@@ -277,7 +277,7 @@ function AddOperation(props) {
         });
     };
     const getOperationHelpertext = () => {
-        if (isAsyncAPI) {
+        if (isAsyncV3 && isAsyncAPI) {
             return intl.formatMessage({
                 id: 'Apis.Details.Resources.components.AddOperation.channel.address',
                 defaultMessage: 'Enter Channel Address',
@@ -317,7 +317,6 @@ function AddOperation(props) {
                         </InputLabel>
 
                         {isAsyncV3 ? (
-                            // V3: single-select
                             <Select
                                 id='add-operation-selection-dropdown'
                                 renderValue={(verb) => {
@@ -331,7 +330,6 @@ function AddOperation(props) {
                                 })}
                                 labelWidth={labelWidth}
                                 inputProps={{ name: 'verbs', id: 'operation-verb' }}
-                                MenuProps={{ getContentAnchorEl: null }}
                             >
                                 {getSupportedVerbs().map((verb) => (
                                     <VerbElement
@@ -406,7 +404,6 @@ function AddOperation(props) {
                         </FormHelperText>
                     </FormControl>
                 </Grid>
-                {/* <Grid item md={isAsyncAPI ? 4 : 5} xs={isAsyncAPI ? 6 : 8}> */}
                 <Grid item md={isAsyncV3 && isAsyncAPI ? 4 : 5} xs={isAsyncAPI ? 6 : 8}>
                     <TextField
                         id='operation-target'
@@ -434,7 +431,6 @@ function AddOperation(props) {
                     />
                 </Grid>
                 {isAsyncV3 && isAsyncAPI && (
-                    // <Grid item md={4} xs={6}>
                     <Grid item md={4} xs={6} sx={{ pl: 2 }}>
                         <TextField
                             id='operation-name'
