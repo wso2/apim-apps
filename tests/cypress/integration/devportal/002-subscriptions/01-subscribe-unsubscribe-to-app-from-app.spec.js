@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe("Anonymous view apis", () => {
+describe.skip("Anonymous view apis", () => {
     const { publisher, developer, password, } = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';

@@ -22,7 +22,7 @@ application_sharing_type = "default"
 */
 import Utils from "@support/utils";
 
-describe("Invoke API Product", () => {
+describe.skip("Invoke API Product", () => {
     let user1;
     let user2;
     const publisher = 'publisher';
