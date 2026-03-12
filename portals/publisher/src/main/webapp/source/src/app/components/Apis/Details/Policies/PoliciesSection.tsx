@@ -77,6 +77,11 @@ const PoliciesSection: FC<PolicySectionProps> = ({
 
     const borderColor = '';
 
+    // Derive async api version from spec directly
+    const isAsyncV3 = openAPISpec?.asyncapi
+        ? parseInt(openAPISpec.asyncapi.split('.')[0], 10) >= 3
+        : false;
+
     return (
         <StyledBox>
             {isAPILevelTabSelected ? (
@@ -108,9 +113,13 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                     </Alert>
                     {api.type === 'WS' ? (
                         Object.entries(openAPISpec.channels).map(([channelName, channelItem]) => {
-                            const operation = (channelItem as { subscribe?: any, publish?: any }).subscribe
-                                ?? (channelItem as { publish?: any }).publish;
-
+                            const operation = isAsyncV3
+                                ? channelItem
+                                : (channelItem as { subscribe?: any, publish?: any }).subscribe
+                                    ?? (channelItem as { publish?: any }).publish;
+                            const target = isAsyncV3
+                                ? (channelItem as { address: string }).address
+                                : channelName;
                             return (
                                 <Grid key={channelName} item xs={12}>
                                     <Box m={1} p={0.1} mt={1.5} sx={{ boxShadow: 0.5, bgcolor: borderColor, borderRadius: 1 }}>
@@ -127,7 +136,7 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                                                 className={classes.gridItem}
                                             >
                                                 <OperationPolicy
-                                                    target={channelName}
+                                                    target={target}
                                                     verb=""
                                                     highlight
                                                     operation={operation}

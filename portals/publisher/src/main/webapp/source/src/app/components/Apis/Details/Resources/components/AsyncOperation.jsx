@@ -38,6 +38,7 @@ import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import DescriptionAndSummary from './operationComponents/asyncapi/DescriptionAndSummary';
 import OperationGovernance from './operationComponents/asyncapi/OperationGovernance';
+import Asyncv3OperationsList from './operationComponents/asyncapi/Asyncv3OperationsList';
 import Parameters from './operationComponents/asyncapi/Parameters';
 import PayloadProperties from './operationComponents/asyncapi/PayloadProperties';
 import Runtime from './operationComponents/asyncapi/Runtime';
@@ -96,15 +97,31 @@ function AsyncOperation(props) {
         target,
         verb,
         sharedScopes,
-        componentValidator
+        componentValidator,
+        isAsyncV3,
     } = props;
 
-    const trimmedVerb = verb === 'publish' || verb === 'subscribe' ? verb.substr(0, 3) : verb;
+    const trimmedVerb = (!isAsyncV3 && (verb === 'publish' || verb === 'subscribe'))
+        ? verb.substr(0, 3)
+        : verb;
+
     const theme = useTheme();
-    const backgroundColor = theme.custom.resourceChipColors[trimmedVerb];
+    const backgroundColor = theme.custom.resourceChipColors[verb] || theme.palette.primary.main;
 
     const [isExpanded, setIsExpanded] = useState(false);
     const isUsedInAPIProduct = false;
+
+    // v3 only
+    const namedOperations = isAsyncV3
+        ? ((operation[verb] && operation[verb]['x-operations']) || [])
+        : [];
+
+    function handleDeleteNamedOperation(opName) {
+        operationsDispatcher({
+            action: 'deleteNamedOperation',
+            data: { target, verb, value: opName },
+        });
+    }
 
     /**
      *
@@ -158,101 +175,205 @@ function AsyncOperation(props) {
                     classes={{ content: classes.contentNoMargin }}
                     sx={highlight ? { backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1) } : { }}
                 >
-                    <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
-                        <Grid item md={11}>
-                            <Badge invisible='false' color='error' variant='dot'>
-                                <Button
-                                    disableFocusRipple
-                                    variant='outlined'
-                                    size='small'
-                                    className={classes.customButton}
-                                    sx={{ borderColor: backgroundColor, color: backgroundColor }}
-                                >
-                                    {trimmedVerb.toUpperCase()}
-                                </Button>
-                            </Badge>
-                            <Typography display='inline' style={{ margin: '0px 30px' }} variant='h6' gutterBottom>
-                                {target}
-                            </Typography>
-                        </Grid>
-                        <Grid item md={1} justify='flex-end' container>
-                            {!(disableDelete || markAsDelete) && (
+                    {isAsyncV3 ? (
+                        <Box
+                            display='flex'
+                            alignItems='center'
+                            justifyContent='space-between'
+                            width='100%'
+                        >
+                            <Box display='flex' alignItems='center' gap={2} sx={{ flex: 4 }}>
+                                <Badge invisible='false' color='error' variant='dot'>
+                                    <Button
+                                        disableFocusRipple
+                                        variant='outlined'
+                                        size='small'
+                                        className={classes.customButton}
+                                        sx={{ borderColor: backgroundColor, color: backgroundColor }}
+                                    >
+                                        {verb.toUpperCase()}
+                                    </Button>
+                                </Badge>
+                                <Typography display='inline' style={{ margin: '0px 30px' }} variant='h6' gutterBottom>
+                                    {target}
+                                </Typography>
+                            </Box>
+                            <Box display='flex' alignItems='center' gap={1} sx={{ flex: 1, justifyContent: 'center' }}>
+                                <Typography variant='body2'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Resources.components.AsyncOperation.operations.count.label'
+                                        defaultMessage='<b>Operations</b> ({count})'
+                                        values={{
+                                            count: namedOperations.length,
+                                            b: (chunks) => <strong>{chunks}</strong>,
+                                        }}
+                                    />
+                                </Typography>
+                            </Box>
+                            <Box display='flex' alignItems='center' sx={{ flex: 1, justifyContent: 'flex-end' }}>
+                                {!(disableDelete || markAsDelete) && (
+                                    <Tooltip
+                                        title={isUsedInAPIProduct? (
+                                            <FormattedMessage
+                                                id={'Apis.Details.Resources.components.Operation.cannot.delete'
+                                                + '.when.used.in.api.products'}
+                                                defaultMessage='Cannot delete operation when used in an API product'
+                                            />
+                                        ) : (
+                                            <FormattedMessage
+                                                id='Apis.Details.Resources.components.Operation.Delete'
+                                                defaultMessage='Delete'
+                                            />
+                                        )}
+                                    >
+                                        <div>
+                                            <IconButton
+                                                disabled={Boolean(isUsedInAPIProduct)
+                                                    || disableUpdate
+                                                    || isRestricted(['apim:api_publish', 'apim:api_create'])}
+                                                onClick={toggleDelete}
+                                                aria-label='delete'
+                                                size='large'>
+                                                <DeleteIcon fontSize='small' />
+                                            </IconButton>
+                                        </div>
+                                    </Tooltip>
+                                )}
                                 <Tooltip
                                     title={
-                                        isUsedInAPIProduct
+                                        (!operation['x-auth-type'] || operation['x-auth-type'].toLowerCase() !== 'none')
                                             ? (
                                                 <FormattedMessage
-                                                    id={'Apis.Details.Resources.components.Operation.cannot.delete'
-                                                    + '.when.used.in.api.products'}
-                                                    defaultMessage='Cannot delete operation when used in an API product'
+                                                    id={'Apis.Details.Resources.components.AsyncOperation.security'
+                                                        + '.enabled'}
+                                                    defaultMessage='Security enabled'
                                                 />
                                             )
                                             : (
                                                 <FormattedMessage
-                                                    id='Apis.Details.Resources.components.Operation.Delete'
-                                                    defaultMessage='Delete'
+                                                    id='Apis.Details.Resources.components.AsyncOperation.no.security'
+                                                    defaultMessage='No security'
+                                                />
+                                            )
+                                    }
+                                >
+                                    <IconButton
+                                        aria-label='Security'
+                                    >
+                                        {(!operation['x-auth-type'] || operation['x-auth-type'].toLowerCase()
+                                        !== 'none')
+                                            ? <LockIcon fontSize='small' />
+                                            : <LockOpenIcon fontSize='small' />}
+                                    </IconButton>
+                                </Tooltip>
+                            </Box>
+                        </Box>
+                    ) : (
+                        <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
+                            <Grid item md={11}>
+                                <Badge invisible='false' color='error' variant='dot'>
+                                    <Button
+                                        disableFocusRipple
+                                        variant='outlined'
+                                        size='small'
+                                        className={classes.customButton}
+                                        sx={{ borderColor: backgroundColor, color: backgroundColor }}
+                                    >
+                                        {trimmedVerb.toUpperCase()}
+                                    </Button>
+                                </Badge>
+                                <Typography display='inline' style={{ margin: '0px 30px' }} variant='h6' gutterBottom>
+                                    {target}
+                                </Typography>
+                            </Grid>
+                            <Grid item md={1} justify='flex-end' container>
+                                {!(disableDelete || markAsDelete) && (
+                                    <Tooltip
+                                        title={
+                                            isUsedInAPIProduct
+                                                ? (
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Resources.components.Operation.cannot.delete'
+                                                        + '.when.used.in.api.products'}
+                                                        defaultMessage=
+                                                            'Cannot delete operation when used in an API product'
+                                                    />
+                                                )
+                                                : (
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Resources.components.Operation.Delete'
+                                                        defaultMessage='Delete'
+                                                    />
+                                                )
+                                        }
+                                        aria-label={(
+                                            <FormattedMessage
+                                                id='Apis.Details.Resources.components.Operation.delete.operation'
+                                                defaultMessage='Delete operation'
+                                            />
+                                        )}
+                                    >
+                                        <div>
+                                            <IconButton
+                                                disabled={Boolean(isUsedInAPIProduct)
+                                                    || disableUpdate
+                                                    || isRestricted(['apim:api_publish', 'apim:api_create'])}
+                                                onClick={toggleDelete}
+                                                aria-label='delete'
+                                                size='large'>
+                                                <DeleteIcon fontSize='small' />
+                                            </IconButton>
+                                        </div>
+                                    </Tooltip>
+                                )}
+                                <Tooltip
+                                    title={
+                                        // security is enabled if x-auth-type is not present or not set to 'none'
+                                        (!operation['x-auth-type'] || operation['x-auth-type'].toLowerCase() !== 'none')
+                                            ? (
+                                                <FormattedMessage
+                                                    id={'Apis.Details.Resources.components.AsyncOperation.security'
+                                                        + '.enabled'}
+                                                    defaultMessage='Security enabled'
+                                                />
+                                            )
+                                            : (
+                                                <FormattedMessage
+                                                    id='Apis.Details.Resources.components.AsyncOperation.no.security'
+                                                    defaultMessage='No security'
                                                 />
                                             )
                                     }
                                     aria-label={(
                                         <FormattedMessage
-                                            id='Apis.Details.Resources.components.Operation.delete.operation'
-                                            defaultMessage='Delete operation'
+                                            id='Apis.Details.Resources.components.AsyncOperation.security.operation'
+                                            defaultMessage='Security '
                                         />
                                     )}
                                 >
-                                    <div>
-                                        <IconButton
-                                            disabled={Boolean(isUsedInAPIProduct)
-                                                || disableUpdate
-                                                || isRestricted(['apim:api_publish', 'apim:api_create'])}
-                                            onClick={toggleDelete}
-                                            aria-label='delete'
-                                            size='large'>
-                                            <DeleteIcon fontSize='small' />
-                                        </IconButton>
-                                    </div>
+                                    <IconButton
+                                        aria-label='Security'
+                                    >
+                                        {(!operation['x-auth-type'] || operation['x-auth-type'].toLowerCase()
+                                        !== 'none')
+                                            ? <LockIcon fontSize='small' />
+                                            : <LockOpenIcon fontSize='small' />}
+                                    </IconButton>
                                 </Tooltip>
-                            )}
-                            <Tooltip
-                                title={
-                                    // security is enabled if x-auth-type is not present or not set to 'none'
-                                    (!operation['x-auth-type'] || operation['x-auth-type'].toLowerCase() !== 'none')
-                                        ? (
-                                            <FormattedMessage
-                                                id={'Apis.Details.Resources.components.AsyncOperation.security'
-                                                    + '.enabled'}
-                                                defaultMessage='Security enabled'
-                                            />
-                                        )
-                                        : (
-                                            <FormattedMessage
-                                                id='Apis.Details.Resources.components.AsyncOperation.no.security'
-                                                defaultMessage='No security'
-                                            />
-                                        )
-                                }
-                                aria-label={(
-                                    <FormattedMessage
-                                        id='Apis.Details.Resources.components.AsyncOperation.security.operation'
-                                        defaultMessage='Security '
-                                    />
-                                )}
-                            >
-                                <IconButton
-                                    aria-label='Security'
-                                >
-                                    {(!operation['x-auth-type'] || operation['x-auth-type'].toLowerCase() !== 'none')
-                                        ? <LockIcon fontSize='small' />
-                                        : <LockOpenIcon fontSize='small' />}
-                                </IconButton>
-                            </Tooltip>
+                            </Grid>
                         </Grid>
-                    </Grid>
+                    )}
                 </AccordionSummary>
                 <Divider sx={{ backgroundColor }} />
                 <AccordionDetails>
                     <Grid spacing={2} container direction='row' justifyContent='flex-start' alignItems='flex-start'>
+                        {isAsyncV3 && (
+                            <Asyncv3OperationsList
+                                operations={namedOperations}
+                                onDeleteOperation={handleDeleteNamedOperation}
+                                disableDelete={disableDelete || disableUpdate}
+                            />
+                        )}
                         <DescriptionAndSummary
                             operation={operation}
                             operationsDispatcher={operationsDispatcher}
@@ -277,6 +398,8 @@ function AsyncOperation(props) {
                             disableUpdate={disableUpdate}
                             target={target}
                             verb={verb}
+                            namedOperations={namedOperations}
+                            isAsyncV3={isAsyncV3}
                         />
                         {(api.gatewayVendor === 'wso2') && (
                             <>
@@ -315,6 +438,7 @@ AsyncOperation.defaultProps = {
     disableDelete: false,
     onMarkAsDelete: () => {},
     markAsDelete: false,
+    isAsyncV3: false,
 };
 AsyncOperation.propTypes = {
     api: PropTypes.shape({ scopes: PropTypes.arrayOf(PropTypes.shape({})), resourcePolicies: PropTypes.shape({}) })
@@ -335,6 +459,7 @@ AsyncOperation.propTypes = {
     sharedScopes: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
     highlight: PropTypes.bool,
     disableUpdate: PropTypes.bool,
+    isAsyncV3: PropTypes.bool,
 };
 
 export default React.memo(AsyncOperation);

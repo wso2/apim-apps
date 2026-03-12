@@ -130,27 +130,26 @@ function VerbElement(props) {
 
 const SUPPORTED_VERBS = {
     REST: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
+    // V3 uses SEND/RECEIVE, V2 uses PUB/SUB
+    WEBSUB_V3: ['RECEIVE'],
+    SSE_V3: ['RECEIVE'],
+    WS_V3: ['SEND', 'RECEIVE'],
     WEBSUB: ['SUB'],
     SSE: ['SUB'],
     WS: ['PUB', 'SUB'],
 };
 
-/**
- *
- *
- * @export
- * @param {*} props
- * @returns
- */
 function AddOperation(props) {
-    const { operationsDispatcher, isAsyncAPI, api } = props;
+    const { operationsDispatcher, isAsyncAPI, api, isAsyncV3 } = props;
     const inputLabel = useRef(null);
     const [labelWidth, setLabelWidth] = useState(0);
     const intl = useIntl();
     const isWebSub = api && api.type === 'WEBSUB';
 
     function getSupportedVerbs() {
-        return isAsyncAPI ? SUPPORTED_VERBS[api.type] : SUPPORTED_VERBS.REST;
+        if (!isAsyncAPI) return SUPPORTED_VERBS.REST;
+        const key = isAsyncV3 ? `${api.type}_V3` : api.type;
+        return SUPPORTED_VERBS[key] || SUPPORTED_VERBS[api.type];
     }
 
     /**
@@ -165,16 +164,22 @@ function AddOperation(props) {
         switch (type) {
             case 'target':
             case 'verbs':
+            case 'operationName':
                 return { ...state, [type]: value };
             case 'clear':
-                return { verbs: [], target: '' };
+                return { verbs: [], target: '', operationName: '' };
             case 'error':
                 return { ...state, error: value };
             default:
                 return state;
         }
     }
-    const [newOperations, newOperationsDispatcher] = useReducer(newOperationsReducer, { verbs: [] });
+    
+    const [newOperations, newOperationsDispatcher] = useReducer(
+        newOperationsReducer,
+        { verbs: [], target: '', operationName: '' },
+    );
+
     React.useEffect(() => {
         setLabelWidth(inputLabel.current.offsetWidth);
     }, []);
@@ -209,6 +214,14 @@ function AddOperation(props) {
             }));
             return;
         }
+        // For AsyncAPI v3, operationName is required
+        if (isAsyncV3 && !newOperations.operationName) {
+            Alert.warning(intl.formatMessage({
+                id: 'Apis.Details.Topics.components.AddOperation.operation.name.cannot.be.empty.warning',
+                defaultMessage: "Operation name can't be empty",
+            }));
+            return;
+        }
         if (api && api.type && api.type.toLowerCase() === 'websub'
             && APIValidation.websubOperationTarget.validate(newOperations.target).error !== null) {
             Alert.warning(intl.formatMessage({
@@ -227,10 +240,66 @@ function AddOperation(props) {
         operationsDispatcher({ action: 'add', data: newOperations });
         clearInputs();
     }
+    const getOperationLabel = () => {
+        if (isAsyncAPI) {
+            return intl.formatMessage({
+                id: 'Apis.Details.Resources.components.AddOperation.channel.address.label',
+                defaultMessage: 'Channel Address',
+            });
+        }
+        if (isAsyncAPI) {
+            return intl.formatMessage({
+                id: 'Apis.Details.Resources.components.AddOperation.operation.target.topic.name.label',
+                defaultMessage: 'Topic Name',
+            });
+        }
+        return intl.formatMessage({
+            id: 'Apis.Details.Resources.components.AddOperation.operation.target.uri.pattern.label',
+            defaultMessage: 'URI Pattern',
+        });
+    };
+    const getOperationPlaceholder = () => {
+        if (isAsyncAPI) {
+            return intl.formatMessage({
+                id: 'Apis.Details.Resources.components.AddOperation.channel.address',
+                defaultMessage: 'Enter Channel Address',
+            });
+        }
+        if (isAsyncAPI) {
+            return intl.formatMessage({
+                id: 'Apis.Details.Resources.components.AddOperation.operation.target.topic.name',
+                defaultMessage: 'Enter topic name',
+            });
+        }
+        return intl.formatMessage({
+            id: 'Apis.Details.Resources.components.AddOperation.operation.target.uri.pattern',
+            defaultMessage: 'Enter URI pattern',
+        });
+    };
+    const getOperationHelpertext = () => {
+        if (isAsyncAPI) {
+            return intl.formatMessage({
+                id: 'Apis.Details.Resources.components.AddOperation.channel.address',
+                defaultMessage: 'Enter Channel Address',
+            });
+        }
+        if (isAsyncAPI) {
+            return intl.formatMessage({
+                id: 'Apis.Details.Resources.components.AddOperation.operation.target.topic.name',
+                defaultMessage: 'Enter topic name',
+            });
+        }
+        return intl.formatMessage({
+            id: 'Apis.Details.Resources.components.AddOperation.operation.target.uri.pattern',
+            defaultMessage: 'Enter URI pattern',
+        });
+    };
+
+
     return (
         <StyledPaper className={classes.paper}>
             <Grid container direction='row' spacing={0} justifyContent='center' alignItems='center'>
-                <Grid item md={5} xs={12}>
+                <Grid item md={isAsyncV3 && isAsyncAPI ? 2 : 5} xs={12}>
                     <FormControl margin='dense' variant='outlined' className={classes.formControl}>
                         <InputLabel ref={inputLabel} htmlFor='operation-verb'>
                             {isAsyncAPI && (
@@ -247,52 +316,73 @@ function AddOperation(props) {
                             )}
                         </InputLabel>
 
-                        <Select
-                            id='add-operation-selection-dropdown'
-                            multiple
-                            renderValue={(verbs) => {
-                                const remaining = [];
-                                const verbElements = verbs.map((verb, index) => {
-                                    if (index < 2) {
-                                        return <VerbElement isButton verb={verb} />;
-                                    }
-                                    remaining.push(verb.toUpperCase());
-                                    return null;
-                                });
-                                const allSelected = getSupportedVerbs().length === newOperations.verbs.length;
-                                return (
-                                    <>
-                                        {verbElements}
-                                        {remaining.length > 0 && (
-                                            <Tooltip title={remaining.join(', ')} placement='top'>
-                                                <Box display='inline' color='text.hint' m={1} fontSize='subtitle1'>
-                                                    {allSelected ? 'All selected' : `${verbs.length - 2} more`}
-                                                </Box>
-                                            </Tooltip>
-                                        )}
-                                    </>
-                                );
-                            }}
-                            value={newOperations.verbs}
-                            onChange={({ target: { name, value } }) => newOperationsDispatcher({ type: name, value })}
-                            labelWidth={labelWidth}
-                            inputProps={{
-                                name: 'verbs',
-                                id: 'operation-verb',
-                            }}
-                            MenuProps={{
-                                getContentAnchorEl: null,
-                            }}
-                        >
-                            {getSupportedVerbs().map((verb) => (
-                                <VerbElement
-                                    checked={newOperations.verbs.includes(verb.toLowerCase())}
-                                    value={verb.toLowerCase()}
-                                    verb={verb}
-                                />
-                            ))}
-                        </Select>
-
+                        {isAsyncV3 ? (
+                            // V3: single-select
+                            <Select
+                                id='add-operation-selection-dropdown'
+                                renderValue={(verb) => {
+                                    if (!verb || typeof verb !== 'string') return null;
+                                    return <VerbElement key={verb} isButton verb={verb} />;
+                                }}
+                                value={newOperations.verbs[0] ?? ''}
+                                onChange={({ target: { name, value } }) => newOperationsDispatcher({
+                                    type: name,
+                                    value: [value],  // wrap in array to keep rest of codebase compatible
+                                })}
+                                labelWidth={labelWidth}
+                                inputProps={{ name: 'verbs', id: 'operation-verb' }}
+                                MenuProps={{ getContentAnchorEl: null }}
+                            >
+                                {getSupportedVerbs().map((verb) => (
+                                    <VerbElement
+                                        key={verb}
+                                        checked={newOperations.verbs.includes(verb.toLowerCase())}
+                                        value={verb.toLowerCase()}
+                                        verb={verb}
+                                    />
+                                ))}
+                            </Select>
+                        ) : (
+                            <Select
+                                id='add-operation-selection-dropdown'
+                                multiple
+                                renderValue={(verbs) => {
+                                    const remaining = [];
+                                    const verbElements = verbs.map((verb, index) => {
+                                        if (index < 2) return <VerbElement isButton verb={verb} />;
+                                        remaining.push(verb.toUpperCase());
+                                        return null;
+                                    });
+                                    const allSelected = getSupportedVerbs().length === newOperations.verbs.length;
+                                    return (
+                                        <>
+                                            {verbElements}
+                                            {remaining.length > 0 && (
+                                                <Tooltip title={remaining.join(', ')} placement='top'>
+                                                    <Box display='inline' color='text.hint' m={1} fontSize='subtitle1'>
+                                                        {allSelected ? 'All selected' : `${verbs.length - 2} more`}
+                                                    </Box>
+                                                </Tooltip>
+                                            )}
+                                        </>
+                                    );
+                                }}
+                                value={newOperations.verbs}
+                                onChange={({ target: { name, value } }) =>
+                                    newOperationsDispatcher({ type: name, value })}
+                                labelWidth={labelWidth}
+                                inputProps={{ name: 'verbs', id: 'operation-verb' }}
+                                MenuProps={{ getContentAnchorEl: null }}
+                            >
+                                {getSupportedVerbs().map((verb) => (
+                                    <VerbElement
+                                        checked={newOperations.verbs.includes(verb.toLowerCase())}
+                                        value={verb.toLowerCase()}
+                                        verb={verb}
+                                    />
+                                ))}
+                            </Select>
+                        )}
                         <FormHelperText id='my-helper-text'>
                             {newOperations.verbs.includes('options') && (
                                 // TODO: Add i18n to tooltip text ~tmkb
@@ -316,53 +406,66 @@ function AddOperation(props) {
                         </FormHelperText>
                     </FormControl>
                 </Grid>
-                <Grid item md={5} xs={8}>
+                {/* <Grid item md={isAsyncAPI ? 4 : 5} xs={isAsyncAPI ? 6 : 8}> */}
+                <Grid item md={isAsyncV3 && isAsyncAPI ? 4 : 5} xs={isAsyncAPI ? 6 : 8}>
                     <TextField
                         id='operation-target'
-                        label={isAsyncAPI ? intl.formatMessage({
-                            id: 'Apis.Details.Resources.components.AddOperation.operation.target.topic.name.label',
-                            defaultMessage: 'Topic Name',
-                        }) : intl.formatMessage({
-                            id: 'Apis.Details.Resources.components.AddOperation.operation.target.uri.pattern.label',
-                            defaultMessage: 'URI Pattern',
-                        })}
+                        label={getOperationLabel()}
                         error={Boolean(newOperations.error)}
                         autoFocus
                         name='target'
                         value={newOperations.target}
                         onChange={({ target: { name, value } }) => newOperationsDispatcher({
                             type: name,
-                            value: !isWebSub && !value.startsWith('/') ? `/${value}` : value,
+                            value: !isWebSub && !isAsyncAPI && !value.startsWith('/') ? `/${value}` : value,
                         })}
-                        placeholder={isAsyncAPI ? intl.formatMessage({
-                            id: 'Apis.Details.Resources.components.AddOperation.operation.target.topic.name',
-                            defaultMessage: 'Enter topic name',
-                        }) : intl.formatMessage({
-                            id: 'Apis.Details.Resources.components.AddOperation.operation.target.uri.pattern',
-                            defaultMessage: 'Enter URI pattern',
-                        })}
-                        helperText={newOperations.error || (isAsyncAPI ? intl.formatMessage({
-                            id: 'Apis.Details.Resources.components.AddOperation.operation.target.topic.name',
-                            defaultMessage: 'Enter topic name',
-                        }) : intl.formatMessage({
-                            id: 'Apis.Details.Resources.components.AddOperation.operation.target.uri.pattern',
-                            defaultMessage: 'Enter URI pattern',
-                        }))}
+                        placeholder={getOperationPlaceholder()}
+                        helperText={newOperations.error || getOperationHelpertext()}
                         fullWidth
                         margin='dense'
                         variant='outlined'
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
+                        InputLabelProps={{ shrink: true }}
                         onKeyPress={(event) => {
                             if (event.key === 'Enter') {
-                                // key code 13 is for `Enter` key
-                                event.preventDefault(); // To prevent form submissions
+                                event.preventDefault();
                                 addOperation();
                             }
                         }}
                     />
                 </Grid>
+                {isAsyncV3 && isAsyncAPI && (
+                    // <Grid item md={4} xs={6}>
+                    <Grid item md={4} xs={6} sx={{ pl: 2 }}>
+                        <TextField
+                            id='operation-name'
+                            label={intl.formatMessage({
+                                id: 'Apis.Details.Resources.components.AddOperation.operation.name.label',
+                                defaultMessage: 'Operation Name',
+                            })}
+                            name='operationName'
+                            value={newOperations.operationName}
+                            onChange={({ target: { name, value } }) => newOperationsDispatcher({ type: name, value })}
+                            placeholder={intl.formatMessage({
+                                id: 'Apis.Details.Resources.components.AddOperation.operation.name.placeholder',
+                                defaultMessage: 'Enter Operation Name',
+                            })}
+                            helperText={intl.formatMessage({
+                                id: 'Apis.Details.Resources.components.AddOperation.operation.name.helper',
+                                defaultMessage: 'Enter Operation Name',
+                            })}
+                            fullWidth
+                            margin='dense'
+                            variant='outlined'
+                            InputLabelProps={{ shrink: true }}
+                            onKeyPress={(event) => {
+                                if (event.key === 'Enter') {
+                                    event.preventDefault();
+                                    addOperation();
+                                }
+                            }}
+                        />
+                    </Grid>
+                )}
                 <Grid item md={2} xs={4}>
                     <Tooltip
                         title={(
@@ -413,6 +516,18 @@ function AddOperation(props) {
 
 AddOperation.propTypes = {
     operationsDispatcher: PropTypes.func.isRequired,
+    isAsyncAPI: PropTypes.bool,
+    isAsyncV3: PropTypes.bool,
+    api: PropTypes.shape({
+        type: PropTypes.string,
+        asyncTransportProtocol: PropTypes.string,
+    }),
+};
+
+AddOperation.defaultProps = {
+    isAsyncAPI: false,
+    api: null,
+    isAsyncV3: false,
 };
 
 export default React.memo(AddOperation);
