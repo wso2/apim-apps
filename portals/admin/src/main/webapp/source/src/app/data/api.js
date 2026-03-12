@@ -532,6 +532,20 @@ class API extends Resource {
         });
     }
 
+    /**
+     * Update an application's token type
+     */
+    upgradeApplicationTokenType(id) {
+        return this.client.then((client) => {
+            return client.apis[
+                'Application'
+            ].post_applications__applicationId__upgrade_token_type(
+                {applicationId: id },
+                this._requestMetaData(),
+            );
+        });
+    }
+
      /**
      * Update an api's owner
      */

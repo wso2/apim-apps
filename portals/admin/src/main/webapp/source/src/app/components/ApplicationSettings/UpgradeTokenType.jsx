@@ -84,7 +84,7 @@ export default function UpgradeTokenType(props) {
             disablePadding: false,
             label: (<FormattedMessage
                 id='Applications.Listing.ApplicationTableHead.createdTime'
-                defaultMessage='Created Time'
+                defaultMessage='Created Date'
             />),
             sorting: true,
         },
@@ -111,7 +111,7 @@ export default function UpgradeTokenType(props) {
         },
         {
             id: 'createdTime',
-            render: (app) => app.createdTime,
+            render: (app) => new Date(app.createdTime).toLocaleDateString('en-CA'),
         },
         {
             id: 'actions',
@@ -224,6 +224,7 @@ export default function UpgradeTokenType(props) {
                             EditComponent={EditApplication}
                             apiCall={apiCall}
                             columns={columns}
+                            filterTokenTypes={['OAUTH', 'DEFAULT']}
                         />
                         <TableFooter>
                             <TableRow>

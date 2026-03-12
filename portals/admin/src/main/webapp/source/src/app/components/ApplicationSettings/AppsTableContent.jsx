@@ -62,13 +62,16 @@ class AppsTableContent extends Component {
      */
     render() {
         const {
-            apps, columns, editComponentProps, apiCall,
+            apps, columns, editComponentProps, apiCall, filterTokenTypes,
         } = this.props;
         const { notFound } = this.state;
 
         if (notFound) {
             return <ResourceNotFound />;
         }
+        const filteredApps = filterTokenTypes
+            ? apps.filter((app) => filterTokenTypes.includes(app.tokenType))
+            : apps;
         const rowHeight = 48;
         return (
             <TableBody
@@ -82,7 +85,7 @@ class AppsTableContent extends Component {
                     },
                 }}
             >
-                {apps && apps.map((app) => {
+                {filteredApps && filteredApps.map((app) => {
                     return (
                         <TableRow
                             sx={{
@@ -116,6 +119,11 @@ class AppsTableContent extends Component {
         );
     }
 }
+
+AppsTableContent.defaultProps = {
+    filterTokenTypes: null,
+};
+
 AppsTableContent.propTypes = {
     toggleDeleteConfirmation: PropTypes.func.isRequired,
     apps: PropTypes.instanceOf(Map).isRequired,
@@ -125,5 +133,6 @@ AppsTableContent.propTypes = {
             render: PropTypes.func.isRequired,
         }),
     ).isRequired,
+    filterTokenTypes: PropTypes.arrayOf(PropTypes.string),
 };
 export default (AppsTableContent);
