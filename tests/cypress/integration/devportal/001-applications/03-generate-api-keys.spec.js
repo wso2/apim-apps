@@ -72,10 +72,15 @@ describe("Application tests", () => {
             cy.get('#api-key-value', { timeout: 30000 }).should('not.be.empty');
             cy.contains('button', 'Close').click();
         });
+        // Ensure the modal is fully closed before starting the next key generation.
+        cy.get('[role="dialog"]').should('not.exist');
     };
 
     const generateApiKey = (name, restrictionType = 'none', restrictionValue = '') => {
-        cy.contains('button', 'Generate API Key').click();
+        cy.contains('button', 'Generate API Key', { timeout: 30000 })
+            .should('be.visible')
+            .should('not.be.disabled');
+        cy.contains('button', 'Generate API Key', { timeout: 30000 }).click({ force: true });
         cy.get('[role="dialog"]').last().within(() => {
             cy.contains('label', 'Name').parents('.MuiFormControl-root').find('input').type(name);
         });
@@ -92,7 +97,9 @@ describe("Application tests", () => {
         }
 
         cy.get('[role="dialog"]').last().within(() => {
-            cy.contains('button', /^Generate API Key$/).click();
+            // Re-query before click to avoid detached-element failures during dialog re-renders.
+            cy.contains('button', /^Generate API Key$/, { timeout: 30000 }).should('be.visible');
+            cy.contains('button', /^Generate API Key$/, { timeout: 30000 }).click();
         });
         checkIfKeyExists();
     };
