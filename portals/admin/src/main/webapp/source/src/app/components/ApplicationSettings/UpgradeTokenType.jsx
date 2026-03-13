@@ -69,7 +69,7 @@ export default function UpgradeTokenType(props) {
             numeric: false,
             disablePadding: true,
             label: (<FormattedMessage
-                id='ApplicationSettings.UpgradeTokeType.column.name'
+                id='ApplicationSettings.UpgradeTokenType.column.name'
                 defaultMessage='Name'
             />),
             sorting: true,
@@ -79,7 +79,7 @@ export default function UpgradeTokenType(props) {
             numeric: false,
             disablePadding: false,
             label: (<FormattedMessage
-                id='ApplicationSettings.UpgradeTokeType.column.owner'
+                id='ApplicationSettings.UpgradeTokenType.column.owner'
                 defaultMessage='Owner'
             />),
             sorting: true,
@@ -89,7 +89,7 @@ export default function UpgradeTokenType(props) {
             numeric: false,
             disablePadding: false,
             label: (<FormattedMessage
-                id='ApplicationSettings.UpgradeTokeType.column.createdTime'
+                id='ApplicationSettings.UpgradeTokenType.column.createdTime'
                 defaultMessage='Created Date'
             />),
             sorting: true,
@@ -99,7 +99,7 @@ export default function UpgradeTokenType(props) {
             numeric: false,
             disablePadding: false,
             label: (<FormattedMessage
-                id='ApplicationSettings.UpgradeTokeType.column.actions'
+                id='ApplicationSettings.UpgradeTokenType.column.actions'
                 defaultMessage='Actions'
             />),
             sorting: false,
@@ -152,7 +152,7 @@ export default function UpgradeTokenType(props) {
                                     id='search-label'
                                     placeholder={intl.formatMessage({
                                         defaultMessage: 'Search Application by Name/Owner',
-                                        id: 'ApplicationSettings.UpgradeTokeType.search.placeholder',
+                                        id: 'ApplicationSettings.UpgradeTokenType.search.placeholder',
                                     })}
                                     sx={(theme) => ({
                                         '& .search-input': {
@@ -172,7 +172,7 @@ export default function UpgradeTokenType(props) {
                                         title={
                                             intl.formatMessage({
                                                 defaultMessage: 'Clear Search',
-                                                id: 'ApplicationSettings.UpgradeTokeType.clear.search',
+                                                id: 'ApplicationSettings.UpgradeTokenType.clear.search',
                                             })
                                         }
                                     >
@@ -195,12 +195,12 @@ export default function UpgradeTokenType(props) {
                                 >
                                     {loading ? (
                                         <FormattedMessage
-                                            id='ApplicationSettings.UpgradeTokeType.applications.searching'
+                                            id='ApplicationSettings.UpgradeTokenType.applications.searching'
                                             defaultMessage='Searching'
                                         />
                                     ) : (
                                         <FormattedMessage
-                                            id='ApplicationSettings.UpgradeTokeType.applications.search'
+                                            id='ApplicationSettings.UpgradeTokenType.applications.search'
                                             defaultMessage='Search'
                                         />
                                     )}
@@ -233,7 +233,7 @@ export default function UpgradeTokenType(props) {
                                     labelDisplayedRows={({ from, to, count }) => {
                                         if (count !== -1) {
                                             return intl.formatMessage({
-                                                id: 'ApplicationSettings.UpgradeTokeType.applications.'
+                                                id: 'ApplicationSettings.UpgradeTokenType.applications.'
                                                 + 'list.rows.range.label',
                                                 defaultMessage: '{from}-{to} of {count}',
                                             },
@@ -242,14 +242,14 @@ export default function UpgradeTokenType(props) {
                                             });
                                         }
                                         return intl.formatMessage({
-                                            id: 'ApplicationSettings.UpgradeTokeType.'
+                                            id: 'ApplicationSettings.UpgradeTokenType.'
                                             + 'applications.list.rows.more.than.label',
                                             defaultMessage: 'more than {to}',
                                         },
                                         { to });
                                     }}
                                     labelRowsPerPage={intl.formatMessage({
-                                        id: 'ApplicationSettings.UpgradeTokeType.applications.'
+                                        id: 'ApplicationSettings.UpgradeTokenType.applications.'
                                         + 'list.rows.show.label',
                                         defaultMessage: 'Show',
                                     })}
@@ -272,7 +272,7 @@ export default function UpgradeTokenType(props) {
                     <Alert severity='info'>
                         <Typography variant='subtitle2'>
                             <FormattedMessage
-                                id='ApplicationSettings.UpgradeTokeType.empty.message'
+                                id='ApplicationSettings.UpgradeTokenType.empty.message'
                                 defaultMessage='No Data to Display'
                             />
                         </Typography>

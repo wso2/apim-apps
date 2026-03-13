@@ -36,6 +36,7 @@ const UpgradeToJWTDialog = (props) => {
         updateList, app,
     } = props;
     const [open, setOpen] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
 
     const handleOpen = () => {
         setOpen(true);
@@ -45,29 +46,29 @@ const UpgradeToJWTDialog = (props) => {
         setOpen(false);
     };
 
-    const handleUpgrade = () => {
-        return restApi.upgradeApplicationTokenType(app.applicationId)
-            .then(() => {
-                Alert.success(intl.formatMessage({
-                    id: 'ApplicationSettings.UpgradeToJWTDialog.app.upgrade.successful',
-                    defaultMessage: 'Application {appName} upgraded to JWT successfully',
-                }, {
-                    appName: app.name,
-                }));
-            })
-            .catch(() => {
-                const upgradeError = intl.formatMessage({
-                    id: 'ApplicationSettings.UpgradeToJWTDialog.app.upgrade.error',
-                    defaultMessage: 'Error while upgrading application {appName} to JWT',
-                }, {
-                    appName: app.name,
-                });
-                Alert.error(upgradeError);
-            })
-            .finally(() => {
-                handleClose();
-                updateList();
+    const handleUpgrade = async () => {
+        setSubmitting(true);
+        try {
+            await restApi.upgradeApplicationTokenType(app.applicationId);
+            Alert.success(intl.formatMessage({
+                id: 'ApplicationSettings.UpgradeToJWTDialog.app.upgrade.successful',
+                defaultMessage: 'Application {appName} upgraded to JWT successfully',
+            }, {
+                appName: app.name,
+            }));
+            handleClose();
+            updateList();
+        } catch {
+            const upgradeError = intl.formatMessage({
+                id: 'ApplicationSettings.UpgradeToJWTDialog.app.upgrade.error',
+                defaultMessage: 'Error while upgrading application {appName} to JWT',
+            }, {
+                appName: app.name,
             });
+            Alert.error(upgradeError);
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -142,7 +143,7 @@ const UpgradeToJWTDialog = (props) => {
                 </DialogContent>
 
                 <DialogActions>
-                    <Button onClick={handleClose}>
+                    <Button onClick={handleClose} disabled={submitting}>
                         {intl.formatMessage({
                             id: 'ApplicationSettings.UpgradeToJWTDialog.button.cancel',
                             defaultMessage: 'Cancel',
@@ -152,6 +153,7 @@ const UpgradeToJWTDialog = (props) => {
                         onClick={handleUpgrade}
                         variant='contained'
                         color='primary'
+                        disabled={submitting}
                     >
                         {intl.formatMessage({
                             id: 'ApplicationSettings.UpgradeToJWTDialog.button.upgrade',

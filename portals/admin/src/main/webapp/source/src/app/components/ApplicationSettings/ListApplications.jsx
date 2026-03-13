@@ -231,7 +231,7 @@ export default function ListApplications() {
             <Link
                 href={`${Configurations.app.docUrl}api-security/key-management/tokens/jwt-tokens/`}
                 target='_blank'
-                rel='noopener noreferre'
+                rel='noopener noreferrer'
             >
                 {intl.formatMessage({
                     defaultMessage: 'Learn More…',
@@ -250,7 +250,10 @@ export default function ListApplications() {
             label: (
                 <Box sx={{ display: 'flex', alignItems: 'center', color: 'warning.main' }}>
                     <WarningAmberIcon sx={{ fontSize: 18, mr: 1 }} />
-                    Upgrade Legacy Applications
+                    {intl.formatMessage({
+                        defaultMessage: 'Upgrade Legacy Applications',
+                        id: 'ApplicationSettings.ListApplications.upgrade.legacy.app.tab.title',
+                    })}
                 </Box>
             ),
             content: <UpgradeTokenType {...childProps} />,

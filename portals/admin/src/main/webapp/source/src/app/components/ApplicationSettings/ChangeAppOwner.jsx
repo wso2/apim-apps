@@ -209,6 +209,10 @@ export default function ChangeAppOwner(props) {
                             rowsPerPage={rowsPerPage}
                             editComponentProps={{
                                 icon: <EditIcon aria-label='edit-application-settings' />,
+                                triggerButtonText: {
+                                    id: 'ApplicationSettings.ChangeAppOwner.applications.action.change.owner',
+                                    defaultMessage: 'Change Owner',
+                                },
                                 title: intl.formatMessage({
                                     id: 'ApplicationSettings.ChangeAppOwner.applications.list.title',
                                     defaultMessage: 'Change Application Owner',

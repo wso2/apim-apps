@@ -69,9 +69,9 @@ function TabbedContentBase(props) {
                             },
                         }}
                     >
-                        {tabs.map((tab) => (
+                        {tabs.map((tab, index) => (
                             <Tab
-                                key={tab.id}
+                                key={tab.id ?? index}
                                 label={tab.label}
                                 sx={{
                                     textTransform: 'none',
@@ -110,26 +110,16 @@ TabbedContentBase.propTypes = {
     pageDescription: PropTypes.string,
     tabs: PropTypes.arrayOf(
         PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            label: PropTypes.string.isRequired,
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+            label: PropTypes.node.isRequired,
             content: PropTypes.element.isRequired,
         }),
     ).isRequired,
-    PaperProps: PropTypes.shape({
-        elevation: PropTypes.number,
-        square: PropTypes.bool,
-        sx: PropTypes.oneOfType([
-            PropTypes.object,
-            PropTypes.array,
-        ]),
-        className: PropTypes.string,
-    }),
     warning: PropTypes.node,
 };
 
 TabbedContentBase.defaultProps = {
     pageDescription: null,
-    PaperProps: { elevation: 1 },
     warning: null,
 };
 
