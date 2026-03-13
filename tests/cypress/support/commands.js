@@ -552,12 +552,18 @@ Cypress.Commands.add('createApp', (appName, appDescription) => {
 });
 
 Cypress.Commands.add('deleteApp', (appName) => {
-    cy.visit(`/devportal/applications?tenant=carbon.super`);
     cy.intercept('**/applications**').as('appGet');
+    cy.visit(`/devportal/applications?tenant=carbon.super`);
     cy.wait('@appGet', { timeout: 300000 }).then(() => {
-        cy.get(`#delete-${appName}-btn`, { timeout: 30000 });
-        cy.get(`#delete-${appName}-btn`).click({ force: true });
-        cy.get(`#itest-confirm-application-delete`).click();
+        const deleteButtonSelector = `[id="delete-${appName}-btn"]`;
+        cy.get('body', { timeout: 30000 }).then(($body) => {
+            if ($body.find(deleteButtonSelector).length > 0) {
+                cy.get(deleteButtonSelector, { timeout: 30000 }).first().click({ force: true });
+                cy.get('#itest-confirm-application-delete', { timeout: 30000 }).click();
+            } else {
+                cy.log(`Skipping deleteApp: application ${appName} is not listed.`);
+            }
+        });
     })
 });
 

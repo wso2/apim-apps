@@ -97,8 +97,8 @@ describe("Generate keys from api details page", () => {
 
     after(() => {
         if (appCreated) {
-            cy.visit('/devportal/applications?tenant=carbon.super');
             cy.intercept('**/applications**').as('appGet');
+            cy.visit('/devportal/applications?tenant=carbon.super');
             cy.wait('@appGet', { timeout: 300000 }).then(() => {
                 cy.get('body').then(($body) => {
                     if ($body.find(`#delete-${appName}-btn`).length > 0) {

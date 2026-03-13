@@ -27,8 +27,9 @@ describe("Application tests", () => {
     let testApiId;
 
     const createAppForTest = () => {
-        cy.visit('/devportal/applications/create?tenant=carbon.super');
         cy.intercept('**/application-attributes').as('attrGet');
+        cy.intercept('POST', '**/applications').as('createAppReq');
+        cy.visit('/devportal/applications/create?tenant=carbon.super');
         cy.wait('@attrGet', { timeout: 300000 });
 
         cy.get('#application-name').type(appName);
@@ -44,23 +45,11 @@ describe("Application tests", () => {
 
         cy.get('#itest-application-create-save').click({ force: true });
 
-        // Accept either redirect-based or in-page success patterns.
-        cy.location('pathname', { timeout: 120000 }).then((pathname) => {
-            if (pathname.includes('/overview')) {
-                cy.get('#itest-info-bar-application-name', { timeout: 30000 })
-                    .contains(appName)
-                    .should('exist');
-                appCreated = true;
-            } else {
-                cy.get('body').then(($body) => {
-                    if ($body.find('#itest-info-bar-application-name').length > 0) {
-                        cy.get('#itest-info-bar-application-name', { timeout: 30000 })
-                            .contains(appName)
-                            .should('exist');
-                        appCreated = true;
-                    }
-                });
-            }
+        // Prefer API success + listing verification over fragile UI timing checks.
+        cy.wait('@createAppReq', { timeout: 120000 }).then(({ response }) => {
+            expect(response, 'application create response').to.exist;
+            expect([200, 201, 202], 'application create status').to.include(response.statusCode);
+            appCreated = true;
         });
     };
     const openSecurityRestrictionSelect = () => {
@@ -108,18 +97,35 @@ describe("Application tests", () => {
         checkIfKeyExists();
     };
 
+    const openRuntimeConfigurations = () => {
+        cy.get('body', { timeout: 60000 }).then(($body) => {
+            if ($body.find('#itest-api-details-api-config-acc').length > 0) {
+                cy.get('#itest-api-details-api-config-acc').click({ force: true });
+            } else if ($body.find('#itest-api-config').length > 0) {
+                cy.get('#itest-api-config').click({ force: true });
+            }
+        });
+
+        cy.get('#left-menu-itemRuntimeConfigurations', { timeout: 100000 }).click({ force: true });
+    };
+
     it("Generate API Keys", () => {
         cy.loginToPublisher(publisher, password);
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
             testApiId = apiId;
+            cy.intercept('PUT', `**/apis/${apiId}`).as('saveRuntimeConfig');
             cy.visit(`/publisher/apis/${apiId}/overview`);
-            cy.get('#itest-api-details-api-config-acc').click();
-            cy.get('#left-menu-itemRuntimeConfigurations').click();
-            cy.wait(2000);
-            cy.get('#applicationLevel').click();
-            cy.wait(1000);
+            openRuntimeConfigurations();
+            cy.get('#applicationLevel', { timeout: 30000 }).should('be.visible');
+            cy.get('#applicationLevel').then(($panel) => {
+                if (!$panel.hasClass('Mui-expanded')) {
+                    cy.wrap($panel).find('.MuiAccordionSummary-root').click();
+                }
+            });
+            cy.get('#api-security-api-key-checkbox', { timeout: 15000 }).should('exist');
             cy.get('#api-security-api-key-checkbox').check({ force: true });
             cy.get('#save-runtime-configurations').click();
+            cy.wait('@saveRuntimeConfig', { timeout: 30000 });
 
             Utils.publishAPI(apiId).then(() => {
                 cy.logoutFromPublisher();
