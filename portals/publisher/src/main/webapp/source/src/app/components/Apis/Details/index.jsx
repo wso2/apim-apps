@@ -967,7 +967,6 @@ class Details extends Component {
                                 && !api.isGraphql()
                                 && !api.isSOAPToREST()
                                 && !api.isSOAP()
-                                && !api.isMCPServer()
                                 && (
                                     <LeftMenuItem
                                         text={intl.formatMessage({
@@ -1421,6 +1420,22 @@ class Details extends Component {
                                             )
                                         }}
                                     />
+                                    <Route
+                                        path={Details.subPaths.MCP_COMPLIANCE}
+                                        render={(props) => {
+                                            return (
+                                                !isAPIProduct &&
+                                                !api.isGraphql() &&
+                                                !api.isSOAPToREST() &&
+                                                !api.isSOAP() ?
+                                                    (
+                                                        <Compliance {...props} api={api} />
+                                                    ) : (
+                                                        <ResourceNotFound />
+                                                    )
+                                            )
+                                        }}
+                                    />
                                 </Switch>
                             </div>
                         </RevisionContextProvider>
@@ -1498,6 +1513,7 @@ Details.subPaths = {
     ASYNCAPI_DEFINITION: '/apis/:api_uuid/asyncApi-definition',
     POLICIES: '/apis/:api_uuid/policies',
     COMPLIANCE: '/apis/:api_uuid/compliance',
+    MCP_COMPLIANCE: '/mcp-servers/:mcpserver_uuid/compliance',
 };
 
 // To make sure that paths will not change by outsiders, Basically an enum

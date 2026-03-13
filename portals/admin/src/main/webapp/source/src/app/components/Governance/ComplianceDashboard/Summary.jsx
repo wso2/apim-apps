@@ -158,8 +158,8 @@ export default function Summary() {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 {intl.formatMessage({
-                                    id: 'Governance.ComplianceDashboard.Summary.api.compliance',
-                                    defaultMessage: 'API Compliance',
+                                    id: 'Governance.ComplianceDashboard.Summary.compliance',
+                                    defaultMessage: 'Compliance',
                                 })}
                             </Typography>
                             <DonutChart
@@ -220,8 +220,8 @@ export default function Summary() {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 {intl.formatMessage({
-                                    id: 'Governance.ComplianceDashboard.Summary.api.compliance.details',
-                                    defaultMessage: 'API Compliance Details',
+                                    id: 'Governance.ComplianceDashboard.Summary.compliance.details',
+                                    defaultMessage: 'Compliance Details',
                                 })}
                             </Typography>
                             <ApiComplianceTable />
