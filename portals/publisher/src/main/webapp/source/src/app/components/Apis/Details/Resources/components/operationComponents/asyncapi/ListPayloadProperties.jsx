@@ -56,7 +56,7 @@ import EditPayloadProperty from './EditPayloadProperty';
  */
 export default function ListPayloadProperties(props) {
     const {
-        operation, operationsDispatcher, target, verb, disableUpdate, disableForSolace,
+        operation, operationsDispatcher, target, verb, disableUpdate, disableForSolace, isAsyncV3
     } = props;
 
     const [editingProperty, setEditingProperty] = useState(null);
@@ -74,9 +74,34 @@ export default function ListPayloadProperties(props) {
                     setEditingProperty={setEditingProperty}
                 />
             )}
-            <Table aria-label='parameters list'>
+            <Table
+                aria-label='parameters list'
+                sx={{
+                    border: '1px solid rgba(224, 224, 224, 1)',
+                    '& .MuiTableCell-root': {
+                        border: '1px solid rgba(224, 224, 224, 1)',
+                    },
+                }}
+            >
                 <TableHead>
                     <TableRow>
+                        {isAsyncV3 && (
+                            <>
+                                <TableCell align='left'>
+                                    <FormattedMessage
+                                        id={'Apis.Details.Topics.components.operationComponents.'
+                                            + 'ListPayloadProps.operation'}
+                                        defaultMessage='Operation'
+                                    />
+                                </TableCell>
+                                <TableCell align='left'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Topics.components.operationComponents.ListPayloadProps.message'
+                                        defaultMessage='Message'
+                                    />
+                                </TableCell>
+                            </>
+                        )}
                         <TableCell>
                             <FormattedMessage
                                 id='Apis.Details.Topics.components.operationComponents.ListPayloadProps.name'
@@ -108,6 +133,12 @@ export default function ListPayloadProperties(props) {
                         properties && Object.entries(properties).map(([k, v]) => {
                             return (
                                 <TableRow key={k}>
+                                    {isAsyncV3 && (
+                                        <>
+                                            <TableCell align='left'>{v['x-operation'] || '—'}</TableCell>
+                                            <TableCell align='left'>{v['x-message'] || '—'}</TableCell>
+                                        </>
+                                    )}
                                     <TableCell align='left'>{k}</TableCell>
                                     <TableCell align='left'>{v.type}</TableCell>
                                     <TableCell align='left'>{v.description}</TableCell>
@@ -163,6 +194,7 @@ export default function ListPayloadProperties(props) {
 ListPayloadProperties.defaultProps = {
     disableUpdate: false,
     disableForSolace: false,
+    isAsyncV3: false,
 };
 ListPayloadProperties.propTypes = {
     operation: PropTypes.shape({}).isRequired,
@@ -173,4 +205,5 @@ ListPayloadProperties.propTypes = {
     disableUpdate: PropTypes.bool,
     resolvedSpec: PropTypes.shape({}).isRequired,
     disableForSolace: PropTypes.bool,
+    isAsyncV3: PropTypes.bool,
 };

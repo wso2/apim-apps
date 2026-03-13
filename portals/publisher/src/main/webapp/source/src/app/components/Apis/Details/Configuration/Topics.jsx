@@ -66,6 +66,7 @@ export default function Topics(props) {
     const [securityDefScopes, setSecurityDefScopes] = useState({});
     const isAsyncAPI = api.type === 'WEBSUB' || api.type === 'WS' || api.type === 'SSE';
     const [markedOperations, setSelectedOperation] = useState({});
+    const [isAsyncV3, setIsAsyncV3] = useState(false);
 
     const intl = useIntl();
     /**
@@ -81,6 +82,329 @@ export default function Topics(props) {
             target = target[arr[j]];
         }
         return target;
+    }
+
+    function extractPayloadProperties(resolvedPayload, opName, msgKey) {
+        if (!resolvedPayload?.properties) return {};
+        return Object.fromEntries(
+            Object.entries(resolvedPayload.properties).map(([propName, propVal]) => {
+                const compositeKey = `${msgKey}__${propName}`;
+                return [compositeKey, {
+                    ...propVal,
+                    'x-operation': opName,
+                    'x-message': msgKey,
+                    'x-prop-name': propName,
+                }];
+            }),
+        );
+    }
+
+    // Extracts and flattens payload properties from all messages of a single AsyncAPI v3 operation.
+    function extractMessageProperties(spec, opObj, opName) {
+        const chRef = opObj.channel?.$ref;
+        const chKey = chRef?.replace('#/channels/', '');
+        const channelSpecObj = chKey && spec.channels[chKey];
+
+        if (!channelSpecObj?.messages) return {};
+
+        const allProperties = {};
+        opObj.messages.forEach((msgRef) => {
+            const msgKey = msgRef.$ref?.split('/messages/')[1];
+            if (!msgKey) return;
+
+            const channelMsg = channelSpecObj.messages[msgKey];
+            if (!channelMsg?.$ref) return;
+
+            const componentMsg = getRefTarget(spec, channelMsg.$ref);
+            if (!componentMsg) return;
+
+            const resolvedPayload = componentMsg.payload?.$ref
+                ? getRefTarget(spec, componentMsg.payload.$ref)
+                : componentMsg.payload;
+
+            Object.assign(allProperties, extractPayloadProperties(resolvedPayload, opName, msgKey));
+        });
+        return allProperties;
+    }
+
+    /**
+     * Builds a UI-friendly channel map from an AsyncAPI v3 spec.
+     */
+    function buildChannelMap(spec) {
+        const channelMap = {};
+        const channelIndex = {};
+    
+        if (spec.channels) {
+            Object.entries(spec.channels).forEach(([key, channelObj]) => {
+                const address = channelObj.address || `/${key}`;
+                channelIndex[`#/channels/${key}`] = address;
+                channelIndex[`#/channels/${key.replace(/\//g, '~1')}`] = address;
+                channelMap[address] = channelMap[address] || {
+                    parameters: channelObj.parameters || {},
+                    ...(channelObj.description && { description: channelObj.description }),
+                };
+            });
+        }
+        if (spec.operations) {
+            Object.entries(spec.operations).forEach(([opName, opObj]) => {
+                const { action } = opObj;
+                const channelRef = opObj.channel?.$ref;
+                const channelAddress = channelRef ? channelIndex[channelRef] || channelRef : null;
+    
+                if (!channelAddress) return;
+    
+                if (!channelMap[channelAddress]) {
+                    channelMap[channelAddress] = { parameters: [] };
+                }
+                if (!channelMap[channelAddress][action]) {
+                    channelMap[channelAddress][action] = { 'x-operations': [], 'x-auth-type': 'Any' };
+                }
+    
+                channelMap[channelAddress][action]['x-operations'].push(opName);
+    
+                if (opObj['x-auth-type']) channelMap[channelAddress][action]['x-auth-type'] = opObj['x-auth-type'];
+                if (opObj['x-uri-mapping']) channelMap[channelAddress][action]['x-uri-mapping'] =
+                    opObj['x-uri-mapping'];
+                if (opObj['x-scopes']) channelMap[channelAddress][action]['x-scopes'] = opObj['x-scopes'];
+                if (opObj.messages) {
+                    const allProperties = extractMessageProperties(spec, opObj, opName);
+                    if (Object.keys(allProperties).length > 0) {
+                        const existing = channelMap[channelAddress][action].message;
+                        channelMap[channelAddress][action].message = {
+                            payload: {
+                                type: 'object',
+                                properties: {
+                                    ...existing?.payload?.properties,
+                                    ...allProperties,
+                                },
+                            },
+                        };
+                    }
+                }
+            });
+        }
+        return channelMap;
+    }
+    
+    /**
+     * Returns updated components with the new message schema and message ref added.
+     */
+    function buildUpdatedComponents(currentComponents, msgName, msgProps) {
+        return {
+            ...currentComponents,
+            schemas: {
+                ...currentComponents.schemas,
+                [msgName]: { type: 'object', properties: msgProps },
+            },
+            messages: {
+                ...currentComponents.messages,
+                [msgName]: { payload: { $ref: `#/components/schemas/${msgName}` } },
+            },
+        };
+    }
+
+    /**
+     * Returns updated channels with the new message ref added to the given channel.
+     */
+    function buildUpdatedChannels(currentChannels, channelName, msgName) {
+        return {
+            ...currentChannels,
+            [channelName]: {
+                ...currentChannels[channelName],
+                messages: {
+                    ...currentChannels[channelName]?.messages,
+                    [msgName]: { $ref: `#/components/messages/${msgName}` },
+                },
+            },
+        };
+    }
+
+    function groupPayloadProperties(properties) {
+        const byMessage = {};
+    
+        Object.entries(properties).forEach(([compositeKey, propVal]) => {
+            const msgName = propVal['x-message'] || propVal['x-operation'] || '__default__';
+    
+            if (!byMessage[msgName]) {
+                byMessage[msgName] = { opName: propVal['x-operation'], props: {} };
+            }
+    
+            const originalPropName = propVal['x-prop-name'] || compositeKey;
+            // const { 'x-operation': _, 'x-message': __, 'x-prop-name': ___, ...cleanProp } = propVal;
+            const {
+                'x-operation': xOperation,
+                'x-message': xMessage,
+                'x-prop-name': xPropName,
+                ...cleanProp
+            } = propVal;
+    
+            byMessage[msgName].props[originalPropName] = cleanProp;
+        });
+    
+        return byMessage;
+    }
+    
+    function wireOperationMessage(opName, channelName, msgName, newOperations) {
+        if (!opName || opName === '__default__' || !newOperations[opName]) return;
+    
+        const ref = { $ref: `#/channels/${channelName}/messages/${msgName}` };
+    
+        if (!newOperations[opName].messages.some((m) => m.$ref === ref.$ref)) {
+            newOperations[opName].messages.push(ref);
+        }
+    }
+    
+    function processMessageGroups(byMessage, channelName, newComponents, newChannels, newOperations) {
+        let updatedComponents = { ...newComponents };
+        let updatedChannels = { ...newChannels };
+    
+        Object.entries(byMessage).forEach(([msgName, { opName, props: msgProps }]) => {
+            updatedComponents = buildUpdatedComponents(updatedComponents, msgName, msgProps);
+            updatedChannels = buildUpdatedChannels(updatedChannels, channelName, msgName);
+    
+            wireOperationMessage(opName, channelName, msgName, newOperations);
+        });
+    
+        return { updatedComponents, updatedChannels };
+    }
+    
+    function wirePayloadProperties(verbInfo, channelName, newComponents, newChannels, newOperations) {
+        if (!verbInfo.message?.payload?.properties) {
+            return { updatedComponents: newComponents, updatedChannels: newChannels };
+        }
+    
+        const byMessage = groupPayloadProperties(verbInfo.message.payload.properties);
+    
+        return processMessageGroups(
+            byMessage,
+            channelName,
+            newComponents,
+            newChannels,
+            newOperations,
+        );
+    }
+    
+    function createOperationEntry(opName, action, channelName, verbInfo, originalSpec) {
+        // const { messages: _, ...restOfOriginal } = originalSpec.operations?.[opName] || {};
+        const { messages, ...restOfOriginal } = originalSpec.operations?.[opName] || {};
+    
+        return {
+            ...restOfOriginal,
+            action,
+            channel: { $ref: `#/channels/${channelName}` },
+            'x-auth-type': verbInfo['x-auth-type'],
+            ...(verbInfo['x-uri-mapping'] && { 'x-uri-mapping': verbInfo['x-uri-mapping'] }),
+            ...(verbInfo['x-scopes'] && { 'x-scopes': verbInfo['x-scopes'] }),
+            messages: [],
+        };
+    }
+    
+    function resolveChannel(channelAddress, channelObj, originalSpec, newChannels, addressToName) {
+        const existingChannelName = addressToName[channelAddress];
+    
+        if (existingChannelName) {
+            return {
+                channelName: existingChannelName,
+                newChannels: {
+                    ...newChannels,
+                    [existingChannelName]: {
+                        ...newChannels[existingChannelName],
+                        ...(channelObj.description && { description: channelObj.description }),
+                    },
+                },
+            };
+        }
+    
+        const baseChannel = channelAddress.split('/').find(s => s.length > 0) || 'channel';
+        const randomId = crypto.randomUUID().split('-')[0];
+        const channelName = `${baseChannel}_${randomId}`;
+        const parametersArray = channelObj.parameters || [];
+    
+        return {
+            channelName,
+            newChannels: {
+                ...newChannels,
+                [channelName]: {
+                    address: channelAddress,
+                    ...(Object.keys(parametersArray).length > 0 && { parameters: parametersArray }),
+                },
+            },
+        };
+    }
+    
+    /**
+     * Helper to process specific verb actions (send/receive) for a channel.
+     * This flattens the nesting from rebuildOperations.
+     */
+    function processVerbActions(context) {
+        const { 
+            verbInfo, action, channelName, 
+            originalSpec, newOperations, newChannels, newComponents 
+        } = context;
+
+        // Level 4: Extracting the operations loop into a named helper or keeping it flat here
+        const opList = verbInfo['x-operations'] || [];
+        opList.forEach((opName) => {
+            newOperations[opName] = createOperationEntry(
+                opName,
+                action,
+                channelName,
+                verbInfo,
+                originalSpec,
+            );
+        });
+
+        return wirePayloadProperties(
+            verbInfo,
+            channelName,
+            newComponents,
+            newChannels,
+            newOperations,
+        );
+    }
+
+    function rebuildOperations(channelMap, originalSpec) {
+        const newOperations = {};
+        let newChannels = { ...originalSpec.channels };
+        let newComponents = { messages: {} };
+
+        const addressToName = {};
+        if (originalSpec.channels) {
+            Object.entries(originalSpec.channels).forEach(([channelName, channelObj]) => {
+                addressToName[channelObj.address] = channelName;
+            });
+        }
+
+        Object.entries(channelMap).forEach(([channelAddress, channelObj]) => {
+            const resolved = resolveChannel(
+                channelAddress,
+                channelObj,
+                originalSpec,
+                newChannels,
+                addressToName,
+            );
+
+            const { channelName } = resolved;
+            newChannels = resolved.newChannels;
+
+            ['send', 'receive'].forEach((action) => {
+                const verbInfo = channelObj[action];
+                if (!verbInfo) return;
+                const result = processVerbActions({
+                    verbInfo,
+                    action,
+                    channelName,
+                    originalSpec,
+                    newOperations,
+                    newChannels,
+                    newComponents,
+                });
+
+                newComponents = result.updatedComponents;
+                newChannels = result.updatedChannels;
+            });
+        });
+        return { newOperations, newChannels, newComponents };
     }
 
     /**
@@ -160,7 +484,7 @@ export default function Topics(props) {
         switch (action) {
             case 'init':
                 setSelectedOperation({});
-                return data || asyncAPISpec.channels;
+                return data || (isAsyncV3 ? {} : asyncAPISpec.channels);
             case 'toggleSecurityStatus':
                 setSelectedOperation({});
                 return Object.entries(currentOperations).reduce((channelAcc, [channelKey, channelObj]) => {
@@ -188,6 +512,18 @@ export default function Topics(props) {
                     },
                 };
             case 'authType':
+                if (isAsyncV3) {
+                    return {
+                        ...currentOperations,
+                        [target]: {
+                            ...currentOperations[target],
+                            [verb]: {
+                                ...currentOperations[target][verb],
+                                'x-auth-type': value ? 'Any' : 'None',
+                            },
+                        },
+                    };
+                }
                 updatedOperation['x-auth-type'] = value ? 'Any' : 'None';
                 return {
                     ...currentOperations,
@@ -202,20 +538,46 @@ export default function Topics(props) {
                 // eslint-disable-next-line no-case-declarations
                 let alreadyExistCount = 0;
                 for (let currentVerb of data.verbs) {
-                    currentVerb = verbMap[currentVerb];
-                    if (addedOperations[data.target][currentVerb]) {
-                        const message = intl.formatMessage(
-                            {
-                                id: 'Apis.Details.Configuration.Topic.already.opreation.verb.exist.error',
-                                defaultMessage: 'Operation already exist with {data_target} and {current_Verb}',
-                            },
-                            { data_target: data.target, current_Verb: currentVerb },
-                        );
-                        Alert.warning(message);
-                        console.warn(message);
-                        alreadyExistCount++;
+                    if (isAsyncV3) {
+                        const ACTION_ALIASES = { pub: 'send', sub: 'receive' };
+                        const normalizedVerb = ACTION_ALIASES[currentVerb.toLowerCase()]
+                        || currentVerb.toLowerCase();
+                        const opName = data.operationName;
+                        if (!addedOperations[data.target][normalizedVerb]) {
+                            addedOperations[data.target][normalizedVerb] = {
+                                'x-operations': [],
+                                'x-auth-type': 'Any',
+                            };
+                        }
+                        const existingOps = addedOperations[data.target][normalizedVerb]['x-operations'];
+                        if (opName && existingOps.includes(opName)) {
+                            Alert.warning(intl.formatMessage(
+                                {
+                                    id: 'Apis.Details.Configuration.Topic.already.operation.exist.error',
+                                    defaultMessage: 'Operation "{opName}" already exists for {verb} on {channel}',
+                                },
+                                { opName, verb: normalizedVerb, channel: data.target },
+                            ));
+                            alreadyExistCount++;
+                        } else if (opName) {
+                            addedOperations[data.target][normalizedVerb]['x-operations'].push(opName);
+                        }
                     } else {
-                        addedOperations[data.target][currentVerb] = { };
+                        currentVerb = verbMap[currentVerb];
+                        if (addedOperations[data.target][currentVerb]) {
+                            const message = intl.formatMessage(
+                                {
+                                    id: 'Apis.Details.Configuration.Topic.already.opreation.verb.exist.error',
+                                    defaultMessage: 'Operation already exist with {data_target} and {current_Verb}',
+                                },
+                                { data_target: data.target, current_Verb: currentVerb },
+                            );
+                            Alert.warning(message);
+                            console.warn(message);
+                            alreadyExistCount++;
+                        } else {
+                            addedOperations[data.target][currentVerb] = { };
+                        }
                     }
                 }
                 if (alreadyExistCount === data.verbs.length) {
@@ -234,20 +596,53 @@ export default function Topics(props) {
                     ...currentOperations,
                     [target]: { ...currentOperations[target], parameters: updatedOperation.parameters },
                 };
-            case 'addPayloadProperty':
+            case 'deleteNamedOperation': {
+                const channelCopy = cloneDeep(currentOperations[target]);
+                if (channelCopy && channelCopy[verb] && channelCopy[verb]['x-operations']) {
+                    channelCopy[verb]['x-operations'] = channelCopy[verb]['x-operations'].filter((n) => n !== value);
+                }
+                return { ...currentOperations, [target]: channelCopy };
+            }
+            case 'addPayloadProperty': {
                 updatedOperation[verb].message = updatedOperation[verb].message || { };
                 updatedOperation[verb].message.payload = updatedOperation[verb].message.payload || { };
                 updatedOperation[verb].message.payload.type = 'object';
                 updatedOperation[verb].message.payload.properties = updatedOperation[verb].message.payload.properties
                     || { };
-                updatedOperation[verb].message.payload.properties[value.name] = {
+                const propKey = isAsyncV3
+                    ? `${value.message}__${value.name}`
+                    : value.name;   
+                updatedOperation[verb].message.payload.properties[propKey] = {
                     description: value.description,
                     type: value.type,
+                    ...(isAsyncV3 && {
+                        'x-operation': value.operation,
+                        'x-message': value.message,
+                        'x-prop-name': value.name,
+                    }),
                 };
                 break;
-            case 'deletePayloadProperty':
-                delete updatedOperation[verb].message.payload.properties[value];
-                break;
+            }
+            case 'deletePayloadProperty': {
+                const existingProps = updatedOperation[verb]?.message?.payload?.properties || {};
+                const { [value]: _removed, ...remainingProps } = existingProps;
+                return {
+                    ...currentOperations,
+                    [target]: {
+                        ...currentOperations[target],
+                        [verb]: {
+                            ...currentOperations[target][verb],
+                            message: {
+                                ...currentOperations[target][verb]?.message,
+                                payload: {
+                                    ...currentOperations[target][verb]?.message?.payload,
+                                    properties: remainingProps,
+                                },
+                            },
+                        },
+                    },
+                };
+            }
             case 'payloadProperty':
                 updatedOperation[verb].message.payload.properties[value.name] = value;
                 break;
@@ -338,6 +733,14 @@ export default function Topics(props) {
             || {};
         spec.components.securitySchemes.oauth2.flows.implicit.scopes = spec.components.securitySchemes.oauth2.flows
             .implicit.scopes || {};
+        if (isAsyncV3) {
+            // v3 — use availableScopes
+            spec.components.securitySchemes.oauth2.flows.implicit.availableScopes = 
+                spec.components.securitySchemes.oauth2.flows.implicit.availableScopes || {};
+        } else {
+            spec.components.securitySchemes.oauth2.flows.implicit.scopes = 
+                spec.components.securitySchemes.oauth2.flows.implicit.scopes || {};
+        }
         /* eslint-enable no-param-reassign */
     }
 
@@ -347,7 +750,9 @@ export default function Topics(props) {
      */
     function setSecurityDefScopesFromSpec(spec) {
         verifySecurityScheme(spec);
-        setSecurityDefScopes(cloneDeep(spec.components.securitySchemes.oauth2.flows.implicit.scopes));
+        const implicitFlow = spec.components.securitySchemes.oauth2.flows.implicit;
+        const scopeSource = isAsyncV3 ? implicitFlow.availableScopes : implicitFlow.scopes;
+        setSecurityDefScopes(cloneDeep(scopeSource));
     }
 
     /**
@@ -355,7 +760,12 @@ export default function Topics(props) {
      */
     function setSpecScopesFromSecurityDefScopes() {
         verifySecurityScheme(asyncAPISpec);
-        asyncAPISpec.components.securitySchemes.oauth2.flows.implicit.scopes = securityDefScopes;
+        if (isAsyncV3) {
+            // v3 uses availableScopes, not scopes
+            asyncAPISpec.components.securitySchemes.oauth2.flows.implicit.availableScopes = securityDefScopes;
+        } else {
+            asyncAPISpec.components.securitySchemes.oauth2.flows.implicit.scopes = securityDefScopes;
+        }
     }
 
     /**
@@ -364,10 +774,18 @@ export default function Topics(props) {
      * @returns {null}
      */
     function resolveAndUpdateSpec(rawSpec) {
-        const resolvedChannels = resolveSpec(rawSpec, rawSpec);
-        const resolvedSpec = { ...rawSpec, channels: resolvedChannels.channels };
-        operationsDispatcher({ action: 'init', data: resolvedSpec.channels });
-        setAsyncAPISpec(resolvedSpec);
+        const asyncSpecVersion = rawSpec?.asyncapi || '2.0.0';
+        const asyncv3 = Number.parseInt(asyncSpecVersion.split('.')[0], 10) >= 3;
+        if (asyncv3) {
+            const channelData = buildChannelMap(rawSpec);
+            operationsDispatcher({ action: 'init', data: channelData });
+            setAsyncAPISpec(rawSpec);
+        } else {
+            const resolvedChannels = resolveSpec(rawSpec, rawSpec);
+            const resolvedSpec = { ...rawSpec, channels: resolvedChannels.channels };
+            operationsDispatcher({ action: 'init', data: resolvedSpec.channels });
+            setAsyncAPISpec(resolvedSpec);
+        }
         setSecurityDefScopesFromSpec(rawSpec);
     }
 
@@ -444,7 +862,10 @@ export default function Topics(props) {
         for (const [target, verbs] of Object.entries(markedOperations)) {
             for (const verb of Object.keys(verbs)) {
                 delete copyOfOperations[target][verb];
-                if (!copyOfOperations[target].publish && !copyOfOperations[target].subscribe) {
+                const channelEmpty = isAsyncV3
+                    ? !copyOfOperations[target].send && !copyOfOperations[target].receive
+                    : !copyOfOperations[target].publish && !copyOfOperations[target].subscribe;
+                if (channelEmpty) {
                     delete copyOfOperations[target];
                 }
             }
@@ -452,6 +873,29 @@ export default function Topics(props) {
 
         updateSecurityDefinition(copyOfOperations);
         setSpecScopesFromSecurityDefScopes();
+        
+        let specToSave;
+        if (isAsyncV3) {
+            const { newOperations, newChannels, newComponents } = rebuildOperations(copyOfOperations, asyncAPISpec);
+            specToSave = {
+                ...asyncAPISpec,
+                channels: newChannels,
+                operations: newOperations,
+                components: {
+                    ...asyncAPISpec.components,
+                    schemas: {
+                        ...(asyncAPISpec.components?.schemas || {}),
+                        ...newComponents.schemas,
+                    },
+                    messages: {
+                        ...(asyncAPISpec.components?.messages || {}),
+                        ...newComponents.messages,
+                    },
+                },
+            };
+        } else {
+            specToSave = { ...asyncAPISpec, channels: copyOfOperations };
+        }
         if (websubSubscriptionConfiguration !== api.websubSubscriptionConfiguration) {
             return updateAPI({ websubSubscriptionConfiguration })
                 .catch((error) => {
@@ -461,10 +905,10 @@ export default function Topics(props) {
                         defaultMessage: 'Error while updating the API',
                     }));
                 })
-                .then(() => updateAsyncAPIDefinition({ ...asyncAPISpec, channels: copyOfOperations }));
-        } else {
-            return updateAsyncAPIDefinition({ ...asyncAPISpec, channels: copyOfOperations });
+                .then(() => updateAsyncAPIDefinition(specToSave));
         }
+        return updateAsyncAPIDefinition(specToSave);
+
     }
 
     useEffect(() => {
@@ -490,9 +934,10 @@ export default function Topics(props) {
     }, []);
 
     useEffect(() => {
-        // Update the Swagger spec object when API object gets changed
         api.getAsyncAPIDefinition()
             .then((response) => {
+                const asyncSpecVersion = response.body?.asyncapi || '2.0.0';
+                setIsAsyncV3(Number.parseInt(asyncSpecVersion.split('.')[0], 10) >= 3);
                 resolveAndUpdateSpec(response.body);
             })
             .catch((error) => {
@@ -536,7 +981,8 @@ export default function Topics(props) {
             {!isRestricted(['apim:api_create'], api) && !disableAddOperation
             && (api.gatewayVendor === 'wso2') && (
                 <Grid item md={12} xs={12}>
-                    <AddOperation operationsDispatcher={operationsDispatcher} isAsyncAPI={isAsyncAPI} api={api} />
+                    <AddOperation operationsDispatcher={operationsDispatcher}
+                        isAsyncAPI={isAsyncAPI} api={api} isAsyncV3={isAsyncV3}/>
                 </Grid>
             )}
             <Grid item md={12}>
@@ -558,44 +1004,29 @@ export default function Topics(props) {
                                     spacing={1}
                                     alignItems='stretch'
                                 >
-                                    {operation.subscribe && (
-                                        <Grid key={target + '_subscribe'} item md={12}>
-                                            <AsyncOperation
-                                                target={target}
-                                                verb='subscribe'
-                                                highlight
-                                                operation={operation}
-                                                spec={asyncAPISpec}
-                                                api={api}
-                                                operationsDispatcher={operationsDispatcher}
-                                                sharedScopes={sharedScopes}
-                                                markAsDelete={Boolean(markedOperations[target]
-                                                        && markedOperations[target].subscribe)}
-                                                onMarkAsDelete={onMarkAsDelete}
-                                                disableDelete={api.gatewayType === 'solace'}
-                                                componentValidator={componentValidator}
-                                            />
-                                        </Grid>
-                                    )}
-                                    {operation.publish && (
-                                        <Grid key={target + '_publish'} item md={12}>
-                                            <AsyncOperation
-                                                target={target}
-                                                verb='publish'
-                                                highlight
-                                                operation={operation}
-                                                spec={asyncAPISpec}
-                                                api={api}
-                                                operationsDispatcher={operationsDispatcher}
-                                                sharedScopes={sharedScopes}
-                                                markAsDelete={Boolean(markedOperations[target]
-                                                        && markedOperations[target].publish)}
-                                                onMarkAsDelete={onMarkAsDelete}
-                                                disableDelete={api.gatewayType === 'solace'}
-                                                componentValidator={componentValidator}
-                                            />
-                                        </Grid>
-                                    )}
+                                    {(isAsyncV3 ? ['send', 'receive'] : ['subscribe', 'publish']).map((verb) => (
+                                        operation[verb] && (
+                                            <Grid key={`${target}_${verb}`} item md={12}>
+                                                <AsyncOperation
+                                                    target={target}
+                                                    verb={verb}
+                                                    highlight
+                                                    operation={operation}
+                                                    spec={asyncAPISpec}
+                                                    api={api}
+                                                    operationsDispatcher={operationsDispatcher}
+                                                    sharedScopes={sharedScopes}
+                                                    markAsDelete={Boolean(
+                                                        markedOperations[target]?.[verb]
+                                                    )}
+                                                    onMarkAsDelete={onMarkAsDelete}
+                                                    disableDelete={api.gatewayType === 'solace'}
+                                                    componentValidator={componentValidator}
+                                                    isAsyncV3={isAsyncV3}
+                                                />
+                                            </Grid>
+                                        )
+                                    ))}
                                 </Grid>
                             </GroupOfOperations>
                         ))

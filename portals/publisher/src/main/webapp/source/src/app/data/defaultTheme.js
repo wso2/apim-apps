@@ -156,6 +156,8 @@ export default {
             sub: '#38a169',
             pub: '#4299e1',
             tool: '#f2d4a7',
+            receive: '#38a169',
+            send: '#4299e1',
         },
         operationChipColor: {
             query: '#b3e6fe',
