@@ -169,64 +169,18 @@ export default function ListApplications() {
         filterApps,
     };
 
-    /**
-     * Calculates the elapsed time between the current date and a given date.
-     *
-     * @param {string|Date} fromTime - The past date to compare with the current date.
-     * @returns {string} Human-readable time difference (e.g., "2 years 3 months").
-     */
-    function getTimeAgo(fromTime) {
-        const now = new Date();
-        const past = new Date(fromTime);
-
-        let years = now.getFullYear() - past.getFullYear();
-        let months = now.getMonth() - past.getMonth();
-        let days = now.getDate() - past.getDate();
-
-        if (days < 0) {
-            months -= 1;
-            days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
-        }
-
-        if (months < 0) {
-            years -= 1;
-            months += 12;
-        }
-
-        if (years > 0) {
-            return months > 0
-                ? `${years} year${years > 1 ? 's' : ''} ${months} month${months > 1 ? 's' : ''}`
-                : `${years} year${years > 1 ? 's' : ''}`;
-        }
-
-        if (months > 0) {
-            return `${months} month${months > 1 ? 's' : ''}`;
-        }
-
-        return `${days} day${days > 1 ? 's' : ''}`;
-    }
-
     const upgradableApps = applicationList?.filter(
         (app) => app.tokenType !== 'JWT',
     );
 
-    const oldestCreatedTime = upgradableApps?.length
-        ? upgradableApps.reduce(
-            (oldest, app) => (new Date(app.createdTime) < new Date(oldest) ? app.createdTime : oldest),
-            upgradableApps[0].createdTime,
-        )
-        : null;
-
-    const timeAgo = oldestCreatedTime ? getTimeAgo(oldestCreatedTime) : null;
-
-    const warning = timeAgo ? (
+    const warning = (
         <>
             {intl.formatMessage({
-                defaultMessage: 'You have legacy applications using opaque access tokens that were created over '
-                + ' {timeAgo} ago. Support for opaque access tokens will be deprecated. Please upgrade these '
+                defaultMessage: 'You have one or more legacy applications using opaque access tokens.'
+                + ' Support for opaque access tokens has been deprecated. Please upgrade these '
                 + ' applications to use JWT-based access tokens.',
                 id: 'ApplicationSettings.ListApplications.opaque.token.warning',
-            }, { timeAgo })}
+            })}
             {' '}
             <Link
                 href={`${Configurations.app.docUrl}api-security/key-management/tokens/jwt-tokens/`}
@@ -239,11 +193,14 @@ export default function ListApplications() {
                 })}
             </Link>
         </>
-    ) : null;
+    );
 
     const tabs = [
         {
-            label: 'Change Owner',
+            label: intl.formatMessage({
+                defaultMessage: 'Owner',
+                id: 'ApplicationSettings.ListApplicationschange.app.owner.tab.title.tab.title',
+            }),
             content: <ChangeAppOwner {...childProps} />,
         },
         {
@@ -251,7 +208,7 @@ export default function ListApplications() {
                 <Box sx={{ display: 'flex', alignItems: 'center', color: 'warning.main' }}>
                     <WarningAmberIcon sx={{ fontSize: 18, mr: 1 }} />
                     {intl.formatMessage({
-                        defaultMessage: 'Upgrade Legacy Applications',
+                        defaultMessage: 'Legacy Applications',
                         id: 'ApplicationSettings.ListApplications.upgrade.legacy.app.tab.title',
                     })}
                 </Box>

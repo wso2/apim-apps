@@ -153,6 +153,7 @@ const UpgradeToJWTDialog = (props) => {
                         onClick={handleUpgrade}
                         variant='contained'
                         color='primary'
+                        type='submit'
                         disabled={submitting}
                     >
                         {intl.formatMessage({

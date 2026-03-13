@@ -165,7 +165,7 @@ export default function ChangeAppOwner(props) {
                                         }
                                     >
                                         <IconButton
-                                            aria-label='delete'
+                                            aria-label='clear-search'
                                             onClick={clearSearch}
                                             size='large'
                                         >
