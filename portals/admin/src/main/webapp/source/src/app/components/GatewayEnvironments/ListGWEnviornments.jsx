@@ -23,12 +23,15 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import Delete from 'AppComponents/GatewayEnvironments/DeleteGWEnvironment';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Chip from '@mui/material/Chip';
@@ -36,6 +39,9 @@ import { styled } from '@mui/material/styles';
 import Permission from './Permission';
 import ListGatewayInstances from './ListGatewayInstances';
 import Utils from '../../data/Utils';
+
+const WSO2_GATEWAY_TYPES = ['Regular', 'APK'];
+const WSO2_LISTING_GATEWAY_TYPES = ['api-platform', ...WSO2_GATEWAY_TYPES];
 
 const StyledTooltip = styled(({ className, ...props }) => (
     <Tooltip {...props} classes={{ popper: className }} />
@@ -58,7 +64,66 @@ const resolvePlatformGatewayStatus = (isPlatformGateway, isActiveProperty) => {
     if (!isPlatformGateway || typeof isActiveProperty === 'undefined' || isActiveProperty === null) {
         return null;
     }
-    return isActiveProperty === 'true' ? 'ACTIVE' : 'INACTIVE';
+    if (typeof isActiveProperty === 'string') {
+        const normalizedStatus = isActiveProperty.toUpperCase();
+        if (normalizedStatus === 'ACTIVE' || normalizedStatus === 'INACTIVE') {
+            return normalizedStatus;
+        }
+        return isActiveProperty === 'true' ? 'ACTIVE' : 'INACTIVE';
+    }
+    return isActiveProperty ? 'ACTIVE' : 'INACTIVE';
+};
+
+const getGatewayStatusChipProps = (status) => {
+    if (status === 'ACTIVE') {
+        return {
+            color: 'success',
+            variant: 'filled',
+        };
+    }
+
+    return {
+        color: 'error',
+        variant: 'outlined',
+    };
+};
+
+const mapEnvironmentItem = (item) => {
+    const additionalProperties = getAdditionalPropertiesAsMap(item.additionalProperties);
+    const platformGatewayId = additionalProperties.platformGatewayId || null;
+    const isPlatformGateway = item.gatewayType === 'api-platform'
+        || Boolean(platformGatewayId);
+    const gatewayStatus = resolvePlatformGatewayStatus(
+        isPlatformGateway,
+        additionalProperties.isActive,
+    );
+    return {
+        ...item,
+        id: Utils.encodeEnvironmentId(item.id),
+        platformGatewayId,
+        isPlatformGateway,
+        gatewayTypeDisplay: isPlatformGateway ? 'api-platform' : (item.gatewayType || '-'),
+        gatewayStatus,
+    };
+};
+
+const mapPlatformGatewayItem = (item) => {
+    const rawId = item.id || item.name || item.displayName || '';
+    const encodedId = rawId ? Utils.encodeEnvironmentId(rawId) : '';
+    const vhosts = item.vhost ? [{ host: item.vhost, httpsPort: 443, httpContext: '' }] : [];
+    return {
+        id: encodedId,
+        name: item.name || item.displayName || rawId,
+        displayName: item.displayName || item.name || rawId,
+        description: item.description || '',
+        gatewayTypeDisplay: 'api-platform',
+        gatewayStatus: resolvePlatformGatewayStatus(true, item.isActive),
+        vhosts,
+        permissions: item.permissions || { permissionType: 'PUBLIC', roles: [] },
+        isPlatformGateway: true,
+        platformGatewayId: item.id || null,
+        isReadOnly: false,
+    };
 };
 
 /**
@@ -67,6 +132,9 @@ const resolvePlatformGatewayStatus = (isPlatformGateway, isActiveProperty) => {
  */
 function GatewayEditButton({ dataRow }) {
     const history = useHistory();
+    if (!dataRow) {
+        return null;
+    }
 
     const handleClick = () => {
         if (dataRow.isPlatformGateway && dataRow.platformGatewayId) {
@@ -96,28 +164,40 @@ function GatewayEditButton({ dataRow }) {
  */
 function apiCall() {
     const restApi = new API();
-    return restApi.getGatewayEnvironmentList()
-        .then((environmentResult) => {
-            return environmentResult.body.list.map((item) => {
-                const additionalProperties = getAdditionalPropertiesAsMap(item.additionalProperties);
-                const platformGatewayId = additionalProperties.platformGatewayId || null;
-                const isPlatformGateway = item.gatewayType === 'api-platform'
-                    || Boolean(platformGatewayId);
+    return Promise.all([
+        restApi.getGatewayEnvironmentList(),
+        restApi.getPlatformGatewayList(),
+    ])
+        .then(([environmentResult, platformGatewayResult]) => {
+            const environmentList = environmentResult?.body?.list || [];
+            const platformGatewayList = platformGatewayResult?.body?.list || [];
 
-                // Get status from additionalProperties for platform gateways
-                const gatewayStatus = resolvePlatformGatewayStatus(
-                    isPlatformGateway,
-                    additionalProperties.isActive,
-                );
-                return {
-                    ...item,
-                    id: Utils.encodeEnvironmentId(item.id),
-                    platformGatewayId,
-                    isPlatformGateway,
-                    gatewayTypeDisplay: isPlatformGateway ? 'api-platform' : (item.gatewayType || '-'),
-                    gatewayStatus,
-                };
+            const mappedEnvironments = environmentList.map(mapEnvironmentItem);
+            const mappedPlatformGateways = platformGatewayList.map(mapPlatformGatewayItem);
+
+            // Avoid duplicate rows when platform gateways are present in both sources.
+            const existingPlatformGatewayIds = new Set(
+                mappedEnvironments
+                    .map((gateway) => gateway.platformGatewayId)
+                    .filter(Boolean),
+            );
+            const existingNames = new Set(
+                mappedEnvironments
+                    .map((gateway) => (gateway.name || '').toLowerCase())
+                    .filter(Boolean),
+            );
+            const nonDuplicatePlatformGateways = mappedPlatformGateways.filter((gateway) => {
+                if (gateway.platformGatewayId && existingPlatformGatewayIds.has(gateway.platformGatewayId)) {
+                    return false;
+                }
+                const normalizedName = (gateway.name || '').toLowerCase();
+                if (normalizedName && existingNames.has(normalizedName)) {
+                    return false;
+                }
+                return true;
             });
+
+            return [...mappedEnvironments, ...nonDuplicatePlatformGateways];
         })
         .catch((error) => {
             throw error;
@@ -130,7 +210,11 @@ GatewayEditButton.propTypes = {
         isReadOnly: PropTypes.bool,
         isPlatformGateway: PropTypes.bool,
         platformGatewayId: PropTypes.string,
-    }).isRequired,
+    }),
+};
+
+GatewayEditButton.defaultProps = {
+    dataRow: null,
 };
 
 /**
@@ -140,14 +224,19 @@ GatewayEditButton.propTypes = {
 export default function ListGWEnviornments() {
     const intl = useIntl();
     const { settings } = useAppContext();
+    const history = useHistory();
+    const [selectedCategory, setSelectedCategory] = useState('wso2');
+    const [visibleGatewayCount, setVisibleGatewayCount] = useState(null);
     // Dialog state for Live Gateways
     const [liveGatewaysOpen, setLiveGatewaysOpen] = useState(false);
     const [selectedEnvId, setSelectedEnvId] = useState(null);
     const [selectedEnvName, setSelectedEnvName] = useState('');
+    const [selectedGatewayStatus, setSelectedGatewayStatus] = useState(null);
 
-    const handleOpenLiveGateways = (envId, envName) => {
+    const handleOpenLiveGateways = (envId, envName, gatewayStatus) => {
         setSelectedEnvId(envId);
         setSelectedEnvName(envName);
+        setSelectedGatewayStatus(gatewayStatus);
         setLiveGatewaysOpen(true);
     };
 
@@ -155,9 +244,46 @@ export default function ListGWEnviornments() {
         setLiveGatewaysOpen(false);
         setSelectedEnvId(null);
         setSelectedEnvName('');
+        setSelectedGatewayStatus(null);
+    };
+    const isWSO2Gateway = (gateway) => {
+        return WSO2_LISTING_GATEWAY_TYPES.includes(gateway.gatewayTypeDisplay);
+    };
+
+    const filterGatewayList = (gatewayList) => {
+        if (selectedCategory === 'wso2') {
+            return gatewayList.filter((gateway) => isWSO2Gateway(gateway));
+        }
+        return gatewayList.filter((gateway) => !isWSO2Gateway(gateway));
+    };
+
+    const apiCallForSelectedTab = () => {
+        return apiCall().then((gatewayList) => {
+            const filteredGateways = filterGatewayList(gatewayList);
+            setVisibleGatewayCount(filteredGateways.length);
+            return filteredGateways;
+        });
+    };
+
+    const openSelfHostedGatewayPage = () => {
+        history.push('/settings/environments/create?category=wso2');
     };
 
     const isGatewayTypeAvailable = settings.gatewayTypes.length >= 2;
+    let idColumnIndex = 5;
+    if (settings.isGatewayNotificationEnabled) {
+        idColumnIndex += 1;
+    }
+    if (isGatewayTypeAvailable) {
+        idColumnIndex += 1;
+    }
+    const rowIndexes = {
+        name: 0,
+        displayName: 1,
+        gatewayTypeDisplay: isGatewayTypeAvailable ? 2 : -1,
+        gatewayStatus: isGatewayTypeAvailable ? 3 : 2,
+        id: idColumnIndex,
+    };
 
     // Helper function to render virtual hosts
     const renderVhosts = (vhosts) => {
@@ -185,30 +311,6 @@ export default function ListGWEnviornments() {
         );
     };
 
-    const renderGatewayStatus = (status) => {
-        if (!status) {
-            return '-';
-        }
-        const isActive = status === 'ACTIVE';
-        const statusLabel = isActive
-            ? intl.formatMessage({
-                id: 'Gateways.AddEditGateway.platform.status.active',
-                defaultMessage: 'Active',
-            })
-            : intl.formatMessage({
-                id: 'Gateways.AddEditGateway.platform.status.inactive',
-                defaultMessage: 'Inactive',
-            });
-        return (
-            <Chip
-                size='small'
-                label={statusLabel}
-                color={isActive ? 'success' : 'default'}
-                variant={isActive ? 'filled' : 'outlined'}
-            />
-        );
-    };
-
     const renderGatewayType = (gatewayType) => {
         if (gatewayType === 'api-platform') {
             return intl.formatMessage({
@@ -220,37 +322,63 @@ export default function ListGWEnviornments() {
     };
 
     // Helper function to render gateway instances
-    const renderGatewayInstances = (value, tableMeta) => {
-        if (typeof tableMeta.rowData === 'object') {
-            const envId = tableMeta.rowData[isGatewayTypeAvailable ? 9 : 8];
-            const envName = tableMeta.rowData[1]; // 'displayName'
-            // Default to 'Regular' if no gatewayType column
-            const gatewayType = isGatewayTypeAvailable ? tableMeta.rowData[2] : 'Regular';
-            const isDisabled = gatewayType !== 'Regular';
-
-            const button = (
-                <IconButton
-                    onClick={() => handleOpenLiveGateways(envId, envName)}
-                    disabled={isDisabled}
-                >
-                    <FormatListBulletedIcon aria-label='gateway-instances-list-icon' />
-                </IconButton>
-            );
-
-            return isDisabled ? (
-                <StyledTooltip
-                    title={intl.formatMessage({
-                        id: 'AdminPages.Gateways.table.gatewayInstances.tooltip.'
-                            + 'notSupported',
-                        defaultMessage: 'Not supported for this gateway type',
-                    })}
-                >
-                    <span>{button}</span>
-                </StyledTooltip>
-            ) : button;
-        } else {
-            return <div />;
+    const getRowValue = (tableMeta, columnName) => {
+        const columnIndex = rowIndexes[columnName];
+        if (columnIndex === -1) {
+            return undefined;
         }
+        return tableMeta.rowData[columnIndex];
+    };
+
+    const renderGatewayInstances = (value, tableMeta) => {
+        const gatewayType = getRowValue(tableMeta, 'gatewayTypeDisplay') || 'Regular';
+        const normalizedGatewayType = String(gatewayType).toLowerCase();
+        const isRegularGateway = normalizedGatewayType === 'regular';
+        const isPlatformGateway = normalizedGatewayType === 'api-platform'
+            || normalizedGatewayType.includes('platform gateway');
+        const isDisabled = !(isRegularGateway || isPlatformGateway);
+        const gatewayStatus = getRowValue(tableMeta, 'gatewayStatus');
+
+        if (isPlatformGateway) {
+            if (!gatewayStatus) {
+                return '-';
+            }
+            return (
+                <Chip
+                    size='small'
+                    label={gatewayStatus}
+                    {...getGatewayStatusChipProps(gatewayStatus)}
+                />
+            );
+        }
+
+        const gatewayId = getRowValue(tableMeta, 'id');
+        const gatewayName = getRowValue(tableMeta, 'displayName') || getRowValue(tableMeta, 'name') || '';
+
+        const button = (
+            <IconButton
+                onClick={() => handleOpenLiveGateways(
+                    gatewayId,
+                    gatewayName,
+                    gatewayStatus,
+                )}
+                disabled={isDisabled}
+            >
+                <FormatListBulletedIcon aria-label='gateway-instances-list-icon' />
+            </IconButton>
+        );
+
+        return isDisabled ? (
+            <StyledTooltip
+                title={intl.formatMessage({
+                    id: 'AdminPages.Gateways.table.gatewayInstances.tooltip.'
+                        + 'notSupported',
+                    defaultMessage: 'Not supported for this gateway type',
+                })}
+            >
+                <span>{button}</span>
+            </StyledTooltip>
+        ) : button;
     };
 
     // Build column configuration
@@ -280,37 +408,7 @@ export default function ListGWEnviornments() {
                 },
             },
         ] : []),
-        {
-            name: 'type',
-            label: intl.formatMessage({
-                id: 'AdminPages.Gateways.table.header.type',
-                defaultMessage: 'Type',
-            }),
-            options: {
-                sort: false,
-            },
-        },
-        {
-            name: 'gatewayStatus',
-            label: intl.formatMessage({
-                id: 'AdminPages.Gateways.table.header.gatewayStatus',
-                defaultMessage: 'Status',
-            }),
-            options: {
-                sort: false,
-                customBodyRender: renderGatewayStatus,
-            },
-        },
-        {
-            name: 'description',
-            label: intl.formatMessage({
-                id: 'AdminPages.Gateways.table.header.description',
-                defaultMessage: 'Description',
-            }),
-            options: {
-                sort: false,
-            },
-        },
+        { name: 'gatewayStatus', options: { display: false } },
         {
             name: 'vhosts',
             label: intl.formatMessage({
@@ -362,16 +460,16 @@ export default function ListGWEnviornments() {
     };
     const searchProps = {
         searchPlaceholder: intl.formatMessage({
-            id: 'AdminPages.Gateways.List.search.default',
-            defaultMessage: 'Search Gateway by Name, Description or Host',
+            id: 'AdminPages.Gateways.List.search.compact',
+            defaultMessage: 'Search gateways...',
         }),
         active: true,
     };
     const pageProps = {
         pageStyle: 'half',
         title: intl.formatMessage({
-            id: 'AdminPages.Gateways.List.title',
-            defaultMessage: 'Gateway Environments',
+            id: 'AdminPages.Gateways.List.title.gateways',
+            defaultMessage: 'Gateways',
         }),
     };
 
@@ -396,6 +494,47 @@ export default function ListGWEnviornments() {
     };
 
     const addCreateButton = () => {
+        if (visibleGatewayCount === 0) {
+            return null;
+        }
+        if (selectedCategory === 'wso2') {
+            return (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        mr: 0.5,
+                    }}
+                >
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        size='small'
+                        startIcon={<AddIcon />}
+                        onClick={openSelfHostedGatewayPage}
+                        data-testid='add-wso2-gateway-btn'
+                        sx={{
+                            px: 2,
+                            py: 0.75,
+                            borderRadius: '8px',
+                            textTransform: 'none',
+                            fontWeight: 500,
+                            fontSize: '0.75rem',
+                            backgroundColor: '#0E4A72',
+                            '&:hover': {
+                                backgroundColor: '#0A3C5D',
+                            },
+                        }}
+                    >
+                        {intl.formatMessage({
+                            id: 'Gateways.ListGatewayEnvironments.addSelfHostedGateway',
+                            defaultMessage: 'Add WSO2 Gateway',
+                        })}
+                    </Button>
+                </Box>
+            );
+        }
         return (
             <Box
                 sx={{
@@ -407,42 +546,224 @@ export default function ListGWEnviornments() {
             >
                 <Button
                     component={RouterLink}
-                    to='/settings/environments/platform-gateways'
-                    variant='outlined'
-                    color='primary'
-                    size='small'
-                >
-                    {intl.formatMessage({
-                        id: 'Gateways.ListGatewayEnvironments.managePlatformGateways',
-                        defaultMessage: 'Manage Platform Gateways',
-                    })}
-                </Button>
-                <Button
-                    component={RouterLink}
-                    to='/settings/environments/create'
+                    to='/settings/environments/create?category=third-party'
                     variant='contained'
                     color='primary'
                     size='small'
+                    startIcon={<AddIcon />}
                     data-testid='form-dialog-base-trigger-btn'
+                    sx={{
+                        px: 2,
+                        py: 0.75,
+                        borderRadius: '8px',
+                        textTransform: 'none',
+                        fontWeight: 500,
+                        fontSize: '0.75rem',
+                        backgroundColor: '#0E4A72',
+                        '&:hover': {
+                            backgroundColor: '#0A3C5D',
+                        },
+                    }}
                 >
                     {intl.formatMessage({
-                        id: 'Gateways.ListGatewayEnvironments.addNewGatewayEnvironment',
-                        defaultMessage: 'Add Gateway Environment',
+                        id: 'Gateways.ListGatewayEnvironments.addThirdPartyGateway',
+                        defaultMessage: 'Add Gateway',
                     })}
                 </Button>
             </Box>
         );
     };
 
+    const tabbedToolbar = (
+        <Tabs
+            value={selectedCategory}
+            onChange={(_, value) => setSelectedCategory(value)}
+            aria-label='gateway-category-tabs'
+            sx={{
+                minHeight: 40,
+                borderBottom: '1px solid #D8DDE6',
+                '& .MuiTabs-flexContainer': {
+                    justifyContent: 'flex-start',
+                },
+                '& .MuiTabs-indicator': {
+                    height: 2,
+                    backgroundColor: '#0E4A72',
+                },
+                '& .MuiTab-root': {
+                    minHeight: 40,
+                    textTransform: 'none',
+                    fontWeight: 500,
+                    fontFamily: 'inherit',
+                    fontSize: '0.75rem',
+                    color: 'text.secondary',
+                    mr: 1,
+                    px: 2,
+                    minWidth: 'auto',
+                    border: 'none',
+                },
+                '& .Mui-selected': {
+                    color: '#0E4A72',
+                    fontWeight: 700,
+                },
+            }}
+        >
+            <Tab
+                value='wso2'
+                label={intl.formatMessage({
+                    id: 'Gateways.ListGatewayEnvironments.tabs.apiPlatform',
+                    defaultMessage: 'WSO2 Gateways',
+                })}
+            />
+            <Tab
+                value='third-party'
+                label={intl.formatMessage({
+                    id: 'Gateways.ListGatewayEnvironments.tabs.thirdParty',
+                    defaultMessage: 'Third Party Gateways',
+                })}
+            />
+        </Tabs>
+    );
+
+    const centeredEmptyState = (
+        <Box
+            sx={{
+                minHeight: '42vh',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 1.5,
+                textAlign: 'center',
+                px: 2,
+            }}
+        >
+            <Typography variant='body2' color='text.secondary'>
+                {intl.formatMessage({
+                    id: 'Gateways.ListGatewayEnvironments.empty.description',
+                    defaultMessage: 'Add third party gateways to discover, manage, and govern APIs'
+                        + ' across providers from a single control plane.',
+                })}
+            </Typography>
+            {selectedCategory === 'wso2' ? (
+                <Button
+                    variant='contained'
+                    size='small'
+                    startIcon={<AddIcon />}
+                    onClick={openSelfHostedGatewayPage}
+                    sx={{
+                        px: 2,
+                        py: 0.75,
+                        borderRadius: '8px',
+                        textTransform: 'none',
+                        fontWeight: 500,
+                        fontSize: '0.75rem',
+                        backgroundColor: '#0E4A72',
+                        '&:hover': {
+                            backgroundColor: '#0A3C5D',
+                        },
+                    }}
+                >
+                    {intl.formatMessage({
+                        id: 'Gateways.ListGatewayEnvironments.addSelfHostedGateway',
+                        defaultMessage: 'Add WSO2 Gateway',
+                    })}
+                </Button>
+            ) : (
+                <Button
+                    component={RouterLink}
+                    to='/settings/environments/create?category=third-party'
+                    variant='contained'
+                    size='small'
+                    startIcon={<AddIcon />}
+                    sx={{
+                        px: 2,
+                        py: 0.75,
+                        borderRadius: '8px',
+                        textTransform: 'none',
+                        fontWeight: 500,
+                        fontSize: '0.75rem',
+                        backgroundColor: '#0E4A72',
+                        '&:hover': {
+                            backgroundColor: '#0A3C5D',
+                        },
+                    }}
+                >
+                    {intl.formatMessage({
+                        id: 'Gateways.ListGatewayEnvironments.addThirdPartyGateway',
+                        defaultMessage: 'Add Gateway',
+                    })}
+                </Button>
+            )}
+        </Box>
+    );
+
     return (
         <>
             <ListBase
+                key={selectedCategory}
                 columProps={columProps}
                 pageProps={pageProps}
                 addButtonProps={addButtonProps}
                 searchProps={searchProps}
+                searchIconInside
+                toolbarContent={tabbedToolbar}
+                showReload={false}
+                panelSx={{
+                    border: '1px solid #D8DDE6',
+                    borderRadius: '10px',
+                    backgroundColor: '#fff',
+                    overflow: 'hidden',
+                }}
+                toolbarSx={{
+                    px: 2,
+                    py: 1,
+                    backgroundColor: '#fff',
+                }}
+                tableSx={{
+                    '& .MuiPaper-root': {
+                        boxShadow: 'none',
+                        borderRadius: 0,
+                    },
+                    '& .MuiTableCell-head': {
+                        fontWeight: 500,
+                        color: '#8A94A6',
+                        fontSize: '0.8rem',
+                        borderBottom: '1px solid #EEF1F6',
+                    },
+                    '& .MuiTableCell-body': {
+                        fontSize: '0.75rem',
+                        borderBottom: '1px solid #EEF1F6',
+                        color: '#2F3441',
+                    },
+                    '& .MuiTableRow-root:last-of-type .MuiTableCell-body': {
+                        borderBottom: 'none',
+                    },
+                }}
+                searchTextFieldProps={{
+                    variant: 'outlined',
+                    size: 'small',
+                    sx: {
+                        '& .MuiInputBase-root': {
+                            fontSize: '0.75rem',
+                        },
+                        '& .MuiOutlinedInput-root': {
+                            borderRadius: '8px',
+                            backgroundColor: '#fff',
+                        },
+                        '& .MuiOutlinedInput-notchedOutline': {
+                            borderColor: '#D8DDE6',
+                        },
+                    },
+                }}
+                options={{
+                    pagination: false,
+                    rowsPerPage: 10,
+                    responsive: 'standard',
+                }}
+                noDataMessage={centeredEmptyState}
+                preserveToolbarOnEmpty
                 emptyBoxProps={emptyBoxProps}
-                apiCall={apiCall}
+                apiCall={apiCallForSelectedTab}
                 EditComponent={GatewayEditButton}
                 addButtonOverride={addCreateButton()}
                 editComponentProps={{
@@ -456,6 +777,7 @@ export default function ListGWEnviornments() {
                 onClose={handleCloseLiveGateways}
                 environmentId={selectedEnvId}
                 environmentName={selectedEnvName}
+                gatewayStatus={selectedGatewayStatus}
             />
         </>
     );

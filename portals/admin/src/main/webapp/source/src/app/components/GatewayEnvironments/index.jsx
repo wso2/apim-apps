@@ -3,7 +3,7 @@ import { Route, Switch, withRouter } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import ListGWEnvironments from './ListGWEnviornments';
 import AddEditGWEnvironment from './AddEditGWEnvironment';
-import PlatformGatewayManagement from './PlatformGatewayManagement';
+import UniversalGatewayManagement from './UniversalGatewayManagement';
 
 /**
  * Render a list
@@ -14,11 +14,17 @@ function GatewayEnvironments() {
         <Switch>
             <Route exact path='/settings/environments' component={ListGWEnvironments} />
             <Route exact path='/settings/environments/create' component={AddEditGWEnvironment} />
-            <Route exact path='/settings/environments/platform-gateways' component={PlatformGatewayManagement} />
+            <Route exact path='/settings/environments/platform-gateways' component={UniversalGatewayManagement} />
+            <Route exact path='/settings/environments/universal-gateways' component={UniversalGatewayManagement} />
             <Route
                 exact
                 path='/settings/environments/platform-gateways/:gatewayId'
-                component={PlatformGatewayManagement}
+                component={UniversalGatewayManagement}
+            />
+            <Route
+                exact
+                path='/settings/environments/universal-gateways/:gatewayId'
+                component={UniversalGatewayManagement}
             />
             <Route exact path='/settings/environments/:id' component={AddEditGWEnvironment} />
             <Route component={ResourceNotFound} />

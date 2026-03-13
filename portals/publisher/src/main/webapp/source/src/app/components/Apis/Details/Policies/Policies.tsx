@@ -103,7 +103,9 @@ const Policies: React.FC = () => {
     );
     const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(isChoreoConnectGateway(api.gatewayType));
     const { showMultiVersionPolicies } = Configurations.apis;
-    const [selectedTab, setSelectedTab] = useState(api.type === 'GRAPHQL' || api.apiPolicies != null ? 0 : 1);
+    const [selectedTab, setSelectedTab] = useState(
+        api.type === 'GRAPHQL' || api.apiPolicies != null || api.apiHubPolicies != null ? 0 : 1,
+    );
     const [gateway, setGateway] = useState<string>("");
     const isPolicyHubGateway = api.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform;
 
@@ -121,7 +123,15 @@ const Policies: React.FC = () => {
         request: [],
         response: [],
         fault: [],
-    }
+    };
+
+    const getInitPolicyListState = (policyList: any[] | null | undefined) => {
+        const clonedPolicyList = cloneDeep(policyList) || [];
+        clonedPolicyList.forEach((policyItem: ApiPolicy) => {
+            policyItem.uuid = uuidv4();
+        });
+        return clonedPolicyList;
+    };
 
     const getInitPolicyState = (policyList: any) => {
         // Iterating through the policy list of request flow, response flow and fault flow
@@ -158,17 +168,21 @@ const Policies: React.FC = () => {
     const getInitState = () => {
         const clonedOperations = cloneDeep(api.operations);
         clonedOperations.forEach((operation: any) => {
-            if (operation.operationPolicies) {
-                const { operationPolicies } = operation;
-                getInitPolicyState(operationPolicies);
+            if (isPolicyHubGateway) {
+                operation.operationHubPolicies = getInitPolicyListState(operation.operationHubPolicies);
+            } else if (operation.operationPolicies) {
+                getInitPolicyState(operation.operationPolicies);
             }
         });
         return clonedOperations;
     }
 
     const getInitAPILevelPoliciesState = () => {
+        if (isPolicyHubGateway) {
+            return getInitPolicyListState(api.apiHubPolicies);
+        }
         const clonedAPIPolicies = cloneDeep(api.apiPolicies);
-        if (api.apiPolicies != null) {
+        if (clonedAPIPolicies) {
             getInitPolicyState(clonedAPIPolicies);
         }
         return clonedAPIPolicies || initApiLevelPolicy;
@@ -300,10 +314,10 @@ const Policies: React.FC = () => {
         const newApiOperations: any = cloneDeep(apiOperations);
         // Set operation policies to the API object
         newApiOperations.forEach((operation: any) => {
-            if (operation.operationPolicies) {
+            if (isPolicyHubGateway) {
+                operation.operationHubPolicies = [];
+            } else if (operation.operationPolicies) {
                 const { operationPolicies } = operation;
-
-                // Iterating through the policy list of request flow, response flow and fault flow
                 for (const flow in operationPolicies) {
                     if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
                         operationPolicies[flow] = [];
@@ -312,7 +326,7 @@ const Policies: React.FC = () => {
             }
         });
         setApiOperations(newApiOperations);
-        setApiLevelPolicies(initApiLevelPolicy);
+        setApiLevelPolicies(isPolicyHubGateway ? [] : initApiLevelPolicy);
     }
 
     useEffect(() => {
@@ -400,28 +414,24 @@ const Policies: React.FC = () => {
                 : null;
 
         if (selectedTab === apiLevelTab) {
-            const flow = newApiLevelPolicies[currentFlow];
-            const existingPolicy = flow.find(
-                (p: any) =>
-                    p.policyId === updatedOperation.policyId &&
-                    p.uuid === updatedOperation.uuid,
-            );
+            if (isPolicyHubGateway && currentFlow === 'hub') {
+                const existingPolicy = newApiLevelPolicies.find(
+                    (p: any) =>
+                        p.policyId === updatedOperation.policyId &&
+                        p.uuid === updatedOperation.uuid,
+                );
 
-            if (existingPolicy) {
-                existingPolicy.parameters = { ...updatedOperation.parameters };
+                if (existingPolicy) {
+                    existingPolicy.parameters = { ...updatedOperation.parameters };
+                } else {
+                    const uuid = uuidv4();
+                    newApiLevelPolicies.push({
+                        ...updatedOperation,
+                        uuid,
+                    });
+                }
             } else {
-                const uuid = uuidv4();
-                flow.push({
-                    ...updatedOperation,
-                    uuid,
-                });
-            }
-            setApiLevelPolicies(newApiLevelPolicies);
-        } else {
-            operationInAction.forEach((op: any) => {
-                const flow = op.operationPolicies?.[currentFlow];
-                if (!flow) return;
-
+                const flow = newApiLevelPolicies[currentFlow];
                 const existingPolicy = flow.find(
                     (p: any) =>
                         p.policyId === updatedOperation.policyId &&
@@ -431,10 +441,50 @@ const Policies: React.FC = () => {
                 if (existingPolicy) {
                     existingPolicy.parameters = { ...updatedOperation.parameters };
                 } else {
+                    const uuid = uuidv4();
                     flow.push({
                         ...updatedOperation,
-                        uuid: uuidv4(),
+                        uuid,
                     });
+                }
+            }
+            setApiLevelPolicies(newApiLevelPolicies);
+        } else {
+            operationInAction.forEach((op: any) => {
+                if (isPolicyHubGateway && currentFlow === 'hub') {
+                    const operationHubPolicies = op.operationHubPolicies || [];
+                    const existingPolicy = operationHubPolicies.find(
+                        (p: any) =>
+                            p.policyId === updatedOperation.policyId &&
+                            p.uuid === updatedOperation.uuid,
+                    );
+
+                    if (existingPolicy) {
+                        existingPolicy.parameters = { ...updatedOperation.parameters };
+                    } else {
+                        op.operationHubPolicies = [
+                            ...operationHubPolicies,
+                            { ...updatedOperation, uuid: uuidv4() },
+                        ];
+                    }
+                } else {
+                    const flow = op.operationPolicies?.[currentFlow];
+                    if (!flow) return;
+
+                    const existingPolicy = flow.find(
+                        (p: any) =>
+                            p.policyId === updatedOperation.policyId &&
+                            p.uuid === updatedOperation.uuid,
+                    );
+
+                    if (existingPolicy) {
+                        existingPolicy.parameters = { ...updatedOperation.parameters };
+                    } else {
+                        flow.push({
+                            ...updatedOperation,
+                            uuid: uuidv4(),
+                        });
+                    }
                 }
             });
             setApiOperations(newApiOperations);
@@ -453,7 +503,12 @@ const Policies: React.FC = () => {
         // Add attached policy to the same flow of all the operations
         newApiOperations.forEach((operation: any) => {
             const uuid = uuidv4();
-            operation.operationPolicies[currentFlow].push({ ...updatedOperation, uuid });
+            if (isPolicyHubGateway && currentFlow === 'hub') {
+                operation.operationHubPolicies = operation.operationHubPolicies || [];
+                operation.operationHubPolicies.push({ ...updatedOperation, uuid });
+            } else {
+                operation.operationPolicies[currentFlow].push({ ...updatedOperation, uuid });
+            }
         });
 
         // Finally update the state
@@ -472,8 +527,13 @@ const Policies: React.FC = () => {
 
         if (selectedTab === apiLevelTab) {
             const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
-            const index = newApiLevelPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
-            newApiLevelPolicies[currentFlow].splice(index, 1);
+            if (isPolicyHubGateway && currentFlow === 'hub') {
+                const index = newApiLevelPolicies.map((p: any) => p.uuid).indexOf(uuid);
+                newApiLevelPolicies.splice(index, 1);
+            } else {
+                const index = newApiLevelPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
+                newApiLevelPolicies[currentFlow].splice(index, 1);
+            }
             setApiLevelPolicies(newApiLevelPolicies);
         } else {
             const newApiOperations: any = cloneDeep(apiOperations);
@@ -489,15 +549,19 @@ const Policies: React.FC = () => {
             [{a:'1'},{a:'2'},{a:'1'}].map( i => i.a).indexOf('2') will output the location of '2'
             */
             if (operationInAction.length > 1) {
-                // In websocket apis, policy should be deleted from both subscribe and publish operations
-                const referencePolicy = operationInAction[0].operationPolicies[currentFlow]
+                const referencePolicyList = isPolicyHubGateway && currentFlow === 'hub'
+                    ? (operationInAction[0].operationHubPolicies || [])
+                    : operationInAction[0].operationPolicies[currentFlow];
+                const referencePolicy = referencePolicyList
                     .find((p: any) => p.uuid === uuid);
 
                 if (referencePolicy) {
                     const referencePolicyId = referencePolicy.policyId;
 
                     operationInAction.forEach((op: any) => {
-                        const policyList = op.operationPolicies[currentFlow];
+                        const policyList = isPolicyHubGateway && currentFlow === 'hub'
+                            ? (op.operationHubPolicies || [])
+                            : op.operationPolicies[currentFlow];
                         const targetIndex = policyList.findIndex((p: any) => p.policyId === referencePolicyId);
 
                         if (targetIndex !== -1) {
@@ -507,8 +571,15 @@ const Policies: React.FC = () => {
                 }
             } else {
                 operationInAction.forEach((op: any) => {
-                    const index = op.operationPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
-                    op.operationPolicies[currentFlow].splice(index, 1);
+                    if (isPolicyHubGateway && currentFlow === 'hub') {
+                        const operationHubPolicies = op.operationHubPolicies || [];
+                        const index = operationHubPolicies.map((p: any) => p.uuid).indexOf(uuid);
+                        operationHubPolicies.splice(index, 1);
+                        op.operationHubPolicies = operationHubPolicies;
+                    } else {
+                        const index = op.operationPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
+                        op.operationPolicies[currentFlow].splice(index, 1);
+                    }
                 });
             }
 
@@ -530,9 +601,13 @@ const Policies: React.FC = () => {
     ) => {
         if (selectedTab === apiLevelTab) {
             const newAPIPolicies: any = cloneDeep(apiLevelPolicies);
-            const policyArray = newAPIPolicies[currentFlow];
-            newAPIPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
-            setApiLevelPolicies(newAPIPolicies);
+            if (isPolicyHubGateway && currentFlow === 'hub') {
+                setApiLevelPolicies(arrayMove(newAPIPolicies, oldIndex, newIndex));
+            } else {
+                const policyArray = newAPIPolicies[currentFlow];
+                newAPIPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
+                setApiLevelPolicies(newAPIPolicies);
+            }
         } else {
             const newApiOperations: any = cloneDeep(apiOperations);
             const operationInAction = newApiOperations.filter(
@@ -540,16 +615,32 @@ const Policies: React.FC = () => {
                     api.type === 'WS'
                         ? op.target === target
                         : op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
-                operationInAction.forEach((operation: any) => {
+            operationInAction.forEach((operation: any) => {
+                if (isPolicyHubGateway && currentFlow === 'hub') {
+                    operation.operationHubPolicies = arrayMove(
+                        operation.operationHubPolicies || [],
+                        oldIndex,
+                        newIndex,
+                    );
+                } else {
                     const policyArray = operation.operationPolicies[currentFlow];
                     operation.operationPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
+                }
                 });
             setApiOperations(newApiOperations);
         }
     };
 
     const deletePolicyUuid = (operationPolicies: any) => {
-        // Iterating through the policy list of request flow, response flow and fault flow
+        if (Array.isArray(operationPolicies)) {
+            operationPolicies.forEach((policyItem: ApiPolicy) => {
+                if (policyItem.uuid) {
+                    delete policyItem.uuid;
+                }
+            });
+            return;
+        }
+
         for (const flow in operationPolicies) {
             if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
                 const policyArray = operationPolicies[flow];
@@ -574,18 +665,28 @@ const Policies: React.FC = () => {
         deletePolicyUuid(newApiLevelPolicies);
         // Set operation policies to the API object
         newApiOperations.forEach((operation: any) => {
-            if (operation.operationPolicies) {
+            if (isPolicyHubGateway) {
+                deletePolicyUuid(operation.operationHubPolicies || []);
+            } else if (operation.operationPolicies) {
                 const { operationPolicies } = operation;
                 deletePolicyUuid(operationPolicies);
             }
         });
 
-        const updatePromise = updateAPI({
-            operations: newApiOperations,
-            apiPolicies: newApiLevelPolicies,
-            gatewayVendor: api.gatewayVendor,
-            gatewayType: api.gatewayType,
-        });
+        const updatedApiPayload: any = api.toJSON ? api.toJSON() : cloneDeep(api);
+
+        updatedApiPayload.operations = newApiOperations;
+        updatedApiPayload.gatewayVendor = api.gatewayVendor;
+        updatedApiPayload.gatewayType = api.gatewayType;
+
+        if (isPolicyHubGateway) {
+            updatedApiPayload.apiHubPolicies = newApiLevelPolicies;
+            updatedApiPayload.apiPolicies = initApiLevelPolicy;
+        } else {
+            updatedApiPayload.apiPolicies = newApiLevelPolicies;
+        }
+
+        const updatePromise = updateAPI(updatedApiPayload);
         updatePromise
             .catch((error: any) => {
                 if (error.response) {

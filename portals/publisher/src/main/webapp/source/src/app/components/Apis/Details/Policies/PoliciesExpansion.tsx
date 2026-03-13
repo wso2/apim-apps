@@ -154,7 +154,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
 
     const buildAttachedPoliciesForFlow = async (
         attachedPolicies: any[],
-        flowName: 'request' | 'response' | 'fault',
+        flowName: 'request' | 'response' | 'fault' | 'hub',
         originatedFromCommonPolicies: string[],
     ) => {
         const flowPolicies: AttachedPolicy[] = [];
@@ -227,31 +227,45 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                         ? op.target === target
                         : op.target === target && op.verb.toLowerCase() === verb.toLowerCase(),
             ) : null;
-            const apiPolicies = (isAPILevelPolicy) ? apiLevelPolicies : null;
             const originatedFromCommonPolicies : string[] = [];
-            const requestFlow = (isAPILevelPolicy) ? apiPolicies.request : operationInAction.operationPolicies.request;
-            const requestFlowList = await buildAttachedPoliciesForFlow(
-                requestFlow,
-                'request',
-                originatedFromCommonPolicies,
-            );
-            setRequestFlowPolicyList(requestFlowList);
-            const responseFlow = isAPILevelPolicy ? apiPolicies.response : operationInAction.operationPolicies.response;
-            const responseFlowList = await buildAttachedPoliciesForFlow(
-                responseFlow,
-                'response',
-                originatedFromCommonPolicies,
-            );
-            setResponseFlowPolicyList(responseFlowList);
-
-            if (!isChoreoConnectEnabled) {
-                const faultFlow = isAPILevelPolicy ? apiPolicies.fault : operationInAction.operationPolicies.fault;
-                const faultFlowList = await buildAttachedPoliciesForFlow(
-                    faultFlow,
-                    'fault',
+            if (isPolicyHubGateway) {
+                const hubPolicies = isAPILevelPolicy
+                    ? (apiLevelPolicies || [])
+                    : (operationInAction?.operationHubPolicies || []);
+                const hubPolicyList = await buildAttachedPoliciesForFlow(
+                    hubPolicies,
+                    'hub',
                     originatedFromCommonPolicies,
                 );
-                setFaultFlowPolicyList(faultFlowList);
+                setRequestFlowPolicyList(hubPolicyList);
+                setResponseFlowPolicyList([]);
+                setFaultFlowPolicyList([]);
+            } else {
+                const apiPolicies = (isAPILevelPolicy) ? apiLevelPolicies : null;
+                const requestFlow = (isAPILevelPolicy) ? apiPolicies.request : operationInAction.operationPolicies.request;
+                const requestFlowList = await buildAttachedPoliciesForFlow(
+                    requestFlow,
+                    'request',
+                    originatedFromCommonPolicies,
+                );
+                setRequestFlowPolicyList(requestFlowList);
+                const responseFlow = isAPILevelPolicy ? apiPolicies.response : operationInAction.operationPolicies.response;
+                const responseFlowList = await buildAttachedPoliciesForFlow(
+                    responseFlow,
+                    'response',
+                    originatedFromCommonPolicies,
+                );
+                setResponseFlowPolicyList(responseFlowList);
+
+                if (!isChoreoConnectEnabled) {
+                    const faultFlow = isAPILevelPolicy ? apiPolicies.fault : operationInAction.operationPolicies.fault;
+                    const faultFlowList = await buildAttachedPoliciesForFlow(
+                        faultFlow,
+                        'fault',
+                        originatedFromCommonPolicies,
+                    );
+                    setFaultFlowPolicyList(faultFlowList);
+                }
             }
             setListOriginatedFromCommonPolicies(originatedFromCommonPolicies);
         })();

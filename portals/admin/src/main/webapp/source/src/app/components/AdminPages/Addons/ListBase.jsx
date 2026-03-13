@@ -22,9 +22,11 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
@@ -49,6 +51,14 @@ function ListBase(props) {
         EditComponent, editComponentProps, DeleteComponent, showActionColumn,
         columProps, pageProps, addButtonProps, addButtonOverride,
         searchProps: { active: searchActive, searchPlaceholder }, apiCall, initialData,
+        toolbarContent,
+        showReload,
+        panelSx,
+        toolbarSx,
+        tableSx,
+        searchTextFieldProps,
+        searchIconInside,
+        preserveToolbarOnEmpty,
         emptyBoxProps: {
             title: emptyBoxTitle,
             content: emptyBoxContent,
@@ -281,7 +291,9 @@ function ListBase(props) {
     // No apiCall and initialData is undefined OR
     // No apiCall and initialData is empty array OR
     // Data exists and it's an empty array
-    if ((!apiCall && (initialData === undefined || initialData?.length === 0)) || (data && data.length === 0)) {
+    if ((!apiCall && (initialData === undefined || initialData?.length === 0))
+        || (!apiCall && data && data.length === 0)
+        || (apiCall && data && data.length === 0 && !preserveToolbarOnEmpty)) {
         const content = (
             <Card>
                 <CardContent>
@@ -319,44 +331,84 @@ function ListBase(props) {
     }
 
     const mainContent = (
-        <>
+        <Box sx={panelSx}>
+            {toolbarContent && (
+                <Box
+                    sx={{
+                        border: '1px solid rgba(0, 0, 0, 0.12)',
+                        borderBottom: 'none',
+                        borderRadius: '4px 4px 0 0',
+                        backgroundColor: 'background.paper',
+                        px: 2,
+                        pt: 1,
+                    }}
+                >
+                    {toolbarContent}
+                </Box>
+            )}
             {(searchActive || addButtonProps) && (
                 <AppBar
-                    sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
+                    sx={{
+                        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                        ...(toolbarContent
+                            ? {
+                                borderLeft: '1px solid rgba(0, 0, 0, 0.12)',
+                                borderRight: '1px solid rgba(0, 0, 0, 0.12)',
+                                borderRadius: 0,
+                            }
+                            : {}),
+                        ...toolbarSx,
+                    }}
                     position='static'
                     color='default'
                     elevation={0}
                 >
                     <Toolbar>
                         <Grid container spacing={2} alignItems='center'>
-
-                            <Grid item>
-                                {searchActive && (<SearchIcon sx={{ display: 'block' }} color='inherit' />)}
-                            </Grid>
-                            <Grid item xs>
-                                {searchActive && (
-                                    <TextField
-                                        variant='standard'
-                                        fullWidth
-                                        placeholder={searchPlaceholder}
-                                        sx={(theme) => ({
-                                            '& .search-input': {
-                                                fontSize: theme.typography.fontSize,
-                                            },
-                                        })}
-                                        InputProps={{
-                                            disableUnderline: true,
-                                            className: 'search-input',
-                                        }}
-                                        // eslint-disable-next-line react/jsx-no-duplicate-props
-                                        inputProps={{
-                                            'aria-label': 'search-by-policy',
-                                        }}
-                                        onChange={filterData}
-                                        value={searchText}
-                                    />
-                                )}
-                            </Grid>
+                            {searchActive && (
+                                <>
+                                    {!searchIconInside && (
+                                        <Grid item>
+                                            <SearchIcon sx={{ display: 'block' }} color='inherit' />
+                                        </Grid>
+                                    )}
+                                    <Grid item xs>
+                                        <TextField
+                                            variant='standard'
+                                            fullWidth
+                                            placeholder={searchPlaceholder}
+                                            sx={(theme) => ({
+                                                '& .search-input': {
+                                                    fontSize: theme.typography.fontSize,
+                                                },
+                                                ...(searchTextFieldProps?.sx || {}),
+                                            })}
+                                            InputProps={{
+                                                ...(searchTextFieldProps?.InputProps || {}),
+                                                disableUnderline: !(searchTextFieldProps?.variant === 'outlined'),
+                                                className: 'search-input',
+                                                ...(searchIconInside
+                                                    ? {
+                                                        startAdornment: (
+                                                            <InputAdornment position='start'>
+                                                                <SearchIcon color='action' />
+                                                            </InputAdornment>
+                                                        ),
+                                                    }
+                                                    : {}),
+                                            }}
+                                            // eslint-disable-next-line react/jsx-no-duplicate-props
+                                            inputProps={{
+                                                'aria-label': 'search-by-policy',
+                                            }}
+                                            onChange={filterData}
+                                            value={searchText}
+                                            {...(searchTextFieldProps || {})}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
+                            {!searchActive && <Grid item xs />}
                             <Grid item sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                 {addButtonOverride || (
                                     EditComponent && (
@@ -366,27 +418,29 @@ function ListBase(props) {
                                         />
                                     )
                                 )}
-                                <Tooltip title={(
-                                    <FormattedMessage
-                                        id='AdminPages.Addons.ListBase.reload'
-                                        defaultMessage='Reload'
-                                    />
-                                )}
-                                >
-                                    <IconButton onClick={fetchData} size='large'>
-                                        <RefreshIcon
-                                            aria-label='refresh-advanced-policies'
-                                            sx={{ display: 'block' }}
-                                            color='inherit'
+                                {showReload && (
+                                    <Tooltip title={(
+                                        <FormattedMessage
+                                            id='AdminPages.Addons.ListBase.reload'
+                                            defaultMessage='Reload'
                                         />
-                                    </IconButton>
-                                </Tooltip>
+                                    )}
+                                    >
+                                        <IconButton onClick={fetchData} size='large'>
+                                            <RefreshIcon
+                                                aria-label='refresh-advanced-policies'
+                                                sx={{ display: 'block' }}
+                                                color='inherit'
+                                            />
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
                             </Grid>
                         </Grid>
                     </Toolbar>
                 </AppBar>
             )}
-            <div>
+            <Box sx={tableSx}>
                 {data && data.length > 0 && (
                     <MUIDataTable
                         title={null}
@@ -395,7 +449,7 @@ function ListBase(props) {
                         options={options}
                     />
                 )}
-            </div>
+            </Box>
             {data && data.length === 0 && (
                 <div>
                     <Typography color='textSecondary' align='center'>
@@ -403,7 +457,7 @@ function ListBase(props) {
                     </Typography>
                 </div>
             )}
-        </>
+        </Box>
     );
 
     return useContentBase ? (
@@ -441,6 +495,14 @@ ListBase.defaultProps = {
     renderExpandableRow: null,
     useContentBase: true,
     options: {},
+    toolbarContent: null,
+    showReload: true,
+    panelSx: {},
+    toolbarSx: {},
+    tableSx: {},
+    searchTextFieldProps: {},
+    searchIconInside: false,
+    preserveToolbarOnEmpty: false,
 };
 
 ListBase.propTypes = {
@@ -473,5 +535,13 @@ ListBase.propTypes = {
     renderExpandableRow: PropTypes.func,
     useContentBase: PropTypes.bool,
     options: PropTypes.shape({}),
+    toolbarContent: PropTypes.element,
+    showReload: PropTypes.bool,
+    panelSx: PropTypes.shape({}),
+    toolbarSx: PropTypes.shape({}),
+    tableSx: PropTypes.shape({}),
+    searchTextFieldProps: PropTypes.shape({}),
+    searchIconInside: PropTypes.bool,
+    preserveToolbarOnEmpty: PropTypes.bool,
 };
 export default ListBase;

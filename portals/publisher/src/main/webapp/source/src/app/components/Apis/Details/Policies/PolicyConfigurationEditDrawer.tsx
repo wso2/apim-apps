@@ -128,9 +128,11 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
                 ? op.target === target
                 : op.target === target && op.verb.toLowerCase() === verb.toLowerCase(),
     ) : null;
-    const operationFlowPolicy = ((isAPILevelPolicy) ? apiLevelPolicies : operationInAction.operationPolicies)[
-        currentFlow
-    ].find((policy: any) => policy.uuid === policyObj?.uniqueKey);
+    const isPolicyHubGateway = api.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform;
+    const currentPolicyCollection = isPolicyHubGateway && currentFlow === 'hub'
+        ? (isAPILevelPolicy ? apiLevelPolicies : operationInAction?.operationHubPolicies || [])
+        : ((isAPILevelPolicy) ? apiLevelPolicies : operationInAction.operationPolicies)[currentFlow];
+    const operationFlowPolicy = currentPolicyCollection.find((policy: any) => policy.uuid === policyObj?.uniqueKey);
 
     const apiPolicy: ApiPolicy = operationFlowPolicy || {
         policyName: policyObj?.name,

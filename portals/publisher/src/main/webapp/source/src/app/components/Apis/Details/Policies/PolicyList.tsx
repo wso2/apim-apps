@@ -210,7 +210,7 @@ const PolicyList: FC<PolicyListPorps> = ({
                                 defaultMessage='Policy List'
                             />
                         </Typography>
-                        {!isChoreoConnectEnabled && (
+                        {!isChoreoConnectEnabled && !isPolicyHubGateway && (
                             <Button
                                 onClick={handleAddPolicy}
                                 disabled={isRestricted(['apim:api_create', 'apim:api_publish'])}
