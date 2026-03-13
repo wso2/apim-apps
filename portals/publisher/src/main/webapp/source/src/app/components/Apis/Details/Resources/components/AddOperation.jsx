@@ -276,24 +276,6 @@ function AddOperation(props) {
             defaultMessage: 'Enter URI pattern',
         });
     };
-    const getOperationHelpertext = () => {
-        if (isAsyncV3 && isAsyncAPI) {
-            return intl.formatMessage({
-                id: 'Apis.Details.Resources.components.AddOperation.channel.address',
-                defaultMessage: 'Enter Channel Address',
-            });
-        }
-        if (isAsyncAPI) {
-            return intl.formatMessage({
-                id: 'Apis.Details.Resources.components.AddOperation.operation.target.topic.name',
-                defaultMessage: 'Enter topic name',
-            });
-        }
-        return intl.formatMessage({
-            id: 'Apis.Details.Resources.components.AddOperation.operation.target.uri.pattern',
-            defaultMessage: 'Enter URI pattern',
-        });
-    };
 
 
     return (
@@ -347,7 +329,7 @@ function AddOperation(props) {
                                 renderValue={(verbs) => {
                                     const remaining = [];
                                     const verbElements = verbs.map((verb, index) => {
-                                        if (index < 2) return <VerbElement isButton verb={verb} />;
+                                        if (index < 2) return <VerbElement key={verb} isButton verb={verb} />;
                                         remaining.push(verb.toUpperCase());
                                         return null;
                                     });
@@ -417,7 +399,7 @@ function AddOperation(props) {
                             value: !isWebSub && !isAsyncAPI && !value.startsWith('/') ? `/${value}` : value,
                         })}
                         placeholder={getOperationPlaceholder()}
-                        helperText={newOperations.error || getOperationHelpertext()}
+                        helperText={newOperations.error || getOperationPlaceholder()}
                         fullWidth
                         margin='dense'
                         variant='outlined'

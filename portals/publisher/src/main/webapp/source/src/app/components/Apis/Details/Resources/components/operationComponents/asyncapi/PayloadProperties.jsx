@@ -92,10 +92,12 @@ PayloadProperties.propTypes = {
     resolvedSpec: PropTypes.shape({}).isRequired,
     disableForSolace: PropTypes.bool,
     namedOperations: PropTypes.arrayOf(PropTypes.string),
+    isAsyncV3: PropTypes.bool,
 };
 
 PayloadProperties.defaultProps = {
     disableUpdate: false,
     disableForSolace: false,
     namedOperations: [],
+    isAsyncV3: false,
 };
