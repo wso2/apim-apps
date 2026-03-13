@@ -75,7 +75,8 @@ const UpgradeToJWTDialog = (props) => {
         <>
             <Button
                 size='small'
-                variant='outlined'
+                variant='contained'
+                color='primary'
                 onClick={handleOpen}
             >
                 {intl.formatMessage({
@@ -104,8 +105,8 @@ const UpgradeToJWTDialog = (props) => {
                     <Typography variant='body2' color='text.secondary' gutterBottom>
                         {intl.formatMessage({
                             id: 'ApplicationSettings.UpgradeToJWTDialog.dialog.body2',
-                            defaultMessage: 'This change will permanently switch the newly generated '
-                            + 'access token format from opaque to JWT.',
+                            defaultMessage: 'This change will permanently switch the format of the newly generated'
+                            + ' access tokens from opaque to JWT.',
                         })}
                     </Typography>
                     <br />
@@ -153,7 +154,6 @@ const UpgradeToJWTDialog = (props) => {
                         onClick={handleUpgrade}
                         variant='contained'
                         color='primary'
-                        type='submit'
                         disabled={submitting}
                     >
                         {intl.formatMessage({

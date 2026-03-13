@@ -176,8 +176,8 @@ export default function ListApplications() {
     const warning = (
         <>
             {intl.formatMessage({
-                defaultMessage: 'You have one or more legacy applications using opaque access tokens.'
-                + ' Support for opaque access tokens has been deprecated. Please upgrade these '
+                defaultMessage: 'You have one or more legacy applications that are using opaque access tokens.'
+                + ' Support for opaque tokens has been deprecated. Please upgrade these '
                 + ' applications to use JWT-based access tokens.',
                 id: 'ApplicationSettings.ListApplications.opaque.token.warning',
             })}
