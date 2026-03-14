@@ -274,6 +274,367 @@ const QUICK_START_TABS = [
     },
 ];
 
+function QuickStartTokenConfigurationStep({
+    t,
+    showTokenCommands,
+    showReconfigureAction,
+    onReconfigureRequested,
+    reconfigureLoading,
+    artifactName,
+    displayKeysCommand,
+    copyKeysCommand,
+}) {
+    return (
+        <>
+            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.step.configure.title',
+                    'Step 2: Configure the Gateway',
+                )}
+            </Typography>
+            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.step.configure.description',
+                    'The registration token is single-use. If you need to reconfigure the gateway, '
+                        + 'generate a new token. This will revoke the old token and disconnect the '
+                        + 'gateway from the control plane.',
+                )}
+            </Typography>
+            {!showTokenCommands && showReconfigureAction && (
+                <Box sx={{ mb: 2 }}>
+                    <Button
+                        variant='outlined'
+                        color='primary'
+                        onClick={onReconfigureRequested}
+                        disabled={reconfigureLoading}
+                        sx={{ bgcolor: 'common.white' }}
+                        startIcon={reconfigureLoading && <CircularProgress size={16} color='inherit' />}
+                    >
+                        {reconfigureLoading
+                            ? t(
+                                'Gateways.PlatformGatewayManagement.quick.start.reconfigure.generating',
+                                'Generating New Token...',
+                            )
+                            : t(
+                                'Gateways.PlatformGatewayManagement.quick.start.reconfigure.action',
+                                'Reconfigure Gateway',
+                            )}
+                    </Button>
+                </Box>
+            )}
+            {showTokenCommands && (
+                <>
+                    <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
+                        {t(
+                            'Gateways.PlatformGatewayManagement.quick.start.analytics.description',
+                            'To configure analytics, add your existing Moesif key as {key} to the '
+                                + 'keys.env file after creating it with the command below.',
+                            { key: 'MOESIF_KEY=<your-moesif-key>' },
+                        )}
+                    </Typography>
+                    <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
+                        {t(
+                            'Gateways.PlatformGatewayManagement.quick.start.keys.command.description',
+                            'Run this command to create {path} with the required environment variables:',
+                            { path: `${artifactName}/configs/keys.env` },
+                        )}
+                    </Typography>
+                    <CodeBlock
+                        code={displayKeysCommand}
+                        copyCode={copyKeysCommand}
+                    />
+                </>
+            )}
+        </>
+    );
+}
+
+QuickStartTokenConfigurationStep.propTypes = {
+    t: PropTypes.func.isRequired,
+    showTokenCommands: PropTypes.bool.isRequired,
+    showReconfigureAction: PropTypes.bool.isRequired,
+    onReconfigureRequested: PropTypes.func,
+    reconfigureLoading: PropTypes.bool.isRequired,
+    artifactName: PropTypes.string.isRequired,
+    displayKeysCommand: PropTypes.string.isRequired,
+    copyKeysCommand: PropTypes.string.isRequired,
+};
+
+QuickStartTokenConfigurationStep.defaultProps = {
+    onReconfigureRequested: null,
+};
+
+function renderQuickStartOverview({
+    t,
+    downloadCommand,
+    artifactName,
+    tokenConfigurationStep,
+}) {
+    return (
+        <>
+            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.prerequisites',
+                    'Prerequisites',
+                )}
+            </Typography>
+            <Box component='ul' sx={{ mt: 0, mb: 2, pl: 2 }}>
+                <li>
+                    <Typography variant='body2'>
+                        {t(
+                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.curl',
+                            'cURL installed',
+                        )}
+                    </Typography>
+                </li>
+                <li>
+                    <Typography variant='body2'>
+                        {t(
+                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.unzip',
+                            'unzip installed',
+                        )}
+                    </Typography>
+                </li>
+                <li>
+                    <Typography variant='body2'>
+                        {t(
+                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.docker',
+                            'Docker installed and running',
+                        )}
+                    </Typography>
+                </li>
+                <li>
+                    <Typography variant='body2'>
+                        {t(
+                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.docker.compose',
+                            'Docker Compose installed',
+                        )}
+                    </Typography>
+                </li>
+            </Box>
+
+            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.step.download.title',
+                    'Step 1: Download the Gateway',
+                )}
+            </Typography>
+            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.step.download.description',
+                    'Run this command in your terminal to download the gateway:',
+                )}
+            </Typography>
+            <CodeBlock code={downloadCommand} />
+
+            {tokenConfigurationStep}
+
+            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.step.start.title',
+                    'Step 3: Start the Gateway',
+                )}
+            </Typography>
+            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.step.start.navigate',
+                    '1. Navigate to the gateway folder.',
+                )}
+            </Typography>
+            <CodeBlock code={`cd ${artifactName}`} />
+            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.step.start.command',
+                    '2. Run this command to start the gateway using the configs/keys.env file created in Step 2:',
+                )}
+            </Typography>
+            <CodeBlock code='docker compose --env-file configs/keys.env up' />
+        </>
+    );
+}
+
+function renderVirtualMachineGuide({
+    t,
+    downloadCommand,
+    artifactName,
+    tokenConfigurationStep,
+}) {
+    return (
+        <>
+            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.prerequisites',
+                    'Prerequisites',
+                )}
+            </Typography>
+            <Box component='ul' sx={{ mt: 0, mb: 2, pl: 2 }}>
+                <li>
+                    <Typography variant='body2'>
+                        {t(
+                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.curl',
+                            'cURL installed',
+                        )}
+                    </Typography>
+                </li>
+                <li>
+                    <Typography variant='body2'>
+                        {t(
+                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.unzip',
+                            'unzip installed',
+                        )}
+                    </Typography>
+                </li>
+                <li>
+                    <Typography variant='body2'>
+                        {t(
+                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.java',
+                            'Java 17 or later installed',
+                        )}
+                    </Typography>
+                </li>
+            </Box>
+
+            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.step.download.title',
+                    'Step 1: Download the Gateway',
+                )}
+            </Typography>
+            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.virtual.machine.download',
+                    'Download and extract the self-hosted gateway package:',
+                )}
+            </Typography>
+            <CodeBlock code={downloadCommand} />
+
+            {tokenConfigurationStep}
+
+            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.step.start.title',
+                    'Step 3: Start the Gateway',
+                )}
+            </Typography>
+            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.virtual.machine.start',
+                    'Start the gateway on your virtual machine after you complete the configuration:',
+                )}
+            </Typography>
+            <CodeBlock code={`cd ${artifactName} && ./bin/gateway`} />
+        </>
+    );
+}
+
+function renderDockerGuide({
+    t,
+    downloadCommand,
+    artifactName,
+    tokenConfigurationStep,
+}) {
+    return renderQuickStartOverview({
+        t,
+        downloadCommand,
+        artifactName,
+        tokenConfigurationStep,
+    });
+}
+
+function renderKubernetesGuide({
+    t,
+    controlPlaneHost,
+    displayRegistrationToken,
+    actualRegistrationToken,
+    tokenConfigurationStep,
+}) {
+    return (
+        <>
+            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.prerequisites',
+                    'Prerequisites',
+                )}
+            </Typography>
+            <Box component='ul' sx={{ mt: 0, mb: 2, pl: 2 }}>
+                <li>
+                    <Typography variant='body2'>
+                        {t(
+                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.kubectl',
+                            'kubectl configured for your cluster',
+                        )}
+                    </Typography>
+                </li>
+                <li>
+                    <Typography variant='body2'>
+                        {t(
+                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.namespace',
+                            'A namespace for the gateway deployment',
+                        )}
+                    </Typography>
+                </li>
+                <li>
+                    <Typography variant='body2'>
+                        {t(
+                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.helm',
+                            'Helm or your preferred manifest deployment workflow',
+                        )}
+                    </Typography>
+                </li>
+            </Box>
+
+            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.kubernetes.namespace.title',
+                    'Step 1: Create the Runtime Namespace',
+                )}
+            </Typography>
+            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.kubernetes.namespace.description',
+                    'Create a dedicated namespace for the gateway resources:',
+                )}
+            </Typography>
+            <CodeBlock code='kubectl create namespace wso2-gateway' />
+
+            {tokenConfigurationStep}
+
+            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.kubernetes.secret.title',
+                    'Step 3: Create the Registration Secret',
+                )}
+            </Typography>
+            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
+                {t(
+                    'Gateways.PlatformGatewayManagement.quick.start.kubernetes.secret.description',
+                    'Store the control plane host and registration token in a secret before applying the deployment:',
+                )}
+            </Typography>
+            <CodeBlock
+                code={'kubectl create secret generic gateway-keys \\\n'
+                    + `  --from-literal=GATEWAY_CONTROLPLANE_HOST=${controlPlaneHost} \\\n`
+                    + `  --from-literal=GATEWAY_REGISTRATION_TOKEN=${displayRegistrationToken} \\\n`
+                    + '  --from-literal=GATEWAY_CONTROLPLANE_ON_PREM=true \\\n'
+                    + '  -n wso2-gateway'}
+                copyCode={'kubectl create secret generic gateway-keys \\\n'
+                    + `  --from-literal=GATEWAY_CONTROLPLANE_HOST=${controlPlaneHost} \\\n`
+                    + `  --from-literal=GATEWAY_REGISTRATION_TOKEN=${actualRegistrationToken} \\\n`
+                    + '  --from-literal=GATEWAY_CONTROLPLANE_ON_PREM=true \\\n'
+                    + '  -n wso2-gateway'}
+            />
+        </>
+    );
+}
+
+const renderQuickStartTabLabel = (tabConfig, t) => (
+    <Tab
+        key={tabConfig.value}
+        value={tabConfig.value}
+        label={t(tabConfig.labelKey, tabConfig.defaultMessage)}
+    />
+);
+
 /**
  * Code block component with copy functionality
  */
@@ -390,393 +751,56 @@ GATEWAY_CONTROLPLANE_HOST=${controlPlaneHost}
 GATEWAY_REGISTRATION_TOKEN=${actualRegistrationToken}
 GATEWAY_CONTROLPLANE_ON_PREM=true
 ENVFILE`;
-
-    const renderTokenConfigurationStep = () => (
-        <>
-            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.step.configure.title',
-                    'Step 2: Configure the Gateway',
-                )}
-            </Typography>
-            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.step.configure.description',
-                    'The registration token is single-use. If you need to reconfigure the gateway, '
-                        + 'generate a new token. This will revoke the old token and disconnect the '
-                        + 'gateway from the control plane.',
-                )}
-            </Typography>
-            {!showTokenCommands && showReconfigureAction && (
-                <Box sx={{ mb: 2 }}>
-                    <Button
-                        variant='outlined'
-                        color='primary'
-                        onClick={onReconfigureRequested}
-                        disabled={reconfigureLoading}
-                        sx={{ bgcolor: 'common.white' }}
-                        startIcon={reconfigureLoading && <CircularProgress size={16} color='inherit' />}
-                    >
-                        {reconfigureLoading
-                            ? t(
-                                'Gateways.PlatformGatewayManagement.quick.start.reconfigure.generating',
-                                'Generating New Token...',
-                            )
-                            : t(
-                                'Gateways.PlatformGatewayManagement.quick.start.reconfigure.action',
-                                'Reconfigure Gateway',
-                            )}
-                    </Button>
-                </Box>
-            )}
-            {showTokenCommands && (
-                <>
-                    <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
-                        {t(
-                            'Gateways.PlatformGatewayManagement.quick.start.analytics.description',
-                            'To configure analytics, add your existing Moesif key as {key} to the '
-                                + 'keys.env file after creating it with the command below.',
-                            { key: 'MOESIF_KEY=<your-moesif-key>' },
-                        )}
-                    </Typography>
-                    <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
-                        {t(
-                            'Gateways.PlatformGatewayManagement.quick.start.keys.command.description',
-                            'Run this command to create {path} with the required environment variables:',
-                            { path: `${artifactName}/configs/keys.env` },
-                        )}
-                    </Typography>
-                    <CodeBlock
-                        code={displayKeysCommand}
-                        copyCode={copyKeysCommand}
-                    />
-                </>
-            )}
-        </>
+    const tokenConfigurationStep = (
+        <QuickStartTokenConfigurationStep
+            t={t}
+            showTokenCommands={showTokenCommands}
+            showReconfigureAction={showReconfigureAction}
+            onReconfigureRequested={onReconfigureRequested}
+            reconfigureLoading={reconfigureLoading}
+            artifactName={artifactName}
+            displayKeysCommand={displayKeysCommand}
+            copyKeysCommand={copyKeysCommand}
+        />
     );
 
-    const renderQuickStartOverview = () => (
-        <>
-            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.prerequisites',
-                    'Prerequisites',
-                )}
-            </Typography>
-            <Box component='ul' sx={{ mt: 0, mb: 2, pl: 2 }}>
-                <li>
-                    <Typography variant='body2'>
-                        {t(
-                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.curl',
-                            'cURL installed',
-                        )}
-                    </Typography>
-                </li>
-                <li>
-                    <Typography variant='body2'>
-                        {t(
-                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.unzip',
-                            'unzip installed',
-                        )}
-                    </Typography>
-                </li>
-                <li>
-                    <Typography variant='body2'>
-                        {t(
-                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.docker',
-                            'Docker installed and running',
-                        )}
-                    </Typography>
-                </li>
-                <li>
-                    <Typography variant='body2'>
-                        {t(
-                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.docker.compose',
-                            'Docker Compose installed',
-                        )}
-                    </Typography>
-                </li>
-            </Box>
-
-            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.step.download.title',
-                    'Step 1: Download the Gateway',
-                )}
-            </Typography>
-            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.step.download.description',
-                    'Run this command in your terminal to download the gateway:',
-                )}
-            </Typography>
-            <CodeBlock code={downloadCommand} />
-
-            {renderTokenConfigurationStep()}
-
-            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.step.start.title',
-                    'Step 3: Start the Gateway',
-                )}
-            </Typography>
-            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.step.start.navigate',
-                    '1. Navigate to the gateway folder.',
-                )}
-            </Typography>
-            <CodeBlock code={`cd ${artifactName}`} />
-            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.step.start.command',
-                    '2. Run this command to start the gateway using the configs/keys.env file created in Step 2:',
-                )}
-            </Typography>
-            <CodeBlock code='docker compose --env-file configs/keys.env up' />
-        </>
-    );
-
-    const renderVirtualMachineGuide = () => (
-        <>
-            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.prerequisites',
-                    'Prerequisites',
-                )}
-            </Typography>
-            <Box component='ul' sx={{ mt: 0, mb: 2, pl: 2 }}>
-                <li>
-                    <Typography variant='body2'>
-                        {t(
-                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.curl',
-                            'cURL installed',
-                        )}
-                    </Typography>
-                </li>
-                <li>
-                    <Typography variant='body2'>
-                        {t(
-                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.unzip',
-                            'unzip installed',
-                        )}
-                    </Typography>
-                </li>
-                <li>
-                    <Typography variant='body2'>
-                        {t(
-                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.java',
-                            'Java 17 or later installed',
-                        )}
-                    </Typography>
-                </li>
-            </Box>
-
-            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.step.download.title',
-                    'Step 1: Download the Gateway',
-                )}
-            </Typography>
-            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.virtual.machine.download',
-                    'Download and extract the self-hosted gateway package:',
-                )}
-            </Typography>
-            <CodeBlock code={downloadCommand} />
-
-            {renderTokenConfigurationStep()}
-
-            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.step.start.title',
-                    'Step 3: Start the Gateway',
-                )}
-            </Typography>
-            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.virtual.machine.start',
-                    'Start the gateway on your virtual machine after you complete the configuration:',
-                )}
-            </Typography>
-            <CodeBlock code={`cd ${artifactName} && ./bin/gateway`} />
-        </>
-    );
-
-    const renderDockerGuide = () => (
-        <>
-            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.prerequisites',
-                    'Prerequisites',
-                )}
-            </Typography>
-            <Box component='ul' sx={{ mt: 0, mb: 2, pl: 2 }}>
-                <li>
-                    <Typography variant='body2'>
-                        {t(
-                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.curl',
-                            'cURL installed',
-                        )}
-                    </Typography>
-                </li>
-                <li>
-                    <Typography variant='body2'>
-                        {t(
-                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.unzip',
-                            'unzip installed',
-                        )}
-                    </Typography>
-                </li>
-                <li>
-                    <Typography variant='body2'>
-                        {t(
-                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.docker',
-                            'Docker installed and running',
-                        )}
-                    </Typography>
-                </li>
-                <li>
-                    <Typography variant='body2'>
-                        {t(
-                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.docker.compose',
-                            'Docker Compose installed',
-                        )}
-                    </Typography>
-                </li>
-            </Box>
-
-            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.step.download.title',
-                    'Step 1: Download the Gateway',
-                )}
-            </Typography>
-            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.step.download.description',
-                    'Run this command in your terminal to download the gateway:',
-                )}
-            </Typography>
-            <CodeBlock code={downloadCommand} />
-
-            {renderTokenConfigurationStep()}
-
-            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.step.start.title',
-                    'Step 3: Start the Gateway',
-                )}
-            </Typography>
-            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.step.start.navigate',
-                    '1. Navigate to the gateway folder.',
-                )}
-            </Typography>
-            <CodeBlock code={`cd ${artifactName}`} />
-            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.step.start.command',
-                    '2. Run this command to start the gateway using the configs/keys.env file created in Step 2:',
-                )}
-            </Typography>
-            <CodeBlock code='docker compose --env-file configs/keys.env up' />
-        </>
-    );
-
-    const renderKubernetesGuide = () => (
-        <>
-            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.prerequisites',
-                    'Prerequisites',
-                )}
-            </Typography>
-            <Box component='ul' sx={{ mt: 0, mb: 2, pl: 2 }}>
-                <li>
-                    <Typography variant='body2'>
-                        {t(
-                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.kubectl',
-                            'kubectl configured for your cluster',
-                        )}
-                    </Typography>
-                </li>
-                <li>
-                    <Typography variant='body2'>
-                        {t(
-                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.namespace',
-                            'A namespace for the gateway deployment',
-                        )}
-                    </Typography>
-                </li>
-                <li>
-                    <Typography variant='body2'>
-                        {t(
-                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.helm',
-                            'Helm or your preferred manifest deployment workflow',
-                        )}
-                    </Typography>
-                </li>
-            </Box>
-
-            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.kubernetes.namespace.title',
-                    'Step 1: Create the Runtime Namespace',
-                )}
-            </Typography>
-            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.kubernetes.namespace.description',
-                    'Create a dedicated namespace for the gateway resources:',
-                )}
-            </Typography>
-            <CodeBlock code='kubectl create namespace wso2-gateway' />
-
-            {renderTokenConfigurationStep()}
-
-            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.kubernetes.secret.title',
-                    'Step 3: Create the Registration Secret',
-                )}
-            </Typography>
-            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
-                {t(
-                    'Gateways.PlatformGatewayManagement.quick.start.kubernetes.secret.description',
-                    'Store the control plane host and registration token in a secret before applying the deployment:',
-                )}
-            </Typography>
-            <CodeBlock
-                code={'kubectl create secret generic gateway-keys \\\n'
-                    + `  --from-literal=GATEWAY_CONTROLPLANE_HOST=${controlPlaneHost} \\\n`
-                    + `  --from-literal=GATEWAY_REGISTRATION_TOKEN=${displayRegistrationToken} \\\n`
-                    + '  --from-literal=GATEWAY_CONTROLPLANE_ON_PREM=true \\\n'
-                    + '  -n wso2-gateway'}
-                copyCode={'kubectl create secret generic gateway-keys \\\n'
-                    + `  --from-literal=GATEWAY_CONTROLPLANE_HOST=${controlPlaneHost} \\\n`
-                    + `  --from-literal=GATEWAY_REGISTRATION_TOKEN=${actualRegistrationToken} \\\n`
-                    + '  --from-literal=GATEWAY_CONTROLPLANE_ON_PREM=true \\\n'
-                    + '  -n wso2-gateway'}
-            />
-        </>
-    );
-
-    const renderTabContent = () => {
-        switch (selectedTab) {
-            case 'virtual-machine':
-                return renderVirtualMachineGuide();
-            case 'docker':
-                return renderDockerGuide();
-            case 'kubernetes':
-                return renderKubernetesGuide();
-            case 'quick-start':
-            default:
-                return renderQuickStartOverview();
-        }
-    };
+    let tabContent;
+    switch (selectedTab) {
+        case 'virtual-machine':
+            tabContent = renderVirtualMachineGuide({
+                t,
+                downloadCommand,
+                artifactName,
+                tokenConfigurationStep,
+            });
+            break;
+        case 'docker':
+            tabContent = renderDockerGuide({
+                t,
+                downloadCommand,
+                artifactName,
+                tokenConfigurationStep,
+            });
+            break;
+        case 'kubernetes':
+            tabContent = renderKubernetesGuide({
+                t,
+                controlPlaneHost,
+                displayRegistrationToken,
+                actualRegistrationToken,
+                tokenConfigurationStep,
+            });
+            break;
+        case 'quick-start':
+        default:
+            tabContent = renderQuickStartOverview({
+                t,
+                downloadCommand,
+                artifactName,
+                tokenConfigurationStep,
+            });
+            break;
+    }
 
     const content = (
         <>
@@ -818,16 +842,10 @@ ENVFILE`;
                     },
                 }}
             >
-                {QUICK_START_TABS.map((tabConfig) => (
-                    <Tab
-                        key={tabConfig.value}
-                        value={tabConfig.value}
-                        label={t(tabConfig.labelKey, tabConfig.defaultMessage)}
-                    />
-                ))}
+                {QUICK_START_TABS.map((tabConfig) => renderQuickStartTabLabel(tabConfig, t))}
             </Tabs>
             <Divider sx={{ mb: 3 }} />
-            {renderTabContent()}
+            {tabContent}
         </>
     );
 

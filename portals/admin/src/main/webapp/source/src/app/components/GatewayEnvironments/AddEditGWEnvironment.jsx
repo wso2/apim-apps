@@ -239,6 +239,127 @@ const getGatewayProvider = (gatewayType) => (
     GATEWAYS_PROVIDED_BY_WSO2.includes(gatewayType) ? 'wso2' : 'external'
 );
 
+const getNameValidationError = (value, formatMessage) => {
+    if (value === undefined) {
+        return false;
+    }
+
+    if (value === '') {
+        return formatMessage({
+            id: 'GatewayEnvironments.AddEditGWEnvironment.form.environment.name.empty',
+            defaultMessage: 'Name is Empty',
+        });
+    }
+
+    if (!(/^[A-Za-z0-9_-]+$/).test(value)) {
+        return formatMessage({
+            id: 'GatewayEnvironments.AddEditGWEnvironment.form.environment.name.invalid',
+            defaultMessage: 'Name must not contain special characters or spaces',
+        });
+    }
+
+    return false;
+};
+
+const getDisplayNameValidationError = (value, formatMessage, isUniversalGatewayCreate) => {
+    if (value === undefined) {
+        return false;
+    }
+
+    if (value === '') {
+        return formatMessage({
+            id: 'GatewayEnvironments.AddEditGWEnvironment.form.environment.displayName.empty',
+            defaultMessage: 'Display Name is Empty',
+        });
+    }
+
+    if (isUniversalGatewayCreate && toPlatformGatewayName(value).length < 3) {
+        return formatMessage({
+            id: 'GatewayEnvironments.AddEditGWEnvironment.form.environment.displayName.invalid',
+            defaultMessage: 'Display Name must contain at least 3 letters or numbers',
+        });
+    }
+
+    return false;
+};
+
+const getVhostValidationError = (value, formatMessage, handleHostValidation) => {
+    if (value === undefined) {
+        return false;
+    }
+
+    if (value.length === 0) {
+        return formatMessage({
+            id: 'AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment.vhost.empty',
+            defaultMessage: 'VHost is empty',
+        });
+    }
+
+    const hosts = value.map((vhost) => vhost.host);
+    if (hosts.length !== new Set(hosts).size) {
+        return formatMessage({
+            id: 'AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment.vhost.duplicate',
+            defaultMessage: 'VHosts are duplicated',
+        });
+    }
+
+    return value.map(handleHostValidation).find(Boolean) || false;
+};
+
+const getScheduledIntervalValidationError = (value, formatMessage) => {
+    if (value === '') {
+        return formatMessage({
+            id: 'AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment'
+                + '.scheduledInterval.empty',
+            defaultMessage: 'Scheduled interval is empty',
+        });
+    }
+
+    if (parseInt(value, 10) < 0) {
+        return formatMessage({
+            id: 'AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment'
+                + '.scheduledInterval.parse',
+            defaultMessage: 'Invalid scheduled interval',
+        });
+    }
+
+    return '';
+};
+
+const getPlatformGatewayBaseUrlValidationError = (value, formatMessage, gatewayType) => {
+    if (gatewayType !== 'api-platform') {
+        return false;
+    }
+
+    if (!value || value.trim() === '') {
+        return formatMessage({
+            id: 'GatewayEnvironments.AddEditGWEnvironment.form.platform.base.url.empty',
+            defaultMessage: 'URL is Empty',
+        });
+    }
+
+    const normalizedBaseUrl = normalizeBaseUrl(value);
+    if (!getVhostFromBaseUrl(normalizedBaseUrl)) {
+        return formatMessage({
+            id: 'GatewayEnvironments.AddEditGWEnvironment.form.platform.base.url.invalid',
+            defaultMessage: 'Invalid URL',
+        });
+    }
+
+    return false;
+};
+
+const getGatewayConfigValidationError = (value, formatMessage) => {
+    if (value === '') {
+        return formatMessage({
+            id: 'GatewayEnvironments.AddEditGWEnvironment.form.gateway.config.empty',
+            defaultMessage: 'Required field is empty',
+        });
+    }
+
+    return undefined;
+};
+
 /**
  * Reducer
  * @param {JSON} state State
@@ -728,137 +849,27 @@ function AddEditGWEnvironment(props) {
     };
 
     const hasErrors = (fieldName, value, validatingActive) => {
-        let error;
         if (!validatingActive) {
             return false;
         }
-        switch (fieldName) {
-            case 'name':
-                if (value === undefined) {
-                    error = false;
-                    break;
-                }
-                if (value === '') {
-                    error = (
-                        intl.formatMessage({
-                            id: 'GatewayEnvironments.AddEditGWEnvironment.form.environment.name.empty',
-                            defaultMessage: 'Name is Empty',
-                        })
-                    );
-                } else if (!((/^[A-Za-z0-9_-]+$/)).test(value)) {
-                    error = (
-                        intl.formatMessage({
-                            id: 'GatewayEnvironments.AddEditGWEnvironment.form.environment.name.invalid',
-                            defaultMessage: 'Name must not contain special characters or spaces',
-                        })
-                    );
-                } else {
-                    error = false;
-                }
-                break;
-            case 'displayName':
-                if (value === undefined) {
-                    error = false;
-                    break;
-                }
-                if (value === '') {
-                    error = (
-                        intl.formatMessage({
-                            id: 'GatewayEnvironments.AddEditGWEnvironment.form.environment.displayName.empty',
-                            defaultMessage: 'Display Name is Empty',
-                        })
-                    );
-                } else if (isUniversalGatewayCreate && toPlatformGatewayName(value).length < 3) {
-                    error = (
-                        intl.formatMessage({
-                            id: 'GatewayEnvironments.AddEditGWEnvironment.form.environment.displayName.invalid',
-                            defaultMessage: 'Display Name must contain at least 3 letters or numbers',
-                        })
-                    );
-                }
-                break;
-            case 'vhosts': {
-                if (value === undefined) {
-                    error = false;
-                    break;
-                }
-                if (value.length === 0) {
-                    error = (
-                        intl.formatMessage({
-                            id: 'AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment.vhost.empty',
-                            defaultMessage: 'VHost is empty',
-                        })
-                    );
-                    break;
-                }
-                const hosts = value.map((vhost) => vhost.host);
-                if (hosts.length !== new Set(hosts).size) {
-                    error = (
-                        intl.formatMessage({
-                            id: 'AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment.vhost.duplicate',
-                            defaultMessage: 'VHosts are duplicated',
-                        })
-                    );
-                    break;
-                }
-                for (const host of value) {
-                    error = handleHostValidation(host);
-                    if (error) {
-                        break;
-                    }
-                }
-                break;
-            }
-            case 'scheduledInterval':
-                if (value === '') {
-                    error = intl.formatMessage({
-                        id: 'AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment'
-                        + '.scheduledInterval.empty',
-                        defaultMessage: 'Scheduled interval is empty',
-                    });
-                } else if (parseInt(value, 10) < 0) {
-                    error = intl.formatMessage({
-                        id: 'AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment'
-                        + '.scheduledInterval.parse',
-                        defaultMessage: 'Invalid scheduled interval',
-                    });
-                } else {
-                    error = '';
-                }
-                break;
-            case 'platformGatewayBaseUrl': {
-                if (gatewayType !== 'api-platform') {
-                    error = false;
-                    break;
-                }
-                if (!value || value.trim() === '') {
-                    error = intl.formatMessage({
-                        id: 'GatewayEnvironments.AddEditGWEnvironment.form.platform.base.url.empty',
-                        defaultMessage: 'URL is Empty',
-                    });
-                    break;
-                }
-                const normalizedBaseUrl = normalizeBaseUrl(value);
-                if (!getVhostFromBaseUrl(normalizedBaseUrl)) {
-                    error = intl.formatMessage({
-                        id: 'GatewayEnvironments.AddEditGWEnvironment.form.platform.base.url.invalid',
-                        defaultMessage: 'Invalid URL',
-                    });
-                }
-                break;
-            }
-            case 'gatewayConfig':
-                if (value === '') {
-                    error = intl.formatMessage({
-                        id: 'GatewayEnvironments.AddEditGWEnvironment.form.gateway.config.empty',
-                        defaultMessage: 'Required field is empty',
-                    });
-                }
-                break;
-            default:
-                break;
-        }
-        return error;
+        const validators = {
+            name: () => getNameValidationError(value, intl.formatMessage),
+            displayName: () => getDisplayNameValidationError(
+                value,
+                intl.formatMessage,
+                isUniversalGatewayCreate,
+            ),
+            vhosts: () => getVhostValidationError(value, intl.formatMessage, handleHostValidation),
+            scheduledInterval: () => getScheduledIntervalValidationError(value, intl.formatMessage),
+            platformGatewayBaseUrl: () => getPlatformGatewayBaseUrlValidationError(
+                value,
+                intl.formatMessage,
+                gatewayType,
+            ),
+            gatewayConfig: () => getGatewayConfigValidationError(value, intl.formatMessage),
+        };
+
+        return validators[fieldName]?.() || false;
     };
     const getAllFormErrors = () => {
         let errorText = '';
