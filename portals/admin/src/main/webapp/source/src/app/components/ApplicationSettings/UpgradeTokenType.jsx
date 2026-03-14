@@ -188,7 +188,7 @@ export default function UpgradeTokenType(props) {
                             </Grid>
                             <Grid item>
                                 <Button
-                                    variant='contained'
+                                    variant='outlined'
                                     sx={{ mr: 1 }}
                                     type='submit'
                                     disabled={loading}

@@ -117,8 +117,11 @@ function Edit(props) {
     };
 
     const formSaveCallback = () => {
+        const body = {
+            owner,
+        };
         return validateOwner().then(() => {
-            return restApi.updateApplicationOwner(dataRow.applicationId, owner)
+            return restApi.updateApplication(dataRow.applicationId, body)
                 .then(() => {
                     return (
                         intl.formatMessage({

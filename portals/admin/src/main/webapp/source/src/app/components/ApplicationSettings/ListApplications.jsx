@@ -220,8 +220,8 @@ export default function ListApplications() {
         },
         {
             label: (
-                <Box sx={{ display: 'flex', alignItems: 'center', color: 'warning.main' }}>
-                    <WarningAmberIcon sx={{ fontSize: 18, mr: 1 }} />
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <WarningAmberIcon sx={{ fontSize: 18, mr: 1, color: 'warning.main' }} />
                     {intl.formatMessage({
                         defaultMessage: 'Legacy Applications',
                         id: 'ApplicationSettings.ListApplications.upgrade.legacy.app.tab.title',

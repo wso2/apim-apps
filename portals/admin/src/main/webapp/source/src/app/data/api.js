@@ -518,6 +518,22 @@ class API extends Resource {
         });
     }
 
+    /**
+     * Update application
+     */
+    updateApplication(id, body) {
+        return this.client.then((client) => {
+            const payload = {
+                applicationId: id,
+            };
+            return client.apis['Application'].updateApplicationSettings(
+                payload,
+                { requestBody: body },
+                this._requestMetaData(),
+            );
+        });
+    }
+
      /**
      * Update an application's owner
      */

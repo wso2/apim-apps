@@ -176,7 +176,7 @@ export default function ChangeAppOwner(props) {
                             </Grid>
                             <Grid item>
                                 <Button
-                                    variant='contained'
+                                    variant='outlined'
                                     sx={{ mr: 1 }}
                                     type='submit'
                                     disabled={loading}
