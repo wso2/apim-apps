@@ -299,6 +299,7 @@ const NewSecretDialog = ({ open, onClose, onCreate, mode }) => {
                 <Tooltip title={tooltipTitle} disableHoverListener={!isCreateDisabled}>
                     <span>
                         <Button
+                            data-testid="create-secret-button"
                             variant="contained"
                             onClick={handleSubmit}
                             disabled={isCreateDisabled}

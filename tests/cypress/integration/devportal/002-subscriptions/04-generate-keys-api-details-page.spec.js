@@ -88,6 +88,8 @@ describe("Generate keys from api details page", () => {
                 // Generate prod keys
                 cy.get(`#${appName}-PK`).click();
                 cy.get('#generate-keys').click();
+                cy.get('[data-testid="create-secret-button"]').should('be.visible').and('not.be.disabled').click();
+                cy.get('[data-testid="secret-dialog-close"]').click();
                 cy.get('#consumer-key', { timeout: 30000 });
                 cy.get('#consumer-key').should('exist');
             })

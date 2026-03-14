@@ -29,6 +29,8 @@ describe("Application tests", () => {
         // Generating keys production
         cy.get('#production-keys-oauth').click();
         cy.get('#generate-keys', {timeout: 30000}).click();
+        cy.get('[data-testid="create-secret-button"]').should('be.visible').and('not.be.disabled').click();
+        cy.get('[data-testid="secret-dialog-close"]').click();
         cy.get('#consumer-key', {timeout: 30000}).should('exist');
 
         /*
@@ -49,6 +51,8 @@ describe("Application tests", () => {
         // Generating keys sandbox
         cy.get('#sandbox-keys-oauth').click();
         cy.get('#generate-keys').click();
+        cy.get('[data-testid="create-secret-button"]').should('be.visible').and('not.be.disabled').click();
+        cy.get('[data-testid="secret-dialog-close"]').click();
         cy.get('#consumer-key', {timeout: 30000});
         cy.get('#consumer-key').should('exist');
 
@@ -66,9 +70,11 @@ describe("Application tests", () => {
         // cy.get('#authorization_code').should('be.checked');
 
         // Show hide keys
-        cy.get('#visibility-toggle-btn').click();
-        cy.get('#consumer-secret').should('have.attr', 'type', 'text');
-        cy.contains('visibility_off').should('be.visible');
+        // Commenting out the below as the consumer secret text field is removed with the multiple client secret support. We can enable this once the consumer secret text field is added back with the new UI.
+        // The text field can be viewable when the multiple client secret support is disabled.
+        // cy.get('#visibility-toggle-btn').click();
+        // cy.get('#consumer-secret').should('have.attr', 'type', 'text');
+        // cy.contains('visibility_off').should('be.visible');
     })
 
     after(() => {

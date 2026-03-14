@@ -60,7 +60,7 @@ export default function SecretValueDialog({ open, onClose, secret }) {
                     pb: 2,
                 }}
             >
-                <Button onClick={onClose} variant="contained" color="primary">
+                <Button onClick={onClose} variant="contained" color="primary" data-testid="secret-dialog-close">
                     <FormattedMessage
                         id='Shared.AppsAndKeys.Secrets.SecretValueDialog.close.button'
                         defaultMessage='Close'
