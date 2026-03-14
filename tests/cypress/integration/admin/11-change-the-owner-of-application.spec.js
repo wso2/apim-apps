@@ -39,7 +39,7 @@ describe("Change the owner of application", () => {
     cy.get('[data-testid="Change Application Settings-child-link"]').click({ force: true });
     cy.get("#itest-application-list-table").within(() => {
       cy.contains("tr", appName).within(() => {
-        cy.get("td > span").click({ force: true });
+        cy.get("td > div > span").click({ force: true });
       });
     });
 
