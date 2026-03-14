@@ -114,6 +114,8 @@ const DefaultConfigurations = {
             head: '#785446',
             sub: '#38a169',
             pub: '#4299e1',
+            receive: '#38a169',
+            send: '#4299e1',
         },
         operationChipColor: {
             query: '#b3e6fe',

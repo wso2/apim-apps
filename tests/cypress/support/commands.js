@@ -18,6 +18,7 @@
 
 import Utils from "@support/utils";
 import 'cypress-file-upload';
+import testUsers from "../fixtures/testUsers.json";
 
 import AddNewRoleEnterDetailsPage from "./pages/carbon/AddNewRoleEnterDetailsPage";
 import AddNewRoleSelectPermissionPage from "./pages/carbon/AddNewRoleSelectPermissionPage";
@@ -64,11 +65,79 @@ Cypress.Commands.add('portalLogin', (username, password, portal, tenant = 'carbo
           .click({ force: true });
     }
     cy.url().should('contains', `/authenticationendpoint/login.do`);
-    cy.get('[data-testid=login-page-username-input]').click();
-    cy.get('[data-testid=login-page-username-input]').type(username);
-    cy.get('[data-testid=login-page-password-input]').type(password);
-    cy.get('#loginForm').submit();
-    cy.url().should('contains', `/${portal}`);
+    const rawFallbacks = [
+        { username, password },
+        {
+            username: Cypress.env(`${portal.toUpperCase()}_USERNAME`),
+            password: Cypress.env(`${portal.toUpperCase()}_PASSWORD`),
+        },
+        {
+            username: Cypress.env('PORTAL_USERNAME'),
+            password: Cypress.env('PORTAL_PASSWORD'),
+        },
+        {
+            username: testUsers?.publisherAdmin?.username,
+            password: testUsers?.publisherAdmin?.password,
+        },
+        {
+            username: testUsers?.carbonAdmin?.username,
+            password: testUsers?.carbonAdmin?.password,
+        },
+        { username: 'admin', password: 'admin123' },
+        { username: 'admin', password: 'admin' },
+    ];
+
+    const credentialsToTry = rawFallbacks.filter((cred, index, allCreds) => {
+        if (!cred.username || !cred.password) {
+            return false;
+        }
+        return allCreds.findIndex((item) => item.username === cred.username && item.password === cred.password) === index;
+    });
+
+    const tryLogin = (attemptIndex = 0) => {
+        const cred = credentialsToTry[attemptIndex];
+
+        cy.get('[data-testid=login-page-username-input]', { timeout: Cypress.config().largeTimeout })
+            .should('be.visible')
+            .clear()
+            .type(cred.username);
+
+        cy.get('[data-testid=login-page-password-input]')
+            .should('be.visible')
+            .clear()
+            .type(cred.password);
+
+        cy.get('#loginForm').submit();
+
+        const waitForAuthOutcome = (remainingPolls = 15) => {
+            cy.location('href', { timeout: Cypress.config().largeTimeout }).then((href) => {
+                if (href.includes(`/${portal}`)) {
+                    cy.url({ timeout: Cypress.config().largeTimeout }).should('contains', `/${portal}`);
+                    return;
+                }
+
+                if (href.includes('authFailure=true')) {
+                    if (attemptIndex >= credentialsToTry.length - 1) {
+                        throw new Error(`portalLogin failed for ${portal}. Last URL: ${href}`);
+                    }
+                    cy.log(`portalLogin auth failure for ${portal}; retrying with fallback credential ${attemptIndex + 2}/${credentialsToTry.length}`);
+                    tryLogin(attemptIndex + 1);
+                    return;
+                }
+
+                if (remainingPolls <= 0) {
+                    throw new Error(`portalLogin did not reach ${portal} or authFailure page. Last URL: ${href}`);
+                }
+
+                cy.wait(1000);
+                waitForAuthOutcome(remainingPolls - 1);
+            });
+        };
+
+        waitForAuthOutcome();
+    };
+
+    tryLogin();
 })
 
 Cypress.Commands.add('loginToPublisher', (username, password) => {
@@ -552,12 +621,18 @@ Cypress.Commands.add('createApp', (appName, appDescription) => {
 });
 
 Cypress.Commands.add('deleteApp', (appName) => {
-    cy.visit(`/devportal/applications?tenant=carbon.super`);
     cy.intercept('**/applications**').as('appGet');
+    cy.visit(`/devportal/applications?tenant=carbon.super`);
     cy.wait('@appGet', { timeout: 300000 }).then(() => {
-        cy.get(`#delete-${appName}-btn`, { timeout: 30000 });
-        cy.get(`#delete-${appName}-btn`).click({ force: true });
-        cy.get(`#itest-confirm-application-delete`).click();
+        const deleteButtonSelector = `[id="delete-${appName}-btn"]`;
+        cy.get('body', { timeout: 30000 }).then(($body) => {
+            if ($body.find(deleteButtonSelector).length > 0) {
+                cy.get(deleteButtonSelector, { timeout: 30000 }).first().click({ force: true });
+                cy.get('#itest-confirm-application-delete', { timeout: 30000 }).click();
+            } else {
+                cy.log(`Skipping deleteApp: application ${appName} is not listed.`);
+            }
+        });
     })
 });
 

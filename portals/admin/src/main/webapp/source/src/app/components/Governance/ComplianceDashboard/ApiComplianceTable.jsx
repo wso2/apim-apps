@@ -147,6 +147,22 @@ export default function ApiComplianceTable() {
         );
     };
 
+    const renderTypeChip = (type) => {
+        const typeLabelMap = {
+            REST_API: 'REST API',
+            ASYNC_API: 'Async API',
+            MCP: 'MCP',
+        };
+
+        return (
+            <Chip
+                label={typeLabelMap[type] || type || '-'}
+                size="small"
+                variant="outlined"
+            />
+        );
+    };
+
     const columProps = [
         {
             name: 'id',
@@ -159,8 +175,8 @@ export default function ApiComplianceTable() {
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Governance.ComplianceDashboard.APICompliance.column.api',
-                defaultMessage: 'API',
+                id: 'Governance.ComplianceDashboard.APICompliance.column.artifact',
+                defaultMessage: 'Artifact',
             }),
             options: {
                 customBodyRender: (value, tableMeta) => (
@@ -172,7 +188,7 @@ export default function ApiComplianceTable() {
                     </Box>
                 ),
                 setCellProps: () => ({
-                    style: { width: '30%' },
+                    style: { width: '20%' },
                 }),
                 setCellHeaderProps: () => ({
                     sx: {
@@ -183,6 +199,30 @@ export default function ApiComplianceTable() {
                             fontSize: 'small'
                         },
                     },
+                }),
+            },
+        },
+        {
+            name: 'extendedType',
+            label: intl.formatMessage({
+                id: 'Governance.ComplianceDashboard.APICompliance.column.type',
+                defaultMessage: 'Type',
+            }),
+            options: {
+                customBodyRender: (value, tableMeta) =>
+                    renderTypeChip(tableMeta.rowData[1]?.extendedType || value),
+                setCellHeaderProps: () => ({
+                    sx: {
+                        paddingTop: 0,
+                        paddingBottom: 0,
+                        '& .MuiButton-root': {
+                            fontWeight: 'bold',
+                            fontSize: 'small'
+                        },
+                    },
+                }),
+                setCellProps: () => ({
+                    style: { width: '20%' },
                 }),
             },
         },
@@ -234,10 +274,10 @@ export default function ApiComplianceTable() {
             }),
             options: {
                 customBodyRender: (value, tableMeta) => {
-                    const followed = tableMeta.rowData[4]?.followed || 0;
-                    const violated = tableMeta.rowData[4]?.violated || 0;
+                    const followed = tableMeta.rowData[5]?.followed || 0;
+                    const violated = tableMeta.rowData[5]?.violated || 0;
                     const total = followed + violated;
-                    const status = tableMeta.rowData[3];
+                    const status = tableMeta.rowData[4];
                     return renderProgress(followed, total, status);
                 },
                 setCellProps: () => ({
@@ -260,7 +300,7 @@ export default function ApiComplianceTable() {
             label: ' ',
             options: {
                 customBodyRender: (value, tableMeta) => {
-                    const severityBasedRuleViolationSummary = tableMeta.rowData[5] || [];
+                    const severityBasedRuleViolationSummary = tableMeta.rowData[6] || [];
                     return renderComplianceIcons(severityBasedRuleViolationSummary);
                 },
                 setCellHeaderProps: () => ({

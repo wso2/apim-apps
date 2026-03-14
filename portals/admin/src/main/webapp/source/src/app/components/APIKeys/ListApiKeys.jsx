@@ -17,27 +17,32 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import {
-    Box,
+    Alert as AlertMui,
+    AppBar,
     Button,
     Chip,
-    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    InputAdornment,
-    Paper,
-    Stack,
+    Grid,
+    IconButton,
     TableCell,
     TextField,
     Tooltip,
+    Toolbar,
     Typography,
+    styled,
 } from '@mui/material';
 import Block from '@mui/icons-material/Block';
-import Search from '@mui/icons-material/Search';
+import SearchIcon from '@mui/icons-material/Search';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import MUIDataTable from 'mui-datatables';
 import API from 'AppData/api';
+import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
+import InlineProgress from 'AppComponents/AdminPages/Addons/InlineProgress';
 
 const typeChipSx = {
     fontWeight: 600,
@@ -45,10 +50,32 @@ const typeChipSx = {
     fontSize: '0.7rem',
 };
 
+const styles = {
+    searchBar: {
+        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+    },
+    block: {
+        display: 'block',
+    },
+    contentWrapper: {
+        margin: '40px 16px',
+    },
+    tableCellWrapper: {
+        '& td': {
+            'word-break': 'break-all',
+            'white-space': 'normal',
+        },
+    },
+};
+
+const StyledDiv = styled('div')({});
+
 export default function ApiKeysView() {
+    const intl = useIntl();
     const [isRevoking, setIsRevoking] = useState(false);
     const [apiKeys, setApiKeys] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [error, setError] = useState(null);
 
     // Revoke dialog state
     const [revokeConfirmOpen, setRevokeConfirmOpen] = useState(false);
@@ -57,32 +84,35 @@ export default function ApiKeysView() {
     const [revokeErrorMessage, setRevokeErrorMessage] = useState('');
     const [selectedKeyForRevoke, setSelectedKeyForRevoke] = useState(null);
 
+    const fetchData = () => {
+        setApiKeys(null);
+        setError(null);
+        const restApi = new API();
+        restApi.getAllAPIKeys()
+            .then((result) => {
+                setApiKeys(result.body.list || result.body);
+            })
+            .catch((e) => {
+                setError(
+                    (e && e.message)
+                    || intl.formatMessage({
+                        id: 'APIKeys.ListApiKeys.error.retrieving.data',
+                        defaultMessage: 'Error while retrieving data.',
+                    }),
+                );
+                setApiKeys([]);
+            });
+    };
+
     /**
      * Load all API keys on mount
      */
     useEffect(() => {
-        const restApi = new API();
-        restApi.getAllAPIKeys()
-            .then((result) => {
-                setApiKeys(result.body.list || result.body);
-            })
-            .catch((error) => {
-                if (process.env.NODE_ENV !== 'production') {
-                    console.log(error);
-                }
-                setApiKeys([]);
-            });
+        fetchData();
     }, []);
 
     const refreshApiKeys = () => {
-        const restApi = new API();
-        restApi.getAllAPIKeys()
-            .then((result) => {
-                setApiKeys(result.body.list || result.body);
-            })
-            .catch((error) => {
-                console.error('Error refreshing API keys:', error);
-            });
+        fetchData();
     };
 
     const handleRevokeKey = (keyData) => {
@@ -95,7 +125,10 @@ export default function ApiKeysView() {
             return;
         }
         if (!selectedKeyForRevoke?.keyUUID) {
-            setRevokeErrorMessage('No API key selected for revoke.');
+            setRevokeErrorMessage(intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.error.no.key.selected.for.revoke',
+                defaultMessage: 'No API key selected for revoke.',
+            }));
             setRevokeErrorOpen(true);
             return;
         }
@@ -107,12 +140,15 @@ export default function ApiKeysView() {
                 setRevokeSuccessOpen(true);
                 refreshApiKeys();
             })
-            .catch((error) => {
-                console.error('Error revoking key:', error);
+            .catch((e) => {
+                console.error('Error revoking key:', e);
                 setRevokeErrorMessage(
-                    (error.response && error.response.body && error.response.body.description)
-                        || error.message
-                        || 'Failed to revoke API key. Please try again.',
+                    (e.response && e.response.body && e.response.body.description)
+                        || e.message
+                        || intl.formatMessage({
+                            id: 'APIKeys.ListApiKeys.error.revoke.failed',
+                            defaultMessage: 'Failed to revoke API key. Please try again.',
+                        }),
                 );
                 setRevokeErrorOpen(true);
             })
@@ -138,10 +174,19 @@ export default function ApiKeysView() {
     });
 
     const columns = [
-        { name: 'keyName', label: 'API Key' },
+        {
+            name: 'keyName',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.api.key',
+                defaultMessage: 'API Key',
+            }),
+        },
         {
             name: 'applicationName',
-            label: 'Application',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.application',
+                defaultMessage: 'Application',
+            }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const app = filteredKeys[dataIndex].applicationName;
@@ -153,7 +198,10 @@ export default function ApiKeysView() {
         },
         {
             name: 'apiName',
-            label: 'API',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.api',
+                defaultMessage: 'API',
+            }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const api = filteredKeys[dataIndex].apiName;
@@ -165,14 +213,29 @@ export default function ApiKeysView() {
         },
         {
             name: 'keyType',
-            label: 'Type',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.type',
+                defaultMessage: 'Type',
+            }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const { keyType } = filteredKeys[dataIndex];
                     const isProduction = keyType === 'PRODUCTION';
+                    let keyTypeLabel = keyType;
+                    if (keyType === 'PRODUCTION') {
+                        keyTypeLabel = intl.formatMessage({
+                            id: 'APIKeys.ListApiKeys.key.type.production',
+                            defaultMessage: 'Production',
+                        });
+                    } else if (keyType === 'SANDBOX') {
+                        keyTypeLabel = intl.formatMessage({
+                            id: 'APIKeys.ListApiKeys.key.type.sandbox',
+                            defaultMessage: 'Sandbox',
+                        });
+                    }
                     return (
                         <Chip
-                            label={keyType}
+                            label={keyTypeLabel}
                             size='small'
                             sx={{
                                 ...typeChipSx,
@@ -184,10 +247,19 @@ export default function ApiKeysView() {
                 },
             },
         },
-        { name: 'user', label: 'User' },
+        {
+            name: 'user',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.user',
+                defaultMessage: 'User',
+            }),
+        },
         {
             name: 'issuedOn',
-            label: 'Issued On',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.issued.on',
+                defaultMessage: 'Issued On',
+            }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const { issuedOn } = filteredKeys[dataIndex];
@@ -209,12 +281,22 @@ export default function ApiKeysView() {
         },
         {
             name: 'validityPeriod',
-            label: 'Expires On',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.expires.on',
+                defaultMessage: 'Expires On',
+            }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const { issuedOn, validityPeriod } = filteredKeys[dataIndex];
                     if (validityPeriod === -1) {
-                        return <Typography variant='body2' color='text.secondary'>Never</Typography>;
+                        return (
+                            <Typography variant='body2' color='text.secondary'>
+                                <FormattedMessage
+                                    id='APIKeys.ListApiKeys.value.never'
+                                    defaultMessage='Never'
+                                />
+                            </Typography>
+                        );
                     }
                     try {
                         const expires = new Date(new Date(issuedOn).getTime() + validityPeriod * 1000);
@@ -233,12 +315,22 @@ export default function ApiKeysView() {
         },
         {
             name: 'lastUsed',
-            label: 'Last Used On',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.last.used.on',
+                defaultMessage: 'Last Used On',
+            }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const { lastUsed } = filteredKeys[dataIndex];
                     if (!lastUsed || lastUsed === 'NOT_USED') {
-                        return <Typography variant='body2' color='text.secondary'>Never</Typography>;
+                        return (
+                            <Typography variant='body2' color='text.secondary'>
+                                <FormattedMessage
+                                    id='APIKeys.ListApiKeys.value.never'
+                                    defaultMessage='Never'
+                                />
+                            </Typography>
+                        );
                     }
                     try {
                         const date = new Date(lastUsed);
@@ -257,7 +349,10 @@ export default function ApiKeysView() {
         },
         {
             name: 'actions',
-            label: 'Actions',
+            label: intl.formatMessage({
+                id: 'APIKeys.ListApiKeys.column.actions',
+                defaultMessage: 'Actions',
+            }),
             options: {
                 sort: false,
                 filter: false,
@@ -265,7 +360,10 @@ export default function ApiKeysView() {
                 setCellProps: () => ({ align: 'right' }),
                 customHeadRender: () => (
                     <TableCell align='right' className='keys-header'>
-                        Actions
+                        <FormattedMessage
+                            id='APIKeys.ListApiKeys.column.actions'
+                            defaultMessage='Actions'
+                        />
                     </TableCell>
                 ),
                 customBodyRenderLite: (dataIndex) => {
@@ -278,7 +376,10 @@ export default function ApiKeysView() {
                             startIcon={<Block />}
                             onClick={() => handleRevokeKey(keyData)}
                         >
-                            Revoke
+                            <FormattedMessage
+                                id='APIKeys.ListApiKeys.action.revoke'
+                                defaultMessage='Revoke'
+                            />
                         </Button>
                     );
                 },
@@ -297,70 +398,144 @@ export default function ApiKeysView() {
         sort: false,
         responsive: 'standard',
         tableBodyMaxHeight: '520px',
+        textLabels: {
+            body: {
+                noMatch: intl.formatMessage({
+                    id: 'Mui.data.table.search.no.records.found',
+                    defaultMessage: 'Sorry, no matching records found',
+                }),
+            },
+        },
     };
 
+    const pageProps = {
+        pageStyle: 'paperLess',
+        title: intl.formatMessage({
+            id: 'APIKeys.ListApiKeys.title',
+            defaultMessage: 'API Keys',
+        }),
+    };
+
+    if (!error && apiKeys === null) {
+        return (
+            <ContentBase pageStyle='paperLess'>
+                <InlineProgress />
+            </ContentBase>
+        );
+    }
+
+    if (error) {
+        return (
+            <ContentBase {...pageProps}>
+                <AlertMui severity='error'>{error}</AlertMui>
+            </ContentBase>
+        );
+    }
+
     return (
-        <Stack spacing={4}>
-            <Paper
-                className='keys-panel'
-                sx={{
-                    border: '1px solid #e0e0e0',
-                    borderRadius: 2,
-                    p: 3,
-                }}
-            >
-                <Stack spacing={3}>
-                    <Box>
-                        <Typography variant='h5' sx={{ fontWeight: 600 }}>
-                            API Keys
-                        </Typography>
-                        <Typography variant='body2' color='text.secondary' sx={{ mt: 0.5 }}>
-                            Visibility into key usage by application and environment.
-                        </Typography>
-                    </Box>
-                    <TextField
-                        placeholder='Search by key, application, API, type, or user…'
-                        size='small'
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position='start'>
-                                    <Search fontSize='small' />
-                                </InputAdornment>
-                            ),
-                        }}
-                        sx={{ width: 400 }}
-                    />
-                    {apiKeys === null ? (
-                        <Box display='flex' justifyContent='center' p={4}>
-                            <CircularProgress />
-                        </Box>
-                    ) : (
+        <>
+            <ContentBase {...pageProps}>
+                <div>
+                    <AppBar sx={styles.searchBar} position='static' color='default' elevation={0}>
+                        <Toolbar>
+                            <Grid container spacing={2} alignItems='center'>
+                                <Grid item>
+                                    <SearchIcon sx={styles.block} color='inherit' />
+                                </Grid>
+                                <Grid item xs>
+                                    <TextField
+                                        fullWidth
+                                        variant='standard'
+                                        placeholder={intl.formatMessage({
+                                            id: 'APIKeys.ListApiKeys.search.placeholder',
+                                            defaultMessage: 'Search by key, application, API, type, or user...',
+                                        })}
+                                        sx={(theme) => ({
+                                            '& .search-input': {
+                                                fontSize: theme.typography.fontSize,
+                                            },
+                                        })}
+                                        InputProps={{
+                                            disableUnderline: true,
+                                            className: 'search-input',
+                                        }}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        value={searchQuery}
+                                    />
+                                </Grid>
+                                <Grid item>
+                                    <Tooltip
+                                        title={(
+                                            <FormattedMessage
+                                                id='AdminPages.Addons.ListBase.reload'
+                                                defaultMessage='Reload'
+                                            />
+                                        )}
+                                    >
+                                        <IconButton onClick={fetchData}>
+                                            <RefreshIcon sx={styles.block} color='inherit' />
+                                        </IconButton>
+                                    </Tooltip>
+                                </Grid>
+                            </Grid>
+                        </Toolbar>
+                    </AppBar>
+                    <StyledDiv sx={styles.tableCellWrapper}>
                         <MUIDataTable
+                            title={null}
                             data={filteredKeys}
                             columns={columns}
                             options={options}
                         />
+                    </StyledDiv>
+                    {filteredKeys.length === 0 && (
+                        <StyledDiv sx={styles.contentWrapper}>
+                            <Typography color='textSecondary' align='center'>
+                                <FormattedMessage
+                                    id='APIKeys.ListApiKeys.no.matching.items'
+                                    defaultMessage='No matching API keys found'
+                                />
+                            </Typography>
+                        </StyledDiv>
                     )}
-                </Stack>
-            </Paper>
+                </div>
+            </ContentBase>
 
             {/* Revoke Confirmation Dialog */}
             <Dialog open={revokeConfirmOpen} onClose={handleCancelRevoke} maxWidth='xs' fullWidth>
-                <DialogTitle>Confirm Revoke</DialogTitle>
+                <DialogTitle>
+                    <FormattedMessage
+                        id='APIKeys.ListApiKeys.revoke.confirm.title'
+                        defaultMessage='Confirm Revoke'
+                    />
+                </DialogTitle>
                 <DialogContent>
                     <Typography>
-                        Are you sure you want to revoke the API key
+                        <FormattedMessage
+                            id='APIKeys.ListApiKeys.revoke.confirm.message.prefix'
+                            defaultMessage='Are you sure you want to revoke the API key'
+                        />
                         {' '}
                         <strong>{selectedKeyForRevoke?.keyName}</strong>
-                        ? This action cannot be undone.
+                        {' '}
+                        <FormattedMessage
+                            id='APIKeys.ListApiKeys.revoke.confirm.message.suffix'
+                            defaultMessage='? This action cannot be undone.'
+                        />
                     </Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCancelRevoke}>Cancel</Button>
+                    <Button onClick={handleCancelRevoke}>
+                        <FormattedMessage
+                            id='APIKeys.ListApiKeys.revoke.cancel'
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
                     <Button onClick={handleConfirmRevoke} variant='contained' color='error' disabled={isRevoking}>
-                        Revoke
+                        <FormattedMessage
+                            id='APIKeys.ListApiKeys.revoke.confirm.button'
+                            defaultMessage='Revoke'
+                        />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -372,16 +547,29 @@ export default function ApiKeysView() {
                 maxWidth='xs'
                 fullWidth
             >
-                <DialogTitle>API Key Revoked</DialogTitle>
+                <DialogTitle>
+                    <FormattedMessage
+                        id='APIKeys.ListApiKeys.revoke.success.title'
+                        defaultMessage='API Key Revoked'
+                    />
+                </DialogTitle>
                 <DialogContent>
-                    <Typography>The API key has been successfully revoked.</Typography>
+                    <Typography>
+                        <FormattedMessage
+                            id='APIKeys.ListApiKeys.revoke.success.message'
+                            defaultMessage='The API key has been successfully revoked.'
+                        />
+                    </Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button
                         onClick={() => { setRevokeSuccessOpen(false); setSelectedKeyForRevoke(null); }}
                         variant='contained'
                     >
-                        OK
+                        <FormattedMessage
+                            id='APIKeys.ListApiKeys.common.ok'
+                            defaultMessage='OK'
+                        />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -393,7 +581,12 @@ export default function ApiKeysView() {
                 maxWidth='xs'
                 fullWidth
             >
-                <DialogTitle>Revoke Failed</DialogTitle>
+                <DialogTitle>
+                    <FormattedMessage
+                        id='APIKeys.ListApiKeys.revoke.error.title'
+                        defaultMessage='Revoke Failed'
+                    />
+                </DialogTitle>
                 <DialogContent>
                     <Typography>{revokeErrorMessage}</Typography>
                 </DialogContent>
@@ -402,10 +595,13 @@ export default function ApiKeysView() {
                         onClick={() => { setRevokeErrorOpen(false); setSelectedKeyForRevoke(null); }}
                         variant='contained'
                     >
-                        OK
+                        <FormattedMessage
+                            id='APIKeys.ListApiKeys.common.ok'
+                            defaultMessage='OK'
+                        />
                     </Button>
                 </DialogActions>
             </Dialog>
-        </Stack>
+        </>
     );
 }

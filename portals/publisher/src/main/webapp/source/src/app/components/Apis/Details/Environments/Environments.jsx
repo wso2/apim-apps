@@ -655,6 +655,116 @@ export default function Environments() {
 
     const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
         || api.workflowStatus === 'CREATED' || api.initiatedFromGateway);
+    const governanceViolationDownloadLinkSx = {
+        color: 'inherit',
+        fontWeight: 600,
+        textDecoration: 'none',
+        transition: 'all 0.3s',
+        '&:hover': {
+            transform: 'translateY(-2px)',
+            textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+        },
+    };
+
+    const alertRevisionCreateError = (error) => {
+        if (error.response) {
+            Alert.error(error.response.body.description);
+        } else {
+            Alert.error(intl.formatMessage({
+                id: 'Apis.Details.Environments.Environments.revision.create.error',
+                defaultMessage: 'Something went wrong while creating the revision',
+            }));
+        }
+        console.error(error);
+    };
+
+    const alertRevisionDeployError = (error) => {
+        if (error.response) {
+            Alert.error(error.response.body.description);
+        } else {
+            Alert.error(intl.formatMessage({
+                id: 'Apis.Details.Environments.Environments.revision.deploy.error',
+                defaultMessage: 'Something went wrong while deploying the revision',
+            }));
+        }
+        console.error(error);
+    };
+
+    const showCreateGovernanceCreationFailureAlert = (violations) => {
+        setGovernanceError(violations);
+        setIsGovernanceViolation(true);
+        Alert.error(
+            <Box sx={{ width: '100%' }}>
+                <Typography>
+                    <FormattedMessage
+                        id='Apis.Details.Environments.Environments.revision.create.error.governance'
+                        defaultMessage='Revision Creation failed. Governance policy violations found'
+                    />
+                </Typography>
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    mt: 1,
+                }}>
+                    <Link
+                        component='button'
+                        onClick={Utils.downloadAsJSON.bind(null, violations, 'governance-violations')}
+                        sx={governanceViolationDownloadLinkSx}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Environments.Environments.revision.create.error.governance.download'
+                            defaultMessage='Download Violations'
+                        />
+                    </Link>
+                </Box>
+            </Box>
+        );
+    };
+
+    const showDeployGovernanceDeploymentFailureAlert = (violations) => {
+        setGovernanceError(violations);
+        setIsGovernanceViolation(true);
+        Alert.error(
+            <Box sx={{ width: '100%' }}>
+                <Typography>
+                    <FormattedMessage
+                        id='Apis.Details.Environments.Environments.revision.deploy.error.governance'
+                        defaultMessage='Revision Deployment failed. Governance policy violations found'
+                    />
+                </Typography>
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    mt: 1,
+                }}>
+                    <Link
+                        component='button'
+                        onClick={Utils.downloadAsJSON.bind(null, violations, 'governance-violations')}
+                        sx={governanceViolationDownloadLinkSx}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Environments.Environments.revision.deploy.error.governance.download'
+                            defaultMessage='Download Violations'
+                        />
+                    </Link>
+                </Box>
+            </Box>
+        );
+    };
+
+    const handleGovernanceViolationError = (error, showGovernanceAlert, onGovernanceViolation) => {
+        if (error?.response?.body?.code !== complianceErrorCode) {
+            return false;
+        }
+
+        const violations = JSON.parse(error.response.body.description).blockingViolations;
+        showGovernanceAlert(violations);
+        if (onGovernanceViolation) {
+            onGovernanceViolation();
+        }
+
+        return true;
+    };
 
     const externalEnvWithEndpoints = [];
     useEffect(() => {
@@ -854,15 +964,14 @@ export default function Environments() {
                     }));
                 })
                 .catch((error) => {
-                    if (error.response) {
-                        Alert.error(error.response.body.description);
-                    } else {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Environments.Environments.revision.create.error',
-                            defaultMessage: 'Something went wrong while creating the revision',
-                        }));
+                    if (handleGovernanceViolationError(
+                        error,
+                        showCreateGovernanceCreationFailureAlert,
+                    )) {
+                        return;
                     }
-                    console.error(error);
+
+                    alertRevisionCreateError(error);
                 }).finally(() => {
                     getRevision();
                 });
@@ -876,62 +985,14 @@ export default function Environments() {
                     getRevision();
                 })
                 .catch((error) => {
-                    if (error.response) {
-                        if (error.response.body.code === complianceErrorCode) {
-                            const violations = JSON.parse(error.response.body.description).blockingViolations;
-                            setGovernanceError(violations);
-                            setIsGovernanceViolation(true);
-                            Alert.error(
-                                <Box sx={{ width: '100%' }}>
-                                    <Typography>
-                                        <FormattedMessage
-                                            id={'Apis.Details.Environments.Environments.'
-                                                + 'revision.create.error.governance'}
-                                            defaultMessage={'Revision Creation failed. '
-                                                + 'Governance policy violations found'}
-                                        />
-                                    </Typography>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        justifyContent: 'flex-end',
-                                        mt: 1
-                                    }}>
-                                        <Link
-                                            component='button'
-                                            onClick={() =>
-                                                Utils.downloadAsJSON(violations, 'governance-violations')
-                                            }
-                                            sx={{
-                                                color: 'inherit',
-                                                fontWeight: 600,
-                                                textDecoration: 'none',
-                                                transition: 'all 0.3s',
-                                                '&:hover': {
-                                                    transform: 'translateY(-2px)',
-                                                    textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
-                                                },
-                                            }}
-                                        >
-                                            <FormattedMessage
-                                                id={'Apis.Details.Environments.Environments.revision.'
-                                                    + 'create.error.governance.download'}
-                                                defaultMessage='Download Violations'
-                                            />
-                                        </Link>
-                                    </Box>
-                                </Box>
-                            );
-                            return;
-                        } else {
-                            Alert.error(error.response.body.description);
-                        }
-                    } else {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Environments.Environments.revision.create.error',
-                            defaultMessage: 'Something went wrong while creating the revision',
-                        }));
+                    if (handleGovernanceViolationError(
+                        error,
+                        showCreateGovernanceCreationFailureAlert,
+                    )) {
+                        return;
                     }
-                    console.error(error);
+
+                    alertRevisionCreateError(error);
                     getRevision();
                 });
         }
@@ -1186,6 +1247,7 @@ export default function Environments() {
         }];
         let isBlockedByGovernanceViolation = false;
         if (isMCPServer) {
+            setIsDeploying(true);
             MCPServer.deployRevision(api.id, revisionId, body)
                 .then(() => {
                     Alert.info(intl.formatMessage({
@@ -1194,18 +1256,23 @@ export default function Environments() {
                     }));
                 })
                 .catch((error) => {
-                    if (error.response) {
-                        Alert.error(error.response.body.description);
-                    } else {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Environments.Environments.revision.deploy.error',
-                            defaultMessage: 'Something went wrong while deploying the revision',
-                        }));
+                    if (handleGovernanceViolationError(
+                        error,
+                        showDeployGovernanceDeploymentFailureAlert,
+                        () => {
+                            isBlockedByGovernanceViolation = true;
+                        },
+                    )) {
+                        return;
                     }
-                    console.error(error);
+
+                    alertRevisionDeployError(error);
                 }).finally(() => {
-                    getRevision();
-                    getDeployedEnv();
+                    if (!isBlockedByGovernanceViolation) {
+                        getRevision();
+                        getDeployedEnv();
+                    }
+                    setIsDeploying(false);
                 });
         } else if (api.apiType !== API.CONSTS.APIProduct) {
             setIsDeploying(true);
@@ -1224,59 +1291,17 @@ export default function Environments() {
                     }
                 }
             }).catch((error) => {
-                if (error.response) {
-                    if (error.response.body.code === complianceErrorCode) {
+                if (handleGovernanceViolationError(
+                    error,
+                    showDeployGovernanceDeploymentFailureAlert,
+                    () => {
                         isBlockedByGovernanceViolation = true;
-                        const violations = JSON.parse(error.response.body.description).blockingViolations;
-                        setGovernanceError(violations);
-                        setIsGovernanceViolation(true);
-                        Alert.error(
-                            <Box sx={{ width: '100%' }}>
-                                <Typography>
-                                    <FormattedMessage
-                                        id='Apis.Details.Environments.Environments.revision.deploy.error.governance'
-                                        defaultMessage='Revision Deployment failed. Governance policy violations found'
-                                    />
-                                </Typography>
-                                <Box sx={{
-                                    display: 'flex',
-                                    justifyContent: 'flex-end',
-                                    mt: 1
-                                }}>
-                                    <Link
-                                        component='button'
-                                        onClick={() => Utils.downloadAsJSON(violations, 'governance-violations')}
-                                        sx={{
-                                            color: 'inherit',
-                                            fontWeight: 600,
-                                            textDecoration: 'none',
-                                            transition: 'all 0.3s',
-                                            '&:hover': {
-                                                transform: 'translateY(-2px)',
-                                                textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
-                                            },
-                                        }}
-                                    >
-                                        <FormattedMessage
-                                            id={'Apis.Details.Environments.Environments.revision.'
-                                                + 'deploy.error.governance.download'}
-                                            defaultMessage='Download Violations'
-                                        />
-                                    </Link>
-                                </Box>
-                            </Box>
-                        );
-                        return;
-                    } else {
-                        Alert.error(error.response.body.description);
-                    }
-                } else {
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.Environments.Environments.revision.deploy.error',
-                        defaultMessage: 'Something went wrong while deploying the revision',
-                    }));
+                    },
+                )) {
+                    return;
                 }
-                console.error(error);
+
+                alertRevisionDeployError(error);
             }).finally(() => {
                 // Only refresh the page if there's no governance violation
                 if (!isBlockedByGovernanceViolation) {
@@ -1344,15 +1369,14 @@ export default function Environments() {
                             }));
                         })
                         .catch((error) => {
-                            if (error.response) {
-                                Alert.error(error.response.body.description);
-                            } else {
-                                Alert.error(intl.formatMessage({
-                                    id: 'Apis.Details.Environments.Environments.revision.deploy.error',
-                                    defaultMessage: 'Something went wrong while deploying the revision',
-                                }));
+                            if (handleGovernanceViolationError(
+                                error,
+                                showDeployGovernanceDeploymentFailureAlert,
+                            )) {
+                                return;
                             }
-                            console.error(error);
+
+                            alertRevisionDeployError(error);
                         }).finally(() => {
                             history.replace();
                             getRevision();
@@ -1362,15 +1386,17 @@ export default function Environments() {
                         });
                 })
                 .catch((error) => {
-                    if (error.response) {
-                        Alert.error(error.response.body.description);
-                    } else {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Environments.Environments.revision.create.error',
-                            defaultMessage: 'Something went wrong while creating the revision',
-                        }));
+                    if (handleGovernanceViolationError(
+                        error,
+                        showCreateGovernanceCreationFailureAlert,
+                        () => {
+                            setOpenDeployPopup(false);
+                        },
+                    )) {
+                        return;
                     }
-                    console.error(error);
+
+                    alertRevisionCreateError(error);
                 });
         } else if (api.apiType !== API.CONSTS.APIProduct) {
             restApi.createRevision(api.id, body)
@@ -1396,62 +1422,14 @@ export default function Environments() {
                             }));
                         })
                         .catch((error) => {
-                            if (error.response) {
-                                if (error.response.body.code === complianceErrorCode) {
-                                    const violations = JSON.parse(error.response.body.description).blockingViolations;
-                                    setGovernanceError(violations);
-                                    setIsGovernanceViolation(true);
-                                    Alert.error(
-                                        <Box sx={{ width: '100%' }}>
-                                            <Typography>
-                                                <FormattedMessage
-                                                    id={'Apis.Details.Environments.Environments.'
-                                                        + 'revision.create.error.governance'}
-                                                    defaultMessage={'Revision Deployment failed. '
-                                                        + 'Governance policy violations found'}
-                                                />
-                                            </Typography>
-                                            <Box sx={{
-                                                display: 'flex',
-                                                justifyContent: 'flex-end',
-                                                mt: 1
-                                            }}>
-                                                <Link
-                                                    component='button'
-                                                    onClick={() =>
-                                                        Utils.downloadAsJSON(violations, 'governance-violations')
-                                                    }
-                                                    sx={{
-                                                        color: 'inherit',
-                                                        fontWeight: 600,
-                                                        textDecoration: 'none',
-                                                        transition: 'all 0.3s',
-                                                        '&:hover': {
-                                                            transform: 'translateY(-2px)',
-                                                            textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
-                                                        },
-                                                    }}
-                                                >
-                                                    <FormattedMessage
-                                                        id={'Apis.Details.Environments.Environments.revision.'
-                                                            + 'create.error.governance.download'}
-                                                        defaultMessage='Download Violations'
-                                                    />
-                                                </Link>
-                                            </Box>
-                                        </Box>
-                                    );
-                                    return;
-                                } else {
-                                    Alert.error(error.response.body.description);
-                                }
-                            } else {
-                                Alert.error(intl.formatMessage({
-                                    id: 'Apis.Details.Environments.Environments.revision.deploy.error',
-                                    defaultMessage: 'Something went wrong while deploying the revision',
-                                }));
+                            if (handleGovernanceViolationError(
+                                error,
+                                showDeployGovernanceDeploymentFailureAlert,
+                            )) {
+                                return;
                             }
-                            console.error(error);
+
+                            alertRevisionDeployError(error);
                         }).finally(() => {
                             history.replace();
                             getRevision();
@@ -1461,61 +1439,17 @@ export default function Environments() {
                         });
                 })
                 .catch((error) => {
-                    if (error.response) {
-                        if (error.response.body.code === complianceErrorCode) {
-                            const violations = JSON.parse(error.response.body.description).blockingViolations;
-                            setGovernanceError(violations);
-                            setIsGovernanceViolation(true);
-                            Alert.error(
-                                <Box sx={{ width: '100%' }}>
-                                    <Typography>
-                                        <FormattedMessage
-                                            id={'Apis.Details.Environments.Environments.revision.'
-                                                + 'create.error.governance'}
-                                            defaultMessage={'Revision Creation failed. '
-                                                + 'Governance policy violations found'}
-                                        />
-                                    </Typography>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        justifyContent: 'flex-end',
-                                        mt: 1
-                                    }}>
-                                        <Link
-                                            component='button'
-                                            onClick={() => Utils.downloadAsJSON(violations, 'governance-violations')}
-                                            sx={{
-                                                color: 'inherit',
-                                                fontWeight: 600,
-                                                textDecoration: 'none',
-                                                transition: 'all 0.3s',
-                                                '&:hover': {
-                                                    transform: 'translateY(-2px)',
-                                                    textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
-                                                },
-                                            }}
-                                        >
-                                            <FormattedMessage
-                                                id={'Apis.Details.Environments.Environments.revision.'
-                                                    + 'create.error.governance.download'}
-                                                defaultMessage='Download Violations'
-                                            />
-                                        </Link>
-                                    </Box>
-                                </Box>
-                            );
+                    if (handleGovernanceViolationError(
+                        error,
+                        showCreateGovernanceCreationFailureAlert,
+                        () => {
                             setOpenDeployPopup(false);
-                            return;
-                        } else {
-                            Alert.error(error.response.body.description);
-                        }
-                    } else {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Environments.Environments.revision.create.error',
-                            defaultMessage: 'Something went wrong while creating the revision',
-                        }));
+                        },
+                    )) {
+                        return;
                     }
-                    console.error(error);
+
+                    alertRevisionCreateError(error);
                 });
         } else {
             restProductApi.createProductRevision(api.id, body)
