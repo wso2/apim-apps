@@ -88,7 +88,16 @@ const UpgradeToJWTDialog = (props) => {
                 })}
             </Button>
 
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog
+                open={open}
+                onClose={(_, reason) => {
+                    if (submitting && (reason === 'backdropClick' || reason === 'escapeKeyDown')) {
+                        return;
+                    }
+                    handleClose();
+                }}
+                disableEscapeKeyDown={submitting}
+            >
                 <DialogTitle>
                     {intl.formatMessage({
                         id: 'ApplicationSettings.UpgradeToJWTDialog.dialog.title',
