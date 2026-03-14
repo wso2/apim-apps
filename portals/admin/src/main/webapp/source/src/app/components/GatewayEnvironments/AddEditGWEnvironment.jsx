@@ -199,6 +199,46 @@ const toPlatformGatewayName = (value) => {
     return normalized.slice(start, end).slice(0, 64);
 };
 
+const GATEWAYS_PROVIDED_BY_WSO2 = ['Regular', 'APK'];
+
+const buildAdditionalPropertiesArray = (properties = {}) => Object.keys(properties).map((key) => ({
+    key,
+    value: properties[key],
+}));
+
+const buildPermissionsDTO = (permissions = {}, roles = [], validRoles = []) => ({
+    permissionType: permissions.permissionType || 'PUBLIC',
+    roles: roles.concat(validRoles),
+});
+
+const buildVhostDTO = (vhosts = [], gatewayType) => {
+    if (gatewayType === 'Regular') {
+        return vhosts.map((vhost) => ({
+            host: vhost.host,
+            httpContext: vhost.httpContext,
+            httpPort: vhost.httpPort,
+            httpsPort: vhost.httpsPort,
+            wsPort: vhost.wsPort,
+            wssPort: vhost.wssPort,
+        }));
+    }
+
+    if (gatewayType === 'APK' || !GATEWAYS_PROVIDED_BY_WSO2.includes(gatewayType)) {
+        return vhosts.map((vhost) => ({
+            host: vhost.host,
+            httpContext: vhost.httpContext,
+            httpPort: vhost.httpPort,
+            httpsPort: vhost.httpsPort,
+        }));
+    }
+
+    return [];
+};
+
+const getGatewayProvider = (gatewayType) => (
+    GATEWAYS_PROVIDED_BY_WSO2.includes(gatewayType) ? 'wso2' : 'external'
+);
+
 /**
  * Reducer
  * @param {JSON} state State
@@ -531,16 +571,8 @@ function AddEditGWEnvironment(props) {
             return;
         }
 
-        const additionalPropertiesArrayDTO = [];
-        Object.keys(additionalProperties || {}).forEach((key) => {
-            additionalPropertiesArrayDTO.push({ key, value: additionalProperties[key] });
-        });
-
-        const permissionsDTO = {
-            permissionType: permissions?.permissionType || 'PUBLIC',
-            roles: permissions?.roles || [],
-        };
-
+        const additionalPropertiesArrayDTO = buildAdditionalPropertiesArray(additionalProperties);
+        const permissionsDTO = buildPermissionsDTO(permissions);
         const vhostDTO = (vhosts || []).map((vhost) => ({
             host: vhost.host,
             wsPort: vhost.wsPort,
@@ -549,8 +581,7 @@ function AddEditGWEnvironment(props) {
             httpPort: vhost.httpPort,
             httpsPort: vhost.httpsPort,
         }));
-        const gatewaysProvidedByWSO2 = ['Regular', 'APK'];
-        const provider = gatewaysProvidedByWSO2.includes(gatewayType) ? 'wso2' : 'external';
+        const provider = getGatewayProvider(gatewayType);
 
         setPlatformHeaderSaving(true);
         try {
@@ -904,51 +935,10 @@ function AddEditGWEnvironment(props) {
         }
 
         setSaving(true);
-        const gatewaysProvidedByWSO2 = ['Regular', 'APK'];
-        const vhostDto = [];
-        if (gatewayType === 'Regular') {
-            vhosts.forEach((vhost) => {
-                vhostDto.push({
-                    host: vhost.host,
-                    httpContext: vhost.httpContext,
-                    httpPort: vhost.httpPort,
-                    httpsPort: vhost.httpsPort,
-                    wsPort: vhost.wsPort,
-                    wssPort: vhost.wssPort,
-                });
-            });
-        } else if (gatewayType === 'APK') {
-            vhosts.forEach((vhost) => {
-                vhostDto.push({
-                    host: vhost.host,
-                    httpContext: vhost.httpContext,
-                    httpPort: vhost.httpPort,
-                    httpsPort: vhost.httpsPort,
-                });
-            });
-        }
-
-        // handle external gateway vhosts and provider
-        let provider = 'wso2';
-        if (!gatewaysProvidedByWSO2.includes(gatewayType)) {
-            vhosts.forEach((vhost) => {
-                vhostDto.push({
-                    host: vhost.host,
-                    httpContext: vhost.httpContext,
-                    httpPort: vhost.httpPort,
-                    httpsPort: vhost.httpsPort,
-                });
-            });
-            provider = 'external';
-        }
-
-        permissions.permissionType = state.permissions.permissionType;
-        permissions.roles = roles.concat(validRoles);
-
-        const additionalPropertiesArrayDTO = [];
-        Object.keys(state.additionalProperties).forEach((key) => {
-            additionalPropertiesArrayDTO.push({ key, value: state.additionalProperties[key] });
-        });
+        const vhostDto = buildVhostDTO(vhosts, gatewayType);
+        const provider = getGatewayProvider(gatewayType);
+        const permissionsDTO = buildPermissionsDTO(state.permissions, roles, validRoles);
+        const additionalPropertiesArrayDTO = buildAdditionalPropertiesArray(state.additionalProperties);
 
         let promiseAPICall;
         if (!id && gatewayType === 'api-platform') {
@@ -968,19 +958,20 @@ function AddEditGWEnvironment(props) {
                     },
                 },
                 permissions: {
-                    permissionType: permissions.permissionType,
-                    roles: permissions.roles,
+                    permissionType: permissionsDTO.permissionType,
+                    roles: permissionsDTO.roles,
                 },
             });
         } else if (id) {
             // assign the update promise to the promiseAPICall
             promiseAPICall = restApi.updateGatewayEnvironment(id, name.trim(), displayName, type, description,
-                gatewayType, gatewayMode, scheduledInterval, vhostDto, permissions, additionalPropertiesArrayDTO,
+                gatewayType, gatewayMode, scheduledInterval, vhostDto, permissionsDTO, additionalPropertiesArrayDTO,
                 provider);
         } else {
             // assign the create promise to the promiseAPICall
             promiseAPICall = restApi.addGatewayEnvironment(name.trim(), displayName, type, description,
-                gatewayType, gatewayMode, scheduledInterval, vhostDto, permissions, additionalPropertiesArrayDTO,
+                gatewayType, gatewayMode, scheduledInterval, vhostDto, permissionsDTO,
+                additionalPropertiesArrayDTO,
                 provider);
         }
 
