@@ -36,16 +36,18 @@ let policySpecsInFlightPromise = null;
 
 const getPolicyHubEndpoint = () => {
     const configuredEndpoint = Configurations?.app?.policyHub?.endpoint;
-    const endpoint = typeof configuredEndpoint === 'string' ? configuredEndpoint.trim() : '';
+    const endpoint =
+        typeof configuredEndpoint === 'string' ? configuredEndpoint.trim() : '';
     if (!endpoint) {
-        throw new Error('Policy Hub endpoint is not configured in settings (app.policyHub.endpoint).');
+        throw new Error(
+            'Policy Hub endpoint is not configured in settings (app.policyHub.endpoint).',
+        );
     }
     return endpoint.endsWith('/') ? endpoint.slice(0, -1) : endpoint;
 };
 
-const getPolicyHubLimit = () => (
-    Configurations?.app?.policyHub?.limit || DEFAULT_POLICY_HUB_LIMIT
-);
+const getPolicyHubLimit = () =>
+    Configurations?.app?.policyHub?.limit || DEFAULT_POLICY_HUB_LIMIT;
 
 const getPolicyHubCacheTTL = () => {
     const configuredTTL = Configurations?.app?.policyHub?.cacheTTL;
@@ -66,7 +68,8 @@ const getPolicyHubTimeout = () => {
 };
 
 const getPolicyHubCacheMaxEntries = () => {
-    const configuredMaxEntries = Configurations?.app?.policyHub?.cacheMaxEntries;
+    const configuredMaxEntries =
+        Configurations?.app?.policyHub?.cacheMaxEntries;
     const maxEntries = Number(configuredMaxEntries);
     if (Number.isFinite(maxEntries) && maxEntries > 0) {
         return Math.floor(maxEntries);
@@ -86,10 +89,15 @@ const setCacheEntry = (cacheMap, key, value) => {
     }
 };
 
-const buildPolicyId = (name, version) => `${name}${POLICY_ID_SEPARATOR}${version}`;
+const buildPolicyId = (name, version) =>
+    `${name}${POLICY_ID_SEPARATOR}${version}`;
 
 const parsePolicyId = (policyId) => {
-    if (!policyId || typeof policyId !== 'string' || !policyId.includes(POLICY_ID_SEPARATOR)) {
+    if (
+        !policyId ||
+        typeof policyId !== 'string' ||
+        !policyId.includes(POLICY_ID_SEPARATOR)
+    ) {
         return null;
     }
     const [name, version] = policyId.split(POLICY_ID_SEPARATOR);
@@ -107,7 +115,8 @@ const humanizeName = (name = '') =>
         .replace(/\b\w/g, (match) => match.toUpperCase());
 
 const normalizeAttributeType = (attribute) => {
-    const rawType = attribute?.type || attribute?.dataType || attribute?.schema?.type || '';
+    const rawType =
+        attribute?.type || attribute?.dataType || attribute?.schema?.type || '';
     const type = typeof rawType === 'string' ? rawType.toLowerCase() : '';
 
     if (attribute?.format === 'password' || attribute?.secret) {
@@ -135,21 +144,36 @@ const normalizeAttribute = (attribute, required = false) => {
     }
     return {
         name,
-        displayName: attribute?.displayName || attribute?.label || attribute?.title || humanizeName(name),
+        displayName:
+            attribute?.displayName ||
+            attribute?.label ||
+            attribute?.title ||
+            humanizeName(name),
         version: attribute?.version || '',
         description: attribute?.description || attribute?.summary || '',
         required: Boolean(attribute?.required ?? required),
         type: normalizeAttributeType(attribute),
         validationRegex: attribute?.validationRegex || attribute?.pattern || '',
-        defaultValue: attribute?.defaultValue ?? attribute?.default ?? attribute?.example ?? null,
-        allowedValues: attribute?.allowedValues || attribute?.enum || attribute?.options || attribute?.values || [],
+        defaultValue:
+            attribute?.defaultValue ??
+            attribute?.default ??
+            attribute?.example ??
+            null,
+        allowedValues:
+            attribute?.allowedValues ||
+            attribute?.enum ||
+            attribute?.options ||
+            attribute?.values ||
+            [],
     };
 };
 
 const isAttributeArray = (value) =>
-    Array.isArray(value)
-    && value.length > 0
-    && value.every((item) => item && typeof item === 'object' && (item.name || item.key));
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.every(
+        (item) => item && typeof item === 'object' && (item.name || item.key),
+    );
 
 const findAttributeArray = (obj) => {
     if (!obj || typeof obj !== 'object') {
@@ -269,10 +293,15 @@ const getPolicyAttributesFromDefinition = (policyDefinitionText) => {
 
     const schemaObj = getPolicySchemaFromObject(definition);
     if (schemaObj && schemaObj.properties) {
-        const requiredList = Array.isArray(schemaObj.required) ? schemaObj.required : [];
+        const requiredList = Array.isArray(schemaObj.required)
+            ? schemaObj.required
+            : [];
         return Object.entries(schemaObj.properties)
             .map(([name, schema]) =>
-                normalizeAttribute({ name, ...schema }, requiredList.includes(name)),
+                normalizeAttribute(
+                    { name, ...schema },
+                    requiredList.includes(name),
+                ),
             )
             .filter(Boolean);
     }
@@ -298,18 +327,21 @@ const normalizeFlow = (flow) => {
 };
 
 const getApplicableFlows = (policy) => {
-    const candidateFlows = policy?.applicableFlows
-        || policy?.supportedFlows
-        || policy?.flows
-        || [];
+    const candidateFlows =
+        policy?.applicableFlows ||
+        policy?.supportedFlows ||
+        policy?.flows ||
+        [];
 
     const normalizedFlows = [];
-    (Array.isArray(candidateFlows) ? candidateFlows : [candidateFlows]).forEach((flow) => {
-        const normalizedFlow = normalizeFlow(flow);
-        if (normalizedFlow) {
-            normalizedFlows.push(normalizedFlow);
-        }
-    });
+    (Array.isArray(candidateFlows) ? candidateFlows : [candidateFlows]).forEach(
+        (flow) => {
+            const normalizedFlow = normalizeFlow(flow);
+            if (normalizedFlow) {
+                normalizedFlows.push(normalizedFlow);
+            }
+        },
+    );
 
     if (normalizedFlows.length > 0) {
         return [...new Set(normalizedFlows)];
@@ -320,13 +352,17 @@ const getApplicableFlows = (policy) => {
 };
 
 const toPolicySpec = (policy, policyDefinitionText) => {
-    const supportedApiTypes = Configurations?.app?.policyHub?.supportedApiTypes || [
+    const supportedApiTypes = Configurations?.app?.policyHub
+        ?.supportedApiTypes || [
         'HTTP',
         'SOAP',
         'SOAPTOREST',
         'GRAPHQL',
         'WS',
         'SSE',
+        'WEBSUB',
+        'WEBHOOK',
+        'ASYNC',
     ];
 
     return {
@@ -339,13 +375,17 @@ const toPolicySpec = (policy, policyDefinitionText) => {
         applicableFlows: getApplicableFlows(policy),
         supportedGateways: [CONSTS.GATEWAY_TYPE.apiPlatform],
         supportedApiTypes,
-        policyAttributes: getPolicyAttributesFromDefinition(policyDefinitionText),
+        policyAttributes:
+            getPolicyAttributesFromDefinition(policyDefinitionText),
         parametersSchema: getPolicySchemaFromDefinition(policyDefinitionText),
         isAPISpecific: false,
     };
 };
 
-const request = async (path, { method = 'GET', params, headers, body } = {}) => {
+const request = async (
+    path,
+    { method = 'GET', params, headers, body } = {},
+) => {
     const endpoint = getPolicyHubEndpoint();
     const url = new URL(`${endpoint}${path}`);
     const timeoutMs = getPolicyHubTimeout();
@@ -375,7 +415,9 @@ const request = async (path, { method = 'GET', params, headers, body } = {}) => 
         });
     } catch (error) {
         if (error?.name === 'AbortError') {
-            const timeoutError = new Error(`Policy Hub request timed out after ${timeoutMs}ms`);
+            const timeoutError = new Error(
+                `Policy Hub request timed out after ${timeoutMs}ms`,
+            );
             timeoutError.name = 'PolicyHubTimeoutError';
             throw timeoutError;
         }
@@ -386,7 +428,9 @@ const request = async (path, { method = 'GET', params, headers, body } = {}) => 
 
     if (!response.ok) {
         const errorText = await response.text().catch(() => '');
-        const error = new Error(`Policy Hub request failed: ${response.status} ${response.statusText}`);
+        const error = new Error(
+            `Policy Hub request failed: ${response.status} ${response.statusText}`,
+        );
         error.details = errorText;
         throw error;
     }
@@ -394,7 +438,13 @@ const request = async (path, { method = 'GET', params, headers, body } = {}) => 
     return response;
 };
 
-const listPolicies = async ({ offset = 0, limit = getPolicyHubLimit(), search, categories, providers } = {}) => {
+const listPolicies = async ({
+    offset = 0,
+    limit = getPolicyHubLimit(),
+    search,
+    categories,
+    providers,
+} = {}) => {
     const params = {
         offset,
         limit,
@@ -432,7 +482,11 @@ const getPolicyVersion = async (name, version) => {
     if (!name || !version) {
         return null;
     }
-    const response = await request(`/policies/${encodeURIComponent(name)}/versions/${encodeURIComponent(version)}`);
+    const response = await request(
+        `/policies/${encodeURIComponent(name)}/versions/${encodeURIComponent(
+            version,
+        )}`,
+    );
     const body = await response.json();
     return body?.data || null;
 };
@@ -442,7 +496,9 @@ const getPolicyDefinition = async (name, version) => {
         return null;
     }
     const response = await request(
-        `/policies/${encodeURIComponent(name)}/versions/${encodeURIComponent(version)}/definition`,
+        `/policies/${encodeURIComponent(name)}/versions/${encodeURIComponent(
+            version,
+        )}/definition`,
         { headers: { Accept: 'text/yaml' } },
     );
     const data = await response.text();
@@ -474,7 +530,10 @@ const getPolicySpec = async (policy) => {
     }
     let definitionText;
     try {
-        const definition = await getPolicyDefinitionCached(policy.name, policy.version);
+        const definition = await getPolicyDefinitionCached(
+            policy.name,
+            policy.version,
+        );
         definitionText = definition?.data;
     } catch (error) {
         console.error(error);
@@ -486,7 +545,9 @@ const getPolicySpec = async (policy) => {
 
 const listAllPolicySpecs = async ({ forceRefresh = false } = {}) => {
     const ttl = getPolicyHubCacheTTL();
-    const hasValidCache = Array.isArray(cachedPolicySpecs) && ((Date.now() - cachedPolicySpecsAt) < ttl);
+    const hasValidCache =
+        Array.isArray(cachedPolicySpecs) &&
+        Date.now() - cachedPolicySpecsAt < ttl;
 
     if (!forceRefresh && hasValidCache) {
         return cachedPolicySpecs;

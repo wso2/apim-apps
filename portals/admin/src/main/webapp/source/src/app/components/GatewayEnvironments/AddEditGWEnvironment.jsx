@@ -1,3 +1,4 @@
+/* eslint-disable object-curly-newline, operator-linebreak, comma-dangle, implicit-arrow-linebreak, react/jsx-curly-newline, react/jsx-wrap-multilines, indent, max-len */
 /*
  * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -16,11 +17,10 @@
  * under the License.
  */
 
-import React, {
-    useEffect, useMemo, useReducer, useState,
-} from 'react';
+import React, { useEffect, useMemo, useReducer, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import API from 'AppData/api';
+import CONSTS from 'AppData/Constants';
 import base64url from 'base64url';
 import PropTypes from 'prop-types';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
@@ -58,9 +58,25 @@ import AddEditVhost from 'AppComponents/GatewayEnvironments/AddEditVhost';
 import GatewayConfiguration from 'AppComponents/GatewayEnvironments/GatewayConfiguration';
 import cloneDeep from 'lodash.clonedeep';
 import CircularProgress from '@mui/material/CircularProgress';
-import { QuickStartGuide } from './UniversalGatewayManagement';
+import QuickStartGuide from './UniversalGatewayQuickStartGuide';
+import {
+    buildAdditionalPropertiesArray,
+    buildPermissionsDTO,
+    buildVhostDTO,
+    createDefaultVhost,
+    getGatewayProvider,
+    getGatewayStatusChipProps,
+    getPlatformGatewayUrl,
+    getVhostFromBaseUrl,
+    normalizeBaseUrl,
+    WSO2_GATEWAY_TYPES,
+    WSO2_SELF_HOSTED_GATEWAY_TYPES,
+    toPlatformGatewayName,
+} from './UniversalGatewayUtils';
 
-const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
+const StyledSpan = styled('span')(({ theme }) => ({
+    color: theme.palette.error.dark,
+}));
 
 const StyledContentBase = styled(ContentBase)({
     '@global': {
@@ -74,170 +90,6 @@ const StyledContentBase = styled(ContentBase)({
 });
 
 const StyledHr = styled('hr')({ border: 'solid 1px #efefef' });
-const WSO2_GATEWAY_TYPES = ['Regular', 'APK'];
-const WSO2_SELF_HOSTED_GATEWAY_TYPES = ['api-platform', ...WSO2_GATEWAY_TYPES];
-const trimTrailingSlashes = (value) => {
-    const normalized = (value || '').trim();
-    let end = normalized.length;
-    while (end > 0 && normalized.charCodeAt(end - 1) === 47) {
-        end -= 1;
-    }
-    return normalized.slice(0, end);
-};
-
-const normalizeBaseUrl = (value) => {
-    const trimmed = (value || '').trim();
-    if (!trimmed) {
-        return '';
-    }
-    if (/^https?:\/\//i.test(trimmed)) {
-        return trimTrailingSlashes(trimmed);
-    }
-    return trimTrailingSlashes(`https://${trimmed}`);
-};
-
-const getVhostFromBaseUrl = (baseUrl) => {
-    try {
-        return new URL(baseUrl).host;
-    } catch (error) {
-        return '';
-    }
-};
-
-const tryParseJson = (value) => {
-    if (typeof value !== 'string') {
-        return value;
-    }
-    try {
-        return JSON.parse(value);
-    } catch (error) {
-        return value;
-    }
-};
-
-const normalizeProperties = (properties) => {
-    if (!properties) {
-        return {};
-    }
-    if (Array.isArray(properties)) {
-        const mapped = {};
-        properties.forEach((property) => {
-            if (property && property.key) {
-                mapped[property.key] = tryParseJson(property.value);
-            }
-        });
-        return mapped;
-    }
-    if (typeof properties === 'string') {
-        const parsed = tryParseJson(properties);
-        return (parsed && typeof parsed === 'object') ? parsed : {};
-    }
-    if (typeof properties === 'object') {
-        return properties;
-    }
-    return {};
-};
-
-const getAdditionalProperty = (additionalProperties, key) => {
-    if (!additionalProperties || !key) {
-        return '';
-    }
-    if (Array.isArray(additionalProperties)) {
-        const matched = additionalProperties.find((property) => property?.key === key);
-        return matched?.value || '';
-    }
-    if (typeof additionalProperties === 'object') {
-        return additionalProperties[key] || '';
-    }
-    return '';
-};
-
-const getPlatformGatewayUrl = (gateway) => {
-    const properties = normalizeProperties(gateway?.properties);
-    const gatewayController = tryParseJson(properties.gatewayController);
-    const controllerBaseUrl = gatewayController?.baseUrl || properties?.baseUrl;
-    if (controllerBaseUrl && String(controllerBaseUrl).trim()) {
-        return String(controllerBaseUrl).trim();
-    }
-    const additionalBaseUrl = getAdditionalProperty(gateway?.additionalProperties, 'platformGatewayBaseUrl');
-    if (additionalBaseUrl && String(additionalBaseUrl).trim()) {
-        return String(additionalBaseUrl).trim();
-    }
-    if (gateway?.vhost) {
-        return `https://${gateway.vhost}`;
-    }
-    return '-';
-};
-
-const getGatewayStatusChipProps = (status) => {
-    if (status === 'ACTIVE') {
-        return {
-            color: 'success',
-            variant: 'filled',
-        };
-    }
-
-    return {
-        color: 'error',
-        variant: 'outlined',
-    };
-};
-
-const toPlatformGatewayName = (value) => {
-    const normalized = (value || '')
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, '-');
-    let start = 0;
-    let end = normalized.length;
-    while (start < end && normalized.charCodeAt(start) === 45) {
-        start += 1;
-    }
-    while (end > start && normalized.charCodeAt(end - 1) === 45) {
-        end -= 1;
-    }
-    return normalized.slice(start, end).slice(0, 64);
-};
-
-const GATEWAYS_PROVIDED_BY_WSO2 = ['Regular', 'APK'];
-
-const buildAdditionalPropertiesArray = (properties = {}) => Object.keys(properties).map((key) => ({
-    key,
-    value: properties[key],
-}));
-
-const buildPermissionsDTO = (permissions = {}, roles = [], validRoles = []) => ({
-    permissionType: permissions.permissionType || 'PUBLIC',
-    roles: roles.concat(validRoles),
-});
-
-const buildVhostDTO = (vhosts = [], gatewayType) => {
-    if (gatewayType === 'Regular') {
-        return vhosts.map((vhost) => ({
-            host: vhost.host,
-            httpContext: vhost.httpContext,
-            httpPort: vhost.httpPort,
-            httpsPort: vhost.httpsPort,
-            wsPort: vhost.wsPort,
-            wssPort: vhost.wssPort,
-        }));
-    }
-
-    if (gatewayType === 'APK' || !GATEWAYS_PROVIDED_BY_WSO2.includes(gatewayType)) {
-        return vhosts.map((vhost) => ({
-            host: vhost.host,
-            httpContext: vhost.httpContext,
-            httpPort: vhost.httpPort,
-            httpsPort: vhost.httpsPort,
-        }));
-    }
-
-    return [];
-};
-
-const getGatewayProvider = (gatewayType) => (
-    GATEWAYS_PROVIDED_BY_WSO2.includes(gatewayType) ? 'wso2' : 'external'
-);
 
 const getNameValidationError = (value, formatMessage) => {
     if (value === undefined) {
@@ -247,21 +99,26 @@ const getNameValidationError = (value, formatMessage) => {
     if (value === '') {
         return formatMessage({
             id: 'GatewayEnvironments.AddEditGWEnvironment.form.environment.name.empty',
-            defaultMessage: 'Name is Empty',
+            defaultMessage: 'Name is empty',
         });
     }
 
-    if (!(/^[A-Za-z0-9_-]+$/).test(value)) {
+    if (!/^[A-Za-z0-9_-]+$/.test(value)) {
         return formatMessage({
             id: 'GatewayEnvironments.AddEditGWEnvironment.form.environment.name.invalid',
-            defaultMessage: 'Name must not contain special characters or spaces',
+            defaultMessage:
+                'Name must not contain special characters or spaces',
         });
     }
 
     return false;
 };
 
-const getDisplayNameValidationError = (value, formatMessage, isUniversalGatewayCreate) => {
+const getDisplayNameValidationError = (
+    value,
+    formatMessage,
+    isUniversalGatewayCreate
+) => {
     if (value === undefined) {
         return false;
     }
@@ -269,21 +126,26 @@ const getDisplayNameValidationError = (value, formatMessage, isUniversalGatewayC
     if (value === '') {
         return formatMessage({
             id: 'GatewayEnvironments.AddEditGWEnvironment.form.environment.displayName.empty',
-            defaultMessage: 'Display Name is Empty',
+            defaultMessage: 'Display name is empty',
         });
     }
 
     if (isUniversalGatewayCreate && toPlatformGatewayName(value).length < 3) {
         return formatMessage({
             id: 'GatewayEnvironments.AddEditGWEnvironment.form.environment.displayName.invalid',
-            defaultMessage: 'Display Name must contain at least 3 letters or numbers',
+            defaultMessage:
+                'Display Name must contain at least 3 letters or numbers',
         });
     }
 
     return false;
 };
 
-const getVhostValidationError = (value, formatMessage, handleHostValidation) => {
+const getVhostValidationError = (
+    value,
+    formatMessage,
+    handleHostValidation
+) => {
     if (value === undefined) {
         return false;
     }
@@ -309,16 +171,18 @@ const getVhostValidationError = (value, formatMessage, handleHostValidation) => 
 const getScheduledIntervalValidationError = (value, formatMessage) => {
     if (value === '') {
         return formatMessage({
-            id: 'AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment'
-                + '.scheduledInterval.empty',
+            id:
+                'AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment' +
+                '.scheduledInterval.empty',
             defaultMessage: 'Scheduled interval is empty',
         });
     }
 
     if (parseInt(value, 10) < 0) {
         return formatMessage({
-            id: 'AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment'
-                + '.scheduledInterval.parse',
+            id:
+                'AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment' +
+                '.scheduledInterval.parse',
             defaultMessage: 'Invalid scheduled interval',
         });
     }
@@ -326,8 +190,12 @@ const getScheduledIntervalValidationError = (value, formatMessage) => {
     return '';
 };
 
-const getPlatformGatewayBaseUrlValidationError = (value, formatMessage, gatewayType) => {
-    if (gatewayType !== 'api-platform') {
+const getPlatformGatewayBaseUrlValidationError = (
+    value,
+    formatMessage,
+    gatewayType
+) => {
+    if (gatewayType !== CONSTS.GATEWAY_TYPE.apiPlatform) {
         return false;
     }
 
@@ -357,7 +225,7 @@ const getGatewayConfigValidationError = (value, formatMessage) => {
         });
     }
 
-    return undefined;
+    return false;
 };
 
 /**
@@ -410,56 +278,68 @@ function AddEditGWEnvironment(props) {
     const [validating, setValidating] = useState(false);
     const [saving, setSaving] = useState(false);
     const { gatewayTypes } = settings;
-    const { match: { params: { id } }, history, location } = props;
-    const searchParams = useMemo(() => new URLSearchParams(location?.search || ''), [location?.search]);
+    const {
+        match: {
+            params: { id },
+        },
+        history,
+        location,
+    } = props;
+    const searchParams = useMemo(
+        () => new URLSearchParams(location?.search || ''),
+        [location?.search]
+    );
     const category = searchParams.get('category');
     const presetGatewayType = searchParams.get('presetType');
+    // Limit the available gateway types to the selected category and configured gateway support.
     const filteredGatewayTypes = useMemo(() => {
-        const configuredGatewayTypes = Array.isArray(gatewayTypes) ? gatewayTypes : [];
+        const configuredGatewayTypes = Array.isArray(gatewayTypes)
+            ? gatewayTypes
+            : [];
         if (category === 'wso2') {
             const wso2Types = WSO2_SELF_HOSTED_GATEWAY_TYPES.filter(
-                (type) => configuredGatewayTypes.includes(type) || type === 'api-platform',
+                (type) =>
+                    configuredGatewayTypes.includes(type) ||
+                    type === CONSTS.GATEWAY_TYPE.apiPlatform
             );
             return wso2Types.length > 0 ? wso2Types : configuredGatewayTypes;
         }
         if (category === 'third-party') {
-            const thirdPartyTypes = configuredGatewayTypes.filter((type) => (
-                !WSO2_GATEWAY_TYPES.includes(type) && type !== 'api-platform'
-            ));
-            return thirdPartyTypes.length > 0 ? thirdPartyTypes : configuredGatewayTypes;
+            const thirdPartyTypes = configuredGatewayTypes.filter(
+                (type) =>
+                    !WSO2_GATEWAY_TYPES.includes(type) &&
+                    type !== CONSTS.GATEWAY_TYPE.apiPlatform
+            );
+            return thirdPartyTypes.length > 0
+                ? thirdPartyTypes
+                : configuredGatewayTypes;
         }
         return configuredGatewayTypes;
     }, [category, gatewayTypes]);
+
+    // Choose the initial gateway type, honoring valid preset selections before falling back to defaults.
     const initialGatewayType = useMemo(() => {
         if (category === 'wso2' && !id && !presetGatewayType) {
-            if (filteredGatewayTypes.includes('api-platform')) {
-                return 'api-platform';
+            if (
+                filteredGatewayTypes.includes(CONSTS.GATEWAY_TYPE.apiPlatform)
+            ) {
+                return CONSTS.GATEWAY_TYPE.apiPlatform;
             }
             return filteredGatewayTypes[0] || '';
         }
-        if (presetGatewayType && filteredGatewayTypes.includes(presetGatewayType)) {
+        if (
+            presetGatewayType &&
+            filteredGatewayTypes.includes(presetGatewayType)
+        ) {
             return presetGatewayType;
         }
-        if (filteredGatewayTypes.includes('Regular')) {
-            return 'Regular';
+        if (filteredGatewayTypes.includes(CONSTS.GATEWAY_TYPE.regular)) {
+            return CONSTS.GATEWAY_TYPE.regular;
         }
-        return filteredGatewayTypes[0] || 'Regular';
+        return filteredGatewayTypes[0] || CONSTS.GATEWAY_TYPE.regular;
     }, [filteredGatewayTypes, presetGatewayType]);
     const shouldLockGatewayTypeSelection = !id && Boolean(presetGatewayType);
     const isWSO2CreateMode = category === 'wso2' && !id;
-
-    const createDefaultVhost = (currentGatewayType) => {
-        const isExternalGateway = !WSO2_GATEWAY_TYPES.includes(currentGatewayType);
-        return {
-            host: '',
-            httpContext: '',
-            httpsPort: isExternalGateway ? 443 : 8243,
-            httpPort: isExternalGateway ? 80 : 8280,
-            wssPort: 8099,
-            wsPort: 9099,
-            isNew: true,
-        };
-    };
     const initialPermissions = useMemo(() => {
         return dataRow?.permissions
             ? dataRow.permissions
@@ -473,31 +353,51 @@ function AddEditGWEnvironment(props) {
         gatewayMode: 'WRITE_ONLY',
         scheduledInterval: 0,
         type: 'hybrid',
-        vhosts: [createDefaultVhost(initialGatewayType || 'Regular')],
+        vhosts: [
+            createDefaultVhost(
+                initialGatewayType || CONSTS.GATEWAY_TYPE.regular
+            ),
+        ],
         permissions: initialPermissions,
         additionalProperties: {},
     });
     const [editMode, setIsEditMode] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(dataRow?.isReadOnly || false);
     const [isPlatformGatewayEdit, setIsPlatformGatewayEdit] = useState(false);
-    const [isGatewayEditTypeResolved, setIsGatewayEditTypeResolved] = useState(!id);
+    const [isGatewayEditTypeResolved, setIsGatewayEditTypeResolved] = useState(
+        !id
+    );
     const [platformGateway, setPlatformGateway] = useState(null);
     const [platformGatewayLoading, setPlatformGatewayLoading] = useState(false);
-    const [platformTokenRegenerating, setPlatformTokenRegenerating] = useState(false);
+    const [platformTokenRegenerating, setPlatformTokenRegenerating] =
+        useState(false);
     const [confirmReconfigureOpen, setConfirmReconfigureOpen] = useState(false);
-    const [showPlatformTokenCommands, setShowPlatformTokenCommands] = useState(false);
+    const [showPlatformTokenCommands, setShowPlatformTokenCommands] =
+        useState(false);
     const [platformHeaderEditMode, setPlatformHeaderEditMode] = useState(false);
     const [platformHeaderSaving, setPlatformHeaderSaving] = useState(false);
-    const [platformDisplayNameDraft, setPlatformDisplayNameDraft] = useState('');
-    const [platformDescriptionDraft, setPlatformDescriptionDraft] = useState('');
+    const [platformDisplayNameDraft, setPlatformDisplayNameDraft] =
+        useState('');
+    const [platformDescriptionDraft, setPlatformDescriptionDraft] =
+        useState('');
 
     const [state, dispatch] = useReducer(reducer, initialState);
     const {
-        name, displayName, description, vhosts, type, gatewayType, gatewayMode, scheduledInterval, permissions,
+        name,
+        displayName,
+        description,
+        vhosts,
+        type,
+        gatewayType,
+        gatewayMode,
+        scheduledInterval,
+        permissions,
         additionalProperties,
     } = state;
-    const platformGatewayBaseUrl = additionalProperties?.platformGatewayBaseUrl || '';
-    const isUniversalGatewayCreate = !id && gatewayType === 'api-platform';
+    const platformGatewayBaseUrl =
+        additionalProperties?.platformGatewayBaseUrl || '';
+    const isUniversalGatewayCreate =
+        !id && gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform;
     const handleWSO2GatewayTypeSelection = (selectedType) => {
         dispatch({ field: 'gatewayType', value: selectedType });
     };
@@ -514,49 +414,57 @@ function AddEditGWEnvironment(props) {
             setPlatformGateway(null);
             setPlatformHeaderEditMode(false);
             setShowPlatformTokenCommands(false);
-            restApi.getGatewayEnvironment(id).then(async (result) => {
-                const { body } = result;
-                const tempAdditionalProperties = {};
-                (body.additionalProperties || []).forEach((property) => {
-                    tempAdditionalProperties[property.key] = property.value;
-                });
-                const { platformGatewayId } = tempAdditionalProperties;
-                const newState = {
-                    name: body.name || '',
-                    displayName: body.displayName || '',
-                    description: body.description || '',
-                    gatewayType: body.gatewayType || '',
-                    gatewayMode: body.mode || '',
-                    scheduledInterval: body.apiDiscoveryScheduledWindow ?? 0,
-                    type: body.type || '',
-                    vhosts: body.vhosts || [],
-                    permissions: body.permissions || initialPermissions,
-                    additionalProperties: tempAdditionalProperties || {},
-                };
-                if (platformGatewayId) {
-                    dispatch({ field: 'editDetails', value: newState });
-                    setIsPlatformGatewayEdit(true);
-                    setIsReadOnly(true);
-                    const platformGatewayResponse = await restApi.getPlatformGatewayList();
-                    const platformGateways = platformGatewayResponse?.body?.list || [];
-                    const matchedGateway = platformGateways.find((gateway) => gateway.id === platformGatewayId);
-                    if (matchedGateway) {
-                        setPlatformGateway(matchedGateway);
-                    } else {
-                        setPlatformGateway({
-                            id: platformGatewayId,
-                            name: body.name,
-                            displayName: body.displayName,
-                            isActive: null,
-                        });
+            restApi
+                .getGatewayEnvironment(id)
+                .then(async (result) => {
+                    const { body } = result;
+                    const tempAdditionalProperties = {};
+                    (body.additionalProperties || []).forEach((property) => {
+                        tempAdditionalProperties[property.key] = property.value;
+                    });
+                    const { platformGatewayId } = tempAdditionalProperties;
+                    const newState = {
+                        name: body.name || '',
+                        displayName: body.displayName || '',
+                        description: body.description || '',
+                        gatewayType: body.gatewayType || '',
+                        gatewayMode: body.mode || '',
+                        scheduledInterval:
+                            body.apiDiscoveryScheduledWindow ?? 0,
+                        type: body.type || '',
+                        vhosts: body.vhosts || [],
+                        permissions: body.permissions || initialPermissions,
+                        additionalProperties: tempAdditionalProperties || {},
+                    };
+                    if (platformGatewayId) {
+                        dispatch({ field: 'editDetails', value: newState });
+                        setIsPlatformGatewayEdit(true);
+                        setIsReadOnly(true);
+                        const platformGatewayResponse =
+                            await restApi.getPlatformGatewayList();
+                        const platformGateways =
+                            platformGatewayResponse?.body?.list || [];
+                        const matchedGateway = platformGateways.find(
+                            (gateway) => gateway.id === platformGatewayId
+                        );
+                        if (matchedGateway) {
+                            setPlatformGateway(matchedGateway);
+                        } else {
+                            setPlatformGateway({
+                                id: platformGatewayId,
+                                name: body.name,
+                                displayName: body.displayName,
+                                isActive: null,
+                            });
+                        }
+                        return;
                     }
-                    return;
-                }
-                setIsReadOnly(body.isReadOnly || false);
-                dispatch({ field: 'editDetails', value: newState });
-            })
+                    setIsReadOnly(body.isReadOnly || false);
+                    dispatch({ field: 'editDetails', value: newState });
+                })
                 .catch((error) => {
-                    const errorMessage = error?.response?.body?.description || error.message;
+                    const errorMessage =
+                        error?.response?.body?.description || error.message;
                     Alert.error(errorMessage);
                 })
                 .finally(() => {
@@ -574,7 +482,11 @@ function AddEditGWEnvironment(props) {
                 gatewayMode: 'WRITE_ONLY',
                 scheduledInterval: 0,
                 type: 'hybrid',
-                vhosts: [createDefaultVhost(initialGatewayType || 'Regular')],
+                vhosts: [
+                    createDefaultVhost(
+                        initialGatewayType || CONSTS.GATEWAY_TYPE.regular
+                    ),
+                ],
                 permissions: {
                     roles: [],
                     permissionType: 'PUBLIC',
@@ -594,23 +506,32 @@ function AddEditGWEnvironment(props) {
 
     useEffect(() => {
         if (!platformHeaderEditMode) {
-            setPlatformDisplayNameDraft(state.displayName || platformGateway?.displayName || '');
+            setPlatformDisplayNameDraft(
+                state.displayName || platformGateway?.displayName || ''
+            );
             setPlatformDescriptionDraft(state.description || '');
         }
-    }, [platformHeaderEditMode, platformGateway, state.description, state.displayName]);
+    }, [
+        platformHeaderEditMode,
+        platformGateway,
+        state.description,
+        state.displayName,
+    ]);
 
     useEffect(() => {
-        const config = settings.gatewayConfiguration.filter((t) => t.type === gatewayType)[0];
-        if (gatewayType === 'other' || gatewayType === 'api-platform' || !config) {
+        const config = settings.gatewayConfiguration.filter(
+            (t) => t.type === gatewayType
+        )[0];
+        if (
+            gatewayType === 'other' ||
+            gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform ||
+            !config
+        ) {
             setGatewayConfiguration([]);
             setSupportedModes([]);
         } else {
-            setGatewayConfiguration(
-                config.configurations || [],
-            );
-            setSupportedModes(
-                config.supportedModes || [],
-            );
+            setGatewayConfiguration(config.configurations || []);
+            setSupportedModes(config.supportedModes || []);
         }
     }, [gatewayType]);
 
@@ -620,7 +541,9 @@ function AddEditGWEnvironment(props) {
     }
     const handleRoleDeletion = (role) => {
         if (invalidRoles.includes(role)) {
-            const invalidRolesArray = invalidRoles.filter((existingRole) => existingRole !== role);
+            const invalidRolesArray = invalidRoles.filter(
+                (existingRole) => existingRole !== role
+            );
             setInvalidRoles(invalidRolesArray);
             if (invalidRolesArray.length === 0) {
                 setRoleValidity(true);
@@ -628,7 +551,9 @@ function AddEditGWEnvironment(props) {
         } else if (roles.includes(role)) {
             setRoles(roles.filter((existingRole) => existingRole !== role));
         } else {
-            setValidRoles(validRoles.filter((existingRole) => existingRole !== role));
+            setValidRoles(
+                validRoles.filter((existingRole) => existingRole !== role)
+            );
         }
     };
 
@@ -648,20 +573,28 @@ function AddEditGWEnvironment(props) {
         }
         setPlatformTokenRegenerating(true);
         try {
-            const result = await restApi.regeneratePlatformGatewayToken(platformGateway.id);
+            const result = await restApi.regeneratePlatformGatewayToken(
+                platformGateway.id
+            );
             const regeneratedGateway = result?.body || result;
             setPlatformGateway(regeneratedGateway);
             setConfirmReconfigureOpen(false);
             setShowPlatformTokenCommands(true);
-            Alert.success(intl.formatMessage({
-                id: 'Gateways.AddEditGateway.platform.token.regenerate.success',
-                defaultMessage: 'Gateway registration token regenerated successfully.',
-            }));
+            Alert.success(
+                intl.formatMessage({
+                    id: 'Gateways.AddEditGateway.platform.token.regenerate.success',
+                    defaultMessage:
+                        'Gateway registration token regenerated successfully.',
+                })
+            );
         } catch (error) {
-            const errorMessage = error?.response?.body?.description || error.message
-                || intl.formatMessage({
+            const errorMessage =
+                error?.response?.body?.description ||
+                error.message ||
+                intl.formatMessage({
                     id: 'Gateways.AddEditGateway.platform.token.regenerate.error',
-                    defaultMessage: 'Failed to regenerate gateway registration token.',
+                    defaultMessage:
+                        'Failed to regenerate gateway registration token.',
                 });
             Alert.error(errorMessage);
         } finally {
@@ -670,13 +603,17 @@ function AddEditGWEnvironment(props) {
     };
 
     const handleEditPlatformHeader = () => {
-        setPlatformDisplayNameDraft(state.displayName || platformGateway?.displayName || '');
+        setPlatformDisplayNameDraft(
+            state.displayName || platformGateway?.displayName || ''
+        );
         setPlatformDescriptionDraft(state.description || '');
         setPlatformHeaderEditMode(true);
     };
 
     const handleCancelPlatformHeaderEdit = () => {
-        setPlatformDisplayNameDraft(state.displayName || platformGateway?.displayName || '');
+        setPlatformDisplayNameDraft(
+            state.displayName || platformGateway?.displayName || ''
+        );
         setPlatformDescriptionDraft(state.description || '');
         setPlatformHeaderEditMode(false);
     };
@@ -685,14 +622,17 @@ function AddEditGWEnvironment(props) {
         const trimmedDisplayName = platformDisplayNameDraft.trim();
         const trimmedDescription = platformDescriptionDraft.trim();
         if (!trimmedDisplayName) {
-            Alert.error(intl.formatMessage({
-                id: 'Gateways.AddEditGateway.platform.name.required',
-                defaultMessage: 'Gateway name is required.',
-            }));
+            Alert.error(
+                intl.formatMessage({
+                    id: 'Gateways.AddEditGateway.platform.name.required',
+                    defaultMessage: 'Gateway name is required.',
+                })
+            );
             return;
         }
 
-        const additionalPropertiesArrayDTO = buildAdditionalPropertiesArray(additionalProperties);
+        const additionalPropertiesArrayDTO =
+            buildAdditionalPropertiesArray(additionalProperties);
         const permissionsDTO = buildPermissionsDTO(permissions);
         const vhostDTO = (vhosts || []).map((vhost) => ({
             host: vhost.host,
@@ -718,18 +658,22 @@ function AddEditGWEnvironment(props) {
                 vhostDTO,
                 permissionsDTO,
                 additionalPropertiesArrayDTO,
-                provider,
+                provider
             );
             dispatch({ field: 'displayName', value: trimmedDisplayName });
             dispatch({ field: 'description', value: trimmedDescription });
             setPlatformHeaderEditMode(false);
-            Alert.success(intl.formatMessage({
-                id: 'Gateways.AddEditGateway.platform.details.update.success',
-                defaultMessage: 'Gateway details updated successfully.',
-            }));
+            Alert.success(
+                intl.formatMessage({
+                    id: 'Gateways.AddEditGateway.platform.details.update.success',
+                    defaultMessage: 'Gateway details updated successfully.',
+                })
+            );
         } catch (error) {
-            const errorMessage = error?.response?.body?.description || error.message
-                || intl.formatMessage({
+            const errorMessage =
+                error?.response?.body?.description ||
+                error.message ||
+                intl.formatMessage({
                     id: 'Gateways.AddEditGateway.platform.details.update.error',
                     defaultMessage: 'Failed to update gateway details.',
                 });
@@ -744,7 +688,11 @@ function AddEditGWEnvironment(props) {
         promise
             .then(() => {
                 // Check if the role is already added
-                if (roles.includes(role) || validRoles.includes(role) || invalidRoles.includes(role)) {
+                if (
+                    roles.includes(role) ||
+                    validRoles.includes(role) ||
+                    invalidRoles.includes(role)
+                ) {
                     Alert.error('Role already added: ' + role);
                     return;
                 }
@@ -774,7 +722,10 @@ function AddEditGWEnvironment(props) {
         } else {
             clonedAdditionalProperties[key] = value;
         }
-        dispatch({ field: 'additionalProperties', value: clonedAdditionalProperties });
+        dispatch({
+            field: 'additionalProperties',
+            value: clonedAdditionalProperties,
+        });
     };
 
     const handlePlatformBaseUrlChange = (e) => {
@@ -790,7 +741,10 @@ function AddEditGWEnvironment(props) {
     };
 
     useEffect(() => {
-        if (!supportedModes?.includes(gatewayMode) && supportedModes?.length > 0) {
+        if (
+            !supportedModes?.includes(gatewayMode) &&
+            supportedModes?.length > 0
+        ) {
             onChange({
                 target: {
                     name: 'gatewayMode',
@@ -811,35 +765,37 @@ function AddEditGWEnvironment(props) {
             return false;
         }
         if (!vhost.host) {
-            return (
-                intl.formatMessage({
-                    id: 'GatewayEnvironments.AddEditGWEnvironment.form.vhost.host.empty',
-                    defaultMessage: 'Host of Vhost is empty',
-                })
-            );
+            return intl.formatMessage({
+                id: 'GatewayEnvironments.AddEditGWEnvironment.form.vhost.host.empty',
+                defaultMessage: 'Host of Vhost is empty',
+            });
         }
 
         // same pattern used in admin Rest API
-        const httpContextRegex = /^\/?([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])*$/g;
+        const httpContextRegex =
+            /^\/?([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])*$/g;
         // empty http context are valid
-        const validHttpContext = !vhost.httpContext || vhost.httpContext.match(httpContextRegex);
+        const validHttpContext =
+            !vhost.httpContext || vhost.httpContext.match(httpContextRegex);
         if (!validHttpContext) {
-            return (
-                intl.formatMessage({
-                    id: 'GatewayEnvironments.AddEditGWEnvironment.form.vhost.context.invalid',
-                    defaultMessage: 'Invalid Http context',
-                })
-            );
+            return intl.formatMessage({
+                id: 'GatewayEnvironments.AddEditGWEnvironment.form.vhost.context.invalid',
+                defaultMessage: 'Invalid Http context',
+            });
         }
 
         // skip port validation for external gateways
-        const portValidatingGWTypes = ['Regular', 'APK'];
+        const portValidatingGWTypes = WSO2_GATEWAY_TYPES;
         if (portValidatingGWTypes.includes(gatewayType)) {
             let portError;
             const ports = ['httpPort', 'httpsPort', 'wsPort', 'wssPort'];
             for (const port of ports) {
-                portError = Number.isInteger(vhost[port])
-                    && vhost[port] >= 1 && vhost[port] <= 65535 ? '' : 'Invalid Port';
+                portError =
+                    Number.isInteger(vhost[port]) &&
+                    vhost[port] >= 1 &&
+                    vhost[port] <= 65535
+                        ? ''
+                        : 'Invalid Port';
                 if (portError) {
                     return portError;
                 }
@@ -854,32 +810,49 @@ function AddEditGWEnvironment(props) {
         }
         const validators = {
             name: () => getNameValidationError(value, intl.formatMessage),
-            displayName: () => getDisplayNameValidationError(
-                value,
-                intl.formatMessage,
-                isUniversalGatewayCreate,
-            ),
-            vhosts: () => getVhostValidationError(value, intl.formatMessage, handleHostValidation),
-            scheduledInterval: () => getScheduledIntervalValidationError(value, intl.formatMessage),
-            platformGatewayBaseUrl: () => getPlatformGatewayBaseUrlValidationError(
-                value,
-                intl.formatMessage,
-                gatewayType,
-            ),
-            gatewayConfig: () => getGatewayConfigValidationError(value, intl.formatMessage),
+            displayName: () =>
+                getDisplayNameValidationError(
+                    value,
+                    intl.formatMessage,
+                    isUniversalGatewayCreate
+                ),
+            vhosts: () =>
+                getVhostValidationError(
+                    value,
+                    intl.formatMessage,
+                    handleHostValidation
+                ),
+            scheduledInterval: () =>
+                getScheduledIntervalValidationError(value, intl.formatMessage),
+            platformGatewayBaseUrl: () =>
+                getPlatformGatewayBaseUrlValidationError(
+                    value,
+                    intl.formatMessage,
+                    gatewayType
+                ),
+            gatewayConfig: () =>
+                getGatewayConfigValidationError(value, intl.formatMessage),
         };
 
         return validators[fieldName]?.() || false;
     };
     const getAllFormErrors = () => {
         let errorText = '';
-        const nameErrors = isUniversalGatewayCreate ? false : hasErrors('name', name, true);
+        const nameErrors = isUniversalGatewayCreate
+            ? false
+            : hasErrors('name', name, true);
         const displayNameErrors = hasErrors('displayName', displayName, true);
-        const vhostErrors = isUniversalGatewayCreate ? false : hasErrors('vhosts', vhosts, true);
+        const vhostErrors = isUniversalGatewayCreate
+            ? false
+            : hasErrors('vhosts', vhosts, true);
         const scheduledIntervalErrors = isUniversalGatewayCreate
             ? false
             : hasErrors('scheduledInterval', scheduledInterval, true);
-        const platformBaseUrlErrors = hasErrors('platformGatewayBaseUrl', platformGatewayBaseUrl, true);
+        const platformBaseUrlErrors = hasErrors(
+            'platformGatewayBaseUrl',
+            platformGatewayBaseUrl,
+            true
+        );
         if (nameErrors) {
             errorText += nameErrors + '\n';
         }
@@ -899,22 +872,44 @@ function AddEditGWEnvironment(props) {
 
         const checkGatewayConnectorConfigErrors = (connectorConfigurations) => {
             for (const connectorConfig of connectorConfigurations) {
-                if (connectorConfig.required && (!additionalProperties[connectorConfig.name]
-                    || additionalProperties[connectorConfig.name] === '')) {
+                if (
+                    connectorConfig.required &&
+                    (!additionalProperties[connectorConfig.name] ||
+                        additionalProperties[connectorConfig.name] === '')
+                ) {
                     return true;
                 }
 
-                if (connectorConfig.values && connectorConfig.values.length > 0
-                        && additionalProperties[connectorConfig.name]) {
-                    const selectedOption = connectorConfig.values.find((option) => {
-                        if (typeof option === 'string') {
-                            return option === additionalProperties[connectorConfig.name];
+                if (
+                    connectorConfig.values &&
+                    connectorConfig.values.length > 0 &&
+                    additionalProperties[connectorConfig.name]
+                ) {
+                    const selectedOption = connectorConfig.values.find(
+                        (option) => {
+                            if (typeof option === 'string') {
+                                return (
+                                    option ===
+                                    additionalProperties[connectorConfig.name]
+                                );
+                            }
+                            return (
+                                option.name ===
+                                additionalProperties[connectorConfig.name]
+                            );
                         }
-                        return option.name === additionalProperties[connectorConfig.name];
-                    });
+                    );
 
-                    if (selectedOption && typeof selectedOption === 'object' && selectedOption.values) {
-                        if (checkGatewayConnectorConfigErrors(selectedOption.values)) {
+                    if (
+                        selectedOption &&
+                        typeof selectedOption === 'object' &&
+                        selectedOption.values
+                    ) {
+                        if (
+                            checkGatewayConnectorConfigErrors(
+                                selectedOption.values
+                            )
+                        ) {
                             return true;
                         }
                     }
@@ -923,7 +918,9 @@ function AddEditGWEnvironment(props) {
             return false;
         };
 
-        gatewayConnectorConfigHasErrors = checkGatewayConnectorConfigErrors(gatewayConfigurations);
+        gatewayConnectorConfigHasErrors = checkGatewayConnectorConfigErrors(
+            gatewayConfigurations
+        );
 
         if (gatewayConnectorConfigHasErrors) {
             const errorConfig = intl.formatMessage({
@@ -938,25 +935,35 @@ function AddEditGWEnvironment(props) {
         setValidating(true);
         const formErrors = getAllFormErrors();
         if (formErrors !== '') {
-            Alert.error(intl.formatMessage({
-                id: 'GatewayEnvironments.AddEditGWEnvironment.form.has.errors',
-                defaultMessage: 'One or more fields contain errors',
-            }));
+            Alert.error(
+                intl.formatMessage({
+                    id: 'GatewayEnvironments.AddEditGWEnvironment.form.has.errors',
+                    defaultMessage: 'One or more fields contain errors',
+                })
+            );
             return false;
         }
 
         setSaving(true);
         const vhostDto = buildVhostDTO(vhosts, gatewayType);
         const provider = getGatewayProvider(gatewayType);
-        const permissionsDTO = buildPermissionsDTO(state.permissions, roles, validRoles);
-        const additionalPropertiesArrayDTO = buildAdditionalPropertiesArray(state.additionalProperties);
+        const permissionsDTO = buildPermissionsDTO(
+            state.permissions,
+            roles,
+            validRoles
+        );
+        const additionalPropertiesArrayDTO = buildAdditionalPropertiesArray(
+            state.additionalProperties
+        );
 
         let promiseAPICall;
-        if (!id && gatewayType === 'api-platform') {
+        if (!id && gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform) {
             const normalizedBaseUrl = normalizeBaseUrl(platformGatewayBaseUrl);
             const computedVhost = getVhostFromBaseUrl(normalizedBaseUrl);
             const normalizedDisplayName = displayName.trim();
-            const platformGatewayName = toPlatformGatewayName(normalizedDisplayName);
+            const platformGatewayName = toPlatformGatewayName(
+                normalizedDisplayName
+            );
             promiseAPICall = restApi.createPlatformGateway({
                 name: platformGatewayName,
                 displayName: normalizedDisplayName,
@@ -975,53 +982,81 @@ function AddEditGWEnvironment(props) {
             });
         } else if (id) {
             // assign the update promise to the promiseAPICall
-            promiseAPICall = restApi.updateGatewayEnvironment(id, name.trim(), displayName, type, description,
-                gatewayType, gatewayMode, scheduledInterval, vhostDto, permissionsDTO, additionalPropertiesArrayDTO,
-                provider);
+            promiseAPICall = restApi.updateGatewayEnvironment(
+                id,
+                name.trim(),
+                displayName,
+                type,
+                description,
+                gatewayType,
+                gatewayMode,
+                scheduledInterval,
+                vhostDto,
+                permissionsDTO,
+                additionalPropertiesArrayDTO,
+                provider
+            );
         } else {
             // assign the create promise to the promiseAPICall
-            promiseAPICall = restApi.addGatewayEnvironment(name.trim(), displayName, type, description,
-                gatewayType, gatewayMode, scheduledInterval, vhostDto, permissionsDTO,
+            promiseAPICall = restApi.addGatewayEnvironment(
+                name.trim(),
+                displayName,
+                type,
+                description,
+                gatewayType,
+                gatewayMode,
+                scheduledInterval,
+                vhostDto,
+                permissionsDTO,
                 additionalPropertiesArrayDTO,
-                provider);
+                provider
+            );
         }
 
-        promiseAPICall.then((result) => {
-            if (id) {
-                Alert.success(`${name} ${intl.formatMessage({
-                    id: 'Environment.edit.success',
-                    defaultMessage: ' - Gateway Environment edited successfully.',
-                })}`);
-            } else {
-                Alert.success(`${name} ${intl.formatMessage({
-                    id: 'Environment.add.success',
-                    defaultMessage: ' - Gateway Environment added successfully.',
-                })}`);
-            }
-            setSaving(false);
-            if (!id && gatewayType === 'api-platform') {
-                const createdGateway = result?.body || result;
-                const createdGatewayId = createdGateway?.id;
-                if (createdGatewayId) {
-                    history.push({
-                        pathname: `/settings/environments/universal-gateways/${createdGatewayId}`,
-                        state: {
-                            createdGateway,
-                        },
-                    });
+        promiseAPICall
+            .then((result) => {
+                if (id) {
+                    Alert.success(
+                        `${name} ${intl.formatMessage({
+                            id: 'Environment.edit.success',
+                            defaultMessage:
+                                ' - Gateway Environment edited successfully.',
+                        })}`
+                    );
+                } else {
+                    Alert.success(
+                        `${name} ${intl.formatMessage({
+                            id: 'Environment.add.success',
+                            defaultMessage:
+                                ' - Gateway Environment added successfully.',
+                        })}`
+                    );
+                }
+                setSaving(false);
+                if (!id && gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform) {
+                    const createdGateway = result?.body || result;
+                    const createdGatewayId = createdGateway?.id;
+                    if (createdGatewayId) {
+                        history.push({
+                            pathname: `/settings/environments/universal-gateways/${createdGatewayId}`,
+                            state: {
+                                createdGateway,
+                            },
+                        });
+                        return;
+                    }
+                    history.push('/settings/environments/universal-gateways');
                     return;
                 }
-                history.push('/settings/environments/universal-gateways');
-                return;
-            }
-            history.push('/settings/environments/');
-        }).catch((error) => {
-            const { response } = error;
-            if (response.body) {
-                Alert.error(response.body.description);
-            }
-            setSaving(false);
-        });
+                history.push('/settings/environments/');
+            })
+            .catch((error) => {
+                const { response } = error;
+                if (response.body) {
+                    Alert.error(response.body.description);
+                }
+                setSaving(false);
+            });
         return true;
     };
 
@@ -1044,11 +1079,11 @@ function AddEditGWEnvironment(props) {
     }
 
     const getDisplayName = (value) => {
-        if (value === 'api-platform') {
+        if (value === CONSTS.GATEWAY_TYPE.apiPlatform) {
             return 'Universal Gateway';
-        } else if (value === 'Regular') {
+        } else if (value === CONSTS.GATEWAY_TYPE.regular) {
             return 'Universal Gateway - Classic';
-        } else if (value === 'APK') {
+        } else if (value === CONSTS.GATEWAY_TYPE.apk) {
             return 'Kubernetes Gateway';
         } else {
             return value + ' Gateway';
@@ -1066,7 +1101,8 @@ function AddEditGWEnvironment(props) {
         },
         READ_WRITE: {
             displayName: 'Read-Write',
-            helperText: 'APIs can be both deployed to and discovered from the Gateway',
+            helperText:
+                'APIs can be both deployed to and discovered from the Gateway',
         },
     };
 
@@ -1080,7 +1116,11 @@ function AddEditGWEnvironment(props) {
                 })}
                 help={<div />}
             >
-                <Box component='div' m={2} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box
+                    component='div'
+                    m={2}
+                    sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                >
                     <CircularProgress size={20} />
                     <Typography variant='body2'>
                         {intl.formatMessage({
@@ -1094,25 +1134,32 @@ function AddEditGWEnvironment(props) {
     }
 
     if (isPlatformGatewayEdit) {
-        const title = state.displayName || platformGateway?.displayName || platformGateway?.name || state.name
-            || intl.formatMessage({
+        const title =
+            state.displayName ||
+            platformGateway?.displayName ||
+            platformGateway?.name ||
+            state.name ||
+            intl.formatMessage({
                 id: 'Gateways.AddEditGateway.title.platform',
                 defaultMessage: 'Platform Gateway',
             });
-        const isPlatformGatewayActive = platformGateway?.isActive === true || platformGateway?.isActive === 'true';
-        const hasPlatformGatewayStatus = platformGateway?.isActive === true
-            || platformGateway?.isActive === false
-            || platformGateway?.isActive === 'true'
-            || platformGateway?.isActive === 'false';
+        const isPlatformGatewayActive =
+            platformGateway?.isActive === true ||
+            platformGateway?.isActive === 'true';
+        const hasPlatformGatewayStatus =
+            platformGateway?.isActive === true ||
+            platformGateway?.isActive === false ||
+            platformGateway?.isActive === 'true' ||
+            platformGateway?.isActive === 'false';
         const platformGatewayStatus = isPlatformGatewayActive
             ? intl.formatMessage({
-                id: 'Gateways.AddEditGateway.platform.status.active',
-                defaultMessage: 'Active',
-            })
+                  id: 'Gateways.AddEditGateway.platform.status.active',
+                  defaultMessage: 'Active',
+              })
             : intl.formatMessage({
-                id: 'Gateways.AddEditGateway.platform.status.inactive',
-                defaultMessage: 'Inactive',
-            });
+                  id: 'Gateways.AddEditGateway.platform.status.inactive',
+                  defaultMessage: 'Inactive',
+              });
         const platformGatewayUrl = getPlatformGatewayUrl(platformGateway);
         const gatewayInitials = (title || 'PG')
             .split(' ')
@@ -1122,19 +1169,26 @@ function AddEditGWEnvironment(props) {
             .join('')
             .toUpperCase();
         return (
-            <StyledContentBase
-                pageStyle='half'
-                title={title}
-                help={<div />}
-            >
-                <Box component='div' m={2} sx={(theme) => ({ mb: theme.spacing(10) })}>
+            <StyledContentBase pageStyle='half' title={title} help={<div />}>
+                <Box
+                    component='div'
+                    m={2}
+                    sx={(theme) => ({ mb: theme.spacing(10) })}
+                >
                     {platformGatewayLoading ? (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                            }}
+                        >
                             <CircularProgress size={20} />
                             <Typography variant='body2'>
                                 {intl.formatMessage({
                                     id: 'Gateways.AddEditGateway.loading.platform.gateway.details',
-                                    defaultMessage: 'Loading platform gateway details...',
+                                    defaultMessage:
+                                        'Loading platform gateway details...',
                                 })}
                             </Typography>
                         </Box>
@@ -1166,7 +1220,10 @@ function AddEditGWEnvironment(props) {
                                         display: 'flex',
                                         alignItems: 'flex-start',
                                         gap: 2,
-                                        flexDirection: { xs: 'column', md: 'row' },
+                                        flexDirection: {
+                                            xs: 'column',
+                                            md: 'row',
+                                        },
                                     }}
                                 >
                                     <Box
@@ -1204,7 +1261,8 @@ function AddEditGWEnvironment(props) {
                                             <Chip
                                                 label={intl.formatMessage({
                                                     id: 'Gateways.AddEditGateway.platform.tag.selfHosted',
-                                                    defaultMessage: 'Self-Hosted Gateway',
+                                                    defaultMessage:
+                                                        'Self-Hosted Gateway',
                                                 })}
                                                 variant='outlined'
                                                 color='primary'
@@ -1212,7 +1270,8 @@ function AddEditGWEnvironment(props) {
                                             <Chip
                                                 label={intl.formatMessage({
                                                     id: 'Gateways.AddEditGateway.platform.tag.apiGateway',
-                                                    defaultMessage: 'API Gateway',
+                                                    defaultMessage:
+                                                        'API Gateway',
                                                 })}
                                                 variant='outlined'
                                                 color='primary'
@@ -1225,7 +1284,10 @@ function AddEditGWEnvironment(props) {
                                                     display: 'flex',
                                                     gap: 1.5,
                                                     alignItems: 'flex-start',
-                                                    flexDirection: { xs: 'column', md: 'row' },
+                                                    flexDirection: {
+                                                        xs: 'column',
+                                                        md: 'row',
+                                                    },
                                                 }}
                                             >
                                                 <Box
@@ -1240,45 +1302,83 @@ function AddEditGWEnvironment(props) {
                                                     <TextField
                                                         fullWidth
                                                         size='small'
-                                                        label={intl.formatMessage({
-                                                            id: 'Gateways.AddEditGateway.platform.field.gateway.name',
-                                                            defaultMessage: 'Gateway Name',
-                                                        })}
-                                                        value={platformDisplayNameDraft}
-                                                        onChange={(event) => (
-                                                            setPlatformDisplayNameDraft(event.target.value)
+                                                        label={intl.formatMessage(
+                                                            {
+                                                                id: 'Gateways.AddEditGateway.platform.field.gateway.name',
+                                                                defaultMessage:
+                                                                    'Gateway Name',
+                                                            }
                                                         )}
-                                                        disabled={platformHeaderSaving}
+                                                        value={
+                                                            platformDisplayNameDraft
+                                                        }
+                                                        onChange={(event) =>
+                                                            setPlatformDisplayNameDraft(
+                                                                event.target
+                                                                    .value
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            platformHeaderSaving
+                                                        }
                                                     />
                                                     <TextField
                                                         fullWidth
                                                         multiline
                                                         minRows={3}
-                                                        label={intl.formatMessage({
-                                                            id: 'Gateways.AddEditGateway.platform.field.description',
-                                                            defaultMessage: 'Description',
-                                                        })}
-                                                        value={platformDescriptionDraft}
-                                                        onChange={(event) => (
-                                                            setPlatformDescriptionDraft(event.target.value)
+                                                        label={intl.formatMessage(
+                                                            {
+                                                                id: 'Gateways.AddEditGateway.platform.field.description',
+                                                                defaultMessage:
+                                                                    'Description',
+                                                            }
                                                         )}
-                                                        disabled={platformHeaderSaving}
+                                                        value={
+                                                            platformDescriptionDraft
+                                                        }
+                                                        onChange={(event) =>
+                                                            setPlatformDescriptionDraft(
+                                                                event.target
+                                                                    .value
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            platformHeaderSaving
+                                                        }
                                                     />
                                                 </Box>
-                                                <Box sx={{ display: 'flex', gap: 1, pt: 0.5 }}>
+                                                <Box
+                                                    sx={{
+                                                        display: 'flex',
+                                                        gap: 1,
+                                                        pt: 0.5,
+                                                    }}
+                                                >
                                                     <IconButton
                                                         color='primary'
-                                                        onClick={handleSavePlatformHeader}
-                                                        disabled={platformHeaderSaving}
+                                                        onClick={
+                                                            handleSavePlatformHeader
+                                                        }
+                                                        disabled={
+                                                            platformHeaderSaving
+                                                        }
                                                         aria-label='save gateway details'
                                                     >
-                                                        {platformHeaderSaving
-                                                            ? <CircularProgress size={18} />
-                                                            : <CheckIcon />}
+                                                        {platformHeaderSaving ? (
+                                                            <CircularProgress
+                                                                size={18}
+                                                            />
+                                                        ) : (
+                                                            <CheckIcon />
+                                                        )}
                                                     </IconButton>
                                                     <IconButton
-                                                        onClick={handleCancelPlatformHeaderEdit}
-                                                        disabled={platformHeaderSaving}
+                                                        onClick={
+                                                            handleCancelPlatformHeaderEdit
+                                                        }
+                                                        disabled={
+                                                            platformHeaderSaving
+                                                        }
                                                         aria-label='cancel gateway details edit'
                                                     >
                                                         <CloseIcon />
@@ -1296,12 +1396,17 @@ function AddEditGWEnvironment(props) {
                                                         mb: 1,
                                                     }}
                                                 >
-                                                    <Typography variant='h4' sx={{ fontWeight: 700 }}>
+                                                    <Typography
+                                                        variant='h4'
+                                                        sx={{ fontWeight: 700 }}
+                                                    >
                                                         {title}
                                                     </Typography>
                                                     <IconButton
                                                         size='small'
-                                                        onClick={handleEditPlatformHeader}
+                                                        onClick={
+                                                            handleEditPlatformHeader
+                                                        }
                                                         aria-label='edit gateway details'
                                                     >
                                                         <EditOutlinedIcon fontSize='small' />
@@ -1309,14 +1414,21 @@ function AddEditGWEnvironment(props) {
                                                     {hasPlatformGatewayStatus && (
                                                         <Chip
                                                             size='small'
-                                                            label={platformGatewayStatus}
-                                                            {...getGatewayStatusChipProps(platformGatewayStatus)}
+                                                            label={
+                                                                platformGatewayStatus
+                                                            }
+                                                            {...getGatewayStatusChipProps(
+                                                                platformGatewayStatus
+                                                            )}
                                                         />
                                                     )}
                                                 </Box>
-                                                <Typography variant='body1' color='text.secondary'>
-                                                    {state.description
-                                                        || intl.formatMessage({
+                                                <Typography
+                                                    variant='body1'
+                                                    color='text.secondary'
+                                                >
+                                                    {state.description ||
+                                                        intl.formatMessage({
                                                             id: 'Gateways.AddEditGateway.platform.description.empty',
                                                             defaultMessage:
                                                                 'No description provided for this gateway yet.',
@@ -1329,7 +1441,10 @@ function AddEditGWEnvironment(props) {
 
                                 <Divider sx={{ my: 3 }} />
 
-                                <Paper elevation={1} sx={{ overflow: 'hidden' }}>
+                                <Paper
+                                    elevation={1}
+                                    sx={{ overflow: 'hidden' }}
+                                >
                                     <Box sx={{ p: 3 }}>
                                         <Typography variant='h6' sx={{ mb: 2 }}>
                                             <FormattedMessage
@@ -1347,7 +1462,9 @@ function AddEditGWEnvironment(props) {
                                                         defaultMessage: 'URL',
                                                     })}
                                                     value={platformGatewayUrl}
-                                                    InputProps={{ readOnly: true }}
+                                                    InputProps={{
+                                                        readOnly: true,
+                                                    }}
                                                 />
                                             </Grid>
                                             <Grid item xs={12} md={6}>
@@ -1355,12 +1472,18 @@ function AddEditGWEnvironment(props) {
                                                     fullWidth
                                                     size='small'
                                                     label={intl.formatMessage({
-                                                        id: 'Gateways.AddEditGateway.platform.field.associated.'
-                                                            + 'environment',
-                                                        defaultMessage: 'Associated Environment',
+                                                        id:
+                                                            'Gateways.AddEditGateway.platform.field.associated.' +
+                                                            'environment',
+                                                        defaultMessage:
+                                                            'Associated Environment',
                                                     })}
-                                                    value={state.displayName || '-'}
-                                                    InputProps={{ readOnly: true }}
+                                                    value={
+                                                        state.displayName || '-'
+                                                    }
+                                                    InputProps={{
+                                                        readOnly: true,
+                                                    }}
                                                 />
                                             </Grid>
                                         </Grid>
@@ -1370,9 +1493,15 @@ function AddEditGWEnvironment(props) {
                                         <QuickStartGuide
                                             gateway={platformGateway}
                                             showReconfigureAction
-                                            onReconfigureRequested={openReconfigureConfirm}
-                                            reconfigureLoading={platformTokenRegenerating}
-                                            showTokenCommands={showPlatformTokenCommands}
+                                            onReconfigureRequested={
+                                                openReconfigureConfirm
+                                            }
+                                            reconfigureLoading={
+                                                platformTokenRegenerating
+                                            }
+                                            showTokenCommands={
+                                                showPlatformTokenCommands
+                                            }
                                             embedded
                                         />
                                     </Box>
@@ -1397,15 +1526,18 @@ function AddEditGWEnvironment(props) {
                             <FormattedMessage
                                 id='Gateways.AddEditGateway.platform.token.dialog.content'
                                 defaultMessage={
-                                    'The older registration key will be revoked immediately and the connected gateway '
-                                    + 'will be disconnected from the control plane. You must reconfigure the gateway '
-                                    + 'with the new key.'
+                                    'The older registration key will be revoked immediately and the connected gateway ' +
+                                    'will be disconnected from the control plane. You must reconfigure the gateway ' +
+                                    'with the new key.'
                                 }
                             />
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={closeReconfigureConfirm} disabled={platformTokenRegenerating}>
+                        <Button
+                            onClick={closeReconfigureConfirm}
+                            disabled={platformTokenRegenerating}
+                        >
                             <FormattedMessage
                                 id='Gateways.AddEditGateway.platform.token.dialog.cancel'
                                 defaultMessage='Cancel'
@@ -1419,13 +1551,13 @@ function AddEditGWEnvironment(props) {
                         >
                             {platformTokenRegenerating
                                 ? intl.formatMessage({
-                                    id: 'Gateways.AddEditGateway.platform.token.generating',
-                                    defaultMessage: 'Generating...',
-                                })
+                                      id: 'Gateways.AddEditGateway.platform.token.generating',
+                                      defaultMessage: 'Generating...',
+                                  })
                                 : intl.formatMessage({
-                                    id: 'Gateways.AddEditGateway.platform.token.generate.key',
-                                    defaultMessage: 'Generate Key',
-                                })}
+                                      id: 'Gateways.AddEditGateway.platform.token.generate.key',
+                                      defaultMessage: 'Generate Key',
+                                  })}
                         </Button>
                     </DialogActions>
                 </Dialog>
@@ -1434,12 +1566,12 @@ function AddEditGWEnvironment(props) {
     }
 
     return (
-        <StyledContentBase
-            pageStyle='half'
-            title={pageTitle}
-            help={<div />}
-        >
-            <Box component='div' m={2} sx={(theme) => ({ mb: theme.spacing(10) })}>
+        <StyledContentBase pageStyle='half' title={pageTitle} help={<div />}>
+            <Box
+                component='div'
+                m={2}
+                sx={(theme) => ({ mb: theme.spacing(10) })}
+            >
                 <Grid container spacing={2}>
                     {isWSO2CreateMode && (
                         <>
@@ -1462,20 +1594,41 @@ function AddEditGWEnvironment(props) {
                                     id='AddEditGWEnvironment.External.GatewayEnvironment.description.container'
                                 >
                                     <FormattedMessage
-                                        id={'GatewayEnvironments.AddEditGWEnvironment.External.GatewayEnvironment'
-                                            + '.general.details.description'}
+                                        id={
+                                            'GatewayEnvironments.AddEditGWEnvironment.External.GatewayEnvironment' +
+                                            '.general.details.description'
+                                        }
                                         defaultMessage='Gateway vendor'
                                     />
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} md={12} lg={9}>
-                                <Box component='div' m={1} sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+                                <Box
+                                    component='div'
+                                    m={1}
+                                    sx={{
+                                        display: 'flex',
+                                        flexWrap: 'wrap',
+                                        gap: 1.5,
+                                    }}
+                                >
                                     {filteredGatewayTypes.map((item) => (
                                         <Button
                                             key={item}
-                                            variant={gatewayType === item ? 'contained' : 'outlined'}
-                                            onClick={() => handleWSO2GatewayTypeSelection(item)}
-                                            disabled={isReadOnly || shouldLockGatewayTypeSelection}
+                                            variant={
+                                                gatewayType === item
+                                                    ? 'contained'
+                                                    : 'outlined'
+                                            }
+                                            onClick={() =>
+                                                handleWSO2GatewayTypeSelection(
+                                                    item
+                                                )
+                                            }
+                                            disabled={
+                                                isReadOnly ||
+                                                shouldLockGatewayTypeSelection
+                                            }
                                             sx={{
                                                 textTransform: 'none',
                                                 minWidth: 220,
@@ -1518,11 +1671,13 @@ function AddEditGWEnvironment(props) {
                                     {isUniversalGatewayCreate ? (
                                         <FormattedMessage
                                             id={
-                                                'GatewayEnvironments.'
-                                                + 'AddEditGWEnvironment.general.details.description.platform'
+                                                'GatewayEnvironments.' +
+                                                'AddEditGWEnvironment.general.details.description.platform'
                                             }
-                                            defaultMessage={'Provide display name and description of '
-                                                + 'the Gateway Environment'}
+                                            defaultMessage={
+                                                'Provide display name and description of ' +
+                                                'the Gateway Environment'
+                                            }
                                         />
                                     ) : (
                                         <FormattedMessage
@@ -1542,68 +1697,121 @@ function AddEditGWEnvironment(props) {
                                                     autoFocus
                                                     margin='dense'
                                                     name='name'
-                                                    label={(
+                                                    label={
                                                         <span>
                                                             <FormattedMessage
                                                                 id='GatewayEnvironments.AddEditGWEnvironment.form.name'
                                                                 defaultMessage='Name'
                                                             />
-                                                            <StyledSpan>*</StyledSpan>
+                                                            <StyledSpan>
+                                                                *
+                                                            </StyledSpan>
                                                         </span>
-                                                    )}
+                                                    }
                                                     fullWidth
                                                     variant='outlined'
                                                     value={state.name}
-                                                    disabled={!!id || isReadOnly}
-                                                    onChange={(e) => dispatch({
-                                                        field: 'name',
-                                                        value: e.target.value,
-                                                    })}
-                                                    error={hasErrors('name', state.name, validating)}
+                                                    disabled={
+                                                        !!id || isReadOnly
+                                                    }
+                                                    onChange={(e) =>
+                                                        dispatch({
+                                                            field: 'name',
+                                                            value: e.target
+                                                                .value,
+                                                        })
+                                                    }
+                                                    error={hasErrors(
+                                                        'name',
+                                                        state.name,
+                                                        validating
+                                                    )}
                                                     helperText={
-                                                        hasErrors('name', state.name, validating)
-                                                        || intl.formatMessage({
-                                                            id: 'GatewayEnvironments.AddEditGWEnvironment.form.name'
-                                                                + '.help',
-                                                            defaultMessage: 'Name of the Gateway '
-                                                                + 'Environment.',
+                                                        hasErrors(
+                                                            'name',
+                                                            state.name,
+                                                            validating
+                                                        ) ||
+                                                        intl.formatMessage({
+                                                            id:
+                                                                'GatewayEnvironments.AddEditGWEnvironment.form.name' +
+                                                                '.help',
+                                                            defaultMessage:
+                                                                'Name of the Gateway ' +
+                                                                'Environment.',
                                                         })
                                                     }
                                                 />
                                             </Grid>
                                         )}
-                                        <Grid item xs={isUniversalGatewayCreate ? 12 : 6}>
-                                            <Box ml={isUniversalGatewayCreate ? 0 : 1}>
+                                        <Grid
+                                            item
+                                            xs={
+                                                isUniversalGatewayCreate
+                                                    ? 12
+                                                    : 6
+                                            }
+                                        >
+                                            <Box
+                                                ml={
+                                                    isUniversalGatewayCreate
+                                                        ? 0
+                                                        : 1
+                                                }
+                                            >
                                                 <TextField
                                                     id='displayName'
-                                                    autoFocus={isUniversalGatewayCreate}
+                                                    autoFocus={
+                                                        isUniversalGatewayCreate
+                                                    }
                                                     margin='dense'
                                                     name='displayName'
                                                     fullWidth
                                                     variant='outlined'
                                                     value={state.displayName}
-                                                    disabled={!!id || isReadOnly}
-                                                    onChange={(e) => dispatch({
-                                                        field: 'displayName',
-                                                        value: e.target.value,
-                                                    })}
-                                                    label={(
+                                                    disabled={
+                                                        !!id || isReadOnly
+                                                    }
+                                                    onChange={(e) =>
+                                                        dispatch({
+                                                            field: 'displayName',
+                                                            value: e.target
+                                                                .value,
+                                                        })
+                                                    }
+                                                    label={
                                                         <span>
                                                             <FormattedMessage
-                                                                id={'GatewayEnvironments.AddEditGWEnvironment.form'
-                                                                    + '.displayName'}
+                                                                id={
+                                                                    'GatewayEnvironments.AddEditGWEnvironment.form' +
+                                                                    '.displayName'
+                                                                }
                                                                 defaultMessage='Display Name'
                                                             />
-                                                            <StyledSpan>*</StyledSpan>
+                                                            <StyledSpan>
+                                                                *
+                                                            </StyledSpan>
                                                         </span>
+                                                    }
+                                                    error={hasErrors(
+                                                        'displayName',
+                                                        state.displayName,
+                                                        validating
                                                     )}
-                                                    error={hasErrors('displayName', state.displayName, validating)}
-                                                    helperText={hasErrors('displayName', state.displayName, validating)
-                                                        || intl.formatMessage({
-                                                            id: 'GatewayEnvironments.AddEditGWEnvironment.form.name.'
-                                                                + 'form.displayName.help',
-                                                            defaultMessage: 'Display name of the Gateway Environment.',
-                                                        })}
+                                                    helperText={
+                                                        hasErrors(
+                                                            'displayName',
+                                                            state.displayName,
+                                                            validating
+                                                        ) ||
+                                                        intl.formatMessage({
+                                                            id:
+                                                                'GatewayEnvironments.AddEditGWEnvironment.form.name.' +
+                                                                'form.displayName.help',
+                                                            defaultMessage:
+                                                                'Display name of the Gateway Environment.',
+                                                        })
+                                                    }
                                                 />
                                             </Box>
                                         </Grid>
@@ -1616,61 +1824,75 @@ function AddEditGWEnvironment(props) {
                                         maxRows={10}
                                         margin='dense'
                                         name='description'
-                                        label={(
+                                        label={
                                             <FormattedMessage
                                                 id='GatewayEnvironments.AddEditGWEnvironment.form.description'
                                                 defaultMessage='Description'
                                             />
-                                        )}
+                                        }
                                         fullWidth
                                         variant='outlined'
                                         value={state.description}
                                         disabled={isReadOnly}
-                                        onChange={(e) => dispatch({
-                                            field: 'description',
-                                            value: e.target.value,
-                                        })}
+                                        onChange={(e) =>
+                                            dispatch({
+                                                field: 'description',
+                                                value: e.target.value,
+                                            })
+                                        }
                                         helperText={intl.formatMessage({
-                                            id: 'GatewayEnvironments.AddEditGWEnvironment.form.name.form.'
-                                                + 'description.help',
-                                            defaultMessage: 'Description of the Gateway Environment.',
+                                            id:
+                                                'GatewayEnvironments.AddEditGWEnvironment.form.name.form.' +
+                                                'description.help',
+                                            defaultMessage:
+                                                'Description of the Gateway Environment.',
                                         })}
                                     />
-                                    {gatewayType === 'api-platform' && (
+                                    {gatewayType ===
+                                        CONSTS.GATEWAY_TYPE.apiPlatform && (
                                         <TextField
                                             id='platformGatewayBaseUrl'
                                             margin='dense'
                                             name='platformGatewayBaseUrl'
-                                            label={(
+                                            label={
                                                 <span>
                                                     <FormattedMessage
-                                                        id={'GatewayEnvironments.AddEditGWEnvironment.form.platform'
-                                                            + '.base.url'}
+                                                        id={
+                                                            'GatewayEnvironments.AddEditGWEnvironment.form.platform' +
+                                                            '.base.url'
+                                                        }
                                                         defaultMessage='URL'
                                                     />
                                                     <StyledSpan>*</StyledSpan>
                                                 </span>
-                                            )}
+                                            }
                                             placeholder='https://gateway.example.com:8443'
                                             fullWidth
                                             variant='outlined'
                                             value={platformGatewayBaseUrl}
                                             disabled={isReadOnly}
-                                            onChange={handlePlatformBaseUrlChange}
+                                            onChange={
+                                                handlePlatformBaseUrlChange
+                                            }
                                             error={hasErrors(
                                                 'platformGatewayBaseUrl',
                                                 platformGatewayBaseUrl,
-                                                validating,
+                                                validating
                                             )}
-                                            helperText={hasErrors(
-                                                'platformGatewayBaseUrl',
-                                                platformGatewayBaseUrl,
-                                                validating,
-                                            ) || intl.formatMessage({
-                                                id: 'GatewayEnvironments.AddEditGWEnvironment.form.platform.base.'
-                                                    + 'url.help',
-                                                defaultMessage: 'The base URL where your gateway will be accessible',
-                                            })}
+                                            helperText={
+                                                hasErrors(
+                                                    'platformGatewayBaseUrl',
+                                                    platformGatewayBaseUrl,
+                                                    validating
+                                                ) ||
+                                                intl.formatMessage({
+                                                    id:
+                                                        'GatewayEnvironments.AddEditGWEnvironment.form.platform.base.' +
+                                                        'url.help',
+                                                    defaultMessage:
+                                                        'The base URL where your gateway will be accessible',
+                                                })
+                                            }
                                         />
                                     )}
                                 </Box>
@@ -1704,8 +1926,10 @@ function AddEditGWEnvironment(props) {
                                     id='AddEditGWEnvironment.External.GatewayEnvironment.description.container'
                                 >
                                     <FormattedMessage
-                                        id={'GatewayEnvironments.AddEditGWEnvironment.External.GatewayEnvironment'
-                                            + '.general.details.description'}
+                                        id={
+                                            'GatewayEnvironments.AddEditGWEnvironment.External.GatewayEnvironment' +
+                                            '.general.details.description'
+                                        }
                                         defaultMessage='Gateway vendor'
                                     />
                                 </Typography>
@@ -1715,9 +1939,15 @@ function AddEditGWEnvironment(props) {
                                     <FormControl
                                         variant='outlined'
                                         fullWidth
-                                        error={hasErrors('type', type, validating)}
+                                        error={hasErrors(
+                                            'type',
+                                            type,
+                                            validating
+                                        )}
                                     >
-                                        <InputLabel sx={{ position: 'relative' }}>
+                                        <InputLabel
+                                            sx={{ position: 'relative' }}
+                                        >
                                             <FormattedMessage
                                                 defaultMessage='Gateway Environment Type'
                                                 id='Admin.GatewayEnvironment.form.type'
@@ -1729,18 +1959,31 @@ function AddEditGWEnvironment(props) {
                                             id='Admin.GatewayEnvironment.form.type.select'
                                             name='gatewayType'
                                             value={gatewayType}
-                                            disabled={!!id || isReadOnly || shouldLockGatewayTypeSelection}
+                                            disabled={
+                                                !!id ||
+                                                isReadOnly ||
+                                                shouldLockGatewayTypeSelection
+                                            }
                                             onChange={onChange}
                                             data-testid='gateway-environment-type-select'
                                         >
-                                            {filteredGatewayTypes.map((item) => (
-                                                <MenuItem key={item} value={item}>
-                                                    {getDisplayName(item)}
-                                                </MenuItem>
-                                            ))}
+                                            {filteredGatewayTypes.map(
+                                                (item) => (
+                                                    <MenuItem
+                                                        key={item}
+                                                        value={item}
+                                                    >
+                                                        {getDisplayName(item)}
+                                                    </MenuItem>
+                                                )
+                                            )}
                                         </Select>
                                         <FormHelperText>
-                                            {hasErrors('gatewayType', type, validating) || (
+                                            {hasErrors(
+                                                'gatewayType',
+                                                type,
+                                                validating
+                                            ) || (
                                                 <FormattedMessage
                                                     defaultMessage='Select Gateway Environment Type'
                                                     id='GatewayEnvironments.AddEditGWEnvironment.form.type.help'
@@ -1762,15 +2005,27 @@ function AddEditGWEnvironment(props) {
                                         </Box>
                                     </Grid>
                                     <Grid item xs={12} md={12} lg={3}>
-                                        <Box display='flex' flexDirection='row' alignItems='center'>
+                                        <Box
+                                            display='flex'
+                                            flexDirection='row'
+                                            alignItems='center'
+                                        >
                                             <Box flex='1'>
-                                                <Typography color='inherit' variant='subtitle2' component='div'>
+                                                <Typography
+                                                    color='inherit'
+                                                    variant='subtitle2'
+                                                    component='div'
+                                                >
                                                     <FormattedMessage
                                                         id='GatewayEnvironments.AddEditGWEnvironment.mode'
                                                         defaultMessage='Gateway Mode'
                                                     />
                                                 </Typography>
-                                                <Typography color='inherit' variant='caption' component='p'>
+                                                <Typography
+                                                    color='inherit'
+                                                    variant='caption'
+                                                    component='p'
+                                                >
                                                     <FormattedMessage
                                                         id='GatewayEnvironments.AddEditGWEnvironment.mode.description'
                                                         defaultMessage='Deployability or discoverabilty of APIs'
@@ -1795,41 +2050,63 @@ function AddEditGWEnvironment(props) {
                                                 id='demo-simple-select'
                                                 name='gatewayMode'
                                                 value={gatewayMode}
-                                                label={(
+                                                label={
                                                     <FormattedMessage
-                                                        id={'GatewayEnvironments.AddEditGWEnvironment.form.mode.select'
-                                                            + '.label'}
+                                                        id={
+                                                            'GatewayEnvironments.AddEditGWEnvironment.form.mode.select' +
+                                                            '.label'
+                                                        }
                                                         defaultMessage='Mode'
                                                     />
-                                                )}
+                                                }
                                                 onChange={onChange}
                                                 disabled={editMode}
                                             >
-                                                {supportedModes?.length > 0
-                                                    && supportedModes.map((item) => (
-                                                        <MenuItem key={item} value={item}>
-                                                            <Box display='flex' flexDirection='column'>
-                                                                <Typography
-                                                                    color='inherit'
-                                                                    variant='subtitle3'
-                                                                    component='div'
-                                                                    id={'GatewayEnvironments.AddEditGWEnvironment.'
-                                                                        + 'mode.select.heading'}
+                                                {supportedModes?.length > 0 &&
+                                                    supportedModes.map(
+                                                        (item) => (
+                                                            <MenuItem
+                                                                key={item}
+                                                                value={item}
+                                                            >
+                                                                <Box
+                                                                    display='flex'
+                                                                    flexDirection='column'
                                                                 >
-                                                                    {GW_MODE_METADATA[item]?.displayName || item}
-                                                                </Typography>
-                                                                <Typography
-                                                                    color='inherit'
-                                                                    variant='caption'
-                                                                    component='p'
-                                                                    id={'GatewayEnvironments.AddEditGWEnvironment.'
-                                                                        + 'mode.select.helper'}
-                                                                >
-                                                                    {GW_MODE_METADATA[item]?.helperText || item}
-                                                                </Typography>
-                                                            </Box>
-                                                        </MenuItem>
-                                                    ))}
+                                                                    <Typography
+                                                                        color='inherit'
+                                                                        variant='subtitle3'
+                                                                        component='div'
+                                                                        id={
+                                                                            'GatewayEnvironments.AddEditGWEnvironment.' +
+                                                                            'mode.select.heading'
+                                                                        }
+                                                                    >
+                                                                        {GW_MODE_METADATA[
+                                                                            item
+                                                                        ]
+                                                                            ?.displayName ||
+                                                                            item}
+                                                                    </Typography>
+                                                                    <Typography
+                                                                        color='inherit'
+                                                                        variant='caption'
+                                                                        component='p'
+                                                                        id={
+                                                                            'GatewayEnvironments.AddEditGWEnvironment.' +
+                                                                            'mode.select.helper'
+                                                                        }
+                                                                    >
+                                                                        {GW_MODE_METADATA[
+                                                                            item
+                                                                        ]
+                                                                            ?.helperText ||
+                                                                            item}
+                                                                    </Typography>
+                                                                </Box>
+                                                            </MenuItem>
+                                                        )
+                                                    )}
                                             </Select>
                                             <FormHelperText>
                                                 <FormattedMessage
@@ -1838,116 +2115,169 @@ function AddEditGWEnvironment(props) {
                                                 />
                                             </FormHelperText>
                                         </FormControl>
-                                        {
-                                            (gatewayMode === 'READ_ONLY' || gatewayMode === 'READ_WRITE')
-                                            && (
-                                                <Box display='flex' flexDirection='row'>
-                                                    <TextField
-                                                        margin='dense'
-                                                        name='scheduledInterval'
-                                                        value={scheduledInterval}
-                                                        onChange={onChange}
-                                                        disabled={isReadOnly}
-                                                        type='number'
-                                                        label={(
-                                                            <FormattedMessage
-                                                                id='GatewayEnvironments.AddEditGWEnvironment.form.mode
+                                        {(gatewayMode === 'READ_ONLY' ||
+                                            gatewayMode === 'READ_WRITE') && (
+                                            <Box
+                                                display='flex'
+                                                flexDirection='row'
+                                            >
+                                                <TextField
+                                                    margin='dense'
+                                                    name='scheduledInterval'
+                                                    value={scheduledInterval}
+                                                    onChange={onChange}
+                                                    disabled={isReadOnly}
+                                                    type='number'
+                                                    label={
+                                                        <FormattedMessage
+                                                            id='GatewayEnvironments.AddEditGWEnvironment.form.mode
                                                                 .scheduled.interval'
-                                                                defaultMessage='API Discovery Scheduling Interval'
-                                                            />
-                                                        )}
-                                                        required
-                                                        error={hasErrors(
+                                                            defaultMessage='API Discovery Scheduling Interval'
+                                                        />
+                                                    }
+                                                    required
+                                                    error={hasErrors(
+                                                        'scheduledInterval',
+                                                        state.scheduledInterval,
+                                                        validating
+                                                    )}
+                                                    helperText={
+                                                        hasErrors(
                                                             'scheduledInterval',
                                                             state.scheduledInterval,
-                                                            validating,
-                                                        )}
-                                                        helperText={
-                                                            hasErrors(
-                                                                'scheduledInterval',
-                                                                state.scheduledInterval,
-                                                                validating,
-                                                            ) || intl.formatMessage({
-                                                                id: 'GatewayEnvironments.AddEditGWEnvironment.form.'
-                                                                    + 'mode.scheduledInterval.help',
-                                                                defaultMessage: 'Provide interval in minutes for '
-                                                                    + 'scheduling API discovery',
-                                                            })
-                                                        }
-                                                        sx={{ width: 350, mt: 3 }}
-                                                        variant='outlined'
-                                                    />
-                                                </Box>
-                                            )
-                                        }
+                                                            validating
+                                                        ) ||
+                                                        intl.formatMessage({
+                                                            id:
+                                                                'GatewayEnvironments.AddEditGWEnvironment.form.' +
+                                                                'mode.scheduledInterval.help',
+                                                            defaultMessage:
+                                                                'Provide interval in minutes for ' +
+                                                                'scheduling API discovery',
+                                                        })
+                                                    }
+                                                    sx={{ width: 350, mt: 3 }}
+                                                    variant='outlined'
+                                                />
+                                            </Box>
+                                        )}
                                     </Grid>
-                                    {(gatewayConfigurations && gatewayConfigurations.length > 0)
-                                    && (
-                                        <>
-                                            <Grid item xs={12}>
-                                                <Box marginTop={2} marginBottom={2}>
-                                                    <StyledHr />
-                                                </Box>
-                                            </Grid>
-                                            <Grid item xs={12} md={12} lg={3}>
-                                                <Typography
-                                                    color='inherit'
-                                                    variant='subtitle2'
-                                                    component='div'
-                                                    id={'GatewayEnvironments.AddEditGWEnvironment.connector'
-                                                        + '.configurations.header'}
+                                    {gatewayConfigurations &&
+                                        gatewayConfigurations.length > 0 && (
+                                            <>
+                                                <Grid item xs={12}>
+                                                    <Box
+                                                        marginTop={2}
+                                                        marginBottom={2}
+                                                    >
+                                                        <StyledHr />
+                                                    </Box>
+                                                </Grid>
+                                                <Grid
+                                                    item
+                                                    xs={12}
+                                                    md={12}
+                                                    lg={3}
                                                 >
-                                                    <FormattedMessage
-                                                        id={'GatewayEnvironments.AddEditGWEnvironment.connector'
-                                                            + '.configurations'}
-                                                        defaultMessage='Gateway Connector Configurations'
-                                                    />
-                                                </Typography>
-                                                <Typography
-                                                    color='inherit'
-                                                    variant='caption'
-                                                    component='p'
-                                                    id={'GatewayEnvironments.AddEditGWEnvironment.connector'
-                                                        + '.configurations.body'}
+                                                    <Typography
+                                                        color='inherit'
+                                                        variant='subtitle2'
+                                                        component='div'
+                                                        id={
+                                                            'GatewayEnvironments.AddEditGWEnvironment.connector' +
+                                                            '.configurations.header'
+                                                        }
+                                                    >
+                                                        <FormattedMessage
+                                                            id={
+                                                                'GatewayEnvironments.AddEditGWEnvironment.connector' +
+                                                                '.configurations'
+                                                            }
+                                                            defaultMessage='Gateway Connector Configurations'
+                                                        />
+                                                    </Typography>
+                                                    <Typography
+                                                        color='inherit'
+                                                        variant='caption'
+                                                        component='p'
+                                                        id={
+                                                            'GatewayEnvironments.AddEditGWEnvironment.connector' +
+                                                            '.configurations.body'
+                                                        }
+                                                    >
+                                                        <FormattedMessage
+                                                            id={
+                                                                'GatewayEnvironments.AddEditGWEnvironment.connector' +
+                                                                '.configurations.description'
+                                                            }
+                                                            defaultMessage={
+                                                                'Provide connection params for the selected ' +
+                                                                'Gateway Environment.'
+                                                            }
+                                                        />
+                                                    </Typography>
+                                                </Grid>
+                                                <Grid
+                                                    item
+                                                    xs={12}
+                                                    md={12}
+                                                    lg={9}
                                                 >
-                                                    <FormattedMessage
-                                                        id={'GatewayEnvironments.AddEditGWEnvironment.connector'
-                                                            + '.configurations.description'}
-                                                        defaultMessage={'Provide connection params for the selected '
-                                                            + 'Gateway Environment.'}
-                                                    />
-                                                </Typography>
-                                            </Grid>
-                                            <Grid item xs={12} md={12} lg={9}>
-                                                <Box component='div' m={1}>
-                                                    <GatewayConfiguration
-                                                        gatewayConfigurations={gatewayConfigurations}
-                                                        additionalProperties={cloneDeep(additionalProperties)}
-                                                        setAdditionalProperties={setAdditionalProperties}
-                                                        hasErrors={hasErrors}
-                                                        validating={validating}
-                                                        gatewayId={cloneDeep(id)}
-                                                        isReadOnly={isReadOnly}
-                                                    />
-                                                </Box>
-                                            </Grid>
-                                        </>
-                                    )}
+                                                    <Box component='div' m={1}>
+                                                        <GatewayConfiguration
+                                                            gatewayConfigurations={
+                                                                gatewayConfigurations
+                                                            }
+                                                            additionalProperties={cloneDeep(
+                                                                additionalProperties
+                                                            )}
+                                                            setAdditionalProperties={
+                                                                setAdditionalProperties
+                                                            }
+                                                            hasErrors={
+                                                                hasErrors
+                                                            }
+                                                            validating={
+                                                                validating
+                                                            }
+                                                            gatewayId={cloneDeep(
+                                                                id
+                                                            )}
+                                                            isReadOnly={
+                                                                isReadOnly
+                                                            }
+                                                        />
+                                                    </Box>
+                                                </Grid>
+                                            </>
+                                        )}
                                     <Grid item xs={12}>
                                         <Box marginTop={2} marginBottom={2}>
                                             <StyledHr />
                                         </Box>
                                     </Grid>
                                     <Grid item xs={12} md={12} lg={3}>
-                                        <Box display='flex' flexDirection='row' alignItems='center'>
+                                        <Box
+                                            display='flex'
+                                            flexDirection='row'
+                                            alignItems='center'
+                                        >
                                             <Box flex='1'>
-                                                <Typography color='inherit' variant='subtitle2' component='div'>
+                                                <Typography
+                                                    color='inherit'
+                                                    variant='subtitle2'
+                                                    component='div'
+                                                >
                                                     <FormattedMessage
                                                         id='GatewayEnvironment.type'
                                                         defaultMessage='Key Type'
                                                     />
                                                 </Typography>
-                                                <Typography color='inherit' variant='caption' component='p'>
+                                                <Typography
+                                                    color='inherit'
+                                                    variant='caption'
+                                                    component='p'
+                                                >
                                                     <FormattedMessage
                                                         id='GatewayEnvironments.AddEditGWEnvironment.type.description'
                                                         defaultMessage='Key type supported by the Gateway Environment'
@@ -1972,33 +2302,39 @@ function AddEditGWEnvironment(props) {
                                                 id='demo-simple-select'
                                                 value={type}
                                                 name='type'
-                                                label={(
+                                                label={
                                                     <FormattedMessage
                                                         id='GatewayEnvironments.AddEditGWEnvironment.form.type.label'
                                                         defaultMessage='Type'
                                                     />
-                                                )}
+                                                }
                                                 onChange={onChange}
                                                 disabled={editMode}
                                             >
                                                 <MenuItem value='hybrid'>
                                                     <FormattedMessage
-                                                        id={'GatewayEnvironments.AddEditGWEnvironment.form.type.'
-                                                            + 'hybrid.option'}
+                                                        id={
+                                                            'GatewayEnvironments.AddEditGWEnvironment.form.type.' +
+                                                            'hybrid.option'
+                                                        }
                                                         defaultMessage='Hybrid'
                                                     />
                                                 </MenuItem>
                                                 <MenuItem value='production'>
                                                     <FormattedMessage
-                                                        id={'GatewayEnvironments.AddEditGWEnvironment.form.type.'
-                                                            + 'prod.option'}
+                                                        id={
+                                                            'GatewayEnvironments.AddEditGWEnvironment.form.type.' +
+                                                            'prod.option'
+                                                        }
                                                         defaultMessage='Production'
                                                     />
                                                 </MenuItem>
                                                 <MenuItem value='sandbox'>
                                                     <FormattedMessage
-                                                        id={'GatewayEnvironments.AddEditGWEnvironment.form.type.'
-                                                            + 'sandbox.option'}
+                                                        id={
+                                                            'GatewayEnvironments.AddEditGWEnvironment.form.type.' +
+                                                            'sandbox.option'
+                                                        }
                                                         defaultMessage='Sandbox'
                                                     />
                                                 </MenuItem>
@@ -2019,19 +2355,31 @@ function AddEditGWEnvironment(props) {
                                 </Box>
                             </Grid>
                             <Grid item xs={12} md={12} lg={3}>
-                                <Box display='flex' flexDirection='row' alignItems='center'>
+                                <Box
+                                    display='flex'
+                                    flexDirection='row'
+                                    alignItems='center'
+                                >
                                     <Box flex='1'>
-                                        <Typography color='inherit' variant='subtitle2' component='div'>
+                                        <Typography
+                                            color='inherit'
+                                            variant='subtitle2'
+                                            component='div'
+                                        >
                                             <FormattedMessage
                                                 id='GatewayEnvironment.visibility'
                                                 defaultMessage='Visibility'
                                             />
                                         </Typography>
-                                        <Typography color='inherit' variant='caption' component='p'>
+                                        <Typography
+                                            color='inherit'
+                                            variant='caption'
+                                            component='p'
+                                        >
                                             <FormattedMessage
                                                 id={
-                                                    'GatewayEnvironments.'
-                                                    + 'AddEditGWEnvironment.form.visibility.helper.text'
+                                                    'GatewayEnvironments.' +
+                                                    'AddEditGWEnvironment.form.visibility.helper.text'
                                                 }
                                                 defaultMessage='Visibility of the Gateway Environment'
                                             />
@@ -2041,11 +2389,11 @@ function AddEditGWEnvironment(props) {
                             </Grid>
                             <Grid item xs={12} md={12} lg={9}>
                                 <Box component='div' m={1}>
-                                    <FormControl
-                                        variant='outlined'
-                                        fullWidth
-                                    >
-                                        <InputLabel id='demo-simple-select-label' sx={{ position: 'relative' }}>
+                                    <FormControl variant='outlined' fullWidth>
+                                        <InputLabel
+                                            id='demo-simple-select-label'
+                                            sx={{ position: 'relative' }}
+                                        >
                                             <FormattedMessage
                                                 id='GatewayEnvironments.AddEditGWEnvironment.form.visibility'
                                                 defaultMessage='Visibility'
@@ -2056,79 +2404,102 @@ function AddEditGWEnvironment(props) {
                                             id='demo-simple-select'
                                             value={permissionType}
                                             name='GatewayPermissionRestrict'
-                                            label={(
+                                            label={
                                                 <FormattedMessage
                                                     id='GatewayEnvironments.AddEditGWEnvironment.form.visibility.select'
                                                     defaultMessage='Visibility'
                                                 />
-                                            )}
+                                            }
                                             onChange={onChange}
                                             disabled={isReadOnly}
                                         >
-                                            <MenuItem key='PUBLIC' value='PUBLIC'>
+                                            <MenuItem
+                                                key='PUBLIC'
+                                                value='PUBLIC'
+                                            >
                                                 <FormattedMessage
-                                                    id={'GatewayEnvironments.AddEditGWEnvironment.form.visibility.'
-                                                        + 'public.option'}
+                                                    id={
+                                                        'GatewayEnvironments.AddEditGWEnvironment.form.visibility.' +
+                                                        'public.option'
+                                                    }
                                                     defaultMessage='Public'
                                                 />
                                             </MenuItem>
-                                            <MenuItem key='Restricted' value='ALLOW'>
+                                            <MenuItem
+                                                key='Restricted'
+                                                value='ALLOW'
+                                            >
                                                 <FormattedMessage
-                                                    id={'GatewayEnvironments.AddEditGWEnvironment.form.visibility.'
-                                                        + 'allow.option'}
+                                                    id={
+                                                        'GatewayEnvironments.AddEditGWEnvironment.form.visibility.' +
+                                                        'allow.option'
+                                                    }
                                                     defaultMessage='Allow for role(s)'
                                                 />
                                             </MenuItem>
-                                            <MenuItem key='Restricted' value='DENY'>
+                                            <MenuItem
+                                                key='Restricted'
+                                                value='DENY'
+                                            >
                                                 <FormattedMessage
-                                                    id={'GatewayEnvironments.AddEditGWEnvironment.form.visibility.'
-                                                        + 'deny.option'}
+                                                    id={
+                                                        'GatewayEnvironments.AddEditGWEnvironment.form.visibility.' +
+                                                        'deny.option'
+                                                    }
                                                     defaultMessage='Deny for role(s)'
                                                 />
                                             </MenuItem>
                                         </Select>
                                         <FormHelperText>
                                             <FormattedMessage
-                                                id={'GatewayEnvironments.AddEditGWEnvironment.form.visibility.'
-                                                    + 'helper.text'}
+                                                id={
+                                                    'GatewayEnvironments.AddEditGWEnvironment.form.visibility.' +
+                                                    'helper.text'
+                                                }
                                                 defaultMessage='Visibility of the Gateway Environment'
                                             />
                                         </FormHelperText>
                                         <Box component='div' m={1}>
-                                            {
-                                                (permissionType === 'ALLOW' || permissionType === 'DENY')
-                                                && (
-                                                    <Box
-                                                        display='flex'
-                                                        flexDirection='row'
-                                                        alignItems='center'
-                                                        sx={{
-                                                            mr: 3.75,
-                                                            ml: 1.25,
-                                                            mt: 1.25,
-                                                            mb: 1.25,
+                                            {(permissionType === 'ALLOW' ||
+                                                permissionType === 'DENY') && (
+                                                <Box
+                                                    display='flex'
+                                                    flexDirection='row'
+                                                    alignItems='center'
+                                                    sx={{
+                                                        mr: 3.75,
+                                                        ml: 1.25,
+                                                        mt: 1.25,
+                                                        mb: 1.25,
+                                                    }}
+                                                >
+                                                    <MuiChipsInput
+                                                        fullWidth
+                                                        label='Roles'
+                                                        InputLabelProps={{
+                                                            shrink: true,
                                                         }}
-                                                    >
-                                                        <MuiChipsInput
-                                                            fullWidth
-                                                            label='Roles'
-                                                            InputLabelProps={{
-                                                                shrink: true,
-                                                            }}
-                                                            name='GatewayEnvironmentPermissions'
-                                                            variant='outlined'
-                                                            value={roles.concat(validRoles, invalidRoles)}
-                                                            alwaysShowPlaceholder={false}
-                                                            placeholder='Enter roles and press Enter'
-                                                            disabled={isReadOnly}
-                                                            blurBehavior='clear'
-                                                            data-testid='gateway-permission-roles'
-                                                            InputProps={{
-                                                                endAdornment: !roleValidity && (
+                                                        name='GatewayEnvironmentPermissions'
+                                                        variant='outlined'
+                                                        value={roles.concat(
+                                                            validRoles,
+                                                            invalidRoles
+                                                        )}
+                                                        alwaysShowPlaceholder={
+                                                            false
+                                                        }
+                                                        placeholder='Enter roles and press Enter'
+                                                        disabled={isReadOnly}
+                                                        blurBehavior='clear'
+                                                        data-testid='gateway-permission-roles'
+                                                        InputProps={{
+                                                            endAdornment:
+                                                                !roleValidity && (
                                                                     <InputAdornment
                                                                         position='end'
                                                                         sx={{
-                                                                            position: 'absolute',
+                                                                            position:
+                                                                                'absolute',
                                                                             right: '25px',
                                                                             top: '50%',
                                                                         }}
@@ -2136,65 +2507,97 @@ function AddEditGWEnvironment(props) {
                                                                         <Error color='error' />
                                                                     </InputAdornment>
                                                                 ),
-                                                            }}
-                                                            onAddChip={handleRoleAddition}
-                                                            renderChip={(ChipComponent, key, ChipProps) => (
-                                                                <ChipComponent
-                                                                    key={ChipProps.label}
-                                                                    label={ChipProps.label}
-                                                                    onDelete={() => handleRoleDeletion(ChipProps.label)}
-                                                                    data-testid={ChipProps.label}
-                                                                    style={{
-                                                                        backgroundColor:
-                                                                            invalidRoles.includes(ChipProps.label)
-                                                                                ? red[300] : null,
-                                                                        margin: '8px 8px 8px 0',
-                                                                        float: 'left',
-                                                                    }}
+                                                        }}
+                                                        onAddChip={
+                                                            handleRoleAddition
+                                                        }
+                                                        renderChip={(
+                                                            ChipComponent,
+                                                            key,
+                                                            ChipProps
+                                                        ) => (
+                                                            <ChipComponent
+                                                                key={
+                                                                    ChipProps.label
+                                                                }
+                                                                label={
+                                                                    ChipProps.label
+                                                                }
+                                                                onDelete={() =>
+                                                                    handleRoleDeletion(
+                                                                        ChipProps.label
+                                                                    )
+                                                                }
+                                                                data-testid={
+                                                                    ChipProps.label
+                                                                }
+                                                                style={{
+                                                                    backgroundColor:
+                                                                        invalidRoles.includes(
+                                                                            ChipProps.label
+                                                                        )
+                                                                            ? red[300]
+                                                                            : null,
+                                                                    margin: '8px 8px 8px 0',
+                                                                    float: 'left',
+                                                                }}
+                                                            />
+                                                        )}
+                                                        error={!roleValidity}
+                                                        helperText={
+                                                            !roleValidity ? (
+                                                                <FormattedMessage
+                                                                    id={
+                                                                        'Gateway.AddEditGWEnvironment.permission.' +
+                                                                        'Invalid'
+                                                                    }
+                                                                    defaultMessage='Invalid Role(s) Found'
                                                                 />
-                                                            )}
-                                                            error={!roleValidity}
-                                                            helperText={
-                                                                !roleValidity ? (
-                                                                    <FormattedMessage
-                                                                        id={'Gateway.AddEditGWEnvironment.permission.'
-                                                                            + 'Invalid'}
-                                                                        defaultMessage='Invalid Role(s) Found'
-                                                                    />
-                                                                ) : [
-                                                                    (permissionType === 'ALLOW'
-                                                                        ? (
-                                                                            <FormattedMessage
-                                                                                id={'Gateway.AddEditGWEnvironment'
-                                                                                    + '.permission.allowed'}
-                                                                                defaultMessage={'Use of this Gateway '
-                                                                                    + 'Environment is "Allowed" for '
-                                                                                    + 'above roles.'}
-                                                                            />
-                                                                        )
-                                                                        : (
-                                                                            <FormattedMessage
-                                                                                id={'Gateway.AddEditGWEnvironment'
-                                                                                    + '.permission.denied'}
-                                                                                defaultMessage={'Use of this Gateway '
-                                                                                    + 'Environment is "Denied" for '
-                                                                                    + 'above roles.'}
-                                                                            />
-                                                                        )
+                                                            ) : (
+                                                                [
+                                                                    permissionType ===
+                                                                    'ALLOW' ? (
+                                                                        <FormattedMessage
+                                                                            id={
+                                                                                'Gateway.AddEditGWEnvironment' +
+                                                                                '.permission.allowed'
+                                                                            }
+                                                                            defaultMessage={
+                                                                                'Use of this Gateway ' +
+                                                                                'Environment is "Allowed" for ' +
+                                                                                'above roles.'
+                                                                            }
+                                                                        />
+                                                                    ) : (
+                                                                        <FormattedMessage
+                                                                            id={
+                                                                                'Gateway.AddEditGWEnvironment' +
+                                                                                '.permission.denied'
+                                                                            }
+                                                                            defaultMessage={
+                                                                                'Use of this Gateway ' +
+                                                                                'Environment is "Denied" for ' +
+                                                                                'above roles.'
+                                                                            }
+                                                                        />
                                                                     ),
                                                                     ' ',
                                                                     <FormattedMessage
-                                                                        id={'Gateway.AddEditGWEnvironment.permission.'
-                                                                            + 'help'}
-                                                                        defaultMessage={'Enter a valid role and '
-                                                                            + 'press `Enter`'}
+                                                                        id={
+                                                                            'Gateway.AddEditGWEnvironment.permission.' +
+                                                                            'help'
+                                                                        }
+                                                                        defaultMessage={
+                                                                            'Enter a valid role and ' +
+                                                                            'press `Enter`'
+                                                                        }
                                                                     />,
                                                                 ]
-                                                            }
-                                                        />
-                                                    </Box>
-                                                )
-                                            }
+                                                            )
+                                                        }
+                                                    />
+                                                </Box>
+                                            )}
                                         </Box>
                                     </FormControl>
                                 </Box>
@@ -2207,18 +2610,32 @@ function AddEditGWEnvironment(props) {
                                         </Box>
                                     </Grid>
                                     <Grid item xs={12} md={12} lg={3}>
-                                        <Box display='flex' flexDirection='row' alignItems='center'>
+                                        <Box
+                                            display='flex'
+                                            flexDirection='row'
+                                            alignItems='center'
+                                        >
                                             <Box flex='1'>
-                                                <Typography color='inherit' variant='subtitle2' component='div'>
+                                                <Typography
+                                                    color='inherit'
+                                                    variant='subtitle2'
+                                                    component='div'
+                                                >
                                                     <FormattedMessage
                                                         id='GatewayEnvironment.vhosts'
                                                         defaultMessage='Vhosts'
                                                     />
                                                 </Typography>
-                                                <Typography color='inherit' variant='caption' component='p'>
+                                                <Typography
+                                                    color='inherit'
+                                                    variant='caption'
+                                                    component='p'
+                                                >
                                                     <FormattedMessage
-                                                        id={'GatewayEnvironments.AddEditGWEnvironment.visibility.'
-                                                            + 'add.description'}
+                                                        id={
+                                                            'GatewayEnvironments.AddEditGWEnvironment.visibility.' +
+                                                            'add.description'
+                                                        }
                                                         defaultMessage='Configure vhosts'
                                                     />
                                                 </Typography>
@@ -2253,7 +2670,9 @@ function AddEditGWEnvironment(props) {
                                         disabled={!roleValidity || isReadOnly}
                                         data-testid='form-dialog-base-save-btn'
                                     >
-                                        {saving ? (<CircularProgress size={16} />) : (
+                                        {saving ? (
+                                            <CircularProgress size={16} />
+                                        ) : (
                                             <>
                                                 {id ? (
                                                     <FormattedMessage

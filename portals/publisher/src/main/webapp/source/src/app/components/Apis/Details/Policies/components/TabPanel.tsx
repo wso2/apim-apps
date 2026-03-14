@@ -17,7 +17,6 @@
  */
 
 import React, { FC } from 'react';
-import { Box } from '@mui/material';
 import TabPanelShared from 'AppComponents/Shared/PoliciesUI/TabPanel';
 import DraggablePolicyCard from '../DraggablePolicyCard';
 import type { Policy } from '../Types';
@@ -30,6 +29,7 @@ interface TabPanelProps {
     selectedTab: number;
     fetchPolicies: () => void;
     isReadOnly?: boolean;
+    hideViewButton?: boolean;
 }
 
 /**
@@ -45,6 +45,7 @@ const TabPanel: FC<TabPanelProps> = ({
     selectedTab,
     fetchPolicies,
     isReadOnly = false,
+    hideViewButton = false,
 }) => {
     const flowNames = ['request', 'response', 'fault'];
     const currentFlow = flowNames[index];
@@ -59,6 +60,7 @@ const TabPanel: FC<TabPanelProps> = ({
             fetchPolicies={fetchPolicies}
             DraggablePolicyCard={DraggablePolicyCard}
             isReadOnly={isReadOnly}
+            hideViewButton={hideViewButton}
         />
     );
 };

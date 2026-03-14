@@ -50,38 +50,40 @@ const classes = {
     paper: `${PREFIX}-paper`,
     ccTypography: `${PREFIX}-ccTypography`,
     flowTabs: `${PREFIX}-flowTabs`,
-    flowTab: `${PREFIX}-flowTab`
+    flowTab: `${PREFIX}-flowTab`,
 };
 
-const StyledApiOperationContextProvider = styled(ApiOperationContextProvider)(() => ({
-    [`& .${classes.gridItem}`]: {
-        display: 'flex',
-        width: '100%',
-    },
-
-    [`& .${classes.operationListingBox}`]: {
-        overflowY: 'scroll',
-    },
-
-    [`& .${classes.paper}`]: {
-        padding: '2px',
-    },
-
-    [`& .${classes.ccTypography}`]: {
-        paddingLeft: '10px',
-        marginTop: '20px',
-    },
-
-    [`& .${classes.flowTabs}`]: {
-        '& button': {
-            minWidth: 50,
+const StyledApiOperationContextProvider = styled(ApiOperationContextProvider)(
+    () => ({
+        [`& .${classes.gridItem}`]: {
+            display: 'flex',
+            width: '100%',
         },
-    },
 
-    [`& .${classes.flowTab}`]: {
-        fontSize: 'smaller',
-    }
-}));
+        [`& .${classes.operationListingBox}`]: {
+            overflowY: 'scroll',
+        },
+
+        [`& .${classes.paper}`]: {
+            padding: '2px',
+        },
+
+        [`& .${classes.ccTypography}`]: {
+            paddingLeft: '10px',
+            marginTop: '20px',
+        },
+
+        [`& .${classes.flowTabs}`]: {
+            '& button': {
+                minWidth: 50,
+            },
+        },
+
+        [`& .${classes.flowTab}`]: {
+            fontSize: 'smaller',
+        },
+    }),
+);
 
 const Configurations = require('Config');
 
@@ -90,30 +92,38 @@ const Configurations = require('Config');
  * @returns {TSX} Policy management page to render.
  */
 const Policies: React.FC = () => {
-
     const [api, updateAPI] = useAPI();
     const [updating, setUpdating] = useState(false);
     const [apiPolicies, setApiPolicies] = useState<Policy[] | null>(null);
     const [commonPolicies, setCommonPolicies] = useState<Policy[] | null>(null);
     const [policies, setPolicies] = useState<Policy[]>([]);
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
-    const [expandedResource, setExpandedResource] = useState<string | null>(null);
-    const isChoreoConnectGateway = (gatewayType: string) => (
-        gatewayType === 'wso2/apk' || gatewayType === CONSTS.GATEWAY_TYPE.choreoConnect
+    const [expandedResource, setExpandedResource] = useState<string | null>(
+        null,
     );
-    const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(isChoreoConnectGateway(api.gatewayType));
+    const isChoreoConnectGateway = (gatewayType: string) =>
+        gatewayType === 'wso2/apk' ||
+        gatewayType === CONSTS.GATEWAY_TYPE.choreoConnect;
+    const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(
+        isChoreoConnectGateway(api.gatewayType),
+    );
     const { showMultiVersionPolicies } = Configurations.apis;
     const [selectedTab, setSelectedTab] = useState(
-        api.type === 'GRAPHQL' || api.apiPolicies != null || api.apiHubPolicies != null ? 0 : 1,
+        api.type === 'GRAPHQL' ||
+            api.apiPolicies != null ||
+            api.apiHubPolicies != null
+            ? 0
+            : 1,
     );
-    const [gateway, setGateway] = useState<string>("");
-    const isPolicyHubGateway = api.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform;
+    const [gateway, setGateway] = useState<string>('');
+    const isPolicyHubGateway =
+        api.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform;
 
-    // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
+    // If Choreo Connect radio button is selected in GatewaySelector, it will pass
     // value as true to render other UI changes specific to the Choreo Connect.
     const setIsChangedToCCGatewayType = (isCCEnabled: boolean) => {
         setIsChoreoConnectEnabled(isCCEnabled);
-    }
+    };
 
     // Tabs
     const apiLevelTab = 0;
@@ -144,7 +154,7 @@ const Policies: React.FC = () => {
                 });
             }
         }
-    }
+    };
 
     const isApiTypeSupported = (supportedApiTypes: any[]) => {
         return supportedApiTypes.some((item: any) => {
@@ -152,7 +162,10 @@ const Policies: React.FC = () => {
                 return item === api.type;
             }
             if (typeof item === 'object') {
-                return item.apiType === api.type && item.subType === api.subtypeConfiguration?.subtype;
+                return (
+                    item.apiType === api.type &&
+                    item.subType === api.subtypeConfiguration?.subtype
+                );
             }
             return false;
         });
@@ -169,13 +182,15 @@ const Policies: React.FC = () => {
         const clonedOperations = cloneDeep(api.operations);
         clonedOperations.forEach((operation: any) => {
             if (isPolicyHubGateway) {
-                operation.operationHubPolicies = getInitPolicyListState(operation.operationHubPolicies);
+                operation.operationHubPolicies = getInitPolicyListState(
+                    operation.operationHubPolicies,
+                );
             } else if (operation.operationPolicies) {
                 getInitPolicyState(operation.operationPolicies);
             }
         });
         return clonedOperations;
-    }
+    };
 
     const getInitAPILevelPoliciesState = () => {
         if (isPolicyHubGateway) {
@@ -189,7 +204,9 @@ const Policies: React.FC = () => {
     };
 
     const [apiOperations, setApiOperations] = useState<any>(getInitState);
-    const [apiLevelPolicies, setApiLevelPolicies] = useState<any>(getInitAPILevelPoliciesState);
+    const [apiLevelPolicies, setApiLevelPolicies] = useState<any>(
+        getInitAPILevelPoliciesState,
+    );
     const [openAPISpec, setOpenAPISpec] = useState<any>(null);
 
     useEffect(() => {
@@ -211,13 +228,17 @@ const Policies: React.FC = () => {
             PolicyHub.listAllPolicySpecs()
                 .then((policySpecs: PolicySpec[]) => {
                     const filteredPolicySpecs = policySpecs.filter(
-                        (policy: PolicySpec) => isApiTypeSupported(policy.supportedApiTypes),
+                        (policy: PolicySpec) =>
+                            isApiTypeSupported(policy.supportedApiTypes),
                     );
-                    const filteredPolicies: Policy[] = filteredPolicySpecs.map((policySpec: PolicySpec) => ({
-                        ...policySpec,
-                        isAPISpecific: Boolean(policySpec.isAPISpecific),
-                        supportedApiTypes: policySpec.supportedApiTypes as Policy['supportedApiTypes'],
-                    }));
+                    const filteredPolicies: Policy[] = filteredPolicySpecs.map(
+                        (policySpec: PolicySpec) => ({
+                            ...policySpec,
+                            isAPISpecific: Boolean(policySpec.isAPISpecific),
+                            supportedApiTypes:
+                                policySpec.supportedApiTypes as Policy['supportedApiTypes'],
+                        }),
+                    );
 
                     setAllPolicies(policySpecs);
                     setApiPolicies([]);
@@ -226,89 +247,143 @@ const Policies: React.FC = () => {
                 })
                 .catch((error) => {
                     console.error(error);
-                    Alert.error('Error occurred while retrieving the policy list');
+                    Alert.error(
+                        'Error occurred while retrieving the policy list',
+                    );
                 });
             return;
         }
 
         const apiPoliciesPromise = API.getOperationPolicies(api.id);
         const commonPoliciesPromise = API.getCommonOperationPolicies();
-        Promise.all([apiPoliciesPromise, commonPoliciesPromise]).then((response) => {
-            const [apiPoliciesResponse, commonPoliciesResponse] = response;
-            const apiSpecificPoliciesList = apiPoliciesResponse.body.list;
-            const commonPoliciesList = commonPoliciesResponse.body.list;
-            const mergedList = [...commonPoliciesList, ...apiSpecificPoliciesList];
+        Promise.all([apiPoliciesPromise, commonPoliciesPromise])
+            .then((response) => {
+                const [apiPoliciesResponse, commonPoliciesResponse] = response;
+                const apiSpecificPoliciesList = apiPoliciesResponse.body.list;
+                const commonPoliciesList = commonPoliciesResponse.body.list;
+                const mergedList = [
+                    ...commonPoliciesList,
+                    ...apiSpecificPoliciesList,
+                ];
 
-            // Get all common policies and API specific policies
-            setAllPolicies(mergedList);
+                // Get all common policies and API specific policies
+                setAllPolicies(mergedList);
 
-            let apiPolicyByPolicyDisplayName;
-            let commonPolicyByPolicyDisplayName;
-            // Get the union of policies depending on the policy display name and version
-            apiPolicyByPolicyDisplayName = [...apiSpecificPoliciesList
-                .reduce((map: Map<string, Policy>, obj: Policy) => 
-                    map.set((showMultiVersionPolicies ? obj.name + obj.version : obj.name), obj), 
-                    new Map()).values()];
+                let apiPolicyByPolicyDisplayName;
+                let commonPolicyByPolicyDisplayName;
+                // Get the union of policies depending on the policy display name and version
+                apiPolicyByPolicyDisplayName = [
+                    ...apiSpecificPoliciesList
+                        .reduce(
+                            (map: Map<string, Policy>, obj: Policy) =>
+                                map.set(
+                                    showMultiVersionPolicies
+                                        ? obj.name + obj.version
+                                        : obj.name,
+                                    obj,
+                                ),
+                            new Map(),
+                        )
+                        .values(),
+                ];
 
-            commonPolicyByPolicyDisplayName = [...commonPoliciesList
-                .reduce((map: Map<string, Policy>, obj: Policy) => 
-                    map.set((showMultiVersionPolicies ? obj.name + obj.version : obj.name), obj), 
-                    new Map()).values()];
+                commonPolicyByPolicyDisplayName = [
+                    ...commonPoliciesList
+                        .reduce(
+                            (map: Map<string, Policy>, obj: Policy) =>
+                                map.set(
+                                    showMultiVersionPolicies
+                                        ? obj.name + obj.version
+                                        : obj.name,
+                                    obj,
+                                ),
+                            new Map(),
+                        )
+                        .values(),
+                ];
 
-            apiPolicyByPolicyDisplayName.sort(
-                (a: Policy, b: Policy) => a.name.localeCompare(b.name))
-            
-            commonPolicyByPolicyDisplayName.sort(
-                (a: Policy, b: Policy) => a.name.localeCompare(b.name))
+                apiPolicyByPolicyDisplayName.sort((a: Policy, b: Policy) =>
+                    a.name.localeCompare(b.name),
+                );
 
-            let gatewayType;
-            if (api.gatewayType === "wso2/apk") {
-                // Get CC gateway supported policies
-                gatewayType = 'ChoreoConnect';
-            } else if (api.gatewayType === "Azure") {
-                gatewayType = 'Azure';
-            } else {
-                // Get synpase gateway supported policies
-                gatewayType = 'Synapse';
-            }
-            setGateway(gatewayType);
+                commonPolicyByPolicyDisplayName.sort((a: Policy, b: Policy) =>
+                    a.name.localeCompare(b.name),
+                );
 
-            let filteredApiPolicyByGatewayTypeList = null;
-            let filteredCommonPolicyByGatewayTypeList = null;
-            
-            // Get relevant gateway supported policies
-            filteredApiPolicyByGatewayTypeList = apiPolicyByPolicyDisplayName.filter(
-                (policy: Policy) => policy.supportedGateways.includes(gatewayType));
-            filteredCommonPolicyByGatewayTypeList = commonPolicyByPolicyDisplayName.filter(
-                (policy: Policy) => policy.supportedGateways.includes(gatewayType));
+                let gatewayType;
+                if (api.gatewayType === 'wso2/apk') {
+                    // Get CC gateway supported policies
+                    gatewayType = 'ChoreoConnect';
+                } else if (api.gatewayType === 'Azure') {
+                    gatewayType = 'Azure';
+                } else if (api.gatewayType === 'AWS') {
+                    gatewayType = 'AWS';
+                } else {
+                    // Get synpase gateway supported policies
+                    gatewayType = 'Synapse';
+                }
+                setGateway(gatewayType);
 
-            let filteredApiPoliciesByAPITypeList = [];
-            let filteredCommonPoliciesByAPITypeList = [];
+                let filteredApiPolicyByGatewayTypeList = null;
+                let filteredCommonPolicyByGatewayTypeList = null;
 
-            if (api.type === "HTTP" || api.type === "SOAP" || api.type === "SOAPTOREST" || api.type === "GRAPHQL" || api.type === "WS") {
-                // Get API policies based on the API type
-                filteredApiPoliciesByAPITypeList = filteredApiPolicyByGatewayTypeList.filter((policy: Policy) => {
-                    return isApiTypeSupported(policy.supportedApiTypes);
-                });
+                // Get relevant gateway supported policies
+                filteredApiPolicyByGatewayTypeList =
+                    apiPolicyByPolicyDisplayName.filter((policy: Policy) =>
+                        policy.supportedGateways.includes(gatewayType),
+                    );
+                filteredCommonPolicyByGatewayTypeList =
+                    commonPolicyByPolicyDisplayName.filter((policy: Policy) =>
+                        policy.supportedGateways.includes(gatewayType),
+                    );
 
-                // Get common policies based on the API type
-                filteredCommonPoliciesByAPITypeList = filteredCommonPolicyByGatewayTypeList.filter((policy: Policy) => {
-                    return isApiTypeSupported(policy.supportedApiTypes);
-                });
-            }
+                let filteredApiPoliciesByAPITypeList = [];
+                let filteredCommonPoliciesByAPITypeList = [];
 
-            setApiPolicies(filteredApiPoliciesByAPITypeList);
-            setCommonPolicies(filteredCommonPoliciesByAPITypeList);
-            const combinedPolicyList = [...filteredCommonPoliciesByAPITypeList, ...filteredApiPoliciesByAPITypeList];
-            combinedPolicyList.sort(
-                (a: Policy, b: Policy) => a.name.localeCompare(b.name))
-            setPolicies(combinedPolicyList);
+                if (
+                    api.type === 'HTTP' ||
+                    api.type === 'SOAP' ||
+                    api.type === 'SOAPTOREST' ||
+                    api.type === 'GRAPHQL' ||
+                    api.type === 'WS'
+                ) {
+                    // Get API policies based on the API type
+                    filteredApiPoliciesByAPITypeList =
+                        filteredApiPolicyByGatewayTypeList.filter(
+                            (policy: Policy) => {
+                                return isApiTypeSupported(
+                                    policy.supportedApiTypes,
+                                );
+                            },
+                        );
 
-        }).catch((error) => {
-            console.error(error);
-            Alert.error('Error occurred while retrieving the policy list');
-        });
-    }
+                    // Get common policies based on the API type
+                    filteredCommonPoliciesByAPITypeList =
+                        filteredCommonPolicyByGatewayTypeList.filter(
+                            (policy: Policy) => {
+                                return isApiTypeSupported(
+                                    policy.supportedApiTypes,
+                                );
+                            },
+                        );
+                }
+
+                setApiPolicies(filteredApiPoliciesByAPITypeList);
+                setCommonPolicies(filteredCommonPoliciesByAPITypeList);
+                const combinedPolicyList = [
+                    ...filteredCommonPoliciesByAPITypeList,
+                    ...filteredApiPoliciesByAPITypeList,
+                ];
+                combinedPolicyList.sort((a: Policy, b: Policy) =>
+                    a.name.localeCompare(b.name),
+                );
+                setPolicies(combinedPolicyList);
+            })
+            .catch((error) => {
+                console.error(error);
+                Alert.error('Error occurred while retrieving the policy list');
+            });
+    };
 
     const removeAPIPoliciesForGatewayChange = () => {
         const newApiOperations: any = cloneDeep(apiOperations);
@@ -319,7 +394,12 @@ const Policies: React.FC = () => {
             } else if (operation.operationPolicies) {
                 const { operationPolicies } = operation;
                 for (const flow in operationPolicies) {
-                    if (Object.prototype.hasOwnProperty.call(operationPolicies, flow)) {
+                    if (
+                        Object.prototype.hasOwnProperty.call(
+                            operationPolicies,
+                            flow,
+                        )
+                    ) {
                         operationPolicies[flow] = [];
                     }
                 }
@@ -327,7 +407,7 @@ const Policies: React.FC = () => {
         });
         setApiOperations(newApiOperations);
         setApiLevelPolicies(isPolicyHubGateway ? [] : initApiLevelPolicy);
-    }
+    };
 
     useEffect(() => {
         fetchPolicies();
@@ -342,16 +422,18 @@ const Policies: React.FC = () => {
 
     useEffect(() => {
         // Update the Swagger spec object when API object gets changed
-        if (api.type != 'WS'){
+        if (api.type != 'WS') {
             api.getSwagger()
                 .then((response: any) => {
                     const retrievedSpec = response.body;
                     setOpenAPISpec(retrievedSpec);
 
                     // To expand the first operation by default on page render
-                    const [target, verbObject]: [string, any] = Object.entries(retrievedSpec.paths)[0];
-                    const verb = Object.keys(verbObject)[0]
-                    setExpandedResource(verb + target)
+                    const [target, verbObject]: [string, any] = Object.entries(
+                        retrievedSpec.paths,
+                    )[0];
+                    const verb = Object.keys(verbObject)[0];
+                    setExpandedResource(verb + target);
                 })
                 .catch((error: any) => {
                     console.error(error);
@@ -363,11 +445,11 @@ const Policies: React.FC = () => {
             api.getAsyncAPIDefinition(api.id)
                 .then((response: any) => {
                     const retrievedSpec = response.body;
-                    setOpenAPISpec(retrievedSpec);            
+                    setOpenAPISpec(retrievedSpec);
 
                     // The verb (subscribe/publish) is ignored for websocket apis
                     const target = Object.keys(retrievedSpec.channels)[0];
-                    setExpandedResource(target)
+                    setExpandedResource(target);
                 })
                 .catch((error: any) => {
                     console.error(error);
@@ -381,7 +463,9 @@ const Policies: React.FC = () => {
     const localAPI = useMemo(
         () => ({
             id: api.id,
-            operations: api.isAPIProduct() ? {} : mapAPIOperations(api.operations),
+            operations: api.isAPIProduct()
+                ? {}
+                : mapAPIOperations(api.operations),
             type: api.type,
         }),
         [api],
@@ -396,7 +480,10 @@ const Policies: React.FC = () => {
      * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
      */
     const updateApiOperations = (
-        updatedOperation: any, target: string, verb: string, currentFlow: string,
+        updatedOperation: any,
+        target: string,
+        verb: string,
+        currentFlow: string,
     ) => {
         const newApiOperations: any = cloneDeep(apiOperations);
         const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
@@ -405,12 +492,12 @@ const Policies: React.FC = () => {
         // For other API types, the target + verb combination is unique
         const operationInAction =
             selectedTab === operationLevelTab
-                ? newApiOperations.filter(
-                    (op: any) =>
-                        api.type === 'WS'
-                            ? op.target === target
-                            : op.target === target && op.verb.toLowerCase() === verb.toLowerCase(),
-                )
+                ? newApiOperations.filter((op: any) =>
+                      api.type === 'WS'
+                          ? op.target === target
+                          : op.target === target &&
+                            op.verb.toLowerCase() === verb.toLowerCase(),
+                  )
                 : null;
 
         if (selectedTab === apiLevelTab) {
@@ -422,7 +509,9 @@ const Policies: React.FC = () => {
                 );
 
                 if (existingPolicy) {
-                    existingPolicy.parameters = { ...updatedOperation.parameters };
+                    existingPolicy.parameters = {
+                        ...updatedOperation.parameters,
+                    };
                 } else {
                     const uuid = uuidv4();
                     newApiLevelPolicies.push({
@@ -439,7 +528,9 @@ const Policies: React.FC = () => {
                 );
 
                 if (existingPolicy) {
-                    existingPolicy.parameters = { ...updatedOperation.parameters };
+                    existingPolicy.parameters = {
+                        ...updatedOperation.parameters,
+                    };
                 } else {
                     const uuid = uuidv4();
                     flow.push({
@@ -460,7 +551,9 @@ const Policies: React.FC = () => {
                     );
 
                     if (existingPolicy) {
-                        existingPolicy.parameters = { ...updatedOperation.parameters };
+                        existingPolicy.parameters = {
+                            ...updatedOperation.parameters,
+                        };
                     } else {
                         op.operationHubPolicies = [
                             ...operationHubPolicies,
@@ -478,7 +571,9 @@ const Policies: React.FC = () => {
                     );
 
                     if (existingPolicy) {
-                        existingPolicy.parameters = { ...updatedOperation.parameters };
+                        existingPolicy.parameters = {
+                            ...updatedOperation.parameters,
+                        };
                     } else {
                         flow.push({
                             ...updatedOperation,
@@ -489,7 +584,7 @@ const Policies: React.FC = () => {
             });
             setApiOperations(newApiOperations);
         }
-    }
+    };
 
     /**
      * To update all API Operations with the provided policy.
@@ -497,27 +592,38 @@ const Policies: React.FC = () => {
      * @param {any} updatedOperation updated operation of API object
      * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
      */
-    const updateAllApiOperations = (updatedOperation: any, currentFlow: string) => {
+    const updateAllApiOperations = (
+        updatedOperation: any,
+        currentFlow: string,
+    ) => {
         const newApiOperations: any = cloneDeep(apiOperations);
 
         // Add attached policy to the same flow of all the operations
         newApiOperations.forEach((operation: any) => {
             const uuid = uuidv4();
             if (isPolicyHubGateway && currentFlow === 'hub') {
-                operation.operationHubPolicies = operation.operationHubPolicies || [];
-                operation.operationHubPolicies.push({ ...updatedOperation, uuid });
+                operation.operationHubPolicies =
+                    operation.operationHubPolicies || [];
+                operation.operationHubPolicies.push({
+                    ...updatedOperation,
+                    uuid,
+                });
             } else {
-                operation.operationPolicies[currentFlow].push({ ...updatedOperation, uuid });
+                operation.operationPolicies[currentFlow].push({
+                    ...updatedOperation,
+                    uuid,
+                });
             }
         });
 
         // Finally update the state
         setApiOperations(newApiOperations);
-    }
+    };
 
     const getOperationPolicies = (operation: any, currentFlow: string) => {
         if (isPolicyHubGateway && currentFlow === 'hub') {
-            operation.operationHubPolicies = operation.operationHubPolicies || [];
+            operation.operationHubPolicies =
+                operation.operationHubPolicies || [];
             return operation.operationHubPolicies;
         }
 
@@ -525,14 +631,18 @@ const Policies: React.FC = () => {
     };
 
     const removePolicyByUuid = (policyList: any[], uuid: string) => {
-        const index = policyList.findIndex((policy: any) => policy.uuid === uuid);
+        const index = policyList.findIndex(
+            (policy: any) => policy.uuid === uuid,
+        );
         if (index !== -1) {
             policyList.splice(index, 1);
         }
     };
 
     const removePolicyById = (policyList: any[], policyId: string) => {
-        const index = policyList.findIndex((policy: any) => policy.policyId === policyId);
+        const index = policyList.findIndex(
+            (policy: any) => policy.policyId === policyId,
+        );
         if (index !== -1) {
             policyList.splice(index, 1);
         }
@@ -540,29 +650,46 @@ const Policies: React.FC = () => {
 
     const removeApiLevelPolicy = (uuid: string, currentFlow: string) => {
         const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
-        const policyList = isPolicyHubGateway && currentFlow === 'hub'
-            ? newApiLevelPolicies
-            : newApiLevelPolicies[currentFlow];
+        const policyList =
+            isPolicyHubGateway && currentFlow === 'hub'
+                ? newApiLevelPolicies
+                : newApiLevelPolicies[currentFlow];
         removePolicyByUuid(policyList, uuid);
         setApiLevelPolicies(newApiLevelPolicies);
     };
 
-    const removeSharedOperationPolicy = (operationInAction: any[], uuid: string, currentFlow: string) => {
-        const referencePolicy = getOperationPolicies(operationInAction[0], currentFlow)
-            .find((policy: any) => policy.uuid === uuid);
+    const removeSharedOperationPolicy = (
+        operationInAction: any[],
+        uuid: string,
+        currentFlow: string,
+    ) => {
+        const referencePolicy = getOperationPolicies(
+            operationInAction[0],
+            currentFlow,
+        ).find((policy: any) => policy.uuid === uuid);
 
         if (!referencePolicy) {
             return;
         }
 
         operationInAction.forEach((operation: any) => {
-            removePolicyById(getOperationPolicies(operation, currentFlow), referencePolicy.policyId);
+            removePolicyById(
+                getOperationPolicies(operation, currentFlow),
+                referencePolicy.policyId,
+            );
         });
     };
 
-    const removeSingleOperationPolicy = (operationInAction: any[], uuid: string, currentFlow: string) => {
+    const removeSingleOperationPolicy = (
+        operationInAction: any[],
+        uuid: string,
+        currentFlow: string,
+    ) => {
         operationInAction.forEach((operation: any) => {
-            removePolicyByUuid(getOperationPolicies(operation, currentFlow), uuid);
+            removePolicyByUuid(
+                getOperationPolicies(operation, currentFlow),
+                uuid,
+            );
         });
     };
 
@@ -574,33 +701,45 @@ const Policies: React.FC = () => {
      * @param {string} verb verb of the operation that neeeds to be updated
      * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
      */
-    const deleteApiOperation = (uuid: string, target: string, verb: string, currentFlow: string) => {
-
+    const deleteApiOperation = (
+        uuid: string,
+        target: string,
+        verb: string,
+        currentFlow: string,
+    ) => {
         if (selectedTab === apiLevelTab) {
             removeApiLevelPolicy(uuid, currentFlow);
         } else {
             const newApiOperations: any = cloneDeep(apiOperations);
-            const operationInAction = newApiOperations.filter(
-                (op: any) =>
-                    api.type === 'WS'
-                        ? op.target === target
-                        : op.target === target && op.verb.toLowerCase() === verb.toLowerCase(),
-            )
+            const operationInAction = newApiOperations.filter((op: any) =>
+                api.type === 'WS'
+                    ? op.target === target
+                    : op.target === target &&
+                      op.verb.toLowerCase() === verb.toLowerCase(),
+            );
             // Find the location of the element using the following logic
             /*
             [{a:'1'},{a:'2'},{a:'1'}].map( i => i.a) will output ['1', '2', '1']
             [{a:'1'},{a:'2'},{a:'1'}].map( i => i.a).indexOf('2') will output the location of '2'
             */
             if (operationInAction.length > 1) {
-                removeSharedOperationPolicy(operationInAction, uuid, currentFlow);
+                removeSharedOperationPolicy(
+                    operationInAction,
+                    uuid,
+                    currentFlow,
+                );
             } else {
-                removeSingleOperationPolicy(operationInAction, uuid, currentFlow);
+                removeSingleOperationPolicy(
+                    operationInAction,
+                    uuid,
+                    currentFlow,
+                );
             }
 
             // Finally update the state
             setApiOperations(newApiOperations);
         }
-    }
+    };
 
     /**
      * Function to rearrange the API Operation ordering
@@ -611,24 +750,35 @@ const Policies: React.FC = () => {
      * @param {string} currentFlow depicts which flow needs to be udpated: request, response or fault
      */
     const rearrangeApiOperations = (
-        oldIndex: number, newIndex: number, target: string, verb: string, currentFlow: string,
+        oldIndex: number,
+        newIndex: number,
+        target: string,
+        verb: string,
+        currentFlow: string,
     ) => {
         if (selectedTab === apiLevelTab) {
             const newAPIPolicies: any = cloneDeep(apiLevelPolicies);
             if (isPolicyHubGateway && currentFlow === 'hub') {
-                setApiLevelPolicies(arrayMove(newAPIPolicies, oldIndex, newIndex));
+                setApiLevelPolicies(
+                    arrayMove(newAPIPolicies, oldIndex, newIndex),
+                );
             } else {
                 const policyArray = newAPIPolicies[currentFlow];
-                newAPIPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
+                newAPIPolicies[currentFlow] = arrayMove(
+                    policyArray,
+                    oldIndex,
+                    newIndex,
+                );
                 setApiLevelPolicies(newAPIPolicies);
             }
         } else {
             const newApiOperations: any = cloneDeep(apiOperations);
-            const operationInAction = newApiOperations.filter(
-                (op: any) =>
-                    api.type === 'WS'
-                        ? op.target === target
-                        : op.target === target && op.verb.toLowerCase() === verb.toLowerCase());
+            const operationInAction = newApiOperations.filter((op: any) =>
+                api.type === 'WS'
+                    ? op.target === target
+                    : op.target === target &&
+                      op.verb.toLowerCase() === verb.toLowerCase(),
+            );
             operationInAction.forEach((operation: any) => {
                 if (isPolicyHubGateway && currentFlow === 'hub') {
                     operation.operationHubPolicies = arrayMove(
@@ -637,10 +787,15 @@ const Policies: React.FC = () => {
                         newIndex,
                     );
                 } else {
-                    const policyArray = operation.operationPolicies[currentFlow];
-                    operation.operationPolicies[currentFlow] = arrayMove(policyArray, oldIndex, newIndex);
+                    const policyArray =
+                        operation.operationPolicies[currentFlow];
+                    operation.operationPolicies[currentFlow] = arrayMove(
+                        policyArray,
+                        oldIndex,
+                        newIndex,
+                    );
                 }
-                });
+            });
             setApiOperations(newApiOperations);
         }
     };
@@ -687,7 +842,9 @@ const Policies: React.FC = () => {
             }
         });
 
-        const updatedApiPayload: any = api.toJSON ? api.toJSON() : cloneDeep(api);
+        const updatedApiPayload: any = api.toJSON
+            ? api.toJSON()
+            : cloneDeep(api);
 
         updatedApiPayload.operations = newApiOperations;
         updatedApiPayload.gatewayVendor = api.gatewayVendor;
@@ -741,44 +898,42 @@ const Policies: React.FC = () => {
     );
 
     if (!apiPolicies || !commonPolicies || !openAPISpec || updating) {
-        return <Progress per={90} message='Loading Policies ...' />
+        return <Progress per={90} message="Loading Policies ..." />;
     }
 
     const renderPolicyTabs = () => (
         <Tabs
             value={selectedTab}
-            onChange={(event, tab) =>
-                handleTabChange(tab)
-            }
-            indicatorColor='primary'
-            textColor='primary'
-            variant='fullWidth'
-            aria-label='Policies local to API'
+            onChange={(event, tab) => handleTabChange(tab)}
+            indicatorColor="primary"
+            textColor="primary"
+            variant="fullWidth"
+            aria-label="Policies local to API"
             className={classes.flowTabs}
         >
             <Tab
                 label={
                     <span className={classes.flowTab}>
                         <FormattedMessage
-                            id='Apis.Details.Policies.Policies.api.level.policies'
-                            defaultMessage='API Level Policies'
+                            id="Apis.Details.Policies.Policies.api.level.policies"
+                            defaultMessage="API Level Policies"
                         />
                     </span>
                 }
-                id='api-level-policies-tab'
-                aria-controls='api-level-policies-tabpanel'
+                id="api-level-policies-tab"
+                aria-controls="api-level-policies-tabpanel"
             />
             <Tab
                 label={
                     <span className={classes.flowTab}>
                         <FormattedMessage
-                            id='Apis.Details.Policies.Policies.operation.level.policies'
-                            defaultMessage='Operation Level Policies'
+                            id="Apis.Details.Policies.Policies.operation.level.policies"
+                            defaultMessage="Operation Level Policies"
                         />
                     </span>
                 }
-                id='operation-level-policies-tab'
-                aria-controls='operation-level-policies-tabpanel'
+                id="operation-level-policies-tab"
+                aria-controls="operation-level-policies-tabpanel"
                 disabled={api.type === 'GRAPHQL'}
             />
         </Tabs>
@@ -819,10 +974,15 @@ const Policies: React.FC = () => {
         <StyledApiOperationContextProvider value={providerValue}>
             <DndProvider backend={HTML5Backend} context={window}>
                 <Box mb={4}>
-                    <Typography id='itest-api-details-resources-head' variant='h4' component='h2' gutterBottom>
+                    <Typography
+                        id="itest-api-details-resources-head"
+                        variant="h4"
+                        component="h2"
+                        gutterBottom
+                    >
                         <FormattedMessage
-                            id='Apis.Details.Policies.Policies.title'
-                            defaultMessage='Policies'
+                            id="Apis.Details.Policies.Policies.title"
+                            defaultMessage="Policies"
                         />
                     </Typography>
                 </Box>
@@ -835,18 +995,22 @@ const Policies: React.FC = () => {
                         />
                     </Box>
                 )} */}
-                <Box display='flex' flexDirection='row'>
-                    <Box width='65%' p={1} className={classes.operationListingBox}>
+                <Box display="flex" flexDirection="row">
+                    <Box
+                        width="65%"
+                        p={1}
+                        className={classes.operationListingBox}
+                    >
                         <Paper className={classes.paper}>
                             <Box p={1}>
                                 {renderPolicyTabs()}
-                                <Box pt={1} overflow='scroll'>
+                                <Box pt={1} overflow="scroll">
                                     {renderPolicyPanels()}
                                 </Box>
                             </Box>
                         </Paper>
                     </Box>
-                    <Box width='35%' p={1}>
+                    <Box width="35%" p={1}>
                         <PolicyList
                             apiPolicyList={apiPolicies}
                             commonPolicyList={commonPolicies}
@@ -860,10 +1024,7 @@ const Policies: React.FC = () => {
                     </Box>
                 </Box>
             </DndProvider>
-            <SaveOperationPolicies
-                saveApi={saveApi}
-                updating={updating}
-            />
+            <SaveOperationPolicies saveApi={saveApi} updating={updating} />
         </StyledApiOperationContextProvider>
     );
 };

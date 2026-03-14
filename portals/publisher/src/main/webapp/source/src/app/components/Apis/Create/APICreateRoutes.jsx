@@ -41,7 +41,7 @@ import ApiCreateAIAPI from './AIAPI/APICreateAIAPI';
 const PREFIX = 'APICreateRoutes';
 
 const classes = {
-    content: `${PREFIX}-content`
+    content: `${PREFIX}-content`,
 };
 
 const Root = styled('div')({
@@ -50,49 +50,9 @@ const Root = styled('div')({
     },
 });
 
-let gatewayDetails = {
-    'wso2/synapse': { 
-        value: 'wso2/synapse',
-        name: 'Universal Gateway',
-        description: 'API gateway embedded in APIM runtime.', 
-        isNew: false 
-    },
-    'wso2/apk': { 
-        value: 'wso2/apk',
-        name: 'Kubernetes Gateway',
-        description: 'API gateway running on Kubernetes.', 
-        isNew: false 
-    },
-    'AWS': { 
-        value: 'AWS',
-        name: 'AWS Gateway', 
-        description: 'API gateway offered by AWS cloud.', 
-        isNew: false 
-    },
-    'Azure': { 
-        value: 'Azure',
-        name: 'Azure Gateway', 
-        description: 'API gateway offered by Azure cloud.', 
-        isNew: false 
-    },
-    [CONSTS.GATEWAY_TYPE.apiPlatform]: {
-        value: CONSTS.GATEWAY_TYPE.apiPlatform,
-        name: 'Platform Gateway',
-        description: 'API gateway for platform-managed policies.',
-        isNew: false,
-    },
-    PlatformGateway: {
-        value: CONSTS.GATEWAY_TYPE.apiPlatform,
-        name: 'Platform Gateway',
-        description: 'API gateway for platform-managed policies.',
-        isNew: false,
-    }
-};
-
 // Wrapper component to pass additional props
-const WithSomeValue = (Component, additionalProps) => (routeProps) => (
-    <Component {...routeProps} {...additionalProps} />
-);
+const WithSomeValue = (Component, additionalProps) => (routeProps) =>
+    <Component {...routeProps} {...additionalProps} />;
 /**
  *
  * Handle routing for all types of API create creations, If you want to add new API type create page,
@@ -104,85 +64,127 @@ function APICreateRoutes() {
     const { data: publisherSettings, isLoading } = usePublisherSettings();
     const [apiTypes, setApiTypes] = useState(null);
     const [gatewayTypes, setGatewayTypes] = useState(null);
+    const [gatewayDetails, setGatewayDetails] = useState(
+        CONSTS.CREATE_API_GATEWAYS,
+    );
 
     useEffect(() => {
         if (!isLoading) {
             setApiTypes(publisherSettings.gatewayFeatureCatalog.apiTypes);
             const data = publisherSettings.gatewayTypes;
             const settingsEnvList = publisherSettings.environment;
-            const filteredEnvironments = settingsEnvList ? settingsEnvList
-                .filter(env => env?.mode !== 'READ_ONLY') : [];
-            const distinctGatewayTypes = [...new Set(filteredEnvironments.map(env => env.gatewayType))];
-            const commonGatewayTypes = distinctGatewayTypes.filter(type => data.includes(type));
-            const updatedData = commonGatewayTypes.map(item => {
-                if (item === "Regular") return "wso2/synapse";
-                if (item === "APK") return "wso2/apk";
+            const filteredEnvironments = settingsEnvList
+                ? settingsEnvList.filter((env) => env?.mode !== 'READ_ONLY')
+                : [];
+            const distinctGatewayTypes = [
+                ...new Set(filteredEnvironments.map((env) => env.gatewayType)),
+            ];
+            const commonGatewayTypes = distinctGatewayTypes.filter((type) =>
+                data.includes(type),
+            );
+            const updatedData = commonGatewayTypes.map((item) => {
+                if (item === 'Regular') return 'wso2/synapse';
+                if (item === 'APK') return 'wso2/apk';
                 return item;
             });
             setGatewayTypes(updatedData);
-
-            const customGateways = {};
-            updatedData.forEach((gw) => {
-                if (!gatewayDetails[gw]) {
-                    const customGateway = {
-                        value: gw,
-                        name: gw + " Gateway",
-                        description: "Custom API Gateway for " + gw,
-                        isNew: false
-                    };
-                    customGateways[gw] = customGateway;
-                }
-            });
-
-            gatewayDetails = {...gatewayDetails, ...customGateways};
+            setGatewayDetails((currentGatewayDetails) => ({
+                ...currentGatewayDetails,
+                ...updatedData.reduce(
+                    (customGateways, gw) =>
+                        currentGatewayDetails[gw]
+                            ? customGateways
+                            : {
+                                ...customGateways,
+                                [gw]: {
+                                    value: gw,
+                                    name: `${gw} Gateway`,
+                                    description: `Custom API Gateway for ${gw}`,
+                                    isNew: false,
+                                },
+                            },
+                    {},
+                ),
+            }));
         }
-    }, [isLoading]);
+    }, [isLoading, publisherSettings]);
 
     if (isLoading) {
         return <Progress per={80} message='Loading app settings ...' />;
     }
-    
+
     return (
         <Root className={classes.content}>
             <Switch>
+                <Route exact path='/apis/create' component={APILanding} />
                 <Route
-                    exact
-                    path='/apis/create'
-                    component={APILanding}
+                    path='/apis/create/rest'
+                    component={WithSomeValue(APICreateDefault, {
+                        multiGateway: apiTypes?.rest
+                            .filter((t) => gatewayTypes.includes(t))
+                            .map((type) => gatewayDetails[type]),
+                    })}
                 />
-                <Route path='/apis/create/rest' component={WithSomeValue(APICreateDefault, 
-                    { multiGateway: apiTypes?.rest
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                <Route
+                    path='/api-products/create'
+                    component={APIProductCreateWrapper}
                 />
-                <Route path='/api-products/create' component={APIProductCreateWrapper} />
-                <Route path='/apis/create/graphQL' component={WithSomeValue(ApiCreateGraphQL,
-                    { multiGateway: apiTypes?.graphql
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                <Route
+                    path='/apis/create/graphQL'
+                    component={WithSomeValue(ApiCreateGraphQL, {
+                        multiGateway: apiTypes?.graphql
+                            .filter((t) => gatewayTypes.includes(t))
+                            .map((type) => gatewayDetails[type]),
+                    })}
                 />
-                <Route path='/apis/create/openapi' component={WithSomeValue(ApiCreateSwagger,
-                    { multiGateway: apiTypes?.rest
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                <Route
+                    path='/apis/create/openapi'
+                    component={WithSomeValue(ApiCreateSwagger, {
+                        multiGateway: apiTypes?.rest
+                            .filter((t) => gatewayTypes.includes(t))
+                            .map((type) => gatewayDetails[type]),
+                    })}
                 />
-                <Route path='/apis/create/wsdl' component={WithSomeValue(ApiCreateWSDL,
-                    { multiGateway: apiTypes?.soap
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                <Route
+                    path='/apis/create/wsdl'
+                    component={WithSomeValue(ApiCreateWSDL, {
+                        multiGateway: apiTypes?.soap
+                            .filter((t) => gatewayTypes.includes(t))
+                            .map((type) => gatewayDetails[type]),
+                    })}
                 />
                 {/* TODO: Remove ApiCreateWebSocket components and associated routes */}
-                <Route path='/apis/create/ws' component={WithSomeValue(ApiCreateWebSocket,
-                    { multiGateway: apiTypes?.ws
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                <Route
+                    path='/apis/create/ws'
+                    component={WithSomeValue(ApiCreateWebSocket, {
+                        multiGateway: apiTypes?.ws
+                            .filter((t) => gatewayTypes.includes(t))
+                            .map((type) => gatewayDetails[type]),
+                    })}
                 />
-                <Route path='/apis/create/streamingapi/:apiType' component={WithSomeValue(APICreateStreamingAPI,
-                    { multiGateway: apiTypes?.ws
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                <Route
+                    path='/apis/create/streamingapi/:apiType'
+                    component={WithSomeValue(APICreateStreamingAPI, {
+                        multiGateway: apiTypes?.ws
+                            .filter((t) => gatewayTypes.includes(t))
+                            .map((type) => gatewayDetails[type]),
+                    })}
                 />
-                <Route path='/apis/create/asyncapi' component={WithSomeValue(APICreateAsyncAPI,
-                    { multiGateway: apiTypes?.ws
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                <Route
+                    path='/apis/create/asyncapi'
+                    component={WithSomeValue(APICreateAsyncAPI, {
+                        multiGateway: apiTypes?.ws
+                            .filter((t) => gatewayTypes.includes(t))
+                            .map((type) => gatewayDetails[type]),
+                    })}
                 />
-                <Route path='/apis/create/ai-api' component={WithSomeValue(ApiCreateAIAPI,
-                    { multiGateway: apiTypes?.ai
-                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                <Route
+                    path='/apis/create/ai-api'
+                    component={WithSomeValue(ApiCreateAIAPI, {
+                        multiGateway: apiTypes?.ai
+                            .filter((t) => gatewayTypes.includes(t))
+                            .map((type) => gatewayDetails[type]),
+                    })}
                 />
 
                 {/* Routes for MCP Server creation */}
@@ -199,8 +201,11 @@ function APICreateRoutes() {
                     path='/mcp-servers/create/import-api-definition'
                     render={(props) => (
                         <MCPRouteGuard>
-                            {WithSomeValue(MCPServerCreateDefault, { multiGateway: apiTypes?.ws
-                                .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })(props)}
+                            {WithSomeValue(MCPServerCreateDefault, {
+                                multiGateway: apiTypes?.ws
+                                    .filter((t) => gatewayTypes.includes(t))
+                                    .map((type) => gatewayDetails[type]),
+                            })(props)}
                         </MCPRouteGuard>
                     )}
                 />
@@ -208,8 +213,11 @@ function APICreateRoutes() {
                     path='/mcp-servers/create/mcp-from-existing-api'
                     render={(props) => (
                         <MCPRouteGuard>
-                            {WithSomeValue(MCPServerCreateUsingExistingAPI, { multiGateway: apiTypes?.ws
-                                .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })(props)}
+                            {WithSomeValue(MCPServerCreateUsingExistingAPI, {
+                                multiGateway: apiTypes?.ws
+                                    .filter((t) => gatewayTypes.includes(t))
+                                    .map((type) => gatewayDetails[type]),
+                            })(props)}
                         </MCPRouteGuard>
                     )}
                 />
@@ -217,8 +225,11 @@ function APICreateRoutes() {
                     path='/mcp-servers/create/mcp-proxy-from-endpoint'
                     render={(props) => (
                         <MCPRouteGuard>
-                            {WithSomeValue(MCPServerCreateProxy, { multiGateway: apiTypes?.ws
-                                .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })(props)}
+                            {WithSomeValue(MCPServerCreateProxy, {
+                                multiGateway: apiTypes?.ws
+                                    .filter((t) => gatewayTypes.includes(t))
+                                    .map((type) => gatewayDetails[type]),
+                            })(props)}
                         </MCPRouteGuard>
                     )}
                 />
@@ -228,4 +239,4 @@ function APICreateRoutes() {
     );
 }
 
-export default (APICreateRoutes);
+export default APICreateRoutes;

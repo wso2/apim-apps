@@ -1,3 +1,4 @@
+/* eslint-disable operator-linebreak, comma-dangle, implicit-arrow-linebreak, react/jsx-curly-newline, indent */
 /*
  * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -36,12 +37,18 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Chip from '@mui/material/Chip';
 import { styled } from '@mui/material/styles';
+import CONSTS from 'AppData/Constants';
 import Permission from './Permission';
 import ListGatewayInstances from './ListGatewayInstances';
+import {
+    getAdditionalPropertiesAsMap,
+    getGatewayStatusChipProps,
+    resolvePlatformGatewayStatus,
+    WSO2_SELF_HOSTED_GATEWAY_TYPES,
+} from './UniversalGatewayUtils';
 import Utils from '../../data/Utils';
 
-const WSO2_GATEWAY_TYPES = ['Regular', 'APK'];
-const WSO2_LISTING_GATEWAY_TYPES = ['api-platform', ...WSO2_GATEWAY_TYPES];
+const WSO2_LISTING_GATEWAY_TYPES = WSO2_SELF_HOSTED_GATEWAY_TYPES;
 
 const StyledTooltip = styled(({ className, ...props }) => (
     <Tooltip {...props} classes={{ popper: className }} />
@@ -56,70 +63,54 @@ const StyledTooltip = styled(({ className, ...props }) => (
     },
 }));
 
-const getAdditionalPropertiesAsMap = (additionalProperties = []) => {
-    return Object.fromEntries(additionalProperties.map((property) => [property.key, property.value]));
-};
-
-const resolvePlatformGatewayStatus = (isPlatformGateway, isActiveProperty) => {
-    if (!isPlatformGateway || typeof isActiveProperty === 'undefined' || isActiveProperty === null) {
-        return null;
-    }
-    if (typeof isActiveProperty === 'string') {
-        const normalizedStatus = isActiveProperty.toUpperCase();
-        if (normalizedStatus === 'ACTIVE' || normalizedStatus === 'INACTIVE') {
-            return normalizedStatus;
-        }
-        return isActiveProperty === 'true' ? 'ACTIVE' : 'INACTIVE';
-    }
-    return isActiveProperty ? 'ACTIVE' : 'INACTIVE';
-};
-
-const getGatewayStatusChipProps = (status) => {
-    if (status === 'ACTIVE') {
-        return {
-            color: 'success',
-            variant: 'filled',
-        };
-    }
-
-    return {
-        color: 'error',
-        variant: 'outlined',
-    };
-};
-
+/**
+ * Maps a regular environment entry into the table row shape.
+ */
 const mapEnvironmentItem = (item) => {
-    const additionalProperties = getAdditionalPropertiesAsMap(item.additionalProperties);
+    const additionalProperties = getAdditionalPropertiesAsMap(
+        item.additionalProperties
+    );
     const platformGatewayId = additionalProperties.platformGatewayId || null;
-    const isPlatformGateway = item.gatewayType === 'api-platform'
-        || Boolean(platformGatewayId);
+    const isPlatformGateway =
+        item.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform ||
+        Boolean(platformGatewayId);
     const gatewayStatus = resolvePlatformGatewayStatus(
         isPlatformGateway,
-        additionalProperties.isActive,
+        additionalProperties.isActive
     );
     return {
         ...item,
         id: Utils.encodeEnvironmentId(item.id),
         platformGatewayId,
         isPlatformGateway,
-        gatewayTypeDisplay: isPlatformGateway ? 'api-platform' : (item.gatewayType || '-'),
+        gatewayTypeDisplay: isPlatformGateway
+            ? CONSTS.GATEWAY_TYPE.apiPlatform
+            : item.gatewayType || '-',
         gatewayStatus,
     };
 };
 
+/**
+ * Maps a platform gateway entry into the shared table row shape.
+ */
 const mapPlatformGatewayItem = (item) => {
     const rawId = item.id || item.name || item.displayName || '';
     const encodedId = rawId ? Utils.encodeEnvironmentId(rawId) : '';
-    const vhosts = item.vhost ? [{ host: item.vhost, httpsPort: 443, httpContext: '' }] : [];
+    const vhosts = item.vhost
+        ? [{ host: item.vhost, httpsPort: 443, httpContext: '' }]
+        : [];
     return {
         id: encodedId,
         name: item.name || item.displayName || rawId,
         displayName: item.displayName || item.name || rawId,
         description: item.description || '',
-        gatewayTypeDisplay: 'api-platform',
+        gatewayTypeDisplay: CONSTS.GATEWAY_TYPE.apiPlatform,
         gatewayStatus: resolvePlatformGatewayStatus(true, item.isActive),
         vhosts,
-        permissions: item.permissions || { permissionType: 'PUBLIC', roles: [] },
+        permissions: item.permissions || {
+            permissionType: 'PUBLIC',
+            roles: [],
+        },
         isPlatformGateway: true,
         platformGatewayId: item.id || null,
         isReadOnly: false,
@@ -130,7 +121,7 @@ const mapPlatformGatewayItem = (item) => {
  * Custom Edit button for Gateway environments that routes to the correct page
  * based on whether it's a platform gateway or regular environment.
  */
-function GatewayEditButton({ dataRow }) {
+const GatewayEditButton = ({ dataRow }) => {
     const history = useHistory();
     if (!dataRow) {
         return null;
@@ -138,7 +129,9 @@ function GatewayEditButton({ dataRow }) {
 
     const handleClick = () => {
         if (dataRow.isPlatformGateway && dataRow.platformGatewayId) {
-            history.push(`/settings/environments/universal-gateways/${dataRow.platformGatewayId}`);
+            history.push(
+                `/settings/environments/universal-gateways/${dataRow.platformGatewayId}`
+            );
             return;
         }
         history.push(`/settings/environments/${dataRow.id}`);
@@ -150,19 +143,21 @@ function GatewayEditButton({ dataRow }) {
             component='span'
             size='large'
             onClick={handleClick}
-            disabled={(dataRow.isReadOnly && !dataRow.isPlatformGateway)
-                || (dataRow.isPlatformGateway && !dataRow.platformGatewayId)}
+            disabled={
+                (dataRow.isReadOnly && !dataRow.isPlatformGateway) ||
+                (dataRow.isPlatformGateway && !dataRow.platformGatewayId)
+            }
         >
             <EditIcon aria-label={`edit-gateway-${dataRow.id}`} />
         </IconButton>
     );
-}
+};
 
 /**
  * API call to get Gateway labels
  * @returns {Promise}.
  */
-function apiCall() {
+const apiCall = () => {
     const restApi = new API();
     return Promise.all([
         restApi.getGatewayEnvironmentList(),
@@ -173,36 +168,45 @@ function apiCall() {
             const platformGatewayList = platformGatewayResult?.body?.list || [];
 
             const mappedEnvironments = environmentList.map(mapEnvironmentItem);
-            const mappedPlatformGateways = platformGatewayList.map(mapPlatformGatewayItem);
+            const mappedPlatformGateways = platformGatewayList.map(
+                mapPlatformGatewayItem
+            );
 
             // Avoid duplicate rows when platform gateways are present in both sources.
             const existingPlatformGatewayIds = new Set(
                 mappedEnvironments
                     .map((gateway) => gateway.platformGatewayId)
-                    .filter(Boolean),
+                    .filter(Boolean)
             );
             const existingNames = new Set(
                 mappedEnvironments
                     .map((gateway) => (gateway.name || '').toLowerCase())
-                    .filter(Boolean),
+                    .filter(Boolean)
             );
-            const nonDuplicatePlatformGateways = mappedPlatformGateways.filter((gateway) => {
-                if (gateway.platformGatewayId && existingPlatformGatewayIds.has(gateway.platformGatewayId)) {
-                    return false;
+            const nonDuplicatePlatformGateways = mappedPlatformGateways.filter(
+                (gateway) => {
+                    if (
+                        gateway.platformGatewayId &&
+                        existingPlatformGatewayIds.has(
+                            gateway.platformGatewayId
+                        )
+                    ) {
+                        return false;
+                    }
+                    const normalizedName = (gateway.name || '').toLowerCase();
+                    if (normalizedName && existingNames.has(normalizedName)) {
+                        return false;
+                    }
+                    return true;
                 }
-                const normalizedName = (gateway.name || '').toLowerCase();
-                if (normalizedName && existingNames.has(normalizedName)) {
-                    return false;
-                }
-                return true;
-            });
+            );
 
             return [...mappedEnvironments, ...nonDuplicatePlatformGateways];
         })
         .catch((error) => {
             throw error;
         });
-}
+};
 
 GatewayEditButton.propTypes = {
     dataRow: PropTypes.shape({
@@ -287,16 +291,16 @@ export default function ListGWEnviornments() {
 
     // Helper function to render virtual hosts
     const renderVhosts = (vhosts) => {
-        return (
-            vhosts.map((vhost) => (
-                <div key={`${vhost.host}:${vhost.httpsPort}`}>
-                    {
-                        'https://' + vhost.host + (vhost.httpsPort === 443 ? '' : ':' + vhost.httpsPort)
-                        + (vhost.httpContext ? '/' + vhost.httpContext.replace(/^\//g, '') : '')
-                    }
-                </div>
-            ))
-        );
+        return vhosts.map((vhost) => (
+            <div key={`${vhost.host}:${vhost.httpsPort}`}>
+                {'https://' +
+                    vhost.host +
+                    (vhost.httpsPort === 443 ? '' : ':' + vhost.httpsPort) +
+                    (vhost.httpContext
+                        ? '/' + vhost.httpContext.replace(/^\//g, '')
+                        : '')}
+            </div>
+        ));
     };
 
     // Helper function to render permissions
@@ -331,11 +335,13 @@ export default function ListGWEnviornments() {
     };
 
     const renderGatewayInstances = (value, tableMeta) => {
-        const gatewayType = getRowValue(tableMeta, 'gatewayTypeDisplay') || 'Regular';
+        const gatewayType =
+            getRowValue(tableMeta, 'gatewayTypeDisplay') || 'Regular';
         const normalizedGatewayType = String(gatewayType).toLowerCase();
         const isRegularGateway = normalizedGatewayType === 'regular';
-        const isPlatformGateway = normalizedGatewayType === 'api-platform'
-            || normalizedGatewayType.includes('platform gateway');
+        const isPlatformGateway =
+            normalizedGatewayType === 'api-platform' ||
+            normalizedGatewayType.includes('platform gateway');
         const isDisabled = !(isRegularGateway || isPlatformGateway);
         const gatewayStatus = getRowValue(tableMeta, 'gatewayStatus');
 
@@ -353,15 +359,20 @@ export default function ListGWEnviornments() {
         }
 
         const gatewayId = getRowValue(tableMeta, 'id');
-        const gatewayName = getRowValue(tableMeta, 'displayName') || getRowValue(tableMeta, 'name') || '';
+        const gatewayName =
+            getRowValue(tableMeta, 'displayName') ||
+            getRowValue(tableMeta, 'name') ||
+            '';
 
         const button = (
             <IconButton
-                onClick={() => handleOpenLiveGateways(
-                    gatewayId,
-                    gatewayName,
-                    gatewayStatus,
-                )}
+                onClick={() =>
+                    handleOpenLiveGateways(
+                        gatewayId,
+                        gatewayName,
+                        gatewayStatus
+                    )
+                }
                 disabled={isDisabled}
             >
                 <FormatListBulletedIcon aria-label='gateway-instances-list-icon' />
@@ -371,14 +382,17 @@ export default function ListGWEnviornments() {
         return isDisabled ? (
             <StyledTooltip
                 title={intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.gatewayInstances.tooltip.'
-                        + 'notSupported',
+                    id:
+                        'AdminPages.Gateways.table.gatewayInstances.tooltip.' +
+                        'notSupported',
                     defaultMessage: 'Not supported for this gateway type',
                 })}
             >
                 <span>{button}</span>
             </StyledTooltip>
-        ) : button;
+        ) : (
+            button
+        );
     };
 
     // Build column configuration
@@ -395,19 +409,21 @@ export default function ListGWEnviornments() {
             },
         },
         // Conditionally include gatewayType column
-        ...(isGatewayTypeAvailable ? [
-            {
-                name: 'gatewayTypeDisplay',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.gatewayType',
-                    defaultMessage: 'Gateway Type',
-                }),
-                options: {
-                    sort: false,
-                    customBodyRender: renderGatewayType,
-                },
-            },
-        ] : []),
+        ...(isGatewayTypeAvailable
+            ? [
+                  {
+                      name: 'gatewayTypeDisplay',
+                      label: intl.formatMessage({
+                          id: 'AdminPages.Gateways.table.header.gatewayType',
+                          defaultMessage: 'Gateway Type',
+                      }),
+                      options: {
+                          sort: false,
+                          customBodyRender: renderGatewayType,
+                      },
+                  },
+              ]
+            : []),
         { name: 'gatewayStatus', options: { display: false } },
         {
             name: 'vhosts',
@@ -432,19 +448,21 @@ export default function ListGWEnviornments() {
             },
         },
         // Conditionally include gateway instances column
-        ...(settings.isGatewayNotificationEnabled ? [
-            {
-                name: 'gatewayInstances',
-                label: intl.formatMessage({
-                    id: 'AdminPages.Gateways.table.header.gatewayInstances',
-                    defaultMessage: 'Gateway Instances',
-                }),
-                options: {
-                    sort: false,
-                    customBodyRender: renderGatewayInstances,
-                },
-            },
-        ] : []),
+        ...(settings.isGatewayNotificationEnabled
+            ? [
+                  {
+                      name: 'gatewayInstances',
+                      label: intl.formatMessage({
+                          id: 'AdminPages.Gateways.table.header.gatewayInstances',
+                          defaultMessage: 'Gateway Instances',
+                      }),
+                      options: {
+                          sort: false,
+                          customBodyRender: renderGatewayInstances,
+                      },
+                  },
+              ]
+            : []),
         { name: 'id', options: { display: false } },
     ];
     const addButtonProps = {
@@ -478,8 +496,10 @@ export default function ListGWEnviornments() {
             <Typography variant='body2' color='textSecondary' component='p'>
                 <FormattedMessage
                     id='AdminPages.Gateways.List.empty.content.Gateways'
-                    defaultMessage={'It is possible to create a Gateway environment with virtual hosts to access APIs.'
-                    + ' API revisions can be attached with Vhost to access it.'}
+                    defaultMessage={
+                        'It is possible to create a Gateway environment with virtual hosts to access APIs.' +
+                        ' API revisions can be attached with Vhost to access it.'
+                    }
                 />
             </Typography>
         ),
@@ -640,8 +660,9 @@ export default function ListGWEnviornments() {
             <Typography variant='body2' color='text.secondary'>
                 {intl.formatMessage({
                     id: 'Gateways.ListGatewayEnvironments.empty.description',
-                    defaultMessage: 'Add third party gateways to discover, manage, and govern APIs'
-                        + ' across providers from a single control plane.',
+                    defaultMessage:
+                        'Add third party gateways to discover, manage, and govern APIs' +
+                        ' across providers from a single control plane.',
                 })}
             </Typography>
             {selectedCategory === 'wso2' ? (

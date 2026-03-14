@@ -28,6 +28,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import { isRestricted } from 'AppData/AuthManager';
 import { AddCircle } from '@mui/icons-material';
+import LaunchIcon from '@mui/icons-material/Launch';
 import {
     Button,
     Theme,
@@ -49,7 +50,7 @@ const classes = {
     flowTab: `${PREFIX}-flowTab`,
     addPolicyBtn: `${PREFIX}-addPolicyBtn`,
     buttonIcon: `${PREFIX}-buttonIcon`,
-    paperPosition: `${PREFIX}-paperPosition`
+    paperPosition: `${PREFIX}-paperPosition`,
 };
 
 const StyledPaper = styled(Paper)(({ theme }: { theme: Theme }) => ({
@@ -73,8 +74,10 @@ const StyledPaper = styled(Paper)(({ theme }: { theme: Theme }) => ({
 
     [`&.${classes.paperPosition}`]: {
         // position: 'fixed',
-    }
+    },
 }));
+
+const POLICY_HUB_URL = 'https://wso2.com/api-platform/policy-hub/';
 
 interface PolicyListPorps {
     apiPolicyList: Policy[];
@@ -107,6 +110,12 @@ const PolicyList: FC<PolicyListPorps> = ({
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
     const [dialogOpen, setDialogOpen] = React.useState(false);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const isReadOnly = isRestricted([
+        'apim:api_create',
+        'apim:api_publish',
+        'apim:api_manage',
+    ]);
+    const canAddPolicy = !isChoreoConnectEnabled && !isPolicyHubGateway;
 
     const isAIAPI = apiSubType === 'AIAPI';
     const isRestAPI = apiType === 'HTTP' && !isAIAPI;
@@ -139,7 +148,9 @@ const PolicyList: FC<PolicyListPorps> = ({
             if (nextSelection.length === 0) {
                 const defaults = isAIAPI
                     ? ['AI', 'Guardrails']
-                    : (isRestAPI ? ['Transformation', 'Security'] : []);
+                    : isRestAPI
+                    ? ['Transformation', 'Security']
+                    : [];
                 const matchingDefaults = defaults.filter((category) =>
                     availableCategories.includes(category),
                 );
@@ -148,8 +159,12 @@ const PolicyList: FC<PolicyListPorps> = ({
                 }
             }
 
-            if (nextSelection.length !== prev.length
-                || nextSelection.some((category, index) => category !== prev[index])) {
+            if (
+                nextSelection.length !== prev.length ||
+                nextSelection.some(
+                    (category, index) => category !== prev[index],
+                )
+            ) {
                 return nextSelection;
             }
             return prev;
@@ -166,26 +181,29 @@ const PolicyList: FC<PolicyListPorps> = ({
 
     const handleCategoryChange = (event: any) => {
         const value = event.target.value;
-        setSelectedCategories(typeof value === 'string' ? value.split(',') : value);
+        setSelectedCategories(
+            typeof value === 'string' ? value.split(',') : value,
+        );
     };
 
     // Empty selection means no filtering; show all categories.
     const shouldShowPolicy = (policy: Policy) =>
-        selectedCategories.length === 0 || selectedCategories.includes(getPolicyCategory(policy));
+        selectedCategories.length === 0 ||
+        selectedCategories.includes(getPolicyCategory(policy));
 
     const filterPoliciesForFlow = (policies: Policy[], flow: string) =>
         policies.filter(
             (policy) =>
-                policy.applicableFlows.includes(flow)
-                && policy.supportedGateways.includes(gatewayType)
-                && shouldShowPolicy(policy),
+                policy.applicableFlows.includes(flow) &&
+                policy.supportedGateways.includes(gatewayType) &&
+                shouldShowPolicy(policy),
         );
 
     const filterPolicies = (policies: Policy[]) =>
         policies.filter(
             (policy) =>
-                policy.supportedGateways.includes(gatewayType)
-                && shouldShowPolicy(policy),
+                policy.supportedGateways.includes(gatewayType) &&
+                shouldShowPolicy(policy),
         );
 
     const renderCategoryValue = (selected: unknown) => {
@@ -199,55 +217,191 @@ const PolicyList: FC<PolicyListPorps> = ({
         });
     };
 
+    const renderFlowPanel = (flow: string, index: number) => (
+        <TabPanel
+            commonPolicyList={filterPoliciesForFlow(commonPolicyList, flow)}
+            apiPolicyList={filterPoliciesForFlow(apiPolicyList, flow)}
+            index={index}
+            selectedTab={selectedTab}
+            fetchPolicies={fetchPolicies}
+            isReadOnly={isReadOnly}
+        />
+    );
+
+    const renderPolicyHubPanel = () => (
+        <Box height="55vh" pt={1} overflow="scroll">
+            <TabPanel
+                commonPolicyList={filterPolicies(commonPolicyList)}
+                apiPolicyList={filterPolicies(apiPolicyList)}
+                index={0}
+                selectedTab={0}
+                fetchPolicies={fetchPolicies}
+                isReadOnly={isReadOnly}
+                hideViewButton
+            />
+        </Box>
+    );
+
+    const renderFlowTabs = () => {
+        if (apiType === 'WS') {
+            return (
+                <Tabs
+                    value={selectedTab}
+                    onChange={(event, tab) => setSelectedTab(tab)}
+                    indicatorColor="primary"
+                    textColor="primary"
+                    variant="standard"
+                    aria-label="Policies local to API"
+                    className={classes.flowTabs}
+                >
+                    <Tab
+                        label={
+                            <span className={classes.flowTab}>
+                                <FormattedMessage
+                                    id="Apis.Details.Policies.PolicyList.add.inbound.tab"
+                                    defaultMessage="Inbound Handshake"
+                                />
+                            </span>
+                        }
+                        id="request-tab"
+                        aria-controls="request-tabpanel"
+                    />
+                </Tabs>
+            );
+        }
+
+        return (
+            <Tabs
+                value={selectedTab}
+                onChange={(event, tab) => setSelectedTab(tab)}
+                indicatorColor="primary"
+                textColor="primary"
+                variant="standard"
+                aria-label="Policies local to API"
+                className={classes.flowTabs}
+            >
+                <Tab
+                    label={
+                        <span className={classes.flowTab}>
+                            <FormattedMessage
+                                id="Apis.Details.Policies.PolicyList.add.request.tab"
+                                defaultMessage="Request"
+                            />
+                        </span>
+                    }
+                    id="request-tab"
+                    aria-controls="request-tabpanel"
+                />
+                <Tab
+                    label={
+                        <span className={classes.flowTab}>
+                            <FormattedMessage
+                                id="Apis.Details.Policies.PolicyList.add.response.tab"
+                                defaultMessage="Response"
+                            />
+                        </span>
+                    }
+                    id="response-tab"
+                    aria-controls="response-tabpanel"
+                />
+                {!isChoreoConnectEnabled && (
+                    <Tab
+                        label={
+                            <span className={classes.flowTab}>
+                                <FormattedMessage
+                                    id="Apis.Details.Policies.PolicyList.add.fault.tab"
+                                    defaultMessage="Fault"
+                                />
+                            </span>
+                        }
+                        id="fault-tab"
+                        aria-controls="fault-tabpanel"
+                    />
+                )}
+            </Tabs>
+        );
+    };
+
     return (
         <StyledPaper className={classes.paperPosition}>
-            <Card variant='outlined'>
+            <Card variant="outlined">
                 <CardContent>
-                    <Box display='flex' mb={1}>
-                        <Typography variant='subtitle2'>
+                    <Box display="flex" mb={1}>
+                        <Typography variant="subtitle2">
                             <FormattedMessage
-                                id='Apis.Details.Policies.PolicyList.title'
-                                defaultMessage='Policy List'
+                                id="Apis.Details.Policies.PolicyList.title"
+                                defaultMessage="Policy List"
                             />
                         </Typography>
-                        {!isChoreoConnectEnabled && !isPolicyHubGateway && (
+                        {canAddPolicy && (
                             <Button
                                 onClick={handleAddPolicy}
-                                disabled={isRestricted(['apim:api_create', 'apim:api_publish'])}
-                                variant='outlined'
-                                color='primary'
-                                data-testid='add-new-api-specific-policy'
-                                size='small'
+                                disabled={isRestricted([
+                                    'apim:api_create',
+                                    'apim:api_publish',
+                                ])}
+                                variant="outlined"
+                                color="primary"
+                                data-testid="add-new-api-specific-policy"
+                                size="small"
                                 className={classes.addPolicyBtn}
                             >
                                 <AddCircle className={classes.buttonIcon} />
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyList.add.new.policy'
-                                    defaultMessage='Add New Policy'
+                                    id="Apis.Details.Policies.PolicyList.add.new.policy"
+                                    defaultMessage="Add New Policy"
                                 />
                             </Button>
                         )}
                     </Box>
                     <Box mb={2}>
-                        <FormControl fullWidth size='small'>
-                            <InputLabel id='policy-category-select-label'>
+                        {isPolicyHubGateway && (
+                            <Box
+                                display="flex"
+                                justifyContent="flex-end"
+                                mb={1}
+                            >
+                                <Button
+                                    component="a"
+                                    href={POLICY_HUB_URL}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    variant="outlined"
+                                    size="small"
+                                    endIcon={
+                                        <LaunchIcon style={{ fontSize: 15 }} />
+                                    }
+                                >
+                                    <FormattedMessage
+                                        id="Apis.Details.Policies.PolicyList.policy.hub.button"
+                                        defaultMessage="Policy Hub"
+                                    />
+                                </Button>
+                            </Box>
+                        )}
+                        <FormControl fullWidth size="small">
+                            <InputLabel id="policy-category-select-label">
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.PolicyList.category.filter'
-                                    defaultMessage='Category'
+                                    id="Apis.Details.Policies.PolicyList.category.filter"
+                                    defaultMessage="Category"
                                 />
                             </InputLabel>
                             <Select
-                                labelId='policy-category-select-label'
-                                id='policy-category-select'
+                                labelId="policy-category-select-label"
+                                id="policy-category-select"
                                 multiple
                                 value={selectedCategories}
                                 onChange={handleCategoryChange}
-                                label='Category'
+                                label="Category"
                                 renderValue={renderCategoryValue}
                             >
                                 {availableCategories.map((category) => (
                                     <MenuItem key={category} value={category}>
-                                        <Checkbox checked={selectedCategories.includes(category)} />
+                                        <Checkbox
+                                            checked={selectedCategories.includes(
+                                                category,
+                                            )}
+                                        />
                                         <ListItemText primary={category} />
                                     </MenuItem>
                                 ))}
@@ -255,129 +409,17 @@ const PolicyList: FC<PolicyListPorps> = ({
                         </FormControl>
                     </Box>
                     <Box>
-                        {isPolicyHubGateway ? (
-                            <Box height='55vh' pt={1} overflow='scroll'>
-                                <TabPanel
-                                    commonPolicyList={filterPolicies(commonPolicyList)}
-                                    apiPolicyList={filterPolicies(apiPolicyList)}
-                                    index={0}
-                                    selectedTab={0}
-                                    fetchPolicies={fetchPolicies}
-                                    isReadOnly={isRestricted(['apim:api_create', 'apim:api_publish', 'apim:api_manage'])}
-                                />
-                            </Box>
-                        ) : apiType === 'WS' ? (
-                            <Tabs
-                                value={selectedTab}
-                                onChange={(event, tab) => setSelectedTab(tab)}
-                                indicatorColor='primary'
-                                textColor='primary'
-                                variant='standard'
-                                aria-label='Policies local to API'
-                                className={classes.flowTabs}
-                            >
-                                <Tab
-                                    label={
-                                        <span className={classes.flowTab}>
-                                            <FormattedMessage
-                                                id='Apis.Details.Policies.PolicyList.add.inbound.tab'
-                                                defaultMessage='Inbound Handshake'
-                                            />
-                                        </span>
-                                    }
-                                    id='request-tab'
-                                    aria-controls='request-tabpanel'
-                                />
-                            </Tabs>
-                        ) : (
-                            <Tabs
-                                value={selectedTab}
-                                onChange={(event, tab) => setSelectedTab(tab)}
-                                indicatorColor='primary'
-                                textColor='primary'
-                                variant='standard'
-                                aria-label='Policies local to API'
-                                className={classes.flowTabs}
-                            >
-                                <Tab
-                                    label={
-                                        <span className={classes.flowTab}>
-                                            <FormattedMessage
-                                                id='Apis.Details.Policies.PolicyList.add.request.tab'
-                                                defaultMessage='Request'
-                                            />
-                                        </span>
-                                    }
-                                    id='request-tab'
-                                    aria-controls='request-tabpanel'
-                                />
-                                <Tab
-                                    label={
-                                        <span className={classes.flowTab}>
-                                            <FormattedMessage
-                                                id='Apis.Details.Policies.PolicyList.add.response.tab'
-                                                defaultMessage='Response'
-                                            />
-                                        </span>
-                                    }
-                                    id='response-tab'
-                                    aria-controls='response-tabpanel'
-                                />
-                                {!isChoreoConnectEnabled && (
-                                    <Tab
-                                        label={
-                                            <span className={classes.flowTab}>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Policies.PolicyList.add.fault.tab'
-                                                    defaultMessage='Fault'
-                                                />
-                                            </span>
-                                        }
-                                        id='fault-tab'
-                                        aria-controls='fault-tabpanel'
-                                    />)
-                                }
-                            </Tabs>
-                        )}
-                        {apiType === 'WS' ? (
-                            <Box height='55vh' pt={1} overflow='scroll'>
-                                <TabPanel
-                                    commonPolicyList={filterPoliciesForFlow(commonPolicyList, 'request')}
-                                    apiPolicyList={filterPoliciesForFlow(apiPolicyList, 'request')}
-                                    index={0}
-                                    selectedTab={selectedTab}
-                                    fetchPolicies={fetchPolicies}
-                                    isReadOnly={isRestricted(['apim:api_create', 'apim:api_publish', 'apim:api_manage'])}
-                                />
-                            </Box>
-                        ) : (
-                            <Box height='55vh' pt={1} overflow='scroll'>
-                                <TabPanel
-                                    commonPolicyList={filterPoliciesForFlow(commonPolicyList, 'request')}
-                                    apiPolicyList={filterPoliciesForFlow(apiPolicyList, 'request')}
-                                    index={0}
-                                    selectedTab={selectedTab}
-                                    fetchPolicies={fetchPolicies}
-                                    isReadOnly={isRestricted(['apim:api_create', 'apim:api_publish', 'apim:api_manage'])}
-                                />
-                                <TabPanel
-                                    commonPolicyList={filterPoliciesForFlow(commonPolicyList, 'response')}
-                                    apiPolicyList={filterPoliciesForFlow(apiPolicyList, 'response')}
-                                    index={1}
-                                    selectedTab={selectedTab}
-                                    fetchPolicies={fetchPolicies}
-                                    isReadOnly={isRestricted(['apim:api_create', 'apim:api_publish', 'apim:api_manage'])}
-                                />
-                                {!isChoreoConnectEnabled && (
-                                    <TabPanel
-                                        commonPolicyList={filterPoliciesForFlow(commonPolicyList, 'fault')}
-                                        apiPolicyList={filterPoliciesForFlow(apiPolicyList, 'fault')}
-                                        index={2}
-                                        selectedTab={selectedTab}
-                                        fetchPolicies={fetchPolicies}
-                                        isReadOnly={isRestricted(['apim:api_create', 'apim:api_publish', 'apim:api_manage'])}
-                                    />
-                                )}
+                        {isPolicyHubGateway
+                            ? renderPolicyHubPanel()
+                            : renderFlowTabs()}
+                        {!isPolicyHubGateway && (
+                            <Box height="55vh" pt={1} overflow="scroll">
+                                {renderFlowPanel('request', 0)}
+                                {apiType !== 'WS' &&
+                                    renderFlowPanel('response', 1)}
+                                {!isChoreoConnectEnabled &&
+                                    apiType !== 'WS' &&
+                                    renderFlowPanel('fault', 2)}
                             </Box>
                         )}
                     </Box>

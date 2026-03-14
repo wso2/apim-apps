@@ -61,6 +61,46 @@ const defaultPolicyForMigration = {
     isAPISpecific: true,
 };
 
+const buildMigratedPolicyFallback = (policyName?: string, policyVersion?: string) => ({
+    ...defaultPolicyForMigration,
+    name: policyName || '',
+    displayName: policyName || '',
+    version: policyVersion || '',
+});
+
+const findPolicyById = (allPolicies: PolicySpec[] | null, policyId: string) => (
+    allPolicies?.find((policy: PolicySpec) => policy.id === policyId) || null
+);
+
+const findPolicyByNameAndVersion = (
+    allPolicies: PolicySpec[] | null,
+    policyName?: string,
+    policyVersion?: string,
+) => (
+    allPolicies?.find(
+        (policy: PolicySpec) => policy.name === policyName && policy.version === policyVersion,
+    ) || null
+);
+
+const getPolicyHubSpec = async (policyName?: string, policyVersion?: string) => {
+    if (!policyName) {
+        return null;
+    }
+
+    const policyLookupInput = policyVersion
+        ? {
+            name: policyName,
+            version: policyVersion,
+            displayName: policyName,
+        }
+        : {
+            name: policyName,
+            displayName: policyName,
+        };
+
+    return PolicyHub.getPolicySpec(policyLookupInput);
+};
+
 interface PoliciesExpansionProps {
     target: any;
     verb: string;
@@ -100,55 +140,36 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
         policyVersion?: string,
         isCommonPolicy = false,
     ) => {
-        const policyById = allPolicies?.find((policy: PolicySpec) => policy.id === policyId);
+        const policyById = findPolicyById(allPolicies, policyId);
         if (policyById) {
             return policyById;
         }
 
-        if (isPolicyHubGateway) {
-            const policyByName = allPolicies?.find(
-                (policy: PolicySpec) => policy.name === policyName && policy.version === policyVersion,
-            );
-            if (policyByName) {
-                return policyByName;
+        if (!isPolicyHubGateway) {
+            if (!policyId) {
+                return null;
             }
 
-            if (policyName && policyVersion) {
-                const policy = await PolicyHub.getPolicySpec({
-                    name: policyName,
-                    version: policyVersion,
-                    displayName: policyName,
-                });
-                if (policy) {
-                    return policy;
-                }
-            }
-
-            if (policyName) {
-                const policy = await PolicyHub.getPolicySpec({
-                    name: policyName,
-                    displayName: policyName,
-                });
-                if (policy) {
-                    return policy;
-                }
-                return {
-                    ...defaultPolicyForMigration,
-                    name: policyName,
-                    displayName: policyName,
-                    version: policyVersion || '',
-                };
-            }
-
-            return null;
-        }
-
-        if (policyId) {
             const policyResponse = isCommonPolicy
                 ? await API.getCommonOperationPolicy(policyId)
                 : await API.getOperationPolicy(policyId, api.id);
             return policyResponse?.body || null;
         }
+
+        const policyByName = findPolicyByNameAndVersion(allPolicies, policyName, policyVersion);
+        if (policyByName) {
+            return policyByName;
+        }
+
+        const policyFromHub = await getPolicyHubSpec(policyName, policyVersion);
+        if (policyFromHub) {
+            return policyFromHub;
+        }
+
+        if (policyName) {
+            return buildMigratedPolicyFallback(policyName, policyVersion);
+        }
+
         return null;
     };
 

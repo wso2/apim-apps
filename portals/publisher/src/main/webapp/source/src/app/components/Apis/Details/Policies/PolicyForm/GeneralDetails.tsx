@@ -63,6 +63,36 @@ interface GeneralDetailsProps {
     hideFlowsAndApiTypes?: boolean;
 }
 
+const dispatchWebsocketSelection = (dispatch: React.Dispatch<any>) => {
+    dispatch({
+        type: ACTIONS.SET_SUPPORTED_API_TYPES,
+        payload: ['WS'],
+    });
+    dispatch({
+        type: ACTIONS.SET_APPLICABLE_FLOWS,
+        payload: ['request']
+    });
+};
+
+const dispatchWebsocketRemoval = (dispatch: React.Dispatch<any>) => {
+    dispatch({
+        type: ACTIONS.REMOVE_SUPPORTED_API_TYPE,
+        payload: 'WS',
+    });
+};
+
+const updateSupportedApiTypes = (
+    dispatch: React.Dispatch<any>,
+    name: string,
+    checked: boolean,
+) => {
+    dispatch({
+        type: ACTIONS.UPDATE_SUPPORTED_API_TYPES,
+        name,
+        checked,
+    });
+};
+
 /**
  * Renders the general details section.
  * @param {JSON} props Input props from parent components.
@@ -143,20 +173,10 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
 
         if (name === 'WS') {
             if (checked) {
-                dispatch({
-                    type: ACTIONS.SET_SUPPORTED_API_TYPES,
-                    payload: ['WS'],
-                });
-                dispatch({
-                    type: ACTIONS.SET_APPLICABLE_FLOWS,
-                    payload: ['request']
-                });
+                dispatchWebsocketSelection(dispatch);
                 return;
             }
-            dispatch({
-                type: ACTIONS.REMOVE_SUPPORTED_API_TYPE,
-                payload: 'WS',
-            });
+            dispatchWebsocketRemoval(dispatch);
             return;
         }
 
@@ -165,11 +185,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
             return;
         }
 
-        dispatch({
-            type: ACTIONS.UPDATE_SUPPORTED_API_TYPES,
-            name,
-            checked,
-        });
+        updateSupportedApiTypes(dispatch, name, checked);
     };
 
     const isWebsocketSelected =

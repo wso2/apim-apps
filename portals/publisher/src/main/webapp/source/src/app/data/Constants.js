@@ -87,6 +87,44 @@ const CONSTS = {
         choreoConnect: 'ChoreoConnect',
         apiPlatform: 'api-platform',
     },
+    CREATE_API_GATEWAYS: {
+        'wso2/synapse': {
+            value: 'wso2/synapse',
+            name: 'Universal Gateway',
+            description: 'API gateway embedded in APIM runtime.',
+            isNew: false,
+        },
+        'wso2/apk': {
+            value: 'wso2/apk',
+            name: 'Kubernetes Gateway',
+            description: 'API gateway running on Kubernetes.',
+            isNew: false,
+        },
+        AWS: {
+            value: 'AWS',
+            name: 'AWS Gateway',
+            description: 'API gateway offered by AWS cloud.',
+            isNew: false,
+        },
+        Azure: {
+            value: 'Azure',
+            name: 'Azure Gateway',
+            description: 'API gateway offered by Azure cloud.',
+            isNew: false,
+        },
+        'api-platform': {
+            value: 'api-platform',
+            name: 'Platform Gateway',
+            description: 'API gateway for platform-managed policies.',
+            isNew: false,
+        },
+        PlatformGateway: {
+            value: 'api-platform',
+            name: 'Platform Gateway',
+            description: 'API gateway for platform-managed policies.',
+            isNew: false,
+        },
+    },
     PATH_TEMPLATES: {
         COMMON_POLICIES: '/policies',
         COMMON_POLICY_CREATE: '/policies/create',
@@ -112,7 +150,7 @@ const CONSTS = {
     ENTITY_TYPES: {
         APIS: 'apis',
         API_PRODUCTS: 'api-products',
-        MCP_SERVERS: 'mcp-servers'
+        MCP_SERVERS: 'mcp-servers',
     },
     API_TYPES: {
         HTTP: 'REST',

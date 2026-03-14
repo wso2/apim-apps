@@ -1,20 +1,20 @@
 /*
-* Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
-* 
-* WSO2 LLC. licenses this file to you under the Apache License,
-* Version 2.0 (the "License"); you may not use this file except
-* in compliance with the License.
-* You may obtain a copy of the License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
 import React, { FC } from 'react';
 import { styled } from '@mui/material/styles';
@@ -29,15 +29,17 @@ import type { AttachedPolicy, PolicySpec } from './Types';
 const PREFIX = 'PoliciesExpansionShared';
 
 const classes = {
-    flowSpecificPolicyAttachGrid: `${PREFIX}-flowSpecificPolicyAttachGrid`
+    flowSpecificPolicyAttachGrid: `${PREFIX}-flowSpecificPolicyAttachGrid`,
 };
 
-const StyledAccordionDetails = styled(AccordionDetails)(({ theme }: { theme: Theme }) => ({
-    [`& .${classes.flowSpecificPolicyAttachGrid}`]: {
-        marginTop: theme.spacing(1),
-        overflowX: 'scroll',
-    }
-}));
+const StyledAccordionDetails = styled(AccordionDetails)(
+    ({ theme }: { theme: Theme }) => ({
+        [`& .${classes.flowSpecificPolicyAttachGrid}`]: {
+            marginTop: theme.spacing(1),
+            overflowX: 'scroll',
+        },
+    }),
+);
 
 interface PoliciesExpansionSharedProps {
     target: any;
@@ -46,13 +48,19 @@ interface PoliciesExpansionSharedProps {
     isChoreoConnectEnabled: boolean;
     isAPILevelPolicy: boolean;
     requestFlowPolicyList: AttachedPolicy[];
-    setRequestFlowPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
+    setRequestFlowPolicyList: React.Dispatch<
+        React.SetStateAction<AttachedPolicy[]>
+    >;
     requestFlowDroppablePolicyList: string[];
     responseFlowPolicyList: AttachedPolicy[];
-    setResponseFlowPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
+    setResponseFlowPolicyList: React.Dispatch<
+        React.SetStateAction<AttachedPolicy[]>
+    >;
     responseFlowDroppablePolicyList: string[];
     faultFlowPolicyList: AttachedPolicy[];
-    setFaultFlowPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
+    setFaultFlowPolicyList: React.Dispatch<
+        React.SetStateAction<AttachedPolicy[]>
+    >;
     faultFlowDroppablePolicyList: string[];
     FlowArrow: any;
     PolicyDropzone: any;
@@ -60,6 +68,19 @@ interface PoliciesExpansionSharedProps {
     isApiRevision?: boolean;
     apiType?: string;
     isPolicyHubGateway?: boolean;
+}
+
+interface PolicySectionConfig {
+    testId: string;
+    title: React.ReactNode;
+    arrowDirection: 'left' | 'right';
+    policyDisplayStartDirection: 'left' | 'right';
+    currentPolicyList: AttachedPolicy[];
+    setCurrentPolicyList: React.Dispatch<
+        React.SetStateAction<AttachedPolicy[]>
+    >;
+    droppablePolicyList: string[];
+    currentFlow: string;
 }
 
 const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
@@ -84,20 +105,22 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
     apiType,
     isPolicyHubGateway,
 }) => {
-    const renderPolicySection = (
-        testId: string,
-        titleId: string,
-        defaultTitle: string,
-        arrowDirection: 'left' | 'right',
-        policyDisplayStartDirection: 'left' | 'right',
-        currentPolicyList: AttachedPolicy[],
-        setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>,
-        droppablePolicyList: string[],
-        currentFlow: string,
-    ) => (
-        <Box className={classes.flowSpecificPolicyAttachGrid} data-testid={testId}>
-            <Typography variant='subtitle2' align='left'>
-                <FormattedMessage id={titleId} defaultMessage={defaultTitle} />
+    const renderPolicySection = ({
+        testId,
+        title,
+        arrowDirection,
+        policyDisplayStartDirection,
+        currentPolicyList,
+        setCurrentPolicyList,
+        droppablePolicyList,
+        currentFlow,
+    }: PolicySectionConfig) => (
+        <Box
+            className={classes.flowSpecificPolicyAttachGrid}
+            data-testid={testId}
+        >
+            <Typography variant="subtitle2" align="left">
+                {title}
             </Typography>
             <FlowArrow arrowDirection={arrowDirection} />
             <PolicyDropzone
@@ -110,7 +133,9 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
                 verb={verb}
                 allPolicies={allPolicies}
                 isAPILevelPolicy={isAPILevelPolicy}
-                listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
+                listOriginatedFromCommonPolicies={
+                    listOriginatedFromCommonPolicies
+                }
                 isApiRevision={isApiRevision}
             />
         </Box>
@@ -118,68 +143,89 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
 
     const renderFlowSections = () => {
         if (isPolicyHubGateway) {
-            return renderPolicySection(
-                'drop-policy-zone-unified',
-                'Apis.Details.Policies.PoliciesExpansion.unified.flow.title',
-                'Policies',
-                'left',
-                'left',
-                requestFlowPolicyList,
-                setRequestFlowPolicyList,
-                requestFlowDroppablePolicyList,
-                'hub',
-            );
+            return renderPolicySection({
+                testId: 'drop-policy-zone-unified',
+                title: (
+                    <FormattedMessage
+                        id="Apis.Details.Policies.PoliciesExpansion.unified.flow.title"
+                        defaultMessage="Policies"
+                    />
+                ),
+                arrowDirection: 'left',
+                policyDisplayStartDirection: 'left',
+                currentPolicyList: requestFlowPolicyList,
+                setCurrentPolicyList: setRequestFlowPolicyList,
+                droppablePolicyList: requestFlowDroppablePolicyList,
+                currentFlow: 'hub',
+            });
         }
 
         if (apiType === 'WS') {
-            return renderPolicySection(
-                'drop-policy-zone-request',
-                'Apis.Details.Policies.PoliciesExpansion.inbound.flow.title',
-                'Inbound Flow',
-                'left',
-                'left',
-                requestFlowPolicyList,
-                setRequestFlowPolicyList,
-                requestFlowDroppablePolicyList,
-                'request',
-            );
+            return renderPolicySection({
+                testId: 'drop-policy-zone-request',
+                title: (
+                    <FormattedMessage
+                        id="Apis.Details.Policies.PoliciesExpansion.inbound.flow.title"
+                        defaultMessage="Inbound Flow"
+                    />
+                ),
+                arrowDirection: 'left',
+                policyDisplayStartDirection: 'left',
+                currentPolicyList: requestFlowPolicyList,
+                setCurrentPolicyList: setRequestFlowPolicyList,
+                droppablePolicyList: requestFlowDroppablePolicyList,
+                currentFlow: 'request',
+            });
         }
 
         return (
             <>
-                {renderPolicySection(
-                    'drop-policy-zone-request',
-                    'Apis.Details.Policies.PoliciesExpansion.request.flow.title',
-                    'Request Flow',
-                    'left',
-                    'left',
-                    requestFlowPolicyList,
-                    setRequestFlowPolicyList,
-                    requestFlowDroppablePolicyList,
-                    'request',
-                )}
-                {renderPolicySection(
-                    'drop-policy-zone-response',
-                    'Apis.Details.Policies.PoliciesExpansion.response.flow.title',
-                    'Response Flow',
-                    'right',
-                    'right',
-                    responseFlowPolicyList,
-                    setResponseFlowPolicyList,
-                    responseFlowDroppablePolicyList,
-                    'response',
-                )}
-                {!isChoreoConnectEnabled && renderPolicySection(
-                    'drop-policy-zone-fault',
-                    'Apis.Details.Policies.PoliciesExpansion.fault.flow.title',
-                    'Fault Flow',
-                    'right',
-                    'right',
-                    faultFlowPolicyList,
-                    setFaultFlowPolicyList,
-                    faultFlowDroppablePolicyList,
-                    'fault',
-                )}
+                {renderPolicySection({
+                    testId: 'drop-policy-zone-request',
+                    title: (
+                        <FormattedMessage
+                            id="Apis.Details.Policies.PoliciesExpansion.request.flow.title"
+                            defaultMessage="Request Flow"
+                        />
+                    ),
+                    arrowDirection: 'left',
+                    policyDisplayStartDirection: 'left',
+                    currentPolicyList: requestFlowPolicyList,
+                    setCurrentPolicyList: setRequestFlowPolicyList,
+                    droppablePolicyList: requestFlowDroppablePolicyList,
+                    currentFlow: 'request',
+                })}
+                {renderPolicySection({
+                    testId: 'drop-policy-zone-response',
+                    title: (
+                        <FormattedMessage
+                            id="Apis.Details.Policies.PoliciesExpansion.response.flow.title"
+                            defaultMessage="Response Flow"
+                        />
+                    ),
+                    arrowDirection: 'right',
+                    policyDisplayStartDirection: 'right',
+                    currentPolicyList: responseFlowPolicyList,
+                    setCurrentPolicyList: setResponseFlowPolicyList,
+                    droppablePolicyList: responseFlowDroppablePolicyList,
+                    currentFlow: 'response',
+                })}
+                {!isChoreoConnectEnabled &&
+                    renderPolicySection({
+                        testId: 'drop-policy-zone-fault',
+                        title: (
+                            <FormattedMessage
+                                id="Apis.Details.Policies.PoliciesExpansion.fault.flow.title"
+                                defaultMessage="Fault Flow"
+                            />
+                        ),
+                        arrowDirection: 'right',
+                        policyDisplayStartDirection: 'right',
+                        currentPolicyList: faultFlowPolicyList,
+                        setCurrentPolicyList: setFaultFlowPolicyList,
+                        droppablePolicyList: faultFlowDroppablePolicyList,
+                        currentFlow: 'fault',
+                    })}
             </>
         );
     };
@@ -189,9 +235,9 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
             <Grid
                 spacing={2}
                 container
-                direction='row'
-                justifyContent='flex-start'
-                alignItems='flex-start'
+                direction="row"
+                justifyContent="flex-start"
+                alignItems="flex-start"
             >
                 <Grid item xs={12} md={12}>
                     {renderFlowSections()}
