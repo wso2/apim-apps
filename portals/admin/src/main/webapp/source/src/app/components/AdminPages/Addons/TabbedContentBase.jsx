@@ -60,12 +60,35 @@ function TabbedContentBase(props) {
                         value={value}
                         onChange={handleChange}
                         sx={{
-                            backgroundColor: 'grey.200',
                             minHeight: 48,
-                            paddingLeft: 0,
+                            backgroundColor: 'grey.200',
+                            ml: 0,
+                            pl: 0,
+                            borderBottom: 'none',
                             '& .MuiTab-root': {
                                 minHeight: 48,
                                 margin: 0,
+                                px: 6,
+                                textTransform: 'none',
+                                borderTop: 1,
+                                borderLeft: 1,
+                                borderRight: 1,
+                                borderBottom: 1,
+                                borderColor: 'divider',
+                                borderBottomColor: 'divider',
+                                borderTopLeftRadius: 8,
+                                borderTopRightRadius: 8,
+                                backgroundColor: 'grey.200',
+                                color: 'text.secondary',
+                                '&.Mui-selected': {
+                                    backgroundColor: 'background.paper',
+                                    color: 'primary.main',
+                                    fontWeight: 600,
+                                    borderBottom: 'none',
+                                },
+                                '&:hover': {
+                                    backgroundColor: 'background.paper',
+                                },
                             },
                         }}
                     >
@@ -73,22 +96,6 @@ function TabbedContentBase(props) {
                             <Tab
                                 key={tab.id ?? index}
                                 label={tab.label}
-                                sx={{
-                                    textTransform: 'none',
-                                    px: 3,
-                                    minWidth: 'auto',
-                                    minHeight: 48,
-                                    height: 48,
-                                    backgroundColor: 'grey.200',
-                                    color: 'text.disabled',
-                                    '&.Mui-selected': {
-                                        backgroundColor: 'background.paper',
-                                        fontWeight: 600,
-                                    },
-                                    '&:hover': {
-                                        backgroundColor: 'background.paper',
-                                    },
-                                }}
                             />
                         ))}
                     </Tabs>
