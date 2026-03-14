@@ -138,7 +138,7 @@ function GatewayEditButton({ dataRow }) {
 
     const handleClick = () => {
         if (dataRow.isPlatformGateway && dataRow.platformGatewayId) {
-            history.push(`/settings/environments/platform-gateways/${dataRow.platformGatewayId}`);
+            history.push(`/settings/environments/universal-gateways/${dataRow.platformGatewayId}`);
             return;
         }
         history.push(`/settings/environments/${dataRow.id}`);

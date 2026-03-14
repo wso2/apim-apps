@@ -1004,14 +1004,14 @@ function AddEditGWEnvironment(props) {
                 const createdGatewayId = createdGateway?.id;
                 if (createdGatewayId) {
                     history.push({
-                        pathname: `/settings/environments/platform-gateways/${createdGatewayId}`,
+                        pathname: `/settings/environments/universal-gateways/${createdGatewayId}`,
                         state: {
                             createdGateway,
                         },
                     });
                     return;
                 }
-                history.push('/settings/environments/platform-gateways');
+                history.push('/settings/environments/universal-gateways');
                 return;
             }
             history.push('/settings/environments/');
