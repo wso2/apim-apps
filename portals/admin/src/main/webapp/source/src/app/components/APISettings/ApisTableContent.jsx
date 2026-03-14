@@ -164,7 +164,7 @@ const ApisTableContent = ({ apis, updateApiList }) => {
                         return (
                             Alert.error(
                                 <FormattedMessage
-                                    id='AdminPages.ApiSettings.EditApi.form.edit.user.notvalid'
+                                    id='AdminPages.ApiSettings.EditApi.form.edit.tenant.notvalid'
                                     defaultMessage='Given Tenant name is not valid.'
                                 />,
                             )

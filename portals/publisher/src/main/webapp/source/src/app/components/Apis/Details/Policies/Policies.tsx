@@ -515,6 +515,57 @@ const Policies: React.FC = () => {
         setApiOperations(newApiOperations);
     }
 
+    const getOperationPolicies = (operation: any, currentFlow: string) => {
+        if (isPolicyHubGateway && currentFlow === 'hub') {
+            operation.operationHubPolicies = operation.operationHubPolicies || [];
+            return operation.operationHubPolicies;
+        }
+
+        return operation.operationPolicies[currentFlow];
+    };
+
+    const removePolicyByUuid = (policyList: any[], uuid: string) => {
+        const index = policyList.findIndex((policy: any) => policy.uuid === uuid);
+        if (index !== -1) {
+            policyList.splice(index, 1);
+        }
+    };
+
+    const removePolicyById = (policyList: any[], policyId: string) => {
+        const index = policyList.findIndex((policy: any) => policy.policyId === policyId);
+        if (index !== -1) {
+            policyList.splice(index, 1);
+        }
+    };
+
+    const removeApiLevelPolicy = (uuid: string, currentFlow: string) => {
+        const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
+        const policyList = isPolicyHubGateway && currentFlow === 'hub'
+            ? newApiLevelPolicies
+            : newApiLevelPolicies[currentFlow];
+        removePolicyByUuid(policyList, uuid);
+        setApiLevelPolicies(newApiLevelPolicies);
+    };
+
+    const removeSharedOperationPolicy = (operationInAction: any[], uuid: string, currentFlow: string) => {
+        const referencePolicy = getOperationPolicies(operationInAction[0], currentFlow)
+            .find((policy: any) => policy.uuid === uuid);
+
+        if (!referencePolicy) {
+            return;
+        }
+
+        operationInAction.forEach((operation: any) => {
+            removePolicyById(getOperationPolicies(operation, currentFlow), referencePolicy.policyId);
+        });
+    };
+
+    const removeSingleOperationPolicy = (operationInAction: any[], uuid: string, currentFlow: string) => {
+        operationInAction.forEach((operation: any) => {
+            removePolicyByUuid(getOperationPolicies(operation, currentFlow), uuid);
+        });
+    };
+
     /**
      * To delete one API Operation from the apiOperations object
      * Note that this function does not perform an API object update, rather, just a state update.
@@ -526,15 +577,7 @@ const Policies: React.FC = () => {
     const deleteApiOperation = (uuid: string, target: string, verb: string, currentFlow: string) => {
 
         if (selectedTab === apiLevelTab) {
-            const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
-            if (isPolicyHubGateway && currentFlow === 'hub') {
-                const index = newApiLevelPolicies.map((p: any) => p.uuid).indexOf(uuid);
-                newApiLevelPolicies.splice(index, 1);
-            } else {
-                const index = newApiLevelPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
-                newApiLevelPolicies[currentFlow].splice(index, 1);
-            }
-            setApiLevelPolicies(newApiLevelPolicies);
+            removeApiLevelPolicy(uuid, currentFlow);
         } else {
             const newApiOperations: any = cloneDeep(apiOperations);
             const operationInAction = newApiOperations.filter(
@@ -549,38 +592,9 @@ const Policies: React.FC = () => {
             [{a:'1'},{a:'2'},{a:'1'}].map( i => i.a).indexOf('2') will output the location of '2'
             */
             if (operationInAction.length > 1) {
-                const referencePolicyList = isPolicyHubGateway && currentFlow === 'hub'
-                    ? (operationInAction[0].operationHubPolicies || [])
-                    : operationInAction[0].operationPolicies[currentFlow];
-                const referencePolicy = referencePolicyList
-                    .find((p: any) => p.uuid === uuid);
-
-                if (referencePolicy) {
-                    const referencePolicyId = referencePolicy.policyId;
-
-                    operationInAction.forEach((op: any) => {
-                        const policyList = isPolicyHubGateway && currentFlow === 'hub'
-                            ? (op.operationHubPolicies || [])
-                            : op.operationPolicies[currentFlow];
-                        const targetIndex = policyList.findIndex((p: any) => p.policyId === referencePolicyId);
-
-                        if (targetIndex !== -1) {
-                            policyList.splice(targetIndex, 1);
-                        }
-                    });
-                }
+                removeSharedOperationPolicy(operationInAction, uuid, currentFlow);
             } else {
-                operationInAction.forEach((op: any) => {
-                    if (isPolicyHubGateway && currentFlow === 'hub') {
-                        const operationHubPolicies = op.operationHubPolicies || [];
-                        const index = operationHubPolicies.map((p: any) => p.uuid).indexOf(uuid);
-                        operationHubPolicies.splice(index, 1);
-                        op.operationHubPolicies = operationHubPolicies;
-                    } else {
-                        const index = op.operationPolicies[currentFlow].map((p: any) => p.uuid).indexOf(uuid);
-                        op.operationPolicies[currentFlow].splice(index, 1);
-                    }
-                });
+                removeSingleOperationPolicy(operationInAction, uuid, currentFlow);
             }
 
             // Finally update the state

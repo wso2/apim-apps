@@ -84,7 +84,105 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
     apiType,
     isPolicyHubGateway,
 }) => {
+    const renderPolicySection = (
+        testId: string,
+        titleId: string,
+        defaultTitle: string,
+        arrowDirection: 'left' | 'right',
+        policyDisplayStartDirection: 'left' | 'right',
+        currentPolicyList: AttachedPolicy[],
+        setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>,
+        droppablePolicyList: string[],
+        currentFlow: string,
+    ) => (
+        <Box className={classes.flowSpecificPolicyAttachGrid} data-testid={testId}>
+            <Typography variant='subtitle2' align='left'>
+                <FormattedMessage id={titleId} defaultMessage={defaultTitle} />
+            </Typography>
+            <FlowArrow arrowDirection={arrowDirection} />
+            <PolicyDropzone
+                policyDisplayStartDirection={policyDisplayStartDirection}
+                currentPolicyList={currentPolicyList}
+                setCurrentPolicyList={setCurrentPolicyList}
+                droppablePolicyList={droppablePolicyList}
+                currentFlow={currentFlow}
+                target={target}
+                verb={verb}
+                allPolicies={allPolicies}
+                isAPILevelPolicy={isAPILevelPolicy}
+                listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
+                isApiRevision={isApiRevision}
+            />
+        </Box>
+    );
 
+    const renderFlowSections = () => {
+        if (isPolicyHubGateway) {
+            return renderPolicySection(
+                'drop-policy-zone-unified',
+                'Apis.Details.Policies.PoliciesExpansion.unified.flow.title',
+                'Policies',
+                'left',
+                'left',
+                requestFlowPolicyList,
+                setRequestFlowPolicyList,
+                requestFlowDroppablePolicyList,
+                'hub',
+            );
+        }
+
+        if (apiType === 'WS') {
+            return renderPolicySection(
+                'drop-policy-zone-request',
+                'Apis.Details.Policies.PoliciesExpansion.inbound.flow.title',
+                'Inbound Flow',
+                'left',
+                'left',
+                requestFlowPolicyList,
+                setRequestFlowPolicyList,
+                requestFlowDroppablePolicyList,
+                'request',
+            );
+        }
+
+        return (
+            <>
+                {renderPolicySection(
+                    'drop-policy-zone-request',
+                    'Apis.Details.Policies.PoliciesExpansion.request.flow.title',
+                    'Request Flow',
+                    'left',
+                    'left',
+                    requestFlowPolicyList,
+                    setRequestFlowPolicyList,
+                    requestFlowDroppablePolicyList,
+                    'request',
+                )}
+                {renderPolicySection(
+                    'drop-policy-zone-response',
+                    'Apis.Details.Policies.PoliciesExpansion.response.flow.title',
+                    'Response Flow',
+                    'right',
+                    'right',
+                    responseFlowPolicyList,
+                    setResponseFlowPolicyList,
+                    responseFlowDroppablePolicyList,
+                    'response',
+                )}
+                {!isChoreoConnectEnabled && renderPolicySection(
+                    'drop-policy-zone-fault',
+                    'Apis.Details.Policies.PoliciesExpansion.fault.flow.title',
+                    'Fault Flow',
+                    'right',
+                    'right',
+                    faultFlowPolicyList,
+                    setFaultFlowPolicyList,
+                    faultFlowDroppablePolicyList,
+                    'fault',
+                )}
+            </>
+        );
+    };
 
     return (
         <StyledAccordionDetails>
@@ -96,128 +194,7 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
                 alignItems='flex-start'
             >
                 <Grid item xs={12} md={12}>
-                    {isPolicyHubGateway ? (
-                        <Box className={classes.flowSpecificPolicyAttachGrid} data-testid='drop-policy-zone-unified'>
-                            <Typography variant='subtitle2' align='left'>
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.PoliciesExpansion.unified.flow.title'
-                                    defaultMessage='Policies'
-                                />
-                            </Typography>
-                            <FlowArrow arrowDirection='left' />
-                            <PolicyDropzone
-                                policyDisplayStartDirection='left'
-                                currentPolicyList={requestFlowPolicyList}
-                                setCurrentPolicyList={setRequestFlowPolicyList}
-                                droppablePolicyList={requestFlowDroppablePolicyList}
-                                currentFlow='hub'
-                                target={target}
-                                verb={verb}
-                                allPolicies={allPolicies}
-                                isAPILevelPolicy={isAPILevelPolicy}
-                                listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
-                                isApiRevision={isApiRevision}
-                            />
-                        </Box>
-                    ) : apiType === 'WS' ? (
-                        <Box className={classes.flowSpecificPolicyAttachGrid} data-testid='drop-policy-zone-request'>
-                            <Typography variant='subtitle2' align='left'>
-                                <FormattedMessage
-                                    id='Apis.Details.Policies.PoliciesExpansion.inbound.flow.title'
-                                    defaultMessage='Inbound Flow'
-                                />
-                            </Typography>
-                            <FlowArrow arrowDirection='left' />
-                            <PolicyDropzone
-                                policyDisplayStartDirection='left'
-                                currentPolicyList={requestFlowPolicyList}
-                                setCurrentPolicyList={setRequestFlowPolicyList}
-                                droppablePolicyList={requestFlowDroppablePolicyList}
-                                currentFlow='request'
-                                target={target}
-                                verb={verb}
-                                allPolicies={allPolicies}
-                                isAPILevelPolicy={isAPILevelPolicy}
-                                listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
-                                isApiRevision={isApiRevision}
-                            />
-                        </Box>
-                    ) : (
-                        <>
-                            <Box className={classes.flowSpecificPolicyAttachGrid} data-testid='drop-policy-zone-request'>
-                                <Typography variant='subtitle2' align='left'>
-                                    <FormattedMessage
-                                        id='Apis.Details.Policies.PoliciesExpansion.request.flow.title'
-                                        defaultMessage='Request Flow'
-                                    />
-                                </Typography>
-                                <FlowArrow arrowDirection='left' />
-                                <PolicyDropzone
-                                    policyDisplayStartDirection='left'
-                                    currentPolicyList={requestFlowPolicyList}
-                                    setCurrentPolicyList={setRequestFlowPolicyList}
-                                    droppablePolicyList={requestFlowDroppablePolicyList}
-                                    currentFlow='request'
-                                    target={target}
-                                    verb={verb}
-                                    allPolicies={allPolicies}
-                                    isAPILevelPolicy={isAPILevelPolicy}
-                                    listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
-                                    isApiRevision={isApiRevision}
-                                />
-                            </Box>
-                            <Box className={classes.flowSpecificPolicyAttachGrid} data-testid='drop-policy-zone-response'>
-                                <Typography variant='subtitle2' align='left'>
-                                    <FormattedMessage
-                                        id='Apis.Details.Policies.PoliciesExpansion.response.flow.title'
-                                        defaultMessage='Response Flow'
-                                    />
-                                </Typography>
-                                <FlowArrow arrowDirection='right' />
-                                <PolicyDropzone
-                                    policyDisplayStartDirection='right'
-                                    currentPolicyList={responseFlowPolicyList}
-                                    setCurrentPolicyList={setResponseFlowPolicyList}
-                                    droppablePolicyList={
-                                        responseFlowDroppablePolicyList
-                                    }
-                                    currentFlow='response'
-                                    target={target}
-                                    verb={verb}
-                                    allPolicies={allPolicies}
-                                    isAPILevelPolicy={isAPILevelPolicy}
-                                    listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
-                                    isApiRevision={isApiRevision}
-                                />
-                            </Box>
-                            {!isChoreoConnectEnabled && (
-                                <Box className={classes.flowSpecificPolicyAttachGrid}>
-                                    <Typography variant='subtitle2' align='left'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Policies.PoliciesExpansion.fault.flow.title'
-                                            defaultMessage='Fault Flow'
-                                        />
-                                    </Typography>
-                                    <FlowArrow arrowDirection='right' />
-                                    <PolicyDropzone
-                                        policyDisplayStartDirection='right'
-                                        currentPolicyList={faultFlowPolicyList}
-                                        setCurrentPolicyList={setFaultFlowPolicyList}
-                                        droppablePolicyList={
-                                            faultFlowDroppablePolicyList
-                                        }
-                                        currentFlow='fault'
-                                        target={target}
-                                        verb={verb}
-                                        allPolicies={allPolicies}
-                                        isAPILevelPolicy={isAPILevelPolicy}
-                                        listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
-                                        isApiRevision={isApiRevision}
-                                    />
-                                </Box>
-                            )}
-                        </>
-                    )}
+                    {renderFlowSections()}
                 </Grid>
             </Grid>
         </StyledAccordionDetails>

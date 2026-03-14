@@ -982,13 +982,6 @@ function AddEditGWEnvironment(props) {
             promiseAPICall = restApi.addGatewayEnvironment(name.trim(), displayName, type, description,
                 gatewayType, gatewayMode, scheduledInterval, vhostDto, permissions, additionalPropertiesArrayDTO,
                 provider);
-            promiseAPICall
-                .then(() => {
-                    return (intl.formatMessage({
-                        id: 'Environment.add.success',
-                        defaultMessage: 'Gateway Environment added successfully.',
-                    }));
-                });
         }
 
         promiseAPICall.then((result) => {
@@ -1522,7 +1515,10 @@ function AddEditGWEnvironment(props) {
                                 >
                                     {isUniversalGatewayCreate ? (
                                         <FormattedMessage
-                                            id='GatewayEnvironments.AddEditGWEnvironment.general.details.description'
+                                            id={
+                                                'GatewayEnvironments.'
+                                                + 'AddEditGWEnvironment.general.details.description.platform'
+                                            }
                                             defaultMessage={'Provide display name and description of '
                                                 + 'the Gateway Environment'}
                                         />
@@ -2031,7 +2027,10 @@ function AddEditGWEnvironment(props) {
                                         </Typography>
                                         <Typography color='inherit' variant='caption' component='p'>
                                             <FormattedMessage
-                                                id='GatewayEnvironments.AddEditGWEnvironment.visibility.add.description'
+                                                id={
+                                                    'GatewayEnvironments.'
+                                                    + 'AddEditGWEnvironment.form.visibility.helper.text'
+                                                }
                                                 defaultMessage='Visibility of the Gateway Environment'
                                             />
                                         </Typography>
