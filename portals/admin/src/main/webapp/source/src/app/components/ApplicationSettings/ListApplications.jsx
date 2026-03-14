@@ -169,10 +169,25 @@ export default function ListApplications() {
         filterApps,
     };
 
-    const upgradableApps = applicationList?.filter(
-        (app) => app.tokenType !== 'JWT',
-    );
+    const ALLOWED_KEY_MANAGERS = ['default', 'WSO2-IS'];
 
+    const upgradableApps = applicationList?.filter((app) => {
+        // Skip apps that already use JWT
+        if (app.tokenType === 'JWT') {
+            return false;
+        }
+
+        const keyManagers = Array.isArray(app.keyManagers) ? app.keyManagers : [];
+
+        // Case 1: Has key managers matching the specific name and allowed type
+        const hasAllowedKM = keyManagers.some((km) => km.name === 'Resident Key Manager'
+            && ALLOWED_KEY_MANAGERS.includes(km.type));
+
+        // Case 2: No key managers
+        const noKeyManagers = keyManagers.length === 0;
+
+        return hasAllowedKM || noKeyManagers;
+    });
     const warning = (
         <>
             {intl.formatMessage({
@@ -199,7 +214,7 @@ export default function ListApplications() {
         {
             label: intl.formatMessage({
                 defaultMessage: 'Owner',
-                id: 'ApplicationSettings.ListApplicationschange.app.owner.tab.title.tab.title',
+                id: 'ApplicationSettings.ListApplications.change.app.owner.tab.title',
             }),
             content: <ChangeAppOwner {...childProps} />,
         },
