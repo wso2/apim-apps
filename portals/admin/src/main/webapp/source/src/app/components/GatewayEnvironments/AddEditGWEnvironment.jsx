@@ -74,11 +74,35 @@ import {
     toPlatformGatewayName,
 } from './UniversalGatewayUtils';
 
+const PREFIX = 'AddEditGWEnvironment';
+
+const classes = {
+    pageContent: `${PREFIX}-pageContent`,
+    platformLoadingRow: `${PREFIX}-platformLoadingRow`,
+    backButton: `${PREFIX}-backButton`,
+    platformSummaryCard: `${PREFIX}-platformSummaryCard`,
+    platformSummaryHeader: `${PREFIX}-platformSummaryHeader`,
+    platformAvatar: `${PREFIX}-platformAvatar`,
+    platformSummaryBody: `${PREFIX}-platformSummaryBody`,
+    platformTagRow: `${PREFIX}-platformTagRow`,
+    platformEditLayout: `${PREFIX}-platformEditLayout`,
+    platformEditFields: `${PREFIX}-platformEditFields`,
+    platformEditActions: `${PREFIX}-platformEditActions`,
+    platformTitleRow: `${PREFIX}-platformTitleRow`,
+    platformConfigPaper: `${PREFIX}-platformConfigPaper`,
+    platformConfigSection: `${PREFIX}-platformConfigSection`,
+    platformConfigGuide: `${PREFIX}-platformConfigGuide`,
+    wso2TypeSelector: `${PREFIX}-wso2TypeSelector`,
+    wso2TypeButton: `${PREFIX}-wso2TypeButton`,
+    roleContainer: `${PREFIX}-roleContainer`,
+    roleErrorAdornment: `${PREFIX}-roleErrorAdornment`,
+};
+
 const StyledSpan = styled('span')(({ theme }) => ({
     color: theme.palette.error.dark,
 }));
 
-const StyledContentBase = styled(ContentBase)({
+const StyledContentBase = styled(ContentBase)(({ theme }) => ({
     '@global': {
         '.MuiFormControl-root': {
             marginTop: '20px',
@@ -87,7 +111,123 @@ const StyledContentBase = styled(ContentBase)({
             marginTop: '0',
         },
     },
-});
+    [`& .${classes.pageContent}`]: {
+        marginBottom: theme.spacing(10),
+    },
+    [`& .${classes.platformLoadingRow}`]: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: theme.spacing(1),
+    },
+    [`& .${classes.backButton}`]: {
+        marginBottom: theme.spacing(3),
+        paddingLeft: theme.spacing(0.5),
+        paddingRight: theme.spacing(0.5),
+    },
+    [`& .${classes.platformSummaryCard}`]: {
+        border: '1px solid',
+        borderColor: theme.palette.divider,
+        borderRadius: theme.shape.borderRadius * 2,
+        padding: theme.spacing(2),
+        backgroundColor: theme.palette.background.paper,
+        [theme.breakpoints.up('md')]: {
+            padding: theme.spacing(3),
+        },
+    },
+    [`& .${classes.platformSummaryHeader}`]: {
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: theme.spacing(2),
+        flexDirection: 'column',
+        [theme.breakpoints.up('md')]: {
+            flexDirection: 'row',
+        },
+    },
+    [`& .${classes.platformAvatar}`]: {
+        width: 96,
+        height: 96,
+        borderRadius: theme.shape.borderRadius * 2,
+        backgroundColor: theme.palette.primary.dark,
+        color: theme.palette.primary.contrastText,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '2rem',
+        fontWeight: 700,
+        flexShrink: 0,
+    },
+    [`& .${classes.platformSummaryBody}`]: {
+        flex: 1,
+        minWidth: 0,
+    },
+    [`& .${classes.platformTagRow}`]: {
+        display: 'flex',
+        gap: theme.spacing(1),
+        flexWrap: 'wrap',
+        marginBottom: theme.spacing(1.5),
+    },
+    [`& .${classes.platformEditLayout}`]: {
+        display: 'flex',
+        gap: theme.spacing(1.5),
+        alignItems: 'flex-start',
+        flexDirection: 'column',
+        [theme.breakpoints.up('md')]: {
+            flexDirection: 'row',
+        },
+    },
+    [`& .${classes.platformEditFields}`]: {
+        flex: 1,
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: theme.spacing(1.5),
+    },
+    [`& .${classes.platformEditActions}`]: {
+        display: 'flex',
+        gap: theme.spacing(1),
+        paddingTop: theme.spacing(0.5),
+    },
+    [`& .${classes.platformTitleRow}`]: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: theme.spacing(1),
+        flexWrap: 'wrap',
+        marginBottom: theme.spacing(1),
+    },
+    [`& .${classes.platformConfigPaper}`]: {
+        overflow: 'hidden',
+    },
+    [`& .${classes.platformConfigSection}`]: {
+        padding: theme.spacing(3),
+    },
+    [`& .${classes.platformConfigGuide}`]: {
+        paddingLeft: theme.spacing(3),
+        paddingRight: theme.spacing(3),
+        paddingBottom: theme.spacing(3),
+    },
+    [`& .${classes.wso2TypeSelector}`]: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: theme.spacing(1.5),
+    },
+    [`& .${classes.wso2TypeButton}`]: {
+        textTransform: 'none',
+        minWidth: 220,
+        justifyContent: 'flex-start',
+        borderRadius: theme.spacing(1),
+    },
+    [`& .${classes.roleContainer}`]: {
+        marginRight: theme.spacing(3.75),
+        marginLeft: theme.spacing(1.25),
+        marginTop: theme.spacing(1.25),
+        marginBottom: theme.spacing(1.25),
+    },
+    [`& .${classes.roleErrorAdornment}`]: {
+        position: 'absolute',
+        right: '25px',
+        top: '50%',
+    },
+}));
 
 const StyledHr = styled('hr')({ border: 'solid 1px #efefef' });
 
@@ -773,7 +913,7 @@ function AddEditGWEnvironment(props) {
 
         // same pattern used in admin Rest API
         const httpContextRegex =
-            /^\/?([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])*$/g;
+            /^\/?(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)?$/;
         // empty http context are valid
         const validHttpContext =
             !vhost.httpContext || vhost.httpContext.match(httpContextRegex);
@@ -1173,16 +1313,10 @@ function AddEditGWEnvironment(props) {
                 <Box
                     component='div'
                     m={2}
-                    sx={(theme) => ({ mb: theme.spacing(10) })}
+                    className={classes.pageContent}
                 >
                     {platformGatewayLoading ? (
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 1,
-                            }}
-                        >
+                        <Box className={classes.platformLoadingRow}>
                             <CircularProgress size={20} />
                             <Typography variant='body2'>
                                 {intl.formatMessage({
@@ -1198,7 +1332,7 @@ function AddEditGWEnvironment(props) {
                                 component={RouterLink}
                                 to='/settings/environments/'
                                 startIcon={<ArrowBackIcon />}
-                                sx={{ mb: 3, px: 0.5 }}
+                                className={classes.backButton}
                             >
                                 <FormattedMessage
                                     id='Gateways.AddEditGateway.back.to.gateways'
@@ -1206,58 +1340,14 @@ function AddEditGWEnvironment(props) {
                                 />
                             </Button>
 
-                            <Box
-                                sx={{
-                                    border: '1px solid',
-                                    borderColor: 'divider',
-                                    borderRadius: 2,
-                                    p: { xs: 2, md: 3 },
-                                    bgcolor: 'background.paper',
-                                }}
-                            >
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        alignItems: 'flex-start',
-                                        gap: 2,
-                                        flexDirection: {
-                                            xs: 'column',
-                                            md: 'row',
-                                        },
-                                    }}
-                                >
-                                    <Box
-                                        sx={{
-                                            width: 96,
-                                            height: 96,
-                                            borderRadius: 2,
-                                            bgcolor: 'primary.dark',
-                                            color: 'primary.contrastText',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            fontSize: '2rem',
-                                            fontWeight: 700,
-                                            flexShrink: 0,
-                                        }}
-                                    >
+                            <Box className={classes.platformSummaryCard}>
+                                <Box className={classes.platformSummaryHeader}>
+                                    <Box className={classes.platformAvatar}>
                                         {gatewayInitials}
                                     </Box>
 
-                                    <Box
-                                        sx={{
-                                            flex: 1,
-                                            minWidth: 0,
-                                        }}
-                                    >
-                                        <Box
-                                            sx={{
-                                                display: 'flex',
-                                                gap: 1,
-                                                flexWrap: 'wrap',
-                                                mb: 1.5,
-                                            }}
-                                        >
+                                    <Box className={classes.platformSummaryBody}>
+                                        <Box className={classes.platformTagRow}>
                                             <Chip
                                                 label={intl.formatMessage({
                                                     id: 'Gateways.AddEditGateway.platform.tag.selfHosted',
@@ -1279,26 +1369,8 @@ function AddEditGWEnvironment(props) {
                                         </Box>
 
                                         {platformHeaderEditMode ? (
-                                            <Box
-                                                sx={{
-                                                    display: 'flex',
-                                                    gap: 1.5,
-                                                    alignItems: 'flex-start',
-                                                    flexDirection: {
-                                                        xs: 'column',
-                                                        md: 'row',
-                                                    },
-                                                }}
-                                            >
-                                                <Box
-                                                    sx={{
-                                                        flex: 1,
-                                                        width: '100%',
-                                                        display: 'flex',
-                                                        flexDirection: 'column',
-                                                        gap: 1.5,
-                                                    }}
-                                                >
+                                            <Box className={classes.platformEditLayout}>
+                                                <Box className={classes.platformEditFields}>
                                                     <TextField
                                                         fullWidth
                                                         size='small'
@@ -1347,13 +1419,7 @@ function AddEditGWEnvironment(props) {
                                                         }
                                                     />
                                                 </Box>
-                                                <Box
-                                                    sx={{
-                                                        display: 'flex',
-                                                        gap: 1,
-                                                        pt: 0.5,
-                                                    }}
-                                                >
+                                                <Box className={classes.platformEditActions}>
                                                     <IconButton
                                                         color='primary'
                                                         onClick={
@@ -1387,15 +1453,7 @@ function AddEditGWEnvironment(props) {
                                             </Box>
                                         ) : (
                                             <>
-                                                <Box
-                                                    sx={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: 1,
-                                                        flexWrap: 'wrap',
-                                                        mb: 1,
-                                                    }}
-                                                >
+                                                <Box className={classes.platformTitleRow}>
                                                     <Typography
                                                         variant='h4'
                                                         sx={{ fontWeight: 700 }}
@@ -1441,11 +1499,8 @@ function AddEditGWEnvironment(props) {
 
                                 <Divider sx={{ my: 3 }} />
 
-                                <Paper
-                                    elevation={1}
-                                    sx={{ overflow: 'hidden' }}
-                                >
-                                    <Box sx={{ p: 3 }}>
+                                <Paper elevation={1} className={classes.platformConfigPaper}>
+                                    <Box className={classes.platformConfigSection}>
                                         <Typography variant='h6' sx={{ mb: 2 }}>
                                             <FormattedMessage
                                                 id='Gateways.AddEditGateway.platform.configurations.title'
@@ -1489,7 +1544,7 @@ function AddEditGWEnvironment(props) {
                                         </Grid>
                                     </Box>
                                     <Divider sx={{ mx: 3, mb: 3 }} />
-                                    <Box sx={{ px: 3, pb: 3 }}>
+                                    <Box className={classes.platformConfigGuide}>
                                         <QuickStartGuide
                                             gateway={platformGateway}
                                             showReconfigureAction
@@ -1570,7 +1625,7 @@ function AddEditGWEnvironment(props) {
             <Box
                 component='div'
                 m={2}
-                sx={(theme) => ({ mb: theme.spacing(10) })}
+                className={classes.pageContent}
             >
                 <Grid container spacing={2}>
                     {isWSO2CreateMode && (
@@ -1606,11 +1661,7 @@ function AddEditGWEnvironment(props) {
                                 <Box
                                     component='div'
                                     m={1}
-                                    sx={{
-                                        display: 'flex',
-                                        flexWrap: 'wrap',
-                                        gap: 1.5,
-                                    }}
+                                    className={classes.wso2TypeSelector}
                                 >
                                     {filteredGatewayTypes.map((item) => (
                                         <Button
@@ -1629,12 +1680,7 @@ function AddEditGWEnvironment(props) {
                                                 isReadOnly ||
                                                 shouldLockGatewayTypeSelection
                                             }
-                                            sx={{
-                                                textTransform: 'none',
-                                                minWidth: 220,
-                                                justifyContent: 'flex-start',
-                                                borderRadius: 2,
-                                            }}
+                                            className={classes.wso2TypeButton}
                                         >
                                             {getDisplayName(item)}
                                         </Button>
@@ -2466,12 +2512,7 @@ function AddEditGWEnvironment(props) {
                                                     display='flex'
                                                     flexDirection='row'
                                                     alignItems='center'
-                                                    sx={{
-                                                        mr: 3.75,
-                                                        ml: 1.25,
-                                                        mt: 1.25,
-                                                        mb: 1.25,
-                                                    }}
+                                                    className={classes.roleContainer}
                                                 >
                                                     <MuiChipsInput
                                                         fullWidth
@@ -2494,16 +2535,11 @@ function AddEditGWEnvironment(props) {
                                                         data-testid='gateway-permission-roles'
                                                         InputProps={{
                                                             endAdornment:
-                                                                !roleValidity && (
-                                                                    <InputAdornment
-                                                                        position='end'
-                                                                        sx={{
-                                                                            position:
-                                                                                'absolute',
-                                                                            right: '25px',
-                                                                            top: '50%',
-                                                                        }}
-                                                                    >
+                                                                        !roleValidity && (
+                                                                            <InputAdornment
+                                                                                position='end'
+                                                                                className={classes.roleErrorAdornment}
+                                                                            >
                                                                         <Error color='error' />
                                                                     </InputAdornment>
                                                                 ),
