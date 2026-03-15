@@ -60,6 +60,10 @@ const classes = {
     titleColumn: `${PREFIX}-titleColumn`,
     keyInfoTable: `${PREFIX}-keyInfoTable`,
     leftCol: `${PREFIX}-leftCol`,
+    accordion: `${PREFIX}-accordion`,
+    accordionSummary: `${PREFIX}-accordionSummary`,
+    accordionDetails: `${PREFIX}-accordionDetails`,
+    accordionTable: `${PREFIX}-accordionTable`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
@@ -137,6 +141,29 @@ const Root = styled('div')((
 
     [`& .${classes.leftCol}`]: {
         width: 180,
+    },
+
+    [`& .${classes.accordion}`]: {
+        backgroundColor: 'inherit',
+        boxShadow: 'none',
+        '&:before': {
+            display: 'none',
+        },
+    },
+
+    [`& .${classes.accordionSummary}`]: {
+        backgroundColor: 'inherit',
+    },
+
+    [`& .${classes.accordionDetails}`]: {
+        backgroundColor: 'inherit',
+    },
+
+    [`& .${classes.accordionTable}`]: {
+        backgroundColor: 'inherit',
+        '& td, & th': {
+            backgroundColor: 'inherit',
+        },
     }
 }));
 
@@ -565,10 +592,14 @@ const KeyConfiguration = (props) => {
                                 <TableRow>
                                     <TableCell colSpan={2} sx={{ p: 0, border: 'none' }}>
                                         <Accordion
+                                            className={classes.accordion}
                                             expanded={expanded}
                                             onChange={handleAccordionChange}
                                         >
-                                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                            <AccordionSummary
+                                                className={classes.accordionSummary}
+                                                expandIcon={<ExpandMoreIcon />}
+                                            >
                                                 <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                                                     <FormattedMessage
                                                         id="Shared.AppsAndKeys.KeyConfiguration.advanced.configurations"
@@ -576,8 +607,8 @@ const KeyConfiguration = (props) => {
                                                     />
                                                 </Typography>
                                             </AccordionSummary>
-                                            <AccordionDetails sx={{ p: 0 }}>
-                                                <Table size="small">
+                                            <AccordionDetails className={classes.accordionDetails} sx={{ p: 0 }}>
+                                                <Table className={classes.accordionTable} size="small">
                                                     <TableBody>
                                                         {advancedConfigurations}
                                                     </TableBody>
