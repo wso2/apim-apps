@@ -57,14 +57,15 @@ export default function DeleteSecretDialog({ onDelete, disabled }) {
           defaultMessage: 'Delete secret',
         })}
       >
-        <span>
-          <IconButton color="error" onClick={handleClickOpen} disabled={disabled}>
+        <span data-testid="secret-delete-trigger-wrapper">
+          <IconButton data-testid="secret-delete-trigger" color="error" onClick={handleClickOpen} disabled={disabled}>
             <DeleteIcon />
           </IconButton>
         </span>
       </Tooltip>
 
       <Dialog
+        data-testid="delete-secret-dialog"
         open={open}
         onClose={handleClose}
         aria-labelledby="delete-secret-title"
@@ -85,13 +86,13 @@ export default function DeleteSecretDialog({ onDelete, disabled }) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="inherit">
+          <Button data-testid="delete-secret-cancel" onClick={handleClose} color="inherit">
             <FormattedMessage
               id='Shared.AppsAndKeys.Secrets.DeleteSecret.delete.secret.dialog.cancel.button'
               defaultMessage='Cancel'
             />
           </Button>
-          <Button onClick={handleConfirmDelete} color='primary' variant="contained" autoFocus>
+          <Button data-testid="delete-secret-confirm" onClick={handleConfirmDelete} color='primary' variant="contained" autoFocus>
             <FormattedMessage
               id='Shared.AppsAndKeys.Secrets.DeleteSecret.delete.secret.dialog.delete.button'
               defaultMessage='Delete'
