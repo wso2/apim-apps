@@ -19,14 +19,13 @@ let apiId;
 describe("Create GraphQl API from file", () => {
   const username = 'admin';
   const password = 'admin';
+  const filmSubscriberRole = `FilmSubscriber${Utils.generateRandomNumber()}`;
   const filepath = 'api_artifacts/schema_graphql.graphql';
   const modifiedFilepath = 'api_artifacts/modified_schema_graphql.graphql';
   const apiVersion = '1.0.0';
-  let apiContext;
-  let apiName;
-  let applicationName;
-  let applicationCreated = false;
-  let filmSubscriberRole;
+  const apiContext = `/swapi${Utils.generateRandomNumber()}`;
+  const apiName = `StarWarsAPIGQL${Utils.generateRandomNumber()}`;
+  const applicationName = 'Graphql Client App';
   const starWarsQueryRequest = `query{
       human(id:1000){\n
          id\n
@@ -95,7 +94,6 @@ describe("Create GraphQl API from file", () => {
 
   beforeEach(function () {
     //add role filmsubscriber
-    filmSubscriberRole = `FilmSubscriber${Utils.generateRandomNumber()}`;
     cy.carbonLogin(username, password);
     cy.visit('/carbon/role/add-step1.jsp');
     cy.get('input[name="roleName"]').type(filmSubscriberRole);
@@ -119,9 +117,6 @@ describe("Create GraphQl API from file", () => {
   })
 
   it("Verify GraphQl API Capabilities", () => {
-    apiContext = `/swapi${Utils.generateRandomNumber()}`;
-    apiName = `StarWarsAPIGQL${Utils.generateRandomNumber()}`;
-    applicationName = `Graphql Client App ${Utils.generateRandomNumber()}`;
 
     //create a graphql API
     cy.createGraphqlAPIfromFile(apiName, apiVersion, apiContext, filepath).then(value => {
@@ -183,7 +178,7 @@ describe("Create GraphQl API from file", () => {
                   .should('not.have.class', 'Mui-disabled').click({ force: true });
                 cy.contains('Revision Created Successfully');
                 cy.contains('Revision Deployed Successfully');
-                // cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
+                cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
 
                 //publish
                 cy.get("#left-menu-overview", { timeout: Cypress.env('largeTimeout') }).click();
@@ -196,9 +191,6 @@ describe("Create GraphQl API from file", () => {
 
                 // create an application
                 cy.createApplication(applicationName, "50PerMin", "Sample Description");
-                cy.then(() => {
-                  applicationCreated = true;
-                });
 
                 //go to apis
                 cy.get('[data-testid="itest-link-to-apis"]',
@@ -305,10 +297,8 @@ expect(JSON.stringify(resp.body)).to.include(starWarsSubscriptionResponse);
 
 
   after(function () {
-    if (applicationCreated) {
-      cy.deleteApplication(applicationName);
-      cy.logoutFromDevportal();
-    }
+    cy.deleteApplication(applicationName);
+    cy.logoutFromDevportal();
     cy.loginToPublisher(username, password);
     cy.log("app id " + apiId);
     // Test is done. Now delete the api

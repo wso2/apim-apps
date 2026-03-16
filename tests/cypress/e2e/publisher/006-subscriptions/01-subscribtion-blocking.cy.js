@@ -79,11 +79,17 @@ describe("Subscription blocking", () => {
     afterEach(() => {
         cy.loginToDevportal(developer, password);
         cy.visit(`/devportal/applications?tenant=carbon.super`);
-        cy.get(`#delete-${appName}-btn`, { timeout: Cypress.env('largeTimeout') });
-        cy.get(`#delete-${appName}-btn`).click();
-        cy.get(`#itest-confirm-application-delete`).click();
+        cy.get('body').then(($body) => {
+            if ($body.find(`#delete-${appName}-btn`).length > 0) {
+                cy.get(`#delete-${appName}-btn`, { timeout: Cypress.env('largeTimeout') }).click();
+                cy.get(`#itest-confirm-application-delete`).click();
+            }
+        });
         cy.logoutFromDevportal();
-        cy.loginToPublisher(publisher, password);
-        Utils.deleteAPI(testApiId);
+        if (testApiId) {
+            cy.loginToPublisher(publisher, password);
+            Utils.deleteAPI(testApiId);
+            cy.logoutFromPublisher();
+        }
     })
 })
