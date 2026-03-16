@@ -57,19 +57,19 @@ describe('Key Manager Constraints (Admin & DevPortal)', () => {
     };
     const expandConstraintsSection = () => {
         cy.get('#KeyManagers\\.AddEditKeyManager\\.app\\.config\\.constraints\\.header', {
-            timeout: Cypress.config().largeTimeout,
+            timeout: Cypress.env('largeTimeout'),
         }).scrollIntoView({ offset: { top: -100, left: 0 } }).click();
     };
 
     it('1. should create a WSO2 IS Key Manager in Admin portal and set constraints', () => {
         cy.loginToAdmin(carbonUsername, carbonPassword);
-        cy.get('[data-testid="Key Managers"]', { timeout: Cypress.config().largeTimeout }).click();
+        cy.get('[data-testid="Key Managers"]', { timeout: Cypress.env('largeTimeout') }).click();
     
         // Click Add Key Manager
-        cy.get('[data-testid="add-key-manager-button"]', { timeout: Cypress.config().largeTimeout }).click();
+        cy.get('[data-testid="add-key-manager-button"]', { timeout: Cypress.env('largeTimeout') }).click();
 
         // Fill Basic Info
-        cy.get('input[name="name"]', { timeout: Cypress.config().largeTimeout }).type(kmName);
+        cy.get('input[name="name"]', { timeout: Cypress.env('largeTimeout') }).type(kmName);
         cy.get('input[name="displayName"]').type(`${kmName}`);
         cy.get('[data-testid="key-manager-type-select"]').click();
         cy.get('li[data-value="WSO2-IS"]').click();
@@ -114,8 +114,8 @@ describe('Key Manager Constraints (Admin & DevPortal)', () => {
         cy.createApp(appName, 'E2E test for constraints');
         
         // Navigate to OAuth keys generation tab
-        cy.get('#production-keys-oauth', { timeout: Cypress.config().largeTimeout }).click();
-        cy.get(`#${kmName}`, { timeout: Cypress.config().largeTimeout })
+        cy.get('#production-keys-oauth', { timeout: Cypress.env('largeTimeout') }).click();
+        cy.get(`#${kmName}`, { timeout: Cypress.env('largeTimeout') })
             .scrollIntoView({ offset: { top: -100, left: 0 } })
             .should('be.visible')
             .click({ force: true });
@@ -123,7 +123,7 @@ describe('Key Manager Constraints (Admin & DevPortal)', () => {
         // Function to check a specific DevPortal Max constraint
         const verifyMaxConstraint = (inputId, maxAllowedValue) => {
             const inputSelector = `#${inputId}`; 
-            cy.get(inputSelector, { timeout: Cypress.config().largeTimeout })
+            cy.get(inputSelector, { timeout: Cypress.env('largeTimeout') })
                 .scrollIntoView({ offset: { top: -150, left: 0 } })
                 .should('be.visible')
                 .clear({ force: true })
@@ -162,7 +162,7 @@ describe('Key Manager Constraints (Admin & DevPortal)', () => {
         cy.visit('/admin/settings/key-managers/');
         // Guard deletion: only delete when the KM row is actually present so a
         // failed creation test does not mask its own error with a teardown failure.
-        cy.get('td > div', { timeout: Cypress.config().largeTimeout }).then(($els) => {
+        cy.get('td > div', { timeout: Cypress.env('largeTimeout') }).then(($els) => {
             const kmExists = Array.from($els).some((el) => el.textContent.includes(kmName));
             if (kmExists) {
                 // Register the intercept before triggering the click to avoid a race condition.
