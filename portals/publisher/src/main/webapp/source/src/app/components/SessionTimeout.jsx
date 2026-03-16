@@ -108,9 +108,11 @@ const SessionTimeout = () => {
                 message={
                     <FormattedMessage
                         id='SessionTimeout.dialog.message'
-                        defaultMessage='Your session is about to expire due to inactivity. To keep your session active, 
-                        click “Stay Logged In”. If no action is taken, you will be logged out 
-                        automatically in {time} seconds, for security reasons.'
+                        defaultMessage={
+                            'Your session is about to expire due to inactivity. To keep your session active, ' +
+                            'click "Stay Logged In". If no action is taken, you will be logged out ' +
+                            'automatically in {time} seconds, for security reasons.'
+                        }
                         values={{time: remainingTime}} // Use remainingTime here
                     />
                 }
