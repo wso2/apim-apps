@@ -21,11 +21,15 @@ import TabPanelShared from 'AppComponents/Shared/PoliciesUI/TabPanel';
 import DraggablePolicyCard from '../DraggablePolicyCard';
 import type { Policy } from '../Types';
 
+// Flow names moved outside component to avoid recreation on each render
+const FLOW_NAMES = ['request', 'response', 'fault'] as const;
+
 interface TabPanelProps {
     children?: React.ReactNode;
     index: number;
-    commonPolicyList: Policy[];
-    apiPolicyList: Policy[];
+    commonPolicyList?: Policy[];
+    apiPolicyList?: Policy[];
+    policyList?: Policy[];
     selectedTab: number;
     fetchPolicies: () => void;
     isReadOnly?: boolean;
@@ -42,19 +46,20 @@ const TabPanel: FC<TabPanelProps> = ({
     index,
     commonPolicyList,
     apiPolicyList,
+    policyList,
     selectedTab,
     fetchPolicies,
     isReadOnly = false,
     hideViewButton = false,
 }) => {
-    const flowNames = ['request', 'response', 'fault'];
-    const currentFlow = flowNames[index];
+    const currentFlow = FLOW_NAMES[index] ?? 'request';
 
     return (
         <TabPanelShared
             selectedTab={selectedTab}
             index={index}
             currentFlow={currentFlow}
+            policyList={policyList}
             commonPolicyList={commonPolicyList}
             apiPolicyList={apiPolicyList}
             fetchPolicies={fetchPolicies}

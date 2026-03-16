@@ -22,33 +22,45 @@
 import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import Alert from 'AppComponents/Shared/Alert';
-import { Box, Button, Card, CardContent, CircularProgress, Divider, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, CircularProgress, Tab, Tabs, Typography } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
+import ComputerIcon from '@mui/icons-material/Computer';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { useIntl } from 'react-intl';
 import { gatewayShape, getPlatformGatewayReleaseConfig } from './UniversalGatewayUtils';
 
+const QUICK_START_TAB = {
+    quickStart: 'quick-start',
+    virtualMachine: 'virtual-machine',
+    docker: 'docker',
+    kubernetes: 'kubernetes',
+};
+
 const QUICK_START_TABS = [
     {
-        value: 'quick-start',
+        value: QUICK_START_TAB.quickStart,
         labelKey: 'Gateways.UniversalGatewayManagement.quick.start.tab.quick.start',
         defaultMessage: 'Quick Start',
+        icon: null,
     },
     {
-        value: 'virtual-machine',
+        value: QUICK_START_TAB.virtualMachine,
         labelKey: 'Gateways.UniversalGatewayManagement.quick.start.tab.virtual.machine',
         defaultMessage: 'Virtual Machine',
+        icon: <ComputerIcon />,
     },
     {
-        value: 'docker',
+        value: QUICK_START_TAB.docker,
         labelKey: 'Gateways.UniversalGatewayManagement.quick.start.tab.docker',
         defaultMessage: 'Docker',
+        icon: <img src='/site/public/images/docker-icon.png' alt='Docker' width={20} height={20} />,
     },
     {
-        value: 'kubernetes',
+        value: QUICK_START_TAB.kubernetes,
         labelKey: 'Gateways.UniversalGatewayManagement.quick.start.tab.kubernetes',
         defaultMessage: 'Kubernetes',
+        icon: <img src='/site/public/images/Kubernetes_logo.png' alt='Kubernetes' width={20} height={20} />,
     },
 ];
 
@@ -365,7 +377,13 @@ const renderKubernetesGuide = ({
 };
 
 const renderQuickStartTabLabel = (tabConfig, t) => (
-    <Tab key={tabConfig.value} value={tabConfig.value} label={t(tabConfig.labelKey, tabConfig.defaultMessage)} />
+    <Tab
+        key={tabConfig.value}
+        value={tabConfig.value}
+        label={t(tabConfig.labelKey, tabConfig.defaultMessage)}
+        icon={tabConfig.icon}
+        iconPosition='start'
+    />
 );
 
 const CodeBlock = ({ code, copyCode }) => {
@@ -449,7 +467,7 @@ const QuickStartGuide = ({
 }) => {
     const intl = useIntl();
     const t = (id, defaultMessage, values) => intl.formatMessage({ id, defaultMessage }, values);
-    const [selectedTab, setSelectedTab] = useState('quick-start');
+    const [selectedTab, setSelectedTab] = useState(QUICK_START_TAB.quickStart);
     const { settings } = useAppContext();
     const { artifactName, controlPlaneHost, downloadCommand } = useMemo(
         () => getPlatformGatewayReleaseConfig(settings),
@@ -482,7 +500,7 @@ ENVFILE`;
 
     let tabContent;
     switch (selectedTab) {
-        case 'virtual-machine':
+        case QUICK_START_TAB.virtualMachine:
             tabContent = renderVirtualMachineGuide({
                 t,
                 downloadCommand,
@@ -490,7 +508,7 @@ ENVFILE`;
                 tokenConfigurationStep,
             });
             break;
-        case 'docker':
+        case QUICK_START_TAB.docker:
             tabContent = renderDockerGuide({
                 t,
                 downloadCommand,
@@ -498,7 +516,7 @@ ENVFILE`;
                 tokenConfigurationStep,
             });
             break;
-        case 'kubernetes':
+        case QUICK_START_TAB.kubernetes:
             tabContent = renderKubernetesGuide({
                 t,
                 controlPlaneHost,
@@ -507,7 +525,7 @@ ENVFILE`;
                 tokenConfigurationStep,
             });
             break;
-        case 'quick-start':
+        case QUICK_START_TAB.quickStart:
         default:
             tabContent = renderQuickStartOverview({
                 t,
@@ -560,7 +578,6 @@ ENVFILE`;
             >
                 {QUICK_START_TABS.map((tabConfig) => renderQuickStartTabLabel(tabConfig, t))}
             </Tabs>
-            <Divider sx={{ mb: 3 }} />
             {tabContent}
         </>
     );

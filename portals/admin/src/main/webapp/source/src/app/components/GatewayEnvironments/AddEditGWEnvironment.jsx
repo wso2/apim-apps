@@ -58,6 +58,7 @@ import AddEditVhost from 'AppComponents/GatewayEnvironments/AddEditVhost';
 import GatewayConfiguration from 'AppComponents/GatewayEnvironments/GatewayConfiguration';
 import cloneDeep from 'lodash.clonedeep';
 import CircularProgress from '@mui/material/CircularProgress';
+import GatewayTypeOptionCard from './GatewayTypeOptionCard';
 import QuickStartGuide from './UniversalGatewayQuickStartGuide';
 import {
     buildAdditionalPropertiesArray,
@@ -93,7 +94,6 @@ const classes = {
     platformConfigSection: `${PREFIX}-platformConfigSection`,
     platformConfigGuide: `${PREFIX}-platformConfigGuide`,
     wso2TypeSelector: `${PREFIX}-wso2TypeSelector`,
-    wso2TypeButton: `${PREFIX}-wso2TypeButton`,
     roleContainer: `${PREFIX}-roleContainer`,
     roleErrorAdornment: `${PREFIX}-roleErrorAdornment`,
 };
@@ -206,15 +206,10 @@ const StyledContentBase = styled(ContentBase)(({ theme }) => ({
         paddingBottom: theme.spacing(3),
     },
     [`& .${classes.wso2TypeSelector}`]: {
-        display: 'flex',
-        flexWrap: 'wrap',
+        display: 'grid',
         gap: theme.spacing(1.5),
-    },
-    [`& .${classes.wso2TypeButton}`]: {
-        textTransform: 'none',
-        minWidth: 220,
-        justifyContent: 'flex-start',
-        borderRadius: theme.spacing(1),
+        gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+        width: '100%',
     },
     [`& .${classes.roleContainer}`]: {
         marginRight: theme.spacing(3.75),
@@ -1071,6 +1066,22 @@ function AddEditGWEnvironment(props) {
         }
         return errorText;
     };
+    const hasFormErrors = useMemo(
+        () => getAllFormErrors() !== '',
+        [
+            additionalProperties,
+            displayName,
+            gatewayConfigurations,
+            gatewayMode,
+            gatewayType,
+            intl,
+            isUniversalGatewayCreate,
+            name,
+            platformGatewayBaseUrl,
+            scheduledInterval,
+            vhosts,
+        ]
+    );
     const formSaveCallback = () => {
         setValidating(true);
         const formErrors = getAllFormErrors();
@@ -1228,6 +1239,42 @@ function AddEditGWEnvironment(props) {
         } else {
             return value + ' Gateway';
         }
+    };
+
+    const getGatewayTypeDescription = (value) => {
+        if (value === CONSTS.GATEWAY_TYPE.apiPlatform) {
+            return intl.formatMessage({
+                id: 'Gateways.AddEditGateway.type.apiPlatform.description',
+                defaultMessage: 'New self-hosted API platform gateway',
+            });
+        } else if (value === CONSTS.GATEWAY_TYPE.regular) {
+            return intl.formatMessage({
+                id: 'Gateways.AddEditGateway.type.regular.description',
+                defaultMessage: 'Enterprise-grade self-hosted Synapse gateway',
+            });
+        } else if (value === CONSTS.GATEWAY_TYPE.apk) {
+            return intl.formatMessage({
+                id: 'Gateways.AddEditGateway.type.apk.description',
+                defaultMessage: 'Kubernetes-native gateway runtime',
+            });
+        }
+
+        return intl.formatMessage({
+            id: 'Gateways.AddEditGateway.type.default.description',
+            defaultMessage: 'Gateway runtime option',
+        });
+    };
+
+    const getGatewayTypeBadgeLabel = (value) => {
+        if (value === CONSTS.GATEWAY_TYPE.apiPlatform) {
+            return 'UG';
+        } else if (value === CONSTS.GATEWAY_TYPE.regular) {
+            return 'UC';
+        } else if (value === CONSTS.GATEWAY_TYPE.apk) {
+            return 'KG';
+        }
+
+        return 'GW';
     };
 
     const GW_MODE_METADATA = {
@@ -1489,7 +1536,7 @@ function AddEditGWEnvironment(props) {
                                                         intl.formatMessage({
                                                             id: 'Gateways.AddEditGateway.platform.description.empty',
                                                             defaultMessage:
-                                                                'No description provided for this gateway yet.',
+                                                                'No description provided.',
                                                         })}
                                                 </Typography>
                                             </>
@@ -1658,34 +1705,36 @@ function AddEditGWEnvironment(props) {
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} md={12} lg={9}>
-                                <Box
-                                    component='div'
-                                    m={1}
-                                    className={classes.wso2TypeSelector}
+                                <Grid
+                                    container
+                                    spacing={2}
+                                    sx={{ mt: -0.5 }}
                                 >
                                     {filteredGatewayTypes.map((item) => (
-                                        <Button
-                                            key={item}
-                                            variant={
-                                                gatewayType === item
-                                                    ? 'contained'
-                                                    : 'outlined'
-                                            }
-                                            onClick={() =>
-                                                handleWSO2GatewayTypeSelection(
+                                        <Grid item xs={12} md={4}>
+                                            <GatewayTypeOptionCard
+                                                key={item}
+                                                title={getDisplayName(item)}
+                                                description={getGatewayTypeDescription(
                                                     item
-                                                )
-                                            }
-                                            disabled={
-                                                isReadOnly ||
-                                                shouldLockGatewayTypeSelection
-                                            }
-                                            className={classes.wso2TypeButton}
-                                        >
-                                            {getDisplayName(item)}
-                                        </Button>
+                                                )}
+                                                badgeLabel={getGatewayTypeBadgeLabel(
+                                                    item
+                                                )}
+                                                selected={gatewayType === item}
+                                                onSelect={() =>
+                                                    handleWSO2GatewayTypeSelection(
+                                                        item
+                                                    )
+                                                }
+                                                disabled={
+                                                    isReadOnly ||
+                                                    shouldLockGatewayTypeSelection
+                                                }
+                                            />
+                                        </Grid>
                                     ))}
-                                </Box>
+                                </Grid>
                             </Grid>
                             <Grid item xs={12}>
                                 <Box marginTop={2} marginBottom={2}>
@@ -2540,8 +2589,8 @@ function AddEditGWEnvironment(props) {
                                                                                 position='end'
                                                                                 className={classes.roleErrorAdornment}
                                                                             >
-                                                                        <Error color='error' />
-                                                                    </InputAdornment>
+                                                                                <Error color='error' />
+                                                                            </InputAdornment>
                                                                 ),
                                                         }}
                                                         onAddChip={
@@ -2703,7 +2752,12 @@ function AddEditGWEnvironment(props) {
                                         variant='contained'
                                         color='primary'
                                         onClick={formSaveCallback}
-                                        disabled={!roleValidity || isReadOnly}
+                                        disabled={
+                                            hasFormErrors ||
+                                            !roleValidity ||
+                                            isReadOnly ||
+                                            saving
+                                        }
                                         data-testid='form-dialog-base-save-btn'
                                     >
                                         {saving ? (

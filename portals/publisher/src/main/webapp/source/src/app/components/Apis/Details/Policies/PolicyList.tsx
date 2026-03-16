@@ -38,7 +38,11 @@ import {
     MenuItem,
     Checkbox,
     ListItemText,
+    TextField,
+    InputAdornment,
+    SelectChangeEvent,
 } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import type { Policy } from './Types';
 import TabPanel from './components/TabPanel';
 import CreatePolicy from './CreatePolicy';
@@ -79,7 +83,7 @@ const StyledPaper = styled(Paper)(({ theme }: { theme: Theme }) => ({
 
 const POLICY_HUB_URL = 'https://wso2.com/api-platform/policy-hub/';
 
-interface PolicyListPorps {
+interface PolicyListProps {
     apiPolicyList: Policy[];
     commonPolicyList: Policy[];
     fetchPolicies: () => void;
@@ -95,7 +99,7 @@ interface PolicyListPorps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} List of policies local to the API segment.
  */
-const PolicyList: FC<PolicyListPorps> = ({
+const PolicyList: FC<PolicyListProps> = ({
     apiPolicyList,
     commonPolicyList,
     fetchPolicies,
@@ -110,6 +114,7 @@ const PolicyList: FC<PolicyListPorps> = ({
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
     const [dialogOpen, setDialogOpen] = React.useState(false);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const isReadOnly = isRestricted([
         'apim:api_create',
         'apim:api_publish',
@@ -179,7 +184,7 @@ const PolicyList: FC<PolicyListPorps> = ({
         setDialogOpen(false);
     };
 
-    const handleCategoryChange = (event: any) => {
+    const handleCategoryChange = (event: SelectChangeEvent<string[]>) => {
         const value = event.target.value;
         setSelectedCategories(
             typeof value === 'string' ? value.split(',') : value,
@@ -187,9 +192,16 @@ const PolicyList: FC<PolicyListPorps> = ({
     };
 
     // Empty selection means no filtering; show all categories.
-    const shouldShowPolicy = (policy: Policy) =>
-        selectedCategories.length === 0 ||
-        selectedCategories.includes(getPolicyCategory(policy));
+    const shouldShowPolicy = (policy: Policy) => {
+        const matchesCategory =
+            selectedCategories.length === 0 ||
+            selectedCategories.includes(getPolicyCategory(policy));
+        const matchesSearch =
+            searchQuery.trim() === '' ||
+            policy.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            policy.name?.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesCategory && matchesSearch;
+    };
 
     const filterPoliciesForFlow = (policies: Policy[], flow: string) =>
         policies.filter(
@@ -228,19 +240,25 @@ const PolicyList: FC<PolicyListPorps> = ({
         />
     );
 
-    const renderPolicyHubPanel = () => (
-        <Box height="55vh" pt={1} overflow="scroll">
-            <TabPanel
-                commonPolicyList={filterPolicies(commonPolicyList)}
-                apiPolicyList={filterPolicies(apiPolicyList)}
-                index={0}
-                selectedTab={0}
-                fetchPolicies={fetchPolicies}
-                isReadOnly={isReadOnly}
-                hideViewButton
-            />
-        </Box>
-    );
+    const renderPolicyHubPanel = () => {
+        // Combine all policies into a single flat list for policy hub
+        const combinedPolicies = [
+            ...filterPolicies(commonPolicyList),
+            ...filterPolicies(apiPolicyList),
+        ];
+        return (
+            <Box height="55vh" pt={1} overflow="scroll">
+                <TabPanel
+                    policyList={combinedPolicies}
+                    index={0}
+                    selectedTab={0}
+                    fetchPolicies={fetchPolicies}
+                    isReadOnly={isReadOnly}
+                    hideViewButton
+                />
+            </Box>
+        );
+    };
 
     const renderFlowTabs = () => {
         if (apiType === 'WS') {
@@ -356,30 +374,27 @@ const PolicyList: FC<PolicyListPorps> = ({
                     </Box>
                     <Box mb={2}>
                         {isPolicyHubGateway && (
-                            <Box
-                                display="flex"
-                                justifyContent="flex-end"
-                                mb={1}
-                            >
-                                <Button
-                                    component="a"
-                                    href={POLICY_HUB_URL}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    variant="outlined"
-                                    size="small"
-                                    endIcon={
-                                        <LaunchIcon style={{ fontSize: 15 }} />
-                                    }
-                                >
-                                    <FormattedMessage
-                                        id="Apis.Details.Policies.PolicyList.policy.hub.button"
-                                        defaultMessage="Policy Hub"
-                                    />
-                                </Button>
-                            </Box>
+                            <TextField
+                                fullWidth
+                                size="small"
+                                placeholder={intl.formatMessage({
+                                    id: 'Apis.Details.Policies.PolicyList.search.placeholder',
+                                    defaultMessage: 'Search policies',
+                                })}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon color="action" />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                                sx={{ mb: 2 }}
+                            />
                         )}
-                        <FormControl fullWidth size="small">
+                        <Box display="flex" alignItems="center" gap={1}>
+                            <FormControl fullWidth size="small">
                             <InputLabel id="policy-category-select-label">
                                 <FormattedMessage
                                     id="Apis.Details.Policies.PolicyList.category.filter"
@@ -407,6 +422,26 @@ const PolicyList: FC<PolicyListPorps> = ({
                                 ))}
                             </Select>
                         </FormControl>
+                            {isPolicyHubGateway && (
+                                <Button
+                                    component="a"
+                                    href={POLICY_HUB_URL}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    variant="outlined"
+                                    size="small"
+                                    endIcon={
+                                        <LaunchIcon style={{ fontSize: 15 }} />
+                                    }
+                                    sx={{ whiteSpace: 'nowrap', height: 40, minWidth: 'auto' }}
+                                >
+                                    <FormattedMessage
+                                        id="Apis.Details.Policies.PolicyList.policy.hub.button"
+                                        defaultMessage="Policy Hub"
+                                    />
+                                </Button>
+                            )}
+                        </Box>
                     </Box>
                     <Box>
                         {isPolicyHubGateway

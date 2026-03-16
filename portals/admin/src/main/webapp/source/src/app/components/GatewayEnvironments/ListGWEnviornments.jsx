@@ -481,7 +481,7 @@ export default function ListGWEnviornments() {
             id: 'AdminPages.Gateways.List.search.compact',
             defaultMessage: 'Search gateways...',
         }),
-        active: true,
+        active: visibleGatewayCount !== 0,
     };
     const pageProps = {
         pageStyle: 'half',
@@ -541,9 +541,9 @@ export default function ListGWEnviornments() {
                             textTransform: 'none',
                             fontWeight: 500,
                             fontSize: '0.75rem',
-                            backgroundColor: '#0E4A72',
+                            backgroundColor: 'rgb(25, 120, 210)',
                             '&:hover': {
-                                backgroundColor: '#0A3C5D',
+                                backgroundColor: 'rgb(0, 109, 179)',
                             },
                         }}
                     >
@@ -579,9 +579,9 @@ export default function ListGWEnviornments() {
                         textTransform: 'none',
                         fontWeight: 500,
                         fontSize: '0.75rem',
-                        backgroundColor: '#0E4A72',
+                        backgroundColor: 'rgb(25, 120, 210)',
                         '&:hover': {
-                            backgroundColor: '#0A3C5D',
+                            backgroundColor: 'rgb(0, 109, 179)',
                         },
                     }}
                 >
@@ -600,6 +600,7 @@ export default function ListGWEnviornments() {
             onChange={(_, value) => setSelectedCategory(value)}
             aria-label='gateway-category-tabs'
             sx={{
+                pl: 0,
                 minHeight: 40,
                 borderBottom: '1px solid #D8DDE6',
                 '& .MuiTabs-flexContainer': {
@@ -728,6 +729,9 @@ export default function ListGWEnviornments() {
                 searchProps={searchProps}
                 searchIconInside
                 toolbarContent={tabbedToolbar}
+                toolbarContentSx={{
+                    pl: 0,
+                }}
                 showReload={false}
                 panelSx={{
                     border: '1px solid #D8DDE6',
@@ -736,7 +740,8 @@ export default function ListGWEnviornments() {
                     overflow: 'hidden',
                 }}
                 toolbarSx={{
-                    px: 2,
+                    pl: 0,
+                    pr: 2,
                     py: 1,
                     backgroundColor: '#fff',
                 }}

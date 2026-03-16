@@ -624,7 +624,7 @@ const UniversalGatewayManagement = (props) => {
                                         {existingGateway.description ||
                                             t(
                                                 'Gateways.UniversalGatewayManagement.description.empty',
-                                                'No description provided for this gateway yet.',
+                                                'No description provided.',
                                             )}
                                     </Typography>
                                 </>

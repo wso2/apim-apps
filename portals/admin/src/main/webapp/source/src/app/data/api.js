@@ -1187,11 +1187,9 @@ class API extends Resource {
      */
     getPlatformGatewayList() {
         return this.client.then((client) => {
-            return client.execute({
-                pathName: '/gateways',
-                method: 'get',
-                requestContentType: 'application/json',
-            });
+            return client.apis['Platform Gateways'].getPlatformGateways(
+                this._requestMetaData(),
+            );
         });
     }
 
@@ -1200,12 +1198,14 @@ class API extends Resource {
      */
     createPlatformGateway(body) {
         return this.client.then((client) => {
-            return client.execute({
-                pathName: '/gateways',
-                method: 'post',
-                requestBody: body,
-                requestContentType: 'application/json',
-            });
+            const payload = {
+                'Content-Type': 'application/json',
+            };
+            return client.apis['Platform Gateways'].createPlatformGateway(
+                payload,
+                { requestBody: body },
+                this._requestMetaData(),
+            );
         });
     }
 
@@ -1216,13 +1216,15 @@ class API extends Resource {
      */
     updatePlatformGateway(gatewayId, body) {
         return this.client.then((client) => {
-            return client.execute({
-                pathName: '/gateways/{gatewayId}',
-                method: 'put',
-                parameters: { gatewayId },
-                requestBody: body,
-                requestContentType: 'application/json',
-            });
+            const payload = {
+                gatewayId,
+                'Content-Type': 'application/json',
+            };
+            return client.apis['Platform Gateways'].updatePlatformGateway(
+                payload,
+                { requestBody: body },
+                this._requestMetaData(),
+            );
         });
     }
 
@@ -1232,12 +1234,10 @@ class API extends Resource {
      */
     deletePlatformGateway(gatewayId) {
         return this.client.then((client) => {
-            return client.execute({
-                pathName: '/gateways/{gatewayId}',
-                method: 'delete',
-                parameters: { gatewayId },
-                requestContentType: 'application/json',
-            });
+            return client.apis['Platform Gateways'].deletePlatformGateway(
+                { gatewayId },
+                this._requestMetaData(),
+            );
         });
     }
 
@@ -1247,12 +1247,10 @@ class API extends Resource {
      */
     regeneratePlatformGatewayToken(gatewayId) {
         return this.client.then((client) => {
-            return client.execute({
-                pathName: '/gateways/{gatewayId}/regenerate-token',
-                method: 'post',
-                parameters: { gatewayId },
-                requestContentType: 'application/json',
-            });
+            return client.apis['Platform Gateways'].regeneratePlatformGatewayToken(
+                { gatewayId },
+                this._requestMetaData(),
+            );
         });
     }
 

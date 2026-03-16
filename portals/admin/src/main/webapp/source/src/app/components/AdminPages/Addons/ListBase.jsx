@@ -61,6 +61,7 @@ function ListBase(props) {
         apiCall,
         initialData,
         toolbarContent,
+        toolbarContentSx,
         showReload,
         panelSx,
         toolbarSx,
@@ -324,6 +325,7 @@ function ListBase(props) {
                         backgroundColor: 'background.paper',
                         px: 2,
                         pt: 1,
+                        ...toolbarContentSx,
                     }}
                 >
                     {toolbarContent}
@@ -462,6 +464,7 @@ ListBase.defaultProps = {
     useContentBase: true,
     options: {},
     toolbarContent: null,
+    toolbarContentSx: {},
     showReload: true,
     panelSx: {},
     toolbarSx: {},
@@ -502,6 +505,7 @@ ListBase.propTypes = {
     useContentBase: PropTypes.bool,
     options: PropTypes.shape({}),
     toolbarContent: PropTypes.element,
+    toolbarContentSx: PropTypes.shape({}),
     showReload: PropTypes.bool,
     panelSx: PropTypes.shape({}),
     toolbarSx: PropTypes.shape({}),

@@ -19,7 +19,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Alert as MuiAlert, Box, Button, Divider, Grid, Link, Paper, Typography } from '@mui/material';
+import { Alert as MuiAlert, Box, Button, Divider, Grid, Link, Paper, TextField, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link as RouterLink } from 'react-router-dom';
 import { useIntl } from 'react-intl';
@@ -94,34 +94,68 @@ const UniversalGatewaySuccessView = ({
                     </Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
-                            <Typography variant='body2' color='text.secondary'>
-                                {t('Gateways.UniversalGatewayManagement.configuration.url', 'URL')}
-                            </Typography>
-                            <Typography variant='body1' sx={{ fontWeight: 500 }}>
-                                {gatewayUrl}
-                            </Typography>
+                            <TextField
+                                fullWidth
+                                label={t('Gateways.UniversalGatewayManagement.configuration.url', 'URL')}
+                                value={gatewayUrl}
+                                InputProps={{
+                                    readOnly: true,
+                                }}
+                                variant='outlined'
+                                size='small'
+                                sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        backgroundColor: '#f5f5f5',
+                                    },
+                                }}
+                            />
                         </Grid>
                         <Grid item xs={12} md={6}>
-                            <Typography variant='body2' color='text.secondary'>
-                                {t('Gateways.UniversalGatewayManagement.configuration.visibility', 'Visibility')}
-                            </Typography>
-                            <Typography variant='body1' sx={{ fontWeight: 500 }}>
-                                {getVisibilityLabel()}
-                            </Typography>
+                            <TextField
+                                fullWidth
+                                label={t('Gateways.UniversalGatewayManagement.configuration.visibility', 'Visibility')}
+                                value={getVisibilityLabel()}
+                                InputProps={{
+                                    readOnly: true,
+                                }}
+                                variant='outlined'
+                                size='small'
+                                sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        backgroundColor: '#f5f5f5',
+                                    },
+                                }}
+                            />
                         </Grid>
                         {permissionRoles.length > 0 && (
                             <Grid item xs={12}>
-                                <Typography variant='body2' color='text.secondary'>
-                                    {t('Gateways.UniversalGatewayManagement.configuration.roles', 'Roles')}
-                                </Typography>
-                                <Typography variant='body1' sx={{ fontWeight: 500 }}>
-                                    {permissionRoles.join(', ')}
-                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    label={t('Gateways.UniversalGatewayManagement.configuration.roles', 'Roles')}
+                                    value={permissionRoles.join(', ')}
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}
+                                    variant='outlined'
+                                    size='small'
+                                    sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            backgroundColor: '#f5f5f5',
+                                        },
+                                    }}
+                                />
                             </Grid>
                         )}
                     </Grid>
                 </Box>
-                <Divider sx={{ mx: 3, mb: 3 }} />
+                <Divider
+                    sx={{
+                        width: '95%',
+                        mx: 'auto',
+                        my: 3,
+                        opacity: 0.1,
+                    }}
+                />
                 <Box sx={{ px: 3, pb: 3 }}>
                     <QuickStartGuide
                         key={showTokenCommands ? 'with-token' : 'no-token'}
@@ -133,24 +167,20 @@ const UniversalGatewaySuccessView = ({
                         embedded
                     />
                 </Box>
-                <Divider sx={{ mx: 3 }} />
-                <Box
-                    sx={{
-                        p: 3,
-                        display: 'flex',
-                        gap: 2,
-                        flexWrap: 'wrap',
-                    }}
-                >
-                    <Button component={RouterLink} to='/settings/environments' variant='contained' color='primary'>
-                        {t('Gateways.UniversalGatewayManagement.action.view.all', 'View All Gateways')}
-                    </Button>
-                    {onAddAnother && (
+                {onAddAnother && (
+                    <Box
+                        sx={{
+                            p: 3,
+                            display: 'flex',
+                            gap: 2,
+                            flexWrap: 'wrap',
+                        }}
+                    >
                         <Button variant='outlined' color='primary' onClick={onAddAnother}>
                             {t('Gateways.UniversalGatewayManagement.action.add.another', 'Add Another Gateway')}
                         </Button>
-                    )}
-                </Box>
+                    </Box>
+                )}
             </Paper>
         </>
     );
