@@ -47,8 +47,14 @@ export const WSO2_SELF_HOSTED_GATEWAY_TYPES = [CONSTS.GATEWAY_TYPE.apiPlatform, 
 const DEFAULT_PLATFORM_GATEWAY_RELEASES_URL = 'https://github.com/wso2/api-platform/releases';
 const DEFAULT_PLATFORM_GATEWAY_VERSION = 'v0.9.0';
 
-const trimTrailingSlashes = (value) =>
-    (value || '').trim().replace(/\/+$/, '');
+const trimTrailingSlashes = (value) => {
+    const str = (value || '').trim();
+    let end = str.length;
+    while (end > 0 && str[end - 1] === '/') {
+        end -= 1;
+    }
+    return str.slice(0, end);
+};
 
 const normalizeReleaseBaseUrl = (value) => {
     const trimmed = value?.trim();
