@@ -26,28 +26,15 @@ import {
     Alert as MuiAlert,
     Box,
     Button,
-    Card,
-    CardContent,
     Chip,
     CircularProgress,
-    FormControl,
-    FormHelperText,
-    Grid,
-    InputAdornment,
-    InputLabel,
     IconButton,
     Link,
-    MenuItem,
-    Select,
     TextField,
     Typography,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import ErrorIcon from '@mui/icons-material/Error';
-import { MuiChipsInput } from 'mui-chips-input';
-import base64url from 'base64url';
-import { red } from '@mui/material/colors';
 import { Link as RouterLink } from 'react-router-dom';
 import { useIntl } from 'react-intl';
 import UniversalGatewaySuccessView from './UniversalGatewaySuccessView';
@@ -56,12 +43,8 @@ import {
     gatewayShape,
     getAdditionalProperty,
     getGatewayStatusChipProps,
-    normalizeBaseUrl,
     normalizeProperties,
-    PERMISSION_TYPE_OPTIONS,
     resolveGatewayStatus,
-    slugifyName,
-    getVhostFromBaseUrl,
 } from './UniversalGatewayUtils';
 
 const UniversalGatewayManagement = (props) => {
@@ -84,14 +67,7 @@ const UniversalGatewayManagement = (props) => {
     }, [gatewayId, location?.state]);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [baseUrl, setBaseUrl] = useState('');
-    const [permissionType, setPermissionType] = useState('PUBLIC');
-    const [validRoles, setValidRoles] = useState([]);
-    const [invalidRoles, setInvalidRoles] = useState([]);
-    const [roleValidity, setRoleValidity] = useState(true);
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [createdGateway, setCreatedGateway] = useState(null);
     const [confirmReconfigureOpen, setConfirmReconfigureOpen] = useState(false);
     const [platformTokenRegenerating, setPlatformTokenRegenerating] = useState(false);
     const [existingGateway, setExistingGateway] = useState(null);
@@ -169,70 +145,6 @@ const UniversalGatewayManagement = (props) => {
         };
     }, [applyExistingGateway, gatewayId, loadExistingGateway, preloadedGateway, t]);
 
-    useEffect(() => {
-        setRoleValidity(invalidRoles.length === 0);
-    }, [invalidRoles]);
-
-    const handleRoleDeletion = (role) => {
-        setInvalidRoles((existingInvalidRoles) => existingInvalidRoles.filter((existingRole) => existingRole !== role));
-        setValidRoles((existingValidRoles) => existingValidRoles.filter((existingRole) => existingRole !== role));
-    };
-
-    const handleRoleAddition = (role) => {
-        const normalizedRole = role.trim();
-        if (!normalizedRole) {
-            return;
-        }
-
-        restApi
-            .validateSystemRole(base64url.encode(normalizedRole))
-            .then(() => {
-                setInvalidRoles(
-                    (existingInvalidRoles) =>
-                        existingInvalidRoles.filter((existingRole) => existingRole !== normalizedRole),
-                );
-                setValidRoles((existingValidRoles) => {
-                    if (existingValidRoles.includes(normalizedRole)) {
-                        return existingValidRoles;
-                    }
-                    return existingValidRoles.concat(normalizedRole);
-                });
-            })
-            .catch((requestError) => {
-                if (requestError.status === 404) {
-                    setValidRoles(
-                        (existingValidRoles) =>
-                            existingValidRoles.filter((existingRole) => existingRole !== normalizedRole),
-                    );
-                    setInvalidRoles((existingInvalidRoles) => {
-                        if (existingInvalidRoles.includes(normalizedRole)) {
-                            return existingInvalidRoles;
-                        }
-                        return existingInvalidRoles.concat(normalizedRole);
-                    });
-                }
-            });
-    };
-
-    const resetForm = () => {
-        setName('');
-        setDescription('');
-        setBaseUrl('');
-        setPermissionType('PUBLIC');
-        setValidRoles([]);
-        setInvalidRoles([]);
-        setRoleValidity(true);
-        setError('');
-    };
-
-    const handleAddAnother = () => {
-        setCreatedGateway(null);
-        setConfirmReconfigureOpen(false);
-        setPlatformTokenRegenerating(false);
-        setShowTokenCommands(false);
-        resetForm();
-    };
-
     const openReconfigureConfirm = () => {
         setConfirmReconfigureOpen(true);
     };
@@ -243,106 +155,11 @@ const UniversalGatewayManagement = (props) => {
         }
     };
 
-    const handleRegeneratePlatformKey = async () => {
-        if (!createdGateway?.id) {
-            return;
-        }
-        setPlatformTokenRegenerating(true);
-        try {
-            const result = await restApi.regeneratePlatformGatewayToken(createdGateway.id);
-            const regeneratedGateway = result?.body || result;
-            if (regeneratedGateway) {
-                setCreatedGateway(regeneratedGateway);
-            }
-            setConfirmReconfigureOpen(false);
-            Alert.success(
-                t(
-                    'Gateways.UniversalGatewayManagement.token.regenerate.success',
-                    'Gateway registration token regenerated successfully.',
-                ),
-            );
-        } catch (regenError) {
-            const errorMessage =
-                regenError?.response?.body?.description ||
-                regenError.message ||
-                t(
-                    'Gateways.UniversalGatewayManagement.token.regenerate.error',
-                    'Failed to regenerate gateway registration token.',
-                );
-            Alert.error(errorMessage);
-        } finally {
-            setPlatformTokenRegenerating(false);
-        }
-    };
-
     const pageProps = {
         pageStyle: 'paperLess',
-        title: createdGateway
-            ? createdGateway.displayName || createdGateway.name
-            : t('Gateways.UniversalGatewayManagement.page.title.new', 'Add WSO2 Gateway'),
+        title: existingGateway?.displayName || existingGateway?.name ||
+            t('Gateways.UniversalGatewayManagement.page.title', 'Gateway Details'),
     };
-
-    const addUniversalGateway = async () => {
-        setLoading(true);
-        setError('');
-        try {
-            const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
-            const computedVhost = getVhostFromBaseUrl(normalizedBaseUrl);
-            if (!computedVhost) {
-                throw new Error(
-                    t(
-                        'Gateways.UniversalGatewayManagement.validation.url.required',
-                        'A valid gateway URL is required.',
-                    ),
-                );
-            }
-
-            const displayName = name.trim();
-            const gatewayName = slugifyName(displayName);
-            if (!gatewayName || gatewayName.length < 3) {
-                throw new Error(
-                    t(
-                        'Gateways.UniversalGatewayManagement.validation.name.invalid',
-                        'Gateway name must have at least 3 letters or numbers.',
-                    ),
-                );
-            }
-
-            const result = await restApi.createPlatformGateway({
-                name: gatewayName,
-                displayName,
-                description: description.trim(),
-                vhost: computedVhost,
-                properties: {
-                    gatewayController: {
-                        enabled: true,
-                        baseUrl: normalizedBaseUrl,
-                    },
-                },
-                permissions: {
-                    permissionType,
-                    roles: validRoles,
-                },
-            });
-
-            const gateway = result?.body || result;
-            setCreatedGateway(gateway);
-        } catch (createError) {
-            setError(
-                createError.message ||
-                    t('Gateways.UniversalGatewayManagement.error.create', 'Failed to add platform gateway.'),
-            );
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const isAddDisabled =
-        loading ||
-        !name.trim() ||
-        !baseUrl.trim() ||
-        !roleValidity ||
-        ((permissionType === 'ALLOW' || permissionType === 'DENY') && validRoles.length === 0);
 
     const handleRegenerateExistingGatewayToken = async () => {
         if (!existingGateway?.id) {
@@ -660,27 +477,7 @@ const UniversalGatewayManagement = (props) => {
         );
     }
 
-    if (createdGateway) {
-        return (
-            <ContentBase {...pageProps}>
-                <UniversalGatewaySuccessView
-                    gateway={createdGateway}
-                    onAddAnother={handleAddAnother}
-                    onReconfigureRequested={openReconfigureConfirm}
-                    reconfigureLoading={platformTokenRegenerating}
-                />
-                <UniversalGatewayRegenerateTokenDialog
-                    open={confirmReconfigureOpen}
-                    titleId='reconfigure-created-gateway-dialog-title'
-                    onClose={closeReconfigureConfirm}
-                    onConfirm={handleRegeneratePlatformKey}
-                    loading={platformTokenRegenerating}
-                    t={t}
-                />
-            </ContentBase>
-        );
-    }
-
+    // No gateway found - show error or redirect
     return (
         <ContentBase {...pageProps}>
             <Box sx={{ mb: 3 }}>
@@ -698,191 +495,17 @@ const UniversalGatewayManagement = (props) => {
                     <ArrowBackIcon fontSize='small' />
                     {t('Gateways.UniversalGatewayManagement.navigation.back', 'Back to Gateways')}
                 </Link>
-                <Typography variant='h4' sx={{ fontWeight: 700, mb: 1 }}>
-                    {t('Gateways.UniversalGatewayManagement.page.title.new', 'Add WSO2 Gateway')}
-                </Typography>
-                <Typography variant='body2' color='text.secondary'>
-                    {t(
-                        'Gateways.UniversalGatewayManagement.page.description.new',
-                        'Register a new API Gateway to manage your APIs',
-                    )}
-                </Typography>
             </Box>
-
-            <Card sx={{ mb: 2 }}>
-                <CardContent>
-                    <Typography variant='h6' sx={{ mb: 2 }}>
-                        {t('Gateways.UniversalGatewayManagement.form.title', 'Gateway Details')}
-                    </Typography>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                size='small'
-                                label={t('Gateways.UniversalGatewayManagement.form.name', 'Name')}
-                                placeholder={t(
-                                    'Gateways.UniversalGatewayManagement.form.name.placeholder',
-                                    'Enter gateway name',
-                                )}
-                                value={name}
-                                onChange={(event) => setName(event.target.value)}
-                                required
-                                helperText={t(
-                                    'Gateways.UniversalGatewayManagement.form.name.help',
-                                    'A unique name for your gateway',
-                                )}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                size='small'
-                                label={t('Gateways.UniversalGatewayManagement.form.url', 'URL')}
-                                placeholder='https://gateway.example.com:8443'
-                                value={baseUrl}
-                                onChange={(event) => setBaseUrl(event.target.value)}
-                                required
-                                helperText={t(
-                                    'Gateways.UniversalGatewayManagement.form.url.help',
-                                    'The base URL where your gateway will be accessible',
-                                )}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <TextField
-                                fullWidth
-                                size='small'
-                                label={t('Gateways.UniversalGatewayManagement.form.description', 'Description')}
-                                placeholder={t(
-                                    'Gateways.UniversalGatewayManagement.form.description.placeholder',
-                                    'Enter description (optional)',
-                                )}
-                                value={description}
-                                onChange={(event) => setDescription(event.target.value)}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <FormControl fullWidth variant='outlined' size='small'>
-                                <InputLabel id='permission-type-label'>
-                                    {t('Gateways.UniversalGatewayManagement.form.visibility', 'Visibility')}
-                                </InputLabel>
-                                <Select
-                                    labelId='permission-type-label'
-                                    id='permission-type-select'
-                                    value={permissionType}
-                                    label={t('Gateways.UniversalGatewayManagement.form.visibility', 'Visibility')}
-                                    onChange={(event) => setPermissionType(event.target.value)}
-                                >
-                                    {PERMISSION_TYPE_OPTIONS.map((option) => (
-                                        <MenuItem key={option.value} value={option.value}>
-                                            {t(option.labelKey, option.defaultMessage)}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                                <FormHelperText>
-                                    {t(
-                                        'Gateways.UniversalGatewayManagement.form.visibility.help',
-                                        'Who can access APIs deployed to this gateway',
-                                    )}
-                                </FormHelperText>
-                            </FormControl>
-                        </Grid>
-                        {(permissionType === 'ALLOW' || permissionType === 'DENY') && (
-                            <Grid item xs={12}>
-                                <MuiChipsInput
-                                    fullWidth
-                                    label={t('Gateways.UniversalGatewayManagement.form.roles', 'Roles')}
-                                    InputLabelProps={{ shrink: true }}
-                                    name='GatewayEnvironmentPermissions'
-                                    variant='outlined'
-                                    size='small'
-                                    value={validRoles.concat(invalidRoles)}
-                                    alwaysShowPlaceholder={false}
-                                    placeholder={t(
-                                        'Gateways.UniversalGatewayManagement.form.roles.placeholder',
-                                        'Enter roles and press Enter',
-                                    )}
-                                    blurBehavior='clear'
-                                    data-testid='gateway-permission-roles'
-                                    InputProps={{
-                                        endAdornment: !roleValidity && (
-                                            <InputAdornment
-                                                position='end'
-                                                sx={{
-                                                    position: 'absolute',
-                                                    right: '25px',
-                                                    top: '50%',
-                                                }}
-                                            >
-                                                <ErrorIcon color='error' />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    onAddChip={handleRoleAddition}
-                                    renderChip={(ChipComponent, key, chipProps) => (
-                                        <ChipComponent
-                                            key={`${chipProps.label}-${key}`}
-                                            label={chipProps.label}
-                                            onDelete={() => handleRoleDeletion(chipProps.label)}
-                                            data-testid={chipProps.label}
-                                            style={{
-                                                backgroundColor: invalidRoles.includes(chipProps.label)
-                                                    ? red[300]
-                                                    : null,
-                                                margin: '8px 8px 8px 0',
-                                                float: 'left',
-                                            }}
-                                        />
-                                    )}
-                                    error={!roleValidity}
-                                    helperText={(() => {
-                                        if (!roleValidity) {
-                                            return t(
-                                                'Gateways.UniversalGatewayManagement.form.roles.invalid',
-                                                'Invalid Role(s) Found',
-                                            );
-                                        }
-                                        if (permissionType === 'ALLOW') {
-                                            return t(
-                                                'Gateways.UniversalGatewayManagement.form.roles.allow.help',
-                                                'Use of this Gateway is "Allowed" for above roles. ' +
-                                                    'Enter a valid role and press Enter.',
-                                            );
-                                        }
-                                        return t(
-                                            'Gateways.UniversalGatewayManagement.form.roles.deny.help',
-                                            'Use of this Gateway is "Denied" for above roles. ' +
-                                                'Enter a valid role and press Enter.',
-                                        );
-                                    })()}
-                                />
-                            </Grid>
-                        )}
-                    </Grid>
-                </CardContent>
-            </Card>
-
             {error && (
-                <MuiAlert severity='error' sx={{ mb: 2 }} onClose={() => setError('')}>
+                <MuiAlert severity='error' sx={{ mb: 2 }}>
                     {error}
                 </MuiAlert>
             )}
-
-            <Box sx={{ display: 'flex', gap: 2 }}>
-                <Button component={RouterLink} to='/settings/environments' variant='outlined'>
-                    {t('Gateways.UniversalGatewayManagement.action.cancel', 'Cancel')}
-                </Button>
-                <Button
-                    variant='contained'
-                    disabled={isAddDisabled}
-                    onClick={addUniversalGateway}
-                    startIcon={loading && <CircularProgress size={16} color='inherit' />}
-                >
-                    {loading
-                        ? t('Gateways.UniversalGatewayManagement.action.adding', 'Adding...')
-                        : t('Gateways.UniversalGatewayManagement.action.add', 'Add Gateway')}
-                </Button>
-            </Box>
+            {!error && (
+                <MuiAlert severity='warning'>
+                    {t('Gateways.UniversalGatewayManagement.error.not.found', 'Gateway not found')}
+                </MuiAlert>
+            )}
         </ContentBase>
     );
 };
@@ -890,9 +513,9 @@ const UniversalGatewayManagement = (props) => {
 UniversalGatewayManagement.propTypes = {
     match: PropTypes.shape({
         params: PropTypes.shape({
-            gatewayId: PropTypes.string,
+            gatewayId: PropTypes.string.isRequired,
         }),
-    }),
+    }).isRequired,
     location: PropTypes.shape({
         state: PropTypes.shape({
             createdGateway: gatewayShape,
@@ -901,9 +524,6 @@ UniversalGatewayManagement.propTypes = {
 };
 
 UniversalGatewayManagement.defaultProps = {
-    match: {
-        params: {},
-    },
     location: {},
 };
 

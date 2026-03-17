@@ -47,14 +47,9 @@ export const WSO2_SELF_HOSTED_GATEWAY_TYPES = [CONSTS.GATEWAY_TYPE.apiPlatform, 
 const DEFAULT_PLATFORM_GATEWAY_RELEASES_URL = 'https://github.com/wso2/api-platform/releases';
 const DEFAULT_PLATFORM_GATEWAY_VERSION = 'v0.9.0';
 
-const trimTrailingSlashes = (value) => {
-    const str = (value || '').trim();
-    let end = str.length;
-    while (end > 0 && str[end - 1] === '/') {
-        end -= 1;
-    }
-    return str.slice(0, end);
-};
+// Safe regex: anchored at end ($), single char class, no nested quantifiers
+const trimTrailingSlashes = (value) =>
+    (value || '').trim().replace(/\/+$/, '');
 
 const normalizeReleaseBaseUrl = (value) => {
     const trimmed = value?.trim();
@@ -123,6 +118,7 @@ export const getVhostFromBaseUrl = (baseUrl) => {
     if (!canParse) {
         return '';
     }
+    // Return the URL's host (hostname:port or just hostname) as a string
     return new URL(baseUrl).host;
 };
 

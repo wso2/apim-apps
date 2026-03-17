@@ -54,13 +54,13 @@ const QUICK_START_TABS = [
         value: QUICK_START_TAB.docker,
         labelKey: 'Gateways.UniversalGatewayManagement.quick.start.tab.docker',
         defaultMessage: 'Docker',
-        icon: <img src='/site/public/images/docker-icon.png' alt='Docker' width={20} height={20} />,
+        icon: <img src='admin/site/public/images/docker-icon.svg' alt='Docker' width={20} height={20} />,
     },
     {
         value: QUICK_START_TAB.kubernetes,
         labelKey: 'Gateways.UniversalGatewayManagement.quick.start.tab.kubernetes',
         defaultMessage: 'Kubernetes',
-        icon: <img src='/site/public/images/Kubernetes_logo.png' alt='Kubernetes' width={20} height={20} />,
+        icon: <img src='admin/site/public/images/Kubernetes_logo.svg' alt='Kubernetes' width={20} height={20} />,
     },
 ];
 

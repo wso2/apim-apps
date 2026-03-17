@@ -1513,6 +1513,7 @@
   "Apis.Details.Policies.PolicyList.add.response.tab": "Response",
   "Apis.Details.Policies.PolicyList.category.filter": "Category",
   "Apis.Details.Policies.PolicyList.policy.hub.button": "Policy Hub",
+  "Apis.Details.Policies.PolicyList.search.placeholder": "Search policies",
   "Apis.Details.Policies.PolicyList.title": "Policy List",
   "Apis.Details.Policies.SaveOperationPolicies.save": "Save",
   "Apis.Details.ProductResources.ProductResourcesEdit.api.resources": "Select API Resources",

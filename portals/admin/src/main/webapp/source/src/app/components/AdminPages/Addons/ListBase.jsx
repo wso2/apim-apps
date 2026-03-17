@@ -1,5 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading, indent, operator-linebreak */
-/* eslint-disable react/jsx-wrap-multilines, no-param-reassign, react/jsx-no-duplicate-props */
 /*
  * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -49,32 +47,13 @@ import Alert from '@mui/material/Alert';
  */
 function ListBase(props) {
     const {
-        EditComponent,
-        editComponentProps,
-        DeleteComponent,
-        showActionColumn,
-        columProps,
-        pageProps,
-        addButtonProps,
-        addButtonOverride,
+        EditComponent, editComponentProps, DeleteComponent, showActionColumn, columProps,
+        pageProps, addButtonProps, addButtonOverride,
         searchProps: { active: searchActive, searchPlaceholder },
-        apiCall,
-        initialData,
-        toolbarContent,
-        toolbarContentSx,
-        showReload,
-        panelSx,
-        toolbarSx,
-        tableSx,
-        searchTextFieldProps,
-        searchIconInside,
-        preserveToolbarOnEmpty,
-        emptyBoxProps: { title: emptyBoxTitle, content: emptyBoxContent },
-        noDataMessage,
-        addedActions,
-        enableCollapsable,
-        renderExpandableRow,
-        useContentBase,
+        apiCall, initialData, toolbarContent, toolbarContentSx, showReload, panelSx, toolbarSx,
+        tableSx, searchTextFieldProps, searchIconInside, preserveToolbarOnEmpty,
+        emptyBoxProps: { title: emptyBoxTitle, content: emptyBoxContent }, noDataMessage,
+        addedActions, enableCollapsable, renderExpandableRow, useContentBase,
     } = props;
 
     const [searchText, setSearchText] = useState('');
@@ -95,18 +74,18 @@ function ListBase(props) {
     const sortBy = (field, reverse, primer) => {
         const key = primer
             ? (x) => {
-                  return primer(x[field]);
-              }
+                return primer(x[field]);
+            }
             : (x) => {
-                  return x[field];
-              };
+                return x[field];
+            };
 
-        reverse = !reverse ? 1 : -1;
+        const sortOrder = !reverse ? 1 : -1;
 
         return (a, b) => {
             const aValue = key(a);
             const bValue = key(b);
-            return reverse * ((aValue > bValue) - (bValue > aValue));
+            return sortOrder * ((aValue > bValue) - (bValue > aValue));
         };
     };
     const onColumnSortChange = (changedColumn, direction) => {
@@ -203,8 +182,8 @@ function ListBase(props) {
                                         )}
                                     </RouterLink>
                                     {DeleteComponent && <DeleteComponent dataRow={dataRow} updateList={fetchData} />}
-                                    {addedActions &&
-                                        addedActions.map((action) => {
+                                    {addedActions
+                                        && addedActions.map((action) => {
                                             const AddedComponent = action;
                                             return (
                                                 <AddedComponent rowData={tableMeta.rowData} updateList={fetchData} />
@@ -222,8 +201,8 @@ function ListBase(props) {
                                 <EditComponent dataRow={dataRow} updateList={fetchData} {...editComponentProps} />
                             )}
                             {DeleteComponent && <DeleteComponent dataRow={dataRow} updateList={fetchData} />}
-                            {addedActions &&
-                                addedActions.map((action) => {
+                            {addedActions
+                                && addedActions.map((action) => {
                                     const AddedComponent = action;
                                     return <AddedComponent rowData={tableMeta.rowData} updateList={fetchData} />;
                                 })}
@@ -286,8 +265,8 @@ function ListBase(props) {
                     {emptyBoxContent}
                 </CardContent>
                 <CardActions>
-                    {addButtonOverride ||
-                        (EditComponent && <EditComponent updateList={fetchData} {...addButtonProps} />)}
+                    {addButtonOverride
+                        || (EditComponent && <EditComponent updateList={fetchData} {...addButtonProps} />)}
                 </CardActions>
             </Card>
         );
@@ -337,10 +316,10 @@ function ListBase(props) {
                         borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
                         ...(toolbarContent
                             ? {
-                                  borderLeft: '1px solid rgba(0, 0, 0, 0.12)',
-                                  borderRight: '1px solid rgba(0, 0, 0, 0.12)',
-                                  borderRadius: 0,
-                              }
+                                borderLeft: '1px solid rgba(0, 0, 0, 0.12)',
+                                borderRight: '1px solid rgba(0, 0, 0, 0.12)',
+                                borderRadius: 0,
+                            }
                             : {}),
                         ...toolbarSx,
                     }}
@@ -359,7 +338,7 @@ function ListBase(props) {
                                     )}
                                     <Grid item xs>
                                         <TextField
-                                            variant='standard'
+                                            variant={restSearchTextFieldProps?.variant || 'standard'}
                                             fullWidth
                                             placeholder={searchPlaceholder}
                                             sx={(theme) => ({
@@ -368,43 +347,45 @@ function ListBase(props) {
                                                 },
                                                 ...(searchTextFieldSx || {}),
                                             })}
-                                            InputProps={{
-                                                ...(searchInputProps || {}),
-                                                disableUnderline: !(restSearchTextFieldProps?.variant === 'outlined'),
-                                                className: 'search-input',
-                                                ...(searchIconInside
-                                                    ? {
-                                                          startAdornment: (
-                                                              <InputAdornment position='start'>
-                                                                  <SearchIcon color='action' />
-                                                              </InputAdornment>
-                                                          ),
-                                                      }
-                                                    : {}),
-                                            }}
-                                            inputProps={{
-                                                'aria-label': 'search-by-policy',
-                                                ...(searchNativeInputProps || {}),
+                                            slotProps={{
+                                                input: {
+                                                    ...(searchInputProps || {}),
+                                                    disableUnderline:
+                                                        !(restSearchTextFieldProps?.variant === 'outlined'),
+                                                    className: 'search-input',
+                                                    ...(searchIconInside
+                                                        ? {
+                                                            startAdornment: (
+                                                                <InputAdornment position='start'>
+                                                                    <SearchIcon color='action' />
+                                                                </InputAdornment>
+                                                            ),
+                                                        }
+                                                        : {}),
+                                                },
+                                                htmlInput: {
+                                                    'aria-label': 'search-by-policy',
+                                                    ...(searchNativeInputProps || {}),
+                                                },
                                             }}
                                             onChange={filterData}
                                             value={searchText}
-                                            {...restSearchTextFieldProps}
                                         />
                                     </Grid>
                                 </>
                             )}
                             {!searchActive && <Grid item xs />}
                             <Grid item sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                {addButtonOverride ||
-                                    (EditComponent && <EditComponent updateList={fetchData} {...addButtonProps} />)}
+                                {addButtonOverride
+                                    || (EditComponent && <EditComponent updateList={fetchData} {...addButtonProps} />)}
                                 {showReload && (
                                     <Tooltip
-                                        title={
+                                        title={(
                                             <FormattedMessage
                                                 id='AdminPages.Addons.ListBase.reload'
                                                 defaultMessage='Reload'
                                             />
-                                        }
+                                        )}
                                     >
                                         <IconButton onClick={fetchData} size='large'>
                                             <RefreshIcon

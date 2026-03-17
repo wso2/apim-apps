@@ -14,8 +14,6 @@ const GatewayEnvironments = () => {
         <Switch>
             <Route exact path='/settings/environments' component={ListGWEnvironments} />
             <Route exact path='/settings/environments/create' component={AddEditGWEnvironment} />
-            {/* This route is used as the post-create fallback when the new gateway ID is not available yet. */}
-            <Route exact path='/settings/environments/universal-gateways' component={UniversalGatewayManagement} />
             <Route
                 exact
                 path='/settings/environments/universal-gateways/:gatewayId'

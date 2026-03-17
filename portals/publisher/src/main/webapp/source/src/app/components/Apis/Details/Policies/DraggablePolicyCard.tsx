@@ -129,7 +129,7 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
 
     return (
         <Root>
-            <Box display="flex" flexDirection="row" alignItems="center">
+            <Box display='flex' flexDirection='row' alignItems='center'>
                 <div ref={isReadOnly ? null : drag} style={containerStyle}>
                     <ListItem
                         key={policyObj.id}
@@ -151,8 +151,8 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                             </Avatar>
                         </ListItemAvatar>
                         <Box
-                            display="flex-inline"
-                            flexDirection="column"
+                            display='flex-inline'
+                            flexDirection='column'
                             sx={{ flexGrow: 1 }}
                             className={classes.policyCardText}
                         >
@@ -172,24 +172,24 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                             />
                         </Box>
                         <Box
-                            display="flex"
-                            justifyContent="flex-end"
+                            display='flex'
+                            justifyContent='flex-end'
                             className={!hovered ? classes.policyActions : ''}
                         >
                             {!hideViewButton && (
                                 <Tooltip
-                                    placement="top"
+                                    placement='top'
                                     title={
                                         <FormattedMessage
-                                            id="Apis.Details.Policies.DraggablePolicyCard.policy.view"
-                                            defaultMessage="View"
+                                            id='Apis.Details.Policies.DraggablePolicyCard.policy.view'
+                                            defaultMessage='View'
                                         />
                                     }
                                 >
                                     <IconButton
                                         onClick={handleViewPolicy}
                                         aria-label={'view-' + policyObj.name}
-                                        size="large"
+                                        size='large'
                                     >
                                         <VisibilityIcon />
                                     </IconButton>

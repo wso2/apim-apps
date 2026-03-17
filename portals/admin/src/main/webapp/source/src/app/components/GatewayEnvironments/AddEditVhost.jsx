@@ -362,28 +362,16 @@ function AddEditVhost(props) {
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <Typography
-                                            color='textSecondary'
-                                            variant='body2'
-                                            style={{ marginLeft: '16px' }}
-                                        >
-                                            {`http://${
-                                                vhost.host || '<HOST>'
-                                            }:${vhost.httpPort}/${
-                                                vhost.httpContext
-                                            } |
-                                            https://${vhost.host || '<HOST>'}:${
-                                                vhost.httpsPort
-                                            }/${vhost.httpContext}`}
+                                        <Typography color='textSecondary' variant='body2' style={{ marginLeft: '16px' }}>
+                                           {
+                                                `http://${vhost.host || '<HOST>'}:${vhost.httpPort}/${vhost.httpContext} |
+                                                https://${vhost.host || '<HOST>'}:${vhost.httpsPort}/${vhost.httpContext}`
+                                            }
                                             <br />
-                                            {gatewayType ===
-                                                CONSTS.GATEWAY_TYPE.regular &&
-                                                `ws://${
-                                                    vhost.host || '<HOST>'
-                                                }:${vhost.wsPort}/ |
-                                            wss://${vhost.host || '<HOST>'}:${
-                                                    vhost.wssPort
-                                                }/`}
+                                            {gatewayType === 'Regular' && (
+                                                `ws://${vhost.host || '<HOST>'}:${vhost.wsPort}/ |
+                                                wss://${vhost.host || '<HOST>'}:${vhost.wssPort}/`
+                                            )}
                                         </Typography>
                                     </Grid>
                                     {/* Advanced Settings */}

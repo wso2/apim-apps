@@ -1196,7 +1196,7 @@ function AddEditGWEnvironment(props) {
                         });
                         return;
                     }
-                    history.push('/settings/environments/universal-gateways');
+                    history.push('/settings/environments/');
                     return;
                 }
                 history.push('/settings/environments/');
