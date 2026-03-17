@@ -99,30 +99,27 @@ describe("WSDL Download URL - Copy URL button", () => {
         });
     };
 
-    // updates API visibility via Publisher REST API to restricted
     const setAPIVisibility = (apiId, visibility) => {
-        Utils.getApiToken().then((token) => {
+        return Utils.getApiToken().then((token) => {
             const getCurl = `curl -k -X GET \
                 -H "Authorization: Bearer ${token}" \
                 "${Cypress.config().baseUrl}/api/am/publisher/v4/apis/${apiId}"`;
-
-            cy.exec(getCurl).then((getResult) => {
+    
+            return cy.exec(getCurl).then((getResult) => {
                 const apiBody = JSON.parse(getResult.stdout);
                 apiBody.visibility = visibility;
-                apiBody.visibleRoles = visibility === "RESTRICTED"
-                    ? ["internal/subscriber"]
-                    : [];
-
+                apiBody.visibleRoles = visibility === "RESTRICTED" ? ["Internal/subscriber"] : [];
+    
                 const tmpPayloadPath = `/tmp/${apiId}-visibility.json`;
                 cy.writeFile(tmpPayloadPath, JSON.stringify(apiBody));
-
+    
                 const putCurl = `curl -k -X PUT \
                     -H "Authorization: Bearer ${token}" \
                     -H "Content-Type: application/json" \
                     -d @${tmpPayloadPath} \
                     "${Cypress.config().baseUrl}/api/am/publisher/v4/apis/${apiId}"`;
-
-                cy.exec(putCurl).then((putResult) => {
+    
+                return cy.exec(putCurl).then((putResult) => {
                     cy.log(`SET visibility to ${visibility}: ${putResult.stdout}`);
                 });
             });
@@ -130,6 +127,7 @@ describe("WSDL Download URL - Copy URL button", () => {
     };
 
     let sharedApiId;
+    let test4ApiId;
 
     before(() => {
         const apiName = Utils.generateName();
@@ -144,11 +142,18 @@ describe("WSDL Download URL - Copy URL button", () => {
     });
 
     after(() => {
-        if (!sharedApiId) return;
         cy.loginToPublisher(publisher, password);
-        Utils.deleteAPI(sharedApiId).then(() => {
-            sharedApiId = null;
-        });
+        if (sharedApiId) {
+            Utils.deleteAPI(sharedApiId).then(() => {
+                sharedApiId = null;
+            });
+        }
+        if (test4ApiId) {
+            Utils.deleteAPI(test4ApiId).then(() => {
+                test4ApiId = null;
+            });
+        }
+        cy.logoutFromPublisher();
     });
 
     // Test 1 — Clicking Copy URL for a PUBLIC API copies a plain URL without exp or sig params.
@@ -180,8 +185,9 @@ describe("WSDL Download URL - Copy URL button", () => {
     // Test 2 — clicking Copy URL for Private API copies a URL with exp and sig params.
     it.only("Clicking Copy URL for a RESTRICTED API should copy a signed URL with exp and sig", () => {
         cy.loginToPublisher(publisher, password);
-        setAPIVisibility(sharedApiId, "RESTRICTED");
-        cy.logoutFromPublisher();
+        setAPIVisibility(sharedApiId, "RESTRICTED").then(() => {
+            cy.logoutFromPublisher();
+        });
 
         cy.loginToDevportal(developer, password);
         visitOverview(sharedApiId);
@@ -276,20 +282,20 @@ describe("WSDL Download URL - Copy URL button", () => {
 
             cy.exec(importCurl).then((result) => {
                 cy.log("import-wsdl (zip) stdout: " + result.stdout);
-                const apiId = JSON.parse(result.stdout).id;
-                expect(apiId, "import-wsdl should return a valid API id").to.be.a("string");
+                test4ApiId = JSON.parse(result.stdout).id;
+                expect(test4ApiId, "import-wsdl should return a valid API id").to.be.a("string");
 
-                Utils.addRevision(apiId).then((revId) => {
-                    Utils.deployRevision(apiId, revId).then(() => {
-                        Utils.publishAPI(apiId).then(() => {
+                Utils.addRevision(test4ApiId).then((revId) => {
+                    Utils.deployRevision(test4ApiId, revId).then(() => {
+                        Utils.publishAPI(test4ApiId).then(() => {
                             cy.logoutFromPublisher();
                             cy.loginToDevportal(developer, password);
-                            visitOverview(apiId);
+                            visitOverview(test4ApiId);
                             cy.get(COPY_URL_BTN).should("not.exist");
                             cy.logoutFromDevportal();
                             devportalComonPage.waitUntillDevportalLoaderSpinnerExit();
                             cy.loginToPublisher(publisher, password);
-                            Utils.deleteAPI(apiId);
+                            Utils.deleteAPI(test4ApiId);
                             cy.logoutFromPublisher();
                         });
                     });
