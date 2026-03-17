@@ -18,7 +18,7 @@
 
 import Utils from "@support/utils";
 
-describe.skip("prototype apis with security enabled", () => {
+describe("prototype apis with security enabled", () => {
     Cypress.on('uncaught:exception', (err, runnable) => {
         return false;
     });

@@ -29,6 +29,7 @@ import {
 import Hidden from '@mui/material/Hidden';
 import Configurations from 'Config';
 import Themes from 'Themes';
+import SessionTimeout from 'AppComponents/SessionTimeout';
 import ResourceNotFound from './components/Base/Errors/ResourceNotFound';
 import User from './data/User';
 import Utils from './data/Utils';
@@ -200,6 +201,7 @@ class Protected extends Component {
             <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={theme}>
                     <AppErrorBoundary>
+                        <SessionTimeout />
                         {settings ? (
                             <AppContextProvider value={{ settings, user, isSuperTenant }}>
                                 <Base header={header} leftMenu={leftMenu}>

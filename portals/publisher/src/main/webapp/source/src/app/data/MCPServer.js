@@ -427,6 +427,153 @@ class MCPServer extends Resource {
     }
 
     /**
+     * Get attached labels to an MCP Server.
+     *
+     * @param {string} mcpServerId
+     * @returns {Promise} A promise that resolves to the attached labels.
+     */
+    static getMCPServerLabels(mcpServerId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            if (client.apis['MCP Server Labels']?.getLabelsOfMCPServer) {
+                const payload = {
+                    mcpServerId,
+                    'Content-Type': 'multipart/form-data',
+                };
+                return client.apis['MCP Server Labels'].getLabelsOfMCPServer(
+                    payload,
+                    this._requestMetaData({
+                        'Content-Type': 'multipart/form-data',
+                    }),
+                );
+            }
+
+            // Fallback for specs where operation names are not generated/predictable.
+            return client.execute({
+                pathName: '/mcp-servers/{mcpServerId}/labels',
+                method: 'get',
+                parameters: {
+                    mcpServerId,
+                },
+            });
+        });
+    }
+
+    /**
+     * Attach labels to the given MCP Server.
+     *
+     * @param {string} mcpServerId
+     * @param {Array} addList
+     * @returns {Promise|undefined} A promise that resolves to updated labels, or undefined when no labels are given.
+     */
+    static attachMCPServerLabels(mcpServerId, addList) {
+        let promiseUpdatedLabels;
+
+        if (addList && addList.length !== 0) {
+            const labelIds = addList.map(label => label.id);
+            const apiClient = new APIClientFactory()
+                .getAPIClient(
+                    Utils.getCurrentEnvironment(),
+                    Utils.CONST.API_CLIENT
+                ).client;
+            promiseUpdatedLabels = apiClient.then(client => {
+                if (client.apis['MCP Server Labels Attach']?.attachLabelsToMCPServer) {
+                    const payload = {
+                        mcpServerId,
+                        'Content-Type': 'multipart/form-data',
+                    };
+                    const requestBody = {
+                        requestBody: {
+                            labels: labelIds,
+                        },
+                    };
+                    return client.apis['MCP Server Labels Attach'].attachLabelsToMCPServer(
+                        payload,
+                        requestBody,
+                        this._requestMetaData({
+                            'Content-Type': 'multipart/form-data',
+                        }),
+                    );
+                }
+
+                // Fallback for specs where operation names are not generated/predictable.
+                return client.execute({
+                    pathName: '/mcp-servers/{mcpServerId}/attach-labels',
+                    method: 'post',
+                    parameters: {
+                        mcpServerId,
+                    },
+                    requestBody: {
+                        labels: labelIds,
+                    },
+                    requestContentType: 'multipart/form-data',
+                });
+            });
+        }
+
+        return promiseUpdatedLabels;
+    }
+
+    /**
+     * Detach labels from the given MCP Server.
+     *
+     * @param {string} mcpServerId
+     * @param {Array} deleteList
+     * @returns {Promise|undefined} A promise that resolves to updated labels, or undefined when no labels are given.
+     */
+    static detachMCPServerLabels(mcpServerId, deleteList) {
+        let promiseUpdatedLabels;
+
+        if (deleteList && deleteList.length !== 0) {
+            const labelIds = deleteList.map(label => label.id);
+            const apiClient = new APIClientFactory()
+                .getAPIClient(
+                    Utils.getCurrentEnvironment(),
+                    Utils.CONST.API_CLIENT
+                ).client;
+            promiseUpdatedLabels = apiClient.then(client => {
+                if (client.apis['MCP Server Labels Detach']?.detachLabelsFromMCPServer) {
+                    const payload = {
+                        mcpServerId,
+                        'Content-Type': 'multipart/form-data',
+                    };
+                    const requestBody = {
+                        requestBody: {
+                            labels: labelIds,
+                        },
+                    };
+                    return client.apis['MCP Server Labels Detach'].detachLabelsFromMCPServer(
+                        payload,
+                        requestBody,
+                        this._requestMetaData({
+                            'Content-Type': 'multipart/form-data',
+                        }),
+                    );
+                }
+
+                // Fallback for specs where operation names are not generated/predictable.
+                return client.execute({
+                    pathName: '/mcp-servers/{mcpServerId}/detach-labels',
+                    method: 'post',
+                    parameters: {
+                        mcpServerId,
+                    },
+                    requestBody: {
+                        labels: labelIds,
+                    },
+                    requestContentType: 'multipart/form-data',
+                });
+            });
+        }
+
+        return promiseUpdatedLabels;
+    }
+
+    /**
      * Update an MCP Server.
      * @param {Object} updatedProperties - The updated properties for the MCP Server.
      * @returns {Promise<MCPServer>} A promise that resolves to the updated MCPServer

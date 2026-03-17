@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Alert,
     Box,
@@ -43,6 +44,8 @@ import API from 'AppData/api';
  * @returns {Object} Hook state and handlers
  */
 export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
+    const intl = useIntl();
+
     // Generation form state
     const [displayName, setDisplayName] = React.useState('');
     const [keyType, setKeyType] = React.useState('PRODUCTION');
@@ -56,7 +59,6 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
     const [isGenerating, setIsGenerating] = React.useState(false);
     const [apikey, setApikey] = React.useState(null);
     const [showToken, setShowToken] = React.useState(false);
-    const [notFound, setNotFound] = React.useState(false);
 
     // Regenerate modal state
     const [regenerateModalOpen, setRegenerateModalOpen] = React.useState(false);
@@ -64,19 +66,64 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
 
     // Validity period options
     const validityOptions = [
-        { value: '30', label: '30 Days' },
-        { value: '90', label: '90 Days' },
-        { value: '180', label: '6 Months' },
-        { value: '365', label: '1 Year' },
-        { value: 'never', label: 'Never Expires' },
-        { value: 'custom', label: 'Custom' },
+        {
+            value: '30',
+            label: intl.formatMessage({ id: 'Apis.Details.APIKeys.ApiKeyGenerate.validity.30days', defaultMessage: '30 Days' }),
+        },
+        {
+            value: '90',
+            label: intl.formatMessage({ id: 'Apis.Details.APIKeys.ApiKeyGenerate.validity.90days', defaultMessage: '90 Days' }),
+        },
+        {
+            value: '180',
+            label: intl.formatMessage({ id: 'Apis.Details.APIKeys.ApiKeyGenerate.validity.6months', defaultMessage: '6 Months' }),
+        },
+        { value: '365', label: intl.formatMessage({ id: 'Apis.Details.APIKeys.ApiKeyGenerate.validity.1year', defaultMessage: '1 Year' }) },
+        {
+            value: 'never',
+            label: intl.formatMessage({ id: 'Apis.Details.APIKeys.ApiKeyGenerate.validity.never', defaultMessage: 'Never Expires' }),
+        },
+        {
+            value: 'custom',
+            label: intl.formatMessage({ id: 'Apis.Details.APIKeys.ApiKeyGenerate.validity.custom', defaultMessage: 'Custom' }),
+        },
     ];
 
     // Restriction options
     const restrictionOptions = [
-        { value: 'none', label: 'None', description: 'No restrictions applied' },
-        { value: 'ip', label: 'Preferred IP', description: 'Restrict by IP address' },
-        { value: 'referrer', label: 'Preferred Referrer', description: 'Restrict by HTTP referrer' },
+        {
+            value: 'none',
+            label: intl.formatMessage({
+                id: 'Apis.Details.APIKeys.ApiKeyGenerate.restriction.none.label',
+                defaultMessage: 'None',
+            }),
+            description: intl.formatMessage({
+                id: 'Apis.Details.APIKeys.ApiKeyGenerate.restriction.none.description',
+                defaultMessage: 'No restrictions applied',
+            }),
+        },
+        {
+            value: 'ip',
+            label: intl.formatMessage({
+                id: 'Apis.Details.APIKeys.ApiKeyGenerate.restriction.ip.label',
+                defaultMessage: 'Preferred IP',
+            }),
+            description: intl.formatMessage({
+                id: 'Apis.Details.APIKeys.ApiKeyGenerate.restriction.ip.description',
+                defaultMessage: 'Restrict by IP address',
+            }),
+        },
+        {
+            value: 'referrer',
+            label: intl.formatMessage({
+                id: 'Apis.Details.APIKeys.ApiKeyGenerate.restriction.referrer.label',
+                defaultMessage: 'Preferred Referrer',
+            }),
+            description: intl.formatMessage({
+                id: 'Apis.Details.APIKeys.ApiKeyGenerate.restriction.referrer.description',
+                defaultMessage: 'Restrict by HTTP referrer',
+            }),
+        },
     ];
 
     // Generation handlers
@@ -100,19 +147,31 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
 
     const handleGenerateKey = () => {
         if (!displayName.trim()) {
-            alert('Please enter a name for the API key.');
+            alert(intl.formatMessage({
+                id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.enterName',
+                defaultMessage: 'Please enter a name for the API key.',
+            }));
             return;
         }
         if (restrictionType !== 'none' && !restrictionValue.trim()) {
             const restrictionOption = restrictionOptions.find((option) => option.value === restrictionType);
             const restrictionLabel = restrictionOption ? restrictionOption.label : '';
-            alert(`Please enter a ${restrictionLabel.toLowerCase()} value.`);
+            alert(intl.formatMessage(
+                {
+                    id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.enterRestrictionValue',
+                    defaultMessage: 'Please enter a {restrictionLabel} value.',
+                },
+                { restrictionLabel: restrictionLabel.toLowerCase() },
+            ));
             return;
         }
         if (validityPeriod === 'custom' && !customValidityDays) {
             const customDays = Number(customValidityDays);
             if (!Number.isInteger(customDays) || customDays <= 0) {
-                alert('Please enter a valid positive number of days for custom validity period.');
+                alert(intl.formatMessage({
+                    id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.invalidCustomDays',
+                    defaultMessage: 'Please enter a valid positive number of days for custom validity period.',
+                }));
                 return;
             }
         }
@@ -165,8 +224,7 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
                 }
                 const { status } = error;
                 if (status === 404) {
-                    setNotFound(true);
-                    console.log('API not found, notFound state:', notFound);
+                    console.log('API not found.');
                 }
                 setIsGenerating(false);
             });
@@ -190,7 +248,10 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
             })
             .catch((error) => {
                 console.error('Error regenerating key:', error);
-                alert('Failed to regenerate API key. Please try again.');
+                alert(intl.formatMessage({
+                    id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.regenerateFailed',
+                    defaultMessage: 'Failed to regenerate API key. Please try again.',
+                }));
             });
     };
 
@@ -208,7 +269,7 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
             startIcon={<Refresh />}
             onClick={() => handleRegenerateKey(keyData)}
         >
-            Regenerate
+            <FormattedMessage id='Apis.Details.APIKeys.ApiKeyGenerate.button.regenerate' defaultMessage='Regenerate' />
         </Button>
     );
 
@@ -223,7 +284,10 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
                 fullWidth
             >
                 <DialogTitle>
-                    API Key Regenerated Successfully
+                    <FormattedMessage
+                        id='Apis.Details.APIKeys.ApiKeyGenerate.regenerateKey.title'
+                        defaultMessage='API Key Regenerated Successfully'
+                    />
                 </DialogTitle>
                 <DialogContent>
                     <Stack spacing={2} sx={{ pt: 1 }}>
@@ -231,12 +295,21 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
                             <>
                                 <Alert severity='warning' sx={{ mb: 0.5 }}>
                                     <Typography variant='h6' component='h3' sx={{ mb: 0.5, fontSize: '0.95rem' }}>
-                                        Please Copy the API Key
+                                        <FormattedMessage
+                                            id='Apis.Details.APIKeys.ApiKeyGenerate.copyAlert.title'
+                                            defaultMessage='Please Copy the API Key'
+                                        />
                                     </Typography>
                                     <Typography component='p' variant='body2' sx={{ fontSize: '0.875rem' }}>
-                                        Please copy this regenerated API Key value as it will be displayed only for
-                                        the current browser session. (The API Key will not be visible in the UI
-                                        after the page is refreshed.)
+                                        <FormattedMessage
+                                            id='Apis.Details.APIKeys.ApiKeyGenerate.regenerateKey.alert.message'
+                                            defaultMessage={
+                                                'Please copy this regenerated API Key value as it will be'
+                                                + ' displayed only for the current browser session.'
+                                                + ' (The API Key will not be visible in the UI after'
+                                                + ' the page is refreshed.)'
+                                            }
+                                        />
                                     </Typography>
                                 </Alert>
                                 <Box sx={{ mt: 1 }}>
@@ -251,8 +324,8 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
                                             fontSize: '0.875rem',
                                         }}
                                     >
-                                        API Key -
-                                        {' '}
+                                        <FormattedMessage id='Apis.Details.APIKeys.ApiKeyGenerate.keyLabel' defaultMessage='API Key' />
+                                        {' - '}
                                         <Typography
                                             component='span'
                                             variant='subtitle2'
@@ -276,9 +349,18 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
                                             readOnly: true,
                                             endAdornment: (
                                                 <InputAdornment position='end'>
-                                                    <Tooltip title='Copy to clipboard' placement='top'>
+                                                    <Tooltip
+                                                        title={intl.formatMessage({
+                                                            id: 'Apis.Details.APIKeys.ApiKeyGenerate.tooltip.copyToClipboard',
+                                                            defaultMessage: 'Copy to clipboard',
+                                                        })}
+                                                        placement='top'
+                                                    >
                                                         <IconButton
-                                                            aria-label='Copy to clipboard'
+                                                            aria-label={intl.formatMessage({
+                                                                id: 'Apis.Details.APIKeys.ApiKeyGenerate.tooltip.copyToClipboard',
+                                                                defaultMessage: 'Copy to clipboard',
+                                                            })}
                                                             onClick={() => {
                                                                 navigator.clipboard.writeText(regeneratedApiKey.apikey);
                                                             }}
@@ -297,12 +379,28 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
                                         }}
                                     />
                                     <FormHelperText sx={{ mt: 0.75, fontSize: '0.75rem' }}>
-                                        Above API Key has a validity period of
+                                        <FormattedMessage
+                                            id='Apis.Details.APIKeys.ApiKeyGenerate.validityHelperText'
+                                            defaultMessage='Above API Key has a validity period of'
+                                        />
                                         {' '}
                                         <strong>
                                             {regeneratedApiKey.validityPeriod === -1
-                                                ? 'Never Expires'
-                                                : `${regeneratedApiKey.validityPeriod} seconds`}
+                                                ? (
+                                                    <FormattedMessage
+                                                        id='Apis.Details.APIKeys.ApiKeyGenerate.validity.neverExpires'
+                                                        defaultMessage='Never Expires'
+                                                    />
+                                                )
+                                                : (
+                                                    <FormattedMessage
+                                                        id='Apis.Details.APIKeys.ApiKeyGenerate.validity.seconds'
+                                                        defaultMessage='{seconds} seconds'
+                                                        values={{
+                                                            seconds: regeneratedApiKey.validityPeriod,
+                                                        }}
+                                                    />
+                                                )}
                                         </strong>
                                         .
                                     </FormHelperText>
@@ -316,7 +414,7 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
                         onClick={handleCloseRegenerateModal}
                         variant='contained'
                     >
-                        Close
+                        <FormattedMessage id='Apis.Details.APIKeys.ApiKeyGenerate.button.close' defaultMessage='Close' />
                     </Button>
                 </DialogActions>
             </Dialog>

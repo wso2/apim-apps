@@ -31,9 +31,6 @@
         "reactHTMLParser": {
             "decodeEntries": true,
             "tagsNotAllowed": []
-        },
-        "legacyApiKeys": {
-            "enabled": false
         }
     },
     "grantTypes": {
@@ -62,5 +59,10 @@
             "showBusinessDetails": false,
             "showTechnicalDetails": false
         }
+    },
+    "sessionTimeout": {
+        "enable": true,
+        "idleWarningTimeout": 160,
+        "idleTimeout": 180
     }
 }

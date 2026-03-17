@@ -119,5 +119,10 @@
         },
         "maxSubscriptionLimit": 2000,
         "maxScopeCount": 2000
+    },
+    "sessionTimeout": {
+        "enable": true,
+        "idleWarningTimeout": 160,
+        "idleTimeout": 180
     }
 }
