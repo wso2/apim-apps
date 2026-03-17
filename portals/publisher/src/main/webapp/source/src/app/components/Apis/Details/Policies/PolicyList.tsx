@@ -373,26 +373,25 @@ const PolicyList: FC<PolicyListProps> = ({
                         )}
                     </Box>
                     <Box mb={2}>
+                        <TextField
+                            fullWidth
+                            size="small"
+                            placeholder={intl.formatMessage({
+                                id: 'Apis.Details.Policies.PolicyList.search.placeholder',
+                                defaultMessage: 'Search policies',
+                            })}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon color="action" />
+                                    </InputAdornment>
+                                ),
+                            }}
+                            sx={{ mb: 2 }}
+                        />
                         {isPolicyHubGateway && (
-                            <TextField
-                                fullWidth
-                                size="small"
-                                placeholder={intl.formatMessage({
-                                    id: 'Apis.Details.Policies.PolicyList.search.placeholder',
-                                    defaultMessage: 'Search policies',
-                                })}
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon color="action" />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                                sx={{ mb: 2 }}
-                            />
-                        )}
                         <Box display="flex" alignItems="center" gap={1}>
                             <FormControl fullWidth size="small">
                             <InputLabel id="policy-category-select-label">
@@ -422,26 +421,25 @@ const PolicyList: FC<PolicyListProps> = ({
                                 ))}
                             </Select>
                         </FormControl>
-                            {isPolicyHubGateway && (
-                                <Button
-                                    component="a"
-                                    href={POLICY_HUB_URL}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    variant="outlined"
-                                    size="small"
-                                    endIcon={
-                                        <LaunchIcon style={{ fontSize: 15 }} />
-                                    }
-                                    sx={{ whiteSpace: 'nowrap', height: 40, minWidth: 'auto' }}
-                                >
-                                    <FormattedMessage
-                                        id="Apis.Details.Policies.PolicyList.policy.hub.button"
-                                        defaultMessage="Policy Hub"
-                                    />
-                                </Button>
-                            )}
+                            <Button
+                                component="a"
+                                href={POLICY_HUB_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                variant="outlined"
+                                size="small"
+                                endIcon={
+                                    <LaunchIcon style={{ fontSize: 15 }} />
+                                }
+                                sx={{ whiteSpace: 'nowrap', height: 40, minWidth: 'auto' }}
+                            >
+                                <FormattedMessage
+                                    id="Apis.Details.Policies.PolicyList.policy.hub.button"
+                                    defaultMessage="Policy Hub"
+                                />
+                            </Button>
                         </Box>
+                        )}
                     </Box>
                     <Box>
                         {isPolicyHubGateway
