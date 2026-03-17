@@ -62,10 +62,9 @@ const normalizeReleaseBaseUrl = (value) => {
 export const getPlatformGatewayReleaseConfig = (settings) => {
     const platformGatewayConfig = settings?.platformGateway || {};
     const releasesUrl = normalizeReleaseBaseUrl(platformGatewayConfig.releasesUrl);
-    const version = (platformGatewayConfig.version || DEFAULT_PLATFORM_GATEWAY_VERSION).trim();
+    const version = (settings?.universalGatewayVersion || DEFAULT_PLATFORM_GATEWAY_VERSION).trim();
     const browserHost = globalThis.window?.location.host || '';
-    const configuredControlPlaneHost = (platformGatewayConfig.controlPlaneHost || '').trim();
-    const controlPlaneHost = configuredControlPlaneHost || browserHost;
+    const controlPlaneHost = browserHost;
     const artifactName = `gateway-${version}`;
     const downloadCommand =
         `curl -sLO ${releasesUrl}/download/gateway/${version}/${artifactName}.zip && \\\n` +
