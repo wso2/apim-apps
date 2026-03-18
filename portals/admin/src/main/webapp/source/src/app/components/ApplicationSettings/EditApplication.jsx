@@ -121,7 +121,7 @@ function Edit(props) {
             owner,
         };
         return validateOwner().then(() => {
-            return restApi.updateApplication(dataRow.applicationId, body)
+            return restApi.updateApplicationSettings(dataRow.applicationId, body)
                 .then(() => {
                     return (
                         intl.formatMessage({

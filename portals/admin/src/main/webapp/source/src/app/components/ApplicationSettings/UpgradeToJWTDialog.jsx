@@ -52,7 +52,7 @@ const UpgradeToJWTDialog = (props) => {
             tokenType: 'JWT',
         };
         try {
-            await restApi.updateApplication(app.applicationId, body);
+            await restApi.updateApplicationSettings(app.applicationId, body);
             Alert.success(intl.formatMessage({
                 id: 'ApplicationSettings.UpgradeToJWTDialog.app.upgrade.successful',
                 defaultMessage: 'Application {appName} upgraded to JWT successfully',
