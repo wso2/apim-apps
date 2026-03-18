@@ -496,10 +496,10 @@ const RouteMenuMapping = (intl) => [
         }),
         children: [
             {
-                id: 'Change Application Owner',
+                id: 'Change Application Settings',
                 displayText: intl.formatMessage({
                     id: 'Base.RouteMenuMapping.applications',
-                    defaultMessage: 'Change Application Owner',
+                    defaultMessage: 'Change Application Settings',
                 }),
                 path: '/settings/applications',
                 component: ListApplications,
