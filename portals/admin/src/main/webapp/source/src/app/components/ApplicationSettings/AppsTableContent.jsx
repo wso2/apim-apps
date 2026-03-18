@@ -21,7 +21,6 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
-import EditApplication from 'AppComponents/ApplicationSettings/EditApplication';
 import PropTypes from 'prop-types';
 
 /**
@@ -63,13 +62,17 @@ class AppsTableContent extends Component {
      */
     render() {
         const {
-            apps, editComponentProps, apiCall,
+            apps, columns, editComponentProps, apiCall, filterTokenTypes,
         } = this.props;
         const { notFound } = this.state;
 
         if (notFound) {
             return <ResourceNotFound />;
         }
+        const filteredApps = filterTokenTypes
+            ? apps.filter((app) => filterTokenTypes.includes(app.tokenType))
+            : apps;
+        const rowHeight = 48;
         return (
             <TableBody
                 sx={{
@@ -82,28 +85,33 @@ class AppsTableContent extends Component {
                     },
                 }}
             >
-                {apps && apps.map((app) => {
+                {filteredApps && filteredApps.map((app) => {
                     return (
                         <TableRow
                             sx={{
-                                height: 5,
-                                '& td': { padding: 0.5, paddingLeft: 2 },
+                                height: rowHeight,
+                                '& td': {
+                                    paddingTop: 0.5,
+                                    paddingBottom: 0.5,
+                                    paddingLeft: 2,
+                                    paddingRight: 2,
+                                },
                             }}
                             key={app.applicationId}
                         >
-                            <TableCell align='left'>
-                                {app.name}
-                            </TableCell>
-                            <TableCell align='left'>
-                                {app.owner}
-                            </TableCell>
-                            <TableCell align='left'>
-                                <EditApplication
-                                    dataRow={app}
-                                    updateList={apiCall}
-                                    {...editComponentProps}
-                                />
-                            </TableCell>
+                            {columns.map((column) => (
+                                <TableCell key={column.id} align='left'>
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            height: '100%',
+                                        }}
+                                    >
+                                        {column.render(app, { apiCall, editComponentProps })}
+                                    </div>
+                                </TableCell>
+                            ))}
                         </TableRow>
                     );
                 })}
@@ -111,8 +119,20 @@ class AppsTableContent extends Component {
         );
     }
 }
+
+AppsTableContent.defaultProps = {
+    filterTokenTypes: null,
+};
+
 AppsTableContent.propTypes = {
     toggleDeleteConfirmation: PropTypes.func.isRequired,
     apps: PropTypes.instanceOf(Map).isRequired,
+    columns: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            render: PropTypes.func.isRequired,
+        }),
+    ).isRequired,
+    filterTokenTypes: PropTypes.arrayOf(PropTypes.string),
 };
 export default (AppsTableContent);
