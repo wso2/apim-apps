@@ -376,7 +376,8 @@ const renderKubernetesGuide = ({
                     <Typography variant='body2'>
                         {t(
                             'Gateways.UniversalGatewayManagement.quick.start.prerequisite.certManager',
-                            'Either permissions to install cert-manager in the cluster or an existing cert-manager installation',
+                            'Either permissions to install cert-manager in the cluster or an existing' +
+                            ' cert-manager installation',
                         )}
                     </Typography>
                 </li>
