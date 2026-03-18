@@ -226,28 +226,82 @@ const renderQuickStartOverview = ({ t, downloadCommand, artifactName, tokenConfi
 const renderVirtualMachineGuide = ({ t, downloadCommand, artifactName, tokenConfigurationStep }) => {
     return (
         <>
-            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
-                {t('Gateways.UniversalGatewayManagement.quick.start.prerequisites', 'Prerequisites')}
-            </Typography>
-            <Box component='ul' sx={{ mt: 0, mb: 2, pl: 2 }}>
-                <li>
-                    <Typography variant='body2'>
-                        {t('Gateways.UniversalGatewayManagement.quick.start.prerequisite.curl', 'cURL installed')}
-                    </Typography>
-                </li>
-                <li>
-                    <Typography variant='body2'>
-                        {t('Gateways.UniversalGatewayManagement.quick.start.prerequisite.unzip', 'unzip installed')}
-                    </Typography>
-                </li>
-                <li>
-                    <Typography variant='body2'>
-                        {t(
-                            'Gateways.UniversalGatewayManagement.quick.start.prerequisite.java',
-                            'Java 17 or later installed',
-                        )}
-                    </Typography>
-                </li>
+            <Box sx={{ color: 'text.secondary' }}>
+                <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1.5, color: 'text.primary' }}>
+                    {t('Gateways.UniversalGatewayManagement.quick.start.prerequisites', 'Prerequisites')}
+                </Typography>
+
+                <Box component='ul' sx={{ mt: 0, mb: 2, pl: 3 }}>
+                    <li>
+                        <Typography variant='body2'>
+                            {t('Gateways.UniversalGatewayManagement.quick.start.prerequisite.curl', 'cURL installed')}
+                        </Typography>
+                    </li>
+                    <li>
+                        <Typography variant='body2'>
+                            {t('Gateways.UniversalGatewayManagement.quick.start.prerequisite.unzip', 'unzip installed')}
+                        </Typography>
+                    </li>
+                    <li>
+                        <Typography variant='body2'>
+                            {t(
+                                'Gateways.UniversalGatewayManagement.quick.start.prerequisite.docker.compose',
+                                'Docker Compose installed',
+                            )}
+                        </Typography>
+                    </li>
+                </Box>
+
+                <Typography variant='body2' sx={{ mb: 1 }}>
+                    {t(
+                        'Gateways.UniversalGatewayManagement.quick.start.prerequisite.container.runtime',
+                        'A Docker-compatible container runtime such as:',
+                    )}
+                </Typography>
+
+                <Box component='ul' sx={{ mt: 0, mb: 2, pl: 3 }}>
+                    <li>
+                        <Typography variant='body2'>
+                            {t(
+                                'Gateways.UniversalGatewayManagement.quick.start.prerequisite.docker.desktop',
+                                'Docker Desktop (Windows / macOS)',
+                            )}
+                        </Typography>
+                    </li>
+                    <li>
+                        <Typography variant='body2'>
+                            {t(
+                                'Gateways.UniversalGatewayManagement.quick.start.prerequisite.rancher.desktop',
+                                'Rancher Desktop (Windows / macOS)',
+                            )}
+                        </Typography>
+                    </li>
+                    <li>
+                        <Typography variant='body2'>
+                            {t(
+                                'Gateways.UniversalGatewayManagement.quick.start.prerequisite.colima',
+                                'Colima (macOS)',
+                            )}
+                        </Typography>
+                    </li>
+                    <li>
+                        <Typography variant='body2'>
+                            {t(
+                                'Gateways.UniversalGatewayManagement.quick.start.prerequisite.docker.engine',
+                                'Docker Engine + Compose plugin (Linux)',
+                            )}
+                        </Typography>
+                    </li>
+                </Box>
+
+                <Typography variant='body2' sx={{ mb: 1 }}>
+                    {t(
+                        'Gateways.UniversalGatewayManagement.quick.start.prerequisite.docker.commands',
+                        'Ensure docker and docker compose commands are available.',
+                    )}
+                </Typography>
+
+                <CodeBlock code={'docker --version\ndocker compose version'} />
             </Box>
 
             <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
@@ -306,15 +360,7 @@ const renderKubernetesGuide = ({
                     <Typography variant='body2'>
                         {t(
                             'Gateways.UniversalGatewayManagement.quick.start.prerequisite.kubectl',
-                            'kubectl configured for your cluster',
-                        )}
-                    </Typography>
-                </li>
-                <li>
-                    <Typography variant='body2'>
-                        {t(
-                            'Gateways.UniversalGatewayManagement.quick.start.prerequisite.namespace',
-                            'A namespace for the gateway deployment',
+                            'Kubernetes 1.32+ cluster',
                         )}
                     </Typography>
                 </li>
@@ -322,7 +368,15 @@ const renderKubernetesGuide = ({
                     <Typography variant='body2'>
                         {t(
                             'Gateways.UniversalGatewayManagement.quick.start.prerequisite.helm',
-                            'Helm or your preferred manifest deployment workflow',
+                            'Helm 3.18+ installed',
+                        )}
+                    </Typography>
+                </li>
+                <li>
+                    <Typography variant='body2'>
+                        {t(
+                            'Gateways.UniversalGatewayManagement.quick.start.prerequisite.certManager',
+                            'Either permissions to install cert-manager in the cluster or an existing cert-manager installation',
                         )}
                     </Typography>
                 </li>
