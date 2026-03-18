@@ -85,7 +85,7 @@ const CONSTS = {
     GATEWAY_TYPE: {
         synapse: 'Synapse',
         choreoConnect: 'ChoreoConnect',
-        apiPlatform: 'api-platform',
+        apiPlatform: 'Universal',
     },
     CREATE_API_GATEWAYS: {
         'wso2/synapse': {
@@ -112,18 +112,12 @@ const CONSTS = {
             description: 'API gateway offered by Azure cloud.',
             isNew: false,
         },
-        'api-platform': {
-            value: 'api-platform',
+        Universal: {
+            value: 'Universal',
             name: 'Platform Gateway',
             description: 'API gateway for platform-managed policies.',
             isNew: false,
-        },
-        PlatformGateway: {
-            value: 'api-platform',
-            name: 'Platform Gateway',
-            description: 'API gateway for platform-managed policies.',
-            isNew: false,
-        },
+        }
     },
     PATH_TEMPLATES: {
         COMMON_POLICIES: '/policies',
