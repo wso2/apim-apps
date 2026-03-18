@@ -567,6 +567,9 @@ const KeyConfiguration = (props) => {
                                         <Accordion
                                             expanded={expanded}
                                             onChange={handleAccordionChange}
+                                            sx={{
+                                                backgroundColor: 'inherit',
+                                            }}
                                         >
                                             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                                 <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
