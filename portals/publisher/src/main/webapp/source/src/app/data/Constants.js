@@ -90,13 +90,13 @@ const CONSTS = {
     CREATE_API_GATEWAYS: {
         'wso2/synapse': {
             value: 'wso2/synapse',
-            name: 'Universal Gateway',
-            description: 'API gateway embedded in APIM runtime.',
+            name: 'Universal Gateway - Classic',
+            description: 'Synapse based API gateway embedded in APIM runtime.',
             isNew: false,
         },
         'wso2/apk': {
             value: 'wso2/apk',
-            name: 'Kubernetes Gateway',
+            name: 'Kubernetes Gateway - Classic',
             description: 'API gateway running on Kubernetes.',
             isNew: false,
         },
@@ -114,9 +114,9 @@ const CONSTS = {
         },
         Universal: {
             value: 'Universal',
-            name: 'Platform Gateway',
+            name: 'Universal Gateway',
             description: 'API gateway for platform-managed policies.',
-            isNew: false,
+            isNew: true,
         }
     },
     PATH_TEMPLATES: {
