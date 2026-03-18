@@ -316,7 +316,7 @@ export default function ListGWEnviornments() {
     };
 
     const renderGatewayType = (gatewayType) => {
-        if (gatewayType === 'api-platform') {
+        if (gatewayType === 'Universal') {
             return intl.formatMessage({
                 id: 'Gateways.AddEditGateway.title.platform',
                 defaultMessage: 'Platform Gateway',
@@ -340,7 +340,7 @@ export default function ListGWEnviornments() {
         const normalizedGatewayType = String(gatewayType).toLowerCase();
         const isRegularGateway = normalizedGatewayType === 'regular';
         const isPlatformGateway =
-            normalizedGatewayType === 'api-platform' ||
+            normalizedGatewayType === 'Universal' ||
             normalizedGatewayType.includes('platform gateway');
         const isDisabled = !(isRegularGateway || isPlatformGateway);
         const gatewayStatus = getRowValue(tableMeta, 'gatewayStatus');
