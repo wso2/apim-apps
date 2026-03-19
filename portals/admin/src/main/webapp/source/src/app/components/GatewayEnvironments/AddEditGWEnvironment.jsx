@@ -1223,7 +1223,7 @@ function AddEditGWEnvironment(props) {
         if (value === CONSTS.GATEWAY_TYPE.apiPlatform) {
             return intl.formatMessage({
                 id: 'Gateways.AddEditGateway.type.apiPlatform.description',
-                defaultMessage: 'New self-hosted API Platform Gateway',
+                defaultMessage: 'New lightweight, self-hosted Universal gateway',
             });
         } else if (value === CONSTS.GATEWAY_TYPE.regular) {
             return intl.formatMessage({
@@ -1305,7 +1305,7 @@ function AddEditGWEnvironment(props) {
             || state.name
             || intl.formatMessage({
                 id: 'Gateways.AddEditGateway.title.platform',
-                defaultMessage: 'Platform Gateway',
+                defaultMessage: 'Universal Gateway',
             });
         const isPlatformGatewayActive = platformGateway?.isActive === true
             || platformGateway?.isActive === 'true';
