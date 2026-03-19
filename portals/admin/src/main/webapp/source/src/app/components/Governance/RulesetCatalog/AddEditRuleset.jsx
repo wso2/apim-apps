@@ -172,6 +172,35 @@ function AddEditRuleset(props) {
 
     const onChange = (e) => {
         dispatch({ field: e.target.name, value: e.target.value });
+
+        // Auto-set ruleCategory when ruleType changes
+        if (e.target.name === 'ruleType') {
+            if (e.target.value === 'GENERIC') {
+                dispatch({ field: 'ruleCategory', value: 'GENERIC' });
+                dispatch({ field: 'ruleType', value: 'API_DEFINITION' });
+                // Auto-populate default GENERIC ruleset YAML if content is empty
+                if (!rulesetContent || !rulesetContent.trim()) {
+                    const defaultYaml = [
+                        'deduplication:',
+                        '  enabled: true',
+                        '  similarity_threshold: 0.50',
+                        '  high_confidence_threshold: 0.99',
+                        '  mode: audit',
+                        'rules:',
+                        '  api-deduplication-check:',
+                        '    description: Detects structurally similar APIs',
+                        '    severity: error',
+                        '    message: >-',
+                        '      This API has high structural similarity with existing APIs.',
+                        '',
+                    ].join('\n');
+                    dispatch({ field: 'rulesetContent', value: defaultYaml });
+                }
+            } else {
+                // Reset ruleCategory when switching away from GENERIC
+                dispatch({ field: 'ruleCategory', value: '' });
+            }
+        }
     };
 
     const handleEditorChange = (value) => {
@@ -590,7 +619,7 @@ function AddEditRuleset(props) {
                             {isGenericRuleset ? (
                                 <FormattedMessage
                                     id='Governance.Rulesets.AddEdit.content.description.generic'
-                                    defaultMessage='Configure deduplication detection settings'
+                                    defaultMessage='Configure the GENERIC Ruleset Engine settings'
                                 />
                             ) : (
                                 <FormattedMessage
