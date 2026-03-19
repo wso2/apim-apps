@@ -139,16 +139,31 @@ export default function Compliance(props) {
 
                 // Get validation results and ruleset details for each ruleset
                 const rulesetPromises = Array.from(rulesetMap.keys()).map(async (rulesetId) => {
-                    const [validationResult, rulesetResult] = await Promise.all([
-                        restApi.getRulesetValidationResultsByAPIId(artifactId, rulesetId),
-                        restApi.getRulesetById(rulesetId),
-                    ]);
-                    return {
-                        ...validationResult.body,
-                        ruleType: rulesetMap.get(rulesetId).ruleType,
-                        ruleCategory: rulesetResult.body.ruleCategory,
-                        documentationLink: rulesetResult.body.documentationLink,
-                    };
+                    try {
+                        const [validationResult, rulesetResult] = await Promise.all([
+                            restApi.getRulesetValidationResultsByAPIId(artifactId, rulesetId),
+                            restApi.getRulesetById(rulesetId),
+                        ]);
+                        return {
+                            ...validationResult.body,
+                            ruleType: rulesetMap.get(rulesetId).ruleType,
+                            ruleCategory: rulesetResult.body.ruleCategory,
+                            documentationLink: rulesetResult.body.documentationLink,
+                        };
+                    } catch (error) {
+                        console.error(`Error fetching results for ruleset ${rulesetId}:`, error);
+                        const rulesetInfo = rulesetMap.get(rulesetId);
+                        return {
+                            id: rulesetId,
+                            name: rulesetInfo.name || 'Unknown Ruleset',
+                            status: rulesetInfo.status || 'PENDING',
+                            violatedRules: [],
+                            followedRules: [],
+                            ruleType: rulesetInfo.ruleType,
+                            ruleCategory: rulesetInfo.ruleCategory || 'GENERIC',
+                            documentationLink: '',
+                        };
+                    }
                 });
 
                 const rulesets = await Promise.all(rulesetPromises);
@@ -164,13 +179,13 @@ export default function Compliance(props) {
                 // Calculate rule adherence counts
                 const ruleCounts = rulesets.reduce((acc, ruleset) => {
                     // Count violated rules by severity
-                    ruleset.violatedRules.forEach((rule) => {
+                    (ruleset.violatedRules || []).forEach((rule) => {
                         if (rule.severity === 'ERROR') acc.errors += 1;
                         if (rule.severity === 'WARN') acc.warnings += 1;
                         if (rule.severity === 'INFO') acc.info += 1;
                     });
                     // Count passed rules
-                    acc.passed += ruleset.followedRules.length;
+                    acc.passed += (ruleset.followedRules || []).length;
                     return acc;
                 }, {
                     errors: 0, warnings: 0, info: 0, passed: 0,
