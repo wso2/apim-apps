@@ -16,7 +16,7 @@
 
 import Utils from "@support/utils";
 
-describe.skip("Change subscription tier of an application", () => {
+describe("Change subscription tier of an application", () => {
     const { publisher, developer, password, } = Utils.getUserInfo();
 
     const apiVersion = '2.0.0';

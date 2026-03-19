@@ -16,7 +16,7 @@
 
 import Utils from "@support/utils";
 
-describe.skip("Developer portal smoke tests", () => {
+describe("Developer portal smoke tests", () => {
     const { carbonUsername, carbonPassword } = Utils.getUserInfo();
 
     it.only("Exchange grant UI Test", () => {

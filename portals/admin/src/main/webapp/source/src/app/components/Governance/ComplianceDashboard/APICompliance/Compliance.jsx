@@ -92,6 +92,7 @@ export default function Compliance(props) {
         info: 0,
         passed: 0,
     });
+    const hasArtifactOwner = Boolean(artifactOwner?.trim());
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -254,13 +255,15 @@ export default function Compliance(props) {
                             defaultMessage='Back to Compliance Dashboard'
                         />
                     </RouterLink>
-                    <Typography variant='body2'>
-                        <FormattedMessage
-                            id='Governance.ComplianceDashboard.Compliance.api.owner'
-                            defaultMessage='API Owner: {owner}'
-                            values={{ owner: artifactOwner }}
-                        />
-                    </Typography>
+                    {hasArtifactOwner && (
+                        <Typography variant='body2'>
+                            <FormattedMessage
+                                id='Governance.ComplianceDashboard.Compliance.api.owner'
+                                defaultMessage='API Owner: {owner}'
+                                values={{ owner: artifactOwner }}
+                            />
+                        </Typography>
+                    )}
                 </Box>
                 <Card
                     elevation={3}
@@ -339,13 +342,15 @@ export default function Compliance(props) {
                             defaultMessage='Back to Compliance Dashboard'
                         />
                     </RouterLink>
-                    <Typography variant='body2'>
-                        <FormattedMessage
-                            id='Governance.ComplianceDashboard.Compliance.api.owner'
-                            defaultMessage='API Owner: {owner}'
-                            values={{ owner: artifactOwner }}
-                        />
-                    </Typography>
+                    {hasArtifactOwner && (
+                        <Typography variant='body2'>
+                            <FormattedMessage
+                                id='Governance.ComplianceDashboard.Compliance.api.owner'
+                                defaultMessage='API Owner: {owner}'
+                                values={{ owner: artifactOwner }}
+                            />
+                        </Typography>
+                    )}
                 </Box>
                 <Card
                     elevation={3}
@@ -422,13 +427,15 @@ export default function Compliance(props) {
                         defaultMessage='Back to Compliance Dashboard'
                     />
                 </RouterLink>
-                <Typography variant='body2'>
-                    <FormattedMessage
-                        id='Governance.ComplianceDashboard.Compliance.api.owner'
-                        defaultMessage='API Owner: {owner}'
-                        values={{ owner: artifactOwner }}
-                    />
-                </Typography>
+                {hasArtifactOwner && (
+                    <Typography variant='body2'>
+                        <FormattedMessage
+                            id='Governance.ComplianceDashboard.Compliance.api.owner'
+                            defaultMessage='API Owner: {owner}'
+                            values={{ owner: artifactOwner }}
+                        />
+                    </Typography>
+                )}
             </Box>
 
             <Grid container spacing={4}>

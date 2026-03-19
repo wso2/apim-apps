@@ -1,69 +1,69 @@
 {
-    "app": {
-        "context": "/publisher",
-        "customUrl": {
-            "enabled": false,
-            "forwardedHeader": "X-Forwarded-For"
-        },
-        "origin": {
-            "host": "localhost"
-        },
-        "feedback": {
-            "enable": false,
-            "serviceURL": ""
-        },
-        "singleLogout": {
-            "enabled": true,
-            "timeout": 4000
-        },
-        "logoutSessionStateAppender" : "" ,
-        "throttlingPolicyLimit": 80,
-        "operationPolicyCount": 500,
-        "documentCount": 1000,
-        "propertyDisplaySuffix": "__display",
-        "markdown": {
-            "skipHtml": true,
-            "syntaxHighlighterProps": {
-                "showLineNumbers": false
-            },
-            "syntaxHighlighterDarkTheme": false,
-            "template": {
-                "howTo": "",
-                "sample": "",
-                "other": ""
-            }
-        },
-        "reactHTMLParser": {
-          "decodeEntries": true,
-          "tagsNotAllowed": []
-        },
-        "workflows": {
-          "limit": 30
-        },
-        "loadDefaultLocales": false,
-        "supportedDocTypes": "application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/msword, application/pdf, text/plain, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.oasis.opendocument.text, application/vnd.oasis.opendocument.spreadsheet, application/json, application/x-yaml, .yaml, .md",
-        "docUrl": "https://apim.docs.wso2.com/en/4.7.0/",
-        "environmentsPolling": {
-          "maxDurationMs": 120000,
-          "intervalMs": 3000
-        }
+  "app": {
+    "context": "/publisher",
+    "customUrl": {
+      "enabled": false,
+      "forwardedHeader": "X-Forwarded-For"
     },
-    "serviceCatalogDefinitionTypes": {
-      "OAS2": "Swagger",
-      "OAS3": "Open API V3",
-      "WSDL1": "WSDL 1",
-      "WSDL2": "WSDL 2",
-      "GRAPHQL_SDL": "GraphQL SDL",
-      "ASYNC_API": "AsyncAPI"
+    "origin": {
+      "host": "localhost"
     },
-    "serviceCatalogSecurityTypes": {
-      "BASIC": "Basic",
-      "DIGEST": "Digest",
-      "OAUTH2": "OAuth2",
-      "NONE": "None",
-      "X509": "X509",
-      "API_KEY": "API Key"
+    "feedback": {
+      "enable": false,
+      "serviceURL": ""
     },
+    "singleLogout": {
+      "enabled": true,
+      "timeout": 4000
+    },
+    "logoutSessionStateAppender": "",
+    "throttlingPolicyLimit": 80,
+    "operationPolicyCount": 500,
+    "documentCount": 1000,
+    "propertyDisplaySuffix": "__display",
+    "markdown": {
+      "skipHtml": true,
+      "syntaxHighlighterProps": {
+        "showLineNumbers": false
+      },
+      "syntaxHighlighterDarkTheme": false,
+      "template": {
+        "howTo": "",
+        "sample": "",
+        "other": ""
+      }
+    },
+    "reactHTMLParser": {
+      "decodeEntries": true,
+      "tagsNotAllowed": []
+    },
+    "workflows": {
+      "limit": 30
+    },
+    "loadDefaultLocales": false,
+    "supportedDocTypes": "application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/msword, application/pdf, text/plain, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.oasis.opendocument.text, application/vnd.oasis.opendocument.spreadsheet, application/json, application/x-yaml, .yaml, .md",
+    "docUrl": "https://apim.docs.wso2.com/en/4.7.0/",
+    "environmentsPolling": {
+      "maxDurationMs": 120000,
+      "intervalMs": 3000
+    }
+  },
+  "serviceCatalogDefinitionTypes": {
+    "OAS2": "Swagger",
+    "OAS3": "Open API V3",
+    "WSDL1": "WSDL 1",
+    "WSDL2": "WSDL 2",
+    "GRAPHQL_SDL": "GraphQL SDL",
+    "ASYNC_API": "AsyncAPI"
+  },
+  "serviceCatalogSecurityTypes": {
+    "BASIC": "Basic",
+    "DIGEST": "Digest",
+    "OAUTH2": "OAuth2",
+    "NONE": "None",
+    "X509": "X509",
+    "API_KEY": "API Key"
+  },
   "apis": {
     "alwaysShowDeploySampleButton": true,
     "showMultiVersionPolicies": false,
@@ -101,6 +101,10 @@
     },
     "maxSubscriptionLimit": 2000,
     "maxScopeCount": 2000
+  },
+  "sessionTimeout": {
+    "enable": true,
+    "idleWarningTimeout": 160,
+    "idleTimeout": 180
   }
 }
-
