@@ -69,7 +69,7 @@ const normalizeReleaseBaseUrl = (value) => {
 };
 
 export const getPlatformGatewayReleaseConfig = (settings) => {
-    const platformGatewayConfig = settings?.platformGateway || {};
+    const platformGatewayConfig = settings?.universalGatewayVersion || {};
     const releasesUrl = normalizeReleaseBaseUrl(platformGatewayConfig.releasesUrl);
     const version = (platformGatewayConfig.version || DEFAULT_PLATFORM_GATEWAY_VERSION).trim();
     const browserHost = globalThis.window?.location.host || '';
