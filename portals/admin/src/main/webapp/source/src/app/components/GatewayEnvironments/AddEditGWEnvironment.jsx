@@ -1245,7 +1245,7 @@ function AddEditGWEnvironment(props) {
         if (value === CONSTS.GATEWAY_TYPE.apiPlatform) {
             return intl.formatMessage({
                 id: 'Gateways.AddEditGateway.type.apiPlatform.description',
-                defaultMessage: 'New self-hosted API platform gateway',
+                defaultMessage: 'New self-hosted API Platform Gateway',
             });
         } else if (value === CONSTS.GATEWAY_TYPE.regular) {
             return intl.formatMessage({
