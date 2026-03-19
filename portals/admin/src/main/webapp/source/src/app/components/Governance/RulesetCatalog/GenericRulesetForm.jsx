@@ -39,6 +39,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TuneIcon from '@mui/icons-material/Tune';
 import SecurityIcon from '@mui/icons-material/Security';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import PropTypes from 'prop-types';
 
 /**
@@ -212,11 +213,14 @@ function GenericRulesetForm({ rulesetContent, onContentChange, rulesetName }) {
     const intl = useIntl();
 
     // Detect lifecycle-type ruleset by name or content structure
-    const isLifecycleRuleset = (() => {
-        if (rulesetName && /lifecycle|retirement/i.test(rulesetName)) return true;
-        if (rulesetContent && /lifecycle_retirement:/i.test(rulesetContent)) return true;
-        return false;
-    })();
+    const detectPurpose = () => {
+        if (rulesetName && /lifecycle|retirement/i.test(rulesetName)) return 'lifecycle';
+        if (rulesetContent && /lifecycle_retirement:/i.test(rulesetContent)) return 'lifecycle';
+        return 'deduplication';
+    };
+
+    const [purpose, setPurpose] = useState(detectPurpose);
+    const isLifecycleRuleset = purpose === 'lifecycle';
 
     const defaultConfig = {
         sectionName: isLifecycleRuleset ? 'lifecycle_retirement' : 'deduplication',
@@ -248,6 +252,22 @@ function GenericRulesetForm({ rulesetContent, onContentChange, rulesetName }) {
 
     // Ref to track YAML we last serialized, so we can skip re-parsing our own output
     const lastSyncedYaml = useRef('');
+
+    // Purpose descriptions map
+    const purposeDescriptions = {
+        deduplication: intl.formatMessage({
+            id: 'Governance.Rulesets.GenericForm.purpose.dedup.description',
+            defaultMessage: 'Detects structurally similar APIs using MinHash/LSH fingerprinting. '
+                + 'Flags new APIs that closely resemble existing ones to prevent catalog bloat '
+                + 'and encourage API reuse.',
+        }),
+        lifecycle: intl.formatMessage({
+            id: 'Governance.Rulesets.GenericForm.purpose.lifecycle.description',
+            defaultMessage: 'Validates that APIs being deprecated or retired have a linked successor '
+                + 'API. Prevents unsafe lifecycle transitions that would leave consumers without '
+                + 'a migration path.',
+        }),
+    };
 
     // Parse incoming YAML content whenever rulesetContent changes from external source
     useEffect(() => {
@@ -310,6 +330,41 @@ function GenericRulesetForm({ rulesetContent, onContentChange, rulesetName }) {
                 rules: {
                     ...prev.rules,
                     [ruleKey]: { ...prev.rules[ruleKey], [field]: value },
+                },
+            };
+            syncToYaml(updated);
+            return updated;
+        });
+    }, [syncToYaml]);
+
+    // Handle purpose change — switch between dedup and lifecycle defaults
+    const handlePurposeChange = useCallback((newPurpose) => {
+        const isLc = newPurpose === 'lifecycle';
+        setPurpose(newPurpose);
+        setConfig((prev) => {
+            const updated = {
+                sectionName: isLc ? 'lifecycle_retirement' : 'deduplication',
+                deduplication: {
+                    enabled: prev.deduplication.enabled,
+                    similarity_threshold: prev.deduplication.similarity_threshold || 0.50,
+                    high_confidence_threshold: isLc ? undefined
+                        : (prev.deduplication.high_confidence_threshold || 0.99),
+                    sunset_period_days: isLc ? (prev.deduplication.sunset_period_days || 90) : undefined,
+                    mode: prev.deduplication.mode || 'audit',
+                },
+                rules: isLc ? {
+                    'successor-linkage-check': {
+                        description: 'Validates successor API linkage during lifecycle transitions',
+                        severity: 'error',
+                        message: 'API lifecycle transition requires a valid successor API to be linked.',
+                    },
+                } : {
+                    'api-deduplication-check': {
+                        description: 'Detects structurally similar APIs using MinHash/LSH algorithm',
+                        severity: 'error',
+                        message: 'This API has high structural similarity with existing APIs in the catalog. '
+                            + 'Review for potential duplication or consolidation opportunities.',
+                    },
                 },
             };
             syncToYaml(updated);
@@ -382,6 +437,61 @@ function GenericRulesetForm({ rulesetContent, onContentChange, rulesetName }) {
                 />
             </Box>
 
+            {/* Ruleset Purpose selector */}
+            <Box sx={{
+                mb: 2,
+                p: 2,
+                borderRadius: 1,
+                border: '1px solid',
+                borderColor: 'divider',
+            }}
+            >
+                <Box sx={{
+                    display: 'flex', alignItems: 'center', gap: 0.5, mb: 1.5,
+                }}
+                >
+                    <HelpOutlineIcon fontSize='small' color='primary' />
+                    <Typography variant='subtitle2' fontWeight='bold'>
+                        <FormattedMessage
+                            id='Governance.Rulesets.GenericForm.purpose.title'
+                            defaultMessage='Ruleset Purpose'
+                        />
+                    </Typography>
+                </Box>
+                <TextField
+                    select
+                    fullWidth
+                    value={purpose}
+                    onChange={(e) => handlePurposeChange(e.target.value)}
+                    variant='outlined'
+                    size='small'
+                    label={intl.formatMessage({
+                        id: 'Governance.Rulesets.GenericForm.purpose.label',
+                        defaultMessage: 'What should this ruleset check?',
+                    })}
+                >
+                    <MenuItem value='deduplication'>
+                        <FormattedMessage
+                            id='Governance.Rulesets.GenericForm.purpose.dedup.option'
+                            defaultMessage='API Deduplication Detection'
+                        />
+                    </MenuItem>
+                    <MenuItem value='lifecycle'>
+                        <FormattedMessage
+                            id='Governance.Rulesets.GenericForm.purpose.lifecycle.option'
+                            defaultMessage='API Lifecycle & Retirement Management'
+                        />
+                    </MenuItem>
+                </TextField>
+                <Typography
+                    variant='body2'
+                    color='text.secondary'
+                    sx={{ mt: 1.5, lineHeight: 1.6 }}
+                >
+                    {purposeDescriptions[purpose]}
+                </Typography>
+            </Box>
+
             {/* Detection Settings */}
             <Accordion
                 expanded={expanded === 'detection'}
@@ -432,12 +542,12 @@ function GenericRulesetForm({ rulesetContent, onContentChange, rulesetName }) {
                             <Slider
                                 value={dedup.similarity_threshold}
                                 onChange={(e, val) => updateDedup('similarity_threshold', val)}
-                                min={0.30}
+                                min={0.50}
                                 max={1.00}
                                 step={0.01}
                                 marks={[
-                                    { value: 0.30, label: '30%' },
                                     { value: 0.50, label: '50%' },
+                                    { value: 0.70, label: '70%' },
                                     { value: 0.80, label: '80%' },
                                     { value: 1.00, label: '100%' },
                                 ]}
