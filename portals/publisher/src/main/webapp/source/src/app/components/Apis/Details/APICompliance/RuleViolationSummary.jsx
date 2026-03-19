@@ -60,10 +60,10 @@ export default function RuleViolationSummary({ complianceData }) {
             ruleType: ruleset.ruleType,
             ruleCategory: ruleset.ruleCategory,
             documentationLink: ruleset.documentationLink,
-            error: ruleset.violatedRules.filter(rule => rule.severity === 'ERROR'),
-            warn: ruleset.violatedRules.filter(rule => rule.severity === 'WARN'),
-            info: ruleset.violatedRules.filter(rule => rule.severity === 'INFO'),
-            passed: ruleset.followedRules
+            error: (ruleset.violatedRules || []).filter(rule => rule.severity === 'ERROR'),
+            warn: (ruleset.violatedRules || []).filter(rule => rule.severity === 'WARN'),
+            info: (ruleset.violatedRules || []).filter(rule => rule.severity === 'INFO'),
+            passed: ruleset.followedRules || []
         }));
 
         // Group by severity level
