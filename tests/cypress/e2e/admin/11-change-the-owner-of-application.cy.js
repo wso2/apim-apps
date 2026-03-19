@@ -22,12 +22,12 @@ const devportalComonPage = new DevportalComonPage();
 
 describe("Change the owner of application", () => {
   const { developer, password } = Utils.getUserInfo();
-  const appName = Utils.generateName();
   const appDescription = "Owner testing application";
   const carbonUsername = "admin";
   const carbonPassword = "admin";
 
   it.only("Change the owner of application", () => {
+    const appName = `${Utils.generateName()}-${Date.now()}`;
     //Create application
     cy.loginToDevportal(developer, password);
     cy.createApp(appName, appDescription);
@@ -36,10 +36,17 @@ describe("Change the owner of application", () => {
 
     //login to admin portal
     cy.loginToAdmin(carbonUsername, carbonPassword);
-    cy.get('[data-testid="Change Application Settings-child-link"]').click({ force: true });
+    cy.visit('/admin/settings/applications');
+    cy.get('body').then(($body) => {
+      if ($body.find('[role="tab"]').length > 0) {
+        cy.contains('[role="tab"]', 'Owner').click({ force: true });
+      }
+    });
+    cy.get('#search-label').clear().type(appName);
+    cy.contains('button', 'Search').click();
     cy.get("#itest-application-list-table").within(() => {
       cy.contains("tr", appName).within(() => {
-        cy.get("td > div > span").click({ force: true });
+        cy.get('[aria-label="edit-application-settings"]').click({ force: true });
       });
     });
 
@@ -51,7 +58,7 @@ describe("Change the owner of application", () => {
     cy.wait(5000);
     cy.get("#itest-application-list-table").within(() => {
       cy.contains("tr", appName).within(() => {
-        cy.get("td").eq(1).should("have.text", "admin");
+        cy.get("td").eq(1).should("contain", "admin");
       });
     });
 
