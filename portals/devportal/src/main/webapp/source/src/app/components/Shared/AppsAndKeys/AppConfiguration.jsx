@@ -242,6 +242,10 @@ const AppConfiguration = (props) => {
         setSelectedValue(previousValue);
         const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
         setIsOrgWideAppUpdateEnabled(orgWideAppUpdateEnabled);
+        // Validate the values against constraint on load
+        if (onValidationError) {
+            onValidationError(config.name, !validateConstraint(String(previousValue ?? ''), config.constraint, null, null).valid);
+        }
     }, [previousValue, settingsContext]);
 
     const setCheckboxValue = () => {
