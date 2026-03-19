@@ -1,4 +1,3 @@
-/* eslint-disable operator-linebreak, react/jsx-wrap-multilines */
 /*
  * Copyright (c) 2024, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -181,51 +180,50 @@ const ApisTableContent = ({ apis, updateApiList }) => {
 
     return (
         <TableBody sx={styles.fullHeight}>
-            {apis &&
-                apis.map((api) => (
-                    <StyledTableRow sx={styles.tableRow} key={api.id}>
-                        <StyledTableCell align='left'>{api.name}</StyledTableCell>
-                        <StyledTableCell align='left'>
-                            <StyledDiv>{api.version}</StyledDiv>
-                        </StyledTableCell>
-                        <StyledTableCell align='left'>
-                            {editableRow !== api.id && (
-                                <StyledDiv>
-                                    {api.provider}
-                                    <IconButton color='primary' onClick={() => handleEditClick(api.id, api.provider)}>
-                                        <EditIcon aria-label='edit-api-settings' />
-                                    </IconButton>
-                                </StyledDiv>
-                            )}
-                            {editableRow === api.id && (
-                                <StyledDiv sx={styles.tableActionBtnContainer}>
-                                    <TextField
-                                        id='standard-basic'
-                                        label={
-                                            <FormattedMessage
-                                                id='AdminPages.ApiSettings.EditApi.form.edit.provider.label'
-                                                defaultMessage='Provider Name'
-                                            />
-                                        }
-                                        variant='standard'
-                                        size='small'
-                                        value={provider}
-                                        sx={styles.textfield}
-                                        onChange={(e) => {
-                                            setProvider(e.target.value);
-                                        }}
-                                    />
-                                    <IconButton color='primary' onClick={() => handleSubmitClick(api.id)}>
-                                        <SaveIcon aria-label='edit-api-settings' />
-                                    </IconButton>
-                                    <IconButton onClick={handleCancelClick}>
-                                        <CancelIcon aria-label='edit-api-settings' />
-                                    </IconButton>
-                                </StyledDiv>
-                            )}
-                        </StyledTableCell>
-                    </StyledTableRow>
-                ))}
+            {apis && apis.map((api) => (
+                <StyledTableRow sx={styles.tableRow} key={api.id}>
+                    <StyledTableCell align='left'>{api.name}</StyledTableCell>
+                    <StyledTableCell align='left'>
+                        <StyledDiv>{api.version}</StyledDiv>
+                    </StyledTableCell>
+                    <StyledTableCell align='left'>
+                        {editableRow !== api.id && (
+                            <StyledDiv>
+                                {api.provider}
+                                <IconButton color='primary' onClick={() => handleEditClick(api.id, api.provider)}>
+                                    <EditIcon aria-label='edit-api-settings' />
+                                </IconButton>
+                            </StyledDiv>
+                        )}
+                        {editableRow === api.id && (
+                            <StyledDiv sx={styles.tableActionBtnContainer}>
+                                <TextField
+                                    id='standard-basic'
+                                    label={(
+                                        <FormattedMessage
+                                            id='AdminPages.ApiSettings.EditApi.form.edit.provider.label'
+                                            defaultMessage='Provider Name'
+                                        />
+                                    )}
+                                    variant='standard'
+                                    size='small'
+                                    value={provider}
+                                    sx={styles.textfield}
+                                    onChange={(e) => {
+                                        setProvider(e.target.value);
+                                    }}
+                                />
+                                <IconButton color='primary' onClick={() => handleSubmitClick(api.id)}>
+                                    <SaveIcon aria-label='edit-api-settings' />
+                                </IconButton>
+                                <IconButton onClick={handleCancelClick}>
+                                    <CancelIcon aria-label='edit-api-settings' />
+                                </IconButton>
+                            </StyledDiv>
+                        )}
+                    </StyledTableCell>
+                </StyledTableRow>
+            ))}
         </TableBody>
     );
 };

@@ -1,4 +1,3 @@
-/* eslint-disable operator-linebreak, comma-dangle, implicit-arrow-linebreak, react/jsx-curly-newline, indent */
 /*
  * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -63,20 +62,135 @@ const StyledTooltip = styled(({ className, ...props }) => (
     },
 }));
 
+// Consolidated styles for better readability
+const styles = {
+    buttonContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+        mr: 0.5,
+    },
+    primaryButton: {
+        px: 2,
+        py: 0.75,
+        borderRadius: '8px',
+        textTransform: 'none',
+        fontWeight: 500,
+        fontSize: '0.75rem',
+        backgroundColor: 'rgb(25, 120, 210)',
+        '&:hover': {
+            backgroundColor: 'rgb(0, 109, 179)',
+        },
+    },
+    emptyStateButton: {
+        px: 2,
+        py: 0.75,
+        borderRadius: '8px',
+        textTransform: 'none',
+        fontWeight: 500,
+        fontSize: '0.75rem',
+        backgroundColor: '#0E4A72',
+        '&:hover': {
+            backgroundColor: '#0A3C5D',
+        },
+    },
+    tabs: {
+        pl: 0,
+        minHeight: 40,
+        borderBottom: '1px solid #D8DDE6',
+        '& .MuiTabs-flexContainer': {
+            justifyContent: 'flex-start',
+        },
+        '& .MuiTabs-indicator': {
+            height: 2,
+            backgroundColor: '#0E4A72',
+        },
+        '& .MuiTab-root': {
+            minHeight: 40,
+            textTransform: 'none',
+            fontWeight: 500,
+            fontFamily: 'inherit',
+            fontSize: '0.75rem',
+            color: 'text.secondary',
+            mr: 1,
+            px: 2,
+            minWidth: 'auto',
+            border: 'none',
+        },
+        '& .Mui-selected': {
+            color: '#0E4A72',
+            fontWeight: 700,
+        },
+    },
+    emptyStateContainer: {
+        minHeight: '42vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 1.5,
+        textAlign: 'center',
+        px: 2,
+    },
+    panel: {
+        border: '1px solid #D8DDE6',
+        borderRadius: '10px',
+        backgroundColor: '#fff',
+        overflow: 'hidden',
+    },
+    toolbar: {
+        pl: 0,
+        pr: 2,
+        py: 1,
+        backgroundColor: '#fff',
+    },
+    table: {
+        '& .MuiPaper-root': {
+            boxShadow: 'none',
+            borderRadius: 0,
+        },
+        '& .MuiTableCell-head': {
+            fontWeight: 500,
+            color: '#8A94A6',
+            fontSize: '0.8rem',
+            borderBottom: '1px solid #EEF1F6',
+        },
+        '& .MuiTableCell-body': {
+            fontSize: '0.75rem',
+            borderBottom: '1px solid #EEF1F6',
+            color: '#2F3441',
+        },
+        '& .MuiTableRow-root:last-of-type .MuiTableCell-body': {
+            borderBottom: 'none',
+        },
+    },
+    searchTextField: {
+        '& .MuiInputBase-root': {
+            fontSize: '0.75rem',
+        },
+        '& .MuiOutlinedInput-root': {
+            borderRadius: '8px',
+            backgroundColor: '#fff',
+        },
+        '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: '#D8DDE6',
+        },
+    },
+};
+
 /**
  * Maps a regular environment entry into the table row shape.
  */
 const mapEnvironmentItem = (item) => {
     const additionalProperties = getAdditionalPropertiesAsMap(
-        item.additionalProperties
+        item.additionalProperties,
     );
     const platformGatewayId = additionalProperties.platformGatewayId || null;
-    const isPlatformGateway =
-        item.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform ||
-        Boolean(platformGatewayId);
+    const isPlatformGateway = item.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform
+        || Boolean(platformGatewayId);
     const gatewayStatus = resolvePlatformGatewayStatus(
         isPlatformGateway,
-        additionalProperties.isActive
+        additionalProperties.isActive,
     );
     return {
         ...item,
@@ -130,7 +244,7 @@ const GatewayEditButton = ({ dataRow }) => {
     const handleClick = () => {
         if (dataRow.isPlatformGateway && dataRow.platformGatewayId) {
             history.push(
-                `/settings/environments/universal-gateways/${dataRow.platformGatewayId}`
+                `/settings/environments/universal-gateways/${dataRow.platformGatewayId}`,
             );
             return;
         }
@@ -144,8 +258,8 @@ const GatewayEditButton = ({ dataRow }) => {
             size='large'
             onClick={handleClick}
             disabled={
-                (dataRow.isReadOnly && !dataRow.isPlatformGateway) ||
-                (dataRow.isPlatformGateway && !dataRow.platformGatewayId)
+                (dataRow.isReadOnly && !dataRow.isPlatformGateway)
+                    || (dataRow.isPlatformGateway && !dataRow.platformGatewayId)
             }
         >
             <EditIcon aria-label={`edit-gateway-${dataRow.id}`} />
@@ -169,26 +283,25 @@ const apiCall = () => {
 
             const mappedEnvironments = environmentList.map(mapEnvironmentItem);
             const mappedPlatformGateways = platformGatewayList.map(
-                mapPlatformGatewayItem
+                mapPlatformGatewayItem,
             );
 
             // Avoid duplicate rows when platform gateways are present in both sources.
             const existingPlatformGatewayIds = new Set(
                 mappedEnvironments
                     .map((gateway) => gateway.platformGatewayId)
-                    .filter(Boolean)
+                    .filter(Boolean),
             );
             const existingNames = new Set(
                 mappedEnvironments
                     .map((gateway) => (gateway.name || '').toLowerCase())
-                    .filter(Boolean)
+                    .filter(Boolean),
             );
             const nonDuplicatePlatformGateways = mappedPlatformGateways.filter(
                 (gateway) => {
                     if (
-                        gateway.platformGatewayId &&
-                        existingPlatformGatewayIds.has(
-                            gateway.platformGatewayId
+                        gateway.platformGatewayId && existingPlatformGatewayIds.has(
+                            gateway.platformGatewayId,
                         )
                     ) {
                         return false;
@@ -198,7 +311,7 @@ const apiCall = () => {
                         return false;
                     }
                     return true;
-                }
+                },
             );
 
             return [...mappedEnvironments, ...nonDuplicatePlatformGateways];
@@ -293,12 +406,9 @@ export default function ListGWEnviornments() {
     const renderVhosts = (vhosts) => {
         return vhosts.map((vhost) => (
             <div key={`${vhost.host}:${vhost.httpsPort}`}>
-                {'https://' +
-                    vhost.host +
-                    (vhost.httpsPort === 443 ? '' : ':' + vhost.httpsPort) +
-                    (vhost.httpContext
-                        ? '/' + vhost.httpContext.replace(/^\//g, '')
-                        : '')}
+                {'https://' + vhost.host + (vhost.httpsPort === 443 ? ''
+                    : ':' + vhost.httpsPort) + (vhost.httpContext ? '/'
+                        + vhost.httpContext.replace(/^\//g, '') : '')}
             </div>
         ));
     };
@@ -335,13 +445,11 @@ export default function ListGWEnviornments() {
     };
 
     const renderGatewayInstances = (value, tableMeta) => {
-        const gatewayType =
-            getRowValue(tableMeta, 'gatewayTypeDisplay') || 'Regular';
+        const gatewayType = getRowValue(tableMeta, 'gatewayTypeDisplay') || 'Regular';
         const normalizedGatewayType = String(gatewayType).toLowerCase();
         const isRegularGateway = normalizedGatewayType === 'regular';
-        const isPlatformGateway =
-            normalizedGatewayType === 'Universal' ||
-            normalizedGatewayType.includes('platform gateway');
+        const isPlatformGateway = normalizedGatewayType === 'universal'
+            || normalizedGatewayType.includes('platform gateway');
         const isDisabled = !(isRegularGateway || isPlatformGateway);
         const gatewayStatus = getRowValue(tableMeta, 'gatewayStatus');
 
@@ -359,20 +467,16 @@ export default function ListGWEnviornments() {
         }
 
         const gatewayId = getRowValue(tableMeta, 'id');
-        const gatewayName =
-            getRowValue(tableMeta, 'displayName') ||
-            getRowValue(tableMeta, 'name') ||
-            '';
+        const gatewayName = getRowValue(tableMeta, 'displayName')
+            || getRowValue(tableMeta, 'name') || '';
 
         const button = (
             <IconButton
-                onClick={() =>
-                    handleOpenLiveGateways(
-                        gatewayId,
-                        gatewayName,
-                        gatewayStatus
-                    )
-                }
+                onClick={() => handleOpenLiveGateways(
+                    gatewayId,
+                    gatewayName,
+                    gatewayStatus,
+                )}
                 disabled={isDisabled}
             >
                 <FormatListBulletedIcon aria-label='gateway-instances-list-icon' />
@@ -383,8 +487,8 @@ export default function ListGWEnviornments() {
             <StyledTooltip
                 title={intl.formatMessage({
                     id:
-                        'AdminPages.Gateways.table.gatewayInstances.tooltip.' +
-                        'notSupported',
+                        'AdminPages.Gateways.table.gatewayInstances.tooltip.'
+                            + 'notSupported',
                     defaultMessage: 'Not supported for this gateway type',
                 })}
             >
@@ -411,18 +515,18 @@ export default function ListGWEnviornments() {
         // Conditionally include gatewayType column
         ...(isGatewayTypeAvailable
             ? [
-                  {
-                      name: 'gatewayTypeDisplay',
-                      label: intl.formatMessage({
-                          id: 'AdminPages.Gateways.table.header.gatewayType',
-                          defaultMessage: 'Gateway Type',
-                      }),
-                      options: {
-                          sort: false,
-                          customBodyRender: renderGatewayType,
-                      },
-                  },
-              ]
+                {
+                    name: 'gatewayTypeDisplay',
+                    label: intl.formatMessage({
+                        id: 'AdminPages.Gateways.table.header.gatewayType',
+                        defaultMessage: 'Gateway Type',
+                    }),
+                    options: {
+                        sort: false,
+                        customBodyRender: renderGatewayType,
+                    },
+                },
+            ]
             : []),
         { name: 'gatewayStatus', options: { display: false } },
         {
@@ -450,18 +554,18 @@ export default function ListGWEnviornments() {
         // Conditionally include gateway instances column
         ...(settings.isGatewayNotificationEnabled
             ? [
-                  {
-                      name: 'gatewayInstances',
-                      label: intl.formatMessage({
-                          id: 'AdminPages.Gateways.table.header.gatewayInstances',
-                          defaultMessage: 'Gateway Instances',
-                      }),
-                      options: {
-                          sort: false,
-                          customBodyRender: renderGatewayInstances,
-                      },
-                  },
-              ]
+                {
+                    name: 'gatewayInstances',
+                    label: intl.formatMessage({
+                        id: 'AdminPages.Gateways.table.header.gatewayInstances',
+                        defaultMessage: 'Gateway Instances',
+                    }),
+                    options: {
+                        sort: false,
+                        customBodyRender: renderGatewayInstances,
+                    },
+                },
+            ]
             : []),
         { name: 'id', options: { display: false } },
     ];
@@ -497,8 +601,8 @@ export default function ListGWEnviornments() {
                 <FormattedMessage
                     id='AdminPages.Gateways.List.empty.content.Gateways'
                     defaultMessage={
-                        'It is possible to create a Gateway environment with virtual hosts to access APIs.' +
-                        ' API revisions can be attached with Vhost to access it.'
+                        'It is possible to create a Gateway environment with virtual hosts to access APIs.'
+                        + ' API revisions can be attached with Vhost to access it.'
                     }
                 />
             </Typography>
@@ -519,14 +623,7 @@ export default function ListGWEnviornments() {
         }
         if (selectedCategory === 'wso2') {
             return (
-                <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        mr: 0.5,
-                    }}
-                >
+                <Box sx={styles.buttonContainer}>
                     <Button
                         variant='contained'
                         color='primary'
@@ -534,18 +631,7 @@ export default function ListGWEnviornments() {
                         startIcon={<AddIcon />}
                         onClick={openSelfHostedGatewayPage}
                         data-testid='add-wso2-gateway-btn'
-                        sx={{
-                            px: 2,
-                            py: 0.75,
-                            borderRadius: '8px',
-                            textTransform: 'none',
-                            fontWeight: 500,
-                            fontSize: '0.75rem',
-                            backgroundColor: 'rgb(25, 120, 210)',
-                            '&:hover': {
-                                backgroundColor: 'rgb(0, 109, 179)',
-                            },
-                        }}
+                        sx={styles.primaryButton}
                     >
                         {intl.formatMessage({
                             id: 'Gateways.ListGatewayEnvironments.addSelfHostedGateway',
@@ -556,14 +642,7 @@ export default function ListGWEnviornments() {
             );
         }
         return (
-            <Box
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                    mr: 0.5,
-                }}
-            >
+            <Box sx={styles.buttonContainer}>
                 <Button
                     component={RouterLink}
                     to='/settings/environments/create?category=third-party'
@@ -572,18 +651,7 @@ export default function ListGWEnviornments() {
                     size='small'
                     startIcon={<AddIcon />}
                     data-testid='form-dialog-base-trigger-btn'
-                    sx={{
-                        px: 2,
-                        py: 0.75,
-                        borderRadius: '8px',
-                        textTransform: 'none',
-                        fontWeight: 500,
-                        fontSize: '0.75rem',
-                        backgroundColor: 'rgb(25, 120, 210)',
-                        '&:hover': {
-                            backgroundColor: 'rgb(0, 109, 179)',
-                        },
-                    }}
+                    sx={styles.primaryButton}
                 >
                     {intl.formatMessage({
                         id: 'Gateways.ListGatewayEnvironments.addThirdPartyGateway',
@@ -599,34 +667,7 @@ export default function ListGWEnviornments() {
             value={selectedCategory}
             onChange={(_, value) => setSelectedCategory(value)}
             aria-label='gateway-category-tabs'
-            sx={{
-                pl: 0,
-                minHeight: 40,
-                borderBottom: '1px solid #D8DDE6',
-                '& .MuiTabs-flexContainer': {
-                    justifyContent: 'flex-start',
-                },
-                '& .MuiTabs-indicator': {
-                    height: 2,
-                    backgroundColor: '#0E4A72',
-                },
-                '& .MuiTab-root': {
-                    minHeight: 40,
-                    textTransform: 'none',
-                    fontWeight: 500,
-                    fontFamily: 'inherit',
-                    fontSize: '0.75rem',
-                    color: 'text.secondary',
-                    mr: 1,
-                    px: 2,
-                    minWidth: 'auto',
-                    border: 'none',
-                },
-                '& .Mui-selected': {
-                    color: '#0E4A72',
-                    fontWeight: 700,
-                },
-            }}
+            sx={styles.tabs}
         >
             <Tab
                 value='wso2'
@@ -646,24 +687,13 @@ export default function ListGWEnviornments() {
     );
 
     const centeredEmptyState = (
-        <Box
-            sx={{
-                minHeight: '42vh',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 1.5,
-                textAlign: 'center',
-                px: 2,
-            }}
-        >
+        <Box sx={styles.emptyStateContainer}>
             <Typography variant='body2' color='text.secondary'>
                 {intl.formatMessage({
                     id: 'Gateways.ListGatewayEnvironments.empty.description',
                     defaultMessage:
-                        'Add third party gateways to discover, manage, and govern APIs' +
-                        ' across providers from a single control plane.',
+                        'Add third party gateways to discover, manage, and govern APIs'
+                            + ' across providers from a single control plane.',
                 })}
             </Typography>
             {selectedCategory === 'wso2' ? (
@@ -672,18 +702,7 @@ export default function ListGWEnviornments() {
                     size='small'
                     startIcon={<AddIcon />}
                     onClick={openSelfHostedGatewayPage}
-                    sx={{
-                        px: 2,
-                        py: 0.75,
-                        borderRadius: '8px',
-                        textTransform: 'none',
-                        fontWeight: 500,
-                        fontSize: '0.75rem',
-                        backgroundColor: '#0E4A72',
-                        '&:hover': {
-                            backgroundColor: '#0A3C5D',
-                        },
-                    }}
+                    sx={styles.emptyStateButton}
                 >
                     {intl.formatMessage({
                         id: 'Gateways.ListGatewayEnvironments.addSelfHostedGateway',
@@ -697,18 +716,7 @@ export default function ListGWEnviornments() {
                     variant='contained'
                     size='small'
                     startIcon={<AddIcon />}
-                    sx={{
-                        px: 2,
-                        py: 0.75,
-                        borderRadius: '8px',
-                        textTransform: 'none',
-                        fontWeight: 500,
-                        fontSize: '0.75rem',
-                        backgroundColor: '#0E4A72',
-                        '&:hover': {
-                            backgroundColor: '#0A3C5D',
-                        },
-                    }}
+                    sx={styles.emptyStateButton}
                 >
                     {intl.formatMessage({
                         id: 'Gateways.ListGatewayEnvironments.addThirdPartyGateway',
@@ -729,57 +737,15 @@ export default function ListGWEnviornments() {
                 searchProps={searchProps}
                 searchIconInside
                 toolbarContent={tabbedToolbar}
-                toolbarContentSx={{
-                    pl: 0,
-                }}
+                toolbarContentSx={{ pl: 0 }}
                 showReload={false}
-                panelSx={{
-                    border: '1px solid #D8DDE6',
-                    borderRadius: '10px',
-                    backgroundColor: '#fff',
-                    overflow: 'hidden',
-                }}
-                toolbarSx={{
-                    pl: 0,
-                    pr: 2,
-                    py: 1,
-                    backgroundColor: '#fff',
-                }}
-                tableSx={{
-                    '& .MuiPaper-root': {
-                        boxShadow: 'none',
-                        borderRadius: 0,
-                    },
-                    '& .MuiTableCell-head': {
-                        fontWeight: 500,
-                        color: '#8A94A6',
-                        fontSize: '0.8rem',
-                        borderBottom: '1px solid #EEF1F6',
-                    },
-                    '& .MuiTableCell-body': {
-                        fontSize: '0.75rem',
-                        borderBottom: '1px solid #EEF1F6',
-                        color: '#2F3441',
-                    },
-                    '& .MuiTableRow-root:last-of-type .MuiTableCell-body': {
-                        borderBottom: 'none',
-                    },
-                }}
+                panelSx={styles.panel}
+                toolbarSx={styles.toolbar}
+                tableSx={styles.table}
                 searchTextFieldProps={{
                     variant: 'outlined',
                     size: 'small',
-                    sx: {
-                        '& .MuiInputBase-root': {
-                            fontSize: '0.75rem',
-                        },
-                        '& .MuiOutlinedInput-root': {
-                            borderRadius: '8px',
-                            backgroundColor: '#fff',
-                        },
-                        '& .MuiOutlinedInput-notchedOutline': {
-                            borderColor: '#D8DDE6',
-                        },
-                    },
+                    sx: styles.searchTextField,
                 }}
                 options={{
                     pagination: false,

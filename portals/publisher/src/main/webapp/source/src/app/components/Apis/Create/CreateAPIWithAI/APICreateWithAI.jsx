@@ -211,7 +211,7 @@ const ApiCreateWithAI = () => {
 
     const authTokenNotProvidedWarning = (
         <FormattedMessage
-            id="Apis.Details.ApiChat.warning.authTokenMissing"
+            id='Apis.Details.ApiChat.warning.authTokenMissing'
             defaultMessage={
                 'You must provide a token to start using API Design Assistant. To obtain one, ' +
                 'follow the steps provided under {apiAiChatDocLink} '
@@ -219,15 +219,15 @@ const ApiCreateWithAI = () => {
             values={{
                 apiAiChatDocLink: (
                     <a
-                        id="api-chat-doc-link"
-                        href="https://apim.docs.wso2.com/en/4.7.0/manage-apis/design/create-api/create-api-with-ai/"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        id='api-chat-doc-link'
+                        href='https://apim.docs.wso2.com/en/4.7.0/manage-apis/design/create-api/create-api-with-ai/'
+                        target='_blank'
+                        rel='noopener noreferrer'
                     >
                         Create APIs with AI
                         <LaunchIcon
                             style={{ marginLeft: '2px' }}
-                            fontSize="small"
+                            fontSize='small'
                         />
                     </a>
                 ),
@@ -393,7 +393,7 @@ const ApiCreateWithAI = () => {
     return (
         <div>
             <Stack
-                direction="column"
+                direction='column'
                 sx={{
                     width: '100%',
                     height: 'calc(100vh - 99px)',
@@ -411,7 +411,7 @@ const ApiCreateWithAI = () => {
                     }}
                 >
                     <Stack
-                        direction="row"
+                        direction='row'
                         sx={{ width: '100%', height: '100%', overflow: 'auto' }}
                     >
                         <Box
@@ -430,7 +430,7 @@ const ApiCreateWithAI = () => {
                             }}
                         >
                             <Stack
-                                direction="column"
+                                direction='column'
                                 sx={{
                                     width: '100%',
                                     height: '100%',
@@ -442,9 +442,9 @@ const ApiCreateWithAI = () => {
                                     <Box>
                                         <WelcomeMessage />
                                         <Stack
-                                            direction="column"
+                                            direction='column'
                                             spacing={2}
-                                            justifyContent="center"
+                                            justifyContent='center'
                                             sx={{
                                                 width: '420px',
                                                 display: 'flex',
@@ -458,21 +458,21 @@ const ApiCreateWithAI = () => {
                                                 onExecuteClick={
                                                     handleExecuteSampleQuery
                                                 }
-                                                queryHeading="Create an API for a banking transaction"
+                                                queryHeading='Create an API for a banking transaction'
                                                 sx={{ textAlign: 'left' }}
                                             />
                                             <SampleQueryCard
                                                 onExecuteClick={
                                                     handleExecuteSampleQuery
                                                 }
-                                                queryHeading="Create a GraphQL API to query patient data"
+                                                queryHeading='Create a GraphQL API to query patient data'
                                                 sx={{ textAlign: 'left' }}
                                             />
                                             <SampleQueryCard
                                                 onExecuteClick={
                                                     handleExecuteSampleQuery
                                                 }
-                                                queryHeading="Create an API for live sports scores"
+                                                queryHeading='Create an API for live sports scores'
                                                 sx={{ textAlign: 'left' }}
                                             />
                                         </Stack>
@@ -501,9 +501,9 @@ const ApiCreateWithAI = () => {
                                 </Box>
                                 <Box>
                                     <Box
-                                        display="flex"
-                                        alignItems="center"
-                                        flexDirection="column"
+                                        display='flex'
+                                        alignItems='center'
+                                        flexDirection='column'
                                         marginTop={1}
                                         marginBottom={2}
                                     >
@@ -515,7 +515,7 @@ const ApiCreateWithAI = () => {
                                                         specEnrichmentErrorLevel
                                                     }
                                                 >
-                                                    <Typography variant="body1">
+                                                    <Typography variant='body1'>
                                                         {specEnrichmentError}
                                                     </Typography>
                                                 </Alert>
@@ -523,8 +523,8 @@ const ApiCreateWithAI = () => {
                                         {/* Handle auth token not provided scenario */}
                                         {settings &&
                                             !settings?.aiAuthTokenProvided && (
-                                                <Alert severity="warning">
-                                                    <Typography variant="body1">
+                                                <Alert severity='warning'>
+                                                    <Typography variant='body1'>
                                                         {
                                                             authTokenNotProvidedWarning
                                                         }
@@ -583,9 +583,9 @@ const ApiCreateWithAI = () => {
                     }}
                 >
                     <Button
-                        size="small"
-                        variant="outlined"
-                        color="primary"
+                        size='small'
+                        variant='outlined'
+                        color='primary'
                         onClick={handleBack}
                         sx={{
                             marginRight: '10px',

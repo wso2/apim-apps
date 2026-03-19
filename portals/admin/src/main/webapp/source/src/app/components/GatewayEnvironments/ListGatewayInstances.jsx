@@ -37,6 +37,33 @@ import Utils from '../../data/Utils';
 
 dayjs.extend(relativeTime);
 
+// Consolidated styles for better readability
+const styles = {
+    statusContainer: {
+        px: 3,
+        pb: 1,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+    },
+    activeChip: {
+        borderRadius: '6px',
+        fontSize: '0.7rem',
+        height: 20,
+        borderColor: '#5AC087',
+        color: '#2E8B57',
+        backgroundColor: '#EAF9F0',
+    },
+    inactiveChip: {
+        borderRadius: '6px',
+        fontSize: '0.7rem',
+        height: 20,
+        borderColor: '#FF6F61',
+        color: '#D14343',
+        backgroundColor: '#FFF2F0',
+    },
+};
+
 /**
  * ListGatewayInstances component displays a dialog with a table of live gateway instances
  * for a given environment. It fetches gateway data from the API when opened and shows
@@ -183,15 +210,7 @@ export default function ListGatewayInstances({
                 defaultMessage: 'Inactive',
             });
         return (
-            <Box
-                sx={{
-                    px: 3,
-                    pb: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                }}
-            >
+            <Box sx={styles.statusContainer}>
                 <Typography variant='body2' color='text.secondary'>
                     <FormattedMessage
                         id='AdminPages.Gateways.GatewayInstances.platform.status.label'
@@ -202,14 +221,7 @@ export default function ListGatewayInstances({
                     size='small'
                     label={statusLabel}
                     variant='outlined'
-                    sx={{
-                        borderRadius: '6px',
-                        fontSize: '0.7rem',
-                        height: 20,
-                        borderColor: isActive ? '#5AC087' : '#FF6F61',
-                        color: isActive ? '#2E8B57' : '#D14343',
-                        backgroundColor: isActive ? '#EAF9F0' : '#FFF2F0',
-                    }}
+                    sx={isActive ? styles.activeChip : styles.inactiveChip}
                 />
             </Box>
         );

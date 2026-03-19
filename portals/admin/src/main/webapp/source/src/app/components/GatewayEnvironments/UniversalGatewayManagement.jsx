@@ -1,4 +1,3 @@
-/* eslint-disable object-curly-newline, operator-linebreak, implicit-arrow-linebreak, indent */
 /*
  * Copyright (c) 2026 WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -17,7 +16,9 @@
  * under the License.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+    useCallback, useEffect, useMemo, useState,
+} from 'react';
 import PropTypes from 'prop-types';
 import API from 'AppData/api';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
@@ -129,8 +130,8 @@ const UniversalGatewayManagement = (props) => {
             .catch((loadError) => {
                 if (isMounted) {
                     setError(
-                        loadError.message ||
-                            t('Gateways.UniversalGatewayManagement.error.load', 'Failed to load gateway'),
+                        loadError.message
+                            || t('Gateways.UniversalGatewayManagement.error.load', 'Failed to load gateway'),
                     );
                 }
             })
@@ -157,8 +158,8 @@ const UniversalGatewayManagement = (props) => {
 
     const pageProps = {
         pageStyle: 'paperLess',
-        title: existingGateway?.displayName || existingGateway?.name ||
-            t('Gateways.UniversalGatewayManagement.page.title', 'Gateway Details'),
+        title: existingGateway?.displayName || existingGateway?.name
+            || t('Gateways.UniversalGatewayManagement.page.title', 'Gateway Details'),
     };
 
     const handleRegenerateExistingGatewayToken = async () => {
@@ -187,10 +188,10 @@ const UniversalGatewayManagement = (props) => {
                 ),
             );
         } catch (requestError) {
-            const errorMessage =
-                requestError?.response?.body?.description ||
-                requestError.message ||
-                t('Gateways.UniversalGatewayManagement.token.regenerate.error.short', 'Failed to regenerate token');
+            const errorMessage = requestError?.response?.body?.description
+                || requestError.message
+                    || t('Gateways.UniversalGatewayManagement.token.regenerate.error.short',
+                        'Failed to regenerate token');
             setError(errorMessage);
             Alert.error(errorMessage);
         } finally {
@@ -199,11 +200,10 @@ const UniversalGatewayManagement = (props) => {
         }
     };
 
-    const isExistingGatewaySaveDisabled =
-        updatingExisting ||
-        !name.trim() ||
-        (name.trim() === (existingGateway?.displayName || existingGateway?.name || '').trim() &&
-            description.trim() === (existingGateway?.description || '').trim());
+    const isExistingGatewaySaveDisabled = updatingExisting || !name.trim()
+        || (name.trim() === (existingGateway?.displayName
+            || existingGateway?.name || '').trim() && description.trim()
+                === (existingGateway?.description || '').trim());
 
     const handleUpdateExistingGateway = async () => {
         if (!existingGateway?.id) {
@@ -230,10 +230,8 @@ const UniversalGatewayManagement = (props) => {
             setExistingHeaderEditMode(false);
             Alert.success(t('Gateways.UniversalGatewayManagement.update.success', 'Gateway updated successfully.'));
         } catch (updateError) {
-            const errorMessage =
-                updateError?.response?.body?.description ||
-                updateError.message ||
-                t('Gateways.UniversalGatewayManagement.update.error', 'Failed to update gateway');
+            const errorMessage = updateError?.response?.body?.description || updateError.message
+                || t('Gateways.UniversalGatewayManagement.update.error', 'Failed to update gateway');
             setError(errorMessage);
             Alert.error(errorMessage);
         } finally {
@@ -263,14 +261,10 @@ const UniversalGatewayManagement = (props) => {
 
     if (existingGateway) {
         const gatewayDisplayName = existingGateway.displayName || existingGateway.name || '';
-        const gatewayInitials =
-            gatewayDisplayName
-                .split(/\s+/)
-                .filter(Boolean)
-                .map((part) => part.charAt(0))
-                .join('')
-                .slice(0, 2)
-                .toUpperCase() || 'GW';
+        const gatewayInitials = gatewayDisplayName.split(/\s+/).filter(Boolean).map((part) => part
+            .charAt(0)).join('')
+            .slice(0, 2)
+            .toUpperCase() || 'GW';
         const gatewayStatus = resolveGatewayStatus(
             getAdditionalProperty(existingGateway.additionalProperties, 'isActive') || existingGateway.isActive,
         );
@@ -382,13 +376,13 @@ const UniversalGatewayManagement = (props) => {
                                                 label={
                                                     isActive
                                                         ? t(
-                                                              'Gateways.UniversalGatewayManagement.status.active',
-                                                              'Active',
-                                                          )
+                                                            'Gateways.UniversalGatewayManagement.status.active',
+                                                            'Active',
+                                                        )
                                                         : t(
-                                                              'Gateways.UniversalGatewayManagement.status.inactive',
-                                                              'Inactive',
-                                                          )
+                                                            'Gateways.UniversalGatewayManagement.status.inactive',
+                                                            'Inactive',
+                                                        )
                                                 }
                                                 {...getGatewayStatusChipProps(isActive ? 'ACTIVE' : 'INACTIVE')}
                                             />
@@ -425,24 +419,22 @@ const UniversalGatewayManagement = (props) => {
                                                 label={
                                                     isActive
                                                         ? t(
-                                                              'Gateways.UniversalGatewayManagement.status.active',
-                                                              'Active',
-                                                          )
+                                                            'Gateways.UniversalGatewayManagement.status.active',
+                                                            'Active',
+                                                        )
                                                         : t(
-                                                              'Gateways.UniversalGatewayManagement.status.inactive',
-                                                              'Inactive',
-                                                          )
+                                                            'Gateways.UniversalGatewayManagement.status.inactive',
+                                                            'Inactive',
+                                                        )
                                                 }
                                                 {...getGatewayStatusChipProps(isActive ? 'ACTIVE' : 'INACTIVE')}
                                             />
                                         )}
                                     </Box>
                                     <Typography variant='body1' color='text.secondary' sx={{ mt: 1 }}>
-                                        {existingGateway.description ||
-                                            t(
-                                                'Gateways.UniversalGatewayManagement.description.empty',
-                                                'No description provided.',
-                                            )}
+                                        {existingGateway.description
+                                            || t('Gateways.UniversalGatewayManagement.description.empty',
+                                                'No description provided.')}
                                     </Typography>
                                 </>
                             )}

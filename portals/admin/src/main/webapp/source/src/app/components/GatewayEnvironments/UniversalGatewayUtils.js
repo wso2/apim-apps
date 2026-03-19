@@ -1,4 +1,3 @@
-/* eslint-disable operator-linebreak, implicit-arrow-linebreak */
 /*
  * Copyright (c) 2026 WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -46,10 +45,11 @@ export const WSO2_SELF_HOSTED_GATEWAY_TYPES = [CONSTS.GATEWAY_TYPE.apiPlatform, 
 
 const DEFAULT_PLATFORM_GATEWAY_RELEASES_URL = 'https://github.com/wso2/api-platform/releases';
 const DEFAULT_PLATFORM_GATEWAY_VERSION = 'v0.9.0';
+const DEFAULT_HELM_CHART_OCI_URL = 'oci://ghcr.io/wso2/api-platform/helm-charts/gateway';
+const DEFAULT_HELM_CHART_VERSION = '0.9.0';
 
 // Safe regex: anchored at end ($), single char class, no nested quantifiers
-const trimTrailingSlashes = (value) =>
-    (value || '').trim().replace(/\/+$/, '');
+const trimTrailingSlashes = (value) => (value || '').trim().replace(/\/+$/, '');
 
 const normalizeReleaseBaseUrl = (value) => {
     const trimmed = value?.trim();
@@ -62,18 +62,22 @@ const normalizeReleaseBaseUrl = (value) => {
 export const getPlatformGatewayReleaseConfig = (settings) => {
     const platformGatewayConfig = settings?.platformGateway || {};
     const releasesUrl = normalizeReleaseBaseUrl(platformGatewayConfig.releasesUrl);
-    const version = (settings?.universalGatewayVersion || DEFAULT_PLATFORM_GATEWAY_VERSION).trim();
+    const version = (platformGatewayConfig.version || DEFAULT_PLATFORM_GATEWAY_VERSION).trim();
     const browserHost = globalThis.window?.location.host || '';
-    const controlPlaneHost = browserHost;
+    const configuredControlPlaneHost = (platformGatewayConfig.controlPlaneHost || '').trim();
+    const controlPlaneHost = configuredControlPlaneHost || browserHost;
     const artifactName = `gateway-${version}`;
-    const downloadCommand =
-        `curl -sLO ${releasesUrl}/download/gateway/${version}/${artifactName}.zip && \\\n` +
-        `unzip ${artifactName}.zip`;
+    const downloadCommand = `curl -sLO ${releasesUrl}/download/gateway/${version}/${artifactName}.zip && \\\n`
+        + `unzip ${artifactName}.zip`;
+    const helmChartOciUrl = (platformGatewayConfig.helmChartOciUrl || DEFAULT_HELM_CHART_OCI_URL).trim();
+    const helmChartVersion = (platformGatewayConfig.helmChartVersion || DEFAULT_HELM_CHART_VERSION).trim();
 
     return {
         artifactName,
         controlPlaneHost,
         downloadCommand,
+        helmChartOciUrl,
+        helmChartVersion,
     };
 };
 
@@ -117,7 +121,6 @@ export const getVhostFromBaseUrl = (baseUrl) => {
     if (!canParse) {
         return '';
     }
-    // Return the URL's host (hostname:port or just hostname) as a string
     return new URL(baseUrl).host;
 };
 
@@ -155,11 +158,10 @@ export const normalizeProperties = (properties) => {
     return {};
 };
 
-export const buildAdditionalPropertiesArray = (properties = {}) =>
-    Object.keys(properties).map((key) => ({
-        key,
-        value: properties[key],
-    }));
+export const buildAdditionalPropertiesArray = (properties = {}) => Object.keys(properties).map((key) => ({
+    key,
+    value: properties[key],
+}));
 
 export const buildPermissionsDTO = (permissions = {}, roles = [], validRoles = []) => ({
     permissionType: permissions.permissionType || 'PUBLIC',

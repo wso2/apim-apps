@@ -1,4 +1,3 @@
-/* eslint-disable object-curly-newline, operator-linebreak, indent */
 /*
  * Copyright (c) 2026 WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -22,7 +21,9 @@
 import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import Alert from 'AppComponents/Shared/Alert';
-import { Box, Button, Card, CardContent, CircularProgress, Tab, Tabs, Typography } from '@mui/material';
+import {
+    Box, Button, Card, CardContent, CircularProgress, Tab, Tabs, Typography,
+} from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import ComputerIcon from '@mui/icons-material/Computer';
@@ -54,13 +55,13 @@ const QUICK_START_TABS = [
         value: QUICK_START_TAB.docker,
         labelKey: 'Gateways.UniversalGatewayManagement.quick.start.tab.docker',
         defaultMessage: 'Docker',
-        icon: <img src='admin/site/public/images/docker-icon.svg' alt='Docker' width={20} height={20} />,
+        icon: <img src='/site/public/images/docker-icon.png' alt='Docker' width={20} height={20} />,
     },
     {
         value: QUICK_START_TAB.kubernetes,
         labelKey: 'Gateways.UniversalGatewayManagement.quick.start.tab.kubernetes',
         defaultMessage: 'Kubernetes',
-        icon: <img src='admin/site/public/images/Kubernetes_logo.svg' alt='Kubernetes' width={20} height={20} />,
+        icon: <img src='/site/public/images/Kubernetes_logo.png' alt='Kubernetes' width={20} height={20} />,
     },
 ];
 
@@ -85,9 +86,9 @@ const QuickStartTokenConfigurationStep = ({
             <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
                 {t(
                     'Gateways.UniversalGatewayManagement.quick.start.step.configure.description',
-                    'The registration token is single-use. If you need to reconfigure the gateway, ' +
-                        'generate a new token. This will revoke the old token and disconnect the ' +
-                        'gateway from the control plane.',
+                    'The registration token is single-use. If you need to reconfigure the gateway, '
+                        + 'generate a new token. This will revoke the old token and disconnect the '
+                            + 'gateway from the control plane.',
                 )}
             </Typography>
             {!showTokenCommands && showReconfigureAction && (
@@ -102,13 +103,13 @@ const QuickStartTokenConfigurationStep = ({
                     >
                         {reconfigureLoading
                             ? t(
-                                  'Gateways.UniversalGatewayManagement.quick.start.reconfigure.generating',
-                                  'Generating New Token...',
-                              )
+                                'Gateways.UniversalGatewayManagement.quick.start.reconfigure.generating',
+                                'Generating New Token...',
+                            )
                             : t(
-                                  'Gateways.UniversalGatewayManagement.quick.start.reconfigure.action',
-                                  'Reconfigure Gateway',
-                              )}
+                                'Gateways.UniversalGatewayManagement.quick.start.reconfigure.action',
+                                'Reconfigure Gateway',
+                            )}
                     </Button>
                 </Box>
             )}
@@ -117,8 +118,8 @@ const QuickStartTokenConfigurationStep = ({
                     <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
                         {t(
                             'Gateways.UniversalGatewayManagement.quick.start.analytics.description',
-                            'To configure analytics, add your existing Moesif key as {key} to the ' +
-                                'keys.env file after creating it with the command below.',
+                            'To configure analytics, add your existing Moesif key as {key} to the '
+                                + 'keys.env file after creating it with the command below.',
                             { key: 'MOESIF_KEY=<your-moesif-key>' },
                         )}
                     </Typography>
@@ -151,7 +152,9 @@ QuickStartTokenConfigurationStep.defaultProps = {
     onReconfigureRequested: null,
 };
 
-const renderQuickStartOverview = ({ t, downloadCommand, artifactName, tokenConfigurationStep }) => {
+const renderQuickStartOverview = ({
+    t, downloadCommand, artifactName, tokenConfigurationStep,
+}) => {
     return (
         <>
             <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
@@ -223,85 +226,33 @@ const renderQuickStartOverview = ({ t, downloadCommand, artifactName, tokenConfi
     );
 };
 
-const renderVirtualMachineGuide = ({ t, downloadCommand, artifactName, tokenConfigurationStep }) => {
+const renderVirtualMachineGuide = ({
+    t, downloadCommand, artifactName, tokenConfigurationStep,
+}) => {
     return (
         <>
-            <Box sx={{ color: 'text.secondary' }}>
-                <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1.5, color: 'text.primary' }}>
-                    {t('Gateways.UniversalGatewayManagement.quick.start.prerequisites', 'Prerequisites')}
-                </Typography>
-
-                <Box component='ul' sx={{ mt: 0, mb: 2, pl: 3 }}>
-                    <li>
-                        <Typography variant='body2'>
-                            {t('Gateways.UniversalGatewayManagement.quick.start.prerequisite.curl', 'cURL installed')}
-                        </Typography>
-                    </li>
-                    <li>
-                        <Typography variant='body2'>
-                            {t('Gateways.UniversalGatewayManagement.quick.start.prerequisite.unzip', 'unzip installed')}
-                        </Typography>
-                    </li>
-                    <li>
-                        <Typography variant='body2'>
-                            {t(
-                                'Gateways.UniversalGatewayManagement.quick.start.prerequisite.docker.compose',
-                                'Docker Compose installed',
-                            )}
-                        </Typography>
-                    </li>
-                </Box>
-
-                <Typography variant='body2' sx={{ mb: 1 }}>
-                    {t(
-                        'Gateways.UniversalGatewayManagement.quick.start.prerequisite.container.runtime',
-                        'A Docker-compatible container runtime such as:',
-                    )}
-                </Typography>
-
-                <Box component='ul' sx={{ mt: 0, mb: 2, pl: 3 }}>
-                    <li>
-                        <Typography variant='body2'>
-                            {t(
-                                'Gateways.UniversalGatewayManagement.quick.start.prerequisite.docker.desktop',
-                                'Docker Desktop (Windows / macOS)',
-                            )}
-                        </Typography>
-                    </li>
-                    <li>
-                        <Typography variant='body2'>
-                            {t(
-                                'Gateways.UniversalGatewayManagement.quick.start.prerequisite.rancher.desktop',
-                                'Rancher Desktop (Windows / macOS)',
-                            )}
-                        </Typography>
-                    </li>
-                    <li>
-                        <Typography variant='body2'>
-                            {t(
-                                'Gateways.UniversalGatewayManagement.quick.start.prerequisite.colima',
-                                'Colima (macOS)',
-                            )}
-                        </Typography>
-                    </li>
-                    <li>
-                        <Typography variant='body2'>
-                            {t(
-                                'Gateways.UniversalGatewayManagement.quick.start.prerequisite.docker.engine',
-                                'Docker Engine + Compose plugin (Linux)',
-                            )}
-                        </Typography>
-                    </li>
-                </Box>
-
-                <Typography variant='body2' sx={{ mb: 1 }}>
-                    {t(
-                        'Gateways.UniversalGatewayManagement.quick.start.prerequisite.docker.commands',
-                        'Ensure docker and docker compose commands are available.',
-                    )}
-                </Typography>
-
-                <CodeBlock code={'docker --version\ndocker compose version'} />
+            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
+                {t('Gateways.UniversalGatewayManagement.quick.start.prerequisites', 'Prerequisites')}
+            </Typography>
+            <Box component='ul' sx={{ mt: 0, mb: 2, pl: 2 }}>
+                <li>
+                    <Typography variant='body2'>
+                        {t('Gateways.UniversalGatewayManagement.quick.start.prerequisite.curl', 'cURL installed')}
+                    </Typography>
+                </li>
+                <li>
+                    <Typography variant='body2'>
+                        {t('Gateways.UniversalGatewayManagement.quick.start.prerequisite.unzip', 'unzip installed')}
+                    </Typography>
+                </li>
+                <li>
+                    <Typography variant='body2'>
+                        {t(
+                            'Gateways.UniversalGatewayManagement.quick.start.prerequisite.java',
+                            'Java 17 or later installed',
+                        )}
+                    </Typography>
+                </li>
             </Box>
 
             <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
@@ -334,7 +285,9 @@ const renderVirtualMachineGuide = ({ t, downloadCommand, artifactName, tokenConf
     );
 };
 
-const renderDockerGuide = ({ t, downloadCommand, artifactName, tokenConfigurationStep }) => {
+const renderDockerGuide = ({
+    t, downloadCommand, artifactName, tokenConfigurationStep,
+}) => {
     return renderQuickStartOverview({
         t,
         downloadCommand,
@@ -348,8 +301,27 @@ const renderKubernetesGuide = ({
     controlPlaneHost,
     displayRegistrationToken,
     actualRegistrationToken,
-    tokenConfigurationStep,
+    showTokenCommands,
+    showReconfigureAction,
+    onReconfigureRequested,
+    reconfigureLoading,
+    helmChartOciUrl,
+    helmChartVersion,
 }) => {
+    const displayHelmInstallCommand = `helm install gateway ${helmChartOciUrl} --version ${helmChartVersion} \\\n`
+        + `  --set gateway.controller.controlPlane.host="${controlPlaneHost}" \\\n`
+        + '  --set gateway.controller.controlPlane.port=443 \\\n'
+        + `  --set gateway.controller.controlPlane.token.value="${displayRegistrationToken}" \\\n`
+        + '  --set gateway.config.analytics.publishers.moesif.application_id=<your-moesif-key> \\\n'
+        + '  --set gateway.config.analytics.enabled=true';
+
+    const copyHelmInstallCommand = `helm install gateway ${helmChartOciUrl} --version ${helmChartVersion} \\\n`
+        + `  --set gateway.controller.controlPlane.host="${controlPlaneHost}" \\\n`
+        + '  --set gateway.controller.controlPlane.port=443 \\\n'
+        + `  --set gateway.controller.controlPlane.token.value="${actualRegistrationToken}" \\\n`
+        + '  --set gateway.config.analytics.publishers.moesif.application_id=<your-moesif-key> \\\n'
+        + '  --set gateway.config.analytics.enabled=true';
+
     return (
         <>
             <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
@@ -359,7 +331,7 @@ const renderKubernetesGuide = ({
                 <li>
                     <Typography variant='body2'>
                         {t(
-                            'Gateways.UniversalGatewayManagement.quick.start.prerequisite.kubectl',
+                            'Gateways.UniversalGatewayManagement.quick.start.prerequisite.kubernetes',
                             'Kubernetes 1.32+ cluster',
                         )}
                     </Typography>
@@ -375,9 +347,9 @@ const renderKubernetesGuide = ({
                 <li>
                     <Typography variant='body2'>
                         {t(
-                            'Gateways.UniversalGatewayManagement.quick.start.prerequisite.certManager',
-                            'Either permissions to install cert-manager in the cluster or an existing' +
-                            ' cert-manager installation',
+                            'Gateways.UniversalGatewayManagement.quick.start.prerequisite.certmanager',
+                            'Either permissions to install cert-manager in the cluster or an existing '
+                                + 'cert-manager installation',
                         )}
                     </Typography>
                 </li>
@@ -385,48 +357,95 @@ const renderKubernetesGuide = ({
 
             <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
                 {t(
-                    'Gateways.UniversalGatewayManagement.quick.start.kubernetes.namespace.title',
-                    'Step 1: Create the Runtime Namespace',
+                    'Gateways.UniversalGatewayManagement.quick.start.kubernetes.certmanager.title',
+                    'Install cert-manager (optional)',
                 )}
             </Typography>
             <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
                 {t(
-                    'Gateways.UniversalGatewayManagement.quick.start.kubernetes.namespace.description',
-                    'Create a dedicated namespace for the gateway resources:',
-                )}
-            </Typography>
-            <CodeBlock code='kubectl create namespace wso2-gateway' />
-
-            {tokenConfigurationStep}
-
-            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
-                {t(
-                    'Gateways.UniversalGatewayManagement.quick.start.kubernetes.secret.title',
-                    'Step 3: Create the Registration Secret',
-                )}
-            </Typography>
-            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
-                {t(
-                    'Gateways.UniversalGatewayManagement.quick.start.kubernetes.secret.description',
-                    'Store the control plane host and registration token in a secret before applying the deployment:',
+                    'Gateways.UniversalGatewayManagement.quick.start.kubernetes.certmanager.description',
+                    'If cert-manager is not already installed, run these commands before installing the gateway chart:',
                 )}
             </Typography>
             <CodeBlock
                 code={
-                    'kubectl create secret generic gateway-keys \\\n' +
-                    `  --from-literal=GATEWAY_CONTROLPLANE_HOST=${controlPlaneHost} \\\n` +
-                    `  --from-literal=GATEWAY_REGISTRATION_TOKEN=${displayRegistrationToken} \\\n` +
-                    '  --from-literal=GATEWAY_CONTROLPLANE_ON_PREM=true \\\n' +
-                    '  -n wso2-gateway'
-                }
-                copyCode={
-                    'kubectl create secret generic gateway-keys \\\n' +
-                    `  --from-literal=GATEWAY_CONTROLPLANE_HOST=${controlPlaneHost} \\\n` +
-                    `  --from-literal=GATEWAY_REGISTRATION_TOKEN=${actualRegistrationToken} \\\n` +
-                    '  --from-literal=GATEWAY_CONTROLPLANE_ON_PREM=true \\\n' +
-                    '  -n wso2-gateway'
+                    'helm repo add jetstack https://charts.jetstack.io --force-update\n'
+                        + 'helm repo update\n\n'
+                        + 'helm install cert-manager jetstack/cert-manager \\\n'
+                        + '  --namespace cert-manager \\\n'
+                        + '  --create-namespace \\\n'
+                        + '  --set crds.enabled=true'
                 }
             />
+
+            {!showTokenCommands && showReconfigureAction && (
+                <Box sx={{ mt: 3, mb: 2 }}>
+                    <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
+                        {t(
+                            'Gateways.UniversalGatewayManagement.quick.start.kubernetes.reconfigure.description',
+                            'The registration token is single-use. If you need to reconfigure the gateway, '
+                                + 'generate a new token. This will revoke the old token and disconnect the '
+                                + 'gateway from the control plane.',
+                        )}
+                    </Typography>
+                    <Button
+                        variant='outlined'
+                        color='primary'
+                        onClick={onReconfigureRequested}
+                        disabled={reconfigureLoading}
+                        sx={{ bgcolor: 'common.white' }}
+                        startIcon={reconfigureLoading && <CircularProgress size={16} color='inherit' />}
+                    >
+                        {reconfigureLoading
+                            ? t(
+                                'Gateways.UniversalGatewayManagement.quick.start.reconfigure.generating',
+                                'Generating New Token...',
+                            )
+                            : t(
+                                'Gateways.UniversalGatewayManagement.quick.start.reconfigure.action',
+                                'Reconfigure Gateway',
+                            )}
+                    </Button>
+                </Box>
+            )}
+
+            {showTokenCommands && showReconfigureAction && (
+                <Box
+                    sx={{
+                        mt: 3,
+                        mb: 2,
+                        p: 1.5,
+                        borderLeft: '4px solid',
+                        borderColor: 'success.main',
+                        bgcolor: 'success.lighter',
+                        borderRadius: 1,
+                    }}
+                >
+                    <Typography variant='body2' color='text.primary'>
+                        {t(
+                            'Gateways.UniversalGatewayManagement.quick.start.kubernetes.token.generated',
+                            'Successfully generated new configurations. Use the updated command below '
+                                + 'to install the gateway chart.',
+                        )}
+                    </Typography>
+                </Box>
+            )}
+
+            <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
+                {t(
+                    'Gateways.UniversalGatewayManagement.quick.start.kubernetes.install.title',
+                    'Installing the Chart',
+                )}
+            </Typography>
+            <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
+                {
+                    t(
+                        'Gateways.UniversalGatewayManagement.quick.start.kubernetes.install.description',
+                        'Run this command to install the gateway chart with control plane configurations:',
+                    )
+                }
+            </Typography>
+            <CodeBlock code={displayHelmInstallCommand} copyCode={copyHelmInstallCommand} />
         </>
     );
 };
@@ -524,7 +543,9 @@ const QuickStartGuide = ({
     const t = (id, defaultMessage, values) => intl.formatMessage({ id, defaultMessage }, values);
     const [selectedTab, setSelectedTab] = useState(QUICK_START_TAB.quickStart);
     const { settings } = useAppContext();
-    const { artifactName, controlPlaneHost, downloadCommand } = useMemo(
+    const {
+        artifactName, controlPlaneHost, downloadCommand, helmChartOciUrl, helmChartVersion,
+    } = useMemo(
         () => getPlatformGatewayReleaseConfig(settings),
         [settings],
     );
@@ -577,7 +598,12 @@ ENVFILE`;
                 controlPlaneHost,
                 displayRegistrationToken,
                 actualRegistrationToken,
-                tokenConfigurationStep,
+                showTokenCommands,
+                showReconfigureAction,
+                onReconfigureRequested,
+                reconfigureLoading,
+                helmChartOciUrl,
+                helmChartVersion,
             });
             break;
         case QUICK_START_TAB.quickStart:
