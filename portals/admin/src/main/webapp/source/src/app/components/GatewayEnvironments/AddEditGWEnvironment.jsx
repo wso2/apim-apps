@@ -1304,7 +1304,7 @@ function AddEditGWEnvironment(props) {
             || platformGateway?.name
             || state.name
             || intl.formatMessage({
-                id: 'Gateways.AddEditGateway.title.platform',
+                id: 'Gateways.AddEditGateway.title.universal',
                 defaultMessage: 'Universal Gateway',
             });
         const isPlatformGatewayActive = platformGateway?.isActive === true

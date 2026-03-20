@@ -595,7 +595,7 @@
   "Gateways.AddEditGateway.title.loading": "Gateway Environment",
   "Gateways.AddEditGateway.title.new": "Gateway Environment - Create new",
   "Gateways.AddEditGateway.title.new.wso2": "Add WSO2 Gateway",
-  "Gateways.AddEditGateway.title.platform": "Platform Gateway",
+  "Gateways.AddEditGateway.title.universal": "Universal Gateway",
   "Gateways.AddEditGateway.type.apiPlatform.description": "New self-hosted API platform gateway",
   "Gateways.AddEditGateway.type.apk.description": "Kubernetes-native gateway runtime",
   "Gateways.AddEditGateway.type.default.description": "Gateway runtime option",

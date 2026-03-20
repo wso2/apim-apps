@@ -428,8 +428,8 @@ export default function ListGWEnviornments() {
     const renderGatewayType = (gatewayType) => {
         if (gatewayType === 'Universal') {
             return intl.formatMessage({
-                id: 'Gateways.AddEditGateway.title.platform',
-                defaultMessage: 'Platform Gateway',
+                id: 'Gateways.AddEditGateway.title.universal',
+                defaultMessage: 'Universal Gateway',
             });
         }
         return gatewayType || '-';
