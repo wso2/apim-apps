@@ -58,6 +58,7 @@ interface PolicySectionProps {
     api: any;
     expandedResource: string | null;
     setExpandedResource: React.Dispatch<React.SetStateAction<string | null>>;
+    disabled?: boolean;
 }
 
 /**
@@ -73,6 +74,7 @@ const PoliciesSection: FC<PolicySectionProps> = ({
     api,
     expandedResource,
     setExpandedResource,
+    disabled,
 }) => {
 
     const borderColor = '';
@@ -98,6 +100,7 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                                 isChoreoConnectEnabled={isChoreoConnectEnabled}
                                 policyList={policyList}
                                 isAPILevelPolicy
+                                disabled={disabled}
                             />
                         </Grid>
                     </Grid>
@@ -147,6 +150,7 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                                                     policyList={policyList}
                                                     allPolicies={allPolicies}
                                                     isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                                    disabled={disabled}
                                                 />
                                             </Grid>
                                         </Grid>
@@ -180,6 +184,7 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                                                         policyList={policyList}
                                                         allPolicies={allPolicies}
                                                         isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                                        disabled={disabled}
                                                     />
                                                 </Grid>
                                             ) : null;
