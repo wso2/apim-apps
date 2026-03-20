@@ -174,7 +174,7 @@ const NewSecretDialog = ({ open, onClose, onCreate, mode }) => {
             : "";
 
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+        <Dialog data-testid="new-secret-dialog" open={open} onClose={handleClose} fullWidth maxWidth="sm">
             <DialogTitle>
                 {mode === CONSTS.SECRET_DIALOG_MODES.KEY_GENERATION ? (
                     <FormattedMessage
@@ -199,6 +199,7 @@ const NewSecretDialog = ({ open, onClose, onCreate, mode }) => {
                 )}
                 <Box display="flex" flexDirection="column" gap={2} mt={1}>
                     <TextField
+                        data-testid="secret-description-input"
                         label={intl.formatMessage({
                             id: 'Shared.AppsAndKeys.Secrets.NewSecretDialog.description.label',
                             defaultMessage: 'Description (optional)',
@@ -213,6 +214,7 @@ const NewSecretDialog = ({ open, onClose, onCreate, mode }) => {
                         }
                     />
                     <TextField
+                        data-testid="secret-expiry-select-field"
                         select
                         label={intl.formatMessage({
                             id: 'Shared.AppsAndKeys.Secrets.NewSecretDialog.expiry.time.label',
@@ -232,33 +234,41 @@ const NewSecretDialog = ({ open, onClose, onCreate, mode }) => {
                                 setIsValid(true); // predefined values are always valid
                             }
                         }}
+                        SelectProps={{
+                            'data-testid': 'secret-expiry-select',
+                            MenuProps: {
+                                MenuListProps: {
+                                    'data-testid': 'secret-expiry-options-list',
+                                },
+                            },
+                        }}
                     >
-                        <MenuItem value="30">
+                        <MenuItem data-testid="secret-expiry-option-30" value="30">
                             <FormattedMessage
                                 id="Shared.AppsAndKeys.Secrets.NewSecretDialog.expiry.time.30days"
                                 defaultMessage="30 days" />
                         </MenuItem>
-                        <MenuItem value="60">
+                        <MenuItem data-testid="secret-expiry-option-60" value="60">
                             <FormattedMessage
                                 id="Shared.AppsAndKeys.Secrets.NewSecretDialog.expiry.time.60days"
                                 defaultMessage="60 days" />
                         </MenuItem>
-                        <MenuItem value="90">
+                        <MenuItem data-testid="secret-expiry-option-90" value="90">
                             <FormattedMessage
                                 id="Shared.AppsAndKeys.Secrets.NewSecretDialog.expiry.time.90days"
                                 defaultMessage="90 days" />
                         </MenuItem>
-                        <MenuItem value="180">
+                        <MenuItem data-testid="secret-expiry-option-180" value="180">
                             <FormattedMessage
                                 id="Shared.AppsAndKeys.Secrets.NewSecretDialog.expiry.time.180days"
                                 defaultMessage="180 days" />
                         </MenuItem>
-                        <MenuItem value="never">
+                        <MenuItem data-testid="secret-expiry-option-never" value="never">
                             <FormattedMessage
                                 id="Shared.AppsAndKeys.Secrets.NewSecretDialog.expiry.time.never"
                                 defaultMessage="Never Expires" />
                         </MenuItem>
-                        <MenuItem value="custom">
+                        <MenuItem data-testid="secret-expiry-option-custom" value="custom">
                             <FormattedMessage
                                 id="Shared.AppsAndKeys.Secrets.NewSecretDialog.expiry.time.custom"
                                 defaultMessage="Custom" />
@@ -267,6 +277,7 @@ const NewSecretDialog = ({ open, onClose, onCreate, mode }) => {
 
                     {form.expiryOption === "custom" && (
                         <TextField
+                            data-testid="secret-custom-days-input"
                             label={intl.formatMessage({
                                 id: 'Shared.AppsAndKeys.Secrets.NewSecretDialog.custom.expiry.time.label',
                                 defaultMessage: 'Custom Expiry Time (days)',
@@ -299,6 +310,7 @@ const NewSecretDialog = ({ open, onClose, onCreate, mode }) => {
                 <Tooltip title={tooltipTitle} disableHoverListener={!isCreateDisabled}>
                     <span>
                         <Button
+                            data-testid="create-secret-button"
                             variant="contained"
                             onClick={handleSubmit}
                             disabled={isCreateDisabled}
