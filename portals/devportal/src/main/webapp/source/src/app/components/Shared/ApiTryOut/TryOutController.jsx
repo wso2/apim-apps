@@ -615,7 +615,6 @@ function TryOutController(props) {
         selectedKMObject && !selectedKMObject.enableTokenHashing;
 
     // Consumer secret is now collected via dialog, so GET TEST KEY is always enabled.
-    const enableGetTestKeyButton = true;
 
     useEffect(() => {
         if (securitySchemeType === 'API-KEY') {
@@ -799,7 +798,7 @@ function TryOutController(props) {
                     {isConsumerSecretRequired && (
                         <Dialog
                             open={secretDialogOpen}
-                            onClose={() => setSecretDialogOpen(false)}
+                            onClose={() => { setSecretDialogOpen(false); setConsumerSecret(''); }}
                             fullWidth
                             maxWidth='sm'
                         >
@@ -811,6 +810,7 @@ function TryOutController(props) {
                             </DialogTitle>
                             <DialogContent>
                                 <TextField
+                                    autoFocus
                                     fullWidth
                                     margin='normal'
                                     variant='outlined'
@@ -862,8 +862,10 @@ function TryOutController(props) {
                                 <Button
                                     variant='contained'
                                     onClick={() => {
+                                        const secretValue = consumerSecret;
                                         setSecretDialogOpen(false);
-                                        generateAccessToken(consumerSecret);
+                                        setConsumerSecret('');
+                                        generateAccessToken(secretValue);
                                     }}
                                     disabled={!consumerSecret?.trim()}
                                 >
@@ -994,8 +996,7 @@ function TryOutController(props) {
                                             className={classes.genKeyButton}
                                             disabled={!user
                                                 || (subscriptions && subscriptions.length === 0 && !isSubValidationDisabled)
-                                                || (!ksGenerated && securitySchemeType === 'OAUTH')
-                                                        || !enableGetTestKeyButton}
+                                                || (!ksGenerated && securitySchemeType === 'OAUTH')}
                                             id='gen-test-key'
                                         >
                                             {isUpdating && (
