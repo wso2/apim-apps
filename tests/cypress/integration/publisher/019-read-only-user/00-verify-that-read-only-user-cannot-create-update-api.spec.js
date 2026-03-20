@@ -31,6 +31,12 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
 
+    const getLocalScopeRow = (scopeName) => (
+        cy.contains('table tbody tr td', scopeName, {
+            timeout: Cypress.config().largeTimeout,
+        }).parents('tr')
+    );
+
     const initEnvironement = () => {
         //create developer user
         cy.carbonLogin(carbonUsername, carbonPassword);
@@ -121,7 +127,8 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
     }, () => {
         initEnvironement();
         //1. should not be able to create APIs
-        cy.get('[data-testid="itest-create-api-button"]').get('[aria-disabled="true"]').should('exist');
+        cy.get('[data-testid="itest-create-api-button"]')
+            .should('have.attr', 'aria-disabled', 'true');
 
         //2. click on API tile and select design config (basic info)
         cy.wait(2000);
@@ -262,17 +269,21 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
 
         //11. Localscopes
         cy.get('#left-menu-itemLocalScopes').click();
-        cy.contains('a', 'Add New Local Scope').get('[aria-disabled="true"]').should('exist');
-        cy.get('table').get('tbody').get('[data-testid="MUIDataTableBodyRow-0"]')
-            .get('[data-testid="MuiDataTableBodyCell-4-0"]').get('[aria-label="Edit creatorscope"]')
-            .get('[aria-disabled="true"]').should('exist');
-        cy.get('table').get('tbody').get('[data-testid="MUIDataTableBodyRow-0"]')
-            .get('[data-testid="MuiDataTableBodyCell-4-0"]').contains('button', 'Delete').should('be.disabled');
+        cy.contains('a', 'Add New Local Scope')
+            .should('have.attr', 'aria-disabled', 'true');
+        getLocalScopeRow('creatorscope').within(() => {
+            cy.get('[aria-label="Edit creatorscope"]')
+                .should('have.attr', 'aria-disabled', 'true');
+            cy.contains('button', 'Delete').should('be.disabled');
+        });
 
         cy.reload();
         //12. Policies should be checked. (UI issue fixed by PR #11297 in carbon-apimgt)
+        cy.get('#itest-api-details-api-config-acc').click();
         cy.get("#left-menu-policies").click();
-        cy.get('[data-testid="add-new-api-specific-policy"]', { timeout: Cypress.config().largeTimeout }).should('be.disabled');
+        cy.get('[data-testid="add-new-api-specific-policy"]', {
+            timeout: Cypress.config().largeTimeout,
+        }).should('be.disabled');
 
         //13. monetization ,lifecycle menus are not visible to observer
         cy.get('[data-testid="left-menu-itemlifecycle"]').should('not.exist');

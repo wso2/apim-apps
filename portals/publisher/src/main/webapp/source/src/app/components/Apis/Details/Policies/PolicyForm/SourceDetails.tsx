@@ -87,10 +87,8 @@ const SourceDetails: FC<SourceDetailsProps> = ({
 }) => {
 
     const { api } = useContext<any>(ApiContext);
-
-    // Validates whether atleast one gateway type (i.e. synapse, or CC ) is selected
-    // True if none of the available gateways are selected.
-    const supportedGatewaysError = supportedGateways.length === 0;
+    const normalizedSupportedGateways = Array.isArray(supportedGateways) ? supportedGateways : [];
+    const isPolicyHubGatewayPolicy = normalizedSupportedGateways.includes(CONSTS.GATEWAY_TYPE.apiPlatform);
 
     /**
      * Function to handle supported gateways related checkbox changes
@@ -176,6 +174,9 @@ const SourceDetails: FC<SourceDetailsProps> = ({
      * @returns {TSX} Policy download section
      */
     const renderPolicyDownload = () => {
+        if (isPolicyHubGatewayPolicy) {
+            return null;
+        }
         return <>
             <StyledBox display='flex' flexDirection='row' alignItems='center'>
                 <Typography
@@ -250,7 +251,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
             </Box>
             <Box width='60%'>
                 {/* Render dropzones for policy file uploads */}
-                {supportedGateways.includes(CONSTS.GATEWAY_TYPE.synapse) &&
+                {normalizedSupportedGateways.includes(CONSTS.GATEWAY_TYPE.synapse) &&
                     !isViewMode &&
                     synapsePolicyDefinitionFile &&
                     setSynapsePolicyDefinitionFile &&

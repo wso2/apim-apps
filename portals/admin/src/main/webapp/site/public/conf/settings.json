@@ -20,11 +20,14 @@
       "timeout": 2000
     },
     "logoutSessionStateAppender" : "" ,
-    "docUrl": "https://apim.docs.wso2.com/en/4.7.0/"
-  },
-  "sessionTimeout": {
-    "enable": true,
-    "idleWarningTimeout": 160,
-    "idleTimeout": 180
+    "docUrl": "https://apim.docs.wso2.com/en/4.7.0/",
+    "platformGateway": {
+      "releasesUrl": "https://github.com/wso2/api-platform/releases"
+    },
+    "sessionTimeout": {
+      "enable": true,
+      "idleWarningTimeout": 160,
+      "idleTimeout": 180
+    }
   }
 }

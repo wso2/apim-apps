@@ -1199,6 +1199,78 @@ class API extends Resource {
     }
 
     /**
+     * Get registered platform gateways.
+     */
+    getPlatformGatewayList() {
+        return this.client.then((client) => {
+            return client.apis['Platform Gateways'].getPlatformGateways(
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Register a platform gateway.
+     */
+    createPlatformGateway(body) {
+        return this.client.then((client) => {
+            const payload = {
+                'Content-Type': 'application/json',
+            };
+            return client.apis['Platform Gateways'].createPlatformGateway(
+                payload,
+                { requestBody: body },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update a platform gateway by ID.
+     * @param {string} gatewayId - The ID of the gateway to update.
+     * @param {object} body - Updated gateway payload.
+     */
+    updatePlatformGateway(gatewayId, body) {
+        return this.client.then((client) => {
+            const payload = {
+                gatewayId,
+                'Content-Type': 'application/json',
+            };
+            return client.apis['Platform Gateways'].updatePlatformGateway(
+                payload,
+                { requestBody: body },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete a platform gateway by ID.
+     * @param {string} gatewayId - The ID of the gateway to delete.
+     */
+    deletePlatformGateway(gatewayId) {
+        return this.client.then((client) => {
+            return client.apis['Platform Gateways'].deletePlatformGateway(
+                { gatewayId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Regenerate a platform gateway registration token.
+     * @param {string} gatewayId - The ID of the gateway.
+     */
+    regeneratePlatformGatewayToken(gatewayId) {
+        return this.client.then((client) => {
+            return client.apis['Platform Gateways'].regeneratePlatformGatewayToken(
+                { gatewayId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * Get AI Service Provider Configuration by id
      * @param aiServiceProviderId AI Service Provider id
      * @returns {*}
