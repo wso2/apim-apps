@@ -805,7 +805,7 @@ function TryOutController(props) {
                             <DialogTitle>
                                 <FormattedMessage
                                     id='Apis.Details.ApiConsole.generate.test.key.dialog.title'
-                                    defaultMessage='Generate Test Key'
+                                    defaultMessage='Generate test key'
                                 />
                             </DialogTitle>
                             <DialogContent>
@@ -817,7 +817,7 @@ function TryOutController(props) {
                                     label={(
                                         <FormattedMessage
                                             id='Apis.Details.ApiConsole.consumer.secret.text.field'
-                                            defaultMessage='Consumer Secret'
+                                            defaultMessage='Consumer secret'
                                         />
                                     )}
                                     name='consumerSecret'
@@ -828,7 +828,7 @@ function TryOutController(props) {
                                     helperText={(
                                         <FormattedMessage
                                             id='Apis.Details.TryOutConsole.consumerSecret.required.helper'
-                                            defaultMessage='Enter the Consumer Secret for the selected application to generate a test key.'
+                                            defaultMessage='Enter the consumer secret for the selected application to generate a test key.'
                                         />
                                     )}
                                     InputProps={{
@@ -1014,13 +1014,13 @@ function TryOutController(props) {
                                                 <>
                                                     <FormattedMessage
                                                         id='Apis.Details.TryOutConsole.access.token.tooltip'
-                                                        defaultMessage='You can use your existing Access Token or generate a new Test Key.'
+                                                        defaultMessage='You can use your existing access token or generate a new test key.'
                                                     />
                                                     {isConsumerSecretRequired && (
                                                         <div style={{ marginTop: 4, fontWeight: 500 }}>
                                                             <FormattedMessage
                                                                 id='Apis.Details.TryOutConsole.consumer.secret.dialog.hint'
-                                                                defaultMessage='You will be prompted for the Consumer Secret.'
+                                                                defaultMessage='You will be prompted for the consumer secret.'
                                                             />
                                                         </div>
                                                     )}
@@ -1029,7 +1029,7 @@ function TryOutController(props) {
                                         >
                                             <Box m={1} mt={2}>
                                                 <IconButton
-                                                    aria-label='Use existing Access Token or generate a new Test Key'
+                                                    aria-label='Use existing access token or generate a new test key'
                                                     size='large'
                                                 >
                                                     <HelpOutline />
