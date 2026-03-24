@@ -798,7 +798,7 @@ function TryOutController(props) {
                     {isConsumerSecretRequired && (
                         <Dialog
                             open={secretDialogOpen}
-                            onClose={() => { setSecretDialogOpen(false); setConsumerSecret(''); }}
+                            onClose={() => { setSecretDialogOpen(false); setConsumerSecret(''); setShowSecret(false); }}
                             fullWidth
                             maxWidth='sm'
                         >
@@ -852,6 +852,7 @@ function TryOutController(props) {
                                 <Button onClick={() => {
                                     setSecretDialogOpen(false);
                                     setConsumerSecret('');
+                                    setShowSecret(false);
                                 }}
                                 >
                                     <FormattedMessage
@@ -865,9 +866,10 @@ function TryOutController(props) {
                                         const secretValue = consumerSecret;
                                         setSecretDialogOpen(false);
                                         setConsumerSecret('');
+                                        setShowSecret(false);
                                         generateAccessToken(secretValue);
                                     }}
-                                    disabled={!consumerSecret?.trim()}
+                                    disabled={!consumerSecret?.trim() || isUpdating}
                                 >
                                     <FormattedMessage
                                         id='Apis.Details.ApiConsole.generate.test.key.dialog.generate'
@@ -996,7 +998,8 @@ function TryOutController(props) {
                                             className={classes.genKeyButton}
                                             disabled={!user
                                                 || (subscriptions && subscriptions.length === 0 && !isSubValidationDisabled)
-                                                || (!ksGenerated && securitySchemeType === 'OAUTH')}
+                                                || (!ksGenerated && securitySchemeType === 'OAUTH')
+                                                || isUpdating}
                                             id='gen-test-key'
                                         >
                                             {isUpdating && (
