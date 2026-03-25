@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
@@ -38,7 +38,7 @@ import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import DescriptionAndSummary from './operationComponents/asyncapi/DescriptionAndSummary';
 import OperationGovernance from './operationComponents/asyncapi/OperationGovernance';
-import Asyncv3OperationsList from './operationComponents/asyncapi/Asyncv3OperationsList';
+import ListAsyncV3Operations from './operationComponents/asyncapi/ListAsyncV3Operations';
 import Parameters from './operationComponents/asyncapi/Parameters';
 import PayloadProperties from './operationComponents/asyncapi/PayloadProperties';
 import Runtime from './operationComponents/asyncapi/Runtime';
@@ -120,7 +120,9 @@ const HeaderContent = ({ isAsyncV3, ...props }) => {
                 </Box>
                 <Box display='flex' alignItems='center' gap={1} sx={{ flex: 1, justifyContent: 'center' }}>
                     <Typography variant='body2'>
-                        <FormattedMessage id='...' defaultMessage='<b>Operations</b> ({count})'
+                        <FormattedMessage 
+                            id='Apis.Details.Resources.components.AsyncOperation.operations.count'
+                            defaultMessage='<b>Operations</b> ({count})'
                             values={{ count: namedOperations.length, b: (c) => <strong>{c}</strong> }} />
                     </Typography>
                 </Box>
@@ -190,12 +192,38 @@ function AsyncOperation(props) {
         ? (operation[verb]?.['x-operations'] || [])
         : [];
 
-    function handleDeleteNamedOperation(opName) {
+    const [markedNamedOperations, setMarkedNamedOperations] = useState([]);
+    const [operationsSnapshot, setOperationsSnapshot] = useState([]);
+
+    function handleMarkNamedOperationDelete(opName) {
+        setMarkedNamedOperations((prev) => [...prev, opName]);
         operationsDispatcher({
             action: 'deleteNamedOperation',
             data: { target, verb, value: opName },
         });
     }
+
+    function handleUndoNamedOperationDelete(opName) {
+        setMarkedNamedOperations((prev) => prev.filter((n) => n !== opName));
+        operationsDispatcher({
+            action: 'add',
+            data: {
+                target,
+                verbs: [verb],
+                operationName: opName,
+            },
+        });
+    }
+
+    useEffect(() => {
+        setMarkedNamedOperations([]);
+    }, [spec]);
+
+    useEffect(() => {
+        if (markedNamedOperations.length === 0) {
+            setOperationsSnapshot(namedOperations);
+        }
+    }, [namedOperations, markedNamedOperations]);
 
     /**
      *
@@ -261,10 +289,14 @@ function AsyncOperation(props) {
                 <AccordionDetails>
                     <Grid spacing={2} container direction='row' justifyContent='flex-start' alignItems='flex-start'>
                         {isAsyncV3 && (
-                            <Asyncv3OperationsList
+                            <ListAsyncV3Operations
+                                operationsSnapshot={operationsSnapshot}
                                 operations={namedOperations}
-                                onDeleteOperation={handleDeleteNamedOperation}
+                                markedOperations={markedNamedOperations}
+                                onDeleteOperation={handleMarkNamedOperationDelete}
+                                onUndoDeleteOperation={handleUndoNamedOperationDelete}
                                 disableDelete={disableDelete || disableUpdate}
+                                spec={spec}
                             />
                         )}
                         <DescriptionAndSummary
@@ -285,15 +317,15 @@ function AsyncOperation(props) {
                                 verb={verb}
                             />
                         )}
-                        <PayloadProperties
-                            operation={operation}
-                            operationsDispatcher={operationsDispatcher}
-                            disableUpdate={disableUpdate}
-                            target={target}
-                            verb={verb}
-                            namedOperations={namedOperations}
-                            isAsyncV3={isAsyncV3}
-                        />
+                        {!isAsyncV3 &&
+                            <PayloadProperties
+                                operation={operation}
+                                operationsDispatcher={operationsDispatcher}
+                                disableUpdate={disableUpdate}
+                                target={target}
+                                verb={verb}
+                            />
+                        }
                         {(api.gatewayVendor === 'wso2') && (
                             <>
                                 <OperationGovernance
@@ -306,6 +338,7 @@ function AsyncOperation(props) {
                                     verb={verb}
                                     sharedScopes={sharedScopes}
                                     componentValidator={componentValidator}
+                                    isAsyncV3={isAsyncV3}
                                 />
                                 {(api.type === 'WS' || api.type === 'WEBSUB') && (
                                     <Runtime

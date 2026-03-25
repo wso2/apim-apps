@@ -59,15 +59,9 @@ export default function OperationGovernance(props) {
             <Grid item xs={12} md={12}>
                 <Typography gutterBottom variant='subtitle1'>
                     <FormattedMessage
-                        id='Apis.Details.Topics.components.operationComponents.OperationGovernance.title'
-                        defaultMessage='Operation Governance'
+                        id='Apis.Details.Topics.components.operationComponents.OperationGovernance.subTitle'
+                        defaultMessage='Security & Scopes'
                     />
-                    <Typography style={{ marginLeft: '10px' }} gutterBottom variant='caption'>
-                        <FormattedMessage
-                            id='Apis.Details.Topics.components.operationComponents.OperationGovernance.subTitle'
-                            defaultMessage='(Security & Scopes)'
-                        />
-                    </Typography>
                     <Divider variant='middle' />
                 </Typography>
             </Grid>

@@ -56,12 +56,25 @@ export default function TopicsOperationsSelector(props) {
             if (channelObj.publish) {
                 operationWithSecurityCount++;
             }
+            // AsyncAPI v3 support
+            if (channelObj.send) {
+                operationWithSecurityCount++;
+            }
+            if (channelObj.receive) {
+                operationWithSecurityCount++;
+            }
         }
         // Count total operations
         if (channelObj.subscribe) {
             operationCount++;
         }
         if (channelObj.publish) {
+            operationCount++;
+        }
+        if (channelObj.send) {
+            operationCount++;
+        }
+        if (channelObj.receive) {
             operationCount++;
         }
     });

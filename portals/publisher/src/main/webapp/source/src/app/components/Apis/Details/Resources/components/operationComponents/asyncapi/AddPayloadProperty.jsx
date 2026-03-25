@@ -30,7 +30,6 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
 import Tooltip from '@mui/material/Tooltip';
-import Alert from 'AppComponents/Shared/Alert';
 import { isRestricted } from 'AppData/AuthManager';
 
 const PREFIX = 'AddPayloadProperty';
@@ -66,7 +65,7 @@ const StyledGrid = styled(Grid)(() => ({
  */
 function AddPayloadProperty(props) {
     const {
-        operationsDispatcher, target, verb, intl, namedOperations, isAsyncV3,
+        operationsDispatcher, target, verb, intl
     } = props;
 
     /**
@@ -83,20 +82,11 @@ function AddPayloadProperty(props) {
             case 'type':
                 nextState[type] = value;
                 break;
-            // V3 only fields
-            case 'operation':
-                if (isAsyncV3) nextState[type] = value;
-                break;
-            case 'message':
-                if (isAsyncV3) nextState[type] = value;
-                break;
             case 'clear':
                 return {
                     name: '',
                     description: '',
                     type: '',
-                    operation: '',
-                    message: '',
                 };
             default:
                 return nextState;
@@ -126,32 +116,6 @@ function AddPayloadProperty(props) {
      * Add new property
      */
     function addNewProperty() {
-        if (isAsyncV3) {
-            if (!property.operation) {
-                Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.Resources.components.operationComponents.AddParameter.operation.required',
-                    defaultMessage: 'Operation name is required',
-                }));
-                return;
-            }
-            if (!property.message) {
-                Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.Resources.components.operationComponents.AddParameter.message.required',
-                    defaultMessage: 'Message name is required',
-                }));
-                return;
-            }
-            if (!namedOperations.includes(property.operation)) {
-                Alert.error(intl.formatMessage(
-                    {
-                        id: 'Apis.Details.Resources.components.operationComponents.AddParameter.operation.not.found',
-                        defaultMessage: 'Operation "{operation}" does not exist',
-                    },
-                    { operation: property.operation },
-                ));
-                return;
-            }
-        }
         operationsDispatcher({
             action: 'addPayloadProperty',
             data: {
@@ -163,55 +127,6 @@ function AddPayloadProperty(props) {
 
     return (
         <StyledGrid container direction='row' spacing={1} className={classes.parameterContainer}>
-            {isAsyncV3 && (
-                <>
-                    <Grid item xs={2} md={2}>
-                        <TextField
-                            id='operation-name'
-                            label={intl.formatMessage({
-                                id: 'Apis.Details.Components.async.api.add.property.operation',
-                                defaultMessage: 'Operation',
-                            })}
-                            name='operation'
-                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                            value={property.operation || ''}
-                            onChange={({ target: { name, value } }) => newPropertyDispatcher({ type: name, value })}
-                            helperText={intl.formatMessage({
-                                id: 'Apis.Details.Components.async.api.add.property.operation.helper',
-                                defaultMessage: 'Enter operation name',
-                            })}
-                            error={property.operation && !namedOperations.includes(property.operation)}
-                            margin='dense'
-                            variant='outlined'
-                            onKeyPress={(event) => {
-                                if (event.key === 'Enter') {
-                                    event.preventDefault();
-                                    addNewProperty();
-                                }
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={2} md={2}>
-                        <TextField
-                            id='message-name'
-                            label={intl.formatMessage({
-                                id: 'Apis.Details.Components.async.api.add.property.message.name',
-                                defaultMessage: 'Message',
-                            })}
-                            name='message'
-                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                            value={property.message || ''}
-                            onChange={({ target: { name, value } }) => newPropertyDispatcher({ type: name, value })}
-                            helperText={intl.formatMessage({
-                                id: 'Apis.Details.Components.async.api.add.property.message.name.helper',
-                                defaultMessage: 'Enter message name',
-                            })}
-                            margin='dense'
-                            variant='outlined'
-                        />
-                    </Grid>
-                </>
-            )}
             <Grid item xs={2} md={2}>
                 <TextField
                     id='parameter-name'
@@ -288,7 +203,7 @@ function AddPayloadProperty(props) {
                     </FormHelperText>
                 </FormControl>
             </Grid>
-            <Grid item xs={2} md={isAsyncV3 ? 2 : 6}>
+            <Grid item xs={6} md={6}>
                 <TextField
                     id='parameter-description'
                     label={intl.formatMessage({
@@ -371,21 +286,12 @@ function AddPayloadProperty(props) {
     );
 }
 
-AddPayloadProperty.defaultProps = {
-    isAsyncV3: false,
-    namedOperations: [],
-};
-
 AddPayloadProperty.propTypes = {
     operation: PropTypes.shape({}).isRequired,
     operationsDispatcher: PropTypes.func.isRequired,
     target: PropTypes.string.isRequired,
     verb: PropTypes.string.isRequired,
-    intl: PropTypes.shape({
-        formatMessage: PropTypes.func.isRequired,
-    }).isRequired,
-    isAsyncV3: PropTypes.bool,
-    namedOperations: PropTypes.arrayOf(PropTypes.string),
+    intl: PropTypes.shape({}).isRequired,
 };
 
 export default React.memo(injectIntl(AddPayloadProperty));

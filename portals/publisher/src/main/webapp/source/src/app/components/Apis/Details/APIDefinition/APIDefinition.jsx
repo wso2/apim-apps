@@ -967,34 +967,51 @@ class APIDefinition extends React.Component {
                                     this.setState({ isSwaggerUI: value === "swagger" })
                                 }}
                             >
-                                <ToggleButton
-                                    className={classes.activeButton}
-                                    value='swagger'
-                                    aria-label='swagger'
-                                    selected={this.state.isSwaggerUI}
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.swagger'
-                                        defaultMessage='Swagger'
-                                    />
-                                </ToggleButton>
-                                <ToggleButton
-                                    className={classes.activeButton}
-                                    value='linter'
-                                    aria-label='linter'
-                                    selected={!this.state.isSwaggerUI}
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.linter'
-                                        defaultMessage='Linter'
-                                    />
-                                </ToggleButton>
-                                <APILintingSummary 
-                                    linterResults={linterResults}
-                                    handleChange = { (event, value)=> {
-                                        this.setState({linterSelectedSeverity: value});
-                                        this.setState({ isSwaggerUI: false }) }}
-                                />
+                                {asyncAPI ? (
+                                    <Button
+                                        className={classes.activeButton}
+                                        value='asyncapi'
+                                        aria-label='asyncapi'
+                                    >
+                                        <FormattedMessage
+                                            id='Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.async'
+                                            defaultMessage='AsyncAPI'
+                                        />
+                                    </Button>
+                                ) : (
+                                    <>
+                                        <ToggleButton
+                                            className={classes.activeButton}
+                                            value='swagger'
+                                            aria-label='swagger'
+                                            selected={this.state.isSwaggerUI}
+                                        >
+                                            <FormattedMessage
+                                                id={'Apis.Details.APIDefinition.APIDefinition.editor.drawer.' 
+                                                    + 'toggle.swagger'}
+                                                defaultMessage='Swagger'
+                                            />
+                                        </ToggleButton>
+                                        <ToggleButton
+                                            className={classes.activeButton}
+                                            value='linter'
+                                            aria-label='linter'
+                                            selected={!this.state.isSwaggerUI}
+                                        >
+                                            <FormattedMessage
+                                                id={'Apis.Details.APIDefinition.APIDefinition.editor.drawer.'
+                                                    + 'toggle.linter'}
+                                                defaultMessage='Linter'
+                                            />
+                                        </ToggleButton>
+                                        <APILintingSummary 
+                                            linterResults={linterResults}
+                                            handleChange = { (event, value)=> {
+                                                this.setState({linterSelectedSeverity: value});
+                                                this.setState({ isSwaggerUI: false }) }}
+                                        />
+                                    </>
+                                )}
                             </ToggleButtonGroup>
                             
                         </Box>

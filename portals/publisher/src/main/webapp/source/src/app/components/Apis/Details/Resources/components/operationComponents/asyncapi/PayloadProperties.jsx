@@ -38,7 +38,7 @@ import ListPayloadProperties from './ListPayloadProperties';
  */
 export default function PayloadProperties(props) {
     const {
-        operation, operationsDispatcher, target, verb, disableUpdate, disableForSolace, namedOperations, isAsyncV3
+        operation, operationsDispatcher, target, verb, disableUpdate, disableForSolace,
     } = props;
     return (
         <>
@@ -60,8 +60,6 @@ export default function PayloadProperties(props) {
                             verb={verb}
                             operationsDispatcher={operationsDispatcher}
                             operation={operation}
-                            namedOperations={namedOperations}
-                            isAsyncV3={isAsyncV3}
                         />
                     )
                 )}
@@ -75,7 +73,6 @@ export default function PayloadProperties(props) {
                     operationsDispatcher={operationsDispatcher}
                     operation={operation}
                     disableForSolace={disableForSolace}
-                    isAsyncV3={isAsyncV3}
                 />
             </Grid>
         </>
@@ -91,13 +88,9 @@ PayloadProperties.propTypes = {
     disableUpdate: PropTypes.bool,
     resolvedSpec: PropTypes.shape({}).isRequired,
     disableForSolace: PropTypes.bool,
-    namedOperations: PropTypes.arrayOf(PropTypes.string),
-    isAsyncV3: PropTypes.bool,
 };
 
 PayloadProperties.defaultProps = {
     disableUpdate: false,
     disableForSolace: false,
-    namedOperations: [],
-    isAsyncV3: false,
 };
