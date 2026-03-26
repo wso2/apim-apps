@@ -428,6 +428,30 @@
       {
         "Name": "apim:mcp_server_generate_key",
         "Roles": "admin,Internal/creator,Internal/publisher"
+      },
+      {
+				"Name": "apim:organization_manage",
+				"Roles": "admin"
+			},
+			{
+				"Name": "apim:publisher_organization_read",
+				"Roles": "admin,Internal/creator"
+			},
+			{
+				"Name": "apim:subscription_approval_manage",
+				"Roles": "admin,Internal/publisher"
+			},
+{
+				"Name": "apim:subscription_approval_view",
+				"Roles": "admin,Internal/publisher"
+			},
+			{
+				"Name": "apim:organization_read",
+				"Roles": "admin"
+			},
+      {
+        "Name": "apim:app_settings_change",
+        "Roles": "admin"
       }
     ]
   },
