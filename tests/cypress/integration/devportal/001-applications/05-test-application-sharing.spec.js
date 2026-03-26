@@ -175,16 +175,14 @@ describe("Invoke API Product", () => {
     });
 
     afterEach(function () {
+        cy.loginToPublisher(publisher, password);
 
-        //Delete Users
         if (apiId) {
             Utils.deleteAPI(apiId);
-        } else {
-            cy.loginToPublisher(publisher, password);
-            if (apiName) {
-                cy.deleteApi(apiName, apiVersion);
-            }
+        } else if (apiName) {
+            cy.deleteApi(apiName, apiVersion);
         }
+
         cy.carbonLogin(carbonUsername, carbonPassword);
         if (user1) {
             cy.searchAndDeleteUserIfExist(user1);
@@ -192,6 +190,5 @@ describe("Invoke API Product", () => {
         if (user2) {
             cy.searchAndDeleteUserIfExist(user2);
         }
-
-    })
+    });
 })
