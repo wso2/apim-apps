@@ -150,6 +150,7 @@ export default function Topics(props) {
                     ...newChannels,
                     [existingChannelName]: {
                         ...newChannels[existingChannelName],
+                        ...(channelObj.parameters !== undefined && { parameters: channelObj.parameters }),
                         ...(channelObj.description && { description: channelObj.description }),
                     },
                 },
@@ -370,17 +371,22 @@ export default function Topics(props) {
                         const normalizedVerb = ACTION_ALIASES[currentVerb.toLowerCase()]
                         || currentVerb.toLowerCase();
                         const opName = data.operationName;
-                        // operation name cannot be duplicated within a channel according to spec
-                        const existsInAnyVerb = ['send', 'receive'].some((v) => 
-                            addedOperations[data.target]?.[v]?.['x-operations']?.includes(opName)
-                        );
-                        if (opName && existsInAnyVerb) {
+
+                        // operation name cannot be duplicated as in spec
+                        const allExistingOpNames = new Set();
+                        Object.values(addedOperations).forEach((channelObj) => {
+                            ['send', 'receive'].forEach((v) => {
+                                (channelObj?.[v]?.['x-operations'] || []).forEach((n) => allExistingOpNames.add(n));
+                            });
+                        });
+                        Object.keys(asyncAPISpec.operations || {}).forEach((n) => allExistingOpNames.add(n));
+                        if (opName && allExistingOpNames.has(opName)) {
                             Alert.warning(intl.formatMessage(
                                 {
                                     id: 'Apis.Details.Configuration.Topic.already.operation.exist.error',
-                                    defaultMessage: 'Operation "{opName}" already exists for {verb} on {channel}',
+                                    defaultMessage: 'Operation "{opName}" already exists on {channel}',
                                 },
-                                { opName, verb: normalizedVerb, channel: data.target },
+                                { opName, channel: data.target },
                             ));
                             alreadyExistCount++;
                         } else if (opName) {
@@ -391,6 +397,14 @@ export default function Topics(props) {
                             }
                             addedOperations[data.target][normalizedVerb]['x-operations'].push(opName);
                         }
+                        if (alreadyExistCount === data.verbs.length) {
+                            Alert.error(intl.formatMessage({
+                                id: 'Apis.Details.Configuration.Topic.already.exist.error',
+                                defaultMessage: 'Operation(s) already exist!',
+                            }));
+                            return currentOperations;
+                        }
+                        return addedOperations;
                     } else {
                         currentVerb = verbMap[currentVerb];
                         if (addedOperations[data.target][currentVerb]) {

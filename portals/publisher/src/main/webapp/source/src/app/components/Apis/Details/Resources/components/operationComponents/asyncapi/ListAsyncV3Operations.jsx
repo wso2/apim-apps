@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -36,14 +36,16 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 
 function ListAsyncV3Operations({
-    operationsSnapshot, operations, markedOperations, onDeleteOperation, onUndoDeleteOperation,
-    disableDelete, spec,
+    operations, onDeleteOperation, disableDelete, spec,
 }) {
-    const allOperations = (operationsSnapshot.length > 0 ? operationsSnapshot : operations)
-        .filter((op) => operations.includes(op) || (markedOperations || []).includes(op));
+    const [deleteConfirmation, setDeleteConfirmation] = useState({ open: false, opName: null });
 
     function getOperationMessages(opName) {
         if (!spec?.operations?.[opName]?.messages) return [];
@@ -57,25 +59,31 @@ function ListAsyncV3Operations({
 
             const chKey = spec.operations[opName]?.channel?.$ref?.replace('#/channels/', '');
             const channelMsg = spec.channels?.[chKey]?.messages?.[msgName];
-            if (!channelMsg?.$ref) return;
+            if (!channelMsg) return;
 
-            const refParts = channelMsg.$ref.split('/').filter(Boolean);
-            let componentMsg = spec;
-            refParts.forEach((part) => { if (part !== '#') componentMsg = componentMsg?.[part]; });
+            // handle both inline and $ref message definitions
+            let componentMsg;
+            if (channelMsg.$ref) {
+                const refParts = channelMsg.$ref.split('/').filter(Boolean);
+                componentMsg = spec;
+                refParts.forEach((part) => { if (part !== '#') componentMsg = componentMsg?.[part]; });
+            } else {
+                componentMsg = channelMsg;
+            }
             if (!componentMsg) return;
 
-            let payloadSchema = componentMsg.payload;
-            if (payloadSchema?.$ref) {
-                const schemaParts = payloadSchema.$ref.split('/').filter(Boolean);
+            // handle both inline and $ref payload
+            let payloadSchema;
+            if (componentMsg.payload?.$ref) {
+                const schemaParts = componentMsg.payload.$ref.split('/').filter(Boolean);
                 payloadSchema = spec;
                 schemaParts.forEach((part) => { if (part !== '#') payloadSchema = payloadSchema?.[part]; });
+            } else {
+                payloadSchema = componentMsg.payload;
             }
-
             const properties = payloadSchema?.properties || {};
-            const isAutoGen = spec.components?.messages?.[msgName]?.['x-wso2-default'] === true;
-
             result.push({
-                msgName: isAutoGen ? 'Default Message' : msgName,
+                msgName,
                 properties: Object.entries(properties).map(([propName, propVal]) => ({
                     name: propName,
                     type: propVal.type || '—',
@@ -100,38 +108,12 @@ function ListAsyncV3Operations({
             </Grid>
             <Grid item md={1} />
             <Grid item md={10}>
-                {allOperations && allOperations.length > 0 ? (
-                    allOperations.map((opName) => {
+                {operations && operations.length > 0 ? (
+                    operations.map((opName) => {
                         const messages = getOperationMessages(opName);
-                        const isMarked = (markedOperations || []).includes(opName);
                         return (
                             <Box key={opName} sx={{ position: 'relative', mb: 1 }}>
-                                {isMarked && (
-                                    <Box sx={{
-                                        position: 'absolute',
-                                        zIndex: 10,
-                                        right: '10%',
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                    }}>
-                                        <Tooltip title='Marked for delete'>
-                                            <Button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    onUndoDeleteOperation(opName);
-                                                }}
-                                                variant='outlined'
-                                            >
-                                                <FormattedMessage
-                                                    id='Apis.Details.Resources.components.Operation.undo.delete'
-                                                    defaultMessage='Undo Delete'
-                                                />
-                                            </Button>
-                                        </Tooltip>
-                                    </Box>
-                                )}
                                 <Accordion
-                                    disabled={isMarked}
                                     onClick={(e) => e.stopPropagation()}
                                     sx={{ border: '1px solid #f2d4a7' }}
                                 >
@@ -146,7 +128,7 @@ function ListAsyncV3Operations({
                                         <Box display='flex' alignItems='center'
                                             justifyContent='space-between' width='100%' pr={1}>
                                             <Typography>{opName}</Typography>
-                                            {!disableDelete && !isMarked && (
+                                            {!disableDelete && (
                                                 <Tooltip title={
                                                     <FormattedMessage
                                                         id='Apis.Details.Resources.components.Operation.Delete'
@@ -159,7 +141,7 @@ function ListAsyncV3Operations({
                                                                 'apim:api_create'])}
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                onDeleteOperation(opName);
+                                                                setDeleteConfirmation({ open: true, opName });
                                                             }}
                                                             size='small'
                                                         >
@@ -295,25 +277,68 @@ function ListAsyncV3Operations({
                 )}
             </Grid>
             <Grid item md={1} />
+            <Dialog
+                open={deleteConfirmation.open}
+                onClose={() => setDeleteConfirmation({ open: false, opName: null })}
+                aria-labelledby='delete-operation-confirmation-dialog-title'
+            >
+                <DialogTitle id='delete-operation-confirmation-dialog-title'>
+                    <FormattedMessage
+                        id={'Apis.Details.Resources.components.operationComponents.asyncapi.'
+                            + 'ListAsyncV3Operations.delete.confirm'}
+                        defaultMessage='Confirm Delete'
+                    />
+                </DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        <FormattedMessage
+                            id={'Apis.Details.Resources.components.operationComponents.asyncapi.'
+                                + 'ListAsyncV3Operations.delete.msg'}
+                            defaultMessage='Are you sure you want to delete operation {opName}?'
+                            values={{ opName: deleteConfirmation.opName }}
+                        />
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={() => setDeleteConfirmation({ open: false, opName: null })}
+                        color='primary'
+                    >
+                        <FormattedMessage
+                            id={'Apis.Details.Resources.components.operationComponents.asyncapi.'
+                                + 'ListAsyncV3Operations.delete.cancel'}
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            onDeleteOperation(deleteConfirmation.opName);
+                            setDeleteConfirmation({ open: false, opName: null });
+                        }}
+                        color='primary'
+                        variant='contained'
+                    >
+                        <FormattedMessage
+                            id={'Apis.Details.Resources.components.operationComponents.asyncapi.'
+                                + 'ListAsyncV3Operations.delete'}
+                            defaultMessage='Delete'
+                        />
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </>
     );
 }
 
 ListAsyncV3Operations.propTypes = {
     operations: PropTypes.arrayOf(PropTypes.string).isRequired,
-    operationsSnapshot: PropTypes.arrayOf(PropTypes.string),
-    markedOperations: PropTypes.arrayOf(PropTypes.string),
     onDeleteOperation: PropTypes.func,
-    onUndoDeleteOperation: PropTypes.func,
     disableDelete: PropTypes.bool,
     spec: PropTypes.shape({}),
 };
 
 ListAsyncV3Operations.defaultProps = {
-    operationsSnapshot: [],
-    markedOperations: [],
     onDeleteOperation: () => {},
-    onUndoDeleteOperation: () => {},
     disableDelete: false,
     spec: {},
 };

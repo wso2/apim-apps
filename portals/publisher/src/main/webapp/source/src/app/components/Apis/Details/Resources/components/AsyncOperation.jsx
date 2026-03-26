@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
@@ -192,38 +192,12 @@ function AsyncOperation(props) {
         ? (operation[verb]?.['x-operations'] || [])
         : [];
 
-    const [markedNamedOperations, setMarkedNamedOperations] = useState([]);
-    const [operationsSnapshot, setOperationsSnapshot] = useState([]);
-
-    function handleMarkNamedOperationDelete(opName) {
-        setMarkedNamedOperations((prev) => [...prev, opName]);
+    function handleDeleteNamedOperation(opName) {
         operationsDispatcher({
             action: 'deleteNamedOperation',
             data: { target, verb, value: opName },
         });
     }
-
-    function handleUndoNamedOperationDelete(opName) {
-        setMarkedNamedOperations((prev) => prev.filter((n) => n !== opName));
-        operationsDispatcher({
-            action: 'add',
-            data: {
-                target,
-                verbs: [verb],
-                operationName: opName,
-            },
-        });
-    }
-
-    useEffect(() => {
-        setMarkedNamedOperations([]);
-    }, [spec]);
-
-    useEffect(() => {
-        if (markedNamedOperations.length === 0) {
-            setOperationsSnapshot(namedOperations);
-        }
-    }, [namedOperations, markedNamedOperations]);
 
     /**
      *
@@ -290,11 +264,8 @@ function AsyncOperation(props) {
                     <Grid spacing={2} container direction='row' justifyContent='flex-start' alignItems='flex-start'>
                         {isAsyncV3 && (
                             <ListAsyncV3Operations
-                                operationsSnapshot={operationsSnapshot}
                                 operations={namedOperations}
-                                markedOperations={markedNamedOperations}
-                                onDeleteOperation={handleMarkNamedOperationDelete}
-                                onUndoDeleteOperation={handleUndoNamedOperationDelete}
+                                onDeleteOperation={handleDeleteNamedOperation}
                                 disableDelete={disableDelete || disableUpdate}
                                 spec={spec}
                             />
