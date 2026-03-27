@@ -46,6 +46,8 @@ import ModelRoundRobin from '../CustomPolicies/ModelRoundRobin';
 import ModelWeightedRoundRobin from '../CustomPolicies/ModelWeightedRoundRobin';
 import ModelFailover from '../CustomPolicies/ModelFailover';
 import ContentBasedRouter from '../CustomPolicies/ContentBasedRouter';
+import SemanticRouting from '../CustomPolicies/SemanticRouting';
+import IntelligentModelRouting from '../CustomPolicies/IntelligentModelRouting';
 import { Editor } from '@monaco-editor/react';
 
 const PREFIX = 'General';
@@ -283,15 +285,23 @@ const General: FC<GeneralProps> = ({
     const dynamicSchema: SchemaNode | null = (policySpec as any).parametersSchema || null;
     const hasDynamicSchema = Boolean(dynamicSchema?.type === 'object' && dynamicSchema?.properties);
     const [dynamicState, setDynamicState] = useState<any>({});
+    const [isManualFormValid, setIsManualFormValid] = useState<boolean>(true);
+    const [showValidationErrors, setShowValidationErrors] = useState<boolean>(false);
 
     useEffect(() => {
         if (
             (policyObj && policyObj.name === 'modelRoundRobin') ||
             (policyObj && policyObj.name === 'modelWeightedRoundRobin') ||
             (policyObj && policyObj.name === 'modelFailover') ||
-            (policyObj && policyObj.name === 'ContentBasedModelRouter')
+            (policyObj && policyObj.name === 'ContentBasedModelRouter') ||
+            (policyObj && policyObj.name === 'SemanticRouting') ||
+            (policyObj && policyObj.name === 'IntelligentModelRouting')
         ) {
             setManual(true);
+            // Initialize form as invalid for policies that require validation
+            if (policyObj.name === 'SemanticRouting' || policyObj.name === 'IntelligentModelRouting') {
+                setIsManualFormValid(false);
+            }
         }
     }, [policyObj]);
 
@@ -384,6 +394,14 @@ const General: FC<GeneralProps> = ({
      */
     const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        if (
+            isManual &&
+            (policyObj?.name === 'SemanticRouting' || policyObj?.name === 'IntelligentModelRouting') &&
+            !isManualFormValid
+        ) {
+            setShowValidationErrors(true);
+            return;
+        }
         setSaving(true);
         let updateCandidates: any = {};
 
@@ -438,6 +456,8 @@ const General: FC<GeneralProps> = ({
             'modelWeightedRoundRobin',
             'modelFailover',
             'ContentBasedModelRouter',
+            'SemanticRouting',
+            'IntelligentModelRouting',
         ].includes(policyObj.name)) {
             if (policySpec.policyAttributes?.length) {
                 updateCandidates[policySpec.policyAttributes[0].name] = manualPolicyConfig;
@@ -917,6 +937,24 @@ const General: FC<GeneralProps> = ({
                             manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
                         />
                     )}
+                    {(isManual && policyObj.name === 'SemanticRouting') && (
+                        <SemanticRouting
+                            setManualPolicyConfig={setManualPolicyConfig}
+                            manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
+                            setIsFormValid={setIsManualFormValid}
+                            showValidationErrors={showValidationErrors}
+                            setShowValidationErrors={setShowValidationErrors}
+                        />
+                    )}
+                    {(isManual && policyObj.name === 'IntelligentModelRouting') && (
+                        <IntelligentModelRouting
+                            setManualPolicyConfig={setManualPolicyConfig}
+                            manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
+                            setIsFormValid={setIsManualFormValid}
+                            showValidationErrors={showValidationErrors}
+                            setShowValidationErrors={setShowValidationErrors}
+                        />
+                    )}
                     {!isManual && hasDynamicSchema && dynamicSchema
                         && Object.entries(dynamicSchema.properties || {}).map(
                             ([fieldName, fieldSchema]) => (
@@ -1165,7 +1203,11 @@ const General: FC<GeneralProps> = ({
                             type='submit'
                             color='primary'
                             data-testid='policy-attached-details-save'
-                            disabled={!isManual && (isSaveDisabled() || formHasErrors() || saving)}
+                            disabled={
+                                isManual
+                                    ? (saving || !isManualFormValid)
+                                    : (isSaveDisabled() || formHasErrors() || saving)
+                            }
                         >
                             {saving
                                 ? <>
