@@ -33,9 +33,10 @@
                 "other": ""
             }
         },
-        "reactHTMLParser": {
-            "decodeEntries": true,
-            "tagsNotAllowed": []
+        "sanitizeHtmlDocs": {
+          "enabled": true,
+          "additionalAllowedTags": [],
+          "additionalAllowedAttributes": []
         },
         "workflows": {
             "limit": 30
