@@ -27,6 +27,7 @@ import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import {
     Radio, RadioGroup, FormControlLabel, FormControl, CircularProgress, Tooltip,
+    Dialog, DialogTitle, DialogContent, DialogActions,
 } from '@mui/material';
 import HelpOutline from '@mui/icons-material/HelpOutline';
 import IconButton from '@mui/material/IconButton';
@@ -189,6 +190,7 @@ function TryOutController(props) {
     const [tokenValue, setTokenValue] = useState('');
     const [consumerSecret, setConsumerSecret] = useState('');
     const [showSecret, setShowSecret] = useState(false);
+    const [secretDialogOpen, setSecretDialogOpen] = useState(false);
     const apiID = api.id;
     const restApi = new Api();
     const user = AuthManager.getUser();
@@ -351,7 +353,8 @@ function TryOutController(props) {
     /**
      * Generate access token
      * */
-    function generateAccessToken() {
+    function generateAccessToken(secretOverride) {
+        const secret = (typeof secretOverride === 'string') ? secretOverride : consumerSecret;
         if (api.lifeCycleStatus) {
             setIsUpdating(true);
             const applicationPromise = Application.get(selectedApplication);
@@ -363,7 +366,7 @@ function TryOutController(props) {
                     scopes,
                     undefined,
                     undefined,
-                    consumerSecret
+                    secret
                 ))
                 .then((response) => {
                     console.log('token generated successfully ' + response);
@@ -611,12 +614,7 @@ function TryOutController(props) {
     const isConsumerSecretRequired = isMultipleClientSecretsAllowed && securitySchemeType === 'OAUTH' &&
         selectedKMObject && !selectedKMObject.enableTokenHashing;
 
-    // When multiple client secrets are allowed, for OAuth security scheme, the consumer secret should
-    // be available for the Get Test Key button to be enabled.
-    let enableGetTestKeyButton = true; // default
-    if (securitySchemeType === 'OAUTH' && isMultipleClientSecretsAllowed) {
-        enableGetTestKeyButton = isConsumerSecretRequired ? !!consumerSecret?.trim() : true; // must provide consumer secret
-    }
+    // Consumer secret is now collected via dialog, so GET TEST KEY is always enabled.
 
     useEffect(() => {
         if (securitySchemeType === 'API-KEY') {
@@ -796,52 +794,91 @@ function TryOutController(props) {
                                 </Grid>
                             )
                         )}
-                    {/* New Consumer Secret Field - Only shows for OAUTH */}
-                    <Box display='block' justifyContent='center'>
-                        <Grid x={8} md={6} className={classes.tokenType} item>
-                            {isConsumerSecretRequired && (
-                            <TextField
-                                fullWidth
-                                margin='normal'
-                                variant='outlined'
-                                label={(
-                                    <FormattedMessage
-                                        id='Apis.Details.ApiConsole.consumer.secret.text.field'
-                                        defaultMessage='Consumer Secret'
-                                    />
-                                )}
-                                name='consumerSecret'
-                                onChange={handleChanges}
-                                type={showSecret ? 'text' : 'password'}
-                                value={consumerSecret || ''}
-                                id='consumerSecretInput'
-                                helperText={
-                                    !consumerSecret?.trim()
-                                        ? <FormattedMessage
-                                            id='Apis.Details.TryOutConsole.consumerSecret.required.helper'
-                                            defaultMessage='Consumer Secret is required to generate a new Test Key.'
+                    {/* Consumer Secret Dialog - Opens when GET TEST KEY is clicked (multiple secrets mode) */}
+                    {isConsumerSecretRequired && (
+                        <Dialog
+                            open={secretDialogOpen}
+                            onClose={() => { setSecretDialogOpen(false); setConsumerSecret(''); setShowSecret(false); }}
+                            fullWidth
+                            maxWidth='sm'
+                        >
+                            <DialogTitle>
+                                <FormattedMessage
+                                    id='Apis.Details.ApiConsole.generate.test.key.dialog.title'
+                                    defaultMessage='Generate test key'
+                                />
+                            </DialogTitle>
+                            <DialogContent>
+                                <TextField
+                                    autoFocus
+                                    fullWidth
+                                    margin='normal'
+                                    variant='outlined'
+                                    label={(
+                                        <FormattedMessage
+                                            id='Apis.Details.ApiConsole.consumer.secret.text.field'
+                                            defaultMessage='Consumer secret'
                                         />
-                                        : null
-                                }
-                                InputProps={{
-                                    autoComplete: 'new-password',
-                                    endAdornment: (
-                                        <InputAdornment position='end'>
-                                            <IconButton
-                                                edge='end'
-                                                aria-label='toggle consumer secret visibility'
-                                                onClick={() => setShowSecret(!showSecret)}
-                                                size='large'
-                                            >
-                                                {showSecret ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
+                                    )}
+                                    name='consumerSecret'
+                                    onChange={handleChanges}
+                                    type={showSecret ? 'text' : 'password'}
+                                    value={consumerSecret || ''}
+                                    id='consumerSecretInput'
+                                    helperText={(
+                                        <FormattedMessage
+                                            id='Apis.Details.TryOutConsole.consumerSecret.required.helper'
+                                            defaultMessage='Enter the consumer secret for the selected application to generate a test key.'
+                                        />
+                                    )}
+                                    InputProps={{
+                                        autoComplete: 'new-password',
+                                        endAdornment: (
+                                            <InputAdornment position='end'>
+                                                <IconButton
+                                                    edge='end'
+                                                    aria-label='toggle consumer secret visibility'
+                                                    onClick={() => setShowSecret(!showSecret)}
+                                                    size='large'
+                                                >
+                                                    {showSecret ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={() => {
+                                    setSecretDialogOpen(false);
+                                    setConsumerSecret('');
+                                    setShowSecret(false);
                                 }}
-                            />
-                        )}
-                        </Grid>
-                    </Box>
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.ApiConsole.generate.test.key.dialog.cancel'
+                                        defaultMessage='Cancel'
+                                    />
+                                </Button>
+                                <Button
+                                    variant='contained'
+                                    onClick={() => {
+                                        const secretValue = consumerSecret;
+                                        setSecretDialogOpen(false);
+                                        setConsumerSecret('');
+                                        setShowSecret(false);
+                                        generateAccessToken(secretValue);
+                                    }}
+                                    disabled={!consumerSecret?.trim() || isUpdating}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.ApiConsole.generate.test.key.dialog.generate'
+                                        defaultMessage='Generate'
+                                    />
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                    )}
                     {((!api.advertiseInfo || !api.advertiseInfo.advertised) 
                         && (api.gatewayVendor === 'wso2' || !api.gatewayVendor)) ? (
                         <Box display='block' justifyContent='center'>
@@ -954,14 +991,15 @@ function TryOutController(props) {
                                     <>
                                         <Button
                                             onClick={securitySchemeType === 'API-KEY' ? generateApiKey
-                                                : generateAccessToken}
+                                                : (isConsumerSecretRequired
+                                                    ? () => setSecretDialogOpen(true) : generateAccessToken)}
                                             variant='contained'
                                             color='grey'
                                             className={classes.genKeyButton}
                                             disabled={!user
                                                 || (subscriptions && subscriptions.length === 0 && !isSubValidationDisabled)
                                                 || (!ksGenerated && securitySchemeType === 'OAUTH')
-                                                        || !enableGetTestKeyButton}
+                                                || isUpdating}
                                             id='gen-test-key'
                                         >
                                             {isUpdating && (
@@ -979,13 +1017,13 @@ function TryOutController(props) {
                                                 <>
                                                     <FormattedMessage
                                                         id='Apis.Details.TryOutConsole.access.token.tooltip'
-                                                        defaultMessage='You can use your existing Access Token or generate a new Test Key.'
+                                                        defaultMessage='You can use your existing access token or generate a new test key.'
                                                     />
-                                                    {!enableGetTestKeyButton && securitySchemeType === 'OAUTH' && isMultipleClientSecretsAllowed && (
+                                                    {isConsumerSecretRequired && (
                                                         <div style={{ marginTop: 4, fontWeight: 500 }}>
                                                             <FormattedMessage
-                                                                id='Apis.Details.TryOutConsole.consumer.secret.required'
-                                                                defaultMessage='Consumer Secret is required to generate a new Test Key.'
+                                                                id='Apis.Details.TryOutConsole.consumer.secret.dialog.hint'
+                                                                defaultMessage='You will be prompted for the consumer secret.'
                                                             />
                                                         </div>
                                                     )}
@@ -994,7 +1032,7 @@ function TryOutController(props) {
                                         >
                                             <Box m={1} mt={2}>
                                                 <IconButton
-                                                    aria-label='Use existing Access Token or generate a new Test Key'
+                                                    aria-label='Use existing access token or generate a new test key'
                                                     size='large'
                                                 >
                                                     <HelpOutline />
