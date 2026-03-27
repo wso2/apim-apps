@@ -34,8 +34,8 @@ export default function HTMLRender(props) {
     const { html, sanitize = true } = props;
     
     // Extract sanitization config from Configuration
-    const sanitizeConfig = Configuration.app?.sanitizeHtmlDocs;
-    const isSanitizationEnabled = sanitizeConfig?.enabled === true && sanitize === true;
+    const sanitizeConfig = Configuration.app?.sanitizeHtmlDocs || {};
+    const isSanitizationEnabled = sanitize === true && sanitizeConfig.enabled !== false;
     
     let parsedHtml;
     
@@ -49,7 +49,7 @@ export default function HTMLRender(props) {
         parsedHtml = parse(sanitizedHtml);
     } else {
         // Render without sanitization
-        parsedHtml = parse(html);
+        parsedHtml = html ? parse(html) : null;
     }
     
     return (
