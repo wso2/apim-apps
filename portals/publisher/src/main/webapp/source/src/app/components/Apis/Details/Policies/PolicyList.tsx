@@ -122,9 +122,6 @@ const PolicyList: FC<PolicyListProps> = ({
     ]);
     const canAddPolicy = !isChoreoConnectEnabled && !isPolicyHubGateway;
 
-    const isAIAPI = apiSubType === 'AIAPI';
-    const isRestAPI = apiType === 'HTTP' && !isAIAPI;
-
     const getPolicyCategory = (policy: Policy) => {
         const category = policy.category || policy.categories?.[0];
         return category || 'Uncategorized';
@@ -147,22 +144,7 @@ const PolicyList: FC<PolicyListProps> = ({
             const normalizedSelection = prev.filter((category) =>
                 availableCategories.includes(category),
             );
-            let nextSelection = normalizedSelection;
-
-            // If current selections become invalid, apply API-type defaults when available.
-            if (nextSelection.length === 0) {
-                const defaults = isAIAPI
-                    ? ['AI', 'Guardrails']
-                    : isRestAPI
-                    ? ['Transformation', 'Security']
-                    : [];
-                const matchingDefaults = defaults.filter((category) =>
-                    availableCategories.includes(category),
-                );
-                if (matchingDefaults.length > 0) {
-                    nextSelection = matchingDefaults;
-                }
-            }
+            const nextSelection = normalizedSelection;
 
             if (
                 nextSelection.length !== prev.length ||
@@ -174,7 +156,7 @@ const PolicyList: FC<PolicyListProps> = ({
             }
             return prev;
         });
-    }, [availableCategories, isAIAPI, isRestAPI]);
+    }, [availableCategories]);
 
     const handleAddPolicy = () => {
         setDialogOpen(true);
