@@ -24,13 +24,10 @@
             },
             "syntaxHighlighterDarkTheme": false
         },
-        "sanitizeHtml": {
-            "allowedTags": false,
-            "allowedAttributes": false
-        },
-        "reactHTMLParser": {
-            "decodeEntries": true,
-            "tagsNotAllowed": []
+        "sanitizeHtmlDocs": {
+          "enabled": true,
+          "additionalAllowedTags": [],
+          "additionalAllowedAttributes": []
         }
     },
     "grantTypes": {
