@@ -275,7 +275,7 @@ const apiCall = () => {
     const restApi = new API();
     return Promise.all([
         restApi.getGatewayEnvironmentList(),
-        restApi.getPlatformGatewayList(),
+        restApi.getPlatformGatewayList().catch(() => ({ body: { list: [] } })),
     ])
         .then(([environmentResult, platformGatewayResult]) => {
             const environmentList = environmentResult?.body?.list || [];
