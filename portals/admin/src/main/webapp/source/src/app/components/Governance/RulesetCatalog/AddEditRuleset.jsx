@@ -549,32 +549,6 @@ function AddEditRuleset(props) {
                                     <TextField
                                         select
                                         margin='dense'
-                                        name='ruleType'
-                                        value={ruleType}
-                                        onChange={onChange}
-                                        label={(
-                                            <FormattedMessage
-                                                id='Governance.Rulesets.AddEdit.form.ruleset.type'
-                                                defaultMessage='Ruleset Type'
-                                            />
-                                        )}
-                                        fullWidth
-                                        error={hasErrors('ruleType', ruleType, validating)}
-                                        helperText={hasErrors('ruleType', ruleType, validating)}
-                                        required
-                                        variant='outlined'
-                                    >
-                                        {CONSTS.RULESET_TYPES.map((option) => (
-                                            <MenuItem key={option.value} value={option.value}>
-                                                {option.label}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <TextField
-                                        select
-                                        margin='dense'
                                         name='artifactType'
                                         value={artifactType}
                                         onChange={onChange}
@@ -597,6 +571,32 @@ function AddEditRuleset(props) {
                                         ))}
                                     </TextField>
                                 </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        select
+                                        margin='dense'
+                                        name='ruleType'
+                                        value={ruleType}
+                                        onChange={onChange}
+                                        label={(
+                                            <FormattedMessage
+                                                id='Governance.Rulesets.AddEdit.form.ruleset.type'
+                                                defaultMessage='Ruleset Type'
+                                            />
+                                        )}
+                                        fullWidth
+                                        error={hasErrors('ruleType', ruleType, validating)}
+                                        helperText={hasErrors('ruleType', ruleType, validating)}
+                                        required
+                                        variant='outlined'
+                                    >
+                                        {CONSTS.RULESET_TYPES.map((option) => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </Grid>
                             </Grid>
                         </Box>
                     </Grid>
@@ -608,27 +608,22 @@ function AddEditRuleset(props) {
                     </Grid>
 
                     {/* Ruleset Content Section */}
-                    <Grid item xs={12} md={12} lg={5} style={{ paddingLeft: '24px' }}>
-                        <Typography color='inherit' variant='subtitle2' component='div'>
-                            <FormattedMessage
-                                id='Governance.Rulesets.AddEdit.content.title'
-                                defaultMessage='Ruleset Content'
-                            />
-                        </Typography>
-                        <Typography color='inherit' variant='caption' component='p'>
-                            {isGenericRuleset ? (
+                    {!isGenericRuleset && (
+                        <Grid item xs={12} md={12} lg={5} style={{ paddingLeft: '24px' }}>
+                            <Typography color='inherit' variant='subtitle2' component='div'>
                                 <FormattedMessage
-                                    id='Governance.Rulesets.AddEdit.content.description.generic'
-                                    defaultMessage='Configure the GENERIC Ruleset Engine settings'
+                                    id='Governance.Rulesets.AddEdit.content.title'
+                                    defaultMessage='Ruleset Content'
                                 />
-                            ) : (
+                            </Typography>
+                            <Typography color='inherit' variant='caption' component='p'>
                                 <FormattedMessage
                                     id='Governance.Rulesets.AddEdit.content.description'
                                     defaultMessage='Define the ruleset content in YAML or JSON format'
                                 />
-                            )}
-                        </Typography>
-                    </Grid>
+                            </Typography>
+                        </Grid>
+                    )}
 
                     <Grid item xs={12} md={12} lg={12}>
                         <Box component='div' m={1}>
