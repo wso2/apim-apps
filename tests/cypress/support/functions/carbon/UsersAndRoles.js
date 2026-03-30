@@ -32,7 +32,7 @@ class UsersAndRoles {
 
         // search created username 
         UsersManagementPage.getEnterUsernameTextBox().clear().type(name)
-        UsersManagementPage.getSearchUsershButton().click
+        UsersManagementPage.getSearchUsershButton().click()
         UsersManagementPage.getNameColumnOfFirstRow().contains(name)
         UsersManagementPage.getAssignRolesButtonOfUser(name).click()
 
@@ -40,6 +40,7 @@ class UsersAndRoles {
         roles.forEach(role => {
             EditUserRolesPage.getEnterRoleNamePattern().clear().type(role)
             EditUserRolesPage.getSearchRolesButton().click()
+            cy.contains('td', role, { timeout: Cypress.config().largeTimeout }).should('be.visible')
             EditUserRolesPage.getRoleCheckbox(role).check()
             EditUserRolesPage.getUpdateButton().click()
             EditUserRolesPage.getMessageBoxOkButton(2).click()

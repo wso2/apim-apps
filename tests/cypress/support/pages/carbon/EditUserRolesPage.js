@@ -26,7 +26,7 @@ class EditUserRolesPage {
         return cy.get('input[value="Search Roles"]')
     }
     static getRoleCheckbox(role){
-        return cy.get(`input[value="${role}"][type="checkbox"]`)
+        return cy.contains('td', role).parent('tr').find('input[type="checkbox"]')
     }
     static getUpdateButton(){
         return cy.get('.button[value="Update"]')
