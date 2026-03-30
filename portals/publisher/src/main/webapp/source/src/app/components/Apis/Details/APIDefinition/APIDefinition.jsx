@@ -600,8 +600,9 @@ class APIDefinition extends React.Component {
                         })
                         .catch((err) => {
                             console.log(err);
-                            if (err.response && err.response.body) {
-                                Alert.error(err.response.body.description);
+                            const backendErrorDescription = err?.response?.body?.description;
+                            if (backendErrorDescription) {
+                                Alert.error(backendErrorDescription);
                             } else {
                                 Alert.error(intl.formatMessage({
                                     id: 'Apis.Details.APIDefinition.APIDefinition.error.while.updating.api.definition',
