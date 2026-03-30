@@ -25,9 +25,11 @@ import { styled, useTheme } from '@mui/material/styles';
 import APIValidation from 'AppData/APIValidation';
 import AddIcon from '@mui/icons-material/Add';
 import Alert from 'AppComponents/Shared/Alert';
+import Autocomplete from '@mui/material/Autocomplete';
 import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import Chip from '@mui/material/Chip';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -140,7 +142,7 @@ const SUPPORTED_VERBS = {
 };
 
 function AddOperation(props) {
-    const { operationsDispatcher, isAsyncAPI, api, isAsyncV3 } = props;
+    const { operationsDispatcher, isAsyncAPI, api, isAsyncV3, existingChannels } = props;
     const inputLabel = useRef(null);
     const [labelWidth, setLabelWidth] = useState(0);
     const intl = useIntl();
@@ -308,18 +310,19 @@ function AddOperation(props) {
                                 value={newOperations.verbs[0] ?? ''}
                                 onChange={({ target: { name, value } }) => newOperationsDispatcher({
                                     type: name,
-                                    value: [value],  // wrap in array to keep rest of codebase compatible
+                                    value: [value],
                                 })}
                                 labelWidth={labelWidth}
                                 inputProps={{ name: 'verbs', id: 'operation-verb' }}
                             >
                                 {getSupportedVerbs().map((verb) => (
-                                    <VerbElement
-                                        key={verb}
-                                        checked={newOperations.verbs.includes(verb.toLowerCase())}
-                                        value={verb.toLowerCase()}
-                                        verb={verb}
-                                    />
+                                    <MenuItem key={verb} value={verb.toLowerCase()} dense>
+                                        <VerbElement
+                                            key={verb}
+                                            isButton
+                                            verb={verb}
+                                        />
+                                    </MenuItem>
                                 ))}
                             </Select>
                         ) : (
@@ -387,30 +390,68 @@ function AddOperation(props) {
                     </FormControl>
                 </Grid>
                 <Grid item md={isAsyncV3 && isAsyncAPI ? 4 : 5} xs={isAsyncAPI ? 6 : 8}>
-                    <TextField
-                        id='operation-target'
-                        label={getOperationLabel()}
-                        error={Boolean(newOperations.error)}
-                        autoFocus
-                        name='target'
-                        value={newOperations.target}
-                        onChange={({ target: { name, value } }) => newOperationsDispatcher({
-                            type: name,
-                            value: !isWebSub && !isAsyncAPI && !value.startsWith('/') ? `/${value}` : value,
-                        })}
-                        placeholder={getOperationPlaceholder()}
-                        helperText={newOperations.error || getOperationPlaceholder()}
-                        fullWidth
-                        margin='dense'
-                        variant='outlined'
-                        InputLabelProps={{ shrink: true }}
-                        onKeyPress={(event) => {
-                            if (event.key === 'Enter') {
-                                event.preventDefault();
-                                addOperation();
-                            }
-                        }}
-                    />
+                    {isAsyncV3 && isAsyncAPI ? (
+                        <Autocomplete
+                            freeSolo
+                            options={existingChannels}
+                            value={newOperations.target}
+                            onInputChange={(event, newValue) => newOperationsDispatcher({
+                                type: 'target',
+                                value: newValue,
+                            })}
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter' && !event.defaultMuiPrevented) {
+                                    addOperation();
+                                }
+                            }}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    id='operation-target'
+                                    label={getOperationLabel()}
+                                    error={Boolean(newOperations.error)}
+                                    autoFocus
+                                    placeholder={getOperationPlaceholder()}
+                                    helperText={newOperations.error || getOperationPlaceholder()}
+                                    fullWidth
+                                    margin='dense'
+                                    variant='outlined'
+                                    InputLabelProps={{ shrink: true }}
+                                    onKeyPress={(event) => {
+                                        if (event.key === 'Enter') {
+                                            event.preventDefault();
+                                            addOperation();
+                                        }
+                                    }}
+                                />
+                            )}
+                        />
+                    ) : (
+                        <TextField
+                            id='operation-target'
+                            label={getOperationLabel()}
+                            error={Boolean(newOperations.error)}
+                            autoFocus
+                            name='target'
+                            value={newOperations.target}
+                            onChange={({ target: { name, value } }) => newOperationsDispatcher({
+                                type: name,
+                                value: !isWebSub && !isAsyncAPI && !value.startsWith('/') ? `/${value}` : value,
+                            })}
+                            placeholder={getOperationPlaceholder()}
+                            helperText={newOperations.error || getOperationPlaceholder()}
+                            fullWidth
+                            margin='dense'
+                            variant='outlined'
+                            InputLabelProps={{ shrink: true }}
+                            onKeyPress={(event) => {
+                                if (event.key === 'Enter') {
+                                    event.preventDefault();
+                                    addOperation();
+                                }
+                            }}
+                        />
+                    )}
                 </Grid>
                 {isAsyncV3 && isAsyncAPI && (
                     <Grid item md={4} xs={6} sx={{ pl: 2 }}>
@@ -500,12 +541,14 @@ AddOperation.propTypes = {
         type: PropTypes.string,
         asyncTransportProtocol: PropTypes.string,
     }),
+    existingChannels: PropTypes.arrayOf(PropTypes.string),
 };
 
 AddOperation.defaultProps = {
     isAsyncAPI: false,
     api: null,
     isAsyncV3: false,
+    existingChannels: [],
 };
 
 export default React.memo(AddOperation);

@@ -25,6 +25,7 @@ import Paper from '@mui/material/Paper';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import cloneDeep from 'lodash.clonedeep';
 import isEmpty from 'lodash/isEmpty';
+import isEqual from 'lodash/isEqual';
 import Alert from 'AppComponents/Shared/Alert';
 import Banner from 'AppComponents/Shared/Banner';
 import API from 'AppData/api';
@@ -84,49 +85,6 @@ export default function Topics(props) {
         return target;
     }
 
-    function extractPayloadProperties(resolvedPayload, opName, msgKey) {
-        if (!resolvedPayload?.properties) return {};
-        return Object.fromEntries(
-            Object.entries(resolvedPayload.properties).map(([propName, propVal]) => {
-                const compositeKey = `${msgKey}__${propName}`;
-                return [compositeKey, {
-                    ...propVal,
-                    'x-operation': opName,
-                    'x-message': msgKey,
-                    'x-prop-name': propName,
-                }];
-            }),
-        );
-    }
-
-    // Extracts and flattens payload properties from all messages of a single AsyncAPI v3 operation.
-    function extractMessageProperties(spec, opObj, opName) {
-        const chRef = opObj.channel?.$ref;
-        const chKey = chRef?.replace('#/channels/', '');
-        const channelSpecObj = chKey && spec.channels[chKey];
-
-        if (!channelSpecObj?.messages) return {};
-
-        const allProperties = {};
-        opObj.messages.forEach((msgRef) => {
-            const msgKey = msgRef.$ref?.split('/messages/')[1];
-            if (!msgKey) return;
-
-            const channelMsg = channelSpecObj.messages[msgKey];
-            if (!channelMsg?.$ref) return;
-
-            const componentMsg = getRefTarget(spec, channelMsg.$ref);
-            if (!componentMsg) return;
-
-            const resolvedPayload = componentMsg.payload?.$ref
-                ? getRefTarget(spec, componentMsg.payload.$ref)
-                : componentMsg.payload;
-
-            Object.assign(allProperties, extractPayloadProperties(resolvedPayload, opName, msgKey));
-        });
-        return allProperties;
-    }
-
     /**
      * Builds a UI-friendly channel map from an AsyncAPI v3 spec.
      */
@@ -142,6 +100,7 @@ export default function Topics(props) {
                 channelMap[address] = channelMap[address] || {
                     parameters: channelObj.parameters || {},
                     ...(channelObj.description && { description: channelObj.description }),
+                    ...(channelObj['x-auth-type'] && { 'x-auth-type': channelObj['x-auth-type'] }),
                 };
             });
         }
@@ -157,148 +116,30 @@ export default function Topics(props) {
                     channelMap[channelAddress] = { parameters: [] };
                 }
                 if (!channelMap[channelAddress][action]) {
-                    channelMap[channelAddress][action] = { 'x-operations': [], 'x-auth-type': 'Any' };
+                    channelMap[channelAddress][action] = { 'x-operations': [] };
                 }
     
                 channelMap[channelAddress][action]['x-operations'].push(opName);
-    
-                if (opObj['x-auth-type']) channelMap[channelAddress][action]['x-auth-type'] = opObj['x-auth-type'];
                 if (opObj['x-uri-mapping']) channelMap[channelAddress][action]['x-uri-mapping'] =
                     opObj['x-uri-mapping'];
                 if (opObj['x-scopes']) channelMap[channelAddress][action]['x-scopes'] = opObj['x-scopes'];
-                if (opObj.messages) {
-                    const allProperties = extractMessageProperties(spec, opObj, opName);
-                    if (Object.keys(allProperties).length > 0) {
-                        const existing = channelMap[channelAddress][action].message;
-                        channelMap[channelAddress][action].message = {
-                            payload: {
-                                type: 'object',
-                                properties: {
-                                    ...existing?.payload?.properties,
-                                    ...allProperties,
-                                },
-                            },
-                        };
-                    }
-                }
             });
         }
         return channelMap;
     }
-    
-    /**
-     * Returns updated components with the new message schema and message ref added.
-     */
-    function buildUpdatedComponents(currentComponents, msgName, msgProps) {
-        return {
-            ...currentComponents,
-            schemas: {
-                ...currentComponents.schemas,
-                [msgName]: { type: 'object', properties: msgProps },
-            },
-            messages: {
-                ...currentComponents.messages,
-                [msgName]: { payload: { $ref: `#/components/schemas/${msgName}` } },
-            },
-        };
-    }
 
-    /**
-     * Returns updated channels with the new message ref added to the given channel.
-     */
-    function buildUpdatedChannels(currentChannels, channelName, msgName) {
-        return {
-            ...currentChannels,
-            [channelName]: {
-                ...currentChannels[channelName],
-                messages: {
-                    ...currentChannels[channelName]?.messages,
-                    [msgName]: { $ref: `#/components/messages/${msgName}` },
-                },
-            },
-        };
-    }
-
-    function groupPayloadProperties(properties) {
-        const byMessage = {};
-    
-        Object.entries(properties).forEach(([compositeKey, propVal]) => {
-            const msgName = propVal['x-message'] || propVal['x-operation'] || '__default__';
-    
-            if (!byMessage[msgName]) {
-                byMessage[msgName] = { opName: propVal['x-operation'], props: {} };
-            }
-    
-            const originalPropName = propVal['x-prop-name'] || compositeKey;
-            // const { 'x-operation': _, 'x-message': __, 'x-prop-name': ___, ...cleanProp } = propVal;
-            const {
-                'x-operation': xOperation,
-                'x-message': xMessage,
-                'x-prop-name': xPropName,
-                ...cleanProp
-            } = propVal;
-    
-            byMessage[msgName].props[originalPropName] = cleanProp;
-        });
-    
-        return byMessage;
-    }
-    
-    function wireOperationMessage(opName, channelName, msgName, newOperations) {
-        if (!opName || opName === '__default__' || !newOperations[opName]) return;
-    
-        const ref = { $ref: `#/channels/${channelName}/messages/${msgName}` };
-    
-        if (!newOperations[opName].messages.some((m) => m.$ref === ref.$ref)) {
-            newOperations[opName].messages.push(ref);
-        }
-    }
-    
-    function processMessageGroups(byMessage, channelName, newComponents, newChannels, newOperations) {
-        let updatedComponents = { ...newComponents };
-        let updatedChannels = { ...newChannels };
-    
-        Object.entries(byMessage).forEach(([msgName, { opName, props: msgProps }]) => {
-            updatedComponents = buildUpdatedComponents(updatedComponents, msgName, msgProps);
-            updatedChannels = buildUpdatedChannels(updatedChannels, channelName, msgName);
-    
-            wireOperationMessage(opName, channelName, msgName, newOperations);
-        });
-    
-        return { updatedComponents, updatedChannels };
-    }
-    
-    function wirePayloadProperties(verbInfo, channelName, newComponents, newChannels, newOperations) {
-        if (!verbInfo.message?.payload?.properties) {
-            return { updatedComponents: newComponents, updatedChannels: newChannels };
-        }
-    
-        const byMessage = groupPayloadProperties(verbInfo.message.payload.properties);
-    
-        return processMessageGroups(
-            byMessage,
-            channelName,
-            newComponents,
-            newChannels,
-            newOperations,
-        );
-    }
-    
     function createOperationEntry(opName, action, channelName, verbInfo, originalSpec) {
-        // const { messages: _, ...restOfOriginal } = originalSpec.operations?.[opName] || {};
-        const { messages, ...restOfOriginal } = originalSpec.operations?.[opName] || {};
-    
+        const { messages: originalMessages, ...restOfOriginal } = originalSpec.operations?.[opName] || {};
         return {
             ...restOfOriginal,
             action,
             channel: { $ref: `#/channels/${channelName}` },
-            'x-auth-type': verbInfo['x-auth-type'],
             ...(verbInfo['x-uri-mapping'] && { 'x-uri-mapping': verbInfo['x-uri-mapping'] }),
             ...(verbInfo['x-scopes'] && { 'x-scopes': verbInfo['x-scopes'] }),
-            messages: [],
+            ...(originalMessages && { messages: originalMessages }),
         };
     }
-    
+
     function resolveChannel(channelAddress, channelObj, originalSpec, newChannels, addressToName) {
         const existingChannelName = addressToName[channelAddress];
     
@@ -309,6 +150,7 @@ export default function Topics(props) {
                     ...newChannels,
                     [existingChannelName]: {
                         ...newChannels[existingChannelName],
+                        ...(channelObj.parameters !== undefined && { parameters: channelObj.parameters }),
                         ...(channelObj.description && { description: channelObj.description }),
                     },
                 },
@@ -337,36 +179,20 @@ export default function Topics(props) {
      * This flattens the nesting from rebuildOperations.
      */
     function processVerbActions(context) {
-        const { 
-            verbInfo, action, channelName, 
-            originalSpec, newOperations, newChannels, newComponents 
+        const {
+            verbInfo, action, channelName,
+            originalSpec, newOperations,
         } = context;
-
-        // Level 4: Extracting the operations loop into a named helper or keeping it flat here
         const opList = verbInfo['x-operations'] || [];
         opList.forEach((opName) => {
-            newOperations[opName] = createOperationEntry(
-                opName,
-                action,
-                channelName,
-                verbInfo,
-                originalSpec,
-            );
+            newOperations[opName] = createOperationEntry(opName, action, channelName, verbInfo, originalSpec);
         });
-
-        return wirePayloadProperties(
-            verbInfo,
-            channelName,
-            newComponents,
-            newChannels,
-            newOperations,
-        );
+        return { updatedComponents: {}, updatedChannels: {} };
     }
 
     function rebuildOperations(channelMap, originalSpec) {
         const newOperations = {};
         let newChannels = { ...originalSpec.channels };
-        let newComponents = { messages: {} };
 
         const addressToName = {};
         if (originalSpec.channels) {
@@ -386,25 +212,30 @@ export default function Topics(props) {
 
             const { channelName } = resolved;
             newChannels = resolved.newChannels;
+            if (channelObj['x-auth-type']) {
+                newChannels = {
+                    ...newChannels,
+                    [channelName]: {
+                        ...newChannels[channelName],
+                        'x-auth-type': channelObj['x-auth-type'],
+                    },
+                };
+            }
 
             ['send', 'receive'].forEach((action) => {
                 const verbInfo = channelObj[action];
                 if (!verbInfo) return;
-                const result = processVerbActions({
+                processVerbActions({
                     verbInfo,
                     action,
                     channelName,
                     originalSpec,
                     newOperations,
-                    newChannels,
-                    newComponents,
+                    channelObj,
                 });
-
-                newComponents = result.updatedComponents;
-                newChannels = result.updatedChannels;
             });
         });
-        return { newOperations, newChannels, newComponents };
+        return { newOperations, newChannels, newComponents: {} };
     }
 
     /**
@@ -512,29 +343,26 @@ export default function Topics(props) {
                     },
                 };
             case 'authType':
-                if (isAsyncV3) {
-                    return {
-                        ...currentOperations,
-                        [target]: {
-                            ...currentOperations[target],
-                            [verb]: {
-                                ...currentOperations[target][verb],
-                                'x-auth-type': value ? 'Any' : 'None',
-                            },
-                        },
-                    };
-                }
                 updatedOperation['x-auth-type'] = value ? 'Any' : 'None';
                 return {
                     ...currentOperations,
                     [target]: { ...currentOperations[target], 'x-auth-type': updatedOperation['x-auth-type'] },
                 };
             case 'add':
-                // If target is not there add an empty object
+                // If target is not there, add an empty object
                 if (!addedOperations[data.target]) {
                     addedOperations[data.target] = {};
                 }
-                addedOperations[data.target].parameters = extractAsyncAPIPathParameters(data.target);
+                if (isAsyncV3) {
+                    if (!addedOperations[data.target].parameters) {
+                        addedOperations[data.target].parameters = extractAsyncAPIPathParameters(data.target);
+                        Object.keys(addedOperations[data.target].parameters).forEach((param) => {
+                            delete addedOperations[data.target].parameters[param].schema;
+                        });
+                    }
+                } else {
+                    addedOperations[data.target].parameters = extractAsyncAPIPathParameters(data.target);
+                }
                 // eslint-disable-next-line no-case-declarations
                 let alreadyExistCount = 0;
                 for (let currentVerb of data.verbs) {
@@ -543,25 +371,40 @@ export default function Topics(props) {
                         const normalizedVerb = ACTION_ALIASES[currentVerb.toLowerCase()]
                         || currentVerb.toLowerCase();
                         const opName = data.operationName;
-                        if (!addedOperations[data.target][normalizedVerb]) {
-                            addedOperations[data.target][normalizedVerb] = {
-                                'x-operations': [],
-                                'x-auth-type': 'Any',
-                            };
-                        }
-                        const existingOps = addedOperations[data.target][normalizedVerb]['x-operations'];
-                        if (opName && existingOps.includes(opName)) {
+
+                        // operation name cannot be duplicated as in spec
+                        const allExistingOpNames = new Set();
+                        Object.values(addedOperations).forEach((channelObj) => {
+                            ['send', 'receive'].forEach((v) => {
+                                (channelObj?.[v]?.['x-operations'] || []).forEach((n) => allExistingOpNames.add(n));
+                            });
+                        });
+                        Object.keys(asyncAPISpec.operations || {}).forEach((n) => allExistingOpNames.add(n));
+                        if (opName && allExistingOpNames.has(opName)) {
                             Alert.warning(intl.formatMessage(
                                 {
                                     id: 'Apis.Details.Configuration.Topic.already.operation.exist.error',
-                                    defaultMessage: 'Operation "{opName}" already exists for {verb} on {channel}',
+                                    defaultMessage: 'Operation "{opName}" already exists on {channel}',
                                 },
-                                { opName, verb: normalizedVerb, channel: data.target },
+                                { opName, channel: data.target },
                             ));
                             alreadyExistCount++;
                         } else if (opName) {
+                            if (!addedOperations[data.target][normalizedVerb]) {
+                                addedOperations[data.target][normalizedVerb] = {
+                                    'x-operations': [],
+                                };
+                            }
                             addedOperations[data.target][normalizedVerb]['x-operations'].push(opName);
                         }
+                        if (alreadyExistCount === data.verbs.length) {
+                            Alert.error(intl.formatMessage({
+                                id: 'Apis.Details.Configuration.Topic.already.exist.error',
+                                defaultMessage: 'Operation(s) already exist!',
+                            }));
+                            return currentOperations;
+                        }
+                        return addedOperations;
                     } else {
                         currentVerb = verbMap[currentVerb];
                         if (addedOperations[data.target][currentVerb]) {
@@ -604,6 +447,9 @@ export default function Topics(props) {
                 return { ...currentOperations, [target]: channelCopy };
             }
             case 'addPayloadProperty': {
+                if (isAsyncV3) {
+                    return currentOperations;
+                }
                 updatedOperation[verb].message = updatedOperation[verb].message || { };
                 updatedOperation[verb].message.payload = updatedOperation[verb].message.payload || { };
                 updatedOperation[verb].message.payload.type = 'object';
@@ -624,6 +470,9 @@ export default function Topics(props) {
                 break;
             }
             case 'deletePayloadProperty': {
+                if (isAsyncV3) {
+                    return currentOperations;
+                }
                 const existingProps = updatedOperation[verb]?.message?.payload?.properties || {};
                 const { [value]: _removed, ...remainingProps } = existingProps;
                 return {
@@ -723,7 +572,7 @@ export default function Topics(props) {
      *
      * @param {*} spec
      */
-    function verifySecurityScheme(spec) {
+    function verifySecurityScheme(spec, asyncv3=isAsyncV3) {
         /* eslint-disable no-param-reassign */
         spec.components = spec.components || {};
         spec.components.securitySchemes = spec.components.securitySchemes || {};
@@ -731,10 +580,10 @@ export default function Topics(props) {
         spec.components.securitySchemes.oauth2.flows = spec.components.securitySchemes.oauth2.flows || {};
         spec.components.securitySchemes.oauth2.flows.implicit = spec.components.securitySchemes.oauth2.flows.implicit
             || {};
-        spec.components.securitySchemes.oauth2.flows.implicit.scopes = spec.components.securitySchemes.oauth2.flows
-            .implicit.scopes || {};
-        if (isAsyncV3) {
+        if (asyncv3) {
             // v3 — use availableScopes
+            spec.components.securitySchemes.oauth2.flows.implicit.authorizationUrl =
+            spec.components.securitySchemes.oauth2.flows.implicit.authorizationUrl || "http://localhost:9999";
             spec.components.securitySchemes.oauth2.flows.implicit.availableScopes = 
                 spec.components.securitySchemes.oauth2.flows.implicit.availableScopes || {};
         } else {
@@ -748,10 +597,10 @@ export default function Topics(props) {
      * This method sets the securityDefinitionScopes from the spec
      * @param {Object} spec The original swagger content.
      */
-    function setSecurityDefScopesFromSpec(spec) {
-        verifySecurityScheme(spec);
+    function setSecurityDefScopesFromSpec(spec, asyncv3) {
+        verifySecurityScheme(spec, asyncv3);
         const implicitFlow = spec.components.securitySchemes.oauth2.flows.implicit;
-        const scopeSource = isAsyncV3 ? implicitFlow.availableScopes : implicitFlow.scopes;
+        const scopeSource = asyncv3 ? implicitFlow.availableScopes : implicitFlow.scopes;
         setSecurityDefScopes(cloneDeep(scopeSource));
     }
 
@@ -786,7 +635,7 @@ export default function Topics(props) {
             operationsDispatcher({ action: 'init', data: resolvedSpec.channels });
             setAsyncAPISpec(resolvedSpec);
         }
-        setSecurityDefScopesFromSpec(rawSpec);
+        setSecurityDefScopesFromSpec(rawSpec, asyncv3);
     }
 
     /**
@@ -876,27 +725,17 @@ export default function Topics(props) {
         
         let specToSave;
         if (isAsyncV3) {
-            const { newOperations, newChannels, newComponents } = rebuildOperations(copyOfOperations, asyncAPISpec);
+            const { newOperations, newChannels } = rebuildOperations(copyOfOperations, asyncAPISpec);
             specToSave = {
                 ...asyncAPISpec,
                 channels: newChannels,
                 operations: newOperations,
-                components: {
-                    ...asyncAPISpec.components,
-                    schemas: {
-                        ...(asyncAPISpec.components?.schemas || {}),
-                        ...newComponents.schemas,
-                    },
-                    messages: {
-                        ...(asyncAPISpec.components?.messages || {}),
-                        ...newComponents.messages,
-                    },
-                },
             };
         } else {
             specToSave = { ...asyncAPISpec, channels: copyOfOperations };
         }
-        if (websubSubscriptionConfiguration !== api.websubSubscriptionConfiguration) {
+        // should be a deep equality check instead a reference equality check
+        if (!isEqual(websubSubscriptionConfiguration, api.websubSubscriptionConfiguration)) {
             return updateAPI({ websubSubscriptionConfiguration })
                 .catch((error) => {
                     console.error(error);
@@ -982,7 +821,8 @@ export default function Topics(props) {
             && (api.gatewayVendor === 'wso2') && (
                 <Grid item md={12} xs={12}>
                     <AddOperation operationsDispatcher={operationsDispatcher}
-                        isAsyncAPI={isAsyncAPI} api={api} isAsyncV3={isAsyncV3}/>
+                        isAsyncAPI={isAsyncAPI} api={api} isAsyncV3={isAsyncV3}
+                        existingChannels={Object.keys(operations)}/>
                 </Grid>
             )}
             <Grid item md={12}>
