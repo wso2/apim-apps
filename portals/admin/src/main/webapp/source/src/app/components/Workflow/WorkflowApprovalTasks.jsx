@@ -864,11 +864,28 @@ function WorkflowApprovalTasks({
             const createdFromNow = row?.createdTime ? dayjs(row.createdTime).fromNow() : 'N/A';
             const createdFormat = row?.createdTime ? dayjs(row.createdTime).format('LLL') : '';
 
+            // Governance-specific property keys to handle separately
+            const governanceKeys = new Set([
+                'governanceCheck', 'successorFound', 'enforcementMode',
+                'riskReason', 'successorApiName', 'successorApiVersion',
+                'similarityPercentage', 'successorCandidates',
+            ]);
+
             // Show attributes which are not already visible in the main table as columns
             const remainingSimpleEntries = Object.entries(row.simpleProperties || {})
-                .filter(([k]) => !visibleKeys.includes(k));
+                .filter(([k]) => !visibleKeys.includes(k) && !governanceKeys.has(k));
 
-            const jsonEntries = Object.entries(row.jsonProperties || {});
+            const jsonEntries = Object.entries(row.jsonProperties || {})
+                .filter(([k]) => !governanceKeys.has(k));
+
+            // Extract governance data
+            const {
+                governanceCheck,
+                successorFound: successorFoundStr,
+            } = row.properties || {};
+            const hasGovernanceCheck = governanceCheck === 'true';
+            const successorFound = successorFoundStr === 'true';
+            const candidates = row.jsonProperties?.successorCandidates;
 
             return (
                 <TableRow>
@@ -932,6 +949,115 @@ function WorkflowApprovalTasks({
                                     </Typography>
                                 ))}
                             </Box>
+
+                            {/* Governance Successor Section */}
+                            {hasGovernanceCheck && (
+                                <Box sx={{ mt: 2 }}>
+                                    <Typography
+                                        variant='subtitle1'
+                                        fontWeight='bold'
+                                        sx={{ mb: 1 }}
+                                    >
+                                        <FormattedMessage
+                                            id='Workflow.WorkflowApprovalTasks.expand.governance.title'
+                                            defaultMessage='Governance - Successor Analysis'
+                                        />
+                                    </Typography>
+                                    {successorFound
+                                    && Array.isArray(candidates)
+                                    && candidates.length > 0
+                                        ? (
+                                            <TableContainer
+                                                sx={{
+                                                    border: 1,
+                                                    borderColor: 'divider',
+                                                    borderRadius: 1,
+                                                }}
+                                            >
+                                                <Table
+                                                    size='small'
+                                                    aria-label='successors'
+                                                >
+                                                    <TableHead>
+                                                        <TableRow
+                                                            sx={{
+                                                                backgroundColor:
+                                                                    'action.hover',
+                                                            }}
+                                                        >
+                                                            <TableCell>
+                                                                <strong>
+                                                                    API Name
+                                                                </strong>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <strong>
+                                                                    Version
+                                                                </strong>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <strong>
+                                                                    Similarity
+                                                                </strong>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <strong>
+                                                                    Type
+                                                                </strong>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        {candidates.map(
+                                                            (c) => (
+                                                                <TableRow
+                                                                    key={
+                                                                        `s-${c.name}-${c.version}`
+                                                                    }
+                                                                >
+                                                                    <TableCell>
+                                                                        {c.name}
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        {c.version}
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        {`${c.similarity}%`}
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        {toTitleCase(
+                                                                            (c.type || '')
+                                                                                .replace(
+                                                                                    /_/g,
+                                                                                    ' ',
+                                                                                ),
+                                                                        )}
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            ),
+                                                        )}
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
+                                        ) : (
+                                            <MUIAlert
+                                                severity='warning'
+                                                sx={{ mt: 1 }}
+                                            >
+                                                <FormattedMessage
+                                                    id='Workflow.expand.governance.noSuccessor'
+                                                    defaultMessage={
+                                                        'Warning: This API is being'
+                                                        + ' deprecated without an'
+                                                        + ' identified successor.'
+                                                        + ' Approving this may impact'
+                                                        + ' active subscribers.'
+                                                    }
+                                                />
+                                            </MUIAlert>
+                                        )}
+                                </Box>
+                            )}
 
                             {jsonEntries.map(([k, v]) => renderJsonValue(k, v))}
                         </Box>
