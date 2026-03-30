@@ -323,9 +323,12 @@ Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version
     cy.get('#itest-id-apiendpoint-input').type(`https://apis.wso2.com/sample${random_number}`);
     cy.get('#itest-id-apiversion-input').click();
     cy.get('body').click(0, 0);
-    cy.get('#itest-id-apicreatedefault-createnpublish').click({ force: true });
+    cy.get('#itest-id-apicreatedefault-createnpublish', { timeout: Cypress.config().largeTimeout })
+        .should('not.be.disabled')
+        .click();
 
     // Wait for the api to load
+    cy.url({ timeout: Cypress.config().largeTimeout }).should('contain', '/overview');
     cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout }).should('be.visible');
     cy.get('#itest-api-name-version').contains(apiVersion);
 })
@@ -505,10 +508,12 @@ Cypress.Commands.add('createGraphqlAPIfromFile', (name, version, context, filepa
     cy.get('body').click(0, 0);
 
     // Saving the form
-    cy.get('[data-testid="itest-create-graphql-api-button"]',)
-        .click({ force: true, timeout: Cypress.config().largeTimeout });
+    cy.get('[data-testid="itest-create-graphql-api-button"]', { timeout: Cypress.config().largeTimeout })
+        .should('not.be.disabled')
+        .click();
 
     //Checking the version in the overview
+    cy.url({ timeout: Cypress.config().largeTimeout }).should('contain', '/overview');
     cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout }).should('be.visible');
     cy.get('#itest-api-name-version').contains(version);
     cy.url().then(url => {
@@ -882,10 +887,8 @@ Cypress.Commands.add('createApplication', (applicationName, perTokenQuota, appli
 });
 
 Cypress.Commands.add('deleteApplication', (applicationName) => {
-    cy.get("#itest-link-to-applications", { timeout: Cypress.config().largeTimeout }).click();
-    cy.get('table', { timeout: Cypress.config().largeTimeout }).get('tbody')
-        .get(`[data-testid="row-${applicationName}"]`)
-        .find('td').eq(5).get(`[id="delete-${applicationName}-btn"]`).click();
+    cy.visit('/devportal/applications');
+    cy.get(`[id="delete-${applicationName}-btn"]`, { timeout: Cypress.config().largeTimeout }).click();
     cy.get("#itest-confirm-application-delete").click();
 });
 
