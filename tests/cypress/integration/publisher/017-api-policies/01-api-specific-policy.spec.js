@@ -97,6 +97,10 @@ describe("Common Policies", () => {
             cy.get('[data-testid="download-policy-file"]').click();
             cy.get('[aria-label="Close"]').click();
 
+            // Switch to Operation Level tab before drag-and-drop
+            cy.get('#operation-level-policies-tab').click();
+            cy.get('#operation-level-tabpanel').should('be.visible');
+
             // Drag and drop the policy to attach it
             const dataTransfer = new DataTransfer();
             getApiSpecificPolicyCard(1).trigger('dragstart', {
@@ -159,6 +163,10 @@ describe("Common Policies", () => {
             // Verify version 2 details
             cy.get('[data-testid="description"] input').should('have.value', 'Enhanced API specific policy description version 2');
             cy.get('[aria-label="Close"]').click();
+
+            // Switch to Operation Level tab before drag-and-drop
+            cy.get('#operation-level-policies-tab').click();
+            cy.get('#operation-level-tabpanel').should('be.visible');
 
             // Drag and drop version 2 policy
             const dataTransferV2 = new DataTransfer();
