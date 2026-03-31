@@ -51,6 +51,8 @@ import MUIDataTable from 'mui-datatables';
 import API from 'AppData/api';
 import { useParams } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
+import CONSTANTS from 'AppData/Constants';
+import Application from 'AppData/Application';
 import ApiKeyAssociation from './ApiKeyAssociation';
 import ApiKeyGenerate from './ApiKeyGenerate';
 
@@ -91,17 +93,41 @@ export default function ApiKeyListing() {
     }, [apiUUID]);
 
     /**
-     * Load subscribed applications for this API
+     * Fetch all applications and filter approved ones for subscriptionless APIs
+     * @param {number} subscriptionLimit - Maximum number of applications to fetch
      */
-    useEffect(() => {
-        const restApi = new API();
-        const subscriptionLimit = 5000;
+    const fetchAllApplications = (subscriptionLimit) => {
+        Application.all(subscriptionLimit, 0, 'asc', 'name', '')
+            .then((appResponse) => {
+                if (appResponse?.list) {
+                    const appList = appResponse.list.filter((app) => app.status === 'APPROVED');
+                    if (appList.length > 0) {
+                        setSubscribedApps(appList.map((app) => ({
+                            id: app.applicationId,
+                            name: app.name,
+                            environment: app.subscriptionCount > 0 ? 'PRODUCTION' : 'SANDBOX',
+                        })));
+                    }
+                }
+            })
+            .catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+                setSubscribedApps([]);
+            });
+    };
 
+    /**
+     * Fetch subscriptions for subscription-based APIs
+     * @param {Object} restApi - API client instance
+     * @param {number} subscriptionLimit - Maximum number of subscriptions to fetch
+     */
+    const fetchSubscriptions = (restApi, subscriptionLimit) => {
         restApi.getSubscriptions(apiUUID, null, subscriptionLimit)
             .then((response) => {
                 const subscriptions = response.obj;
-                if (subscriptions && subscriptions.list) {
-                    // Extract unique applications from subscriptions
+                if (subscriptions?.list) {
                     const apps = subscriptions.list.map((subscription) => ({
                         id: subscription.applicationId,
                         name: subscription.applicationInfo.name,
@@ -116,6 +142,33 @@ export default function ApiKeyListing() {
                 }
                 setSubscribedApps([]);
             });
+    };
+
+    /**
+     * Load subscribed applications for this API
+     * Depending on the API's subscription validation configuration.
+     */
+    useEffect(() => {
+        const restApi = new API();
+        const subscriptionLimit = 5000;
+
+        restApi.getAPIById(apiUUID)
+            .then((apiResponse) => {
+                const apiData = apiResponse.obj;
+                const isSubValidationDisabled = apiData.tiers?.length === 1
+                    && apiData.tiers[0].tierName.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
+
+                if (isSubValidationDisabled) {
+                    fetchAllApplications(subscriptionLimit);
+                } else {
+                    fetchSubscriptions(restApi, subscriptionLimit);
+                }
+            })
+            .catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
+            });
     }, [apiUUID]);
 
     // Function to refresh API keys list
@@ -127,7 +180,9 @@ export default function ApiKeyListing() {
                 setApiKeys(apiKeyList);
             })
             .catch((error) => {
-                console.error('Error refreshing API keys list:', error);
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
             });
     };
 
@@ -172,7 +227,6 @@ export default function ApiKeyListing() {
 
     const handleConfirmRevoke = () => {
         setRevokeConfirmOpen(false);
-        console.log('Revoking key:', selectedKeyForRevoke);
         const restApi = new API();
         restApi.revokeAPIBoundAPIKey(apiUUID, selectedKeyForRevoke.keyUUID)
             .then(() => {
@@ -185,7 +239,9 @@ export default function ApiKeyListing() {
                 setApiKeys(apiKeyList);
             })
             .catch((error) => {
-                console.error('Error revoking key:', error);
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log(error);
+                }
                 setRevokeErrorMessage(
                     error.message || intl.formatMessage({
                         id: 'Apis.Details.APIKeys.ApiKeyListing.error.revokeFailed',
