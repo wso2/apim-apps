@@ -30,9 +30,11 @@ import ComputerIcon from '@mui/icons-material/Computer';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { useIntl } from 'react-intl';
+import Configurations from 'Config';
 import { gatewayShape, getPlatformGatewayReleaseConfig } from './UniversalGatewayUtils';
-import DockerIcon from '../../../../../site/public/images/docker-icon.svg';
-import KubernetesIcon from '../../../../../site/public/images/Kubernetes_logo.svg';
+
+const DockerIcon = `${Configurations.app.context}/site/public/images/docker-icon.svg`;
+const KubernetesIcon = `${Configurations.app.context}/site/public/images/Kubernetes_logo.svg`;
 
 const QUICK_START_TAB = {
     quickStart: 'quick-start',
