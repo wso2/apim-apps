@@ -179,6 +179,7 @@
         "react-syntax-highlighter": {
             "prismjs": "^1.30.0"
         },
+        "lodash": "4.17.23",
         "@stoplight/elements": {
             "@stoplight/react-error-boundary": "^3.0.0"
         },

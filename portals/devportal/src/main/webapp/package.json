@@ -63,7 +63,7 @@
         "html-react-parser": "^4.2.2",
         "js-file-download": "^0.4.12",
         "js-yaml": "^4.1.0",
-        "lodash": "^4.17.21",
+        "lodash": "4.17.23",
         "lodash.clonedeep": "^4.5.0",
         "lodash.isplainobject": "^4.0.6",
         "lodash.merge": "^4.6.2",
@@ -156,6 +156,7 @@
         "react-syntax-highlighter": {
             "prismjs": "^1.30.0"
         },
+        "lodash": "4.17.23",
         "@stoplight/elements": {
             "@stoplight/react-error-boundary": "^3.0.0"
         },
