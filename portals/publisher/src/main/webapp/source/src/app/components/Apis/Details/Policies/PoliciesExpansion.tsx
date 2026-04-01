@@ -118,7 +118,6 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
         policyId: string,
         policyName?: string,
         policyVersion?: string,
-        isCommonPolicy = false,
     ) => {
         const policyById = findPolicyById(allPolicies, policyId);
         if (policyById) {
@@ -129,11 +128,13 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             if (!policyId) {
                 return null;
             }
-
-            const policyResponse = isCommonPolicy
-                ? await API.getCommonOperationPolicy(policyId)
-                : await API.getOperationPolicy(policyId, api.id);
-            return policyResponse?.body || null;
+            try {
+                const apiPolicyResponse = await API.getOperationPolicy(policyId, api.id);
+                return apiPolicyResponse?.body || null;
+            } catch (error) {
+                console.debug('Unable to resolve attached policy as API-specific', error);
+                return null;
+            }
         }
 
         const policyByName = findPolicyByNameAndVersion(allPolicies, policyName, policyVersion);
@@ -183,7 +184,6 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                         policyId,
                         policyName,
                         policyVersion,
-                        isCommonPolicy,
                     );
                 }
                 if (policyObj) {
@@ -222,6 +222,9 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
 
     useEffect(() => {
         (async () => {
+            if (!isPolicyHubGateway && !allPolicies) {
+                return;
+            }
             const operationInAction = (!isAPILevelPolicy) ? apiOperations.find(
                 (op: any) =>
                     api.type === 'WS'
@@ -270,7 +273,8 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             }
             setListOriginatedFromCommonPolicies(originatedFromCommonPolicies);
         })();
-    }, [apiOperations, apiLevelPolicies]);
+    }, [allPolicies, api.type, apiLevelPolicies, apiOperations, isAPILevelPolicy, isChoreoConnectEnabled,
+        isPolicyHubGateway, target, verb]);
 
     return (
         <PoliciesExpansionShared
