@@ -46,7 +46,7 @@
         "@mui/material": "^5.18.0",
         "@mui/x-charts": "^7.28.0",
         "@stoplight/elements": "^8.5.2",
-        "@stoplight/spectral-core": "^1.20.0",
+        "@stoplight/spectral-core": "1.20.0",
         "@stoplight/spectral-rulesets": "1.22.0",
         "@wso2-org/mcp-playground": "1.0.7",
         "async-mutex": "^0.5.0",
@@ -182,6 +182,9 @@
         "lodash": "4.17.23",
         "@stoplight/elements": {
             "@stoplight/react-error-boundary": "^3.0.0"
+        },
+        "@stoplight/spectral-core": {
+            "minimatch": "3.1.5"
         },
         "@asyncapi/react-component": {
             ".": "2.6.3",

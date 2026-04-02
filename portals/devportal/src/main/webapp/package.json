@@ -160,6 +160,9 @@
         "@stoplight/elements": {
             "@stoplight/react-error-boundary": "^3.0.0"
         },
+        "@stoplight/spectral-core": {
+            "minimatch": "3.1.5"
+        },
         "@asyncapi/react-component": {
             ".": "2.6.3",
             "@asyncapi/avro-schema-parser": "3.0.24",
