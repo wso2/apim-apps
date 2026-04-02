@@ -82,13 +82,15 @@ describe("Tryout API invocations", () => {
                 // cy.intercept('**/oauth-keys').as('oauthKeys');
                 // cy.wait('@oauthKeys');
                 cy.intercept('**/generate-token').as('genToken');
+                // Click GET TEST KEY — opens the consumer secret dialog
+                cy.get('#gen-test-key', { timeout: 30000 }).should('not.be.disabled').click();
+                // Fill consumer secret in the dialog
                 cy.get('#consumerSecretInput', { timeout: 10000 }).should('be.visible').clear().then(($input) => {
                     const secretToType = Cypress.env('consumerSecret') || '';
                     cy.wrap($input).type(secretToType);
                 });
-                cy.get('#gen-test-key', { timeout: 30000 }).should('not.be.disabled');
-                // Generate token and wait for response
-                cy.get('#gen-test-key').click({ force: true });
+                // Click the Generate button inside the dialog
+                cy.get('[role="dialog"]').contains('button', 'Generate').should('not.be.disabled').click();
                 cy.wait('@genToken', { timeout: Cypress.config().largeTimeout });
                 cy.get('#accessTokenInput').should('not.have.value', '');
                 // Test the console
