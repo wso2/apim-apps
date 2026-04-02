@@ -600,10 +600,15 @@ class APIDefinition extends React.Component {
                         })
                         .catch((err) => {
                             console.log(err);
-                            Alert.error(intl.formatMessage({
-                                id: 'Apis.Details.APIDefinition.APIDefinition.error.while.updating.api.definition',
-                                defaultMessage: 'Error occurred while updating the API Definition',
-                            }));
+                            const backendErrorDescription = err?.response?.body?.description;
+                            if (backendErrorDescription) {
+                                Alert.error(backendErrorDescription);
+                            } else {
+                                Alert.error(intl.formatMessage({
+                                    id: 'Apis.Details.APIDefinition.APIDefinition.error.while.updating.api.definition',
+                                    defaultMessage: 'Error occurred while updating the API Definition',
+                                }));
+                            }
                             this.setState({ isUpdating: false });
                         });
                 }
