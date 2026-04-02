@@ -274,8 +274,15 @@ const GatewayEditButton = ({ dataRow }) => {
 const apiCall = () => {
     const restApi = new API();
     return Promise.all([
-        restApi.getGatewayEnvironmentList(),
-        restApi.getPlatformGatewayList().catch(() => ({ body: { list: [] } })),
+        restApi.getGatewayEnvironmentList().catch(() => ({ body: { list: [] } })),
+        restApi.getPlatformGatewayList().catch((error) => {
+            // Returns 404 when no platform gateways are configured
+            const status = error?.response?.status || error?.status;
+            if (status !== 404) {
+                console.error('Error fetching platform gateways:', status);
+            }
+            return { body: { list: [] } };
+        }),
     ])
         .then(([environmentResult, platformGatewayResult]) => {
             const environmentList = environmentResult?.body?.list || [];
@@ -315,9 +322,6 @@ const apiCall = () => {
             );
 
             return [...mappedEnvironments, ...nonDuplicatePlatformGateways];
-        })
-        .catch((error) => {
-            throw error;
         });
 };
 
