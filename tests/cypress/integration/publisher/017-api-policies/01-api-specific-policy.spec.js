@@ -34,16 +34,8 @@ describe("Common Policies", () => {
     };
 
     const getApiSpecificPolicyCard = (version) => {
-        return cy.get('#tabPanel-api-policies .MuiListItem-root', {
+        return cy.contains('#tabPanel-api-policies .MuiListItem-root', `v${version}`, {
             timeout: Cypress.config().largeTimeout,
-        }).then(($items) => {
-            const matchedCard = [...$items].find((item) => {
-                const cardText = item.innerText || '';
-                return cardText.includes(policyName) && cardText.includes(String(version));
-            });
-
-            expect(matchedCard, `policy card for version ${version}`).to.exist;
-            return cy.wrap(matchedCard);
         });
     };
 
