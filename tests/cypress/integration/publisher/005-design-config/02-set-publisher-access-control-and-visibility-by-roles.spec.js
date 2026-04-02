@@ -18,6 +18,8 @@
 
 import Utils from "@support/utils";
 
+const USER_ROLE_ACCESS_VALIDATION_MSG = 'At least one role must be associated with the API creator';
+
 describe("Set publisher access control and visibility by roles", () => {
     const { publisher, password, } = Utils.getUserInfo();
     const apiName = Utils.generateName();
@@ -83,16 +85,20 @@ describe("Set publisher access control and visibility by roles", () => {
                 // Add a system role that would normally trigger user role validation error for non-admin users
                 cy.get('[data-testid="access-control-select-role"]').type(`${systemRole}{enter}`);
 
-                // Verify no validation error appears for admin users
-                cy.get('[data-testid="access-control-select-role"]').should('not.contain', 'At least one role must be associated with the API creator');
-                cy.get('[data-testid="access-control-select-role"]').should('not.have.class', 'Mui-error');
+                // Verify no validation error (ChipInput renders helper text under FormControl, not on the input)
+                cy.get('[data-testid="access-control-select-role"]')
+                    .find('.MuiFormHelperText-root.Mui-error')
+                    .should('not.exist');
+                cy.get('[data-testid="access-control-select-role"]').should('not.contain', USER_ROLE_ACCESS_VALIDATION_MSG);
 
                 // Verify save button is enabled (not disabled due to validation errors)
                 cy.get('#design-config-save-btn').should('not.be.disabled');
 
                 // Save the configuration successfully
                 cy.get('#design-config-save-btn').scrollIntoView().click();
-                
+                cy.get('#design-config-save-btn', { timeout: 30000 }).should('not.be.disabled');
+                cy.get('#design-config-save-btn .MuiCircularProgress-root').should('not.exist');
+
                 // Verify the configuration was saved without errors
                 cy.get('div[data-testid="access-control-select-role"] span').contains(systemRole).should('exist');
 
@@ -113,7 +119,8 @@ describe("Set publisher access control and visibility by roles", () => {
         });
 
         it("Non-admin user should still see user role validation when configuring system-only roles", () => {
-            const systemRole = 'internal/subscriber'; // This is a system role, not a user role
+            // WSO2 default role casing; treated as a valid system role but fails creator user-role association for non-admins
+            const systemRole = 'Internal/subscriber';
 
             Utils.addAPI({ name: nonAdminApiName, version: nonAdminApiVersion }).then((apiId) => {
                 cy.visit(`/publisher/apis/${apiId}/overview`);
@@ -124,22 +131,15 @@ describe("Set publisher access control and visibility by roles", () => {
                 cy.get('#accessControl-selector').click();
                 cy.get('#access-control-restricted-by-roles').click();
 
-                // Add a system role that should trigger user role validation error for non-admin users
+                // Add a role that should trigger user role validation error for non-admin users
                 cy.get('[data-testid="access-control-select-role"]').type(`${systemRole}{enter}`);
 
-                // Wait for validation to complete
-                cy.wait(1000);
+                cy.get('[data-testid="access-control-select-role"]')
+                    .find('.MuiFormHelperText-root')
+                    .should('have.class', 'Mui-error')
+                    .and('contain.text', USER_ROLE_ACCESS_VALIDATION_MSG);
 
-                // Verify validation error appears for non-admin users
-                // Note: The exact error message and selectors may need adjustment based on actual implementation
-                cy.get('[data-testid="access-control-select-role"]').then(($element) => {
-                    // Check if error state is present (either through error class or error message)
-                    const hasErrorClass = $element.hasClass('Mui-error') || $element.find('.Mui-error').length > 0;
-                    const hasErrorMessage = $element.text().includes('At least one role must be associated with the API creator');
-
-                    // For non-admin users, either error styling or validation message should be present
-                    expect(hasErrorClass || hasErrorMessage).to.be.true;
-                });
+                cy.get('#design-config-save-btn').should('be.disabled');
 
                 // Test is done. Now delete the api
                 Utils.deleteAPI(apiId);
