@@ -29,5 +29,3 @@ setInterval(() => {
     // eslint-disable-next-line no-restricted-globals
     self.postMessage('');
 }, TIMER_INTERVAL);
-
-export default {};

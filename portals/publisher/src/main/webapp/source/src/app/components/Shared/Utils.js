@@ -59,7 +59,7 @@ export const getTypeToDisplay = (type) => {
  * @param {Object} api - The API object
  * @returns {Promise<Object>} Object with isUrlPresent and isSecure properties
  */
-export const verifyEndpointUrlAndSecurity = async (endpointId, endpointType, config, api) => {
+const verifyEndpointUrlAndSecurity = async (endpointId, endpointType, config, api) => {
     const isDefaultEndpoint = endpointId === CONSTS.DEFAULT_ENDPOINT_ID[endpointType];
     
     if (isDefaultEndpoint) {
@@ -88,7 +88,7 @@ export const verifyEndpointUrlAndSecurity = async (endpointId, endpointType, con
  * @param {Object} config - The configuration object
  * @returns {Promise<boolean>} True if endpoint configuration is valid
  */
-export const checkEndpointConfiguration = async (api, config) => {
+const checkEndpointConfiguration = async (api, config) => {
     try {
         const hasProductionEndpoint = !!api.primaryProductionEndpointId;
         const hasSandboxEndpoint = !!api.primarySandboxEndpointId;

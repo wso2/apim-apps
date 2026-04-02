@@ -634,38 +634,34 @@ class DetailsLegacy extends React.Component {
                             />
                             {user && showCredentials && !isSubValidationDisabled
                                 && (api.gatewayVendor === 'wso2' || !api.gatewayVendor || api.gatewayType === 'solace') && (
-                                <>
-
-                                    <LeftMenuItem
-                                        text={(
-                                            <FormattedMessage
-                                                id='Apis.Details.index.subscriptions'
-                                                defaultMessage='Subscriptions'
-                                            />
-                                        )}
-                                        route='credentials'
-                                        iconText='credentials'
-                                        to={pathPrefix + 'credentials'}
-                                        open={open}
-                                        id='left-menu-credentials'
-                                    />
-                                    {api && api.securityScheme && api.securityScheme.includes('api_key') && (
-                                        <LeftMenuItem
-                                            text={(
-                                                <FormattedMessage
-                                                    id='Apis.Details.index.api.keys'
-                                                    defaultMessage='API Keys'
-                                                />
-                                            )}
-                                            route='api-keys'
-                                            iconText='api-keys'
-                                            to={pathPrefix + 'api-keys'}
-                                            open={open}
-                                            id='left-menu-api-keys'
+                                <LeftMenuItem
+                                    text={(
+                                        <FormattedMessage
+                                            id='Apis.Details.index.subscriptions'
+                                            defaultMessage='Subscriptions'
                                         />
                                     )}
-
-                                </>
+                                    route='credentials'
+                                    iconText='credentials'
+                                    to={pathPrefix + 'credentials'}
+                                    open={open}
+                                    id='left-menu-credentials'
+                                />
+                            )}
+                            {user && api?.securityScheme?.includes('api_key') && (
+                                <LeftMenuItem
+                                    text={(
+                                        <FormattedMessage
+                                            id='Apis.Details.index.api.keys'
+                                            defaultMessage='API Keys'
+                                        />
+                                    )}
+                                    route='api-keys'
+                                    iconText='api-keys'
+                                    to={pathPrefix + 'api-keys'}
+                                    open={open}
+                                    id='left-menu-api-keys'
+                                />
                             )}
                             {showTryout && (api.gatewayType !== 'wso2/apk'
                                 || (api.type === 'APIPRODUCT' && !api.gatewayVendor)) && api.gatewayType !== 'solace' && (
