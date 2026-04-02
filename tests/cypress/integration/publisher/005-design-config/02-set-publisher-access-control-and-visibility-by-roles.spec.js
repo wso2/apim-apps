@@ -25,6 +25,16 @@ describe("Set publisher access control and visibility by roles", () => {
     const apiName = Utils.generateName();
     const apiVersion = '1.0.0';
 
+    let rootManagedApiId;
+
+    afterEach(() => {
+        if (rootManagedApiId) {
+            const id = rootManagedApiId;
+            rootManagedApiId = undefined;
+            return Utils.deleteAPI(id);
+        }
+    });
+
     before(function () {
         cy.loginToPublisher(publisher, password);
     })
@@ -32,6 +42,7 @@ describe("Set publisher access control and visibility by roles", () => {
     it("Set role based API Store visibility and access control for the api", () => {
         const role = 'internal/everyone';
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
+            rootManagedApiId = apiId;
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-portal-config-acc').click();
             cy.get('#left-menu-itemDesignConfigurations').click();
@@ -55,8 +66,6 @@ describe("Set publisher access control and visibility by roles", () => {
                 cy.get('div[data-testid="access-control-select-role"] span').contains(role).should('exist');
                 cy.get('div[data-testid="visibility-select-role"] span').contains(role).should('exist');
             });
-            // Test is done. Now delete the api
-            Utils.deleteAPI(apiId);
         });
     });
 
@@ -65,7 +74,19 @@ describe("Set publisher access control and visibility by roles", () => {
         const adminApiName = Utils.generateName();
         const adminApiVersion = '1.0.0';
 
+        let adminApiId;
+
+        afterEach(() => {
+            if (adminApiId) {
+                const id = adminApiId;
+                adminApiId = undefined;
+                return Utils.deleteAPI(id);
+            }
+        });
+
         before(function () {
+            cy.clearCookies();
+            cy.clearLocalStorage();
             // Login as admin user who has apim:admin permission
             cy.loginToPublisher(carbonUsername, carbonPassword);
         });
@@ -74,6 +95,7 @@ describe("Set publisher access control and visibility by roles", () => {
             const systemRole = 'Internal/system'; // This is a system role, not a user role
 
             Utils.addAPI({ name: adminApiName, version: adminApiVersion }).then((apiId) => {
+                adminApiId = apiId;
                 cy.visit(`/publisher/apis/${apiId}/overview`);
                 cy.get('#itest-api-details-portal-config-acc').click();
                 cy.get('#left-menu-itemDesignConfigurations').click();
@@ -101,9 +123,6 @@ describe("Set publisher access control and visibility by roles", () => {
 
                 // Verify the configuration was saved without errors
                 cy.get('div[data-testid="access-control-select-role"] span').contains(systemRole).should('exist');
-
-                // Test is done. Now delete the api
-                Utils.deleteAPI(apiId);
             });
         });
     });
@@ -113,7 +132,19 @@ describe("Set publisher access control and visibility by roles", () => {
         const nonAdminApiName = Utils.generateName();
         const nonAdminApiVersion = '1.0.0';
 
+        let nonAdminApiId;
+
+        afterEach(() => {
+            if (nonAdminApiId) {
+                const id = nonAdminApiId;
+                nonAdminApiId = undefined;
+                return Utils.deleteAPI(id);
+            }
+        });
+
         before(function () {
+            cy.clearCookies();
+            cy.clearLocalStorage();
             // Login as non-admin user (regular publisher)
             cy.loginToPublisher(publisher, password);
         });
@@ -123,6 +154,7 @@ describe("Set publisher access control and visibility by roles", () => {
             const systemRole = 'Internal/subscriber';
 
             Utils.addAPI({ name: nonAdminApiName, version: nonAdminApiVersion }).then((apiId) => {
+                nonAdminApiId = apiId;
                 cy.visit(`/publisher/apis/${apiId}/overview`);
                 cy.get('#itest-api-details-portal-config-acc').click();
                 cy.get('#left-menu-itemDesignConfigurations').click();
@@ -140,9 +172,6 @@ describe("Set publisher access control and visibility by roles", () => {
                     .and('contain.text', USER_ROLE_ACCESS_VALIDATION_MSG);
 
                 cy.get('#design-config-save-btn').should('be.disabled');
-
-                // Test is done. Now delete the api
-                Utils.deleteAPI(apiId);
             });
         });
     });
