@@ -23,7 +23,10 @@ class EditUserRolesPage {
         return cy.get('input[name="org.wso2.carbon.user.unassigned.role.filter"]')
     }
     static getSearchRolesButton(){
-        return cy.get('input[value="Search Roles"]')
+        // Find the Search Roles button near the unassigned role filter to avoid
+        // clicking the assigned roles search button when both exist on the page
+        return cy.get('input[name="org.wso2.carbon.user.unassigned.role.filter"]')
+            .parents('table').first().find('input[value="Search Roles"]')
     }
     static getRoleCheckbox(role){
         return cy.contains('td', role).parent('tr').find('input[type="checkbox"]')

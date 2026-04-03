@@ -218,9 +218,7 @@ describe("Create GraphQl API from file", () => {
 
                 cy.intercept('**/generate-token').as('getToken');
                 cy.get('#gen-test-key', { timeout: Cypress.config().largeTimeout }).click();
-                // Handle the consumer secret dialog if it appears
-                // eslint-disable-next-line cypress/no-unnecessary-waiting
-                cy.wait(2000);
+                // Handle the consumer secret dialog if it appears (multiple secrets mode)
                 cy.get('body').then(($body) => {
                   if ($body.find('#consumerSecretInput').length > 0) {
                     cy.get('#consumerSecretInput').should('be.visible').clear().then(($input) => {
@@ -249,9 +247,7 @@ describe("Create GraphQl API from file", () => {
 
                 cy.intercept('**/generate-token').as('getToken');
                 cy.get('#gen-test-key', { timeout: Cypress.config().largeTimeout }).click();
-                // Handle the consumer secret dialog if it appears
-                // eslint-disable-next-line cypress/no-unnecessary-waiting
-                cy.wait(2000);
+                // Handle the consumer secret dialog if it appears (multiple secrets mode)
                 cy.get('body').then(($body) => {
                   if ($body.find('#consumerSecretInput').length > 0) {
                     cy.get('#consumerSecretInput').should('be.visible').clear().then(($input) => {

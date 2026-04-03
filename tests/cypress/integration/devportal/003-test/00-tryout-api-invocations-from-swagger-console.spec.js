@@ -82,15 +82,18 @@ describe("Tryout API invocations", () => {
                 // cy.intercept('**/oauth-keys').as('oauthKeys');
                 // cy.wait('@oauthKeys');
                 cy.intercept('**/generate-token').as('genToken');
-                // Click GET TEST KEY — opens the consumer secret dialog
+                // Click GET TEST KEY
                 cy.get('#gen-test-key', { timeout: 30000 }).should('not.be.disabled').click();
-                // Fill consumer secret in the dialog
-                cy.get('#consumerSecretInput', { timeout: 10000 }).should('be.visible').clear().then(($input) => {
-                    const secretToType = Cypress.env('consumerSecret') || '';
-                    cy.wrap($input).type(secretToType);
+                // Handle consumer secret dialog if it appears (multiple secrets mode)
+                cy.get('body').then(($body) => {
+                    if ($body.find('#consumerSecretInput').length > 0) {
+                        cy.get('#consumerSecretInput').should('be.visible').clear().then(($input) => {
+                            const secretToType = Cypress.env('consumerSecret') || '';
+                            cy.wrap($input).type(secretToType);
+                        });
+                        cy.get('[role="dialog"]').contains('button', 'Generate').should('not.be.disabled').click();
+                    }
                 });
-                // Click the Generate button inside the dialog
-                cy.get('[role="dialog"]').contains('button', 'Generate').should('not.be.disabled').click();
                 cy.wait('@genToken', { timeout: Cypress.config().largeTimeout });
                 cy.get('#accessTokenInput').should('not.have.value', '');
                 // Test the console

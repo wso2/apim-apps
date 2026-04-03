@@ -40,8 +40,12 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
     const initEnvironement = () => {
         //create developer user
         cy.carbonLogin(carbonUsername, carbonPassword);
-        //cy.addNewUser(readOnlyUser, ['Internal/observer'], readOnlyUserPassword);
-        //cy.addNewUser(creatorPublisher,  ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], creatorpublisherPassword);
+        // Ensure the Internal/observer role exists (not auto-created on existing tenants)
+        cy.ensureRoleExists('observer', 'Internal');
+
+        // Clean up any leftover users from previous failed runs
+        cy.searchAndDeleteUserIfExist(readOnlyUser);
+        cy.searchAndDeleteUserIfExist(creatorPublisher);
 
         UsersAndRoles.addNewUserAndUpdateRoles(readOnlyUser, ['Internal/observer'], readOnlyUserPassword);
         UsersAndRoles.addNewUserAndUpdateRoles(creatorPublisher,
@@ -319,9 +323,8 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
         cy.get('#itest-id-deleteconf').click()
         // delete observer user.
 
-        cy.visit(`/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(readOnlyUser);
-        cy.deleteUser(creatorPublisher);
+        cy.searchAndDeleteUserIfExist(readOnlyUser);
+        cy.searchAndDeleteUserIfExist(creatorPublisher);
     })
 
 });

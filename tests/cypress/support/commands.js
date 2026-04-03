@@ -325,7 +325,8 @@ Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version
     cy.get('#itest-id-apiendpoint-input').type(`https://apis.wso2.com/sample${random_number}`);
     cy.get('#itest-id-apiversion-input').click();
     cy.get('body').click(0, 0);
-    // Wait for async name/context validation to complete
+    // Wait for both name and context async validation calls to complete
+    cy.wait('@validateRestApi', { timeout: 30000 });
     cy.wait('@validateRestApi', { timeout: 30000 });
     cy.get('#itest-create-default-api-button', { timeout: Cypress.config().largeTimeout })
         .should('not.be.disabled')
@@ -346,6 +347,7 @@ Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version
     cy.get('#left-menu-itemlifecycle', { timeout: Cypress.config().largeTimeout }).click();
     cy.wait(2000);
     cy.get('[data-testid="Publish-btn"]', { timeout: Cypress.config().largeTimeout }).click();
+    cy.get('button[data-testid="Demote to Created-btn"]', { timeout: Cypress.config().largeTimeout }).should('exist');
 
     cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout }).should('be.visible');
     cy.get('#itest-api-name-version').contains(apiVersion);
@@ -528,7 +530,8 @@ Cypress.Commands.add('createGraphqlAPIfromFile', (name, version, context, filepa
     cy.get('#itest-id-apiversion-input').click();
     cy.get('body').click(0, 0);
 
-    // Wait for async name/context validation to complete
+    // Wait for both name and context async validation calls to complete
+    cy.wait('@validateGraphqlApi', { timeout: 30000 });
     cy.wait('@validateGraphqlApi', { timeout: 30000 });
 
     // Saving the form
@@ -905,8 +908,7 @@ Cypress.Commands.add('createApplication', (applicationName, perTokenQuota, appli
     cy.get("#production-keys").click();
     cy.get("#generate-keys").click();
     // Handle the "Create Secret" dialog if it appears (multiple secrets mode)
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(2000);
+    // The dialog renders synchronously via setState when isMultipleSecretsAllowed is true
     cy.get('body').then(($body) => {
         if ($body.find('[data-testid="new-secret-dialog"]').length > 0) {
             cy.get('[data-testid="create-secret-button"]').click();
@@ -922,8 +924,6 @@ Cypress.Commands.add('createApplication', (applicationName, perTokenQuota, appli
     cy.get("#sandbox-keys").click();
     cy.get("#generate-keys", { timeout: 30000 }).click();
     // Handle the "Create Secret" dialog if it appears (multiple secrets mode)
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(2000);
     cy.get('body').then(($body) => {
         if ($body.find('[data-testid="new-secret-dialog"]').length > 0) {
             cy.get('[data-testid="create-secret-button"]').click();
@@ -999,6 +999,23 @@ Cypress.Commands.add('searchAndDeleteRoleIfExist', (roleNameToDelete) => {
         }
         //customDeleteLog = "Whatx going on"
     })
+})
+
+Cypress.Commands.add('ensureRoleExists', (roleName, domain = 'PRIMARY') => {
+    const fullRoleName = domain === 'PRIMARY' ? roleName : `${domain}/${roleName}`;
+    const WAIT_TIME_FOR_DIALOG_BOX_TO_APPEAR = 3000;
+    cy.visit(`${Utils.getAppOrigin()}` + rolesManagementPage.getUrl());
+    rolesManagementPage.getRoleNameTextBox().clear().type(fullRoleName);
+    rolesManagementPage.getSearchRolesButton().click();
+    cy.wait(WAIT_TIME_FOR_DIALOG_BOX_TO_APPEAR);
+    cy.get('body').then(($body) => {
+        if ($body.find('#messagebox-info').length > 0) {
+            // Role not found - dismiss dialog and create it
+            cy.get('.ui-dialog-buttonpane button').first().click();
+            cy.addNewRole(roleName, domain, []);
+        }
+        // If role exists, do nothing
+    });
 })
 
 Cypress.Commands.add('addScopeMappingFromAPIMAdminPortal', (roleName, roleAlias) => {
