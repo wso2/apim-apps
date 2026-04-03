@@ -908,9 +908,9 @@ Cypress.Commands.add('createApplication', (applicationName, perTokenQuota, appli
     cy.get("#production-keys").click();
     cy.get("#generate-keys").click();
     // Handle the "Create Secret" dialog if it appears (multiple secrets mode)
-    // The dialog renders synchronously via setState when isMultipleSecretsAllowed is true
     cy.get('body').then(($body) => {
         if ($body.find('[data-testid="new-secret-dialog"]').length > 0) {
+            cy.get('[data-testid="new-secret-dialog"]').should('be.visible');
             cy.get('[data-testid="create-secret-button"]').click();
             // After CREATE, a SecretValueDialog shows the generated secret — capture it
             cy.get('[data-testid="secret-dialog-close"]', { timeout: 30000 }).should('be.visible');
@@ -926,6 +926,7 @@ Cypress.Commands.add('createApplication', (applicationName, perTokenQuota, appli
     // Handle the "Create Secret" dialog if it appears (multiple secrets mode)
     cy.get('body').then(($body) => {
         if ($body.find('[data-testid="new-secret-dialog"]').length > 0) {
+            cy.get('[data-testid="new-secret-dialog"]').should('be.visible');
             cy.get('[data-testid="create-secret-button"]').click();
             // After CREATE, capture the sandbox consumer secret
             cy.get('[data-testid="secret-dialog-close"]', { timeout: 30000 }).should('be.visible');
