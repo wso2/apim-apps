@@ -1471,6 +1471,23 @@ class API extends Resource {
         });
         return promiseRevokeKeys;
     }
+
+    /**
+     * Export consumption data for a given date range as a zip file.
+     * Calls GET /export-consumption?fromDate=...&toDate=... on the Admin REST API.
+     *
+     * @param {string} fromDate - Start date in YYYY-MM-DD format.
+     * @param {string} toDate   - End date in YYYY-MM-DD format.
+     * @returns {Promise} Raw swagger-client response; response.data is a Blob of the zip bytes.
+     */
+    exportConsumptionData(fromDate, toDate) {
+        return this.client.then((client) => {
+            return client.apis['Consumption'].exportConsumptionData(
+                { fromDate: fromDate, toDate: toDate },
+                this._requestMetaData({ 'accept': 'application/zip' }),
+            );
+        });
+    }
 }
 
 API.CONSTS = {
