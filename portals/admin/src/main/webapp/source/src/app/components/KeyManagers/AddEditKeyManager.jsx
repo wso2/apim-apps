@@ -287,6 +287,9 @@ function AddEditKeyManager(props) {
         if (keyManagerType === 'tokenExchange') {
             setEnableDirectToken(false);
             setEnableExchangeToken(true);
+        } else {
+            setEnableDirectToken(true);
+            setEnableExchangeToken(false);
         }
         if (settings.keyManagerConfiguration) {
             settings.keyManagerConfiguration.map(({
