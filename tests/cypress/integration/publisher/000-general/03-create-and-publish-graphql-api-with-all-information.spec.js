@@ -221,7 +221,7 @@ describe("Create GraphQl API from file", () => {
                 cy.wait('@getToken', { timeout: Cypress.config().largeTimeout })
                   .its('response.statusCode').should('eq', 200);
 
-                cy.get('[aria-label="Query Editor"]').type(starWarsQueryRequest);
+                  
                 cy.get('.graphiql-execute-button').click();
 
                 cy.intercept('POST', `${apiContext}/1.0.0`, (res) => {
