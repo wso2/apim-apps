@@ -561,15 +561,17 @@ const RouteMenuMapping = (intl) => [
         ],
     },
     {
-        id: intl.formatMessage({
+        id: 'Reports',
+        displayText: intl.formatMessage({
             id: 'Base.RouteMenuMapping.reports',
             defaultMessage: 'Reports',
         }),
         icon: <DescriptionIcon />,
         children: [
             {
-                id: intl.formatMessage({
-                    id: 'Base.RouteMenuMapping.consumption.tracking',
+                id: 'Export Consumption Data',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.export.consumption.data',
                     defaultMessage: 'Consumption Data',
                 }),
                 path: '/settings/consumption-data',

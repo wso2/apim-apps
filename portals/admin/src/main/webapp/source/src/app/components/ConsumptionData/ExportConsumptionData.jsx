@@ -57,7 +57,11 @@ function toInputDateString(date) {
  */
 function monthsAgo(months) {
     const d = new Date();
+    const day = d.getDate();
+    d.setDate(1);
     d.setMonth(d.getMonth() - months);
+    const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    d.setDate(Math.min(day, lastDay));
     return toInputDateString(d);
 }
 
@@ -75,12 +79,6 @@ function formatDisplayDate(dateStr) {
     });
 }
 
-const QUICK_RANGES = [
-    { label: 'Last 3 Months', months: 3 },
-    { label: 'Last 6 Months', months: 6 },
-    { label: 'Last 12 Months', months: 12 },
-];
-
 /**
  * Consumption Data page — lets the admin select a date range and export
  * the consumption report as a zip file.
@@ -89,6 +87,30 @@ const QUICK_RANGES = [
  */
 export default function ExportConsumptionData() {
     const intl = useIntl();
+
+    const QUICK_RANGES = [
+        {
+            label: intl.formatMessage({
+                id: 'ExportConsumptionData.quickRange.last3Months',
+                defaultMessage: 'Last 3 Months',
+            }),
+            months: 3,
+        },
+        {
+            label: intl.formatMessage({
+                id: 'ExportConsumptionData.quickRange.last6Months',
+                defaultMessage: 'Last 6 Months',
+            }),
+            months: 6,
+        },
+        {
+            label: intl.formatMessage({
+                id: 'ExportConsumptionData.quickRange.last12Months',
+                defaultMessage: 'Last 12 Months',
+            }),
+            months: 12,
+        },
+    ];
 
     const today = toInputDateString(new Date());
     const defaultFrom = monthsAgo(3);
@@ -133,14 +155,14 @@ export default function ExportConsumptionData() {
                 document.body.removeChild(link);
                 URL.revokeObjectURL(url);
                 Alert.success(intl.formatMessage({
-                    id: 'ConsumptionTracking.success.export',
+                    id: 'ExportConsumptionData.success.export',
                     defaultMessage: 'Export started — your download should begin shortly.',
                 }));
             })
             .catch((err) => {
                 Alert.error(
                     err.message || intl.formatMessage({
-                        id: 'ConsumptionTracking.error.export',
+                        id: 'ExportConsumptionData.error.export',
                         defaultMessage: 'Failed to export consumption data.',
                     }),
                 );
@@ -157,7 +179,7 @@ export default function ExportConsumptionData() {
                     </ListItemIcon>
                     <ListItemText
                         primary={intl.formatMessage({
-                            id: 'ConsumptionTracking.help.line1',
+                            id: 'ExportConsumptionData.help.line1',
                             defaultMessage: 'Select a date range using the quick options or custom date pickers.',
                         })}
                     />
@@ -168,7 +190,7 @@ export default function ExportConsumptionData() {
                     </ListItemIcon>
                     <ListItemText
                         primary={intl.formatMessage({
-                            id: 'ConsumptionTracking.help.line2',
+                            id: 'ExportConsumptionData.help.line2',
                             defaultMessage: 'Click Export to download the consumption data as a zip file.',
                         })}
                     />
@@ -180,13 +202,13 @@ export default function ExportConsumptionData() {
     return (
         <ContentBase
             title={intl.formatMessage({
-                id: 'ConsumptionTracking.title',
+                id: 'ExportConsumptionData.title',
                 defaultMessage: 'Consumption Data',
             })}
             pageDescription={intl.formatMessage({
-                id: 'ConsumptionTracking.description',
+                id: 'ExportConsumptionData.description',
                 defaultMessage: 'Download consumption data for a selected date range.'
-                    + 'The report is exported as a zip file directly to your device.',
+                    + ' The report is exported as a zip file directly to your device.',
             })}
             pageStyle='small'
             help={helpContent}
@@ -196,15 +218,15 @@ export default function ExportConsumptionData() {
                 <CardContent>
                     <Typography gutterBottom variant='h5' component='h2'>
                         {intl.formatMessage({
-                            id: 'ConsumptionTracking.card.title',
+                            id: 'ExportConsumptionData.card.title',
                             defaultMessage: 'Export Consumption Data',
                         })}
                     </Typography>
                     <Typography variant='body2' color='textSecondary' component='p'>
                         {intl.formatMessage({
-                            id: 'ConsumptionTracking.card.description',
+                            id: 'ExportConsumptionData.card.description',
                             defaultMessage: 'Select a predefined date range or specify a custom range'
-                                + 'to export the consumption data as a zip file.',
+                                + ' to export the consumption data as a zip file.',
                         })}
                     </Typography>
 
@@ -245,7 +267,7 @@ export default function ExportConsumptionData() {
                                 onClick={handleCustomRange}
                             >
                                 {intl.formatMessage({
-                                    id: 'ConsumptionTracking.filter.custom',
+                                    id: 'ExportConsumptionData.filter.custom',
                                     defaultMessage: 'Custom',
                                 })}
                             </Button>
@@ -258,7 +280,7 @@ export default function ExportConsumptionData() {
                                 <TextField
                                     id='consumption-from-date'
                                     label={intl.formatMessage({
-                                        id: 'ConsumptionTracking.filter.from',
+                                        id: 'ExportConsumptionData.filter.from',
                                         defaultMessage: 'From',
                                     })}
                                     type='date'
@@ -273,7 +295,7 @@ export default function ExportConsumptionData() {
                                 <TextField
                                     id='consumption-to-date'
                                     label={intl.formatMessage({
-                                        id: 'ConsumptionTracking.filter.to',
+                                        id: 'ExportConsumptionData.filter.to',
                                         defaultMessage: 'To',
                                     })}
                                     type='date'
@@ -289,7 +311,7 @@ export default function ExportConsumptionData() {
                             {fromDate && toDate && fromDate > toDate && (
                                 <Typography variant='caption' color='error' style={{ display: 'block', marginTop: 4 }}>
                                     {intl.formatMessage({
-                                        id: 'ConsumptionTracking.error.dateRange',
+                                        id: 'ExportConsumptionData.error.dateRange',
                                         defaultMessage: 'From date must be before To date.',
                                     })}
                                 </Typography>
@@ -312,7 +334,7 @@ export default function ExportConsumptionData() {
                         {fromDate && toDate && fromDate <= toDate ? (
                             intl.formatMessage(
                                 {
-                                    id: 'ConsumptionTracking.range.summary',
+                                    id: 'ExportConsumptionData.range.summary',
                                     defaultMessage: 'Selected range: {from} — {to}',
                                 },
                                 {
