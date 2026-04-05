@@ -266,7 +266,7 @@ export const getPlatformGatewayUrl = (gateway) => {
         return String(additionalBaseUrl).trim();
     }
     if (gateway?.vhost) {
-        return `https://${gateway.vhost}`;
+        return `${gateway.vhost}`;
     }
     return '-';
 };

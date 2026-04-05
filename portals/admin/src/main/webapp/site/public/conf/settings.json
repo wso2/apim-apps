@@ -26,8 +26,8 @@
     },
     "sessionTimeout": {
       "enable": true,
-      "idleWarningTimeout": 160,
-      "idleTimeout": 180
+      "idleWarningTimeout": 1740,
+      "idleTimeout": 1800
     }
   }
 }

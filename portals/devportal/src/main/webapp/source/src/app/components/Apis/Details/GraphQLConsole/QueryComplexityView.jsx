@@ -198,7 +198,7 @@ export default function QueryComplexityView() {
                                         <div className={classes.row}>
                                             <div className={classes.column}>
                                                 {respond.field}
-                                                &lsquo;&#58;&rsquo;
+                                                &#58;
                                             </div>
                                             <div className={classes.column}>
                                                 {respond.complexityValue}
