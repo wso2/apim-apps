@@ -23,6 +23,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const DeadCodePlugin = require('webpack-deadcode-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const { clientRoutingBypass, devServerBefore } = require('./source/dev/webpack/auth_login.js');
 
 module.exports = function (env, argv) {
@@ -253,6 +254,9 @@ module.exports = function (env, argv) {
                     'source/src/app/components/Shared/ChipInput.js',
                     'source/src/app/data/stringFormatter.js',
                 ],
+            }),
+            new MonacoWebpackPlugin({
+                languages: ['json', 'graphql'],
             }),
         ],
     };
