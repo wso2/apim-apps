@@ -130,6 +130,9 @@ function AddEditRuleset(props) {
         rulesetContent,
         documentationLink,
     } = state;
+    const rulesetTypeOptions = artifactType === 'MCP'
+        ? CONSTS.RULESET_TYPES.filter((option) => option.value !== 'API_DEFINITION')
+        : CONSTS.RULESET_TYPES;
 
     useEffect(() => {
         const restApi = new GovernanceAPI();
@@ -163,6 +166,12 @@ function AddEditRuleset(props) {
                 });
         }
     }, [id]);
+
+    useEffect(() => {
+        if (artifactType === 'MCP' && ruleType === 'API_DEFINITION') {
+            dispatch({ field: 'ruleType', value: '' });
+        }
+    }, [artifactType, ruleType]);
 
     const onChange = (e) => {
         dispatch({ field: e.target.name, value: e.target.value });
@@ -514,32 +523,6 @@ function AddEditRuleset(props) {
                                     <TextField
                                         select
                                         margin='dense'
-                                        name='ruleType'
-                                        value={ruleType}
-                                        onChange={onChange}
-                                        label={(
-                                            <FormattedMessage
-                                                id='Governance.Rulesets.AddEdit.form.ruleset.type'
-                                                defaultMessage='Ruleset Type'
-                                            />
-                                        )}
-                                        fullWidth
-                                        error={hasErrors('ruleType', ruleType, validating)}
-                                        helperText={hasErrors('ruleType', ruleType, validating)}
-                                        required
-                                        variant='outlined'
-                                    >
-                                        {CONSTS.RULESET_TYPES.map((option) => (
-                                            <MenuItem key={option.value} value={option.value}>
-                                                {option.label}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <TextField
-                                        select
-                                        margin='dense'
                                         name='artifactType'
                                         value={artifactType}
                                         onChange={onChange}
@@ -556,6 +539,32 @@ function AddEditRuleset(props) {
                                         variant='outlined'
                                     >
                                         {CONSTS.ARTIFACT_TYPES.map((option) => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        select
+                                        margin='dense'
+                                        name='ruleType'
+                                        value={ruleType}
+                                        onChange={onChange}
+                                        label={(
+                                            <FormattedMessage
+                                                id='Governance.Rulesets.AddEdit.form.ruleset.type'
+                                                defaultMessage='Ruleset Type'
+                                            />
+                                        )}
+                                        fullWidth
+                                        error={hasErrors('ruleType', ruleType, validating)}
+                                        helperText={hasErrors('ruleType', ruleType, validating)}
+                                        required
+                                        variant='outlined'
+                                    >
+                                        {rulesetTypeOptions.map((option) => (
                                             <MenuItem key={option.value} value={option.value}>
                                                 {option.label}
                                             </MenuItem>
