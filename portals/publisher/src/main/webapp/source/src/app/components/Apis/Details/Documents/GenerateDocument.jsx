@@ -33,7 +33,7 @@ function GenerateDocument(){
         let promisedApi = api.getSwagger(api.id);
         promisedApi
             .then((response) => {
-                updateSwagger(YAML.safeDump(YAML.safeLoad(response.data)));
+                updateSwagger(YAML.dump(YAML.load(response.data)));
             })
             .catch((error) => {
                 if(process.env.NODE_ENV !== 'production'){

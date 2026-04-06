@@ -62,7 +62,7 @@
         "graphql-ws": "^5.14.0",
         "html-react-parser": "^4.2.2",
         "js-file-download": "^0.4.12",
-        "js-yaml": "^4.1.0",
+        "js-yaml": "4.1.1",
         "lodash": "4.17.23",
         "lodash.clonedeep": "^4.5.0",
         "lodash.isplainobject": "^4.0.6",
@@ -90,7 +90,7 @@
         "remark-gfm": "^3.0.1",
         "stream-browserify": "^3.0.0",
         "swagger-client": "^3.35.6",
-        "swagger-ui-react": "^5.29.0",
+        "swagger-ui-react": "5.32.1",
         "url": "^0.11.3",
         "xml-formatter": "^3.6.2"
     },
@@ -164,6 +164,9 @@
         },
         "@stoplight/spectral-core": {
             "minimatch": "3.1.5"
+        },
+        "openapi-to-postmanv2": {
+            "js-yaml": "4.1.1"
         },
         "@asyncapi/react-component": {
             ".": "2.6.3",
