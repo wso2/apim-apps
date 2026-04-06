@@ -57,7 +57,7 @@
         "dayjs": "^1.11.13",
         "dompurify": "3.3.3",
         "downshift": "^6.1.12",
-        "draft-js": "^0.11.7",
+        "draft-js": "0.11.7",
         "draftjs-to-html": "^0.9.1",
         "error-stack-parser": "^2.1.4",
         "fastestsmallesttextencoderdecoder": "^1.0.22",
@@ -213,6 +213,9 @@
         "@stoplight/spectral-rulesets": {
             ".": "1.22.0",
             "@asyncapi/specs": "6.9.0"
+        },
+        "draft-js": {
+            "immutable": "3.8.3"
         }
     }
 }
