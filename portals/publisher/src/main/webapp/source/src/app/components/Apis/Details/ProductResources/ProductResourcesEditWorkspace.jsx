@@ -518,7 +518,7 @@ function ProductResourcesEdit(props) {
                 } = response;
                 const filteredList = list.filter((theApi) => theApi.lifeCycleStatus !== 'PROTOTYPED' &&
                     theApi.lifeCycleStatus !== 'RETIRED' && theApi.lifeCycleStatus !== 'DEPRECATED' &&
-                    theApi.gatewayType === 'wso2/synapse'
+                    theApi.gatewayType === 'wso2/synapse' && theApi.subtype !== 'AIAPI'
                 );
 
                 setAllApis(filteredList);
