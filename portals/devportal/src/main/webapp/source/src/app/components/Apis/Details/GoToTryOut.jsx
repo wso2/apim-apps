@@ -267,13 +267,17 @@ export default function GoToTryOut() {
             />
         </Button>
     );
+    const isSubscriptionless = api.tiers && api.tiers.length > 0
+        && api.tiers.every((tier) => tier.tierName === CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN
+            || tier.tierName === CONSTANTS.DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN);
     if (!defaultApplication
         || subscribedApplications.length > 0
         || api.advertiseInfo.advertised
         || (api.gatewayVendor && api.gatewayVendor !== 'wso2')
         || !user
         || isAsyncAPI
-        || isPrototypedAPI) {
+        || isPrototypedAPI
+        || isSubscriptionless) {
         return (
             <>{redirectButton}</>
 
