@@ -50,8 +50,6 @@
         "base64url": "3.0.1",
         "btoa": "^1.2.1",
         "caniuse-api": "^3.0.0",
-        "cleanup-dependencies": "0.0.6",
-        "dataloader": "^2.1.0",
         "dayjs": "^1.11.13",
         "dompurify": "3.3.3",
         "fetch-to-curl": "^0.6.0",
