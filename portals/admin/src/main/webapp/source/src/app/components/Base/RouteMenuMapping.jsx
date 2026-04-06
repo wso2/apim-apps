@@ -24,6 +24,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 import PhonelinkSetupIcon from '@mui/icons-material/PhonelinkSetup';
 import HomeIcon from '@mui/icons-material/Home';
+import DescriptionIcon from '@mui/icons-material/Description';
 import Dashboard from 'AppComponents/AdminPages/Dashboard/Dashboard';
 import ApplicationThrottlingPolicies from 'AppComponents/Throttling/Application/List';
 import SubscriptionThrottlingPolicies from 'AppComponents/Throttling/Subscription/index';
@@ -68,10 +69,12 @@ import AssistantIcon from '@mui/icons-material/Assistant';
 import TouchAppIcon from '@mui/icons-material/TouchApp';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import ListApis from '../APISettings/ListApis';
 import UsageReport from '../APISettings/UsageReport';
 import ListLabels from '../Labels/ListLabels';
 import ComplianceDashboard from '../Governance/ComplianceDashboard';
+import ExportConsumptionData from '../ConsumptionData/ExportConsumptionData';
 
 const RouteMenuMapping = (intl) => [
     {
@@ -554,6 +557,26 @@ const RouteMenuMapping = (intl) => [
                 path: '/settings/usage-report',
                 component: UsageReport,
                 icon: <AssignmentIcon />,
+            },
+        ],
+    },
+    {
+        id: 'Reports',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.reports',
+            defaultMessage: 'Reports',
+        }),
+        icon: <DescriptionIcon />,
+        children: [
+            {
+                id: 'Export Consumption Data',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.export.consumption.data',
+                    defaultMessage: 'Consumption Data',
+                }),
+                path: '/settings/consumption-data',
+                component: ExportConsumptionData,
+                icon: <BarChartIcon />,
             },
         ],
     },
