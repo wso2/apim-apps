@@ -327,6 +327,9 @@ const apiCall = () => {
             );
 
             return [...mappedEnvironments, ...nonDuplicatePlatformGateways];
+        })
+        .catch((error) => {
+            throw error;
         });
 };
 
