@@ -96,7 +96,6 @@
         "react-syntax-highlighter": "^15.6.1",
         "react-tagsinput": "3.20.0",
         "remark-gfm": "^3.0.1",
-        "rich-textarea": "^0.26.4",
         "sourcemapped-stacktrace": "^1.1.11",
         "swagger-client": "^3.35.6",
         "swagger-ui-react": "5.32.1",
