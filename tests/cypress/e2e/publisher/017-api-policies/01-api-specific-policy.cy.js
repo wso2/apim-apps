@@ -175,7 +175,6 @@ describe("Common Policies", () => {
             // Drag and drop version 2 policy
             const dataTransferV2 = new DataTransfer();
             getApiSpecificPolicyCard(2).trigger('dragstart', {
-            cy.contains('API Specific Policy Sample', { timeout: Cypress.env('largeTimeout') }).trigger('dragstart', {
                 dataTransfer: dataTransferV2
             });
             cy.get('#operation-level-tabpanel').contains('Drag and drop policies here').trigger('drop', {

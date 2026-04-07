@@ -87,10 +87,6 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
 
         //set policy
         cy.location('pathname').then((pathName) => {
-            // Switch to Operation Level tab before interacting with operation accordions
-            cy.get('#operation-level-policies-tab').click();
-            cy.get('#operation-level-tabpanel').should('be.visible');
-
             const pathSegments = pathName.split('/');
             const uuid = pathSegments[pathSegments.length - 2];
             cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/policies`);
@@ -324,14 +320,16 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
     });
 
     afterEach(function () {
-        // Ensure we are logged in as admin before cleanup (test may fail before admin login)
+        // Clear any active session before logging in as admin for cleanup
+        cy.clearCookies();
+        cy.clearLocalStorage();
         cy.loginToPublisher(carbonUsername, carbonPassword);
         cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
         cy.get('#searchQuery', { timeout: Cypress.env('largeTimeout') }).click().type(`"${apiName}"` + "{enter}");
         cy.get("#itest-id-deleteapi-icon-button", { timeout: Cypress.env('largeTimeout') }).click();
         cy.get('#itest-id-deleteconf').click();
-        // delete observer user.
-
+        // delete users — carbonLogin first since clearCookies wiped the carbon session
+        cy.carbonLogin(carbonUsername, carbonPassword);
         cy.searchAndDeleteUserIfExist(readOnlyUser);
         cy.searchAndDeleteUserIfExist(creatorPublisher);
     })

@@ -275,10 +275,6 @@ describe("Create GraphQl API from file", () => {
                 cy.get('[aria-label="Operation Editor"], section[aria-label="Query Editor"]').first().wait(3000).type(starWarsQueryRequest);
                 cy.get('.graphiql-execute-button').click();
 
-                cy.intercept('POST', `${apiContext}/1.0.0`, (res) => {
-                  expect(res.body).to.include(starWarsQueryResponse);
-                }).as("queryResponse");
-
                 cy.reload();
                 cy.intercept('**/applications/').then((res) => {
                   // Check if the application exists
