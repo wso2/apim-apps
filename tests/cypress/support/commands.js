@@ -190,7 +190,7 @@ Cypress.Commands.add('addNewUser', (name = 'newuser', roles = [], password = 'te
     // Go to step 2 where add roles
     cy.url().should('contains', `/carbon/user/add-step2.jsp`);
     roles.forEach(role => {
-        cy.get(`input[value="${role}"][type="checkbox"]`).check();
+        cy.contains('td', role).parent('tr').find('input[type="checkbox"]').check();
     });
     // Finish wizard
     cy.get('.buttonRow input:first-child').click();
@@ -742,7 +742,7 @@ Cypress.Commands.add('logoutFromAdminPortal', () => {
 })
 
 Cypress.Commands.add('viewThirdPartyApi', (apiName = null) => {
-    cy.get(`[area-label="Go to ${apiName}"], [aria-label="Go to ${apiName}"]`, { timeout: Cypress.env('largeTimeout') }).click();
+    cy.get(`[area-label="Go to ${apiName}"]`, { timeout: Cypress.env('largeTimeout') }).click();
 
     //Check if the subscriptions, tryout, comments and SDKs sections are present
     cy.get('#left-menu-test').should('exist');
@@ -867,7 +867,7 @@ Cypress.Commands.add('viewSolaceApi', (apiName = null) => {
 
     cy.wait('@publishedApis', { timeout: 10000 }).then(() => {
         cy.get('[data-testid="solace-label"]').should('exist');
-        cy.get('[area-label="Go to APIConsumption"], [aria-label="Go to APIConsumption"]').click();
+        cy.get('[area-label="Go to APIConsumption"]').click();
     });
     cy.wait('@mockSolaceApi', { timeout: 10000 }).then(() => {
         cy.get('#left-menu-overview').click();

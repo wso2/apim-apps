@@ -175,18 +175,24 @@ describe("Invoke API Product", () => {
                 }
             });
         });
+        cy.loginToPublisher(publisher, password);
 
     });
 
     afterEach(function () {
-        cy.loginToPublisher(publisher, password);
-
+        // Clear any active session before logging in for cleanup, since the test
+        // body may have already logged into publisher (line 178).
+        cy.clearCookies();
+        cy.clearLocalStorage();
         if (apiId) {
+            cy.loginToPublisher(publisher, password);
             Utils.deleteAPI(apiId);
+            cy.logoutFromPublisher();
         } else if (apiName) {
             cy.deleteApi(apiName, apiVersion);
-        }
+            cy.logoutFromPublisher();
 
+        }
         cy.carbonLogin(carbonUsername, carbonPassword);
         if (user1) {
             cy.searchAndDeleteUserIfExist(user1);
@@ -194,5 +200,14 @@ describe("Invoke API Product", () => {
         if (user2) {
             cy.searchAndDeleteUserIfExist(user2);
         }
+
+        // Force clear cookies/sessions so SSO doesn't bypass the login screen
+        cy.clearCookies();
+        cy.clearLocalStorage();
     });
+
+    after(() => {
+        // Restore the default tenant configuration for other suites.
+        cy.updateTenantConfig(carbonUsername, carbonPassword, 'carbon.super', tenantConfigJson);
+    })
 })

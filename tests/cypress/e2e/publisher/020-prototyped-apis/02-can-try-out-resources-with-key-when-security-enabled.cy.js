@@ -103,6 +103,16 @@ describe("prototype apis with security enabled", () => {
                     //it takes some time to generate the key
                     cy.intercept('**/generate-token').as('getToken');
 
+                    // Handle the consumer secret dialog if it appears (multiple secrets mode)
+                    cy.get('body').then(($body) => {
+                        if ($body.find('#consumerSecretInput').length > 0) {
+                            cy.get('#consumerSecretInput').should('be.visible').clear().then(($input) => {
+                                const secret = Cypress.env('sandboxConsumerSecret') || Cypress.env('consumerSecret') || '';
+                                cy.wrap($input).type(secret);
+                            });
+                            cy.get('[role="dialog"]').contains('button', 'Generate').should('not.be.disabled').click();
+                        }
+                    });
                     cy.get('#gen-test-key', { timeout: Cypress.env('largeTimeout') }).click();
                     // Handle the consumer secret dialog if it appears (multiple secrets mode)
                     cy.get('body').then(($body) => {

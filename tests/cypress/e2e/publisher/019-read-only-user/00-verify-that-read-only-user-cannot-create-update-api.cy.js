@@ -87,6 +87,10 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
 
         //set policy
         cy.location('pathname').then((pathName) => {
+            // Switch to Operation Level tab before interacting with operation accordions
+            cy.get('#operation-level-policies-tab').click();
+            cy.get('#operation-level-tabpanel').should('be.visible');
+
             const pathSegments = pathName.split('/');
             const uuid = pathSegments[pathSegments.length - 2];
             cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/policies`);

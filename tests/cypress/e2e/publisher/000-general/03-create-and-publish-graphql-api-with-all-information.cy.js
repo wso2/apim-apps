@@ -19,12 +19,13 @@ let apiId;
 describe("Create GraphQl API from file", () => {
   const username = 'admin';
   const password = 'admin';
-  const filmSubscriberRole = `FilmSubscriber${Utils.generateRandomNumber()}`;
+  // Use let so beforeEach regenerates unique values on each retry attempt
+  let filmSubscriberRole;
   const filepath = 'api_artifacts/schema_graphql.graphql';
   const modifiedFilepath = 'api_artifacts/modified_schema_graphql.graphql';
   const apiVersion = '1.0.0';
-  const apiContext = `/swapi${Utils.generateRandomNumber()}`;
-  const apiName = `StarWarsAPIGQL${Utils.generateRandomNumber()}`;
+  let apiContext;
+  let apiName;
   const applicationName = 'Graphql Client App';
   const starWarsQueryRequest = `query{
       human(id:1000){\n
@@ -92,7 +93,46 @@ describe("Create GraphQl API from file", () => {
          commentary\n`;
 
 
+  before(function () {
+    // Clean up any leftover application from a previous failed run
+    cy.loginToDevportal(username, password);
+    cy.visit('/devportal/applications?tenant=carbon.super');
+    cy.get('#itest-application-create-link', { timeout: Cypress.env('largeTimeout') }).should('be.visible');
+    cy.wait(3000); // wait for application list API response to render
+    cy.get('body').then(($body) => {
+      if ($body.text().includes(applicationName)) {
+        cy.deleteApplication(applicationName);
+      }
+    });
+    cy.logoutFromDevportal();
+  })
+
   beforeEach(function () {
+    // Regenerate unique values on each attempt to avoid conflicts on retry
+    filmSubscriberRole = `FilmSubscriber${Utils.generateRandomNumber()}`;
+    apiContext = `/swapi${Utils.generateRandomNumber()}`;
+    apiName = `StarWarsAPIGQL${Utils.generateRandomNumber()}`;
+
+    // Clean up previously created API from a failed attempt
+    if (apiId != null) {
+      cy.loginToPublisher(username, password);
+      Utils.deleteAPI(apiId);
+      apiId = null;
+      cy.wait(2000);
+    }
+
+    // Clean up leftover application from a previous retry attempt
+    cy.loginToDevportal(username, password);
+    cy.visit('/devportal/applications?tenant=carbon.super');
+    cy.get('#itest-application-create-link', { timeout: Cypress.env('largeTimeout') }).should('be.visible');
+    cy.wait(3000);
+    cy.get('body').then(($body) => {
+      if ($body.text().includes('Graphql Client App')) {
+        cy.deleteApplication('Graphql Client App');
+      }
+    });
+    cy.logoutFromDevportal();
+
     //add role filmsubscriber
     cy.carbonLogin(username, password);
     cy.visit('/carbon/role/add-step1.jsp');
@@ -205,7 +245,7 @@ describe("Create GraphQl API from file", () => {
 
                 // Go to application subscription page
                 cy.get("#left-menu-credentials").click();
-                cy.get("#application-subscribe").next().find('button[aria-label="Open"]').debug().click();
+                cy.get("#application-subscribe").next().find('button[aria-label="Open"]').click();
                 cy.get('ul').contains('li', applicationName).click();
                 cy.get("#subscribe-to-api-btn").click();
 
@@ -232,7 +272,7 @@ describe("Create GraphQl API from file", () => {
                 cy.wait('@getToken', { timeout: Cypress.env('largeTimeout') })
                   .its('response.statusCode').should('eq', 200);
 
-                cy.get('[aria-label="Operation Editor"]').wait(3000).type(starWarsQueryRequest);
+                cy.get('[aria-label="Operation Editor"], section[aria-label="Query Editor"]').first().wait(3000).type(starWarsQueryRequest);
                 cy.get('.graphiql-execute-button').click();
 
                 cy.intercept('POST', `${apiContext}/1.0.0`, (res) => {
@@ -261,7 +301,7 @@ describe("Create GraphQl API from file", () => {
                 cy.wait('@getToken', { timeout: Cypress.env('largeTimeout') })
                   .its('response.statusCode').should('eq', 200);
 
-                cy.get('[aria-label="Operation Editor"]').wait(2000).type('{backspace}' + starWarsSubscriptionRequest);
+                cy.get('[aria-label="Operation Editor"], section[aria-label="Query Editor"]').first().wait(2000).type('{backspace}' + starWarsSubscriptionRequest);
                 cy.get('.graphiql-execute-button').click();
 
                 cy.intercept('GET', `${apiContext}/1.0.0/*`, (res) => {
@@ -297,7 +337,14 @@ expect(JSON.stringify(resp.body)).to.include(starWarsSubscriptionResponse);
 
 
   after(function () {
-    cy.deleteApplication(applicationName);
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.loginToDevportal(username, password);
+    cy.get('body').then(($body) => {
+      if ($body.text().includes(applicationName)) {
+        cy.deleteApplication(applicationName);
+      }
+    });
     cy.logoutFromDevportal();
     cy.loginToPublisher(username, password);
     cy.log("app id " + apiId);
