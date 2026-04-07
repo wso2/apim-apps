@@ -335,7 +335,13 @@ export default function ApiKeyListing() {
                     try {
                         const issuedDate = new Date(issuedOn);
                         const expiresDate = new Date(issuedDate.getTime() + (keyValidityPeriod * 1000));
-                        return expiresDate.toLocaleString();
+                        const dateOnly = expiresDate.toLocaleDateString('en-CA');
+                        const fullDateTime = expiresDate.toLocaleString();
+                        return (
+                            <Tooltip title={fullDateTime} placement='top'>
+                                <Typography variant='body2'>{dateOnly}</Typography>
+                            </Tooltip>
+                        );
                     } catch (error) {
                         return keyValidityPeriod;
                     }
@@ -365,9 +371,7 @@ export default function ApiKeyListing() {
                     }
                     try {
                         const date = new Date(lastUsed);
-                        const dateOnly = date.toLocaleDateString(undefined, {
-                            year: 'numeric', month: '2-digit', day: '2-digit',
-                        });
+                        const dateOnly = date.toLocaleDateString('en-CA');
                         const fullDateTime = date.toLocaleString();
                         return (
                             <Tooltip title={fullDateTime} placement='top'>

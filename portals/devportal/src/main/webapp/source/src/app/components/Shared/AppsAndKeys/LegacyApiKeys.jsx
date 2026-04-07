@@ -355,11 +355,10 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                     if (lastUsed == null) {
                         return (
                             <Typography variant='body2' color='text.secondary'>
-                                <FormattedMessage id='Shared.AppsAndKeys.ApiKeyListing.table.never' defaultMessage='Not Used' />
+                                <FormattedMessage id='Shared.AppsAndKeys.LegacyApiKeys.table.never' defaultMessage='Not Used' />
                             </Typography>
                         );
                     }
-                    if (!lastUsed) return '-';
                     try {
                         const date = new Date(lastUsed);
                         const dateOnly = date.toLocaleDateString('en-CA');
