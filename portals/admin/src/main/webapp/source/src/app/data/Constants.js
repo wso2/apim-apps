@@ -95,7 +95,7 @@ const CONSTS = {
     ARTIFACT_TYPES: [
         { value: 'REST_API', label: 'REST API' },
         { value: 'ASYNC_API', label: 'Async API' },
-        { value: 'MCP', label: 'MCP Server' },
+        { value: 'MCP', label: 'MCP' },
     ],
     SEVERITY_LEVELS: [
         { value: 'ERROR', label: 'Error' },
