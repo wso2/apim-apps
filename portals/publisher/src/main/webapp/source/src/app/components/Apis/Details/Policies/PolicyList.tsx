@@ -374,7 +374,7 @@ const PolicyList: FC<PolicyListProps> = ({
                             sx={{ mb: 2 }}
                         />
                         {isPolicyHubGateway && (
-                        <Box display="flex" alignItems="center" gap={1}>
+                        <Box display="flex" alignItems="stretch" gap={1}>
                             <FormControl fullWidth size="small">
                             <InputLabel id="policy-category-select-label">
                                 <FormattedMessage
@@ -408,12 +408,12 @@ const PolicyList: FC<PolicyListProps> = ({
                                 href={POLICY_HUB_URL}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                variant="outlined"
+                                variant="contained"
                                 size="small"
                                 endIcon={
                                     <LaunchIcon style={{ fontSize: 15 }} />
                                 }
-                                sx={{ whiteSpace: 'nowrap', height: 40, minWidth: 'auto' }}
+                                sx={{ whiteSpace: 'nowrap', minWidth: 'auto', alignSelf: 'stretch' }}
                             >
                                 <FormattedMessage
                                     id="Apis.Details.Policies.PolicyList.policy.hub.button"

@@ -27,8 +27,10 @@ import {
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import ComputerIcon from '@mui/icons-material/Computer';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { useIntl } from 'react-intl';
+import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import { gatewayShape, getPlatformGatewayReleaseConfig } from './UniversalGatewayUtils';
 
 const QUICK_START_TAB = {
@@ -43,7 +45,7 @@ const QUICK_START_TABS = [
         value: QUICK_START_TAB.quickStart,
         labelKey: 'Gateways.UniversalGatewayManagement.quick.start.tab.quick.start',
         defaultMessage: 'Quick Start',
-        icon: null,
+        icon: <RocketLaunchIcon sx={{ fontSize: 20 }} />,
     },
     {
         value: QUICK_START_TAB.virtualMachine,
@@ -55,13 +57,13 @@ const QUICK_START_TABS = [
         value: QUICK_START_TAB.docker,
         labelKey: 'Gateways.UniversalGatewayManagement.quick.start.tab.docker',
         defaultMessage: 'Docker',
-        icon: <img src='/site/public/images/docker-icon.png' alt='Docker' width={20} height={20} />,
+        icon: <CustomIcon icon='docker' width={20} height={20} />,
     },
     {
         value: QUICK_START_TAB.kubernetes,
         labelKey: 'Gateways.UniversalGatewayManagement.quick.start.tab.kubernetes',
         defaultMessage: 'Kubernetes',
-        icon: <img src='/site/public/images/Kubernetes_logo.png' alt='Kubernetes' width={20} height={20} />,
+        icon: <CustomIcon icon='kubernetes' width={20} height={20} />,
     },
 ];
 
