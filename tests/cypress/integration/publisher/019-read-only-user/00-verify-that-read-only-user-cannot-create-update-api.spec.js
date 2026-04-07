@@ -40,8 +40,12 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
     const initEnvironement = () => {
         //create developer user
         cy.carbonLogin(carbonUsername, carbonPassword);
-        //cy.addNewUser(readOnlyUser, ['Internal/observer'], readOnlyUserPassword);
-        //cy.addNewUser(creatorPublisher,  ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], creatorpublisherPassword);
+        // Ensure the Internal/observer role exists (not auto-created on existing tenants)
+        cy.ensureRoleExists('observer', 'Internal');
+
+        // Clean up any leftover users from previous failed runs
+        cy.searchAndDeleteUserIfExist(readOnlyUser);
+        cy.searchAndDeleteUserIfExist(creatorPublisher);
 
         UsersAndRoles.addNewUserAndUpdateRoles(readOnlyUser, ['Internal/observer'], readOnlyUserPassword);
         UsersAndRoles.addNewUserAndUpdateRoles(creatorPublisher,
@@ -87,6 +91,10 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
             const uuid = pathSegments[pathSegments.length - 2];
             cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/policies`);
             cy.wait(5000);
+
+            // Switch to Operation Level tab before interacting with operation accordions
+            cy.get('#operation-level-policies-tab').click();
+            cy.get('#operation-level-tabpanel').should('be.visible');
 
             cy.get("[id='post/testuri']").click()
 
@@ -309,19 +317,19 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
         cy.get('#itest-id-deleteapi-icon-button').should('not.exist');
         cy.get('#create-new-version-btn').should('not.exist');
         cy.logoutFromPublisher();
-        // Test is done. Now delete the api
-        cy.loginToPublisher(carbonUsername, carbonPassword).wait(3000);
     });
 
     afterEach(function () {
-        cy.get('#searchQuery').click().type(`"${apiName}"` + "{enter}");
-        cy.get("#itest-id-deleteapi-icon-button").click()
-        cy.get('#itest-id-deleteconf').click()
+        // Ensure we are logged in as admin before cleanup (test may fail before admin login)
+        cy.loginToPublisher(carbonUsername, carbonPassword);
+        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
+        cy.get('#searchQuery', { timeout: Cypress.config().largeTimeout }).click().type(`"${apiName}"` + "{enter}");
+        cy.get("#itest-id-deleteapi-icon-button", { timeout: Cypress.config().largeTimeout }).click();
+        cy.get('#itest-id-deleteconf').click();
         // delete observer user.
 
-        cy.visit(`/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(readOnlyUser);
-        cy.deleteUser(creatorPublisher);
+        cy.searchAndDeleteUserIfExist(readOnlyUser);
+        cy.searchAndDeleteUserIfExist(creatorPublisher);
     })
 
 });

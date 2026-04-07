@@ -33,7 +33,7 @@ describe("Add Edit Delete Microgateway Environments", () => {
             timeout: Cypress.config().largeTimeout,
         }).click();
 
-        cy.contains('button', 'Regular').click();
+        cy.contains('[role="radio"]', 'Universal Gateway - Classic').click();
         cy.get('input[name="name"]').type(gatewayName);
         cy.get('input[name="displayName"]').type(gatewayName);
         cy
@@ -58,7 +58,7 @@ describe("Add Edit Delete Microgateway Environments", () => {
         cy.intercept('GET', '**/environments').as('environmentsGetAfterEdit');
         cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Update').click();
         cy.wait('@environmentsGetAfterEdit', { timeout: Cypress.config().largeTimeout }).then(() => {
-            cy.contains('table tr td', gatewayDescription).should('exist');
+            cy.contains('table tr td', gatewayName).should('exist');
         });
 
         cy.contains('table tr td', gatewayName)

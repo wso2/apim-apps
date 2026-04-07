@@ -82,13 +82,19 @@ describe("Tryout API invocations", () => {
                 // cy.intercept('**/oauth-keys').as('oauthKeys');
                 // cy.wait('@oauthKeys');
                 cy.intercept('**/generate-token').as('genToken');
-                cy.get('#consumerSecretInput', { timeout: 10000 }).should('be.visible').clear().then(($input) => {
-                    const secretToType = Cypress.env('consumerSecret') || '';
-                    cy.wrap($input).type(secretToType);
+                // Click GET TEST KEY
+                cy.get('#gen-test-key', { timeout: 30000 }).should('not.be.disabled').click();
+                // Handle consumer secret dialog if it appears (multiple secrets mode)
+                cy.get('body').then(($body) => {
+                    if ($body.find('#consumerSecretInput').length > 0) {
+                        cy.get('#consumerSecretInput').should('be.visible').clear().then(($input) => {
+                            const secretToType = Cypress.env('consumerSecret');
+                            expect(secretToType, 'consumerSecret should be set before tryout').to.exist;
+                            cy.wrap($input).type(secretToType);
+                        });
+                        cy.get('[role="dialog"]').contains('button', 'Generate').should('not.be.disabled').click();
+                    }
                 });
-                cy.get('#gen-test-key', { timeout: 30000 }).should('not.be.disabled');
-                // Generate token and wait for response
-                cy.get('#gen-test-key').click({ force: true });
                 cy.wait('@genToken', { timeout: Cypress.config().largeTimeout });
                 cy.get('#accessTokenInput').should('not.have.value', '');
                 // Test the console

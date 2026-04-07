@@ -274,8 +274,20 @@ const GatewayEditButton = ({ dataRow }) => {
 const apiCall = () => {
     const restApi = new API();
     return Promise.all([
-        restApi.getGatewayEnvironmentList(),
-        restApi.getPlatformGatewayList(),
+        restApi.getGatewayEnvironmentList().catch((error) => {
+            const status = error?.response?.status || error?.status;
+            if (status === 404) {
+                return { body: { list: [] } };
+            }
+            throw error;
+        }),
+        restApi.getPlatformGatewayList().catch((error) => {
+            const status = error?.response?.status || error?.status;
+            if (status === 404) {
+                return { body: { list: [] } };
+            }
+            throw error;
+        }),
     ])
         .then(([environmentResult, platformGatewayResult]) => {
             const environmentList = environmentResult?.body?.list || [];
