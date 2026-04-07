@@ -352,6 +352,13 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                             </Typography>
                         );
                     }
+                    if (lastUsed == null) {
+                        return (
+                            <Typography variant='body2' color='text.secondary'>
+                                <FormattedMessage id='Shared.AppsAndKeys.ApiKeyListing.table.never' defaultMessage='Not Used' />
+                            </Typography>
+                        );
+                    }
                     if (!lastUsed) return '-';
                     try {
                         const date = new Date(lastUsed);
