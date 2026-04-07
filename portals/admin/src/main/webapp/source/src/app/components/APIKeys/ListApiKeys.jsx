@@ -220,7 +220,6 @@ export default function ApiKeysView() {
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const { keyType } = filteredKeys[dataIndex];
-                    const isProduction = keyType === 'PRODUCTION';
                     let keyTypeLabel = keyType;
                     if (keyType === 'PRODUCTION') {
                         keyTypeLabel = intl.formatMessage({
@@ -239,8 +238,8 @@ export default function ApiKeysView() {
                             size='small'
                             sx={{
                                 ...typeChipSx,
-                                backgroundColor: isProduction ? '#FFE7E3' : '#E3F2FD',
-                                color: isProduction ? '#B42318' : '#1565C0',
+                                backgroundColor: '#F2F4F7',
+                                color: '#475467',
                             }}
                         />
                     );
