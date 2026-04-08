@@ -131,7 +131,7 @@ export const getPlatformGatewayReleaseConfig = (settings, selectedVersion) => {
     const releasesUrl = normalizeReleaseBaseUrl();
     const browserHost = globalThis.window?.location.host || '';
     const controlPlaneHost = browserHost;
-    const artifactName = `gateway-${version}`;
+    const artifactName = `wso2apip-api-gateway-${version}`;
     const downloadCommand = `curl -sLO ${releasesUrl}/download/gateway/${version}/${artifactName}.zip && \\\n`
         + `unzip ${artifactName}.zip`;
     const helmChartOciUrl = DEFAULT_HELM_CHART_OCI_URL;
