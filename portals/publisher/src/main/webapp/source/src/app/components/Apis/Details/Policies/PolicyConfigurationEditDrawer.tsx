@@ -34,6 +34,8 @@ import type { PolicySpec, ApiPolicy, AttachedPolicy } from './Types';
 import ApiContext from '../components/ApiContext';
 import ApiOperationContext from './ApiOperationContext';
 import API from 'AppData/api';
+import PolicyHub from 'AppData/PolicyHub';
+import CONSTS from 'AppData/Constants';
 
 const PREFIX = 'PolicyConfigurationEditDrawer';
 
@@ -90,6 +92,7 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
     useEffect(() => {
         (async () => {
             if (policyObj) {
+                const isPolicyHubGateway = api.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform;
                 let policySpecVal = allPolicies?.find(
                     (policy: PolicySpec) =>
                         policy.name === policyObj.name &&
@@ -98,11 +101,19 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
 
                 // If this policy is a deleted common policy we need to do an API call to get the policy specification
                 if (!policySpecVal) {
-                    const policyResponse = await API.getOperationPolicy(
-                        policyObj.id,
-                        api.id,
-                    );
-                    policySpecVal = policyResponse.body;
+                    if (isPolicyHubGateway) {
+                        policySpecVal = await PolicyHub.getPolicySpec({
+                            name: policyObj.name,
+                            version: policyObj.version,
+                            displayName: policyObj.displayName,
+                        }) || PolicyHub.toPolicySpec(policyObj);
+                    } else {
+                        const policyResponse = await API.getOperationPolicy(
+                            policyObj.id,
+                            api.id,
+                        );
+                        policySpecVal = policyResponse.body;
+                    }
                 }
 
                 setPolicySpec(policySpecVal);
@@ -117,9 +128,11 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
                 ? op.target === target
                 : op.target === target && op.verb.toLowerCase() === verb.toLowerCase(),
     ) : null;
-    const operationFlowPolicy = ((isAPILevelPolicy) ? apiLevelPolicies : operationInAction.operationPolicies)[
-        currentFlow
-    ].find((policy: any) => policy.uuid === policyObj?.uniqueKey);
+    const isPolicyHubGateway = api.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform;
+    const currentPolicyCollection = isPolicyHubGateway && currentFlow === 'hub'
+        ? (isAPILevelPolicy ? apiLevelPolicies : operationInAction?.operationHubPolicies || [])
+        : ((isAPILevelPolicy) ? apiLevelPolicies : operationInAction.operationPolicies)[currentFlow];
+    const operationFlowPolicy = currentPolicyCollection.find((policy: any) => policy.uuid === policyObj?.uniqueKey);
 
     const apiPolicy: ApiPolicy = operationFlowPolicy || {
         policyName: policyObj?.name,

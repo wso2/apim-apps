@@ -1,20 +1,20 @@
 /*
-* Copyright (c) 2024, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
-*
-* WSO2 LLC. licenses this file to you under the Apache License,
-* Version 2.0 (the "License"); you may not use this file except
-* in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Copyright (c) 2024, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
 import React, { useState } from 'react';
 import TableBody from '@mui/material/TableBody';
@@ -126,24 +126,21 @@ const ApisTableContent = ({ apis, updateApiList }) => {
 
     const handleSubmitClick = (apiId) => {
         if (provider.trim() === '') {
-            return (
-                Alert.error(
-                    <FormattedMessage
-                        id='AdminPages.ApiSettings.EditApi.form.edit.error'
-                        defaultMessage='API provider should not be empty.'
-                    />,
-                )
+            return Alert.error(
+                <FormattedMessage
+                    id='AdminPages.ApiSettings.EditApi.form.edit.error'
+                    defaultMessage='API provider should not be empty.'
+                />,
             );
         } else {
-            return restApi.updateApiProvider(apiId, provider.trim())
+            return restApi
+                .updateApiProvider(apiId, provider.trim())
                 .then(() => {
-                    return (
-                        Alert.success(
-                            <FormattedMessage
-                                id='AdminPages.ApiSettings.EditApi.form.edit.successful'
-                                defaultMessage='API provider changed successfully'
-                            />,
-                        )
+                    return Alert.success(
+                        <FormattedMessage
+                            id='AdminPages.ApiSettings.EditApi.form.edit.successful'
+                            defaultMessage='API provider changed successfully'
+                        />,
                     );
                 })
                 .catch((error) => {
@@ -151,32 +148,26 @@ const ApisTableContent = ({ apis, updateApiList }) => {
                     // This api returns 404 when the $provider is not found.
                     // error codes: 901502, 901500 for user not found and scope not found
                     if (response?.body?.code === 901502 || response?.body?.code === 901500) {
-                        return (
-                            Alert.error(
-                                <FormattedMessage
-                                    id='AdminPages.ApiSettings.EditApi.form.edit.other.error'
-                                    defaultMessage='Given Username is not valid.'
-                                />,
-                            )
+                        return Alert.error(
+                            <FormattedMessage
+                                id='AdminPages.ApiSettings.EditApi.form.edit.other.error'
+                                defaultMessage='Given Username is not valid.'
+                            />,
                         );
-                    // error code: 901300 for tenant not found
+                        // error code: 901300 for tenant not found
                     } else if (response?.body?.code === 901300) {
-                        return (
-                            Alert.error(
-                                <FormattedMessage
-                                    id='AdminPages.ApiSettings.EditApi.form.edit.user.notvalid'
-                                    defaultMessage='Given Tenant name is not valid.'
-                                />,
-                            )
+                        return Alert.error(
+                            <FormattedMessage
+                                id='AdminPages.ApiSettings.EditApi.form.edit.tenant.notvalid'
+                                defaultMessage='Given tenant name is not valid.'
+                            />,
                         );
                     } else {
-                        return (
-                            Alert.error(
-                                <FormattedMessage
-                                    id='AdminPages.ApiSettings.EditApi.form.edit.user.notvalid'
-                                    defaultMessage='Error while updating the provider name.'
-                                />,
-                            )
+                        return Alert.error(
+                            <FormattedMessage
+                                id='AdminPages.ApiSettings.EditApi.form.edit.user.notvalid'
+                                defaultMessage='Error while updating the provider name.'
+                            />,
                         );
                     }
                 })
@@ -191,18 +182,14 @@ const ApisTableContent = ({ apis, updateApiList }) => {
         <TableBody sx={styles.fullHeight}>
             {apis && apis.map((api) => (
                 <StyledTableRow sx={styles.tableRow} key={api.id}>
+                    <StyledTableCell align='left'>{api.name}</StyledTableCell>
                     <StyledTableCell align='left'>
-                        {api.name}
-                    </StyledTableCell>
-                    <StyledTableCell align='left'>
-                        <StyledDiv>
-                            {api.version}
-                        </StyledDiv>
+                        <StyledDiv>{api.version}</StyledDiv>
                     </StyledTableCell>
                     <StyledTableCell align='left'>
                         {editableRow !== api.id && (
                             <StyledDiv>
-                                { api.provider }
+                                {api.provider}
                                 <IconButton color='primary' onClick={() => handleEditClick(api.id, api.provider)}>
                                     <EditIcon aria-label='edit-api-settings' />
                                 </IconButton>
@@ -222,7 +209,9 @@ const ApisTableContent = ({ apis, updateApiList }) => {
                                     size='small'
                                     value={provider}
                                     sx={styles.textfield}
-                                    onChange={(e) => { setProvider(e.target.value); }}
+                                    onChange={(e) => {
+                                        setProvider(e.target.value);
+                                    }}
                                 />
                                 <IconButton color='primary' onClick={() => handleSubmitClick(api.id)}>
                                     <SaveIcon aria-label='edit-api-settings' />

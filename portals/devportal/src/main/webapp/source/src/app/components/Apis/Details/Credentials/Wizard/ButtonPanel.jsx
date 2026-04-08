@@ -13,6 +13,7 @@ const styles = {
         mr: 1,
     },
     wizardButtons: {
+        mt: 2,
         pl: 2,
     },
 };

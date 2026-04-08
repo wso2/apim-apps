@@ -339,19 +339,32 @@ const SecretsTable = (props) => {
     return (
         <Grid container spacing={2} alignItems="flex-start" mb={2}>
             <Grid item xs={12} md={9}>
-                <Box sx={(theme) => ({
-                    position: "relative",
-                    backgroundColor: "inherit", // Paper inherits from parent
-                })}>
+                <Paper
+                    component="fieldset"
+                    variant="outlined"
+                    sx={{
+                        m: 0,
+                        p: 3,
+                        width: "100%",
+                        overflow: "hidden",
+                        borderColor: "rgba(0, 0, 0, 0.23)",
+                        borderWidth: 1,
+                        borderRadius: 1,
+                        borderStyle: "solid",
+                        boxShadow: "none",
+                        backgroundColor: "inherit",
+                        minWidth: 0,
+                    }}
+                >
                     <Typography
+                        component="legend"
                         variant="caption"
                         sx={{
-                            position: "absolute",
                             top: -10,
                             left: 10,
-                            backgroundColor: "background.paper",
                             px: 0.3,
-                            color: "text.disabled",
+                            ml: -1.6,
+                            color: "text.primary",
                         }}
                     >
                         <FormattedMessage
@@ -359,17 +372,6 @@ const SecretsTable = (props) => {
                             defaultMessage="Consumer Secrets"
                         />
                     </Typography>
-                    <Paper
-                        variant="outlined"
-                        sx={{
-                            backgroundColor: 'inherit',
-                            width: "100%", overflow: "hidden",
-                            borderColor: "rgba(0, 0, 0, 0.23)", // Same as MUI's default TextField outline
-                            borderWidth: 1,
-                            borderRadius: 1, // Matches TextField rounded corners
-                            boxShadow: "none", // Remove Paper shadow
-                            p: 3,
-                        }}>
                         {/* Row: New Secret + Show Expired */}
                         <Box
                             display="flex"
@@ -391,6 +393,7 @@ const SecretsTable = (props) => {
                                 {/* Wrapping Button in span so Tooltip works when button is disabled */}
                                 <span>
                                     <Button
+                                        data-testid="new-secret-button"
                                         variant="contained"
                                         startIcon={<AddIcon sx={{ color: "white" }} />}
                                         onClick={() => setOpenNewDialog(true)}
@@ -487,7 +490,7 @@ const SecretsTable = (props) => {
 
                         {/* Table */}
                         <TableContainer sx={{ tableLayout: 'fixed' }}>
-                            <Table size="small">
+                            <Table size="small" data-testid="secrets-table">
                                 <TableHead>
                                     <TableRow>
                                         <TableCell sx={{ width: '35%' }}>
@@ -542,8 +545,8 @@ const SecretsTable = (props) => {
                                             const { description, expiresAt } = additionalProperties || {};
 
                                             return (
-                                                <TableRow key={secretId}>
-                                                    <TableCell>
+                                                <TableRow key={secretId} data-testid={`secret-row-${secretId}`}>
+                                                    <TableCell data-testid="secret-description-cell">
                                                         <Typography
                                                             variant="body2"
                                                             fontStyle={!description ? 'italic' : 'normal'}
@@ -558,13 +561,13 @@ const SecretsTable = (props) => {
                                                         </Typography>
                                                     </TableCell>
 
-                                                    <TableCell>
+                                                    <TableCell data-testid="secret-value-cell">
                                                         <Typography variant="body2">
                                                             {secretValue}
                                                         </Typography>
                                                     </TableCell>
 
-                                                    <TableCell>
+                                                    <TableCell data-testid="secret-expires-cell">
                                                         <Box display="flex" alignItems="center" gap={1}>
                                                             {renderExpiresIn(expiresAt)}
                                                         </Box>
@@ -604,8 +607,7 @@ const SecretsTable = (props) => {
                             onClose={handleCloseSecretValueDialog}
                             secret={generatedSecret}
                         />
-                    </Paper>
-                </Box>
+                </Paper>
             </Grid>
         </Grid>
     );

@@ -33,8 +33,36 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import Box from '@mui/material/Box';
 import { Chip } from '@mui/material';
+import Utils from '../../data/Utils';
 
 dayjs.extend(relativeTime);
+
+// Consolidated styles for better readability
+const styles = {
+    statusContainer: {
+        px: 3,
+        pb: 1,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+    },
+    activeChip: {
+        borderRadius: '6px',
+        fontSize: '0.7rem',
+        height: 20,
+        borderColor: '#5AC087',
+        color: '#2E8B57',
+        backgroundColor: '#EAF9F0',
+    },
+    inactiveChip: {
+        borderRadius: '6px',
+        fontSize: '0.7rem',
+        height: 20,
+        borderColor: '#FF6F61',
+        color: '#D14343',
+        backgroundColor: '#FFF2F0',
+    },
+};
 
 /**
  * ListGatewayInstances component displays a dialog with a table of live gateway instances
@@ -56,6 +84,7 @@ export default function ListGatewayInstances({
     onClose,
     environmentId,
     environmentName,
+    gatewayStatus,
 }) {
     const intl = useIntl();
     const [loading, setLoading] = useState(false);
@@ -65,20 +94,15 @@ export default function ListGatewayInstances({
     const statusColors = {
         ACTIVE: 'success',
         EXPIRED: 'error',
+        INACTIVE: 'error',
     };
-
-    const needsEncoding = (str) => /[^A-Za-z0-9]/.test(str);
 
     const fetchData = () => {
         setLoading(true);
         setError(null);
         setGateways([]);
         const restApi = new API();
-        // Encode the environment ID if it contains special characters
-        let encodedEnvId = environmentId;
-        if (needsEncoding(environmentId)) {
-            encodedEnvId = btoa(environmentId);
-        }
+        const encodedEnvId = Utils.encodeEnvironmentId(environmentId);
         restApi.getEnvironmentGateways(encodedEnvId)
             .then((result) => {
                 if (result.body && Array.isArray(result.body.list)) {
@@ -171,6 +195,38 @@ export default function ListGatewayInstances({
         },
     };
 
+    const renderPlatformStatus = () => {
+        if (!gatewayStatus) {
+            return null;
+        }
+        const isActive = gatewayStatus === 'ACTIVE';
+        const statusLabel = isActive
+            ? intl.formatMessage({
+                id: 'Gateways.AddEditGateway.platform.status.active',
+                defaultMessage: 'Active',
+            })
+            : intl.formatMessage({
+                id: 'Gateways.AddEditGateway.platform.status.inactive',
+                defaultMessage: 'Inactive',
+            });
+        return (
+            <Box sx={styles.statusContainer}>
+                <Typography variant='body2' color='text.secondary'>
+                    <FormattedMessage
+                        id='AdminPages.Gateways.GatewayInstances.platform.status.label'
+                        defaultMessage='Gateway Status'
+                    />
+                </Typography>
+                <Chip
+                    size='small'
+                    label={statusLabel}
+                    variant='outlined'
+                    sx={isActive ? styles.activeChip : styles.inactiveChip}
+                />
+            </Box>
+        );
+    };
+
     return (
         <Dialog open={open} onClose={onClose} maxWidth='md' fullWidth>
             <DialogTitle>
@@ -188,14 +244,17 @@ export default function ListGatewayInstances({
                     </Typography>
                 )}
                 {!loading && !error && (
-                    <Box px={3}>
-                        <MUIDataTable
-                            title={null}
-                            data={gateways}
-                            columns={columns}
-                            options={options}
-                        />
-                    </Box>
+                    <>
+                        {renderPlatformStatus()}
+                        <Box px={3}>
+                            <MUIDataTable
+                                title={null}
+                                data={gateways}
+                                columns={columns}
+                                options={options}
+                            />
+                        </Box>
+                    </>
                 )}
             </DialogContent>
             <DialogActions>
@@ -215,8 +274,10 @@ ListGatewayInstances.propTypes = {
     onClose: PropTypes.func.isRequired,
     environmentId: PropTypes.string,
     environmentName: PropTypes.string,
+    gatewayStatus: PropTypes.string,
 };
 ListGatewayInstances.defaultProps = {
     environmentId: '',
     environmentName: '',
+    gatewayStatus: null,
 };

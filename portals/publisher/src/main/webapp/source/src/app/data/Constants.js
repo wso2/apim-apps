@@ -85,7 +85,39 @@ const CONSTS = {
     GATEWAY_TYPE: {
         synapse: 'Synapse',
         choreoConnect: 'ChoreoConnect',
-        AWS: 'AWS',
+        apiPlatform: 'Universal',
+    },
+    CREATE_API_GATEWAYS: {
+        'wso2/synapse': {
+            value: 'wso2/synapse',
+            name: 'Universal Gateway - Classic',
+            description: 'Synapse based API gateway embedded in APIM runtime.',
+            isNew: false,
+        },
+        'wso2/apk': {
+            value: 'wso2/apk',
+            name: 'Kubernetes Gateway - Classic',
+            description: 'API gateway running on Kubernetes.',
+            isNew: false,
+        },
+        AWS: {
+            value: 'AWS',
+            name: 'AWS Gateway',
+            description: 'API gateway offered by AWS cloud.',
+            isNew: false,
+        },
+        Azure: {
+            value: 'Azure',
+            name: 'Azure Gateway',
+            description: 'API gateway offered by Azure cloud.',
+            isNew: false,
+        },
+        Universal: {
+            value: 'Universal',
+            name: 'Universal Gateway',
+            description: 'API gateway for platform-managed policies.',
+            isNew: true,
+        }
     },
     PATH_TEMPLATES: {
         COMMON_POLICIES: '/policies',
@@ -113,7 +145,7 @@ const CONSTS = {
     ENTITY_TYPES: {
         APIS: 'apis',
         API_PRODUCTS: 'api-products',
-        MCP_SERVERS: 'mcp-servers'
+        MCP_SERVERS: 'mcp-servers',
     },
     API_TYPES: {
         HTTP: 'REST',

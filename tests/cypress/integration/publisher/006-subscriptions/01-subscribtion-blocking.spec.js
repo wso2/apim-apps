@@ -19,8 +19,6 @@
 import Utils from "@support/utils";
 
 describe("Subscription blocking", () => {
-
-
     const { publisher, password, developer } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const apiVersion = '2.0.0';
@@ -33,7 +31,7 @@ describe("Subscription blocking", () => {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Subscription blocking", {
+    it("Subscription blocking", {
         retries: {
             runMode: 3,
             openMode: 0,
@@ -61,17 +59,18 @@ describe("Subscription blocking", () => {
                 cy.logoutFromDevportal();
                 cy.loginToPublisher(publisher, password);
                 cy.visit(`/publisher/apis/${apiId}/overview`);
-
-
-                // click the left menu to go to subscriptions page.
                 cy.get('#itest-api-details-portal-config-acc', { timeout: Cypress.config().largeTimeout }).should('be.visible');
                 cy.get('#itest-api-details-portal-config-acc').click();
                 cy.get('#left-menu-itemsubscriptions').click();
-                cy.wait(3000)
-                cy.get('table tr button').wait(1000).contains('Block Production Only').click();
-                cy.get('table tr td').wait(1000).contains('PROD_ONLY_BLOCKED').should('exist');
-                cy.get('table tr button').wait(1000).contains('Block All').click();
-                cy.get('table tr td').wait(1000).contains('BLOCKED').should('exist');
+                cy.contains('table tr td', appName, { timeout: Cypress.config().largeTimeout })
+                    .parents('tr')
+                    .as('subscriptionRow');
+
+                cy.get('@subscriptionRow').contains('button', 'Block Production Only').click();
+                cy.get('@subscriptionRow').contains('td', 'PROD_ONLY_BLOCKED').should('exist');
+
+                cy.get('@subscriptionRow').contains('button', 'Block All').click();
+                cy.get('@subscriptionRow').contains('td', 'BLOCKED').should('exist');
                 cy.logoutFromPublisher();
             })
         });

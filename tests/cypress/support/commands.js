@@ -314,6 +314,8 @@ Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version
         return false
     });
     cy.visit(`/publisher/apis/create/rest`);
+    // Intercept API validation calls to wait for form validation
+    cy.intercept('POST', '**/apis/validate*').as('validateRestApi');
     cy.get('#itest-id-apiname-input', { timeout: Cypress.config().largeTimeout }).type(apiName);
     cy.get('#itest-id-apicontext-input').click();
     cy.get('#itest-id-apicontext-input').type(apiContext);
@@ -323,9 +325,30 @@ Cypress.Commands.add('createAndPublishAPIByRestAPIDesign', (name = null, version
     cy.get('#itest-id-apiendpoint-input').type(`https://apis.wso2.com/sample${random_number}`);
     cy.get('#itest-id-apiversion-input').click();
     cy.get('body').click(0, 0);
-    cy.get('#itest-id-apicreatedefault-createnpublish').click({ force: true });
+    // Wait for both name and context async validation calls to complete
+    cy.wait('@validateRestApi', { timeout: 30000 });
+    cy.wait('@validateRestApi', { timeout: 30000 });
+    cy.get('#itest-create-default-api-button', { timeout: Cypress.config().largeTimeout })
+        .should('not.be.disabled')
+        .click();
 
-    // Wait for the api to load
+    // Wait for the api to be created
+    cy.url({ timeout: Cypress.config().largeTimeout }).should('contain', '/overview');
+
+    // Deploy the API
+    cy.get('#left-menu-itemdeployments', { timeout: Cypress.config().largeTimeout }).click();
+    cy.wait(2000);
+    cy.get('#deploy-btn', { timeout: Cypress.config().largeTimeout })
+        .should('not.have.class', 'Mui-disabled')
+        .click({ force: true });
+    cy.contains('div[role="button"]', 'Successfully Deployed').should('exist');
+
+    // Publish the API
+    cy.get('#left-menu-itemlifecycle', { timeout: Cypress.config().largeTimeout }).click();
+    cy.wait(2000);
+    cy.get('[data-testid="Publish-btn"]', { timeout: Cypress.config().largeTimeout }).click();
+    cy.get('button[data-testid="Demote to Created-btn"]', { timeout: Cypress.config().largeTimeout }).should('exist');
+
     cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout }).should('be.visible');
     cy.get('#itest-api-name-version').contains(apiVersion);
 })
@@ -492,6 +515,9 @@ Cypress.Commands.add('createGraphqlAPIfromFile', (name, version, context, filepa
     cy.get('[data-testid="uploaded-list-graphql"]');
     cy.get('[data-testid="create-graphql-next-btn"]').should("exist").click();
 
+    // Intercept API validation calls to wait for form validation
+    cy.intercept('POST', '**/apis/validate*').as('validateGraphqlApi');
+
     // Filling the form
     cy.get('#itest-id-apiname-input').click();
     cy.get('#itest-id-apiname-input').type(name);
@@ -504,11 +530,17 @@ Cypress.Commands.add('createGraphqlAPIfromFile', (name, version, context, filepa
     cy.get('#itest-id-apiversion-input').click();
     cy.get('body').click(0, 0);
 
+    // Wait for both name and context async validation calls to complete
+    cy.wait('@validateGraphqlApi', { timeout: 30000 });
+    cy.wait('@validateGraphqlApi', { timeout: 30000 });
+
     // Saving the form
-    cy.get('[data-testid="itest-create-graphql-api-button"]',)
-        .click({ force: true, timeout: Cypress.config().largeTimeout });
+    cy.get('[data-testid="itest-create-graphql-api-button"]', { timeout: Cypress.config().largeTimeout })
+        .should('not.be.disabled')
+        .click();
 
     //Checking the version in the overview
+    cy.url({ timeout: Cypress.config().largeTimeout }).should('contain', '/overview');
     cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout }).should('be.visible');
     cy.get('#itest-api-name-version').contains(version);
     cy.url().then(url => {
@@ -875,17 +907,41 @@ Cypress.Commands.add('createApplication', (applicationName, perTokenQuota, appli
         .contains(applicationName).should('exist');
     cy.get("#production-keys").click();
     cy.get("#generate-keys").click();
+    // Handle the "Create Secret" dialog if it appears (multiple secrets mode)
+    cy.get('body').then(($body) => {
+        if ($body.find('[data-testid="new-secret-dialog"]').length > 0) {
+            cy.get('[data-testid="new-secret-dialog"]').should('be.visible');
+            cy.get('[data-testid="create-secret-button"]').click();
+            // After CREATE, a SecretValueDialog shows the generated secret — capture it
+            cy.get('[data-testid="secret-dialog-close"]', { timeout: 30000 }).should('be.visible');
+            cy.get('#bootstrap-input').invoke('val').then((secret) => {
+                Cypress.env('consumerSecret', secret);
+            });
+            cy.get('[data-testid="secret-dialog-close"]').click();
+        }
+    });
 
     cy.get("#sandbox-keys").click();
     cy.get("#generate-keys", { timeout: 30000 }).click();
+    // Handle the "Create Secret" dialog if it appears (multiple secrets mode)
+    cy.get('body').then(($body) => {
+        if ($body.find('[data-testid="new-secret-dialog"]').length > 0) {
+            cy.get('[data-testid="new-secret-dialog"]').should('be.visible');
+            cy.get('[data-testid="create-secret-button"]').click();
+            // After CREATE, capture the sandbox consumer secret
+            cy.get('[data-testid="secret-dialog-close"]', { timeout: 30000 }).should('be.visible');
+            cy.get('#bootstrap-input').invoke('val').then((secret) => {
+                Cypress.env('sandboxConsumerSecret', secret);
+            });
+            cy.get('[data-testid="secret-dialog-close"]').click();
+        }
+    });
 
 });
 
 Cypress.Commands.add('deleteApplication', (applicationName) => {
-    cy.get("#itest-link-to-applications", { timeout: Cypress.config().largeTimeout }).click();
-    cy.get('table', { timeout: Cypress.config().largeTimeout }).get('tbody')
-        .get(`[data-testid="row-${applicationName}"]`)
-        .find('td').eq(5).get(`[id="delete-${applicationName}-btn"]`).click();
+    cy.get('#itest-link-to-applications', { timeout: Cypress.config().largeTimeout }).click();
+    cy.get(`[id="delete-${applicationName}-btn"]`, { timeout: Cypress.config().largeTimeout }).click();
     cy.get("#itest-confirm-application-delete").click();
 });
 
@@ -944,6 +1000,23 @@ Cypress.Commands.add('searchAndDeleteRoleIfExist', (roleNameToDelete) => {
         }
         //customDeleteLog = "Whatx going on"
     })
+})
+
+Cypress.Commands.add('ensureRoleExists', (roleName, domain = 'PRIMARY') => {
+    const fullRoleName = domain === 'PRIMARY' ? roleName : `${domain}/${roleName}`;
+    const WAIT_TIME_FOR_DIALOG_BOX_TO_APPEAR = 3000;
+    cy.visit(`${Utils.getAppOrigin()}` + rolesManagementPage.getUrl());
+    rolesManagementPage.getRoleNameTextBox().clear().type(fullRoleName);
+    rolesManagementPage.getSearchRolesButton().click();
+    cy.wait(WAIT_TIME_FOR_DIALOG_BOX_TO_APPEAR);
+    cy.get('body').then(($body) => {
+        if ($body.find('#messagebox-info').length > 0) {
+            // Role not found - dismiss dialog and create it
+            cy.get('.ui-dialog-buttonpane button').first().click();
+            cy.addNewRole(roleName, domain, []);
+        }
+        // If role exists, do nothing
+    });
 })
 
 Cypress.Commands.add('addScopeMappingFromAPIMAdminPortal', (roleName, roleAlias) => {

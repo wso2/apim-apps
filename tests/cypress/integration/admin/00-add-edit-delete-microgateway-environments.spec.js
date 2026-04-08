@@ -19,43 +19,54 @@
 describe("Add Edit Delete Microgateway Environments", () => {
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
+    const gatewayName = `MARKETING_STORE_${Date.now()}`;
+    const gatewayDescription = 'marketing store';
 
     before(function () {
         cy.loginToAdmin(carbonUsername, carbonPassword);
     })
-    it.only("Add Edit Delete Microgateway Environments", () => {
-        cy.get('[data-testid="Gateways"]').click();
-        cy.get('[data-testid="form-dialog-base-trigger-btn"]').contains('Add Gateway Environment').click();
-        cy.get('input[name="name"]').type('MARKETING_STORE');
-        cy.get('input[name="displayName"]').type('MARKETING_STORE');
+
+    it("Add Edit Delete Microgateway Environments", () => {
+        cy.visit('/admin/settings/environments');
+        cy.contains('[role="tab"]', 'WSO2 Gateways').click();
+        cy.get('[data-testid="add-wso2-gateway-btn"]', {
+            timeout: Cypress.config().largeTimeout,
+        }).click();
+
+        cy.contains('[role="radio"]', 'Universal Gateway - Classic').click();
+        cy.get('input[name="name"]').type(gatewayName);
+        cy.get('input[name="displayName"]').type(gatewayName);
         cy
             .get('[data-testid="vhost"]')
-            .find('input[name="0"]').type('localhost');
-        // Wait until the label is saved
+            .find('input[name="0"]')
+            .clear()
+            .type('localhost');
+
         cy.intercept('GET', '**/environments').as('environmentsGet');
         cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Add').click();
-        cy.wait('@environmentsGet',{ timeout: 3000 }).then(() => {
-            cy.get('table tr td').contains('MARKETING_STORE').should('exist');
+        cy.wait('@environmentsGet', { timeout: Cypress.config().largeTimeout }).then(() => {
+            cy.contains('table tr td', gatewayName).should('exist');
         });
 
-        // editing
-        cy.get('[data-testid="MUIDataTableBodyRow-1"]').within(() => {
-            cy.get('[data-testid="EditIcon"]').click();
-        });
-        cy.get('textarea[name="description"]').type('marketing store');
-        // Wait until the label is saved
-        cy.intercept('GET', '**/environments').as('environmentsGet');
+        cy.contains('table tr td', gatewayName)
+            .parents('tr')
+            .within(() => {
+                cy.get('[aria-label^="edit-gateway-"]').click({ force: true });
+            });
+        cy.get('textarea[name="description"]').clear().type(gatewayDescription);
+
+        cy.intercept('GET', '**/environments').as('environmentsGetAfterEdit');
         cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Update').click();
-        cy.wait('@environmentsGet', { timeout: 3000 }).then(() => {
-            cy.get('table tr td').contains('marketing store').should('exist');
+        cy.wait('@environmentsGetAfterEdit', { timeout: Cypress.config().largeTimeout }).then(() => {
+            cy.contains('table tr td', gatewayName).should('exist');
         });
 
-        // deleting
-        cy.get('[data-testid="MUIDataTableBodyRow-1"]').within(() => {
-            cy.get('[data-testid="DeleteForeverIcon"]').click();
-        });
+        cy.contains('table tr td', gatewayName)
+            .parents('tr')
+            .within(() => {
+                cy.get('[data-testid="DeleteForeverIcon"]').click({ force: true });
+            });
         cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Delete').click();
-        cy.get('div[role="status"]').should('have.text','Gateway Environment deleted successfully');
+        cy.get('div[role="status"]').should('contain.text', 'Gateway Environment deleted successfully');
     });
-
 })

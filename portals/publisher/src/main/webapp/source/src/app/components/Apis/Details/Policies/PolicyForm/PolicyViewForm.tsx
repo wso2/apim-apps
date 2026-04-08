@@ -28,6 +28,7 @@ import PolicyAttributes from './PolicyAttributes';
 import GeneralDetails from './GeneralDetails';
 import SourceDetails from './SourceDetails';
 import uuidv4 from '../Utils';
+import CONSTS from 'AppData/Constants';
 
 const PREFIX = 'PolicyViewForm';
 
@@ -69,6 +70,13 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone, isLocalTo
         return policyAttributeList;
     };
 
+    const policyAttributes = getPolicyAttributes();
+    const showSourceDetails = Array.isArray(policySpec.supportedGateways)
+        && policySpec.supportedGateways.length > 0;
+    const showAttributes = policyAttributes.length > 0;
+    const isPolicyHubGatewayPolicy = Array.isArray(policySpec.supportedGateways)
+        && (policySpec.supportedGateways.includes(CONSTS.GATEWAY_TYPE.apiPlatform));
+
     return (
         <StyledPaper elevation={0} className={classes.root}>
             {/* General details of policy */}
@@ -80,21 +88,30 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone, isLocalTo
                 supportedApiTypes={policySpec.supportedApiTypes}
                 isViewMode
                 isLocalToAPI={isLocalToAPI}
+                hideFlowsAndApiTypes={isPolicyHubGatewayPolicy}
             />
-            <Divider />
-            {/* Gateway specific details of policy */}
-            <SourceDetails
-                supportedGateways={policySpec.supportedGateways}
-                isViewMode
-                policyId={policySpec.id}
-                isAPISpecific={policySpec.isAPISpecific}
-            />
-            <Divider />
-            {/* Attributes of policy */}
-            <PolicyAttributes
-                policyAttributes={getPolicyAttributes()}
-                isViewMode
-            />
+            {showSourceDetails && (
+                <>
+                    <Divider />
+                    {/* Gateway specific details of policy */}
+                    <SourceDetails
+                        supportedGateways={policySpec.supportedGateways}
+                        isViewMode
+                        policyId={policySpec.id}
+                        isAPISpecific={policySpec.isAPISpecific}
+                    />
+                </>
+            )}
+            {showAttributes && (
+                <>
+                    <Divider />
+                    {/* Attributes of policy */}
+                    <PolicyAttributes
+                        policyAttributes={policyAttributes}
+                        isViewMode
+                    />
+                </>
+            )}
             {!apiType && (
                 <Box>
                     <Button variant='contained' color='primary' data-testid='done-view-policy-file' onClick={onDone}>

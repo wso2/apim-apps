@@ -31,11 +31,21 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
 
+    const getLocalScopeRow = (scopeName) => (
+        cy.contains('table tbody tr td', scopeName, {
+            timeout: Cypress.config().largeTimeout,
+        }).parents('tr')
+    );
+
     const initEnvironement = () => {
         //create developer user
         cy.carbonLogin(carbonUsername, carbonPassword);
-        //cy.addNewUser(readOnlyUser, ['Internal/observer'], readOnlyUserPassword);
-        //cy.addNewUser(creatorPublisher,  ['Internal/publisher', 'Internal/creator', 'Internal/everyone'], creatorpublisherPassword);
+        // Ensure the Internal/observer role exists (not auto-created on existing tenants)
+        cy.ensureRoleExists('observer', 'Internal');
+
+        // Clean up any leftover users from previous failed runs
+        cy.searchAndDeleteUserIfExist(readOnlyUser);
+        cy.searchAndDeleteUserIfExist(creatorPublisher);
 
         UsersAndRoles.addNewUserAndUpdateRoles(readOnlyUser, ['Internal/observer'], readOnlyUserPassword);
         UsersAndRoles.addNewUserAndUpdateRoles(creatorPublisher,
@@ -82,6 +92,10 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
             cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/policies`);
             cy.wait(5000);
 
+            // Switch to Operation Level tab before interacting with operation accordions
+            cy.get('#operation-level-policies-tab').click();
+            cy.get('#operation-level-tabpanel').should('be.visible');
+
             cy.get("[id='post/testuri']").click()
 
             const dataTransfer = new DataTransfer();
@@ -121,7 +135,8 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
     }, () => {
         initEnvironement();
         //1. should not be able to create APIs
-        cy.get('[data-testid="itest-create-api-button"]').get('[aria-disabled="true"]').should('exist');
+        cy.get('[data-testid="itest-create-api-button"]')
+            .should('have.attr', 'aria-disabled', 'true');
 
         //2. click on API tile and select design config (basic info)
         cy.wait(2000);
@@ -262,17 +277,21 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
 
         //11. Localscopes
         cy.get('#left-menu-itemLocalScopes').click();
-        cy.contains('a', 'Add New Local Scope').get('[aria-disabled="true"]').should('exist');
-        cy.get('table').get('tbody').get('[data-testid="MUIDataTableBodyRow-0"]')
-            .get('[data-testid="MuiDataTableBodyCell-4-0"]').get('[aria-label="Edit creatorscope"]')
-            .get('[aria-disabled="true"]').should('exist');
-        cy.get('table').get('tbody').get('[data-testid="MUIDataTableBodyRow-0"]')
-            .get('[data-testid="MuiDataTableBodyCell-4-0"]').contains('button', 'Delete').should('be.disabled');
+        cy.contains('a', 'Add New Local Scope')
+            .should('have.attr', 'aria-disabled', 'true');
+        getLocalScopeRow('creatorscope').within(() => {
+            cy.get('[aria-label="Edit creatorscope"]')
+                .should('have.attr', 'aria-disabled', 'true');
+            cy.contains('button', 'Delete').should('be.disabled');
+        });
 
         cy.reload();
         //12. Policies should be checked. (UI issue fixed by PR #11297 in carbon-apimgt)
+        cy.get('#itest-api-details-api-config-acc').click();
         cy.get("#left-menu-policies").click();
-        cy.get('[data-testid="add-new-api-specific-policy"]', { timeout: Cypress.config().largeTimeout }).should('be.disabled');
+        cy.get('[data-testid="add-new-api-specific-policy"]', {
+            timeout: Cypress.config().largeTimeout,
+        }).should('be.disabled');
 
         //13. monetization ,lifecycle menus are not visible to observer
         cy.get('[data-testid="left-menu-itemlifecycle"]').should('not.exist');
@@ -298,19 +317,19 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
         cy.get('#itest-id-deleteapi-icon-button').should('not.exist');
         cy.get('#create-new-version-btn').should('not.exist');
         cy.logoutFromPublisher();
-        // Test is done. Now delete the api
-        cy.loginToPublisher(carbonUsername, carbonPassword).wait(3000);
     });
 
     afterEach(function () {
-        cy.get('#searchQuery').click().type(`"${apiName}"` + "{enter}");
-        cy.get("#itest-id-deleteapi-icon-button").click()
-        cy.get('#itest-id-deleteconf').click()
+        // Ensure we are logged in as admin before cleanup (test may fail before admin login)
+        cy.loginToPublisher(carbonUsername, carbonPassword);
+        cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
+        cy.get('#searchQuery', { timeout: Cypress.config().largeTimeout }).click().type(`"${apiName}"` + "{enter}");
+        cy.get("#itest-id-deleteapi-icon-button", { timeout: Cypress.config().largeTimeout }).click();
+        cy.get('#itest-id-deleteconf').click();
         // delete observer user.
 
-        cy.visit(`/carbon/user/user-mgt.jsp`);
-        cy.deleteUser(readOnlyUser);
-        cy.deleteUser(creatorPublisher);
+        cy.searchAndDeleteUserIfExist(readOnlyUser);
+        cy.searchAndDeleteUserIfExist(creatorPublisher);
     })
 
 });

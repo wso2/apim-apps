@@ -32,7 +32,7 @@ export const PORTAL_MODES = {
  * @param {Object} settings - Settings response body
  * @returns {string} Portal mode
  */
-export const extractPortalMode = (settings) => {
+const extractPortalMode = (settings) => {
     // Check if devportalMode exists in settings
     if (settings && settings.devportalMode) {
         const mode = settings.devportalMode.toUpperCase();
@@ -50,7 +50,7 @@ export const extractPortalMode = (settings) => {
  * @param {string} portalMode - Current portal mode
  * @returns {boolean} True if APIs are accessible
  */
-export const areApisAccessible = (portalMode) => {
+const areApisAccessible = (portalMode) => {
     return portalMode === PORTAL_MODES.HYBRID || portalMode === PORTAL_MODES.API_ONLY;
 };
 
@@ -59,7 +59,7 @@ export const areApisAccessible = (portalMode) => {
  * @param {string} portalMode - Current portal mode
  * @returns {boolean} True if MCP servers are accessible
  */
-export const areMcpServersAccessible = (portalMode) => {
+const areMcpServersAccessible = (portalMode) => {
     return portalMode === PORTAL_MODES.HYBRID || portalMode === PORTAL_MODES.MCP_ONLY;
 };
 

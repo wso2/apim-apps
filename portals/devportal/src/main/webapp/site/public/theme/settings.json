@@ -24,13 +24,10 @@
             },
             "syntaxHighlighterDarkTheme": false
         },
-        "sanitizeHtml": {
-            "allowedTags": false,
-            "allowedAttributes": false
-        },
-        "reactHTMLParser": {
-            "decodeEntries": true,
-            "tagsNotAllowed": []
+        "sanitizeHtmlDocs": {
+          "enabled": true,
+          "additionalAllowedTags": [],
+          "additionalAllowedAttributes": []
         }
     },
     "grantTypes": {
@@ -62,7 +59,7 @@
     },
     "sessionTimeout": {
         "enable": true,
-        "idleWarningTimeout": 160,
-        "idleTimeout": 180
+        "idleWarningTimeout": 1740,
+        "idleTimeout": 1800
     }
 }

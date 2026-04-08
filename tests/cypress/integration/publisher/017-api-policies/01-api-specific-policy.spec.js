@@ -21,6 +21,41 @@ import Utils from "@support/utils";
 describe("Common Policies", () => {
     const { publisher, password, } = Utils.getUserInfo();
     let apiTestId;
+    const policyName = 'API Specific Policy Sample';
+
+    const openApiSpecificPolicyAccordion = () => {
+        cy.get('#tabPanel-api-policies').within(() => {
+            cy.get('.MuiAccordionSummary-root').then(($summary) => {
+                if ($summary.attr('aria-expanded') !== 'true') {
+                    cy.wrap($summary).click();
+                }
+            });
+        });
+    };
+
+    const getApiSpecificPolicyCard = (version) => {
+        return cy.get('#tabPanel-api-policies .MuiListItem-root', {
+            timeout: Cypress.config().largeTimeout,
+        }).should(($items) => {
+            const matchedCard = [...$items].find((item) => {
+                const cardText = item.textContent || '';
+                return cardText.includes(policyName) && cardText.includes(String(version));
+            });
+            expect(matchedCard, `policy card for version ${version}`).to.exist;
+        }).then(($items) => {
+            const matchedCard = [...$items].find((item) => {
+                const cardText = item.textContent || '';
+                return cardText.includes(policyName) && cardText.includes(String(version));
+            });
+            return cy.wrap(matchedCard);
+        });
+    };
+
+    const viewPolicyVersion = (version) => {
+        getApiSpecificPolicyCard(version).within(() => {
+            cy.get('[aria-label="view-APISpecificPolicySample"]').click({ force: true });
+        });
+    };
 
     beforeEach(function () {
         cy.loginToPublisher(publisher, password);
@@ -38,7 +73,7 @@ describe("Common Policies", () => {
 
             // Create API Specific Policy
             cy.get('[data-testid="add-new-api-specific-policy"]', {timeout: Cypress.config().largeTimeout}).click();
-            cy.get('#name').type('API Specific Policy Sample');
+            cy.get('#name').type(policyName);
             cy.get('#version').type('1');
             cy.get('input[name="description"]').type('Sample API specific policy description');
             cy.get('#fault-select-check-box').uncheck()
@@ -56,20 +91,23 @@ describe("Common Policies", () => {
 
             // Save API specific policy
             cy.get('[data-testid="policy-create-save-btn"]').click();
-            cy.wait(2000);
+            openApiSpecificPolicyAccordion();
 
             // View API specific policy
-            cy.get('#tabPanel-api-policies').click();
-            cy.contains('API Specific Policy Sample').trigger('mouseover');
-            cy.get('[aria-label="view-APISpecificPolicySample"]').click({force:true});
+            getApiSpecificPolicyCard(1).should('be.visible');
+            viewPolicyVersion(1);
 
             // Download file
             cy.get('[data-testid="download-policy-file"]').click();
             cy.get('[aria-label="Close"]').click();
 
+            // Switch to Operation Level tab before drag-and-drop
+            cy.get('#operation-level-policies-tab').click();
+            cy.get('#operation-level-tabpanel').should('be.visible');
+
             // Drag and drop the policy to attach it
             const dataTransfer = new DataTransfer();
-            cy.contains('API Specific Policy Sample', { timeout: Cypress.config().largeTimeout }).trigger('dragstart', {
+            getApiSpecificPolicyCard(1).trigger('dragstart', {
                 dataTransfer
             });
             cy.get('#operation-level-tabpanel').contains('Drag and drop policies here').trigger('drop', {
@@ -83,20 +121,20 @@ describe("Common Policies", () => {
 
             // Verify attached policy details
             cy.get('[data-testid="drop-policy-zone-request"]')
-              .get('[data-testid="attached-policy-card-APISpecificPolicySample"]')
+              .find('[data-testid="attached-policy-card-APISpecificPolicySample"]')
               .click({ force: true });
             cy.get('#sampleAttribute').should('have.value', 'test value for sample attribute');
             cy.get('[data-testid="policy-attached-details-cancel"]').click();
 
             // delete the policy . get button with aria-label="delete attached policy"
             cy.get('[data-testid="attached-policy-card-APISpecificPolicySample"]')
-              .get('[aria-label="delete attached policy"]')
+              .find('[aria-label="delete attached policy"]')
               .click();
             cy.get('[data-testid="custom-select-save-button"]').scrollIntoView().click();
 
             // Create Version 2 of the same policy
             cy.get('[data-testid="add-new-api-specific-policy"]').click();
-            cy.get('#name').type('API Specific Policy Sample');
+            cy.get('#name').type(policyName);
             cy.get('#version').type('2');
             cy.get('input[name="description"]').type('Enhanced API specific policy description version 2');
             cy.get('#fault-select-check-box').uncheck()
@@ -120,20 +158,23 @@ describe("Common Policies", () => {
 
             // Save API specific policy version 2
             cy.get('[data-testid="policy-create-save-btn"]').click();
-            cy.wait(2000);
+            openApiSpecificPolicyAccordion();
 
             // View API specific policy
-            cy.get('#tabPanel-api-policies').click();
-            cy.contains('API Specific Policy Sample').trigger('mouseover');
-            cy.get('[aria-label="view-APISpecificPolicySample"]').click({force:true});
+            getApiSpecificPolicyCard(2).should('be.visible');
+            viewPolicyVersion(2);
 
             // Verify version 2 details
             cy.get('[data-testid="description"] input').should('have.value', 'Enhanced API specific policy description version 2');
             cy.get('[aria-label="Close"]').click();
 
+            // Switch to Operation Level tab before drag-and-drop
+            cy.get('#operation-level-policies-tab').click();
+            cy.get('#operation-level-tabpanel').should('be.visible');
+
             // Drag and drop version 2 policy
             const dataTransferV2 = new DataTransfer();
-            cy.contains('API Specific Policy Sample', { timeout: Cypress.config().largeTimeout }).trigger('dragstart', {
+            getApiSpecificPolicyCard(2).trigger('dragstart', {
                 dataTransfer: dataTransferV2
             });
             cy.get('#operation-level-tabpanel').contains('Drag and drop policies here').trigger('drop', {
@@ -149,7 +190,7 @@ describe("Common Policies", () => {
 
             // Open edit mode for version 2 and verify correct data is displayed
             cy.get('[data-testid="drop-policy-zone-request"]')
-              .get('[data-testid="attached-policy-card-APISpecificPolicySample"]')
+              .find('[data-testid="attached-policy-card-APISpecificPolicySample"]')
               .click({ force: true });
             cy.contains('Enhanced API specific policy description version 2').should('be.visible');
             cy.get('#enhancedAttribute').should('have.value', 'enhanced test value version 2');

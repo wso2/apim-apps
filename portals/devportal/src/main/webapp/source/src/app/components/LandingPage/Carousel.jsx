@@ -147,7 +147,9 @@ function Carousel() {
                             >
                                 <HTMLRender html={slide.title} />
                             </div>
-                            <div className={classes.slideContentContent}><HTMLRender html={slide.content} /></div>
+                            <div className={classes.slideContentContent}>
+                                <HTMLRender html={slide.content} />
+                            </div>
                         </div>
                         <img
                             alt='slider'

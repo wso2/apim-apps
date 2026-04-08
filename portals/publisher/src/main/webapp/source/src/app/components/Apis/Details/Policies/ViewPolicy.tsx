@@ -27,6 +27,8 @@ import IconButton from '@mui/material/IconButton';
 import Alert from 'AppComponents/Shared/Alert';
 import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
+import PolicyHub from 'AppData/PolicyHub';
+import CONSTS from 'AppData/Constants';
 import type { Policy, PolicySpec } from './Types';
 import ApiContext from '../components/ApiContext';
 import PolicyViewForm from './PolicyForm/PolicyViewForm';
@@ -52,9 +54,33 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
     const { api } = useContext<any>(ApiContext);
     const [policySpec, setPolicySpec] = useState<PolicySpec | null>(null);
     const [loading, setLoading] = useState(false);
+    const isPolicyHubGateway = api.gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform;
 
     useEffect(() => {
-        if (dialogOpen && isLocalToAPI) {
+        if (dialogOpen && isPolicyHubGateway) {
+            setPolicySpec(null);
+            setLoading(true);
+            PolicyHub.getPolicySpec({
+                name: policyObj.name,
+                version: policyObj.version,
+                displayName: policyObj.displayName,
+            })
+                .then((policyResponse) => {
+                    if (policyResponse) {
+                        setPolicySpec(policyResponse);
+                    } else {
+                        setPolicySpec(PolicyHub.toPolicySpec(policyObj));
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                    setPolicySpec(PolicyHub.toPolicySpec(policyObj));
+                    Alert.error('Something went wrong while retrieving policy details');
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        } else if (dialogOpen && isLocalToAPI) {
             setLoading(true);
             const promisedPolicyGet = API.getOperationPolicy(
                 policyObj.id,
@@ -95,7 +121,7 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
                     setLoading(false);
                 });
         }
-    }, [dialogOpen]);
+    }, [dialogOpen, isLocalToAPI, isPolicyHubGateway, policyObj, api.id]);
 
     const stopPropagation = (
         e: React.MouseEvent<HTMLDivElement, MouseEvent>,

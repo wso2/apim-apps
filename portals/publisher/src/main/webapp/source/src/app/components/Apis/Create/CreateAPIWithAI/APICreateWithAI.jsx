@@ -36,6 +36,7 @@ import { FormattedMessage } from 'react-intl';
 import LaunchIcon from '@mui/icons-material/Launch';
 import Alert from '@mui/material/Alert';
 import findBestMatchingAnswer from './components/SimilaritySearch';
+import CONSTS from 'AppData/Constants';
 
 /**
  * Renders the Create API with AI UI.
@@ -52,45 +53,24 @@ const ApiCreateWithAI = () => {
     const [messages, setMessages] = useState([]);
     const [taskId, setTaskId] = useState('');
     const [taskStatus, setTaskStatus] = useState('');
-    const [loading, setLoading] = useState(false); 
+    const [loading, setLoading] = useState(false);
     const [isSuggestion, setIsSuggestion] = useState('');
     const [selectedTitles, setSelectedTitles] = useState([]);
     const [paths, setPaths] = useState([]);
     const [apiTypeSuggestion, setApiTypeSuggestion] = useState('');
     const [missingValues, setMissingValues] = useState('');
     const history = useHistory();
-    const [lastRenderedComponent, setLastRenderedComponent] = useState(<ApiChatBanner />);
+    const [lastRenderedComponent, setLastRenderedComponent] = useState(
+        <ApiChatBanner />,
+    );
     const { data: settings, isLoading } = usePublisherSettings();
     const [specEnrichmentError, setSpecEnrichmentError] = useState('');
-    const [specEnrichmentErrorLevel, setSpecEnrichmentErrorLevel] = useState('');
+    const [specEnrichmentErrorLevel, setSpecEnrichmentErrorLevel] =
+        useState('');
     const [multiGateway, setMultiGateway] = useState([]);
-
-    let gatewayDetails = {
-        'wso2/synapse': {
-            value: 'wso2/synapse',
-            name: 'Universal Gateway',
-            description: 'API gateway embedded in APIM runtime.',
-            isNew: false
-        },
-        'wso2/apk': {
-            value: 'wso2/apk',
-            name: 'Kubernetes Gateway',
-            description: 'API gateway running on Kubernetes.',
-            isNew: false
-        },
-        'AWS': {
-            value: 'AWS',
-            name: 'AWS Gateway',
-            description: 'API gateway offered by AWS cloud.',
-            isNew: false
-        },
-        'Azure': {
-            value: 'Azure',
-            name: 'Azure Gateway',
-            description: 'API gateway offered by Azure cloud.',
-            isNew: false
-        }
-    };
+    const [gatewayDetails, setGatewayDetails] = useState(
+        CONSTS.CREATE_API_GATEWAYS,
+    );
 
     const chatContainerRef = useRef(null);
     useEffect(() => {
@@ -103,11 +83,11 @@ const ApiCreateWithAI = () => {
     useEffect(() => {
         if (taskStatus === 'COMPLETE') {
             setLastRenderedComponent(
-                <DisplayCode 
+                <DisplayCode
                     finalOutcomeCode={finalOutcomeCode}
                     apiType={apiType}
                     sessionId={sessionId}
-                />
+                />,
             );
         } else if (taskStatus === null) {
             setLastRenderedComponent(<ApiChatBanner />);
@@ -119,34 +99,49 @@ const ApiCreateWithAI = () => {
             const apiTypes = settings.gatewayFeatureCatalog.apiTypes;
             const data = settings.gatewayTypes;
             const settingsEnvList = settings.environment;
-            const filteredEnvironments = settingsEnvList ? settingsEnvList
-                .filter(env => env?.mode !== 'READ_ONLY') : [];
-            const distinctGatewayTypes = [...new Set(filteredEnvironments.map(env => env.gatewayType))];
-            const commonGatewayTypes = distinctGatewayTypes.filter(type => data.includes(type));
-            const gatewayTypes = commonGatewayTypes.map(item => {
-                if (item === "Regular") return "wso2/synapse";
-                if (item === "APK") return "wso2/apk";
+            const filteredEnvironments = settingsEnvList
+                ? settingsEnvList.filter((env) => env?.mode !== 'READ_ONLY')
+                : [];
+            const distinctGatewayTypes = [
+                ...new Set(filteredEnvironments.map((env) => env.gatewayType)),
+            ];
+            const commonGatewayTypes = distinctGatewayTypes.filter((type) =>
+                data.includes(type),
+            );
+            const gatewayTypes = commonGatewayTypes.map((item) => {
+                if (item === 'Regular') return 'wso2/synapse';
+                if (item === 'APK') return 'wso2/apk';
                 return item;
             });
 
-            const customGateways = {};
-            gatewayTypes.forEach((gw) => {
-                if (!gatewayDetails[gw]) {
-                    const customGateway = {
-                        value: gw,
-                        name: gw + " Gateway",
-                        description: "Custom API Gateway for " + gw,
-                        isNew: false
-                    };
-                    customGateways[gw] = customGateway;
-                }
+            setGatewayDetails((currentGatewayDetails) => {
+                const nextGatewayDetails = {
+                    ...currentGatewayDetails,
+                    ...gatewayTypes.reduce(
+                        (customGateways, gw) =>
+                            currentGatewayDetails[gw]
+                                ? customGateways
+                                : {
+                                      ...customGateways,
+                                      [gw]: {
+                                          value: gw,
+                                          name: `${gw} Gateway`,
+                                          description: `Custom API Gateway for ${gw}`,
+                                          isNew: false,
+                                      },
+                                  },
+                        {},
+                    ),
+                };
+                setMultiGateway(
+                    apiTypes?.rest
+                        .filter((t) => gatewayTypes.includes(t))
+                        .map((type) => nextGatewayDetails[type]),
+                );
+                return nextGatewayDetails;
             });
-
-            gatewayDetails = {...gatewayDetails, ...customGateways};
-            setMultiGateway(apiTypes?.rest.filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]));
-
         }
-    }, [isLoading]);
+    }, [isLoading, settings]);
 
     const handleQueryChange = (event) => {
         const { value } = event.target;
@@ -157,7 +152,7 @@ const ApiCreateWithAI = () => {
         if (inputQuery.length !== 0) {
             const query = inputQuery;
             setInputQuery('');
-            setLastQuery(inputQuery);    
+            setLastQuery(inputQuery);
             setTaskStatus('IN_PROGRESS');
 
             setMessages((prevMessages) => [
@@ -182,7 +177,7 @@ const ApiCreateWithAI = () => {
 
         setMessages((prevMessages) => [
             ...prevMessages,
-            { role: 'user', content: query }
+            { role: 'user', content: query },
         ]);
 
         if (!sessionId) {
@@ -195,27 +190,32 @@ const ApiCreateWithAI = () => {
     };
 
     const generateSessionId = () => {
-        const uuid = (function() {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                const r = Math.random() * 16 | 0;
-                const v = c === 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
+        const uuid = (function () {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
+                /[xy]/g,
+                function (c) {
+                    const r = (Math.random() * 16) | 0;
+                    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+                    return v.toString(16);
+                },
+            );
         })();
-    
+
         const dateTime = new Date().toISOString();
         const sessionId = `${uuid}-${dateTime}`;
         const encodedSessionId = btoa(sessionId);
         const modifiedSessionId = encodedSessionId.slice(0, -2);
-    
+
         return encodedSessionId;
     };
-    
+
     const authTokenNotProvidedWarning = (
         <FormattedMessage
             id='Apis.Details.ApiChat.warning.authTokenMissing'
-            defaultMessage={'You must provide a token to start using API Design Assistant. To obtain one, '
-                + 'follow the steps provided under {apiAiChatDocLink} '}
+            defaultMessage={
+                'You must provide a token to start using API Design Assistant. To obtain one, ' +
+                'follow the steps provided under {apiAiChatDocLink} '
+            }
             values={{
                 apiAiChatDocLink: (
                     <a
@@ -235,37 +235,42 @@ const ApiCreateWithAI = () => {
         />
     );
 
-    const handleSelectedTitles = (titles) => { 
-        const titlesString = 'Modify this API to include the following features as well:\n' + 
-        titles.map(title => `- ${title}`).join('\n');
-        setSelectedTitles(titlesString); 
+    const handleSelectedTitles = (titles) => {
+        const titlesString =
+            'Modify this API to include the following features as well:\n' +
+            titles.map((title) => `- ${title}`).join('\n');
+        setSelectedTitles(titlesString);
         setLastQuery(titlesString);
         setTaskStatus('IN_PROGRESS');
 
         setMessages((prevMessages) => [
             ...prevMessages,
-            { role: 'user', content: titlesString }
+            { role: 'user', content: titlesString },
         ]);
 
         sendInitialRequest(titlesString, sessionId);
     };
-    
-    async function sendQuery(query, sessionId) { 
+
+    async function sendQuery(query, sessionId) {
         try {
             const queryDesignAssistant = new API();
-            const response = await queryDesignAssistant.sendChatAPIDesignAssistant(query, sessionId);
-    
+            const response =
+                await queryDesignAssistant.sendChatAPIDesignAssistant(
+                    query,
+                    sessionId,
+                );
+
             if (!response || typeof response !== 'object') {
                 throw new Error('Invalid response received from API.');
             }
-    
+
             return response;
         } catch (error) {
             console.error('Error in sendQuery:', error);
             throw error;
         }
     }
-    
+
     const sendInitialRequest = async (query, currentSessionId) => {
         setFinalOutcome('');
         setLoading(true);
@@ -277,11 +282,11 @@ const ApiCreateWithAI = () => {
             if (response) {
                 setMessages((prevMessages) => [
                     ...prevMessages,
-                    { role: 'system', content: response, suggestions: false }
+                    { role: 'system', content: response, suggestions: false },
                 ]);
             } else {
                 const jsonResponse = await sendQuery(query, currentSessionId);
-                
+
                 const {
                     backendResponse,
                     isSuggestions,
@@ -290,7 +295,7 @@ const ApiCreateWithAI = () => {
                     paths,
                     apiTypeSuggestion,
                     missingValues,
-                    state
+                    state,
                 } = jsonResponse;
 
                 setFinalOutcome(backendResponse);
@@ -305,25 +310,36 @@ const ApiCreateWithAI = () => {
                 if (backendResponse) {
                     setMessages((prevMessages) => [
                         ...prevMessages,
-                        { role: 'system', content: backendResponse, suggestions: isSuggestions }
+                        {
+                            role: 'system',
+                            content: backendResponse,
+                            suggestions: isSuggestions,
+                        },
                     ]);
                 }
 
                 if (apiTypeSuggestion) {
                     setMessages((prevMessages) => [
                         ...prevMessages,
-                        { role: 'system', content: apiTypeSuggestion, suggestions: false }
+                        {
+                            role: 'system',
+                            content: apiTypeSuggestion,
+                            suggestions: false,
+                        },
                     ]);
                 }
 
                 if (missingValues) {
                     setMessages((prevMessages) => [
                         ...prevMessages,
-                        { role: 'system', content: missingValues, suggestions: false }
+                        {
+                            role: 'system',
+                            content: missingValues,
+                            suggestions: false,
+                        },
                     ]);
                 }
             }
-
         } catch (error) {
             console.error('Error:', error);
 
@@ -331,29 +347,33 @@ const ApiCreateWithAI = () => {
             try {
                 switch (error.response.status) {
                     case 401: // Unauthorized
-                        content = 'Apologies for the inconvenience. It appears that your token is invalid or expired. Please'
-                        + ' provide a valid token or upgrade your subscription plan.';
+                        content =
+                            'Apologies for the inconvenience. It appears that your token is invalid or expired. Please' +
+                            ' provide a valid token or upgrade your subscription plan.';
                         break;
                     case 429: // Token limit exceeded
-                        content = 'Apologies for the inconvenience. It appears that the token limit has been exceeded.';
+                        content =
+                            'Apologies for the inconvenience. It appears that the token limit has been exceeded.';
                         break;
                     case 504: // Handle gateway timeout scenario
-                        content = 'Apologies for the inconvenience. The request has timed out. Please try again.';
+                        content =
+                            'Apologies for the inconvenience. The request has timed out. Please try again.';
                         break;
                     default:
-                        content = 'Apologies for the inconvenience. It seems that something went wrong with the'
-                        + ' API Design Assistant. Please try again.';
+                        content =
+                            'Apologies for the inconvenience. It seems that something went wrong with the' +
+                            ' API Design Assistant. Please try again.';
                         break;
                 }
-
             } catch (err) {
-                content = 'Apologies for the inconvenience. It seems that something went wrong with the'
-                + ' API Design Assistant. Please try again.';
+                content =
+                    'Apologies for the inconvenience. It seems that something went wrong with the' +
+                    ' API Design Assistant. Please try again.';
             }
 
             setMessages((prevMessages) => [
                 ...prevMessages,
-                { role: 'system', content: content, isSuggestions: false }
+                { role: 'system', content: content, isSuggestions: false },
             ]);
 
             throw error;
@@ -368,137 +388,166 @@ const ApiCreateWithAI = () => {
         } else {
             history.push('/apis');
         }
-
     };
-    
+
     return (
         <div>
-            <Stack 
-                direction='column' 
-                sx={{ width: '100%', height: 'calc(100vh - 99px)', minHeight: 'calc(100vh - 99px)' }}>
-                <Box sx={{
-                    display: 'flex',
-                    flex: 9,
-                    flexDirection: 'row',
-                    paddingTop:'10px',
-                    marginTop:'10px',
-                    overflow: 'auto',
-                }}>
+            <Stack
+                direction='column'
+                sx={{
+                    width: '100%',
+                    height: 'calc(100vh - 99px)',
+                    minHeight: 'calc(100vh - 99px)',
+                }}
+            >
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flex: 9,
+                        flexDirection: 'row',
+                        paddingTop: '10px',
+                        marginTop: '10px',
+                        overflow: 'auto',
+                    }}
+                >
                     <Stack
                         direction='row'
                         sx={{ width: '100%', height: '100%', overflow: 'auto' }}
                     >
-                        <Box 
+                        <Box
                             sx={{
                                 flex: 1,
                                 display: 'flex',
                                 flexDirection: 'column',
-                                paddingTop:'10px',
-                                paddingBottom:'10px',
+                                paddingTop: '10px',
+                                paddingBottom: '10px',
                                 marginLeft: '20px',
                                 borderLeft: '1px solid #dee0e8',
                                 borderBottom: '1px solid #dee0e8',
                                 borderTop: '1px solid #dee0e8',
                                 borderRight: '1px solid #dee0e8',
-                                minwidth:'50%'
+                                minwidth: '50%',
                             }}
                         >
                             <Stack
-                                direction='column' 
-                                sx={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden' }}
+                                direction='column'
+                                sx={{
+                                    width: '100%',
+                                    height: '100%',
+                                    overflowY: 'auto',
+                                    overflowX: 'hidden',
+                                }}
                             >
                                 {!lastQuery && (
                                     <Box>
-                                        <WelcomeMessage/>
-                                        <Stack 
-                                            direction="column" 
-                                            spacing={2} 
-                                            justifyContent="center"
-                                            sx={{ 
-                                                width: '420px', 
-                                                display: 'flex', 
-                                                marginTop: '40px', 
-                                                marginLeft: 'auto', 
-                                                marginRight: 'auto', 
-                                                marginBottom: '0' 
+                                        <WelcomeMessage />
+                                        <Stack
+                                            direction='column'
+                                            spacing={2}
+                                            justifyContent='center'
+                                            sx={{
+                                                width: '420px',
+                                                display: 'flex',
+                                                marginTop: '40px',
+                                                marginLeft: 'auto',
+                                                marginRight: 'auto',
+                                                marginBottom: '0',
                                             }}
                                         >
-                                            <SampleQueryCard 
-                                                onExecuteClick={handleExecuteSampleQuery} 
-                                                queryHeading='Create an API for a banking transaction' 
-                                                sx={{ textAlign: 'left' }} 
+                                            <SampleQueryCard
+                                                onExecuteClick={
+                                                    handleExecuteSampleQuery
+                                                }
+                                                queryHeading='Create an API for a banking transaction'
+                                                sx={{ textAlign: 'left' }}
                                             />
-                                            <SampleQueryCard 
-                                                onExecuteClick={handleExecuteSampleQuery} 
-                                                queryHeading='Create a GraphQL API to query patient data' 
-                                                sx={{ textAlign: 'left' }} 
-                                            />  
-                                            <SampleQueryCard 
-                                                onExecuteClick={handleExecuteSampleQuery} 
-                                                queryHeading='Create an API for live sports scores' 
-                                                sx={{ textAlign: 'left' }} 
-                                            />                                          
+                                            <SampleQueryCard
+                                                onExecuteClick={
+                                                    handleExecuteSampleQuery
+                                                }
+                                                queryHeading='Create a GraphQL API to query patient data'
+                                                sx={{ textAlign: 'left' }}
+                                            />
+                                            <SampleQueryCard
+                                                onExecuteClick={
+                                                    handleExecuteSampleQuery
+                                                }
+                                                queryHeading='Create an API for live sports scores'
+                                                sx={{ textAlign: 'left' }}
+                                            />
                                         </Stack>
                                     </Box>
                                 )}
-                                <Box 
-                                    ref={chatContainerRef} 
-                                    sx={{ 
-                                        flexGrow: 1, 
-                                        textAlign: 'left', 
-                                        overflowY: 'auto', 
-                                        overflowX: 'auto', 
-                                        scrollBehavior: 'smooth' }}
+                                <Box
+                                    ref={chatContainerRef}
+                                    sx={{
+                                        flexGrow: 1,
+                                        textAlign: 'left',
+                                        overflowY: 'auto',
+                                        overflowX: 'auto',
+                                        scrollBehavior: 'smooth',
+                                    }}
                                 >
                                     {(lastQuery || finalOutcome) && (
-                                        <ApiChatResponse 
-                                            messages={messages} 
-                                            onTitlesSelected={handleSelectedTitles}
+                                        <ApiChatResponse
+                                            messages={messages}
+                                            onTitlesSelected={
+                                                handleSelectedTitles
+                                            }
                                             taskStatus={taskStatus}
                                         />
                                     )}
                                     {loading && <LoadingDots />}
                                 </Box>
                                 <Box>
-                                    <Box 
-                                        display='flex' 
-                                        alignItems='center' 
-                                        flexDirection='column' 
-                                        marginTop={1} 
+                                    <Box
+                                        display='flex'
+                                        alignItems='center'
+                                        flexDirection='column'
+                                        marginTop={1}
                                         marginBottom={2}
                                     >
                                         {/* Handle prepare call failed scenario */}
-                                        {specEnrichmentError && specEnrichmentErrorLevel && (
-                                            <Alert severity={specEnrichmentErrorLevel}>
-                                                <Typography variant='body1'>
-                                                    {specEnrichmentError}
-                                                </Typography>
-                                            </Alert>
-                                        )}
+                                        {specEnrichmentError &&
+                                            specEnrichmentErrorLevel && (
+                                                <Alert
+                                                    severity={
+                                                        specEnrichmentErrorLevel
+                                                    }
+                                                >
+                                                    <Typography variant='body1'>
+                                                        {specEnrichmentError}
+                                                    </Typography>
+                                                </Alert>
+                                            )}
                                         {/* Handle auth token not provided scenario */}
-                                        {settings && !settings?.aiAuthTokenProvided && (
-                                            <Alert severity='warning'>
-                                                <Typography variant='body1'>
-                                                    {authTokenNotProvidedWarning}
-                                                </Typography>
-                                            </Alert>
-                                        )}
+                                        {settings &&
+                                            !settings?.aiAuthTokenProvided && (
+                                                <Alert severity='warning'>
+                                                    <Typography variant='body1'>
+                                                        {
+                                                            authTokenNotProvidedWarning
+                                                        }
+                                                    </Typography>
+                                                </Alert>
+                                            )}
                                     </Box>
                                     <Box>
                                         <ApiChatExecute
                                             lastQuery={lastQuery}
                                             inputQuery={inputQuery}
                                             handleExecute={handleExecute}
-                                            handleQueryChange={handleQueryChange}
-                                            paths={paths} 
+                                            handleQueryChange={
+                                                handleQueryChange
+                                            }
+                                            paths={paths}
                                             loading={loading}
                                         />
                                     </Box>
                                 </Box>
-                                
                             </Stack>
                         </Box>
-                        <Box 
+                        <Box
                             sx={{
                                 flex: 1,
                                 display: 'flex',
@@ -514,9 +563,9 @@ const ApiCreateWithAI = () => {
                                 paddingRight: '10px',
                                 backgroundColor: '#fff',
                                 marginRight: '20px',
-                                minwidth:'50%',
+                                minwidth: '50%',
                                 overflowY: 'hidden',
-                                overflowX: 'hidden'
+                                overflowX: 'hidden',
                             }}
                         >
                             {lastRenderedComponent}
@@ -524,13 +573,13 @@ const ApiCreateWithAI = () => {
                     </Stack>
                 </Box>
                 <Box
-                    sx={{ 
+                    sx={{
                         display: 'flex',
                         flex: 1,
                         flexDirection: 'row',
                         alignItems: 'center',
                         justifyContent: 'flex-end',
-                        padding:'10px 20px',
+                        padding: '10px 20px',
                     }}
                 >
                     <Button
@@ -538,11 +587,15 @@ const ApiCreateWithAI = () => {
                         variant='outlined'
                         color='primary'
                         onClick={handleBack}
-                        sx={{ marginRight: '10px', minWidth: '100px',  height: '35px',}}
+                        sx={{
+                            marginRight: '10px',
+                            minWidth: '100px',
+                            height: '35px',
+                        }}
                     >
                         Cancel
                     </Button>
-                    <AlertDialog 
+                    <AlertDialog
                         sessionId={sessionId}
                         loading={loading}
                         taskStatus={taskStatus}

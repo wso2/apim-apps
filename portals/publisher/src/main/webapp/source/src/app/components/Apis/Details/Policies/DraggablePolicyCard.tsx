@@ -38,9 +38,8 @@ const PREFIX = 'DraggablePolicyCard';
 const classes = {
     policyCardText: `${PREFIX}-policyCardText`,
     listItem: `${PREFIX}-listItem`,
-    policyActions: `${PREFIX}-policyActions`
+    policyActions: `${PREFIX}-policyActions`,
 };
-
 
 const Root = styled('div')(() => ({
     [`& .${classes.policyCardText}`]: {
@@ -59,7 +58,7 @@ const Root = styled('div')(() => ({
         '&:hover': {
             visibility: 'inherit',
         },
-    }
+    },
 }));
 
 const style: CSSProperties = {
@@ -75,6 +74,7 @@ interface DraggablePolicyCardProps {
     isLocalToAPI: boolean;
     fetchPolicies: () => void;
     isReadOnly?: boolean;
+    hideViewButton?: boolean;
 }
 
 /**
@@ -88,8 +88,8 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
     isLocalToAPI,
     fetchPolicies,
     isReadOnly = false,
+    hideViewButton = false,
 }) => {
-
     const [hovered, setHovered] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -176,22 +176,25 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                             justifyContent='flex-end'
                             className={!hovered ? classes.policyActions : ''}
                         >
-                            <Tooltip
-                                placement='top'
-                                title={
-                                    <FormattedMessage
-                                        id='Apis.Details.Policies.DraggablePolicyCard.policy.view'
-                                        defaultMessage='View'
-                                    />
-                                }
-                            >
-                                <IconButton
-                                    onClick={handleViewPolicy}
-                                    aria-label={'view-' + policyObj.name}
-                                    size='large'>
-                                    <VisibilityIcon />
-                                </IconButton>
-                            </Tooltip>
+                            {!hideViewButton && (
+                                <Tooltip
+                                    placement='top'
+                                    title={
+                                        <FormattedMessage
+                                            id='Apis.Details.Policies.DraggablePolicyCard.policy.view'
+                                            defaultMessage='View'
+                                        />
+                                    }
+                                >
+                                    <IconButton
+                                        onClick={handleViewPolicy}
+                                        aria-label={'view-' + policyObj.name}
+                                        size='large'
+                                    >
+                                        <VisibilityIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            )}
                             {isLocalToAPI && (
                                 <DeletePolicy
                                     policyId={policyObj.id}
@@ -203,12 +206,14 @@ const DraggablePolicyCard: React.FC<DraggablePolicyCardProps> = ({
                     </ListItem>
                 </div>
             </Box>
-            <ViewPolicy
-                dialogOpen={dialogOpen}
-                handleDialogClose={handleViewPolicyClose}
-                policyObj={policyObj}
-                isLocalToAPI={isLocalToAPI}
-            />
+            {!hideViewButton && (
+                <ViewPolicy
+                    dialogOpen={dialogOpen}
+                    handleDialogClose={handleViewPolicyClose}
+                    policyObj={policyObj}
+                    isLocalToAPI={isLocalToAPI}
+                />
+            )}
         </Root>
     );
 };
