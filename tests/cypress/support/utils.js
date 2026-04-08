@@ -29,17 +29,15 @@ export default class Utils {
     }
     static getApiToken() {
         return new Cypress.Promise((resolve, reject) => {
-            try {
-                cy.getCookie('WSO2_AM_TOKEN_1_Default')
-                    .then((cookieP1) => {
-                        cy.getCookie('AM_ACC_TOKEN_DEFAULT_P2')
-                            .then((cookieP2) => {
-                                resolve(`${cookieP1.value}${cookieP2.value}`);
-                            })
-                    });
-            } catch (e) {
-                reject('Error while extracting token');
-            }
+            cy.getCookie('WSO2_AM_TOKEN_1_Default').then((cookieP1) => {
+                cy.getCookie('AM_ACC_TOKEN_DEFAULT_P2').then((cookieP2) => {
+                    if (!cookieP1?.value || !cookieP2?.value) {
+                        reject('Error while extracting token: required auth cookies are missing.');
+                        return;
+                    }
+                    resolve(`${cookieP1.value}${cookieP2.value}`);
+                });
+            });
         })
     }
 

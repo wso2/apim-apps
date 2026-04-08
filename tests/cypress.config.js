@@ -1,0 +1,44 @@
+const { defineConfig } = require('cypress')
+
+module.exports = defineConfig({
+  chromeWebSecurity: false,
+  pageLoadTimeout: 100000,
+  defaultCommandTimeout: 100000,
+  screenshotsFolder: 'cypress/screenshots',
+  screenshotOnRunFailure: true,
+  reporter: 'cypress-multi-reporters',
+  reporterOptions: {
+    inlineAssets: true,
+    reporterEnabled: 'cypress-mochawesome-reporter, mocha-junit-reporter',
+    mochaJunitReporterReporterOptions: {
+      mochaFile: 'cypress/reports/junit/results-[hash].xml',
+    },
+    cypressMochawesomeReporterReporterOptions: {
+      charts: true,
+      reportPageTitle: 'custom-title',
+    },
+  },
+  video: false,
+  scrollBehavior: 'nearest',
+  retries: {
+    runMode: 2,
+    openMode: 0,
+  },
+  env: {
+    largeTimeout: 100000,
+  },
+  e2e: {
+    setupNodeEvents(on, config) {
+      require('cypress-mochawesome-reporter/plugin')(on)
+      require('./cypress/plugins/index.js')(on, config)
+      return config
+    },
+    specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
+    excludeSpecPattern: [
+      '**/externalDevPortals/**/*.cy.js',
+      '**/06-solace-broker-integration.cy.js',
+      '**/*.cy.skip.js',
+    ],
+    baseUrl: 'https://localhost:9443',
+  },
+})
