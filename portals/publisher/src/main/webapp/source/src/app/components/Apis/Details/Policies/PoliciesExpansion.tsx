@@ -223,6 +223,10 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     useEffect(() => {
         (async () => {
             if (!isPolicyHubGateway && !allPolicies) {
+                setRequestFlowPolicyList([]);
+                setResponseFlowPolicyList([]);
+                setFaultFlowPolicyList([]);
+                setListOriginatedFromCommonPolicies([]);
                 return;
             }
             const operationInAction = (!isAPILevelPolicy) ? apiOperations.find(

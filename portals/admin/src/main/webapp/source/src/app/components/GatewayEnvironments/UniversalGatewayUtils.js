@@ -48,6 +48,8 @@ const DEFAULT_PLATFORM_GATEWAY_VERSION = 'v0.11.0';
 const DEFAULT_HELM_CHART_OCI_URL = 'oci://ghcr.io/wso2/api-platform/helm-charts/gateway';
 const DEFAULT_HELM_CHART_VERSION = '0.11.0';
 
+const getDefaultGatewayVersions = () => [DEFAULT_PLATFORM_GATEWAY_VERSION];
+
 // Safe regex: anchored at end ($), single char class, no nested quantifiers
 const trimTrailingSlashes = (value = '') => {
     const trimmed = value.trim();
@@ -68,18 +70,72 @@ const normalizeReleaseBaseUrl = (value) => {
     return trimTrailingSlashes(trimmed);
 };
 
-export const getPlatformGatewayReleaseConfig = (settings) => {
-    const platformGatewayConfig = settings?.universalGatewayVersion || {};
-    const releasesUrl = normalizeReleaseBaseUrl(platformGatewayConfig.releasesUrl);
-    const version = (platformGatewayConfig.version || DEFAULT_PLATFORM_GATEWAY_VERSION).trim();
+// Helper function to safely parse JSON strings
+export const tryParseJson = (value) => {
+    if (typeof value !== 'string') {
+        return value;
+    }
+    try {
+        return JSON.parse(value);
+    } catch (error) {
+        return value;
+    }
+};
+
+// Helper function to normalize properties into an object
+export const normalizeProperties = (properties) => {
+    if (!properties) {
+        return {};
+    }
+    if (Array.isArray(properties)) {
+        const mapped = {};
+        properties.forEach((property) => {
+            if (property && property.key) {
+                mapped[property.key] = tryParseJson(property.value);
+            }
+        });
+        return mapped;
+    }
+    if (typeof properties === 'string') {
+        const parsed = tryParseJson(properties);
+        return parsed && typeof parsed === 'object' ? parsed : {};
+    }
+    if (typeof properties === 'object') {
+        return properties;
+    }
+    return {};
+};
+
+export const getUniversalGatewayVersions = (settings) => {
+    const configuredVersions = settings?.universalGatewayVersions;
+    if (!Array.isArray(configuredVersions) || configuredVersions.length === 0) {
+        return getDefaultGatewayVersions();
+    }
+
+    const normalizedVersions = configuredVersions
+        .map((version) => (typeof version === 'string' ? version.trim() : ''))
+        .filter(Boolean);
+
+    if (normalizedVersions.length === 0) {
+        return getDefaultGatewayVersions();
+    }
+
+    return [...new Set(normalizedVersions)];
+};
+
+export const getPlatformGatewayReleaseConfig = (settings, selectedVersion) => {
+    const versions = getUniversalGatewayVersions(settings);
+    const version = versions.includes(selectedVersion)
+        ? selectedVersion
+        : versions[versions.length - 1];
+    const releasesUrl = normalizeReleaseBaseUrl();
     const browserHost = globalThis.window?.location.host || '';
-    const configuredControlPlaneHost = (platformGatewayConfig.controlPlaneHost || '').trim();
-    const controlPlaneHost = configuredControlPlaneHost || browserHost;
+    const controlPlaneHost = browserHost;
     const artifactName = `gateway-${version}`;
     const downloadCommand = `curl -sLO ${releasesUrl}/download/gateway/${version}/${artifactName}.zip && \\\n`
         + `unzip ${artifactName}.zip`;
-    const helmChartOciUrl = (platformGatewayConfig.helmChartOciUrl || DEFAULT_HELM_CHART_OCI_URL).trim();
-    const helmChartVersion = (platformGatewayConfig.helmChartVersion || DEFAULT_HELM_CHART_VERSION).trim();
+    const helmChartOciUrl = DEFAULT_HELM_CHART_OCI_URL;
+    const helmChartVersion = DEFAULT_HELM_CHART_VERSION;
 
     return {
         artifactName,
@@ -87,6 +143,37 @@ export const getPlatformGatewayReleaseConfig = (settings) => {
         downloadCommand,
         helmChartOciUrl,
         helmChartVersion,
+        version,
+        versions,
+    };
+};
+
+export const getGatewayConfiguredVersion = (gateway, settings) => {
+    const versions = getUniversalGatewayVersions(settings);
+    const properties = normalizeProperties(gateway?.properties);
+    const gatewayController = tryParseJson(properties.gatewayController);
+    const versionFromProperties = (gatewayController?.version || properties?.version || '').trim();
+
+    if (versionFromProperties && versions.includes(versionFromProperties)) {
+        return versionFromProperties;
+    }
+
+    return versions[versions.length - 1];
+};
+
+export const setGatewayVersionInProperties = (properties, version) => {
+    const normalized = normalizeProperties(properties);
+    const gatewayController = tryParseJson(normalized.gatewayController);
+    const resolvedController = gatewayController && typeof gatewayController === 'object'
+        ? gatewayController
+        : {};
+
+    return {
+        ...normalized,
+        gatewayController: {
+            ...resolvedController,
+            version,
+        },
     };
 };
 
@@ -131,40 +218,6 @@ export const getVhostFromBaseUrl = (baseUrl) => {
         return '';
     }
     return new URL(baseUrl).host;
-};
-
-export const tryParseJson = (value) => {
-    if (typeof value !== 'string') {
-        return value;
-    }
-    try {
-        return JSON.parse(value);
-    } catch (error) {
-        return value;
-    }
-};
-
-export const normalizeProperties = (properties) => {
-    if (!properties) {
-        return {};
-    }
-    if (Array.isArray(properties)) {
-        const mapped = {};
-        properties.forEach((property) => {
-            if (property && property.key) {
-                mapped[property.key] = tryParseJson(property.value);
-            }
-        });
-        return mapped;
-    }
-    if (typeof properties === 'string') {
-        const parsed = tryParseJson(properties);
-        return parsed && typeof parsed === 'object' ? parsed : {};
-    }
-    if (typeof properties === 'object') {
-        return properties;
-    }
-    return {};
 };
 
 export const buildAdditionalPropertiesArray = (properties = {}) => Object.keys(properties).map((key) => ({

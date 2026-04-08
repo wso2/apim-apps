@@ -66,13 +66,16 @@ import {
     buildPermissionsDTO,
     buildVhostDTO,
     createDefaultVhost,
+    getGatewayConfiguredVersion,
     getGatewayProvider,
     getGatewayStatusChipProps,
     getPlatformGatewayUrl,
+    getUniversalGatewayVersions,
     getVhostFromBaseUrl,
     normalizeBaseUrl,
     WSO2_GATEWAY_TYPES,
     WSO2_SELF_HOSTED_GATEWAY_TYPES,
+    setGatewayVersionInProperties,
     toPlatformGatewayName,
 } from './UniversalGatewayUtils';
 
@@ -412,6 +415,7 @@ function AddEditGWEnvironment(props) {
     const [validating, setValidating] = useState(false);
     const [saving, setSaving] = useState(false);
     const { gatewayTypes } = settings;
+    const gatewayVersions = useMemo(() => getUniversalGatewayVersions(settings), [settings]);
     const {
         match: {
             params: { id },
@@ -509,6 +513,9 @@ function AddEditGWEnvironment(props) {
     const [
         platformDescriptionDraft, setPlatformDescriptionDraft,
     ] = useState('');
+    const [platformGatewayVersion, setPlatformGatewayVersion] = useState(
+        gatewayVersions[gatewayVersions.length - 1],
+    );
 
     const [state, dispatch] = useReducer(reducer, initialState);
     const {
@@ -574,6 +581,7 @@ function AddEditGWEnvironment(props) {
                         );
                         if (matchedGateway) {
                             setPlatformGateway(matchedGateway);
+                            setPlatformGatewayVersion(getGatewayConfiguredVersion(matchedGateway, settings));
                         } else {
                             setPlatformGateway({
                                 id: platformGatewayId,
@@ -581,6 +589,7 @@ function AddEditGWEnvironment(props) {
                                 displayName: body.displayName,
                                 isActive: null,
                             });
+                            setPlatformGatewayVersion(gatewayVersions[gatewayVersions.length - 1]);
                         }
                         return;
                     }
@@ -619,8 +628,9 @@ function AddEditGWEnvironment(props) {
             };
             setInitialState(newInitialState);
             dispatch({ field: 'editDetails', value: newInitialState });
+            setPlatformGatewayVersion(gatewayVersions[gatewayVersions.length - 1]);
         }
-    }, [id, initialPermissions, restApi, initialGatewayType]);
+    }, [gatewayVersions, id, initialPermissions, restApi, initialGatewayType, settings]);
 
     useEffect(() => {
         if (permissions && permissions.roles) {
@@ -634,12 +644,16 @@ function AddEditGWEnvironment(props) {
                 state.displayName || platformGateway?.displayName || '',
             );
             setPlatformDescriptionDraft(state.description || '');
+            if (platformGateway) {
+                setPlatformGatewayVersion(getGatewayConfiguredVersion(platformGateway, settings));
+            }
         }
     }, [
         platformHeaderEditMode,
         platformGateway,
         state.description,
         state.displayName,
+        settings,
     ]);
 
     useEffect(() => {
@@ -730,6 +744,9 @@ function AddEditGWEnvironment(props) {
             state.displayName || platformGateway?.displayName || '',
         );
         setPlatformDescriptionDraft(state.description || '');
+        if (platformGateway) {
+            setPlatformGatewayVersion(getGatewayConfiguredVersion(platformGateway, settings));
+        }
         setPlatformHeaderEditMode(true);
     };
 
@@ -738,6 +755,9 @@ function AddEditGWEnvironment(props) {
             state.displayName || platformGateway?.displayName || '',
         );
         setPlatformDescriptionDraft(state.description || '');
+        if (platformGateway) {
+            setPlatformGatewayVersion(getGatewayConfiguredVersion(platformGateway, settings));
+        }
         setPlatformHeaderEditMode(false);
     };
 
@@ -768,6 +788,30 @@ function AddEditGWEnvironment(props) {
 
         setPlatformHeaderSaving(true);
         try {
+            if (platformGateway?.id) {
+                const updatedProperties = setGatewayVersionInProperties(
+                    platformGateway.properties,
+                    platformGatewayVersion,
+                );
+                const updatedPlatformGatewayResponse = await restApi.updatePlatformGateway(platformGateway.id, {
+                    name: platformGateway.name || name.trim(),
+                    displayName: trimmedDisplayName,
+                    description: trimmedDescription,
+                    vhost: platformGateway.vhost,
+                    properties: updatedProperties,
+                    permissions: platformGateway.permissions,
+                });
+                const updatedPlatformGateway = updatedPlatformGatewayResponse?.body
+                    || updatedPlatformGatewayResponse;
+                if (updatedPlatformGateway) {
+                    setPlatformGateway({
+                        ...platformGateway,
+                        ...updatedPlatformGateway,
+                        properties: updatedPlatformGateway.properties || updatedProperties,
+                    });
+                }
+            }
+
             await restApi.updateGatewayEnvironment(
                 id,
                 name.trim(),
@@ -1102,6 +1146,7 @@ function AddEditGWEnvironment(props) {
                     gatewayController: {
                         enabled: true,
                         baseUrl: normalizedBaseUrl,
+                        version: platformGatewayVersion,
                     },
                 },
                 permissions: {
@@ -1440,6 +1485,31 @@ function AddEditGWEnvironment(props) {
                                                             platformHeaderSaving
                                                         }
                                                     />
+                                                    <FormControl fullWidth size='small'>
+                                                        <InputLabel>
+                                                            {intl.formatMessage({
+                                                                id: 'Gateways.AddEditGateway.platform.field.version',
+                                                                defaultMessage: 'Gateway Version',
+                                                            })}
+                                                        </InputLabel>
+                                                        <Select
+                                                            value={platformGatewayVersion}
+                                                            label={intl.formatMessage({
+                                                                id: 'Gateways.AddEditGateway.platform.field.version',
+                                                                defaultMessage: 'Gateway Version',
+                                                            })}
+                                                            onChange={(event) => {
+                                                                setPlatformGatewayVersion(event.target.value);
+                                                            }}
+                                                            disabled={platformHeaderSaving}
+                                                        >
+                                                            {gatewayVersions.map((version) => (
+                                                                <MenuItem key={version} value={version}>
+                                                                    {version}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    </FormControl>
                                                 </Box>
                                                 <Box className={classes.platformEditActions}>
                                                     <IconButton
@@ -1513,6 +1583,14 @@ function AddEditGWEnvironment(props) {
                                                             defaultMessage:
                                                                 'No description provided.',
                                                         })}
+                                                </Typography>
+                                                <Typography variant='body2' color='text.secondary' sx={{ mt: 1 }}>
+                                                    {intl.formatMessage({
+                                                        id: 'Gateways.AddEditGateway.platform.field.version',
+                                                        defaultMessage: 'Gateway Version',
+                                                    })}
+                                                    :
+                                                    {platformGatewayVersion}
                                                 </Typography>
                                             </>
                                         )}
@@ -1898,49 +1976,86 @@ function AddEditGWEnvironment(props) {
                                     />
                                     {gatewayType
                                         === CONSTS.GATEWAY_TYPE.apiPlatform && (
-                                        <TextField
-                                            id='platformGatewayBaseUrl'
-                                            margin='dense'
-                                            name='platformGatewayBaseUrl'
-                                            label={(
-                                                <span>
-                                                    <FormattedMessage
-                                                        id={
-                                                            'GatewayEnvironments.AddEditGWEnvironment'
-                                                            + '.form.platform.base.url'
-                                                        }
-                                                        defaultMessage='URL'
-                                                    />
-                                                    <StyledSpan>*</StyledSpan>
-                                                </span>
-                                            )}
-                                            placeholder='https://gateway.example.com:8443'
-                                            fullWidth
-                                            variant='outlined'
-                                            value={platformGatewayBaseUrl}
-                                            disabled={isReadOnly}
-                                            onChange={
-                                                handlePlatformBaseUrlChange
-                                            }
-                                            error={hasErrors(
-                                                'platformGatewayBaseUrl',
-                                                platformGatewayBaseUrl,
-                                                validating,
-                                            )}
-                                            helperText={
-                                                hasErrors(
+                                        <>
+                                            <TextField
+                                                id='platformGatewayBaseUrl'
+                                                margin='dense'
+                                                name='platformGatewayBaseUrl'
+                                                label={(
+                                                    <span>
+                                                        <FormattedMessage
+                                                            id={
+                                                                'GatewayEnvironments.AddEditGWEnvironment'
+                                                                + '.form.platform.base.url'
+                                                            }
+                                                            defaultMessage='URL'
+                                                        />
+                                                        <StyledSpan>*</StyledSpan>
+                                                    </span>
+                                                )}
+                                                placeholder='https://gateway.example.com:8443'
+                                                fullWidth
+                                                variant='outlined'
+                                                value={platformGatewayBaseUrl}
+                                                disabled={isReadOnly}
+                                                onChange={
+                                                    handlePlatformBaseUrlChange
+                                                }
+                                                error={hasErrors(
                                                     'platformGatewayBaseUrl',
                                                     platformGatewayBaseUrl,
                                                     validating,
-                                                )
-                                                || intl.formatMessage({
-                                                    id: 'GatewayEnvironments.AddEditGWEnvironment.form.platform.base.'
-                                                        + 'url.help',
-                                                    defaultMessage:
-                                                        'The base URL where your gateway will be accessible',
-                                                })
-                                            }
-                                        />
+                                                )}
+                                                helperText={
+                                                    hasErrors(
+                                                        'platformGatewayBaseUrl',
+                                                        platformGatewayBaseUrl,
+                                                        validating,
+                                                    )
+                                                    || intl.formatMessage({
+                                                        id: 'GatewayEnvironments.AddEditGWEnvironment'
+                                                            + '.form.platform.base.url.help',
+                                                        defaultMessage:
+                                                            'The base URL where your gateway will be accessible',
+                                                    })
+                                                }
+                                            />
+                                            <FormControl fullWidth margin='dense'>
+                                                <InputLabel>
+                                                    <FormattedMessage
+                                                        id={'GatewayEnvironments.AddEditGWEnvironment'
+                                                            + '.form.platform.version'}
+                                                        defaultMessage='Gateway Version'
+                                                    />
+                                                </InputLabel>
+                                                <Select
+                                                    value={platformGatewayVersion}
+                                                    label={intl.formatMessage({
+                                                        id: 'GatewayEnvironments.AddEditGWEnvironment'
+                                                            + '.form.platform.version',
+                                                        defaultMessage: 'Gateway Version',
+                                                    })}
+                                                    onChange={(event) => {
+                                                        setPlatformGatewayVersion(event.target.value);
+                                                    }}
+                                                    disabled={isReadOnly}
+                                                >
+                                                    {gatewayVersions.map((version) => (
+                                                        <MenuItem key={version} value={version}>
+                                                            {version}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                                <FormHelperText>
+                                                    <FormattedMessage
+                                                        id={'GatewayEnvironments.AddEditGWEnvironment'
+                                                            + '.form.platform.version.help'}
+                                                        defaultMessage={'Select the gateway version'
+                                                            + ' for quick-start setup.'}
+                                                    />
+                                                </FormHelperText>
+                                            </FormControl>
+                                        </>
                                     )}
                                 </Box>
                             </Grid>

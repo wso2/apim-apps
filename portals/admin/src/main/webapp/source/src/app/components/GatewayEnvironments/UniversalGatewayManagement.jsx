@@ -23,14 +23,19 @@ import PropTypes from 'prop-types';
 import API from 'AppData/api';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import Alert from 'AppComponents/Shared/Alert';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 import {
     Alert as MuiAlert,
     Box,
     Button,
     Chip,
     CircularProgress,
+    FormControl,
     IconButton,
     Link,
+    InputLabel,
+    MenuItem,
+    Select,
     TextField,
     Typography,
 } from '@mui/material';
@@ -42,15 +47,19 @@ import UniversalGatewaySuccessView from './UniversalGatewaySuccessView';
 import UniversalGatewayRegenerateTokenDialog from './UniversalGatewayRegenerateTokenDialog';
 import {
     gatewayShape,
+    getGatewayConfiguredVersion,
+    getUniversalGatewayVersions,
     getAdditionalProperty,
     getGatewayStatusChipProps,
     normalizeProperties,
     resolveGatewayStatus,
+    setGatewayVersionInProperties,
 } from './UniversalGatewayUtils';
 
 const UniversalGatewayManagement = (props) => {
     const intl = useIntl();
     const t = useCallback((id, defaultMessage, values) => intl.formatMessage({ id, defaultMessage }, values), [intl]);
+    const { settings } = useAppContext();
     const { match: { params: { gatewayId } = {} } = {}, location } = props;
     const restApi = useMemo(() => new API(), []);
     const preloadedGateway = useMemo(() => {
@@ -76,13 +85,16 @@ const UniversalGatewayManagement = (props) => {
     const [updatingExisting, setUpdatingExisting] = useState(false);
     const [showTokenCommands, setShowTokenCommands] = useState(false);
     const [existingHeaderEditMode, setExistingHeaderEditMode] = useState(false);
+    const [gatewayVersion, setGatewayVersion] = useState('');
+    const gatewayVersions = useMemo(() => getUniversalGatewayVersions(settings), [settings]);
 
     const applyExistingGateway = useCallback((gatewayToApply) => {
         setExistingGateway(gatewayToApply);
         setName(gatewayToApply?.displayName || gatewayToApply?.name || '');
         setDescription(gatewayToApply?.description || '');
+        setGatewayVersion(getGatewayConfiguredVersion(gatewayToApply, settings));
         setExistingHeaderEditMode(false);
-    }, []);
+    }, [settings]);
 
     const getMergedGateway = useCallback(
         (gatewayToApply) => {
@@ -203,7 +215,8 @@ const UniversalGatewayManagement = (props) => {
     const isExistingGatewaySaveDisabled = updatingExisting || !name.trim()
         || (name.trim() === (existingGateway?.displayName
             || existingGateway?.name || '').trim() && description.trim()
-                === (existingGateway?.description || '').trim());
+                === (existingGateway?.description || '').trim()
+                && gatewayVersion === getGatewayConfiguredVersion(existingGateway, settings));
 
     const handleUpdateExistingGateway = async () => {
         if (!existingGateway?.id) {
@@ -213,19 +226,28 @@ const UniversalGatewayManagement = (props) => {
         setUpdatingExisting(true);
         setError('');
         try {
+            const updatedProperties = setGatewayVersionInProperties(
+                normalizeProperties(existingGateway.properties),
+                gatewayVersion,
+            );
             const result = await restApi.updatePlatformGateway(existingGateway.id, {
                 name: existingGateway.name,
                 displayName: name.trim(),
                 description: description.trim(),
                 vhost: existingGateway.vhost,
-                properties: normalizeProperties(existingGateway.properties),
+                properties: updatedProperties,
                 permissions: existingGateway.permissions,
             });
             const updatedGateway = result?.body || result;
             if (updatedGateway) {
-                setExistingGateway(updatedGateway);
-                setName(updatedGateway.displayName || updatedGateway.name || '');
-                setDescription(updatedGateway.description || '');
+                const mergedGateway = {
+                    ...existingGateway,
+                    ...updatedGateway,
+                    properties: updatedGateway.properties || updatedProperties,
+                };
+                setExistingGateway(mergedGateway);
+                setName(mergedGateway.displayName || mergedGateway.name || '');
+                setDescription(mergedGateway.description || '');
             }
             setExistingHeaderEditMode(false);
             Alert.success(t('Gateways.UniversalGatewayManagement.update.success', 'Gateway updated successfully.'));
@@ -246,6 +268,7 @@ const UniversalGatewayManagement = (props) => {
     const handleCancelExistingGatewayHeaderEdit = () => {
         setName(existingGateway?.displayName || existingGateway?.name || '');
         setDescription(existingGateway?.description || '');
+        setGatewayVersion(getGatewayConfiguredVersion(existingGateway, settings));
         setExistingHeaderEditMode(false);
     };
 
@@ -343,6 +366,29 @@ const UniversalGatewayManagement = (props) => {
                                         onChange={(event) => setDescription(event.target.value)}
                                         disabled={updatingExisting}
                                     />
+                                    <FormControl fullWidth size='small'>
+                                        <InputLabel>
+                                            {t(
+                                                'Gateways.UniversalGatewayManagement.form.version',
+                                                'Gateway Version',
+                                            )}
+                                        </InputLabel>
+                                        <Select
+                                            value={gatewayVersion}
+                                            label={t(
+                                                'Gateways.UniversalGatewayManagement.form.version',
+                                                'Gateway Version',
+                                            )}
+                                            onChange={(event) => setGatewayVersion(event.target.value)}
+                                            disabled={updatingExisting}
+                                        >
+                                            {gatewayVersions.map((version) => (
+                                                <MenuItem key={version} value={version}>
+                                                    {version}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
                                     <Box
                                         sx={{
                                             display: 'flex',
@@ -435,6 +481,11 @@ const UniversalGatewayManagement = (props) => {
                                         {existingGateway.description
                                             || t('Gateways.UniversalGatewayManagement.description.empty',
                                                 'No description provided.')}
+                                    </Typography>
+                                    <Typography variant='body2' color='text.secondary' sx={{ mt: 1 }}>
+                                        {t('Gateways.UniversalGatewayManagement.version.label', 'Version')}
+                                        :
+                                        {gatewayVersion}
                                     </Typography>
                                 </>
                             )}
