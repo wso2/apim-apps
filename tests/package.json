@@ -39,10 +39,9 @@
     "mochawesome-report-generator": "^5.2.0"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.808.0",
+    "aws-sdk": "^2.942.0",
     "archiver": "^7.0.1",
     "cypress-file-upload": "^5.0.8",
-    "nodemailer": "^7.0.3",
     "require-text": "0.0.1",
     "styliner": "^1.1.0",
     "yamljs": "^0.3.0"

@@ -119,29 +119,11 @@ sudo ln -s $HOME/node-v12.22.3-linux-x64/bin/npx /usr/bin/npx
 sudo apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb -y
 export LC_CTYPE="en_US.UTF-8"
 cd $HOME
-npm install cypress
-npm install --save-dev cypress-file-upload
-npm install --save  nodemailer
-npm install --save require-text
-npm install styliner
-npm i --save-dev cypress-mochawesome-reporter
-npm i --save-dev mocha-junit-reporter
-npm i --save-dev cypress-multi-reporters
-npm i babel-plugin-module-resolver
-
+npm ci
 
 export S3_SECRET_KEY=$(get_prop 's3secretKey')
 export S3_ACCESS_KEY=$(get_prop 's3accessKey')
 export TESTGRID_EMAIL_PASSWORD=$(get_prop 'testgridEmailPassword')
-
-npm install --save-dev cypress-multi-reporters mocha-junit-reporter
-npm install --save-dev mochawesome mochawesome-merge mochawesome-report-generator
-npm install --save-dev mocha
-npm install --save-dev @cypress/browserify-preprocessor
-npm install archiver
-npm install yamljs
-npm install junit-report-merger --save-dev
-npm i --save aws-sdk
 npm run delete:reportFolderHTML
 npm run delete:reportFolderJUnit
 npm run delete:reportFolderReport
