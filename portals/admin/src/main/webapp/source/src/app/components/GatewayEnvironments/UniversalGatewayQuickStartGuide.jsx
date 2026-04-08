@@ -31,7 +31,7 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { useIntl } from 'react-intl';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
-import { gatewayShape, getPlatformGatewayReleaseConfig } from './UniversalGatewayUtils';
+import { gatewayShape, getGatewayConfiguredVersion, getPlatformGatewayReleaseConfig } from './UniversalGatewayUtils';
 
 const QUICK_START_TAB = {
     quickStart: 'quick-start',
@@ -545,11 +545,15 @@ const QuickStartGuide = ({
     const t = (id, defaultMessage, values) => intl.formatMessage({ id, defaultMessage }, values);
     const [selectedTab, setSelectedTab] = useState(QUICK_START_TAB.quickStart);
     const { settings } = useAppContext();
+    const selectedGatewayVersion = useMemo(
+        () => getGatewayConfiguredVersion(gateway, settings),
+        [gateway, settings],
+    );
     const {
         artifactName, controlPlaneHost, downloadCommand, helmChartOciUrl, helmChartVersion,
     } = useMemo(
-        () => getPlatformGatewayReleaseConfig(settings),
-        [settings],
+        () => getPlatformGatewayReleaseConfig(settings, selectedGatewayVersion),
+        [selectedGatewayVersion, settings],
     );
     const displayRegistrationToken = '<your-gateway-token>';
     const actualRegistrationToken = gateway?.registrationToken || displayRegistrationToken;
