@@ -58,7 +58,9 @@ const styles = {
         display: 'block',
     },
     contentWrapper: {
-        margin: '40px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     tableCellWrapper: {
         '& td': {
@@ -70,6 +72,14 @@ const styles = {
 
 const StyledDiv = styled('div')({});
 
+/**
+ * API Keys View Component
+ *
+ * Displays a list of all API keys with search, filter, and revoke functionality.
+ * Allows administrators to view and manage API keys across applications and APIs.
+ *
+ * @returns {JSX.Element} The API Keys listing page component
+ */
 export default function ApiKeysView() {
     const intl = useIntl();
     const [isRevoking, setIsRevoking] = useState(false);
@@ -172,7 +182,6 @@ export default function ApiKeysView() {
             || (row.user || '').toLowerCase().includes(q)
         );
     });
-
     const columns = [
         {
             name: 'keyName',
@@ -220,7 +229,6 @@ export default function ApiKeysView() {
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const { keyType } = filteredKeys[dataIndex];
-                    const isProduction = keyType === 'PRODUCTION';
                     let keyTypeLabel = keyType;
                     if (keyType === 'PRODUCTION') {
                         keyTypeLabel = intl.formatMessage({
@@ -239,8 +247,8 @@ export default function ApiKeysView() {
                             size='small'
                             sx={{
                                 ...typeChipSx,
-                                backgroundColor: isProduction ? '#FFE7E3' : '#E3F2FD',
-                                color: isProduction ? '#B42318' : '#1565C0',
+                                backgroundColor: '#F2F4F7',
+                                color: '#475467',
                             }}
                         />
                     );
@@ -436,66 +444,89 @@ export default function ApiKeysView() {
         <>
             <ContentBase {...pageProps}>
                 <div>
-                    <AppBar sx={styles.searchBar} position='static' color='default' elevation={0}>
-                        <Toolbar>
-                            <Grid container spacing={2} alignItems='center'>
-                                <Grid item>
-                                    <SearchIcon sx={styles.block} color='inherit' />
-                                </Grid>
-                                <Grid item xs>
-                                    <TextField
-                                        fullWidth
-                                        variant='standard'
-                                        placeholder={intl.formatMessage({
-                                            id: 'APIKeys.ListApiKeys.search.placeholder',
-                                            defaultMessage: 'Search by key, application, API, type, or user...',
-                                        })}
-                                        sx={(theme) => ({
-                                            '& .search-input': {
-                                                fontSize: theme.typography.fontSize,
-                                            },
-                                        })}
-                                        InputProps={{
-                                            disableUnderline: true,
-                                            className: 'search-input',
-                                        }}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        value={searchQuery}
-                                    />
-                                </Grid>
-                                <Grid item>
-                                    <Tooltip
-                                        title={(
-                                            <FormattedMessage
-                                                id='AdminPages.Addons.ListBase.reload'
-                                                defaultMessage='Reload'
+                    {apiKeys.length >= 1 ? (
+                        <>
+                            <AppBar sx={styles.searchBar} position='static' color='default' elevation={0}>
+                                <Toolbar>
+                                    <Grid container spacing={2} alignItems='center'>
+                                        <Grid item>
+                                            <SearchIcon sx={styles.block} color='inherit' />
+                                        </Grid>
+                                        <Grid item xs>
+                                            <TextField
+                                                fullWidth
+                                                variant='standard'
+                                                placeholder={intl.formatMessage({
+                                                    id: 'APIKeys.ListApiKeys.search.placeholder',
+                                                    defaultMessage: 'Search by key, application, API, type, or user...',
+                                                })}
+                                                sx={(theme) => ({
+                                                    '& .search-input': {
+                                                        fontSize: theme.typography.fontSize,
+                                                    },
+                                                })}
+                                                InputProps={{
+                                                    disableUnderline: true,
+                                                    className: 'search-input',
+                                                }}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                value={searchQuery}
                                             />
-                                        )}
-                                    >
-                                        <IconButton onClick={fetchData}>
-                                            <RefreshIcon sx={styles.block} color='inherit' />
-                                        </IconButton>
-                                    </Tooltip>
-                                </Grid>
-                            </Grid>
-                        </Toolbar>
-                    </AppBar>
-                    <StyledDiv sx={styles.tableCellWrapper}>
-                        <MUIDataTable
-                            title={null}
-                            data={filteredKeys}
-                            columns={columns}
-                            options={options}
-                        />
-                    </StyledDiv>
-                    {filteredKeys.length === 0 && (
+                                        </Grid>
+                                        <Grid item>
+                                            <Tooltip
+                                                title={(
+                                                    <FormattedMessage
+                                                        id='AdminPages.Addons.ListBase.reload'
+                                                        defaultMessage='Reload'
+                                                    />
+                                                )}
+                                            >
+                                                <IconButton onClick={fetchData}>
+                                                    <RefreshIcon sx={styles.block} color='inherit' />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </Grid>
+                                    </Grid>
+                                </Toolbar>
+                            </AppBar>
+                            {filteredKeys.length > 0 ? (
+                                <StyledDiv sx={styles.tableCellWrapper}>
+                                    <MUIDataTable
+                                        title={null}
+                                        data={filteredKeys}
+                                        columns={columns}
+                                        options={options}
+                                    />
+                                </StyledDiv>
+                            ) : (
+                                <StyledDiv sx={styles.contentWrapper}>
+                                    <Typography color='textSecondary' align='center'>
+                                        <FormattedMessage
+                                            id='APIKeys.ListApiKeys.no.matching.items'
+                                            defaultMessage='No matching API keys found'
+                                        />
+                                    </Typography>
+                                </StyledDiv>
+                            )}
+                        </>
+                    ) : (
                         <StyledDiv sx={styles.contentWrapper}>
-                            <Typography color='textSecondary' align='center'>
-                                <FormattedMessage
-                                    id='APIKeys.ListApiKeys.no.matching.items'
-                                    defaultMessage='No matching API keys found'
-                                />
-                            </Typography>
+                            <div style={{ maxWidth: '640px', textAlign: 'center' }}>
+                                <Typography variant='h5' color='textPrimary' gutterBottom>
+                                    <FormattedMessage
+                                        id='APIKeys.ListApiKeys.empty.title'
+                                        defaultMessage='No API Keys Found'
+                                    />
+                                </Typography>
+                                <Typography variant='body1' color='textSecondary'>
+                                    <FormattedMessage
+                                        id='APIKeys.ListApiKeys.empty.description'
+                                        defaultMessage={'Get started by generating your first API key to access APIs '
+                                            + 'securely.'}
+                                    />
+                                </Typography>
+                            </div>
                         </StyledDiv>
                     )}
                 </div>

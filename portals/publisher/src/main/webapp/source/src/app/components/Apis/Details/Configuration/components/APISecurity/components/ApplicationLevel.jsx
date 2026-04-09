@@ -37,7 +37,6 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormHelperText from '@mui/material/FormHelperText';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
-import CONSTS from 'AppData/Constants';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import KeyManager from 'AppComponents/Apis/Details/Configuration/components/KeyManager';
 import Audience from 'AppComponents/Apis/Details/Configuration/components/Audience';
@@ -117,8 +116,6 @@ export default function ApplicationLevel(props) {
         }
     };
     const isCreateRestricted = () => isRestricted(getCreateScopes(), apiFromContext);
-    const isSubValidationDisabled = apiFromContext.policies && apiFromContext.policies.length === 1 
-        && apiFromContext.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
     let mandatoryValue = null;
     let hasResourceWithSecurity;
     if (apiFromContext.apiType === API.CONSTS.APIProduct) {
@@ -262,7 +259,6 @@ export default function ApplicationLevel(props) {
                                             checked={securityScheme.includes(API_SECURITY_API_KEY)}
                                             disabled={
                                                 isCreateRestricted()
-                                                || isSubValidationDisabled
                                             }
                                             onChange={({ target: { checked, value } }) => {
                                                 setApiKeyEnabled(checked);

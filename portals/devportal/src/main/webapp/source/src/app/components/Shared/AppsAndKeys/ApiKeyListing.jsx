@@ -50,6 +50,16 @@ import { getBasePath } from 'AppUtils/utils';
 import { mdiOpenInNew } from '@mdi/js';
 import { Icon as MDIcon } from '@mdi/react';
 
+/**
+ * Component for managing API key associations for an application.
+ * Displays associated API keys and allows users to associate/dissociate keys with subscribed APIs.
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.keyType - The type of key (e.g., 'PRODUCTION' or 'SANDBOX')
+ * @param {Object} props.selectedApp - The selected application object
+ * @param {string} props.selectedApp.appId - The ID of the selected application
+ * @returns {JSX.Element} The API key listing component
+ */
 export default function ApiKeyListing({ keyType, selectedApp }) {
     const intl = useIntl();
     const { settings } = React.useContext(SettingsContext);
@@ -146,9 +156,12 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
             .catch((error) => {
                 console.error('Error associating key:', error);
                 handleCloseAssociateModal();
-                setAssociateErrorMessage(
-                    error.response?.body?.description || intl.formatMessage({ id: 'Shared.AppsAndKeys.ApiKeyListing.error.associateFailed', defaultMessage: 'Failed to associate API key. Please try again.' }),
-                );
+                const errorMessage = error.response?.body?.description
+                    || intl.formatMessage({
+                        id: 'Shared.AppsAndKeys.ApiKeyListing.error.associateFailed',
+                        defaultMessage: 'Failed to associate API key. Please try again.',
+                    });
+                setAssociateErrorMessage(errorMessage);
                 setAssociateErrorOpen(true);
             });
     };
@@ -324,7 +337,13 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
                             </Typography>
                         );
                     }
-                    if (!lastUsed) return '-';
+                    if (lastUsed == null) {
+                        return (
+                            <Typography variant='body2' color='text.secondary'>
+                                <FormattedMessage id='Shared.AppsAndKeys.ApiKeyListing.table.notUsed' defaultMessage='Not Used' />
+                            </Typography>
+                        );
+                    }
                     try {
                         const date = new Date(lastUsed);
                         const dateOnly = date.toLocaleDateString('en-CA'); // YYYY-MM-DD format in local timezone

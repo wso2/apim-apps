@@ -728,7 +728,7 @@ export default function ListGWEnviornments() {
                     variant='contained'
                     size='small'
                     startIcon={<AddIcon />}
-                    sx={styles.emptyStateButton}
+                    sx={styles.primaryButton}
                 >
                     {intl.formatMessage({
                         id: 'Gateways.ListGatewayEnvironments.addThirdPartyGateway',

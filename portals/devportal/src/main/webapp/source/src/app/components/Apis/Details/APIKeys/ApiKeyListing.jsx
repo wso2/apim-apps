@@ -56,6 +56,10 @@ import Application from 'AppData/Application';
 import ApiKeyAssociation from './ApiKeyAssociation';
 import ApiKeyGenerate from './ApiKeyGenerate';
 
+/**
+ * Component for listing and managing API keys for a specific API
+ * @returns {React.Component} ApiKeyListing component
+ */
 export default function ApiKeyListing() {
     const params = useParams();
     const apiUUID = params.apiUuid;
@@ -331,7 +335,13 @@ export default function ApiKeyListing() {
                     try {
                         const issuedDate = new Date(issuedOn);
                         const expiresDate = new Date(issuedDate.getTime() + (keyValidityPeriod * 1000));
-                        return expiresDate.toLocaleString();
+                        const dateOnly = expiresDate.toLocaleDateString('en-CA');
+                        const fullDateTime = expiresDate.toLocaleString();
+                        return (
+                            <Tooltip title={fullDateTime} placement='top'>
+                                <Typography variant='body2'>{dateOnly}</Typography>
+                            </Tooltip>
+                        );
                     } catch (error) {
                         return keyValidityPeriod;
                     }
@@ -352,10 +362,16 @@ export default function ApiKeyListing() {
                             </Typography>
                         );
                     }
-                    if (!lastUsed) return '-';
+                    if (lastUsed == null) {
+                        return (
+                            <Typography variant='body2' color='text.secondary'>
+                                <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.table.notUsed' defaultMessage='Not Used' />
+                            </Typography>
+                        );
+                    }
                     try {
                         const date = new Date(lastUsed);
-                        const dateOnly = date.toLocaleDateString('en-CA'); // YYYY-MM-DD format in local timezone
+                        const dateOnly = date.toLocaleDateString('en-CA');
                         const fullDateTime = date.toLocaleString();
                         return (
                             <Tooltip title={fullDateTime} placement='top'>
