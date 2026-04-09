@@ -363,7 +363,9 @@ const Root = styled('div')(({ theme }) => ({
                                     </>
                                 ) : (
                                     <Typography variant="body1" style={{ whiteSpace: 'pre-wrap' }}>
-                                        {message.content}
+                                        {typeof message.content === 'string'
+                                            ? message.content
+                                            : JSON.stringify(message.content)}
                                     </Typography>
                                 )}
                             </Box>
@@ -415,7 +417,11 @@ const Root = styled('div')(({ theme }) => ({
                                         display: 'inline-block',
                                     }}
                                 >
-                                    <Typography variant="body1">{message.content}</Typography>
+                                    <Typography variant="body1">
+                                        {typeof message.content === 'string'
+                                            ? message.content
+                                            : JSON.stringify(message.content)}
+                                    </Typography>
                                 </Box>
                             </Box>
                         </Box>

@@ -232,15 +232,15 @@ class APIDefinition extends React.Component {
                     });
                 } else if (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE' || api.type === 'ASYNC') {
                     this.setState({
-                        asyncAPI: YAML.safeDump(YAML.safeLoad(response.data)),
-                        asyncAPIModified: YAML.safeDump(YAML.safeLoad(response.data)),
+                        asyncAPI: YAML.dump(YAML.load(response.data)),
+                        asyncAPIModified: YAML.dump(YAML.load(response.data)),
                         format: 'yaml',
                         convertTo: this.getConvertToFormat('yaml'),
                     });
                 } else {
                     this.setState({
-                        swagger: YAML.safeDump(YAML.safeLoad(response.data)),
-                        swaggerModified: YAML.safeDump(YAML.safeLoad(response.data)),
+                        swagger: YAML.dump(YAML.load(response.data)),
+                        swaggerModified: YAML.dump(YAML.load(response.data)),
                         format: 'yaml',
                         convertTo: this.getConvertToFormat('yaml'),
                     });
@@ -295,7 +295,7 @@ class APIDefinition extends React.Component {
             if (convertTo === 'json') {
                 formattedString = JSON.stringify(YAML.load(swagger), null, 1);
             } else {
-                formattedString = YAML.safeDump(YAML.safeLoad(swagger));
+                formattedString = YAML.dump(YAML.load(swagger));
             }
             this.setState({
                 swagger: formattedString,
@@ -307,7 +307,7 @@ class APIDefinition extends React.Component {
             if (convertTo === 'json') {
                 formattedString = JSON.stringify(YAML.load(asyncAPI), null, 1);
             } else {
-                formattedString = YAML.safeDump(YAML.safeLoad(asyncAPI));
+                formattedString = YAML.dump(YAML.load(asyncAPI));
             }
             this.setState({
                 asyncAPI: formattedString,
