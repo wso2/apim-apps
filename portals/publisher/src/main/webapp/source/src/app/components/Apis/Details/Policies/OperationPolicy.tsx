@@ -184,7 +184,7 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                                 )}
                             </Typography>
                         </Grid>
-                        {renderUsedInApiProducts}
+                        {renderUsedInApiProducts()}
                     </Grid>
                 </AccordionSummary>
                 <Divider sx={{ backgroundColor }} />
