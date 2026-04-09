@@ -1258,7 +1258,7 @@ function AddEditGWEnvironment(props) {
         } else if (value === CONSTS.GATEWAY_TYPE.regular) {
             return 'Universal Gateway - Classic';
         } else if (value === CONSTS.GATEWAY_TYPE.apk) {
-            return 'Kubernetes Gateway';
+            return 'Kubernetes Gateway v1.3';
         } else {
             return value + ' Gateway';
         }

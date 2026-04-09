@@ -417,11 +417,16 @@ export default function ListGWEnviornments() {
     // Helper function to render virtual hosts
     const renderVhosts = (vhosts) => {
         return vhosts.map((vhost) => (
-            <div key={`${vhost.host}:${vhost.httpsPort}`}>
-                {'https://' + vhost.host + (vhost.httpsPort === 443 ? ''
-                    : ':' + vhost.httpsPort) + (vhost.httpContext ? '/'
+        // Helper function to render virtual hosts
+        const renderVhosts = (vhosts) => {
+            return vhosts.map((vhost) => (
+                <div key={`${vhost.host}:${vhost.httpsPort}`}>
+                    {'https://' + vhost.host + (vhost.httpsPort === 443 ? ''
+                        : ':' + vhost.httpsPort) + (vhost.httpContext ? '/'
                         + vhost.httpContext.replace(/^\//g, '') : '')}
-            </div>
+                    </div>
+                ));
+            };
         ));
     };
 
