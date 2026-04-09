@@ -130,9 +130,11 @@ export const getPlatformGatewayReleaseConfig = (settings, selectedVersion) => {
         : versions[versions.length - 1];
     const releasesUrl = normalizeReleaseBaseUrl();
     const browserHost = globalThis.window?.location.host || '';
-    const controlPlaneHost = browserHost;
+    const controlPlaneHost = browserHost.startsWith('localhost')
+        ? browserHost.replace('localhost', 'host.docker.internal')
+        : browserHost;
     const artifactName = `wso2apip-api-gateway-${version}`;
-    const downloadCommand = `curl -sLO ${releasesUrl}/download/gateway/${version}/${artifactName}.zip && \\\n`
+    const downloadCommand = `curl -sLO ${releasesUrl}/download/gateway/v${version}/${artifactName}.zip && \\\n`
         + `unzip ${artifactName}.zip`;
     const helmChartOciUrl = DEFAULT_HELM_CHART_OCI_URL;
     const helmChartVersion = DEFAULT_HELM_CHART_VERSION;
