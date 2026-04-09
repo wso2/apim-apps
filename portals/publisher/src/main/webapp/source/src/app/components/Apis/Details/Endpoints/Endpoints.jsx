@@ -301,23 +301,32 @@ function Endpoints(props) {
                     .then(() => {
                         Alert.success('Custom backend uploaded successfully');
                     })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
-                            defaultMessage: 'Error Uploading Production Sequence Backend',
-                        }));
+                    .catch((error) => {
+                        if (error.response) {
+                            Alert.error(error.response.body.description);
+                        } else {
+                            Alert.error(intl.formatMessage({
+                                id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
+                                defaultMessage: 'Error Uploading Production Sequence Backend',
+                            }));
+                        }
                     });
             }
             if (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content) {
                 const sandBackend = sandBoxBackendList[0];
-                api.uploadCustomBackend(sandBackend.content, API_SECURITY_KEY_TYPE_SANDBOX, api.id).then(() => {
-                    Alert.success('Custom backend uploaded successfully');
-                })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
-                            defaultMessage: 'Error Uploading Sandbox Sequence Backend',
-                        }));
+                api.uploadCustomBackend(sandBackend.content, API_SECURITY_KEY_TYPE_SANDBOX, api.id)
+                    .then(() => {
+                        Alert.success('Custom backend uploaded successfully');
+                    })
+                    .catch((error) => {
+                        if (error.response) {
+                            Alert.error(error.response.body.description);
+                        } else {
+                            Alert.error(intl.formatMessage({
+                                id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
+                                defaultMessage: 'Error Uploading Sandbox Sequence Backend',
+                            }));
+                        }
                     });
             }
         }
@@ -401,11 +410,15 @@ function Endpoints(props) {
                     .then(() => {
                         Alert.success('Custom backend uploaded successfully');
                     })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
-                            defaultMessage: 'Error Uploading Production Sequence Backend',
-                        }));
+                    .catch((error) => {
+                        if (error.response) {
+                            Alert.error(error.response.body.description);
+                        } else {
+                            Alert.error(intl.formatMessage({
+                                id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
+                                defaultMessage: 'Error Uploading Production Sequence Backend',
+                            }));
+                        }
                     });
             }
             if (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content) {
@@ -414,11 +427,15 @@ function Endpoints(props) {
                     .then(() => {
                         Alert.success('Custom backend uploaded successfully');
                     })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
-                            defaultMessage: 'Error Uploading Sandbox Sequence Backend',
-                        }));
+                    .catch((error) => {
+                        if (error.response) {
+                            Alert.error(error.response.body.description);
+                        } else {
+                            Alert.error(intl.formatMessage({
+                                id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
+                                defaultMessage: 'Error Uploading Sandbox Sequence Backend',
+                            }));
+                        }
                     });
             }
         }
