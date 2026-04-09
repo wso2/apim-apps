@@ -302,14 +302,13 @@ function Endpoints(props) {
                         Alert.success('Custom backend uploaded successfully');
                     })
                     .catch((error) => {
-                        if (error.response) {
-                            Alert.error(error.response.body.description);
-                        } else {
-                            Alert.error(intl.formatMessage({
+                        const backendMessage = error?.response?.body?.description;
+                        Alert.error(
+                            backendMessage || intl.formatMessage({
                                 id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
                                 defaultMessage: 'Error Uploading Production Sequence Backend',
-                            }));
-                        }
+                            }),
+                        );
                     });
             }
             if (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content) {
@@ -319,14 +318,13 @@ function Endpoints(props) {
                         Alert.success('Custom backend uploaded successfully');
                     })
                     .catch((error) => {
-                        if (error.response) {
-                            Alert.error(error.response.body.description);
-                        } else {
-                            Alert.error(intl.formatMessage({
+                        const backendMessage = error?.response?.body?.description;
+                        Alert.error(
+                            backendMessage || intl.formatMessage({
                                 id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
                                 defaultMessage: 'Error Uploading Sandbox Sequence Backend',
-                            }));
-                        }
+                            }),
+                        );
                     });
             }
         }
@@ -411,14 +409,13 @@ function Endpoints(props) {
                         Alert.success('Custom backend uploaded successfully');
                     })
                     .catch((error) => {
-                        if (error.response) {
-                            Alert.error(error.response.body.description);
-                        } else {
-                            Alert.error(intl.formatMessage({
+                        const backendMessage = error?.response?.body?.description;
+                        Alert.error(
+                            backendMessage || intl.formatMessage({
                                 id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
                                 defaultMessage: 'Error Uploading Production Sequence Backend',
-                            }));
-                        }
+                            }),
+                        );
                     });
             }
             if (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content) {
@@ -428,14 +425,13 @@ function Endpoints(props) {
                         Alert.success('Custom backend uploaded successfully');
                     })
                     .catch((error) => {
-                        if (error.response) {
-                            Alert.error(error.response.body.description);
-                        } else {
-                            Alert.error(intl.formatMessage({
+                        const backendMessage = error?.response?.body?.description;
+                        Alert.error(
+                            backendMessage || intl.formatMessage({
                                 id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
                                 defaultMessage: 'Error Uploading Sandbox Sequence Backend',
-                            }));
-                        }
+                            }),
+                        );
                     });
             }
         }
