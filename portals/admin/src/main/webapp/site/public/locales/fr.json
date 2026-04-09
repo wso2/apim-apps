@@ -10,6 +10,8 @@
   "APIKeys.ListApiKeys.column.type": "Type",
   "APIKeys.ListApiKeys.column.user": "User",
   "APIKeys.ListApiKeys.common.ok": "OK",
+  "APIKeys.ListApiKeys.empty.description": "Get started by generating your first API key to access APIs securely.",
+  "APIKeys.ListApiKeys.empty.title": "No API Keys Found",
   "APIKeys.ListApiKeys.error.no.key.selected.for.revoke": "No API key selected for revoke.",
   "APIKeys.ListApiKeys.error.retrieving.data": "Error while retrieving data.",
   "APIKeys.ListApiKeys.error.revoke.failed": "Failed to revoke API key. Please try again.",
