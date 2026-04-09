@@ -340,7 +340,7 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
                     if (lastUsed == null) {
                         return (
                             <Typography variant='body2' color='text.secondary'>
-                                <FormattedMessage id='Shared.AppsAndKeys.ApiKeyListing.table.never' defaultMessage='Not Used' />
+                                <FormattedMessage id='Shared.AppsAndKeys.ApiKeyListing.table.notUsed' defaultMessage='Not Used' />
                             </Typography>
                         );
                     }

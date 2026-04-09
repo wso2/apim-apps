@@ -50,6 +50,13 @@ import {
 import MUIDataTable from 'mui-datatables';
 import API from 'AppData/api';
 
+/**
+ * LegacyApiKeys component for managing legacy API keys
+ * @param {object} props - Component props
+ * @param {string} props.keyType - Type of the key (PRODUCTION/SANDBOX)
+ * @param {object} props.selectedApp - Selected application object
+ * @returns {React.Component} LegacyApiKeys component
+ */
 export default function LegacyApiKeys({ keyType, selectedApp }) {
     const intl = useIntl();
 
@@ -118,10 +125,22 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
     const validityOptions = [
         { value: '30', label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.30days', defaultMessage: '30 Days' }) },
         { value: '90', label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.90days', defaultMessage: '90 Days' }) },
-        { value: '180', label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.6months', defaultMessage: '6 Months' }) },
+        {
+            value: '180',
+            label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.6months', defaultMessage: '6 Months' }),
+        },
         { value: '365', label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.1year', defaultMessage: '1 Year' }) },
-        { value: 'never', label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.never', defaultMessage: 'Never Expires' }) },
-        { value: 'custom', label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.custom', defaultMessage: 'Custom' }) },
+        {
+            value: 'never',
+            label: intl.formatMessage({
+                id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.never',
+                defaultMessage: 'Never Expires',
+            }),
+        },
+        {
+            value: 'custom',
+            label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.custom', defaultMessage: 'Custom' }),
+        },
     ];
 
     // Restriction options

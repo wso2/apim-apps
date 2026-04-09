@@ -444,7 +444,7 @@ export default function ApiKeysView() {
         <>
             <ContentBase {...pageProps}>
                 <div>
-                    {filteredKeys.length >= 1 ? (
+                    {apiKeys.length >= 1 ? (
                         <>
                             <AppBar sx={styles.searchBar} position='static' color='default' elevation={0}>
                                 <Toolbar>
@@ -490,14 +490,25 @@ export default function ApiKeysView() {
                                     </Grid>
                                 </Toolbar>
                             </AppBar>
-                            <StyledDiv sx={styles.tableCellWrapper}>
-                                <MUIDataTable
-                                    title={null}
-                                    data={filteredKeys}
-                                    columns={columns}
-                                    options={options}
-                                />
-                            </StyledDiv>
+                            {filteredKeys.length > 0 ? (
+                                <StyledDiv sx={styles.tableCellWrapper}>
+                                    <MUIDataTable
+                                        title={null}
+                                        data={filteredKeys}
+                                        columns={columns}
+                                        options={options}
+                                    />
+                                </StyledDiv>
+                            ) : (
+                                <StyledDiv sx={styles.contentWrapper}>
+                                    <Typography color='textSecondary' align='center'>
+                                        <FormattedMessage
+                                            id='APIKeys.ListApiKeys.no.matching.items'
+                                            defaultMessage='No matching API keys found'
+                                        />
+                                    </Typography>
+                                </StyledDiv>
+                            )}
                         </>
                     ) : (
                         <StyledDiv sx={styles.contentWrapper}>

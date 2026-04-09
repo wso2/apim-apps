@@ -365,7 +365,7 @@ export default function ApiKeyListing() {
                     if (lastUsed == null) {
                         return (
                             <Typography variant='body2' color='text.secondary'>
-                                <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.table.never' defaultMessage='Not Used' />
+                                <FormattedMessage id='Apis.Details.APIKeys.ApiKeyListing.table.notUsed' defaultMessage='Not Used' />
                             </Typography>
                         );
                     }
