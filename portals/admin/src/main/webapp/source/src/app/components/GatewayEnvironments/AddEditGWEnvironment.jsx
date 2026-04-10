@@ -2038,7 +2038,7 @@ function AddEditGWEnvironment(props) {
                                                     onChange={(event) => {
                                                         setPlatformGatewayVersion(event.target.value);
                                                     }}
-                                                    disabled={isReadOnly}
+                                                    disabled={isReadOnly || saving}
                                                 >
                                                     {gatewayVersions.map((version) => (
                                                         <MenuItem key={version} value={version}>
