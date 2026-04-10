@@ -96,7 +96,7 @@ const CONSTS = {
         },
         'wso2/apk': {
             value: 'wso2/apk',
-            name: 'Kubernetes Gateway - Classic',
+            name: 'Kubernetes Gateway v1.3',
             description: 'API gateway running on Kubernetes.',
             isNew: false,
         },

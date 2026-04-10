@@ -367,14 +367,14 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                     if (lastUsed === 'NOT_USED') {
                         return (
                             <Typography variant='body2' color='text.secondary'>
-                                <FormattedMessage id='Shared.AppsAndKeys.LegacyApiKeys.table.never' defaultMessage='Never' />
+                                <FormattedMessage id='Shared.AppsAndKeys.LegacyApiKeys.table.notUsed' defaultMessage='Not Used' />
                             </Typography>
                         );
                     }
                     if (lastUsed == null) {
                         return (
                             <Typography variant='body2' color='text.secondary'>
-                                <FormattedMessage id='Shared.AppsAndKeys.LegacyApiKeys.table.never' defaultMessage='Not Used' />
+                                <FormattedMessage id='Shared.AppsAndKeys.LegacyApiKeys.table.notUsed' defaultMessage='Not Used' />
                             </Typography>
                         );
                     }
