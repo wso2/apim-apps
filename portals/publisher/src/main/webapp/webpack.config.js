@@ -134,7 +134,9 @@ module.exports = (env, argv) => {
                 OverrideData: path.resolve(__dirname, 'override/src/app/data/'),
                 OverrideComponents: path.resolve(__dirname, 'override/src/app/components/'),
                 AppTests: path.resolve(__dirname, 'source/Tests/'),
-                'nimma/fallbacks': require.resolve('./node_modules/nimma/dist/legacy/cjs/fallbacks/index.js'), // nimma/* things Added because of spectral
+                'process/browser': require.resolve('process/browser.js'),
+                // nimma/* things Added because of spectral
+                'nimma/fallbacks': require.resolve('./node_modules/nimma/dist/legacy/cjs/fallbacks/index.js'), 
                 'nimma/legacy': require.resolve('./node_modules/nimma/dist/legacy/cjs/index.js'),
                 nimma: require.resolve('./node_modules/nimma/dist/legacy/cjs/index.js'),
             },
@@ -148,7 +150,7 @@ module.exports = (env, argv) => {
                 "http": false,
                 "https": false,
                 "stream": require.resolve("stream-browserify"),
-                "process": false,
+                "process": require.resolve("process/browser.js"),
                 "crypto": false,
                 "crypto-browserify": require.resolve('crypto-browserify'),
                 "url": require.resolve("url/"),
@@ -246,10 +248,8 @@ module.exports = (env, argv) => {
             // Work around for Buffer is undefined:
             // https://github.com/webpack/changelog-v5/issues/10
             new webpack.ProvidePlugin({
+                process: 'process/browser.js',
                 Buffer: ['buffer', 'Buffer'],
-            }),
-            new webpack.ProvidePlugin({
-                process: 'process/browser',
             }),
             new DeadCodePlugin({
                 failOnHint: !isDevelopmentBuild,
