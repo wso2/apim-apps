@@ -201,10 +201,16 @@ module.exports = (env, argv) => {
                 },
                 {
                     test: /\.(png|jpe?g|gif|svg|eot|ttf|woff|woff2)$/i,
-                    loader: 'url-loader',
-                    options: {
-                        limit: 8192,
-                    },
+                    type: 'javascript/auto',
+                    use: [
+                        {
+                            loader: 'url-loader',
+                            options: {
+                                limit: 8192,
+                                esModule: false,
+                            },
+                        },
+                    ],
                 },
                 // Until we migrate to webpack 5 https://github.com/jantimon/html-webpack-plugin/issues/1483 ~tmkb
                 // This is added to generate the index.jsp from a hbs template file including the hashed bundle file
