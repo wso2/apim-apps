@@ -414,13 +414,30 @@ export default function ListGWEnviornments() {
         id: idColumnIndex,
     };
 
+    // Helper: universal gateways store full URL in `host`
+    // regular gateways store hostname only — avoid prepending https:// twice.
+    const formatVhostDisplayUrl = (vhost) => {
+        const host = vhost.host || '';
+        const contextPart = vhost.httpContext
+            ? `/${String(vhost.httpContext).replace(/^\//g, '')}`
+            : '';
+        if (/^https?:\/\//i.test(host)) {
+            return host + contextPart;
+        }
+        // API may send httpsPort as string "443"; strict === 443 failed and produced a bogus ":443" suffix.
+        const portRaw = vhost.httpsPort;
+        const portNum = portRaw === undefined || portRaw === null || portRaw === ''
+            ? NaN
+            : Number(portRaw);
+        const portPart = Number.isFinite(portNum) && portNum !== 443 ? `:${portNum}` : '';
+        return `https://${host}${portPart}${contextPart}`;
+    };
+
     // Helper function to render virtual hosts
     const renderVhosts = (vhosts) => {
         return vhosts.map((vhost) => (
             <div key={`${vhost.host}:${vhost.httpsPort}`}>
-                {'https://' + vhost.host + (vhost.httpsPort === 443 ? ''
-                    : ':' + vhost.httpsPort) + (vhost.httpContext ? '/'
-                    + vhost.httpContext.replace(/^\//g, '') : '')}
+                {formatVhostDisplayUrl(vhost)}
             </div>
         ));
     };
