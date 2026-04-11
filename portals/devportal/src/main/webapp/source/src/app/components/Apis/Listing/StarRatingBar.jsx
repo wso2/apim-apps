@@ -166,17 +166,25 @@ class StarRatingBarLegacy extends React.Component {
         if (user != null) {
             const promisedRating = restApi.getRatingFromUser(apiId, null);
             promisedRating.then((response) => {
+                if (!response || response.body == null) {
+                    return;
+                }
+                const b = response.body;
+                const safeNum = (v) => {
+                    const n = typeof v === 'number' ? v : Number.parseFloat(String(v));
+                    return Number.isFinite(n) ? n : 0;
+                };
                 this.setState({
-                    avgRating: response.body.avgRating,
-                    userRating: response.body.userRating,
-                    count: response.body.count,
-                    total: response.body.pagination.total,
+                    avgRating: safeNum(b.avgRating),
+                    userRating: safeNum(b.userRating),
+                    count: Number.isFinite(b.count) ? b.count : 0,
+                    total: b.pagination && Number.isFinite(b.pagination.total) ? b.pagination.total : 0,
                 });
                 if (setRatingUpdate) {
                     setRatingUpdate({
-                        avgRating: response.body.avgRating,
-                        count: response.body.count,
-                        total: response.body.pagination.total,
+                        avgRating: safeNum(b.avgRating),
+                        count: Number.isFinite(b.count) ? b.count : 0,
+                        total: b.pagination && Number.isFinite(b.pagination.total) ? b.pagination.total : 0,
                     });
                 }
             });
@@ -257,7 +265,9 @@ class StarRatingBarLegacy extends React.Component {
         const {
             isEditable, showSummary, apiRating,
         } = this.props;
-        const apiRatingNumber = parseFloat(apiRating);
+        const parsed = parseFloat(apiRating);
+        const raw = Number.isFinite(parsed) ? parsed : 0;
+        const apiRatingNumber = Math.min(5, Math.max(0, raw));
         return (
             <Root>
                 {showSummary ? (
@@ -324,14 +334,33 @@ class StarRatingBarLegacy extends React.Component {
                                 )}
                             </Box>
                         ) : (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <Rating
-                                    name='half-rating'
-                                    value={apiRatingNumber}
-                                    precision={0.1}
-                                    readOnly
-                                    classes={{ iconEmpty: classes.iconEmpty, iconFilled: classes.iconFilled }}
-                                />
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    minWidth: 0,
+                                }}
+                            >
+                                <Box
+                                    sx={{
+                                        minWidth: 120,
+                                        flexShrink: 0,
+                                        display: 'inline-flex',
+                                    }}
+                                >
+                                    <Rating
+                                        name='half-rating'
+                                        value={apiRatingNumber}
+                                        max={5}
+                                        precision={0.1}
+                                        readOnly
+                                        classes={{
+                                            iconEmpty: classes.iconEmpty,
+                                            iconFilled: classes.iconFilled,
+                                        }}
+                                    />
+                                </Box>
                                 <Typography variant='caption' component='div'>
                                     {`${apiRating}/5.0`}
                                     {total > 0 && (
@@ -383,7 +412,7 @@ function StarRatingBar(props) {
     const theme = useTheme();
     return (
         <StarRatingBarLegacy
-            apiRating={apiRating}
+            apiRating={apiRating != null ? apiRating : 0}
             apiId={apiId}
             isEditable={isEditable}
             showSummary={showSummary}
