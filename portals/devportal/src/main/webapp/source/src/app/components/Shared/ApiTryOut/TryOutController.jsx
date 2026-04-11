@@ -491,6 +491,15 @@ function TryOutController(props) {
                         // eslint-disable-next-line no-console
                         console.warn('TryOutController: could not load application keys', err);
                     }
+                    setKeys([]);
+                    setProductionAccessToken('');
+                    setSandboxAccessToken('');
+                    setProductionApiKey('');
+                    setSandboxApiKey('');
+                    setKSGenerated(false);
+                    setConsumerSecret('');
+                    setShowToken(false);
+                    handleAccessTokenChange({ newAccessToken: '' });
                 });
         }
     }

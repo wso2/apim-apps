@@ -34,7 +34,7 @@ function consumeShellSingleQuoted(str, start) {
     while (j < str.length) {
         if (str[j] === "'" && str[j + 1] === '\\' && str[j + 2] === "'") {
             acc += "'\\''";
-            j += 3;
+            j += 4;
         } else if (str[j] === "'") {
             acc += "'";
             j += 1;
@@ -78,7 +78,8 @@ function tokenizeCurlLine(line) {
  * Swagger-like curl highlighting: flags white, quoted strings green.
  */
 export default function CurlHighlightedPre({ text, style, className }) {
-    const lines = text.split('\n');
+    const safeText = text == null ? '' : String(text);
+    const lines = safeText.split('\n');
     let keySeq = 0;
     const nextKey = (prefix) => {
         keySeq += 1;

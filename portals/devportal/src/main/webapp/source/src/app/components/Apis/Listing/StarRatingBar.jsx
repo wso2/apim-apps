@@ -362,7 +362,7 @@ class StarRatingBarLegacy extends React.Component {
                                     />
                                 </Box>
                                 <Typography variant='caption' component='div'>
-                                    {`${apiRating}/5.0`}
+                                    {`${apiRatingNumber.toFixed(1)}/5.0`}
                                     {total > 0 && (
                                         <>
                                             {` (${total} `}

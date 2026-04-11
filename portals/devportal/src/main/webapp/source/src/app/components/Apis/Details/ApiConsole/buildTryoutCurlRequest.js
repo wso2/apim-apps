@@ -80,7 +80,9 @@ export async function buildMutatedSwaggerRequest(getSystem, { path, method, oper
         operation,
     };
 
-    const op = operation.toJS();
+    const op = (operation && typeof operation.toJS === 'function')
+        ? operation.toJS()
+        : undefined;
 
     if (operation && operation.get('parameters')) {
         operation.get('parameters')
@@ -94,7 +96,7 @@ export async function buildMutatedSwaggerRequest(getSystem, { path, method, oper
                     const nextParams = req.parameters || {};
                     req.parameters = nextParams;
                     const paramValue = paramToValueSimple(param, req.parameters);
-                    if (!paramValue || (paramValue && paramValue.size === 0)) {
+                    if (!paramValue || paramValue.size === 0) {
                         req.parameters[param.get('name')] = '';
                     }
                 }
