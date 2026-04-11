@@ -34,6 +34,7 @@ import {
     Radio,
     Grid,
     Alert,
+    FormHelperText,
 } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -51,6 +52,7 @@ export default function ActionConfigDialog({
             info: CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
         },
     });
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
     useEffect(() => {
         setFormState(editAction || {
@@ -76,8 +78,11 @@ export default function ActionConfigDialog({
     };
 
     const handleSave = () => {
-        onSave(formState);
-        handleClose(); // Reset the form after saving
+        setIsSubmitted(true);
+        if (isValid()) {
+            onSave(formState);
+            handleClose(); // Reset the form after saving
+        }
     };
 
     const isValid = () => {
@@ -101,7 +106,11 @@ export default function ActionConfigDialog({
             </DialogTitle>
             <DialogContent sx={{ p: 3 }}>
                 <Box mb={3} mt={1}>
-                    <FormControl fullWidth size='small'>
+                    <FormControl
+                        fullWidth
+                        size='small'
+                        error={isSubmitted && !formState.governedState}
+                    >
                         <InputLabel>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.enforcement.state.label'
@@ -148,6 +157,14 @@ export default function ActionConfigDialog({
                                 </MenuItem>
                             ))}
                         </Select>
+                        {isSubmitted && !formState.governedState && (
+                            <FormHelperText>
+                                <FormattedMessage
+                                    id='Governance.Policies.AddEdit.enforcement.state.required'
+                                    defaultMessage='This field is required'
+                                />
+                            </FormHelperText>
+                        )}
                     </FormControl>
                 </Box>
 
