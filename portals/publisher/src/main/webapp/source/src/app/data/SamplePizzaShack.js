@@ -148,7 +148,7 @@ const getSampleOpenAPI = (defaultAdvancePolicy = 'Unlimited') => ({
         '/order': {
             post: {
                 description: 'Create a new Order',
-                operationId: 'getOrders',
+                operationId: 'createOrder',
                 tags: [
                     'order'
                 ],
