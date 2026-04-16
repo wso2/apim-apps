@@ -49,9 +49,40 @@ function apiCall(params) {
         });
 }
 
-export default function ApiComplianceTable() {
+function filterArtifacts(artifacts, filters) {
+    return artifacts.filter((artifact) => {
+        const artifactType = artifact.info?.extendedType;
+        const matchesType = !filters.type?.length || filters.type.includes(artifactType);
+        const matchesStatus = !filters.status?.length || filters.status.includes(artifact.status);
+
+        return matchesType && matchesStatus;
+    });
+}
+
+async function getFilteredArtifactPage(params, filters) {
+    const initialResponse = await apiCall({ ...params, offset: 0 });
+    const total = initialResponse.pagination?.total || 0;
+    const fullResponse = total > (initialResponse.list || []).length
+        ? await apiCall({ ...params, limit: total, offset: 0 })
+        : initialResponse;
+    const filteredArtifacts = filterArtifacts(fullResponse.list || [], filters);
+    const offset = params.offset || 0;
+    const limit = params.limit || filteredArtifacts.length;
+
+    return {
+        ...fullResponse,
+        list: filteredArtifacts.slice(offset, offset + limit),
+        pagination: {
+            ...fullResponse.pagination,
+            total: filteredArtifacts.length,
+        },
+    };
+}
+
+export default function ApiComplianceTable({ filters }) {
     const intl = useIntl();
     const theme = useTheme();
+    const hasActiveFilters = filters.type.length > 0 || filters.status.length > 0;
 
     const renderProgress = (followed, total, status) => {
         if (status === 'PENDING') {
@@ -339,28 +370,47 @@ export default function ApiComplianceTable() {
                 gutterBottom
                 sx={{ fontWeight: 'medium' }}
             >
-                {intl.formatMessage({
-                    id: 'Governance.ComplianceDashboard.APICompliance.empty.content',
-                    defaultMessage: 'No APIs Available',
-                })}
+                {hasActiveFilters
+                    ? intl.formatMessage({
+                        id: 'Governance.ComplianceDashboard.APICompliance.filtered.empty.content',
+                        defaultMessage: 'No Matching Artifacts',
+                    })
+                    : intl.formatMessage({
+                        id: 'Governance.ComplianceDashboard.APICompliance.empty.content',
+                        defaultMessage: 'No Artifacts Available',
+                    })}
             </Typography>
             <Typography
                 variant="body2"
                 color="text.secondary"
                 align="center"
             >
-                {intl.formatMessage({
-                    id: 'Governance.ComplianceDashboard.APICompliance.empty.helper',
-                    defaultMessage: 'Create APIs to start evaluating their compliance.',
-                })}
+                {hasActiveFilters
+                    ? intl.formatMessage({
+                        id: 'Governance.ComplianceDashboard.APICompliance.filtered.empty.helper',
+                        defaultMessage: 'Adjust or clear the selected filters to see more APIs.',
+                    })
+                    : intl.formatMessage({
+                        id: 'Governance.ComplianceDashboard.APICompliance.empty.helper',
+                        defaultMessage: 'Create APIs to start evaluating their compliance.',
+                    })}
             </Typography>
         </Box>
     );
 
+    const filteredApiCall = (params) => {
+        if (!hasActiveFilters) {
+            return apiCall(params);
+        }
+
+        return getFilteredArtifactPage(params, filters);
+    };
+
     return (
         <ListBaseWithPagination
+            key={JSON.stringify(filters)}
             columProps={columProps}
-            apiCall={apiCall}
+            apiCall={filteredApiCall}
             searchProps={false}
             emptyBoxProps={{
                 content: emptyStateContent

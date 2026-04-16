@@ -20,18 +20,28 @@
 import React, { useState, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import { Grid, Card, CardContent, Typography, List, ListItemButton, ListItemIcon, Link, ListItemText, useTheme } from '@mui/material';
+import { Grid, Card, CardContent, Typography, List, ListItemButton, ListItemIcon, Link, ListItemText, useTheme, Box } from '@mui/material';
 import DonutChart from 'AppComponents/Shared/DonutChart';
 import DescriptionIcon from '@mui/icons-material/Description';
 import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
 import Configurations from 'Config';
+import CONSTS from 'AppData/Constants';
+import Utils from 'AppData/Utils';
 import ApiComplianceTable from './ApiComplianceTable';
 import PolicyAdherenceTable from './PolicyAdherenceTable';
+import TableFilterBar from './TableFilterBar';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 
 export default function Summary() {
     const intl = useIntl();
     const theme = useTheme();
+    const [apiComplianceFilters, setApiComplianceFilters] = useState({
+        type: [],
+        status: []
+    });
+    const [policyAdherenceFilters, setPolicyAdherenceFilters] = useState({
+        status: []
+    });
     const [policyAdherence, setPolicyAdherence] = useState({
         followedPolicies: 0,
         violatedPolicies: 0,
@@ -71,6 +81,45 @@ export default function Summary() {
                 console.error('Error fetching compliance data:', error);
             });
     }, []);
+
+    const complianceFilterConfig = [
+        {
+            id: 'type',
+            label: intl.formatMessage({
+                id: 'Governance.ComplianceDashboard.APICompliance.column.type',
+                defaultMessage: 'Type',
+            }),
+            options: CONSTS.ARTIFACT_TYPES.map((artifactType) => ({
+                value: artifactType.value,
+                label: artifactType.label,
+            })),
+        },
+        {
+            id: 'status',
+            label: intl.formatMessage({
+                id: 'Governance.ComplianceDashboard.APICompliance.column.status',
+                defaultMessage: 'Status',
+            }),
+            options: CONSTS.COMPLIANCE_STATES.map((state) => ({
+                value: state.value,
+                label: Utils.mapComplianceStateToLabel(state.value),
+            })),
+        },
+    ];
+
+    const policyAdherenceFilterConfig = [
+        {
+            id: 'status',
+            label: intl.formatMessage({
+                id: 'Governance.ComplianceDashboard.PolicyAdherence.column.status',
+                defaultMessage: 'Status',
+            }),
+            options: CONSTS.POLICY_ADHERENCE_STATES.map((state) => ({
+                value: state.value,
+                label: Utils.mapPolicyAdherenceStateToLabel(state.value),
+            })),
+        },
+    ];
 
     return (
         <ContentBase
@@ -215,16 +264,34 @@ export default function Summary() {
                             },
                         }}>
                         <CardContent>
-                            <Typography
-                                variant='body1'
-                                sx={{ fontWeight: 'bold', mb: 2 }}
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'flex-start',
+                                    gap: 2,
+                                    flexWrap: 'wrap',
+                                    mb: 2,
+                                }}
                             >
-                                {intl.formatMessage({
-                                    id: 'Governance.ComplianceDashboard.Summary.compliance.details',
-                                    defaultMessage: 'Compliance Details',
-                                })}
-                            </Typography>
-                            <ApiComplianceTable />
+                                <Typography
+                                    variant='body1'
+                                    sx={{ fontWeight: 'bold' }}
+                                >
+                                    {intl.formatMessage({
+                                        id: 'Governance.ComplianceDashboard.Summary.compliance.details',
+                                        defaultMessage: 'Compliance Details',
+                                    })}
+                                </Typography>
+                                <Box sx={{ flex: '1 1 360px', maxWidth: 520 }}>
+                                    <TableFilterBar
+                                        filters={complianceFilterConfig}
+                                        selectedFilters={apiComplianceFilters}
+                                        onFiltersChange={setApiComplianceFilters}
+                                    />
+                                </Box>
+                            </Box>
+                            <ApiComplianceTable filters={apiComplianceFilters} />
                         </CardContent>
                     </Card>
                 </Grid>
@@ -236,16 +303,34 @@ export default function Summary() {
                             },
                         }}>
                         <CardContent>
-                            <Typography
-                                variant='body1'
-                                sx={{ fontWeight: 'bold', mb: 2 }}
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'flex-start',
+                                    gap: 2,
+                                    flexWrap: 'wrap',
+                                    mb: 2,
+                                }}
                             >
-                                {intl.formatMessage({
-                                    id: 'Governance.ComplianceDashboard.Summary.policy.adherence.details',
-                                    defaultMessage: 'Policy Adherence Details',
-                                })}
-                            </Typography>
-                            <PolicyAdherenceTable />
+                                <Typography
+                                    variant='body1'
+                                    sx={{ fontWeight: 'bold' }}
+                                >
+                                    {intl.formatMessage({
+                                        id: 'Governance.ComplianceDashboard.Summary.policy.adherence.details',
+                                        defaultMessage: 'Policy Adherence Details',
+                                    })}
+                                </Typography>
+                                <Box sx={{ flex: '1 1 240px', maxWidth: 520 }}>
+                                    <TableFilterBar
+                                        filters={policyAdherenceFilterConfig}
+                                        selectedFilters={policyAdherenceFilters}
+                                        onFiltersChange={setPolicyAdherenceFilters}
+                                    />
+                                </Box>
+                            </Box>
+                            <PolicyAdherenceTable filters={policyAdherenceFilters} />
                         </CardContent>
                     </Card>
                 </Grid>

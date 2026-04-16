@@ -82,20 +82,20 @@ const CONSTS = {
     DEFAULT_SUBSCRIPTIONLESS_PLAN: 'DefaultSubscriptionless',
     DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN: 'AsyncDefaultSubscriptionless',
     GOVERNABLE_STATES: [
-        { value: 'API_CREATE', label: 'API Create' },
-        { value: 'API_UPDATE', label: 'API Update' },
-        { value: 'API_DEPLOY', label: 'API Deploy' },
-        { value: 'API_PUBLISH', label: 'API Publish' },
+        { value: 'API_CREATE', label: 'Create' },
+        { value: 'API_UPDATE', label: 'Update' },
+        { value: 'API_DEPLOY', label: 'Deploy' },
+        { value: 'API_PUBLISH', label: 'Publish' },
     ],
     RULESET_TYPES: [
-        { value: 'API_DEFINITION', label: 'API Definition' },
-        { value: 'API_METADATA', label: 'API Metadata' },
+        { value: 'API_DEFINITION', label: 'Definition' },
+        { value: 'API_METADATA', label: 'Metadata' },
         { value: 'API_DOCUMENTATION', label: 'Documentation' },
     ],
     ARTIFACT_TYPES: [
         { value: 'REST_API', label: 'REST API' },
         { value: 'ASYNC_API', label: 'Async API' },
-        { value: 'MCP', label: 'MCP Server' },
+        { value: 'MCP', label: 'MCP' },
     ],
     SEVERITY_LEVELS: [
         { value: 'ERROR', label: 'Error' },
