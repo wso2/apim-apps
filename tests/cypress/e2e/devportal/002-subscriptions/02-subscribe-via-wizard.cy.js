@@ -27,7 +27,7 @@ describe("Anonymous view apis", () => {
     let testApiId;
     const appName = Utils.generateName();
 
-    it.only("Subscribe to API", {
+        it("Subscribe to API", {
         retries: {
           runMode: 3,
           openMode: 0,
@@ -54,13 +54,31 @@ describe("Anonymous view apis", () => {
                 cy.get('#wizard-next-1-btn', {timeout: Cypress.env('largeTimeout')})
                 cy.get('#wizard-next-1-btn').click();
             
-                cy.get('#wizard-next-2-btn', {timeout: Cypress.env('largeTimeout')});
-                cy.get('#wizard-next-2-btn').click();
-            
-                cy.intercept('GET','**/oauth-keys').as('oauthKeys');
-                cy.wait('@oauthKeys', {timeout: Cypress.env('largeTimeout')}).then(() => {
-                    cy.get('#wizard-next-3-btn', {timeout: Cypress.env('largeTimeout')});
-                    cy.get('#wizard-next-3-btn').click();
+                cy.intercept('POST', '**/generate-keys').as('generateKeys');
+                cy.intercept('GET', '**/oauth-keys').as('oauthKeys');
+                cy.get('#wizard-next-2-btn', { timeout: Cypress.env('largeTimeout') }).click();
+
+                cy.get('body').then(($body) => {
+                    if ($body.find('[data-testid="new-secret-dialog"]').length > 0) {
+                        cy.get('[data-testid="create-secret-button"]')
+                            .should('be.visible')
+                            .and('not.be.disabled')
+                            .click();
+                    }
+                });
+
+                cy.wait('@generateKeys', { timeout: Cypress.env('largeTimeout') });
+
+                cy.get('body').then(($body) => {
+                    if ($body.find('[data-testid="secret-dialog-close"]').length > 0) {
+                        cy.get('[data-testid="secret-dialog-close"]', { timeout: Cypress.env('largeTimeout') })
+                            .should('be.visible')
+                            .click();
+                    }
+                });
+
+                cy.wait('@oauthKeys', { timeout: Cypress.env('largeTimeout') }).then(() => {
+                    cy.get('#wizard-next-3-btn', { timeout: Cypress.env('largeTimeout') }).click();
                 });
             
                     /*
