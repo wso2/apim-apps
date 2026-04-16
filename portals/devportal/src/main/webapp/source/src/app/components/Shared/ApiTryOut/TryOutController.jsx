@@ -611,9 +611,8 @@ function TryOutController(props) {
 
     const isMultipleClientSecretsAllowed = isMultipleClientSecretsEnabled(selectedKMObject?.additionalProperties);
 
-    const isConsumerSecretRequired = isMultipleClientSecretsAllowed && securitySchemeType === 'OAUTH' &&
-        selectedKMObject && !selectedKMObject.enableTokenHashing;
-
+    const isConsumerSecretRequired = selectedKMObject && (isMultipleClientSecretsAllowed || selectedKMObject.enableTokenHashing) 
+        && securitySchemeType === 'OAUTH';
     // Consumer secret is now collected via dialog, so GET TEST KEY is always enabled.
 
     useEffect(() => {
@@ -987,7 +986,7 @@ function TryOutController(props) {
                                 )}
                                 {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
                                 && securitySchemeType !== 'API-KEY'
-                                && selectedKMObject && !selectedKMObject.enableTokenHashing && (
+                                && selectedKMObject && (
                                     <>
                                         <Button
                                             onClick={securitySchemeType === 'API-KEY' ? generateApiKey
