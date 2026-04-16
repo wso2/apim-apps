@@ -105,8 +105,13 @@ const tokens = (props) => {
         updateAccessTokenRequest(newRequest);
     };
     const {
-        accessTokenRequest, subscriptionScopes, multipleSecretsAllowed, onConsumerSecretChange
+        accessTokenRequest,
+        subscriptionScopes,
+        multipleSecretsAllowed,
+        consumerSecretRequired,
+        onConsumerSecretChange,
     } = props;
+    const shouldPromptForConsumerSecret = multipleSecretsAllowed || consumerSecretRequired;
 
     const [consumerSecret, setConsumerSecret] = useState('');
     const [showSecret, setShowSecret] = useState(false);
@@ -130,7 +135,7 @@ const tokens = (props) => {
                 disabled={subscriptionScopes.length === 0}
             >
                 <Stack spacing={2}>
-                {multipleSecretsAllowed && (
+                {shouldPromptForConsumerSecret && (
                     <TextField
                         fullWidth
                         variant="outlined"
