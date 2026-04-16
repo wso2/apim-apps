@@ -59,6 +59,7 @@ import API from 'AppData/api';
  */
 export default function LegacyApiKeys({ keyType, selectedApp }) {
     const intl = useIntl();
+    const KEY_NAME_MAX_LEN = 20;
 
     // API keys state
     const [apiKeys, setApiKeys] = React.useState(null);
@@ -303,6 +304,20 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
         {
             name: 'keyName',
             label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.column.keyName', defaultMessage: 'Key Name' }),
+            options: {
+                customBodyRenderLite: (dataIndex) => {
+                    const keyData = legacyKeysData[dataIndex];
+                    const { keyName } = keyData;
+                    const truncated = keyName && keyName.length > KEY_NAME_MAX_LEN
+                        ? `${keyName.slice(0, KEY_NAME_MAX_LEN)}...`
+                        : keyName;
+                    return (
+                        <Tooltip title={keyName && keyName.length > KEY_NAME_MAX_LEN ? keyName : ''} placement='top'>
+                            <Typography variant='body2'>{truncated || '-'}</Typography>
+                        </Tooltip>
+                    );
+                },
+            },
         },
         {
             name: 'issuedOn',

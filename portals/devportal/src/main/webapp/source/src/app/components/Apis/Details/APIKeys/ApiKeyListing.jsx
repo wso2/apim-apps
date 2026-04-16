@@ -64,9 +64,12 @@ export default function ApiKeyListing() {
     const params = useParams();
     const apiUUID = params.apiUuid;
     const intl = useIntl();
+    const KEY_NAME_MAX_LEN = 20;
 
     // API keys state for dynamic updates
     const [apiKeys, setApiKeys] = React.useState(null);
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     // Revoke key dialog state
     const [revokeConfirmOpen, setRevokeConfirmOpen] = React.useState(false);
@@ -271,10 +274,31 @@ export default function ApiKeyListing() {
         setSelectedKeyForRevoke(null);
     };
 
+    useEffect(() => {
+        const maxPage = Math.max(Math.ceil((apiKeys?.length || 0) / rowsPerPage) - 1, 0);
+        if (page > maxPage) {
+            setPage(maxPage);
+        }
+    }, [apiKeys, page, rowsPerPage]);
+
     const columns = [
         {
             name: 'keyName',
             label: intl.formatMessage({ id: 'Apis.Details.APIKeys.ApiKeyListing.column.apiKey', defaultMessage: 'API Key' }),
+            options: {
+                customBodyRenderLite: (dataIndex) => {
+                    const keyData = apiKeys[dataIndex];
+                    const { keyName } = keyData;
+                    const truncated = keyName && keyName.length > KEY_NAME_MAX_LEN
+                        ? `${keyName.slice(0, KEY_NAME_MAX_LEN)}...`
+                        : keyName;
+                    return (
+                        <Tooltip title={keyName && keyName.length > KEY_NAME_MAX_LEN ? keyName : ''} placement='top'>
+                            <Typography variant='body2'>{truncated || '-'}</Typography>
+                        </Tooltip>
+                    );
+                },
+            },
         },
         {
             name: 'associatedApp',
@@ -453,10 +477,17 @@ export default function ApiKeyListing() {
         download: false,
         print: false,
         viewColumns: false,
-        pagination: false,
+        pagination: true,
         sort: false,
         responsive: 'standard',
-        tableBodyMaxHeight: '520px',
+        page,
+        rowsPerPage,
+        rowsPerPageOptions: [5, 10, 25],
+        onChangePage: (currentPage) => setPage(currentPage),
+        onChangeRowsPerPage: (numberOfRows) => {
+            setRowsPerPage(numberOfRows);
+            setPage(0);
+        },
     };
 
     return (

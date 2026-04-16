@@ -1,9 +1,7 @@
 {
   "APIKeys.ListApiKeys.action.revoke": "Revoke",
   "APIKeys.ListApiKeys.column.actions": "Actions",
-  "APIKeys.ListApiKeys.column.api": "API",
   "APIKeys.ListApiKeys.column.api.key": "API Key",
-  "APIKeys.ListApiKeys.column.application": "Application",
   "APIKeys.ListApiKeys.column.expires.on": "Expires On",
   "APIKeys.ListApiKeys.column.issued.on": "Issued On",
   "APIKeys.ListApiKeys.column.last.used.on": "Last Used On",
@@ -17,6 +15,8 @@
   "APIKeys.ListApiKeys.error.revoke.failed": "Failed to revoke API key. Please try again.",
   "APIKeys.ListApiKeys.key.type.production": "Production",
   "APIKeys.ListApiKeys.key.type.sandbox": "Sandbox",
+  "APIKeys.ListApiKeys.label.api": "API",
+  "APIKeys.ListApiKeys.label.application": "Application",
   "APIKeys.ListApiKeys.no.matching.items": "No matching API keys found",
   "APIKeys.ListApiKeys.revoke.cancel": "Cancel",
   "APIKeys.ListApiKeys.revoke.confirm.button": "Revoke",

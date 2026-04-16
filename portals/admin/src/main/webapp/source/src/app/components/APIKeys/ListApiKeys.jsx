@@ -86,6 +86,8 @@ export default function ApiKeysView() {
     const [apiKeys, setApiKeys] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [error, setError] = useState(null);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
 
     // Revoke dialog state
     const [revokeConfirmOpen, setRevokeConfirmOpen] = useState(false);
@@ -97,6 +99,7 @@ export default function ApiKeysView() {
     const fetchData = () => {
         setApiKeys(null);
         setError(null);
+        setPage(0);
         const restApi = new API();
         restApi.getAllAPIKeys()
             .then((result) => {
@@ -182,6 +185,16 @@ export default function ApiKeysView() {
             || (row.user || '').toLowerCase().includes(q)
         );
     });
+
+    useEffect(() => {
+        const maxPage = Math.max(Math.ceil(filteredKeys.length / rowsPerPage) - 1, 0);
+        if (page > maxPage) {
+            setPage(maxPage);
+        }
+    }, [filteredKeys.length, page, rowsPerPage]);
+
+    const KEY_NAME_MAX_LEN = 20;
+
     const columns = [
         {
             name: 'keyName',
@@ -189,34 +202,48 @@ export default function ApiKeysView() {
                 id: 'APIKeys.ListApiKeys.column.api.key',
                 defaultMessage: 'API Key',
             }),
-        },
-        {
-            name: 'applicationName',
-            label: intl.formatMessage({
-                id: 'APIKeys.ListApiKeys.column.application',
-                defaultMessage: 'Application',
-            }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
-                    const app = filteredKeys[dataIndex].applicationName;
-                    return app
-                        ? <Chip label={app} size='small' className='keys-chip' />
-                        : <Typography variant='body2' color='text.secondary'>-</Typography>;
-                },
-            },
-        },
-        {
-            name: 'apiName',
-            label: intl.formatMessage({
-                id: 'APIKeys.ListApiKeys.column.api',
-                defaultMessage: 'API',
-            }),
-            options: {
-                customBodyRenderLite: (dataIndex) => {
-                    const api = filteredKeys[dataIndex].apiName;
-                    return api
-                        ? <Chip label={api} size='small' className='keys-chip' />
-                        : <Typography variant='body2' color='text.secondary'>-</Typography>;
+                    const { keyName, applicationName, apiName } = filteredKeys[dataIndex];
+                    const truncated = keyName && keyName.length > KEY_NAME_MAX_LEN
+                        ? `${keyName.slice(0, KEY_NAME_MAX_LEN)}...`
+                        : keyName;
+                    return (
+                        <div>
+                            <Tooltip
+                                title={keyName && keyName.length > KEY_NAME_MAX_LEN ? keyName : ''}
+                                placement='top'
+                            >
+                                <Typography variant='body2' sx={{ fontWeight: 500 }}>
+                                    {truncated || '-'}
+                                </Typography>
+                            </Tooltip>
+                            {(applicationName || apiName) && (
+                                <div style={{ marginTop: 2 }}>
+                                    {applicationName && (
+                                        <Typography variant='caption' color='text.secondary' display='block'>
+                                            <FormattedMessage
+                                                id='APIKeys.ListApiKeys.label.application'
+                                                defaultMessage='Application'
+                                            />
+                                            {': '}
+                                            {applicationName}
+                                        </Typography>
+                                    )}
+                                    {apiName && (
+                                        <Typography variant='caption' color='text.secondary' display='block'>
+                                            <FormattedMessage
+                                                id='APIKeys.ListApiKeys.label.api'
+                                                defaultMessage='API'
+                                            />
+                                            {': '}
+                                            {apiName}
+                                        </Typography>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    );
                 },
             },
         },
@@ -402,10 +429,18 @@ export default function ApiKeysView() {
         download: false,
         print: false,
         viewColumns: false,
-        pagination: false,
+        pagination: true,
         sort: false,
         responsive: 'standard',
-        tableBodyMaxHeight: '520px',
+        fixedHeader: false,
+        page,
+        rowsPerPage,
+        rowsPerPageOptions: [5, 10, 25],
+        onChangePage: (currentPage) => setPage(currentPage),
+        onChangeRowsPerPage: (numberOfRows) => {
+            setRowsPerPage(numberOfRows);
+            setPage(0);
+        },
         textLabels: {
             body: {
                 noMatch: intl.formatMessage({
@@ -469,7 +504,10 @@ export default function ApiKeysView() {
                                                     disableUnderline: true,
                                                     className: 'search-input',
                                                 }}
-                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                onChange={(e) => {
+                                                    setSearchQuery(e.target.value);
+                                                    setPage(0);
+                                                }}
                                                 value={searchQuery}
                                             />
                                         </Grid>

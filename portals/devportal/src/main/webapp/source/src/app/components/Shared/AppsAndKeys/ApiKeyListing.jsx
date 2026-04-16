@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import {
@@ -64,6 +64,7 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
     const intl = useIntl();
     const { settings } = React.useContext(SettingsContext);
     const legacyApiKeysEnabled = settings?.IsLegacyApiKeysEnabled ?? false;
+    const KEY_NAME_MAX_LEN = 20;
     const [currentTab, setCurrentTab] = React.useState(0);
     const [selectedAPI, setSelectedAPI] = React.useState('');
     const [selectedExistingKey, setSelectedExistingKey] = React.useState('');
@@ -245,6 +246,20 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
         {
             name: 'keyName',
             label: intl.formatMessage({ id: 'Shared.AppsAndKeys.ApiKeyListing.column.keyName', defaultMessage: 'Key Name' }),
+            options: {
+                customBodyRenderLite: (dataIndex) => {
+                    const keyData = associatedKeysData[dataIndex];
+                    const { keyName } = keyData;
+                    const truncated = keyName && keyName.length > KEY_NAME_MAX_LEN
+                        ? `${keyName.slice(0, KEY_NAME_MAX_LEN)}...`
+                        : keyName;
+                    return (
+                        <Tooltip title={keyName && keyName.length > KEY_NAME_MAX_LEN ? keyName : ''} placement='top'>
+                            <Typography variant='body2'>{truncated || '-'}</Typography>
+                        </Tooltip>
+                    );
+                },
+            },
         },
         {
             name: 'apiName',
@@ -392,6 +407,9 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
         },
     ];
 
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+
     const options = {
         selectableRows: 'none',
         filter: false,
@@ -399,10 +417,18 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
         download: false,
         print: false,
         viewColumns: false,
-        pagination: false,
+        pagination: true,
         sort: false,
         responsive: 'standard',
         tableBodyMaxHeight: '520px',
+        page,
+        rowsPerPage,
+        rowsPerPageOptions: [5, 10, 25],
+        onChangePage: (currentPage) => setPage(currentPage),
+        onChangeRowsPerPage: (numberOfRows) => {
+            setRowsPerPage(numberOfRows);
+            setPage(0);
+        },
     };
 
     return (
