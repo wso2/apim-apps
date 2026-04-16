@@ -410,6 +410,13 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
+    React.useEffect(() => {
+        const maxPage = Math.max(Math.ceil((associatedKeysData?.length || 0) / rowsPerPage) - 1, 0);
+        if (page > maxPage) {
+            setPage(maxPage);
+        }
+    }, [associatedKeysData, page, rowsPerPage]);
+
     const options = {
         selectableRows: 'none',
         filter: false,
