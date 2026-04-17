@@ -53,7 +53,7 @@ export default function Runtime(props) {
         url += context;
         url += '/' + api.version;
         url += '/webhooks_events_receiver_resource?topic=';
-        url += target.toLowerCase();
+        url += target;
         return url;
     };
 
