@@ -54,30 +54,10 @@ const GatewayTypeCardRoot = styled(Box, {
         },
 }));
 
-const GatewayTypeBadge = styled(Box, {
-    shouldForwardProp: (prop) => prop !== 'selected',
-})(({ theme, selected }) => ({
-    width: 48,
-    height: 48,
-    borderRadius: theme.spacing(0.75),
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-    background: selected
-        ? 'linear-gradient(180deg, #3F51B5 0%, #5C6BC0 100%)'
-        : 'linear-gradient(180deg, #5364B6 0%, #6F7CC6 100%)',
-    color: theme.palette.common.white,
-    fontWeight: 700,
-    fontSize: theme.typography.pxToRem(14),
-    letterSpacing: '0.04em',
-}));
-
 function GatewayTypeOptionCard(props) {
     const {
         title,
         description,
-        badgeLabel,
         selected,
         disabled,
         onSelect,
@@ -117,9 +97,6 @@ function GatewayTypeOptionCard(props) {
                     },
                 }}
             />
-            <GatewayTypeBadge selected={selected ? 1 : 0}>
-                {badgeLabel}
-            </GatewayTypeBadge>
             <Box sx={{ minWidth: 0, flex: 1, textAlign: 'left' }}>
                 <Typography
                     variant='subtitle1'
@@ -153,7 +130,6 @@ function GatewayTypeOptionCard(props) {
 }
 
 GatewayTypeOptionCard.propTypes = {
-    badgeLabel: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
     onSelect: PropTypes.func.isRequired,

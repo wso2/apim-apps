@@ -1254,9 +1254,9 @@ function AddEditGWEnvironment(props) {
 
     const getDisplayName = (value) => {
         if (value === CONSTS.GATEWAY_TYPE.apiPlatform) {
-            return 'Universal Gateway';
+            return 'API Platform Gateway';
         } else if (value === CONSTS.GATEWAY_TYPE.regular) {
-            return 'Universal Gateway - Classic';
+            return 'Universal Gateway';
         } else if (value === CONSTS.GATEWAY_TYPE.apk) {
             return 'Kubernetes Gateway v1.3';
         } else {
@@ -1268,7 +1268,7 @@ function AddEditGWEnvironment(props) {
         if (value === CONSTS.GATEWAY_TYPE.apiPlatform) {
             return intl.formatMessage({
                 id: 'Gateways.AddEditGateway.type.apiPlatform.description',
-                defaultMessage: 'New lightweight, self-hosted Universal gateway',
+                defaultMessage: 'New lightweight, self-hosted API Platform gateway',
             });
         } else if (value === CONSTS.GATEWAY_TYPE.regular) {
             return intl.formatMessage({
@@ -1286,18 +1286,6 @@ function AddEditGWEnvironment(props) {
             id: 'Gateways.AddEditGateway.type.default.description',
             defaultMessage: 'Gateway runtime option',
         });
-    };
-
-    const getGatewayTypeBadgeLabel = (value) => {
-        if (value === CONSTS.GATEWAY_TYPE.apiPlatform) {
-            return 'UG';
-        } else if (value === CONSTS.GATEWAY_TYPE.regular) {
-            return 'UC';
-        } else if (value === CONSTS.GATEWAY_TYPE.apk) {
-            return 'KG';
-        }
-
-        return 'GW';
     };
 
     const GW_MODE_METADATA = {
@@ -1349,8 +1337,8 @@ function AddEditGWEnvironment(props) {
             || platformGateway?.name
             || state.name
             || intl.formatMessage({
-                id: 'Gateways.AddEditGateway.title.universal',
-                defaultMessage: 'Universal Gateway',
+                id: 'Gateways.AddEditGateway.title.platform',
+                defaultMessage: 'API Platform Gateway',
             });
         const isPlatformGatewayActive = platformGateway?.isActive === true
             || platformGateway?.isActive === 'true';
@@ -1767,9 +1755,6 @@ function AddEditGWEnvironment(props) {
                                                 key={item}
                                                 title={getDisplayName(item)}
                                                 description={getGatewayTypeDescription(
-                                                    item,
-                                                )}
-                                                badgeLabel={getGatewayTypeBadgeLabel(
                                                     item,
                                                 )}
                                                 selected={gatewayType === item}

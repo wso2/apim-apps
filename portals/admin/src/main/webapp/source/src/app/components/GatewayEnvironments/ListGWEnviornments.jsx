@@ -455,10 +455,10 @@ export default function ListGWEnviornments() {
     };
 
     const renderGatewayType = (gatewayType) => {
-        if (gatewayType === 'Universal') {
+        if (gatewayType === 'APIPlatform') {
             return intl.formatMessage({
-                id: 'Gateways.AddEditGateway.title.universal',
-                defaultMessage: 'Universal Gateway',
+                id: 'Gateways.AddEditGateway.title.platform',
+                defaultMessage: 'API Platform Gateway',
             });
         }
         return gatewayType || '-';
@@ -477,7 +477,7 @@ export default function ListGWEnviornments() {
         const gatewayType = getRowValue(tableMeta, 'gatewayTypeDisplay') || 'Regular';
         const normalizedGatewayType = String(gatewayType).toLowerCase();
         const isRegularGateway = normalizedGatewayType === 'regular';
-        const isPlatformGateway = normalizedGatewayType === 'universal'
+        const isPlatformGateway = normalizedGatewayType === 'apiplatform'
             || normalizedGatewayType.includes('platform gateway');
         const isDisabled = !(isRegularGateway || isPlatformGateway);
         const gatewayStatus = getRowValue(tableMeta, 'gatewayStatus');

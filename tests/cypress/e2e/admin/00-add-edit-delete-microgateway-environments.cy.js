@@ -33,7 +33,7 @@ describe("Add Edit Delete Microgateway Environments", () => {
             timeout: Cypress.env('largeTimeout'),
         }).click();
 
-        cy.contains('[role="radio"]', 'Universal Gateway - Classic').click();
+        cy.contains('[role="radio"]', 'Universal Gateway').click();
         cy.get('input[name="name"]').type(gatewayName);
         cy.get('input[name="displayName"]').type(gatewayName);
         cy
