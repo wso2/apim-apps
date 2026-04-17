@@ -303,6 +303,24 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
         {
             name: 'keyName',
             label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.column.keyName', defaultMessage: 'Key Name' }),
+            options: {
+                customBodyRenderLite: (dataIndex) => {
+                    const keyData = legacyKeysData[dataIndex];
+                    const { keyName } = keyData;
+                    return (
+                        <Tooltip title={keyName || ''} placement='top'>
+                            <Box sx={{ maxWidth: '200px' }}>
+                                <Typography
+                                    variant='body2'
+                                    sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                                >
+                                    {keyName || '-'}
+                                </Typography>
+                            </Box>
+                        </Tooltip>
+                    );
+                },
+            },
         },
         {
             name: 'issuedOn',

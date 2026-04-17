@@ -21,6 +21,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Alert as AlertMui,
     AppBar,
+    Box,
     Button,
     Chip,
     Dialog,
@@ -86,6 +87,8 @@ export default function ApiKeysView() {
     const [apiKeys, setApiKeys] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [error, setError] = useState(null);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
 
     // Revoke dialog state
     const [revokeConfirmOpen, setRevokeConfirmOpen] = useState(false);
@@ -97,6 +100,7 @@ export default function ApiKeysView() {
     const fetchData = () => {
         setApiKeys(null);
         setError(null);
+        setPage(0);
         const restApi = new API();
         restApi.getAllAPIKeys()
             .then((result) => {
@@ -182,6 +186,7 @@ export default function ApiKeysView() {
             || (row.user || '').toLowerCase().includes(q)
         );
     });
+
     const columns = [
         {
             name: 'keyName',
@@ -189,34 +194,44 @@ export default function ApiKeysView() {
                 id: 'APIKeys.ListApiKeys.column.api.key',
                 defaultMessage: 'API Key',
             }),
-        },
-        {
-            name: 'applicationName',
-            label: intl.formatMessage({
-                id: 'APIKeys.ListApiKeys.column.application',
-                defaultMessage: 'Application',
-            }),
             options: {
                 customBodyRenderLite: (dataIndex) => {
-                    const app = filteredKeys[dataIndex].applicationName;
-                    return app
-                        ? <Chip label={app} size='small' className='keys-chip' />
-                        : <Typography variant='body2' color='text.secondary'>-</Typography>;
-                },
-            },
-        },
-        {
-            name: 'apiName',
-            label: intl.formatMessage({
-                id: 'APIKeys.ListApiKeys.column.api',
-                defaultMessage: 'API',
-            }),
-            options: {
-                customBodyRenderLite: (dataIndex) => {
-                    const api = filteredKeys[dataIndex].apiName;
-                    return api
-                        ? <Chip label={api} size='small' className='keys-chip' />
-                        : <Typography variant='body2' color='text.secondary'>-</Typography>;
+                    const { keyName, applicationName, apiName } = filteredKeys[dataIndex];
+                    return (
+                        <div>
+                            <Tooltip title={keyName || ''} placement='top'>
+                                <Box sx={{ maxWidth: '200px' }}>
+                                    <Typography
+                                        variant='body2'
+                                        sx={{
+                                            fontWeight: 500,
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        {keyName || '-'}
+                                    </Typography>
+                                </Box>
+                            </Tooltip>
+                            <div style={{ marginTop: 2 }}>
+                                {[
+                                    {
+                                        id: 'APIKeys.ListApiKeys.label.application',
+                                        defaultMessage: 'Application',
+                                        value: applicationName,
+                                    },
+                                    { id: 'APIKeys.ListApiKeys.label.api', defaultMessage: 'API', value: apiName },
+                                ].filter(({ value }) => value).map(({ id, defaultMessage, value }) => (
+                                    <Typography key={id} variant='caption' color='text.secondary' display='block'>
+                                        <FormattedMessage id={id} defaultMessage={defaultMessage} />
+                                        {': '}
+                                        {value}
+                                    </Typography>
+                                ))}
+                            </div>
+                        </div>
+                    );
                 },
             },
         },
@@ -402,10 +417,18 @@ export default function ApiKeysView() {
         download: false,
         print: false,
         viewColumns: false,
-        pagination: false,
+        pagination: true,
         sort: false,
         responsive: 'standard',
-        tableBodyMaxHeight: '520px',
+        fixedHeader: false,
+        page,
+        rowsPerPage,
+        rowsPerPageOptions: [5, 10, 25],
+        onChangePage: (currentPage) => setPage(currentPage),
+        onChangeRowsPerPage: (numberOfRows) => {
+            setRowsPerPage(numberOfRows);
+            setPage(0);
+        },
         textLabels: {
             body: {
                 noMatch: intl.formatMessage({
@@ -469,7 +492,10 @@ export default function ApiKeysView() {
                                                     disableUnderline: true,
                                                     className: 'search-input',
                                                 }}
-                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                onChange={(e) => {
+                                                    setSearchQuery(e.target.value);
+                                                    setPage(0);
+                                                }}
                                                 value={searchQuery}
                                             />
                                         </Grid>

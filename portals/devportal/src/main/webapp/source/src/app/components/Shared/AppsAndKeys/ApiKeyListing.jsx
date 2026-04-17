@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import {
@@ -245,6 +245,24 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
         {
             name: 'keyName',
             label: intl.formatMessage({ id: 'Shared.AppsAndKeys.ApiKeyListing.column.keyName', defaultMessage: 'Key Name' }),
+            options: {
+                customBodyRenderLite: (dataIndex) => {
+                    const keyData = associatedKeysData[dataIndex];
+                    const { keyName } = keyData;
+                    return (
+                        <Tooltip title={keyName || ''} placement='top'>
+                            <Box sx={{ maxWidth: '200px' }}>
+                                <Typography
+                                    variant='body2'
+                                    sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                                >
+                                    {keyName || '-'}
+                                </Typography>
+                            </Box>
+                        </Tooltip>
+                    );
+                },
+            },
         },
         {
             name: 'apiName',
@@ -392,6 +410,9 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
         },
     ];
 
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+
     const options = {
         selectableRows: 'none',
         filter: false,
@@ -399,10 +420,18 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
         download: false,
         print: false,
         viewColumns: false,
-        pagination: false,
+        pagination: true,
         sort: false,
         responsive: 'standard',
         tableBodyMaxHeight: '520px',
+        page,
+        rowsPerPage,
+        rowsPerPageOptions: [5, 10, 25],
+        onChangePage: (currentPage) => setPage(currentPage),
+        onChangeRowsPerPage: (numberOfRows) => {
+            setRowsPerPage(numberOfRows);
+            setPage(0);
+        },
     };
 
     return (

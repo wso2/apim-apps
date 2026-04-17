@@ -1,9 +1,7 @@
 {
   "APIKeys.ListApiKeys.action.revoke": "Revoke",
   "APIKeys.ListApiKeys.column.actions": "Actions",
-  "APIKeys.ListApiKeys.column.api": "API",
   "APIKeys.ListApiKeys.column.api.key": "API Key",
-  "APIKeys.ListApiKeys.column.application": "Application",
   "APIKeys.ListApiKeys.column.expires.on": "Expires On",
   "APIKeys.ListApiKeys.column.issued.on": "Issued On",
   "APIKeys.ListApiKeys.column.last.used.on": "Last Used On",

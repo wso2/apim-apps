@@ -67,6 +67,8 @@ export default function ApiKeyListing() {
 
     // API keys state for dynamic updates
     const [apiKeys, setApiKeys] = React.useState(null);
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     // Revoke key dialog state
     const [revokeConfirmOpen, setRevokeConfirmOpen] = React.useState(false);
@@ -275,6 +277,24 @@ export default function ApiKeyListing() {
         {
             name: 'keyName',
             label: intl.formatMessage({ id: 'Apis.Details.APIKeys.ApiKeyListing.column.apiKey', defaultMessage: 'API Key' }),
+            options: {
+                customBodyRenderLite: (dataIndex) => {
+                    const keyData = apiKeys[dataIndex];
+                    const { keyName } = keyData;
+                    return (
+                        <Tooltip title={keyName || ''} placement='top'>
+                            <Box sx={{ maxWidth: '200px' }}>
+                                <Typography
+                                    variant='body2'
+                                    sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                                >
+                                    {keyName || '-'}
+                                </Typography>
+                            </Box>
+                        </Tooltip>
+                    );
+                },
+            },
         },
         {
             name: 'associatedApp',
@@ -453,10 +473,17 @@ export default function ApiKeyListing() {
         download: false,
         print: false,
         viewColumns: false,
-        pagination: false,
+        pagination: true,
         sort: false,
         responsive: 'standard',
-        tableBodyMaxHeight: '520px',
+        page,
+        rowsPerPage,
+        rowsPerPageOptions: [5, 10, 25],
+        onChangePage: (currentPage) => setPage(currentPage),
+        onChangeRowsPerPage: (numberOfRows) => {
+            setRowsPerPage(numberOfRows);
+            setPage(0);
+        },
     };
 
     return (
