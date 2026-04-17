@@ -64,7 +64,6 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
     const intl = useIntl();
     const { settings } = React.useContext(SettingsContext);
     const legacyApiKeysEnabled = settings?.IsLegacyApiKeysEnabled ?? false;
-    const KEY_NAME_MAX_LEN = 20;
     const [currentTab, setCurrentTab] = React.useState(0);
     const [selectedAPI, setSelectedAPI] = React.useState('');
     const [selectedExistingKey, setSelectedExistingKey] = React.useState('');
@@ -250,12 +249,16 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
                 customBodyRenderLite: (dataIndex) => {
                     const keyData = associatedKeysData[dataIndex];
                     const { keyName } = keyData;
-                    const truncated = keyName && keyName.length > KEY_NAME_MAX_LEN
-                        ? `${keyName.slice(0, KEY_NAME_MAX_LEN)}...`
-                        : keyName;
                     return (
-                        <Tooltip title={keyName && keyName.length > KEY_NAME_MAX_LEN ? keyName : ''} placement='top'>
-                            <Typography variant='body2'>{truncated || '-'}</Typography>
+                        <Tooltip title={keyName || ''} placement='top'>
+                            <Box sx={{ maxWidth: '200px' }}>
+                                <Typography
+                                    variant='body2'
+                                    sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                                >
+                                    {keyName || '-'}
+                                </Typography>
+                            </Box>
                         </Tooltip>
                     );
                 },
@@ -409,13 +412,6 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-
-    React.useEffect(() => {
-        const maxPage = Math.max(Math.ceil((associatedKeysData?.length || 0) / rowsPerPage) - 1, 0);
-        if (page > maxPage) {
-            setPage(maxPage);
-        }
-    }, [associatedKeysData, page, rowsPerPage]);
 
     const options = {
         selectableRows: 'none',

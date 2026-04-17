@@ -21,6 +21,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Alert as AlertMui,
     AppBar,
+    Box,
     Button,
     Chip,
     Dialog,
@@ -186,15 +187,6 @@ export default function ApiKeysView() {
         );
     });
 
-    useEffect(() => {
-        const maxPage = Math.max(Math.ceil(filteredKeys.length / rowsPerPage) - 1, 0);
-        if (page > maxPage) {
-            setPage(maxPage);
-        }
-    }, [filteredKeys.length, page, rowsPerPage]);
-
-    const KEY_NAME_MAX_LEN = 20;
-
     const columns = [
         {
             name: 'keyName',
@@ -205,43 +197,39 @@ export default function ApiKeysView() {
             options: {
                 customBodyRenderLite: (dataIndex) => {
                     const { keyName, applicationName, apiName } = filteredKeys[dataIndex];
-                    const truncated = keyName && keyName.length > KEY_NAME_MAX_LEN
-                        ? `${keyName.slice(0, KEY_NAME_MAX_LEN)}...`
-                        : keyName;
                     return (
                         <div>
-                            <Tooltip
-                                title={keyName && keyName.length > KEY_NAME_MAX_LEN ? keyName : ''}
-                                placement='top'
-                            >
-                                <Typography variant='body2' sx={{ fontWeight: 500 }}>
-                                    {truncated || '-'}
-                                </Typography>
+                            <Tooltip title={keyName || ''} placement='top'>
+                                <Box sx={{ maxWidth: '200px' }}>
+                                    <Typography
+                                        variant='body2'
+                                        sx={{
+                                            fontWeight: 500,
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        {keyName || '-'}
+                                    </Typography>
+                                </Box>
                             </Tooltip>
-                            {(applicationName || apiName) && (
-                                <div style={{ marginTop: 2 }}>
-                                    {applicationName && (
-                                        <Typography variant='caption' color='text.secondary' display='block'>
-                                            <FormattedMessage
-                                                id='APIKeys.ListApiKeys.label.application'
-                                                defaultMessage='Application'
-                                            />
-                                            {': '}
-                                            {applicationName}
-                                        </Typography>
-                                    )}
-                                    {apiName && (
-                                        <Typography variant='caption' color='text.secondary' display='block'>
-                                            <FormattedMessage
-                                                id='APIKeys.ListApiKeys.label.api'
-                                                defaultMessage='API'
-                                            />
-                                            {': '}
-                                            {apiName}
-                                        </Typography>
-                                    )}
-                                </div>
-                            )}
+                            <div style={{ marginTop: 2 }}>
+                                {[
+                                    {
+                                        id: 'APIKeys.ListApiKeys.label.application',
+                                        defaultMessage: 'Application',
+                                        value: applicationName,
+                                    },
+                                    { id: 'APIKeys.ListApiKeys.label.api', defaultMessage: 'API', value: apiName },
+                                ].filter(({ value }) => value).map(({ id, defaultMessage, value }) => (
+                                    <Typography key={id} variant='caption' color='text.secondary' display='block'>
+                                        <FormattedMessage id={id} defaultMessage={defaultMessage} />
+                                        {': '}
+                                        {value}
+                                    </Typography>
+                                ))}
+                            </div>
                         </div>
                     );
                 },

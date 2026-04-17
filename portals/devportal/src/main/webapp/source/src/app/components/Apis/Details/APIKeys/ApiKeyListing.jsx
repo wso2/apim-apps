@@ -64,7 +64,6 @@ export default function ApiKeyListing() {
     const params = useParams();
     const apiUUID = params.apiUuid;
     const intl = useIntl();
-    const KEY_NAME_MAX_LEN = 20;
 
     // API keys state for dynamic updates
     const [apiKeys, setApiKeys] = React.useState(null);
@@ -274,13 +273,6 @@ export default function ApiKeyListing() {
         setSelectedKeyForRevoke(null);
     };
 
-    useEffect(() => {
-        const maxPage = Math.max(Math.ceil((apiKeys?.length || 0) / rowsPerPage) - 1, 0);
-        if (page > maxPage) {
-            setPage(maxPage);
-        }
-    }, [apiKeys, page, rowsPerPage]);
-
     const columns = [
         {
             name: 'keyName',
@@ -289,12 +281,16 @@ export default function ApiKeyListing() {
                 customBodyRenderLite: (dataIndex) => {
                     const keyData = apiKeys[dataIndex];
                     const { keyName } = keyData;
-                    const truncated = keyName && keyName.length > KEY_NAME_MAX_LEN
-                        ? `${keyName.slice(0, KEY_NAME_MAX_LEN)}...`
-                        : keyName;
                     return (
-                        <Tooltip title={keyName && keyName.length > KEY_NAME_MAX_LEN ? keyName : ''} placement='top'>
-                            <Typography variant='body2'>{truncated || '-'}</Typography>
+                        <Tooltip title={keyName || ''} placement='top'>
+                            <Box sx={{ maxWidth: '200px' }}>
+                                <Typography
+                                    variant='body2'
+                                    sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                                >
+                                    {keyName || '-'}
+                                </Typography>
+                            </Box>
                         </Tooltip>
                     );
                 },
