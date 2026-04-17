@@ -19,6 +19,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import Radio from '@mui/material/Radio';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
@@ -57,6 +58,7 @@ const GatewayTypeCardRoot = styled(Box, {
 function GatewayTypeOptionCard(props) {
     const {
         title,
+        versionLabel,
         description,
         selected,
         disabled,
@@ -98,19 +100,32 @@ function GatewayTypeOptionCard(props) {
                 }}
             />
             <Box sx={{ minWidth: 0, flex: 1, textAlign: 'left' }}>
-                <Typography
-                    variant='subtitle1'
-                    component='div'
-                    sx={{
-                        fontSize: '0.7rem',
-                        fontWeight: 600,
-                        lineHeight: 1.2,
-                        textAlign: 'left',
-                        color: 'text.primary',
-                    }}
-                >
-                    {title}
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
+                    <Typography
+                        variant='subtitle1'
+                        component='span'
+                        sx={{
+                            fontSize: '0.7rem',
+                            fontWeight: 600,
+                            lineHeight: 1.2,
+                            color: 'text.primary',
+                        }}
+                    >
+                        {title}
+                    </Typography>
+                    {versionLabel && (
+                        <Chip
+                            label={versionLabel}
+                            size='small'
+                            sx={{
+                                height: '14px',
+                                fontSize: '0.5rem',
+                                fontWeight: 600,
+                                '& .MuiChip-label': { px: 0.75 },
+                            }}
+                        />
+                    )}
+                </Box>
                 <Typography
                     variant='body2'
                     component='div'
@@ -135,11 +150,13 @@ GatewayTypeOptionCard.propTypes = {
     onSelect: PropTypes.func.isRequired,
     selected: PropTypes.bool,
     title: PropTypes.string.isRequired,
+    versionLabel: PropTypes.string,
 };
 
 GatewayTypeOptionCard.defaultProps = {
     disabled: false,
     selected: false,
+    versionLabel: null,
 };
 
 export default GatewayTypeOptionCard;

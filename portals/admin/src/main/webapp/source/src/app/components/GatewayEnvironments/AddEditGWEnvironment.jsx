@@ -1252,13 +1252,17 @@ function AddEditGWEnvironment(props) {
         });
     }
 
+    const GATEWAY_TYPE_VERSION_LABELS = {
+        [CONSTS.GATEWAY_TYPE.apk]: 'v1.3',
+    };
+
     const getDisplayName = (value) => {
         if (value === CONSTS.GATEWAY_TYPE.apiPlatform) {
             return 'API Platform Gateway';
         } else if (value === CONSTS.GATEWAY_TYPE.regular) {
             return 'Universal Gateway';
         } else if (value === CONSTS.GATEWAY_TYPE.apk) {
-            return 'Kubernetes Gateway v1.3';
+            return 'Kubernetes Gateway';
         } else {
             return value + ' Gateway';
         }
@@ -1754,6 +1758,7 @@ function AddEditGWEnvironment(props) {
                                             <GatewayTypeOptionCard
                                                 key={item}
                                                 title={getDisplayName(item)}
+                                                versionLabel={GATEWAY_TYPE_VERSION_LABELS[item] || null}
                                                 description={getGatewayTypeDescription(
                                                     item,
                                                 )}
