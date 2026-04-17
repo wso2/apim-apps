@@ -148,7 +148,11 @@ function AddEditRuleset(props) {
                     return body;
                 })
                 .then((data) => {
-                    dispatch({ field: 'all', value: data });
+                    // If ruleCategory is GENERIC, display ruleType as GENERIC in dropdown
+                    const loadedData = data.ruleCategory === 'GENERIC'
+                        ? { ...data, ruleType: 'GENERIC' }
+                        : data;
+                    dispatch({ field: 'all', value: loadedData });
                     // After getting metadata, fetch the ruleset content
                     return restApi.getRulesetContent(id);
                 })
@@ -177,7 +181,6 @@ function AddEditRuleset(props) {
         if (e.target.name === 'ruleType') {
             if (e.target.value === 'GENERIC') {
                 dispatch({ field: 'ruleCategory', value: 'GENERIC' });
-                dispatch({ field: 'ruleType', value: 'API_DEFINITION' });
                 // Auto-populate default GENERIC ruleset YAML if content is empty
                 if (!rulesetContent || !rulesetContent.trim()) {
                     const defaultYaml = [
@@ -377,6 +380,7 @@ function AddEditRuleset(props) {
             ...state,
             provider: AuthManager.getUser().name,
             ruleCategory: ruleCategory || 'SPECTRAL',
+            ruleType: ruleType === 'GENERIC' ? 'API_DEFINITION' : ruleType,
             rulesetContent: file,
         };
 

@@ -1450,10 +1450,7 @@
   "Workflow.WorkflowApprovalTasks.expand.attribute.value": "Value",
   "Workflow.WorkflowApprovalTasks.expand.created": "Created:",
   "Workflow.WorkflowApprovalTasks.expand.description": "Description:",
-<<<<<<< HEAD
   "Workflow.WorkflowApprovalTasks.expand.governance.title": "Governance - Successor Analysis",
-=======
->>>>>>> upstream/main
   "Workflow.WorkflowApprovalTasks.expand.no.data": "No data to display.",
   "Workflow.WorkflowApprovalTasks.expand.title": "Request Details",
   "Workflow.WorkflowApprovalTasks.help.link": "Learn more about workflows",
@@ -1472,10 +1469,7 @@
   "Workflow.WorkflowApprovalTasks.update.error": "Unable to complete approve/reject process.",
   "Workflow.WorkflowApprovalTasks.update.success": "Workflow status is updated successfully",
   "Workflow.application.deletion.search.default": "Search by Application Name, Application Tier, Application Owner etc",
-<<<<<<< HEAD
   "Workflow.expand.governance.noSuccessor": "Warning: This API is being deprecated without an identified successor. Approving this may impact active subscribers.",
-=======
->>>>>>> upstream/main
   "dsdds": "The specific combination of attributes being checked in the policy need to be defined as the key template. Allowed values are : $userId, $apiContext, $apiVersion, $resourceKey, $appTenant, $apiTenant, $appId, $clientIp, $customProperty, $customProperty.somevalue",
   "error.list.401": "401 : Authorization Required.",
   "error.list.401.description": "The server could not verify that you are authorized to access the requested resource",
