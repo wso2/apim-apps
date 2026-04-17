@@ -3,6 +3,20 @@ import PropTypes from 'prop-types';
 import 'swagger-ui-react/swagger-ui.css';
 import SwaggerUILib from 'swagger-ui-react';
 import CustomPadLock from './CustomPadLock';
+import GenerateCurlExecute from './GenerateCurlExecute';
+import isUniversalGatewayApi from './universalGateway';
+
+const generateCurlTryoutPlugin = (getSecuritySchemeType) => ({
+    wrapComponents: {
+        execute: (_, system) => (props) => (
+            <GenerateCurlExecute
+                {...props}
+                getSystem={system.getSystem}
+                getSecuritySchemeType={getSecuritySchemeType}
+            />
+        ),
+    },
+});
 
 const disableAuthorizeAndInfoPlugin = function (spec) {
     return {
@@ -71,7 +85,12 @@ const SwaggerUI = (props) => {
             return req;
         },
         defaultModelExpandDepth: -1,
-        plugins: [disableAuthorizeAndInfoPlugin(spec)],
+        plugins: [
+            disableAuthorizeAndInfoPlugin(spec),
+            ...(isUniversalGatewayApi(api)
+                ? [generateCurlTryoutPlugin(() => securitySchemeRef.current)]
+                : []),
+        ],
     };
     const [render, setRender] = useState();
     const [layoutRender, setlayoutRender] = useState();

@@ -86,8 +86,12 @@ class DevPortal extends React.Component {
         const promisedSettings = api.getSettings();
         promisedSettings
             .then((response) => {
-                this.setSettings(response.body);
-                if (!this.state.settings.IsAnonymousModeEnabled) {
+                const settings = response.body;
+                if (!settings) {
+                    return;
+                }
+                this.setSettings(settings);
+                if (!settings.IsAnonymousModeEnabled) {
                     this.setState({ isNonAnonymous: true });
                 }
                 if (Settings.app.isPassive && !AuthManager.getUser()

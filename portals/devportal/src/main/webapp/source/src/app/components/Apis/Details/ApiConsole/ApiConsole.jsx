@@ -40,6 +40,7 @@ import { ApiContext } from '../ApiContext';
 import Progress from '../../../Shared/Progress';
 import Api from '../../../../data/api';
 import SwaggerUI from './SwaggerUI';
+import isUniversalGatewayApi from './universalGateway';
 import TryOutController from '../../../Shared/ApiTryOut/TryOutController';
 import Application from '../../../../data/Application';
 
@@ -404,6 +405,9 @@ class ApiConsole extends React.Component {
      * @memberof TryOutController
      */
     updateAccessToken(selectedApplication) {
+        if (selectedApplication == null || selectedApplication === '') {
+            return;
+        }
         const {
             selectedKeyType, selectedKeyManager, keys,
         } = this.state;
@@ -431,6 +435,12 @@ class ApiConsole extends React.Component {
                         this.setSandboxAccessToken(accessToken);
                     }
                     this.setKeys(appKeys);
+                })
+                .catch((err) => {
+                    if (process.env.NODE_ENV !== 'production') {
+                        // eslint-disable-next-line no-console
+                        console.warn('ApiConsole: could not load application keys', err);
+                    }
                 });
         }
     }
@@ -524,7 +534,11 @@ class ApiConsole extends React.Component {
         if (api && api.securityScheme) {
             isApiKeyEnabled = api.securityScheme.includes('api_key');
             if (isApiKeyEnabled && securitySchemeType === 'API-KEY') {
-                authorizationHeader = api.apiKeyHeader ? api.apiKeyHeader : 'ApiKey';
+                if (isUniversalGatewayApi(api)) {
+                    authorizationHeader = 'ApiKey';
+                } else {
+                    authorizationHeader = api.apiKeyHeader ? api.apiKeyHeader : 'ApiKey';
+                }
             }
         }
 

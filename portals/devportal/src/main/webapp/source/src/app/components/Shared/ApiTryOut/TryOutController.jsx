@@ -439,6 +439,9 @@ function TryOutController(props) {
      */
     function updateApplication() {
         if (api.lifeCycleStatus) {
+            if (selectedApplication == null || String(selectedApplication).trim() === '') {
+                return;
+            }
             let accessToken;
             let keyType;
             if (isSubValidationDisabled) {
@@ -482,6 +485,21 @@ function TryOutController(props) {
                         setKSGenerated(false);
                     }
                     setKeys(appKeys);
+                })
+                .catch((err) => {
+                    if (process.env.NODE_ENV !== 'production') {
+                        // eslint-disable-next-line no-console
+                        console.warn('TryOutController: could not load application keys', err);
+                    }
+                    setKeys([]);
+                    setProductionAccessToken('');
+                    setSandboxAccessToken('');
+                    setProductionApiKey('');
+                    setSandboxApiKey('');
+                    setKSGenerated(false);
+                    setConsumerSecret('');
+                    setShowToken(false);
+                    handleAccessTokenChange({ newAccessToken: '' });
                 });
         }
     }
