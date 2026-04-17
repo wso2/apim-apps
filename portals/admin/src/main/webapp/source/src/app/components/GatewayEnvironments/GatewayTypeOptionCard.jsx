@@ -100,7 +100,11 @@ function GatewayTypeOptionCard(props) {
                 }}
             />
             <Box sx={{ minWidth: 0, flex: 1, textAlign: 'left' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
+                <Box
+                    sx={{
+                        display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap',
+                    }}
+                >
                     <Typography
                         variant='subtitle1'
                         component='span'
