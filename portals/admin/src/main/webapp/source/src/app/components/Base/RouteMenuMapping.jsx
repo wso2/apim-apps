@@ -227,6 +227,14 @@ const RouteMenuMapping = (intl) => [
                 }),
                 path: '/settings/gateways/(.*?)$',
             },
+            {
+                id: 'API Platform Gateway',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.gateways.items.APIPlatformGateway',
+                    defaultMessage: 'API Platform Gateway',
+                }),
+                path: '/settings/environments/platform-gateways/(.*?)$',
+            },
         ],
     },
     {

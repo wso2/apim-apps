@@ -439,6 +439,7 @@
   "Base.RouteMenuMapping.gateways": "Gateways",
   "Base.RouteMenuMapping.gateways.items.Adding": "Gateway Environment",
   "Base.RouteMenuMapping.gateways.items.Editing": "Edit Gateway Environment",
+  "Base.RouteMenuMapping.gateways.items.APIPlatformGateway": "API Platform Gateway",
   "Base.RouteMenuMapping.governance": "Governance",
   "Base.RouteMenuMapping.governance.policies": "Policies",
   "Base.RouteMenuMapping.keymanagers": "Key Managers",

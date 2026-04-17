@@ -244,7 +244,7 @@ const GatewayEditButton = ({ dataRow }) => {
     const handleClick = () => {
         if (dataRow.isPlatformGateway && dataRow.platformGatewayId) {
             history.push(
-                `/settings/environments/universal-gateways/${dataRow.platformGatewayId}`,
+                `/settings/environments/platform-gateways/${dataRow.platformGatewayId}`,
             );
             return;
         }
