@@ -39,6 +39,7 @@ export default function SecretValueDialog({ open, onClose, secret }) {
             onClose={onClose}
             fullWidth
             maxWidth="sm"
+            data-testid="secret-value-dialog"
         >
             <DialogTitle>
                 <FormattedMessage

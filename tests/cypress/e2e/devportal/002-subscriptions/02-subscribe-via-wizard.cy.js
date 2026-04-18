@@ -70,7 +70,7 @@ describe("Anonymous view apis", () => {
                 cy.wait('@generateKeys', { timeout: Cypress.env('largeTimeout') });
 
                 cy.get('body').then(($body) => {
-                    if ($body.find('[data-testid="secret-dialog-close"]').length > 0) {
+                    if ($body.find('[data-testid="secret-value-dialog"]').length > 0) {
                         cy.get('[data-testid="secret-dialog-close"]', { timeout: Cypress.env('largeTimeout') })
                             .should('be.visible')
                             .click();
