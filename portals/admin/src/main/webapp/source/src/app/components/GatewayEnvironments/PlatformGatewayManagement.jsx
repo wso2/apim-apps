@@ -43,20 +43,20 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { Link as RouterLink } from 'react-router-dom';
 import { useIntl } from 'react-intl';
-import UniversalGatewaySuccessView from './UniversalGatewaySuccessView';
-import UniversalGatewayRegenerateTokenDialog from './UniversalGatewayRegenerateTokenDialog';
+import PlatformGatewaySuccessView from './PlatformGatewaySuccessView';
+import PlatformGatewayRegenerateTokenDialog from './PlatformGatewayRegenerateTokenDialog';
 import {
     gatewayShape,
     getGatewayConfiguredVersion,
-    getUniversalGatewayVersions,
+    getPlatformGatewayVersions,
     getAdditionalProperty,
     getGatewayStatusChipProps,
     normalizeProperties,
     resolveGatewayStatus,
     setGatewayVersionInProperties,
-} from './UniversalGatewayUtils';
+} from './PlatformGatewayUtils';
 
-const UniversalGatewayManagement = (props) => {
+const PlatformGatewayManagement = (props) => {
     const intl = useIntl();
     const t = useCallback((id, defaultMessage, values) => intl.formatMessage({ id, defaultMessage }, values), [intl]);
     const { settings } = useAppContext();
@@ -86,7 +86,7 @@ const UniversalGatewayManagement = (props) => {
     const [showTokenCommands, setShowTokenCommands] = useState(false);
     const [existingHeaderEditMode, setExistingHeaderEditMode] = useState(false);
     const [gatewayVersion, setGatewayVersion] = useState('');
-    const gatewayVersions = useMemo(() => getUniversalGatewayVersions(settings), [settings]);
+    const gatewayVersions = useMemo(() => getPlatformGatewayVersions(settings), [settings]);
 
     const applyExistingGateway = useCallback((gatewayToApply) => {
         setExistingGateway(gatewayToApply);
@@ -115,7 +115,7 @@ const UniversalGatewayManagement = (props) => {
         const foundGateway = gateways.find((gateway) => gateway.id === gatewayId || gateway.name === gatewayId);
 
         if (!foundGateway) {
-            setError(t('Gateways.UniversalGatewayManagement.error.not.found', 'Gateway not found'));
+            setError(t('Gateways.PlatformGatewayManagement.error.not.found', 'Gateway not found'));
             return;
         }
 
@@ -143,7 +143,7 @@ const UniversalGatewayManagement = (props) => {
                 if (isMounted) {
                     setError(
                         loadError.message
-                            || t('Gateways.UniversalGatewayManagement.error.load', 'Failed to load gateway'),
+                            || t('Gateways.PlatformGatewayManagement.error.load', 'Failed to load gateway'),
                     );
                 }
             })
@@ -171,7 +171,7 @@ const UniversalGatewayManagement = (props) => {
     const pageProps = {
         pageStyle: 'paperLess',
         title: existingGateway?.displayName || existingGateway?.name
-            || t('Gateways.UniversalGatewayManagement.page.title', 'Gateway Details'),
+            || t('Gateways.PlatformGatewayManagement.page.title', 'Gateway Details'),
     };
 
     const handleRegenerateExistingGatewayToken = async () => {
@@ -195,14 +195,14 @@ const UniversalGatewayManagement = (props) => {
             setShowTokenCommands(true);
             Alert.success(
                 t(
-                    'Gateways.UniversalGatewayManagement.token.regenerate.success',
+                    'Gateways.PlatformGatewayManagement.token.regenerate.success',
                     'Gateway registration token regenerated successfully.',
                 ),
             );
         } catch (requestError) {
             const errorMessage = requestError?.response?.body?.description
                 || requestError.message
-                    || t('Gateways.UniversalGatewayManagement.token.regenerate.error.short',
+                    || t('Gateways.PlatformGatewayManagement.token.regenerate.error.short',
                         'Failed to regenerate token');
             setError(errorMessage);
             Alert.error(errorMessage);
@@ -250,10 +250,10 @@ const UniversalGatewayManagement = (props) => {
                 setDescription(mergedGateway.description || '');
             }
             setExistingHeaderEditMode(false);
-            Alert.success(t('Gateways.UniversalGatewayManagement.update.success', 'Gateway updated successfully.'));
+            Alert.success(t('Gateways.PlatformGatewayManagement.update.success', 'Gateway updated successfully.'));
         } catch (updateError) {
             const errorMessage = updateError?.response?.body?.description || updateError.message
-                || t('Gateways.UniversalGatewayManagement.update.error', 'Failed to update gateway');
+                || t('Gateways.PlatformGatewayManagement.update.error', 'Failed to update gateway');
             setError(errorMessage);
             Alert.error(errorMessage);
         } finally {
@@ -309,7 +309,7 @@ const UniversalGatewayManagement = (props) => {
                         }}
                     >
                         <ArrowBackIcon fontSize='small' />
-                        {t('Gateways.UniversalGatewayManagement.navigation.back', 'Back to Gateways')}
+                        {t('Gateways.PlatformGatewayManagement.navigation.back', 'Back to Gateways')}
                     </Link>
 
                     <Box
@@ -349,7 +349,7 @@ const UniversalGatewayManagement = (props) => {
                                         fullWidth
                                         size='small'
                                         label={t(
-                                            'Gateways.UniversalGatewayManagement.form.gateway.name',
+                                            'Gateways.PlatformGatewayManagement.form.gateway.name',
                                             'Gateway Name',
                                         )}
                                         value={name}
@@ -361,7 +361,7 @@ const UniversalGatewayManagement = (props) => {
                                         size='small'
                                         multiline
                                         minRows={2}
-                                        label={t('Gateways.UniversalGatewayManagement.form.description', 'Description')}
+                                        label={t('Gateways.PlatformGatewayManagement.form.description', 'Description')}
                                         value={description}
                                         onChange={(event) => setDescription(event.target.value)}
                                         disabled={updatingExisting}
@@ -369,14 +369,14 @@ const UniversalGatewayManagement = (props) => {
                                     <FormControl fullWidth size='small'>
                                         <InputLabel>
                                             {t(
-                                                'Gateways.UniversalGatewayManagement.form.version',
+                                                'Gateways.PlatformGatewayManagement.form.version',
                                                 'Gateway Version',
                                             )}
                                         </InputLabel>
                                         <Select
                                             value={gatewayVersion}
                                             label={t(
-                                                'Gateways.UniversalGatewayManagement.form.version',
+                                                'Gateways.PlatformGatewayManagement.form.version',
                                                 'Gateway Version',
                                             )}
                                             onChange={(event) => setGatewayVersion(event.target.value)}
@@ -406,15 +406,15 @@ const UniversalGatewayManagement = (props) => {
                                             }
                                         >
                                             {updatingExisting
-                                                ? t('Gateways.UniversalGatewayManagement.action.saving', 'Saving...')
-                                                : t('Gateways.UniversalGatewayManagement.action.save', 'Save')}
+                                                ? t('Gateways.PlatformGatewayManagement.action.saving', 'Saving...')
+                                                : t('Gateways.PlatformGatewayManagement.action.save', 'Save')}
                                         </Button>
                                         <Button
                                             variant='outlined'
                                             onClick={handleCancelExistingGatewayHeaderEdit}
                                             disabled={updatingExisting}
                                         >
-                                            {t('Gateways.UniversalGatewayManagement.action.close', 'Close')}
+                                            {t('Gateways.PlatformGatewayManagement.action.close', 'Close')}
                                         </Button>
                                         {hasStatus && (
                                             <Chip
@@ -422,11 +422,11 @@ const UniversalGatewayManagement = (props) => {
                                                 label={
                                                     isActive
                                                         ? t(
-                                                            'Gateways.UniversalGatewayManagement.status.active',
+                                                            'Gateways.PlatformGatewayManagement.status.active',
                                                             'Active',
                                                         )
                                                         : t(
-                                                            'Gateways.UniversalGatewayManagement.status.inactive',
+                                                            'Gateways.PlatformGatewayManagement.status.inactive',
                                                             'Inactive',
                                                         )
                                                 }
@@ -453,7 +453,7 @@ const UniversalGatewayManagement = (props) => {
                                             size='small'
                                             onClick={handleStartExistingGatewayHeaderEdit}
                                             aria-label={t(
-                                                'Gateways.UniversalGatewayManagement.action.edit.details',
+                                                'Gateways.PlatformGatewayManagement.action.edit.details',
                                                 'edit gateway details',
                                             )}
                                         >
@@ -465,11 +465,11 @@ const UniversalGatewayManagement = (props) => {
                                                 label={
                                                     isActive
                                                         ? t(
-                                                            'Gateways.UniversalGatewayManagement.status.active',
+                                                            'Gateways.PlatformGatewayManagement.status.active',
                                                             'Active',
                                                         )
                                                         : t(
-                                                            'Gateways.UniversalGatewayManagement.status.inactive',
+                                                            'Gateways.PlatformGatewayManagement.status.inactive',
                                                             'Inactive',
                                                         )
                                                 }
@@ -479,11 +479,11 @@ const UniversalGatewayManagement = (props) => {
                                     </Box>
                                     <Typography variant='body1' color='text.secondary' sx={{ mt: 1 }}>
                                         {existingGateway.description
-                                            || t('Gateways.UniversalGatewayManagement.description.empty',
+                                            || t('Gateways.PlatformGatewayManagement.description.empty',
                                                 'No description provided.')}
                                     </Typography>
                                     <Typography variant='body2' color='text.secondary' sx={{ mt: 1 }}>
-                                        {t('Gateways.UniversalGatewayManagement.version.label', 'Version')}
+                                        {t('Gateways.PlatformGatewayManagement.version.label', 'Version')}
                                         :
                                         {gatewayVersion}
                                     </Typography>
@@ -499,7 +499,7 @@ const UniversalGatewayManagement = (props) => {
                     </MuiAlert>
                 )}
 
-                <UniversalGatewaySuccessView
+                <PlatformGatewaySuccessView
                     gateway={existingGateway}
                     onAddAnother={null}
                     onReconfigureRequested={openReconfigureConfirm}
@@ -508,7 +508,7 @@ const UniversalGatewayManagement = (props) => {
                     showTokenCommands={showTokenCommands}
                     hideHeader
                 />
-                <UniversalGatewayRegenerateTokenDialog
+                <PlatformGatewayRegenerateTokenDialog
                     open={confirmReconfigureOpen}
                     titleId='reconfigure-existing-gateway-dialog-title'
                     onClose={closeReconfigureConfirm}
@@ -536,7 +536,7 @@ const UniversalGatewayManagement = (props) => {
                     }}
                 >
                     <ArrowBackIcon fontSize='small' />
-                    {t('Gateways.UniversalGatewayManagement.navigation.back', 'Back to Gateways')}
+                    {t('Gateways.PlatformGatewayManagement.navigation.back', 'Back to Gateways')}
                 </Link>
             </Box>
             {error && (
@@ -546,14 +546,14 @@ const UniversalGatewayManagement = (props) => {
             )}
             {!error && (
                 <MuiAlert severity='warning'>
-                    {t('Gateways.UniversalGatewayManagement.error.not.found', 'Gateway not found')}
+                    {t('Gateways.PlatformGatewayManagement.error.not.found', 'Gateway not found')}
                 </MuiAlert>
             )}
         </ContentBase>
     );
 };
 
-UniversalGatewayManagement.propTypes = {
+PlatformGatewayManagement.propTypes = {
     match: PropTypes.shape({
         params: PropTypes.shape({
             gatewayId: PropTypes.string.isRequired,
@@ -566,8 +566,8 @@ UniversalGatewayManagement.propTypes = {
     }),
 };
 
-UniversalGatewayManagement.defaultProps = {
+PlatformGatewayManagement.defaultProps = {
     location: {},
 };
 
-export default UniversalGatewayManagement;
+export default PlatformGatewayManagement;

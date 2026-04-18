@@ -21,16 +21,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
-const UniversalGatewayRegenerateTokenDialog = ({ open, titleId, onClose, onConfirm, loading, t }) => {
+const PlatformGatewayRegenerateTokenDialog = ({ open, titleId, onClose, onConfirm, loading, t }) => {
     return (
         <Dialog open={open} onClose={onClose} aria-labelledby={titleId}>
             <DialogTitle id={titleId}>
-                {t('Gateways.UniversalGatewayManagement.token.dialog.title', 'Generate New Registration Token?')}
+                {t('Gateways.PlatformGatewayManagement.token.dialog.title', 'Generate New Registration Token?')}
             </DialogTitle>
             <DialogContent>
                 <DialogContentText>
                     {t(
-                        'Gateways.UniversalGatewayManagement.token.dialog.description',
+                        'Gateways.PlatformGatewayManagement.token.dialog.description',
                         'The older registration key will be revoked immediately and the ' +
                             'connected gateway will be disconnected from the control plane. ' +
                             'You must reconfigure the gateway with the new key.',
@@ -39,19 +39,19 @@ const UniversalGatewayRegenerateTokenDialog = ({ open, titleId, onClose, onConfi
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} disabled={loading}>
-                    {t('Gateways.UniversalGatewayManagement.action.cancel', 'Cancel')}
+                    {t('Gateways.PlatformGatewayManagement.action.cancel', 'Cancel')}
                 </Button>
                 <Button onClick={onConfirm} variant='contained' color='primary' disabled={loading}>
                     {loading
-                        ? t('Gateways.UniversalGatewayManagement.action.generating', 'Generating...')
-                        : t('Gateways.UniversalGatewayManagement.action.generate.key', 'Generate Key')}
+                        ? t('Gateways.PlatformGatewayManagement.action.generating', 'Generating...')
+                        : t('Gateways.PlatformGatewayManagement.action.generate.key', 'Generate Key')}
                 </Button>
             </DialogActions>
         </Dialog>
     );
 };
 
-UniversalGatewayRegenerateTokenDialog.propTypes = {
+PlatformGatewayRegenerateTokenDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     titleId: PropTypes.string.isRequired,
     onClose: PropTypes.func.isRequired,
@@ -60,4 +60,4 @@ UniversalGatewayRegenerateTokenDialog.propTypes = {
     t: PropTypes.func.isRequired,
 };
 
-export default UniversalGatewayRegenerateTokenDialog;
+export default PlatformGatewayRegenerateTokenDialog;

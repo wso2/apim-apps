@@ -24,17 +24,17 @@ import CONSTS from 'AppData/Constants';
 export const PERMISSION_TYPE_OPTIONS = [
     {
         value: 'PUBLIC',
-        labelKey: 'Gateways.UniversalGatewayManagement.permission.public',
+        labelKey: 'Gateways.PlatformGatewayManagement.permission.public',
         defaultMessage: 'Public',
     },
     {
         value: 'ALLOW',
-        labelKey: 'Gateways.UniversalGatewayManagement.permission.allow',
+        labelKey: 'Gateways.PlatformGatewayManagement.permission.allow',
         defaultMessage: 'Allow for role(s)',
     },
     {
         value: 'DENY',
-        labelKey: 'Gateways.UniversalGatewayManagement.permission.deny',
+        labelKey: 'Gateways.PlatformGatewayManagement.permission.deny',
         defaultMessage: 'Deny for role(s)',
     },
 ];
@@ -106,7 +106,7 @@ export const normalizeProperties = (properties) => {
     return {};
 };
 
-export const getUniversalGatewayVersions = (settings) => {
+export const getPlatformGatewayVersions = (settings) => {
     const configuredVersions = settings?.universalGatewayVersions;
     if (!Array.isArray(configuredVersions) || configuredVersions.length === 0) {
         return getDefaultGatewayVersions();
@@ -124,7 +124,7 @@ export const getUniversalGatewayVersions = (settings) => {
 };
 
 export const getPlatformGatewayReleaseConfig = (settings, selectedVersion) => {
-    const versions = getUniversalGatewayVersions(settings);
+    const versions = getPlatformGatewayVersions(settings);
     const version = versions.includes(selectedVersion)
         ? selectedVersion
         : versions[versions.length - 1];
@@ -151,7 +151,7 @@ export const getPlatformGatewayReleaseConfig = (settings, selectedVersion) => {
 };
 
 export const getGatewayConfiguredVersion = (gateway, settings) => {
-    const versions = getUniversalGatewayVersions(settings);
+    const versions = getPlatformGatewayVersions(settings);
     const properties = normalizeProperties(gateway?.properties);
     const gatewayController = tryParseJson(properties.gatewayController);
     const versionFromProperties = (gatewayController?.version || properties?.version || '').trim();
