@@ -44,7 +44,7 @@ export const WSO2_GATEWAY_TYPES = [CONSTS.GATEWAY_TYPE.regular, CONSTS.GATEWAY_T
 export const WSO2_SELF_HOSTED_GATEWAY_TYPES = [CONSTS.GATEWAY_TYPE.apiPlatform, ...WSO2_GATEWAY_TYPES];
 
 const DEFAULT_PLATFORM_GATEWAY_RELEASES_URL = 'https://github.com/wso2/api-platform/releases';
-const DEFAULT_PLATFORM_GATEWAY_VERSION = 'v1.0.0';
+const DEFAULT_PLATFORM_GATEWAY_VERSION = '1.0.0';
 const DEFAULT_HELM_CHART_OCI_URL = 'oci://ghcr.io/wso2/api-platform/helm-charts/gateway';
 
 const getDefaultGatewayVersions = () => [DEFAULT_PLATFORM_GATEWAY_VERSION];
