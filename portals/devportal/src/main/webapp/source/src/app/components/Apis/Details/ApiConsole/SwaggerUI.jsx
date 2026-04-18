@@ -4,7 +4,7 @@ import 'swagger-ui-react/swagger-ui.css';
 import SwaggerUILib from 'swagger-ui-react';
 import CustomPadLock from './CustomPadLock';
 import GenerateCurlExecute from './GenerateCurlExecute';
-import isUniversalGatewayApi from './universalGateway';
+import isPlatformGatewayApi from './platformGateway';
 
 const generateCurlTryoutPlugin = (getSecuritySchemeType) => ({
     wrapComponents: {
@@ -87,7 +87,7 @@ const SwaggerUI = (props) => {
         defaultModelExpandDepth: -1,
         plugins: [
             disableAuthorizeAndInfoPlugin(spec),
-            ...(isUniversalGatewayApi(api)
+            ...(isPlatformGatewayApi(api)
                 ? [generateCurlTryoutPlugin(() => securitySchemeRef.current)]
                 : []),
         ],
