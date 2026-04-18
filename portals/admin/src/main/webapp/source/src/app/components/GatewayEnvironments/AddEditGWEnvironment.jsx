@@ -60,7 +60,7 @@ import GatewayConfiguration from 'AppComponents/GatewayEnvironments/GatewayConfi
 import cloneDeep from 'lodash.clonedeep';
 import CircularProgress from '@mui/material/CircularProgress';
 import GatewayTypeOptionCard from './GatewayTypeOptionCard';
-import QuickStartGuide from './UniversalGatewayQuickStartGuide';
+import QuickStartGuide from './PlatformGatewayQuickStartGuide';
 import {
     buildAdditionalPropertiesArray,
     buildPermissionsDTO,
@@ -70,14 +70,14 @@ import {
     getGatewayProvider,
     getGatewayStatusChipProps,
     getPlatformGatewayUrl,
-    getUniversalGatewayVersions,
+    getPlatformGatewayVersions,
     getVhostFromBaseUrl,
     normalizeBaseUrl,
     WSO2_GATEWAY_TYPES,
     WSO2_SELF_HOSTED_GATEWAY_TYPES,
     setGatewayVersionInProperties,
     toPlatformGatewayName,
-} from './UniversalGatewayUtils';
+} from './PlatformGatewayUtils';
 
 const PREFIX = 'AddEditGWEnvironment';
 
@@ -415,7 +415,7 @@ function AddEditGWEnvironment(props) {
     const [validating, setValidating] = useState(false);
     const [saving, setSaving] = useState(false);
     const { gatewayTypes } = settings;
-    const gatewayVersions = useMemo(() => getUniversalGatewayVersions(settings), [settings]);
+    const gatewayVersions = useMemo(() => getPlatformGatewayVersions(settings), [settings]);
     const {
         match: {
             params: { id },
@@ -531,7 +531,7 @@ function AddEditGWEnvironment(props) {
         additionalProperties,
     } = state;
     const platformGatewayBaseUrl = additionalProperties?.platformGatewayBaseUrl || '';
-    const isUniversalGatewayCreate = !id && gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform;
+    const isApiPlatformGateway = !id && gatewayType === CONSTS.GATEWAY_TYPE.apiPlatform;
     const handleWSO2GatewayTypeSelection = (selectedType) => {
         dispatch({ field: 'gatewayType', value: selectedType });
     };
@@ -975,7 +975,7 @@ function AddEditGWEnvironment(props) {
             displayName: () => getDisplayNameValidationError(
                 value,
                 intl.formatMessage,
-                isUniversalGatewayCreate,
+                isApiPlatformGateway,
             ),
             vhosts: () => getVhostValidationError(
                 value,
@@ -995,14 +995,14 @@ function AddEditGWEnvironment(props) {
     };
     const getAllFormErrors = () => {
         let errorText = '';
-        const nameErrors = isUniversalGatewayCreate
+        const nameErrors = isApiPlatformGateway
             ? false
             : hasErrors('name', name, true);
         const displayNameErrors = hasErrors('displayName', displayName, true);
-        const vhostErrors = isUniversalGatewayCreate
+        const vhostErrors = isApiPlatformGateway
             ? false
             : hasErrors('vhosts', vhosts, true);
-        const scheduledIntervalErrors = isUniversalGatewayCreate
+        const scheduledIntervalErrors = isApiPlatformGateway
             ? false
             : hasErrors('scheduledInterval', scheduledInterval, true);
         const platformBaseUrlErrors = hasErrors(
@@ -1097,7 +1097,7 @@ function AddEditGWEnvironment(props) {
             gatewayMode,
             gatewayType,
             intl,
-            isUniversalGatewayCreate,
+            isApiPlatformGateway,
             name,
             platformGatewayBaseUrl,
             scheduledInterval,
@@ -1802,7 +1802,7 @@ function AddEditGWEnvironment(props) {
                                     component='p'
                                     id='GatewayEnvironments.AddEditGWEnvironment.general.details.description.div'
                                 >
-                                    {isUniversalGatewayCreate ? (
+                                    {isApiPlatformGateway ? (
                                         <FormattedMessage
                                             id={'GatewayEnvironments.'
                                                 + 'AddEditGWEnvironment.general.details.description.platform'}
@@ -1820,7 +1820,7 @@ function AddEditGWEnvironment(props) {
                             <Grid item xs={12} md={12} lg={9}>
                                 <Box component='div' m={1}>
                                     <Grid container>
-                                        {!isUniversalGatewayCreate && (
+                                        {!isApiPlatformGateway && (
                                             <Grid item xs={6}>
                                                 <TextField
                                                     id='name'
@@ -1871,14 +1871,14 @@ function AddEditGWEnvironment(props) {
                                         <Grid
                                             item
                                             xs={
-                                                isUniversalGatewayCreate
+                                                isApiPlatformGateway
                                                     ? 12
                                                     : 6
                                             }
                                         >
                                             <Box
                                                 ml={
-                                                    isUniversalGatewayCreate
+                                                    isApiPlatformGateway
                                                         ? 0
                                                         : 1
                                                 }
@@ -1886,7 +1886,7 @@ function AddEditGWEnvironment(props) {
                                                 <TextField
                                                     id='displayName'
                                                     autoFocus={
-                                                        isUniversalGatewayCreate
+                                                        isApiPlatformGateway
                                                     }
                                                     margin='dense'
                                                     name='displayName'
@@ -2147,7 +2147,7 @@ function AddEditGWEnvironment(props) {
                     )}
                     {showFormDetails && (
                         <>
-                            {!isUniversalGatewayCreate && (
+                            {!isApiPlatformGateway && (
                                 <>
                                     <Grid item xs={12}>
                                         <Box marginTop={2} marginBottom={2}>
@@ -2714,7 +2714,7 @@ function AddEditGWEnvironment(props) {
                                     </FormControl>
                                 </Box>
                             </Grid>
-                            {!isUniversalGatewayCreate && (
+                            {!isApiPlatformGateway && (
                                 <>
                                     <Grid item xs={12}>
                                         <Box marginTop={2} marginBottom={2}>

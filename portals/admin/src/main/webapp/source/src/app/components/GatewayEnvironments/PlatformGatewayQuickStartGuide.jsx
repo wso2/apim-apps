@@ -31,7 +31,7 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { useIntl } from 'react-intl';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
-import { gatewayShape, getGatewayConfiguredVersion, getPlatformGatewayReleaseConfig } from './UniversalGatewayUtils';
+import { gatewayShape, getGatewayConfiguredVersion, getPlatformGatewayReleaseConfig } from './PlatformGatewayUtils';
 
 const QUICK_START_TAB = {
     quickStart: 'quick-start',
@@ -43,25 +43,25 @@ const QUICK_START_TAB = {
 const QUICK_START_TABS = [
     {
         value: QUICK_START_TAB.quickStart,
-        labelKey: 'Gateways.UniversalGatewayManagement.quick.start.tab.quick.start',
+        labelKey: 'Gateways.PlatformGatewayManagement.quick.start.tab.quick.start',
         defaultMessage: 'Quick Start',
         icon: <RocketLaunchIcon sx={{ fontSize: 20 }} />,
     },
     {
         value: QUICK_START_TAB.virtualMachine,
-        labelKey: 'Gateways.UniversalGatewayManagement.quick.start.tab.virtual.machine',
+        labelKey: 'Gateways.PlatformGatewayManagement.quick.start.tab.virtual.machine',
         defaultMessage: 'Virtual Machine',
         icon: <ComputerIcon />,
     },
     {
         value: QUICK_START_TAB.docker,
-        labelKey: 'Gateways.UniversalGatewayManagement.quick.start.tab.docker',
+        labelKey: 'Gateways.PlatformGatewayManagement.quick.start.tab.docker',
         defaultMessage: 'Docker',
         icon: <CustomIcon icon='docker' width={20} height={20} />,
     },
     {
         value: QUICK_START_TAB.kubernetes,
-        labelKey: 'Gateways.UniversalGatewayManagement.quick.start.tab.kubernetes',
+        labelKey: 'Gateways.PlatformGatewayManagement.quick.start.tab.kubernetes',
         defaultMessage: 'Kubernetes',
         icon: <CustomIcon icon='kubernetes' width={20} height={20} />,
     },
@@ -81,13 +81,13 @@ const QuickStartTokenConfigurationStep = ({
         <>
             <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
                 {t(
-                    'Gateways.UniversalGatewayManagement.quick.start.step.configure.title',
+                    'Gateways.PlatformGatewayManagement.quick.start.step.configure.title',
                     'Step 2: Configure the Gateway',
                 )}
             </Typography>
             <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
                 {t(
-                    'Gateways.UniversalGatewayManagement.quick.start.step.configure.description',
+                    'Gateways.PlatformGatewayManagement.quick.start.step.configure.description',
                     'The registration token is single-use. If you need to reconfigure the gateway, '
                         + 'generate a new token. This will revoke the old token and disconnect the '
                             + 'gateway from the control plane.',
@@ -105,11 +105,11 @@ const QuickStartTokenConfigurationStep = ({
                     >
                         {reconfigureLoading
                             ? t(
-                                'Gateways.UniversalGatewayManagement.quick.start.reconfigure.generating',
+                                'Gateways.PlatformGatewayManagement.quick.start.reconfigure.generating',
                                 'Generating New Token...',
                             )
                             : t(
-                                'Gateways.UniversalGatewayManagement.quick.start.reconfigure.action',
+                                'Gateways.PlatformGatewayManagement.quick.start.reconfigure.action',
                                 'Reconfigure Gateway',
                             )}
                     </Button>
@@ -119,7 +119,7 @@ const QuickStartTokenConfigurationStep = ({
                 <>
                     <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
                         {t(
-                            'Gateways.UniversalGatewayManagement.quick.start.analytics.description',
+                            'Gateways.PlatformGatewayManagement.quick.start.analytics.description',
                             'To configure analytics, add your existing Moesif key as {key} to the '
                                 + 'keys.env file after creating it with the command below.',
                             { key: 'MOESIF_KEY=<your-moesif-key>' },
@@ -127,7 +127,7 @@ const QuickStartTokenConfigurationStep = ({
                     </Typography>
                     <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
                         {t(
-                            'Gateways.UniversalGatewayManagement.quick.start.keys.command.description',
+                            'Gateways.PlatformGatewayManagement.quick.start.keys.command.description',
                             'Run this command to create {path} with the required environment variables:',
                             { path: `${artifactName}/configs/keys.env` },
                         )}
@@ -160,23 +160,23 @@ const renderQuickStartOverview = ({
     return (
         <>
             <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
-                {t('Gateways.UniversalGatewayManagement.quick.start.prerequisites', 'Prerequisites')}
+                {t('Gateways.PlatformGatewayManagement.quick.start.prerequisites', 'Prerequisites')}
             </Typography>
             <Box component='ul' sx={{ mt: 0, mb: 2, pl: 2 }}>
                 <li>
                     <Typography variant='body2'>
-                        {t('Gateways.UniversalGatewayManagement.quick.start.prerequisite.curl', 'cURL installed')}
+                        {t('Gateways.PlatformGatewayManagement.quick.start.prerequisite.curl', 'cURL installed')}
                     </Typography>
                 </li>
                 <li>
                     <Typography variant='body2'>
-                        {t('Gateways.UniversalGatewayManagement.quick.start.prerequisite.unzip', 'unzip installed')}
+                        {t('Gateways.PlatformGatewayManagement.quick.start.prerequisite.unzip', 'unzip installed')}
                     </Typography>
                 </li>
                 <li>
                     <Typography variant='body2'>
                         {t(
-                            'Gateways.UniversalGatewayManagement.quick.start.prerequisite.docker',
+                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.docker',
                             'Docker installed and running',
                         )}
                     </Typography>
@@ -184,7 +184,7 @@ const renderQuickStartOverview = ({
                 <li>
                     <Typography variant='body2'>
                         {t(
-                            'Gateways.UniversalGatewayManagement.quick.start.prerequisite.docker.compose',
+                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.docker.compose',
                             'Docker Compose installed',
                         )}
                     </Typography>
@@ -193,13 +193,13 @@ const renderQuickStartOverview = ({
 
             <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
                 {t(
-                    'Gateways.UniversalGatewayManagement.quick.start.step.download.title',
+                    'Gateways.PlatformGatewayManagement.quick.start.step.download.title',
                     'Step 1: Download the Gateway',
                 )}
             </Typography>
             <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
                 {t(
-                    'Gateways.UniversalGatewayManagement.quick.start.step.download.description',
+                    'Gateways.PlatformGatewayManagement.quick.start.step.download.description',
                     'Run this command in your terminal to download the gateway:',
                 )}
             </Typography>
@@ -208,18 +208,18 @@ const renderQuickStartOverview = ({
             {tokenConfigurationStep}
 
             <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
-                {t('Gateways.UniversalGatewayManagement.quick.start.step.start.title', 'Step 3: Start the Gateway')}
+                {t('Gateways.PlatformGatewayManagement.quick.start.step.start.title', 'Step 3: Start the Gateway')}
             </Typography>
             <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
                 {t(
-                    'Gateways.UniversalGatewayManagement.quick.start.step.start.navigate',
+                    'Gateways.PlatformGatewayManagement.quick.start.step.start.navigate',
                     '1. Navigate to the gateway folder.',
                 )}
             </Typography>
             <CodeBlock code={`cd ${artifactName}`} />
             <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
                 {t(
-                    'Gateways.UniversalGatewayManagement.quick.start.step.start.command',
+                    'Gateways.PlatformGatewayManagement.quick.start.step.start.command',
                     '2. Run this command to start the gateway using the configs/keys.env file created in Step 2:',
                 )}
             </Typography>
@@ -234,23 +234,23 @@ const renderVirtualMachineGuide = ({
     return (
         <>
             <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
-                {t('Gateways.UniversalGatewayManagement.quick.start.prerequisites', 'Prerequisites')}
+                {t('Gateways.PlatformGatewayManagement.quick.start.prerequisites', 'Prerequisites')}
             </Typography>
             <Box component='ul' sx={{ mt: 0, mb: 2, pl: 2 }}>
                 <li>
                     <Typography variant='body2'>
-                        {t('Gateways.UniversalGatewayManagement.quick.start.prerequisite.curl', 'cURL installed')}
+                        {t('Gateways.PlatformGatewayManagement.quick.start.prerequisite.curl', 'cURL installed')}
                     </Typography>
                 </li>
                 <li>
                     <Typography variant='body2'>
-                        {t('Gateways.UniversalGatewayManagement.quick.start.prerequisite.unzip', 'unzip installed')}
+                        {t('Gateways.PlatformGatewayManagement.quick.start.prerequisite.unzip', 'unzip installed')}
                     </Typography>
                 </li>
                 <li>
                     <Typography variant='body2'>
                         {t(
-                            'Gateways.UniversalGatewayManagement.quick.start.prerequisite.java',
+                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.java',
                             'Java 17 or later installed',
                         )}
                     </Typography>
@@ -259,13 +259,13 @@ const renderVirtualMachineGuide = ({
 
             <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
                 {t(
-                    'Gateways.UniversalGatewayManagement.quick.start.step.download.title',
+                    'Gateways.PlatformGatewayManagement.quick.start.step.download.title',
                     'Step 1: Download the Gateway',
                 )}
             </Typography>
             <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
                 {t(
-                    'Gateways.UniversalGatewayManagement.quick.start.virtual.machine.download',
+                    'Gateways.PlatformGatewayManagement.quick.start.virtual.machine.download',
                     'Download and extract the self-hosted gateway package:',
                 )}
             </Typography>
@@ -274,11 +274,11 @@ const renderVirtualMachineGuide = ({
             {tokenConfigurationStep}
 
             <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
-                {t('Gateways.UniversalGatewayManagement.quick.start.step.start.title', 'Step 3: Start the Gateway')}
+                {t('Gateways.PlatformGatewayManagement.quick.start.step.start.title', 'Step 3: Start the Gateway')}
             </Typography>
             <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
                 {t(
-                    'Gateways.UniversalGatewayManagement.quick.start.virtual.machine.start',
+                    'Gateways.PlatformGatewayManagement.quick.start.virtual.machine.start',
                     'Start the gateway on your virtual machine after you complete the configuration:',
                 )}
             </Typography>
@@ -327,13 +327,13 @@ const renderKubernetesGuide = ({
     return (
         <>
             <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1 }}>
-                {t('Gateways.UniversalGatewayManagement.quick.start.prerequisites', 'Prerequisites')}
+                {t('Gateways.PlatformGatewayManagement.quick.start.prerequisites', 'Prerequisites')}
             </Typography>
             <Box component='ul' sx={{ mt: 0, mb: 2, pl: 2 }}>
                 <li>
                     <Typography variant='body2'>
                         {t(
-                            'Gateways.UniversalGatewayManagement.quick.start.prerequisite.kubernetes',
+                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.kubernetes',
                             'Kubernetes 1.32+ cluster',
                         )}
                     </Typography>
@@ -341,7 +341,7 @@ const renderKubernetesGuide = ({
                 <li>
                     <Typography variant='body2'>
                         {t(
-                            'Gateways.UniversalGatewayManagement.quick.start.prerequisite.helm',
+                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.helm',
                             'Helm 3.18+ installed',
                         )}
                     </Typography>
@@ -349,7 +349,7 @@ const renderKubernetesGuide = ({
                 <li>
                     <Typography variant='body2'>
                         {t(
-                            'Gateways.UniversalGatewayManagement.quick.start.prerequisite.certmanager',
+                            'Gateways.PlatformGatewayManagement.quick.start.prerequisite.certmanager',
                             'Either permissions to install cert-manager in the cluster or an existing '
                                 + 'cert-manager installation',
                         )}
@@ -359,13 +359,13 @@ const renderKubernetesGuide = ({
 
             <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
                 {t(
-                    'Gateways.UniversalGatewayManagement.quick.start.kubernetes.certmanager.title',
+                    'Gateways.PlatformGatewayManagement.quick.start.kubernetes.certmanager.title',
                     'Install cert-manager (optional)',
                 )}
             </Typography>
             <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
                 {t(
-                    'Gateways.UniversalGatewayManagement.quick.start.kubernetes.certmanager.description',
+                    'Gateways.PlatformGatewayManagement.quick.start.kubernetes.certmanager.description',
                     'If cert-manager is not already installed, run these commands before installing the gateway chart:',
                 )}
             </Typography>
@@ -384,7 +384,7 @@ const renderKubernetesGuide = ({
                 <Box sx={{ mt: 3, mb: 2 }}>
                     <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
                         {t(
-                            'Gateways.UniversalGatewayManagement.quick.start.kubernetes.reconfigure.description',
+                            'Gateways.PlatformGatewayManagement.quick.start.kubernetes.reconfigure.description',
                             'The registration token is single-use. If you need to reconfigure the gateway, '
                                 + 'generate a new token. This will revoke the old token and disconnect the '
                                 + 'gateway from the control plane.',
@@ -400,11 +400,11 @@ const renderKubernetesGuide = ({
                     >
                         {reconfigureLoading
                             ? t(
-                                'Gateways.UniversalGatewayManagement.quick.start.reconfigure.generating',
+                                'Gateways.PlatformGatewayManagement.quick.start.reconfigure.generating',
                                 'Generating New Token...',
                             )
                             : t(
-                                'Gateways.UniversalGatewayManagement.quick.start.reconfigure.action',
+                                'Gateways.PlatformGatewayManagement.quick.start.reconfigure.action',
                                 'Reconfigure Gateway',
                             )}
                     </Button>
@@ -425,7 +425,7 @@ const renderKubernetesGuide = ({
                 >
                     <Typography variant='body2' color='text.primary'>
                         {t(
-                            'Gateways.UniversalGatewayManagement.quick.start.kubernetes.token.generated',
+                            'Gateways.PlatformGatewayManagement.quick.start.kubernetes.token.generated',
                             'Successfully generated new configurations. Use the updated command below '
                                 + 'to install the gateway chart.',
                         )}
@@ -435,14 +435,14 @@ const renderKubernetesGuide = ({
 
             <Typography variant='subtitle2' sx={{ fontWeight: 600, mb: 1, mt: 3 }}>
                 {t(
-                    'Gateways.UniversalGatewayManagement.quick.start.kubernetes.install.title',
+                    'Gateways.PlatformGatewayManagement.quick.start.kubernetes.install.title',
                     'Installing the Chart',
                 )}
             </Typography>
             <Typography variant='body2' color='text.secondary' sx={{ mb: 1 }}>
                 {
                     t(
-                        'Gateways.UniversalGatewayManagement.quick.start.kubernetes.install.description',
+                        'Gateways.PlatformGatewayManagement.quick.start.kubernetes.install.description',
                         'Run this command to install the gateway chart with control plane configurations:',
                     )
                 }
@@ -626,7 +626,7 @@ ENVFILE`;
     const content = (
         <>
             <Typography variant='h6' sx={{ mb: 2 }}>
-                {t('Gateways.UniversalGatewayManagement.quick.start.title', 'Quick Start Guide')}
+                {t('Gateways.PlatformGatewayManagement.quick.start.title', 'Quick Start Guide')}
             </Typography>
             <Tabs
                 value={selectedTab}

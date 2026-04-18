@@ -44,7 +44,7 @@ import {
     getGatewayStatusChipProps,
     resolvePlatformGatewayStatus,
     WSO2_SELF_HOSTED_GATEWAY_TYPES,
-} from './UniversalGatewayUtils';
+} from './PlatformGatewayUtils';
 import Utils from '../../data/Utils';
 
 const WSO2_LISTING_GATEWAY_TYPES = WSO2_SELF_HOSTED_GATEWAY_TYPES;

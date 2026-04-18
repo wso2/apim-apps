@@ -23,8 +23,8 @@ import { Alert as MuiAlert, Box, Button, Divider, Grid, Link, Paper, TextField, 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link as RouterLink } from 'react-router-dom';
 import { useIntl } from 'react-intl';
-import QuickStartGuide from './UniversalGatewayQuickStartGuide';
-import { gatewayShape, getPlatformGatewayUrl, PERMISSION_TYPE_OPTIONS } from './UniversalGatewayUtils';
+import QuickStartGuide from './PlatformGatewayQuickStartGuide';
+import { gatewayShape, getPlatformGatewayUrl, PERMISSION_TYPE_OPTIONS } from './PlatformGatewayUtils';
 
 // Consolidated styles for better readability
 const styles = {
@@ -53,7 +53,7 @@ const styles = {
     },
 };
 
-const UniversalGatewaySuccessView = ({
+const PlatformGatewaySuccessView = ({
     gateway,
     onAddAnother,
     onReconfigureRequested,
@@ -84,7 +84,7 @@ const UniversalGatewaySuccessView = ({
                         sx={styles.backLink}
                     >
                         <ArrowBackIcon fontSize='small' />
-                        {t('Gateways.UniversalGatewayManagement.navigation.back', 'Back to Gateways')}
+                        {t('Gateways.PlatformGatewayManagement.navigation.back', 'Back to Gateways')}
                     </Link>
                     <Typography variant='h4' sx={{ fontWeight: 700 }}>
                         {gateway.displayName || gateway.name}
@@ -92,7 +92,7 @@ const UniversalGatewaySuccessView = ({
                     {!isViewMode && (
                         <Typography variant='body2' color='text.secondary' sx={{ mt: 0.5 }}>
                             {t(
-                                'Gateways.UniversalGatewayManagement.create.success.title',
+                                'Gateways.PlatformGatewayManagement.create.success.title',
                                 'Gateway created successfully',
                             )}
                         </Typography>
@@ -103,7 +103,7 @@ const UniversalGatewaySuccessView = ({
             {!isViewMode && (
                 <MuiAlert severity='success' sx={{ mb: 3 }}>
                     {t(
-                        'Gateways.UniversalGatewayManagement.create.success.banner',
+                        'Gateways.PlatformGatewayManagement.create.success.banner',
                         'Your gateway has been registered. Follow the quick start guide below.',
                     )}
                 </MuiAlert>
@@ -112,13 +112,13 @@ const UniversalGatewaySuccessView = ({
             <Paper elevation={1} sx={{ mb: 2, overflow: 'hidden' }}>
                 <Box sx={{ p: 3 }}>
                     <Typography variant='h6' sx={{ mb: 2 }}>
-                        {t('Gateways.UniversalGatewayManagement.configuration.title', 'Configuration')}
+                        {t('Gateways.PlatformGatewayManagement.configuration.title', 'Configuration')}
                     </Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
                             <TextField
                                 fullWidth
-                                label={t('Gateways.UniversalGatewayManagement.configuration.url', 'URL')}
+                                label={t('Gateways.PlatformGatewayManagement.configuration.url', 'URL')}
                                 value={gatewayUrl}
                                 InputProps={{
                                     readOnly: true,
@@ -131,7 +131,7 @@ const UniversalGatewaySuccessView = ({
                         <Grid item xs={12} md={6}>
                             <TextField
                                 fullWidth
-                                label={t('Gateways.UniversalGatewayManagement.configuration.visibility', 'Visibility')}
+                                label={t('Gateways.PlatformGatewayManagement.configuration.visibility', 'Visibility')}
                                 value={getVisibilityLabel()}
                                 InputProps={{
                                     readOnly: true,
@@ -145,7 +145,7 @@ const UniversalGatewaySuccessView = ({
                             <Grid item xs={12}>
                                 <TextField
                                     fullWidth
-                                    label={t('Gateways.UniversalGatewayManagement.configuration.roles', 'Roles')}
+                                    label={t('Gateways.PlatformGatewayManagement.configuration.roles', 'Roles')}
                                     value={permissionRoles.join(', ')}
                                     InputProps={{
                                         readOnly: true,
@@ -173,7 +173,7 @@ const UniversalGatewaySuccessView = ({
                 {onAddAnother && (
                     <Box sx={styles.actionsContainer}>
                         <Button variant='outlined' color='primary' onClick={onAddAnother}>
-                            {t('Gateways.UniversalGatewayManagement.action.add.another', 'Add Another Gateway')}
+                            {t('Gateways.PlatformGatewayManagement.action.add.another', 'Add Another Gateway')}
                         </Button>
                     </Box>
                 )}
@@ -182,7 +182,7 @@ const UniversalGatewaySuccessView = ({
     );
 };
 
-UniversalGatewaySuccessView.propTypes = {
+PlatformGatewaySuccessView.propTypes = {
     gateway: gatewayShape,
     onAddAnother: PropTypes.func,
     onReconfigureRequested: PropTypes.func,
@@ -192,7 +192,7 @@ UniversalGatewaySuccessView.propTypes = {
     hideHeader: PropTypes.bool,
 };
 
-UniversalGatewaySuccessView.defaultProps = {
+PlatformGatewaySuccessView.defaultProps = {
     gateway: null,
     onAddAnother: null,
     onReconfigureRequested: null,
@@ -202,4 +202,4 @@ UniversalGatewaySuccessView.defaultProps = {
     hideHeader: false,
 };
 
-export default UniversalGatewaySuccessView;
+export default PlatformGatewaySuccessView;

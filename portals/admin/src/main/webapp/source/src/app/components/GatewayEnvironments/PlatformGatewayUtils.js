@@ -24,17 +24,17 @@ import CONSTS from 'AppData/Constants';
 export const PERMISSION_TYPE_OPTIONS = [
     {
         value: 'PUBLIC',
-        labelKey: 'Gateways.UniversalGatewayManagement.permission.public',
+        labelKey: 'Gateways.PlatformGatewayManagement.permission.public',
         defaultMessage: 'Public',
     },
     {
         value: 'ALLOW',
-        labelKey: 'Gateways.UniversalGatewayManagement.permission.allow',
+        labelKey: 'Gateways.PlatformGatewayManagement.permission.allow',
         defaultMessage: 'Allow for role(s)',
     },
     {
         value: 'DENY',
-        labelKey: 'Gateways.UniversalGatewayManagement.permission.deny',
+        labelKey: 'Gateways.PlatformGatewayManagement.permission.deny',
         defaultMessage: 'Deny for role(s)',
     },
 ];
@@ -44,9 +44,8 @@ export const WSO2_GATEWAY_TYPES = [CONSTS.GATEWAY_TYPE.regular, CONSTS.GATEWAY_T
 export const WSO2_SELF_HOSTED_GATEWAY_TYPES = [CONSTS.GATEWAY_TYPE.apiPlatform, ...WSO2_GATEWAY_TYPES];
 
 const DEFAULT_PLATFORM_GATEWAY_RELEASES_URL = 'https://github.com/wso2/api-platform/releases';
-const DEFAULT_PLATFORM_GATEWAY_VERSION = 'v1.0.0';
+const DEFAULT_PLATFORM_GATEWAY_VERSION = '1.0.0';
 const DEFAULT_HELM_CHART_OCI_URL = 'oci://ghcr.io/wso2/api-platform/helm-charts/gateway';
-const DEFAULT_HELM_CHART_VERSION = '1.0.0';
 
 const getDefaultGatewayVersions = () => [DEFAULT_PLATFORM_GATEWAY_VERSION];
 
@@ -106,8 +105,8 @@ export const normalizeProperties = (properties) => {
     return {};
 };
 
-export const getUniversalGatewayVersions = (settings) => {
-    const configuredVersions = settings?.universalGatewayVersions;
+export const getPlatformGatewayVersions = (settings) => {
+    const configuredVersions = settings?.platformGatewayVersions;
     if (!Array.isArray(configuredVersions) || configuredVersions.length === 0) {
         return getDefaultGatewayVersions();
     }
@@ -124,7 +123,7 @@ export const getUniversalGatewayVersions = (settings) => {
 };
 
 export const getPlatformGatewayReleaseConfig = (settings, selectedVersion) => {
-    const versions = getUniversalGatewayVersions(settings);
+    const versions = getPlatformGatewayVersions(settings);
     const version = versions.includes(selectedVersion)
         ? selectedVersion
         : versions[versions.length - 1];
@@ -151,7 +150,7 @@ export const getPlatformGatewayReleaseConfig = (settings, selectedVersion) => {
 };
 
 export const getGatewayConfiguredVersion = (gateway, settings) => {
-    const versions = getUniversalGatewayVersions(settings);
+    const versions = getPlatformGatewayVersions(settings);
     const properties = normalizeProperties(gateway?.properties);
     const gatewayController = tryParseJson(properties.gatewayController);
     const versionFromProperties = (gatewayController?.version || properties?.version || '').trim();
