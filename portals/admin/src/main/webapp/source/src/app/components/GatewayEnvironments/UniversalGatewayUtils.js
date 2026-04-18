@@ -137,7 +137,7 @@ export const getPlatformGatewayReleaseConfig = (settings, selectedVersion) => {
     const downloadCommand = `curl -sLO ${releasesUrl}/download/gateway/v${version}/${artifactName}.zip && \\\n`
         + `unzip ${artifactName}.zip`;
     const helmChartOciUrl = DEFAULT_HELM_CHART_OCI_URL;
-    const helmChartVersion = DEFAULT_HELM_CHART_VERSION;
+    const helmChartVersion = version;
 
     return {
         artifactName,
