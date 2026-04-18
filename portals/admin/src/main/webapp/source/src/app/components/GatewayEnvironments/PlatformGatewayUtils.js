@@ -106,7 +106,7 @@ export const normalizeProperties = (properties) => {
 };
 
 export const getPlatformGatewayVersions = (settings) => {
-    const configuredVersions = settings?.universalGatewayVersions;
+    const configuredVersions = settings?.platformGatewayVersions;
     if (!Array.isArray(configuredVersions) || configuredVersions.length === 0) {
         return getDefaultGatewayVersions();
     }
