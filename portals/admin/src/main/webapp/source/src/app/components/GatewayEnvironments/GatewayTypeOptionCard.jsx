@@ -19,6 +19,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import Radio from '@mui/material/Radio';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
@@ -54,30 +55,11 @@ const GatewayTypeCardRoot = styled(Box, {
         },
 }));
 
-const GatewayTypeBadge = styled(Box, {
-    shouldForwardProp: (prop) => prop !== 'selected',
-})(({ theme, selected }) => ({
-    width: 48,
-    height: 48,
-    borderRadius: theme.spacing(0.75),
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-    background: selected
-        ? 'linear-gradient(180deg, #3F51B5 0%, #5C6BC0 100%)'
-        : 'linear-gradient(180deg, #5364B6 0%, #6F7CC6 100%)',
-    color: theme.palette.common.white,
-    fontWeight: 700,
-    fontSize: theme.typography.pxToRem(14),
-    letterSpacing: '0.04em',
-}));
-
 function GatewayTypeOptionCard(props) {
     const {
         title,
+        versionLabel,
         description,
-        badgeLabel,
         selected,
         disabled,
         onSelect,
@@ -117,23 +99,37 @@ function GatewayTypeOptionCard(props) {
                     },
                 }}
             />
-            <GatewayTypeBadge selected={selected ? 1 : 0}>
-                {badgeLabel}
-            </GatewayTypeBadge>
             <Box sx={{ minWidth: 0, flex: 1, textAlign: 'left' }}>
-                <Typography
-                    variant='subtitle1'
-                    component='div'
+                <Box
                     sx={{
-                        fontSize: '0.7rem',
-                        fontWeight: 600,
-                        lineHeight: 1.2,
-                        textAlign: 'left',
-                        color: 'text.primary',
+                        display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap',
                     }}
                 >
-                    {title}
-                </Typography>
+                    <Typography
+                        variant='subtitle1'
+                        component='span'
+                        sx={{
+                            fontSize: '0.7rem',
+                            fontWeight: 600,
+                            lineHeight: 1.2,
+                            color: 'text.primary',
+                        }}
+                    >
+                        {title}
+                    </Typography>
+                    {versionLabel && (
+                        <Chip
+                            label={versionLabel}
+                            size='small'
+                            sx={{
+                                height: '14px',
+                                fontSize: '0.5rem',
+                                fontWeight: 600,
+                                '& .MuiChip-label': { px: 0.75 },
+                            }}
+                        />
+                    )}
+                </Box>
                 <Typography
                     variant='body2'
                     component='div'
@@ -153,17 +149,18 @@ function GatewayTypeOptionCard(props) {
 }
 
 GatewayTypeOptionCard.propTypes = {
-    badgeLabel: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
     onSelect: PropTypes.func.isRequired,
     selected: PropTypes.bool,
     title: PropTypes.string.isRequired,
+    versionLabel: PropTypes.string,
 };
 
 GatewayTypeOptionCard.defaultProps = {
     disabled: false,
     selected: false,
+    versionLabel: null,
 };
 
 export default GatewayTypeOptionCard;

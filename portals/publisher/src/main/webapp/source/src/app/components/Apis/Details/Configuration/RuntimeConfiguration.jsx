@@ -652,7 +652,7 @@ export default function RuntimeConfiguration() {
         return <Progress per={80} message='Loading app settings ...' />;
     }
 
-    if (api.gatewayType === 'Universal') {
+    if (api.gatewayType === 'APIPlatform') {
         const policiesPath = `${getBasePath(api.apiType)}${api.id}/policies`;
         return (
             <Root>
@@ -685,14 +685,14 @@ export default function RuntimeConfiguration() {
                         <InfoOutlinedIcon color='info' sx={{ fontSize: 48 }} />
                         <Typography variant='h6' sx={{ fontWeight: 600 }}>
                             <FormattedMessage
-                                id='Apis.Details.Configuration.RuntimeConfiguration.universal.gateway.title'
+                                id='Apis.Details.Configuration.RuntimeConfiguration.platform.gateway.title'
                                 defaultMessage='Runtime is managed through Policies'
                             />
                         </Typography>
                         <Typography variant='body1' color='text.secondary'>
                             <FormattedMessage
-                                id='Apis.Details.Configuration.RuntimeConfiguration.universal.gateway.description'
-                                defaultMessage='For APIs deployed on the Universal Gateway, runtime configurations
+                                id='Apis.Details.Configuration.RuntimeConfiguration.platform.gateway.description'
+                                defaultMessage='For APIs deployed on the API Platform Gateway, runtime configurations
                                     such as authentication and security are applied via policies.
                                     Head over to the Policies section to view and manage them.'
                             />
@@ -705,7 +705,7 @@ export default function RuntimeConfiguration() {
                             sx={{ mt: 1 }}
                         >
                             <FormattedMessage
-                                id='Apis.Details.Configuration.RuntimeConfiguration.universal.gateway.go.policies'
+                                id='Apis.Details.Configuration.RuntimeConfiguration.platform.gateway.go.policies'
                                 defaultMessage='Go to Policies'
                             />
                         </Button>

@@ -85,19 +85,19 @@ const CONSTS = {
     GATEWAY_TYPE: {
         synapse: 'Synapse',
         choreoConnect: 'ChoreoConnect',
-        apiPlatform: 'Universal',
+        apiPlatform: 'APIPlatform',
     },
     CREATE_API_GATEWAYS: {
         'wso2/synapse': {
             value: 'wso2/synapse',
-            name: 'Universal Gateway - Classic',
-            description: 'Synapse based API gateway embedded in APIM runtime.',
+            name: 'Universal Gateway',
+            description: 'Enterprise-grade self-hosted Synapse gateway.',
             isNew: false,
         },
         'wso2/apk': {
             value: 'wso2/apk',
             name: 'Kubernetes Gateway v1.3',
-            description: 'API gateway running on Kubernetes.',
+            description: 'Kubernetes-native gateway runtime.',
             isNew: false,
         },
         AWS: {
@@ -112,10 +112,10 @@ const CONSTS = {
             description: 'API gateway offered by Azure cloud.',
             isNew: false,
         },
-        Universal: {
-            value: 'Universal',
-            name: 'Universal Gateway',
-            description: 'API gateway for platform-managed policies.',
+        APIPlatform: {
+            value: 'APIPlatform',
+            name: 'API Platform Gateway',
+            description: 'New lightweight, self-hosted API Platform gateway.',
             isNew: true,
         }
     },

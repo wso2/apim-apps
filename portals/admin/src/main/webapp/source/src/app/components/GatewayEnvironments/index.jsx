@@ -34,7 +34,7 @@ const GatewayEnvironments = () => {
             <Route exact path='/settings/environments/create' component={AddEditGWEnvironment} />
             <Route
                 exact
-                path='/settings/environments/universal-gateways/:gatewayId'
+                path='/settings/environments/platform-gateways/:gatewayId'
                 component={UniversalGatewayManagement}
             />
             <Route exact path='/settings/environments/:id' component={AddEditGWEnvironment} />

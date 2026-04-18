@@ -126,7 +126,7 @@ const CONSTS = {
     GATEWAY_TYPE: {
         regular: 'Regular',
         apk: 'APK',
-        apiPlatform: 'Universal',
+        apiPlatform: 'APIPlatform',
     },
 };
 
