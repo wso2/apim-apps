@@ -23,6 +23,6 @@
  * @param {object|null|undefined} api DevPortal API object
  * @returns {boolean}
  */
-export default function isUniversalGatewayApi(api) {
-    return Boolean(api && api.gatewayType === 'Universal');
+export default function isPlatformGatewayApi(api) {
+    return Boolean(api && api.gatewayType === 'APIPlatform');
 }

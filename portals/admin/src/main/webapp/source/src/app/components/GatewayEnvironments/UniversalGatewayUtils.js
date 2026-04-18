@@ -44,9 +44,9 @@ export const WSO2_GATEWAY_TYPES = [CONSTS.GATEWAY_TYPE.regular, CONSTS.GATEWAY_T
 export const WSO2_SELF_HOSTED_GATEWAY_TYPES = [CONSTS.GATEWAY_TYPE.apiPlatform, ...WSO2_GATEWAY_TYPES];
 
 const DEFAULT_PLATFORM_GATEWAY_RELEASES_URL = 'https://github.com/wso2/api-platform/releases';
-const DEFAULT_PLATFORM_GATEWAY_VERSION = 'v0.11.0';
+const DEFAULT_PLATFORM_GATEWAY_VERSION = 'v1.0.0';
 const DEFAULT_HELM_CHART_OCI_URL = 'oci://ghcr.io/wso2/api-platform/helm-charts/gateway';
-const DEFAULT_HELM_CHART_VERSION = '0.11.0';
+const DEFAULT_HELM_CHART_VERSION = '1.0.0';
 
 const getDefaultGatewayVersions = () => [DEFAULT_PLATFORM_GATEWAY_VERSION];
 
@@ -137,7 +137,7 @@ export const getPlatformGatewayReleaseConfig = (settings, selectedVersion) => {
     const downloadCommand = `curl -sLO ${releasesUrl}/download/gateway/v${version}/${artifactName}.zip && \\\n`
         + `unzip ${artifactName}.zip`;
     const helmChartOciUrl = DEFAULT_HELM_CHART_OCI_URL;
-    const helmChartVersion = DEFAULT_HELM_CHART_VERSION;
+    const helmChartVersion = version;
 
     return {
         artifactName,
