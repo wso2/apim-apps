@@ -24,5 +24,5 @@
  * @returns {boolean}
  */
 export default function isUniversalGatewayApi(api) {
-    return Boolean(api && api.gatewayType === 'Universal');
+    return Boolean(api && api.gatewayType === 'APIPlatform');
 }
