@@ -40,7 +40,6 @@ import { ApiContext } from '../ApiContext';
 import Progress from '../../../Shared/Progress';
 import Api from '../../../../data/api';
 import SwaggerUI from './SwaggerUI';
-import isPlatformGatewayApi from './platformGateway';
 import TryOutController from '../../../Shared/ApiTryOut/TryOutController';
 import Application from '../../../../data/Application';
 
@@ -534,13 +533,7 @@ class ApiConsole extends React.Component {
         if (api && api.securityScheme) {
             isApiKeyEnabled = api.securityScheme.includes('api_key');
             if (isApiKeyEnabled && securitySchemeType === 'API-KEY') {
-                if (isPlatformGatewayApi(api)) {
-                    // API Platform / Universal only: honor Publisher API Key policy header name
-                    authorizationHeader = api.apiKeyHeader ? api.apiKeyHeader : 'ApiKey';
-                } else {
-                    // Classic gateway — unchanged behavior (must not regress non-platform flows)
-                    authorizationHeader = api.apiKeyHeader ? api.apiKeyHeader : 'ApiKey';
-                }
+                authorizationHeader = api.apiKeyHeader ? api.apiKeyHeader : 'ApiKey';
             }
         }
 
