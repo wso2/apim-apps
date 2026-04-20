@@ -214,22 +214,30 @@ export default function ApiKeysView() {
                                     </Typography>
                                 </Box>
                             </Tooltip>
-                            <div style={{ marginTop: 2 }}>
-                                {[
-                                    {
-                                        id: 'APIKeys.ListApiKeys.label.application',
-                                        defaultMessage: 'Application',
-                                        value: applicationName,
-                                    },
-                                    { id: 'APIKeys.ListApiKeys.label.api', defaultMessage: 'API', value: apiName },
-                                ].filter(({ value }) => value).map(({ id, defaultMessage, value }) => (
-                                    <Typography key={id} variant='caption' color='text.secondary' display='block'>
-                                        <FormattedMessage id={id} defaultMessage={defaultMessage} />
+                            {applicationName && (
+                                <div style={{ marginTop: 2 }}>
+                                    <Typography variant='caption' color='text.secondary' display='block'>
+                                        <FormattedMessage
+                                            id='APIKeys.ListApiKeys.label.application'
+                                            defaultMessage='Application'
+                                        />
                                         {': '}
-                                        {value}
+                                        {applicationName}
                                     </Typography>
-                                ))}
-                            </div>
+                                </div>
+                            )}
+                            {apiName && (
+                                <div style={{ marginTop: 2 }}>
+                                    <Typography variant='caption' color='text.secondary' display='block'>
+                                        <FormattedMessage
+                                            id='APIKeys.ListApiKeys.label.api'
+                                            defaultMessage='API'
+                                        />
+                                        {': '}
+                                        {apiName}
+                                    </Typography>
+                                </div>
+                            )}
                         </div>
                     );
                 },
