@@ -68,6 +68,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import API from 'AppData/api';
+import CONSTS from 'AppData/Constants';
 import MCPServer from 'AppData/MCPServer';
 import { ConfirmDialog } from 'AppComponents/Shared/index';
 import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
@@ -2252,7 +2253,9 @@ export default function Environments() {
      * for a given environment row using data from allEnvDeployments.
      * 
      * - If deployment data is available, shows status with success/fail counts and progress bar.
-     * - If no deployment data exists, shows "No Active Gateways" message.
+     * - Universal/API Platform may have liveGatewayCount 0 while deployment is pending (notify not yet SUCCESS);
+     *   then deploymentStatus is "Deployment Pending" and we still show the chip (not "No Active Gateways").
+     * - If no deployment data exists, shows "No Active Gateways" when not in that pending state.
      */
     function envDeploymentStatusComponent(row, allEnvDeployments) {
         const envDetails = allEnvDeployments[row.name]?.envDetails;
@@ -2262,7 +2265,8 @@ export default function Environments() {
             const deployed = envDetails.deployedGatewayCount;
             const total = envDetails.liveGatewayCount;
             const failed = envDetails.failedGatewayCount;
-            if (total) {
+            const showGatewayProgress = total > 0 || status === 'Deployment Pending';
+            if (showGatewayProgress) {
                 return (
                     <StyledTooltip
                         title={
@@ -2307,13 +2311,13 @@ export default function Environments() {
                                     <span>{total ?? '-'}</span>
                                 </Box>
                                 <LinearProgress
-                                    variant='determinate'
-                                    value={total ? (deployed / total) * 100 : 0}
+                                    variant={total > 0 ? 'determinate' : 'indeterminate'}
+                                    value={total > 0 ? (deployed / total) * 100 : 0}
                                     color={failed > 0 ? 'error' : 'primary'}
                                     sx={{ height: 6, borderRadius: 2, mb: 0.5 }}
                                 />
                                 <Typography fontWeight='light' variant='caption' display='block' textAlign='right'>
-                                    {total ? ((deployed / total) * 100).toFixed(0) : '0'}%
+                                    {total > 0 ? ((deployed / total) * 100).toFixed(0) : '—'}%
                                     &nbsp;
                                     <FormattedMessage
                                         id='Apis.Details.Environments.Environments.gateway.deployment.percent.deployed'
@@ -2473,20 +2477,32 @@ export default function Environments() {
      */
     const hasPendingDeployment = () => {
         if (!allEnvRevision) return false;
-    
+
         const now = Date.now();
-    
-        return allEnvRevision.some(revision =>
-            revision.deploymentInfo?.some(env =>
-                env.status !== 'CREATED' &&
-                env.failedGatewayCount === 0 &&
-                env.deployedGatewayCount < env.liveGatewayCount &&
-                (
-                    env.deployedTime == null || // allow null or undefined
-                    now - env.deployedTime <= MAX_POLLING_DURATION_MS
-                )
-            )
-        );
+
+        return allEnvRevision.some((revision) => revision.deploymentInfo?.some((env) => {
+            const failed = env.failedGatewayCount ?? 0;
+            const deployed = env.deployedGatewayCount ?? 0;
+            const live = env.liveGatewayCount ?? 0;
+            const inTimeWindow = env.deployedTime == null
+                || now - env.deployedTime <= MAX_POLLING_DURATION_MS;
+
+            const synapseStylePending = env.status !== 'CREATED'
+                && failed === 0
+                && deployed < live
+                && inTimeWindow;
+
+            // Universal / API Platform: live and deployed stay 0 until notify; use 0/0 + APPROVED + no success time
+            const universalStylePending = api.gatewayType === CONSTS.API_PLATFORM_GATEWAY
+                && env.status === 'APPROVED'
+                && failed === 0
+                && deployed === 0
+                && live === 0
+                && !env.successDeployedTime
+                && inTimeWindow;
+
+            return synapseStylePending || universalStylePending;
+        }));
     };
     
     useEffect(() => {
@@ -2539,7 +2555,7 @@ export default function Environments() {
     // allEnvDeployments represents all deployments of the API with mapping
     // environment -> {revision deployed to env, vhost deployed to env with revision}
     const allEnvDeployments = allEnvRevision ?
-        Utils.getAllEnvironmentDeployments(settings.environment, allEnvRevision) : null;
+        Utils.getAllEnvironmentDeployments(settings.environment, allEnvRevision, api.gatewayType) : null;
     const allEnvRevisionMapping = allEnvRevision ?
         Utils.getAllEnvironmentRevisions(settings.environment, allEnvRevision) : null;
 

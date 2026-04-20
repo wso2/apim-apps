@@ -614,7 +614,7 @@ class Utils {
         return username;
     }
 
-    static getAllEnvironmentDeployments(environments, allEnvRevision) {
+    static getAllEnvironmentDeployments(environments, allEnvRevision, apiGatewayType) {
         // allEnvDeployments represents all deployments of the API with mapping
         // environment -> {revision deployed to env, vhost deployed to env with revision}
         const allEnvDeployments = [];
@@ -642,7 +642,7 @@ class Utils {
             }
             // Derive status and color based on gateway counts
             const updatedEnvDetails = envDetails
-                ? this.setDeploymentStatus(envDetails)
+                ? this.setDeploymentStatus(envDetails, apiGatewayType)
                 : null;
             allEnvDeployments[env.name] = { revision, vhost, disPlayDevportal, envDetails: updatedEnvDetails };
         });
@@ -653,7 +653,7 @@ class Utils {
      * Sets deployment status, color, and last updated time for envDetails.
      * @param {Object} envDetails
      */
-    static setDeploymentStatus(envDetails) {
+    static setDeploymentStatus(envDetails, apiGatewayType) {
         const deployed = envDetails.deployedGatewayCount ?? 0;
         const total = envDetails.liveGatewayCount ?? 0;
         const failed = envDetails.failedGatewayCount ?? 0;
@@ -666,6 +666,17 @@ class Utils {
         if (deployed > total || failed > total) {
             status = 'Inconsistent';
             color = 'error';
+        } else if (
+            apiGatewayType === CONSTS.API_PLATFORM_GATEWAY
+            && deployed === 0
+            && total === 0
+            && failed === 0
+            && envDetails.status === 'APPROVED'
+            && !successTime
+        ) {
+            // API Platform / Universal: backend keeps live === deployed === 0 until gateway notify SUCCESS
+            status = 'Deployment Pending';
+            color = 'default';
         } else if (total === 0) {
             status = 'No Gateways Configured';
         } else if (failed > 0) {

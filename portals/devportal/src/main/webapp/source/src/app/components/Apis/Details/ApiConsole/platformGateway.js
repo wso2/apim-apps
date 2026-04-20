@@ -16,13 +16,18 @@
  * under the License.
  */
 
+import CONSTS from 'AppData/Constants';
+
 /**
- * APIs deployed to the API Platform / Universal gateway use gatewayType "Universal"
- * (see org.wso2.carbon.apimgt.api.APIConstants.WSO2_API_PLATFORM_GATEWAY).
+ * APIs deployed to the API Platform gateway use gateway type `APIPlatform` (see CONSTS.API_PLATFORM_GATEWAY).
  *
  * @param {object|null|undefined} api DevPortal API object
- * @returns {boolean}
+ * @returns {boolean} true when the API uses the API Platform gateway type
  */
 export default function isPlatformGatewayApi(api) {
-    return Boolean(api && api.gatewayType === 'APIPlatform');
+    if (!api || api.gatewayType == null || typeof api.gatewayType !== 'string') {
+        return false;
+    }
+    const gt = api.gatewayType;
+    return gt === CONSTS.API_PLATFORM_GATEWAY || gt.toUpperCase() === 'APIPLATFORM';
 }

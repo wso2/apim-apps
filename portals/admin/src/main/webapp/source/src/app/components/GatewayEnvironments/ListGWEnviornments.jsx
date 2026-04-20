@@ -455,7 +455,7 @@ export default function ListGWEnviornments() {
     };
 
     const renderGatewayType = (gatewayType) => {
-        if (gatewayType === 'APIPlatform') {
+        if (gatewayType === CONSTS.API_PLATFORM_GATEWAY) {
             return intl.formatMessage({
                 id: 'Gateways.AddEditGateway.title.platform',
                 defaultMessage: 'API Platform Gateway',

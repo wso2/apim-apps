@@ -535,8 +535,10 @@ class ApiConsole extends React.Component {
             isApiKeyEnabled = api.securityScheme.includes('api_key');
             if (isApiKeyEnabled && securitySchemeType === 'API-KEY') {
                 if (isPlatformGatewayApi(api)) {
-                    authorizationHeader = 'ApiKey';
+                    // API Platform / Universal only: honor Publisher API Key policy header name
+                    authorizationHeader = api.apiKeyHeader ? api.apiKeyHeader : 'ApiKey';
                 } else {
+                    // Classic gateway — unchanged behavior (must not regress non-platform flows)
                     authorizationHeader = api.apiKeyHeader ? api.apiKeyHeader : 'ApiKey';
                 }
             }

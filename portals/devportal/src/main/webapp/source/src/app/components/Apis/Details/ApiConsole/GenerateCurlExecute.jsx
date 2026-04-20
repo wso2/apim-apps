@@ -270,9 +270,7 @@ class GenerateCurlExecute extends Component {
                 method,
                 operation,
             });
-            const getScheme = this.props.getSecuritySchemeType;
-            const securitySchemeType = typeof getScheme === 'function' ? getScheme() : 'OAUTH';
-            const curlText = requestObjectToCurl(mutated, securitySchemeType);
+            const curlText = requestObjectToCurl(mutated);
             const requestUrl = mutated && mutated.url ? String(mutated.url) : '';
             this.setState({
                 curlText,
@@ -300,7 +298,6 @@ class GenerateCurlExecute extends Component {
     render() {
         const {
             disabled,
-            getSecuritySchemeType,
             intl,
         } = this.props;
         const copyTooltip = intl.formatMessage({
@@ -318,8 +315,6 @@ class GenerateCurlExecute extends Component {
         const {
             curlText, requestUrl, busy, error, copyDone,
         } = this.state;
-        const scheme = typeof getSecuritySchemeType === 'function' ? getSecuritySchemeType() : 'OAUTH';
-        const showAuthPlaceholderHint = curlText && (scheme === 'OAUTH' || scheme === 'BASIC');
         const hasOutput = Boolean(curlText);
 
         return (
@@ -490,16 +485,6 @@ class GenerateCurlExecute extends Component {
                                     —
                                 </pre>
                             </div>
-                            {showAuthPlaceholderHint && (
-                                <p className='small' style={{ marginTop: 8, opacity: 0.85 }}>
-                                    <FormattedMessage
-                                        id='Apis.Details.APIConsole.GenerateCurl.oauthBasicHint'
-                                        defaultMessage={'Placeholders are used for OAuth and Basic credentials. '
-                                            + 'Replace <ACCESS_TOKEN> or <BASE64_CREDENTIALS> with the values from '
-                                            + 'the Access Token field or your Basic credentials in try-out.'}
-                                    />
-                                </p>
-                            )}
                         </div>
                     </div>
                 )}

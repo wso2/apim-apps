@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/** Carbon APIConstants.WSO2_API_PLATFORM_GATEWAY wire value. */
+const API_PLATFORM_GATEWAY = 'APIPlatform';
+
 const CONSTS = {
     API: 'API',
     APIProduct: 'APIProduct',
@@ -82,10 +85,11 @@ const CONSTS = {
         PRODUCTION: 'default_production_endpoint',
         SANDBOX: 'default_sandbox_endpoint',
     },
+    API_PLATFORM_GATEWAY,
     GATEWAY_TYPE: {
         synapse: 'Synapse',
         choreoConnect: 'ChoreoConnect',
-        apiPlatform: 'APIPlatform',
+        apiPlatform: API_PLATFORM_GATEWAY,
     },
     CREATE_API_GATEWAYS: {
         'wso2/synapse': {
@@ -113,7 +117,7 @@ const CONSTS = {
             isNew: false,
         },
         APIPlatform: {
-            value: 'APIPlatform',
+            value: API_PLATFORM_GATEWAY,
             name: 'API Platform Gateway',
             description: 'New lightweight, self-hosted API Platform gateway.',
             isNew: true,

@@ -33,6 +33,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Api from 'AppData/api';
+import CONSTS from 'AppData/Constants';
 import MCPServer from 'AppData/MCPServer';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import { useAppContext, usePublisherSettings } from 'AppComponents/Shared/AppContext';
@@ -652,7 +653,7 @@ export default function RuntimeConfiguration() {
         return <Progress per={80} message='Loading app settings ...' />;
     }
 
-    if (api.gatewayType === 'APIPlatform') {
+    if (api.gatewayType === CONSTS.API_PLATFORM_GATEWAY) {
         const policiesPath = `${getBasePath(api.apiType)}${api.id}/policies`;
         return (
             <Root>
