@@ -2479,13 +2479,15 @@ export default function Environments() {
         if (!allEnvRevision) return false;
 
         const now = Date.now();
+        const anchoredStartTime = pollingStartTimeRef.current ?? now;
 
-        return allEnvRevision.some((revision) => revision.deploymentInfo?.some((env) => {
+        const hasPending = allEnvRevision.some((revision) => revision.deploymentInfo?.some((env) => {
             const failed = env.failedGatewayCount ?? 0;
             const deployed = env.deployedGatewayCount ?? 0;
             const live = env.liveGatewayCount ?? 0;
             const inTimeWindow = env.deployedTime == null
-                || now - env.deployedTime <= MAX_POLLING_DURATION_MS;
+                ? (now - anchoredStartTime <= MAX_POLLING_DURATION_MS)
+                : (now - env.deployedTime <= MAX_POLLING_DURATION_MS);
 
             const synapseStylePending = env.status !== 'CREATED'
                 && failed === 0
@@ -2503,17 +2505,28 @@ export default function Environments() {
 
             return synapseStylePending || universalStylePending;
         }));
+
+        if (hasPending && pollingStartTimeRef.current == null) {
+            pollingStartTimeRef.current = now;
+        } else if (!hasPending) {
+            pollingStartTimeRef.current = null;
+        }
+
+        return hasPending;
     };
     
     useEffect(() => {
         if (settings && settings.isGatewayNotificationEnabled === true) {
             if (hasPendingDeployment()) {
                 if (!pollingRef.current) {
-                    pollingStartTimeRef.current = Date.now();
+                    if (pollingStartTimeRef.current == null) {
+                        pollingStartTimeRef.current = Date.now();
+                    }
                     pollingRef.current = setInterval(() => {
                         if (Date.now() - pollingStartTimeRef.current > MAX_POLLING_DURATION_MS) {
                             clearInterval(pollingRef.current);
                             pollingRef.current = null;
+                            pollingStartTimeRef.current = null;
                             return;
                         }
                         getDeployedEnv(); // Updates allEnvRevision
@@ -2522,12 +2535,14 @@ export default function Environments() {
             } else if (pollingRef.current) {
                 clearInterval(pollingRef.current);
                 pollingRef.current = null;
+                pollingStartTimeRef.current = null;
             }
             return () => {
                 if (pollingRef.current) {
                     clearInterval(pollingRef.current);
                     pollingRef.current = null;
                 }
+                pollingStartTimeRef.current = null;
             };
         }
         return undefined;

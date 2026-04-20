@@ -640,7 +640,16 @@ function TryOutController(props) {
     const isPrototypedAPI = lifeCycleStatus === 'prototyped';
     const isPublished = lifeCycleStatus === 'published';
     const showSecurityType = isPublished || isPrototypedAPI;
-    const hasSupportedSecurityScheme = isApiKeyEnabled || isBasicAuthEnabled || isOAuthEnabled || isTestKeyEnabled;
+    let selectedSchemeEnabled = false;
+    if (securitySchemeType === 'API-KEY') {
+        selectedSchemeEnabled = isApiKeyEnabled;
+    } else if (securitySchemeType === 'BASIC') {
+        selectedSchemeEnabled = isBasicAuthEnabled;
+    } else if (securitySchemeType === 'TEST') {
+        selectedSchemeEnabled = isTestKeyEnabled;
+    } else {
+        selectedSchemeEnabled = isOAuthEnabled;
+    }
 
     const authHeader = `${authorizationHeader}: ${prefix}`;
 
@@ -972,7 +981,7 @@ function TryOutController(props) {
                                     </>
                                 )}
                                 {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
-                                    && hasSupportedSecurityScheme && (
+                                    && selectedSchemeEnabled && (
                                     <TextField
                                         fullWidth
                                         margin='normal'
@@ -1024,7 +1033,7 @@ function TryOutController(props) {
                                 )}
                                 {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
                                 && securitySchemeType !== 'API-KEY'
-                                && selectedKMObject && hasSupportedSecurityScheme && (
+                                && selectedKMObject && selectedSchemeEnabled && (
                                     <>
                                         <Button
                                             onClick={securitySchemeType === 'API-KEY' ? generateApiKey
