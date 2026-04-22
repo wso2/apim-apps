@@ -20,7 +20,7 @@ import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import {
-    Alert,
+    Alert as MuiAlert,
     Box,
     Button,
     CircularProgress,
@@ -49,6 +49,7 @@ import API from 'AppData/api';
 import { getBasePath } from 'AppUtils/utils';
 import { mdiOpenInNew } from '@mdi/js';
 import { Icon as MDIcon } from '@mdi/react';
+import Alert from 'AppComponents/Shared/Alert';
 
 /**
  * Component for managing API key associations for an application.
@@ -139,11 +140,17 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
 
     const handleAssociateKey = () => {
         if (!selectedAPI) {
-            alert(intl.formatMessage({ id: 'Shared.AppsAndKeys.ApiKeyListing.alert.selectApi', defaultMessage: 'Please select an API first.' }));
+            Alert.error(intl.formatMessage({
+                id: 'Shared.AppsAndKeys.ApiKeyListing.alert.selectApi',
+                defaultMessage: 'Please select an API first.',
+            }));
             return;
         }
         if (!selectedExistingKey) {
-            alert(intl.formatMessage({ id: 'Shared.AppsAndKeys.ApiKeyListing.alert.selectKey', defaultMessage: 'Please select an existing API key to associate.' }));
+            Alert.error(intl.formatMessage({
+                id: 'Shared.AppsAndKeys.ApiKeyListing.alert.selectKey',
+                defaultMessage: 'Please select an existing API key to associate.',
+            }));
             return;
         }
         const restApi = new API();
@@ -669,9 +676,12 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
                     <FormattedMessage id='Shared.AppsAndKeys.ApiKeyListing.dissociateSuccess.title' defaultMessage='Association Removed' />
                 </DialogTitle>
                 <DialogContent>
-                    <Alert severity='success' sx={{ mb: 1 }}>
-                        <FormattedMessage id='Shared.AppsAndKeys.ApiKeyListing.dissociateSuccess.message' defaultMessage='API key association has been successfully removed.' />
-                    </Alert>
+                    <MuiAlert severity='success' sx={{ mb: 1 }}>
+                        <FormattedMessage
+                            id='Shared.AppsAndKeys.ApiKeyListing.dissociateSuccess.message'
+                            defaultMessage='API Key association has been successfully removed.'
+                        />
+                    </MuiAlert>
                 </DialogContent>
                 <DialogActions>
                     <Button
@@ -719,9 +729,12 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
                     <FormattedMessage id='Shared.AppsAndKeys.ApiKeyListing.associateSuccess.title' defaultMessage='Association Successful' />
                 </DialogTitle>
                 <DialogContent>
-                    <Alert severity='success' sx={{ mb: 1 }}>
-                        <FormattedMessage id='Shared.AppsAndKeys.ApiKeyListing.associateSuccess.message' defaultMessage='API key has been successfully associated with the application.' />
-                    </Alert>
+                    <MuiAlert severity='success' sx={{ mb: 1 }}>
+                        <FormattedMessage
+                            id='Shared.AppsAndKeys.ApiKeyListing.associateSuccess.message'
+                            defaultMessage='API key has been successfully associated with the application.'
+                        />
+                    </MuiAlert>
                 </DialogContent>
                 <DialogActions>
                     <Button

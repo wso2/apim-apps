@@ -19,7 +19,7 @@
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
-    Alert,
+    Alert as MuiAlert,
     Box,
     Button,
     Dialog,
@@ -36,6 +36,7 @@ import {
 } from '@mui/material';
 import { ContentCopy, Refresh } from '@mui/icons-material';
 import API from 'AppData/api';
+import Alert from 'AppComponents/Shared/Alert';
 
 /**
  * Custom hook for managing API key generation and regeneration operations
@@ -147,7 +148,7 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
 
     const handleGenerateKey = () => {
         if (!displayName.trim()) {
-            alert(intl.formatMessage({
+            Alert.error(intl.formatMessage({
                 id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.enterName',
                 defaultMessage: 'Please enter a name for the API key.',
             }));
@@ -156,7 +157,7 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
         if (restrictionType !== 'none' && !restrictionValue.trim()) {
             const restrictionOption = restrictionOptions.find((option) => option.value === restrictionType);
             const restrictionLabel = restrictionOption ? restrictionOption.label : '';
-            alert(intl.formatMessage(
+            Alert.error(intl.formatMessage(
                 {
                     id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.enterRestrictionValue',
                     defaultMessage: 'Please enter a {restrictionLabel} value.',
@@ -168,7 +169,7 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
         if (validityPeriod === 'custom' && !customValidityDays) {
             const customDays = Number(customValidityDays);
             if (!Number.isInteger(customDays) || customDays <= 0) {
-                alert(intl.formatMessage({
+                Alert.error(intl.formatMessage({
                     id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.invalidCustomDays',
                     defaultMessage: 'Please enter a valid positive number of days for custom validity period.',
                 }));
@@ -248,9 +249,9 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
             })
             .catch((error) => {
                 console.error('Error regenerating key:', error);
-                alert(intl.formatMessage({
+                Alert.error(intl.formatMessage({
                     id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.regenerateFailed',
-                    defaultMessage: 'Failed to regenerate API key. Please try again.',
+                    defaultMessage: 'Failed to regenerate API Key. Please try again.',
                 }));
             });
     };
@@ -293,7 +294,7 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
                     <Stack spacing={2} sx={{ pt: 1 }}>
                         {regeneratedApiKey && (
                             <>
-                                <Alert severity='warning' sx={{ mb: 0.5 }}>
+                                <MuiAlert severity='warning' sx={{ mb: 0.5 }}>
                                     <Typography variant='h6' component='h3' sx={{ mb: 0.5, fontSize: '0.95rem' }}>
                                         <FormattedMessage
                                             id='Apis.Details.APIKeys.ApiKeyGenerate.copyAlert.title'
@@ -311,7 +312,7 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
                                             }
                                         />
                                     </Typography>
-                                </Alert>
+                                </MuiAlert>
                                 <Box sx={{ mt: 1 }}>
                                     <Typography
                                         variant='subtitle2'
