@@ -31,6 +31,7 @@ import {
     Typography,
 } from '@mui/material';
 import API from 'AppData/api';
+import Alert from 'AppComponents/Shared/Alert';
 
 /**
  * Custom hook for managing API key association and dissociation operations
@@ -76,7 +77,7 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
 
     const handleAssociateKey = () => {
         if (!selectedAppForAssociation || !selectedKeyForAssociation || isAssociating) {
-            alert(intl.formatMessage({
+            Alert.error(intl.formatMessage({
                 id: 'Apis.Details.APIKeys.ApiKeyAssociation.alert.selectApplication',
                 defaultMessage: 'Please select an application.',
             }));
