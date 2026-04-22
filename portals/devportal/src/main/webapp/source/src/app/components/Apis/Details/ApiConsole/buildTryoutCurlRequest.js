@@ -162,10 +162,9 @@ function escapeShellSingleQuotes(value) {
 
 /**
  * @param {object} req mutated request from swagger-client (url, method, headers, body, ...)
- * @param {string} [securitySchemeType] Try-out security: OAUTH, API-KEY, BASIC (OAuth/Basic use placeholders).
  * @returns {string}
  */
-export function requestObjectToCurl(req, securitySchemeType) {
+export function requestObjectToCurl(req) {
     const method = (req.method || 'GET').toUpperCase();
     const url = req.url || '';
     const lines = [`curl -X '${method}'`, `  '${escapeShellSingleQuotes(url)}'`];
@@ -174,17 +173,6 @@ export function requestObjectToCurl(req, securitySchemeType) {
     Object.keys(headers).forEach((key) => {
         const val = headers[key];
         if (val === undefined || val === null || val === '') {
-            return;
-        }
-        const lowerKey = key.toLowerCase();
-        if (lowerKey === 'authorization') {
-            let displayVal = val;
-            if (securitySchemeType === 'OAUTH') {
-                displayVal = 'Bearer <ACCESS_TOKEN>';
-            } else if (securitySchemeType === 'BASIC') {
-                displayVal = 'Basic <BASE64_CREDENTIALS>';
-            }
-            lines.push(`  -H '${escapeShellSingleQuotes(`Authorization: ${displayVal}`)}'`);
             return;
         }
         lines.push(`  -H '${escapeShellSingleQuotes(`${key}: ${val}`)}'`);

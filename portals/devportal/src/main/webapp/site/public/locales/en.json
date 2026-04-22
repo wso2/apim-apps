@@ -22,7 +22,6 @@
   "Apis.Details.APIConsole.GenerateCurl.downloadAria": "Download generated cURL as a file",
   "Apis.Details.APIConsole.GenerateCurl.noLiveResponseBody": "No response body. Execute the cURL command to capture the gateway response.",
   "Apis.Details.APIConsole.GenerateCurl.noLiveResponseDetail": "Not applicable. This try-out does not send the request; run the generated cURL in your environment to see status and body.",
-  "Apis.Details.APIConsole.GenerateCurl.oauthBasicHint": "Placeholders are used for OAuth and Basic credentials. Replace <ACCESS_TOKEN> or <BASE64_CREDENTIALS> with the values from the Access Token field or your Basic credentials in try-out.",
   "Apis.Details.APIConsole.GenerateCurl.requestUrlHeading": "Request URL",
   "Apis.Details.APIConsole.GenerateCurl.responseBodyHeading": "Response body",
   "Apis.Details.APIConsole.GenerateCurl.responseHeadersHeading": "Response headers",

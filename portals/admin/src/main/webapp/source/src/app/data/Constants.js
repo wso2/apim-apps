@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/** Carbon APIConstants.WSO2_API_PLATFORM_GATEWAY wire value. */
+const API_PLATFORM_GATEWAY = 'APIPlatform';
+
 const CONSTS = {
     API: 'API',
     APIProduct: 'APIProduct',
@@ -123,10 +126,11 @@ const CONSTS = {
         BLOCK: 'BLOCK',
         NOTIFY: 'NOTIFY',
     },
+    API_PLATFORM_GATEWAY,
     GATEWAY_TYPE: {
         regular: 'Regular',
         apk: 'APK',
-        apiPlatform: 'APIPlatform',
+        apiPlatform: API_PLATFORM_GATEWAY,
     },
 };
 
