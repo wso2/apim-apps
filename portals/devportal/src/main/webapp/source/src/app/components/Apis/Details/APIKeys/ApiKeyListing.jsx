@@ -53,6 +53,8 @@ import { useParams } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CONSTANTS from 'AppData/Constants';
 import Application from 'AppData/Application';
+import AuthManager from 'AppData/AuthManager';
+import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import ApiKeyAssociation from './ApiKeyAssociation';
 import ApiKeyGenerate from './ApiKeyGenerate';
 
@@ -486,6 +488,27 @@ export default function ApiKeyListing() {
         },
     };
 
+    const user = AuthManager.getUser();
+
+    if (!user) {
+        return (
+            <InlineMessage type='info'>
+                <Typography variant='h5' component='h2'>
+                    <FormattedMessage
+                        id='Apis.Details.APIKeys.ApiKeyListing.sign.in.to.manage'
+                        defaultMessage='Sign In to Manage API Keys'
+                    />
+                </Typography>
+                <Typography variant='body2'>
+                    <FormattedMessage
+                        id='Apis.Details.APIKeys.ApiKeyListing.sign.in.to.manage.msg'
+                        defaultMessage='You need to sign in to view and manage API Keys for this API.'
+                    />
+                </Typography>
+            </InlineMessage>
+        );
+    }
+
     return (
         <Stack spacing={4}>
             {/* Check if API keys exist */}
@@ -505,7 +528,7 @@ export default function ApiKeyListing() {
                         <Typography variant='subtitle1' gutterBottom sx={{ mb: 3 }}>
                             <FormattedMessage
                                 id='Apis.Details.APIKeys.ApiKeyListing.emptyState.description'
-                                defaultMessage='Get started by generating your first API key to access this API from your applications.'
+                                defaultMessage='Get started by generating your first API Key to access this API from your applications.'
                             />
                         </Typography>
                         <Button
@@ -546,7 +569,7 @@ export default function ApiKeyListing() {
                                 <Typography variant='body2' color='text.secondary' sx={{ mt: 0.5 }}>
                                     <FormattedMessage
                                         id='Apis.Details.APIKeys.ApiKeyListing.section.description'
-                                        defaultMessage='View and manage your current API keys for this API across all applications.'
+                                        defaultMessage='View and manage your current API Keys for this API across all applications.'
                                     />
                                 </Typography>
                             </Box>
