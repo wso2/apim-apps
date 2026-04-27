@@ -20,10 +20,12 @@ import React from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import UnmanagedApisList from './List/UnmanagedApisList';
+import UnmanagedApiDetail from './Detail/UnmanagedApiDetail';
 
 /**
- * Routes the /governance/unmanaged-apis URL space. Round 10 wires the
- * list page; Round 11 will add /:id for the detail page.
+ * Routes the /governance/unmanaged-apis URL space. Round 10 wired the
+ * list; Round 11 adds /:id for the detail page. Round 12 may add more
+ * sub-paths (e.g., raw evidence drill-down).
  *
  * @returns {JSX} react-router Switch for the Unmanaged APIs sub-tree
  */
@@ -34,6 +36,11 @@ function UnmanagedApisRouter() {
                 exact
                 path='/governance/unmanaged-apis'
                 component={UnmanagedApisList}
+            />
+            <Route
+                exact
+                path='/governance/unmanaged-apis/:discoveredApiId'
+                component={UnmanagedApiDetail}
             />
             <Route component={ResourceNotFound} />
         </Switch>
