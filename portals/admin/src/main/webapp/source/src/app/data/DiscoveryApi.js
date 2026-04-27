@@ -14,16 +14,17 @@ import APIClientFactory from './APIClientFactory';
  * "Unmanaged APIs" in admin-api.yaml; the Swagger client groups operations
  * by that tag, so we access them via client.apis['Unmanaged APIs'].
  *
- * Reuses the existing GOVERNANCE_CLIENT channel — the new endpoints live in
- * the same admin v4 OpenAPI surface as the existing Governance feature, so
- * a separate APIClientFactory client type isn't needed.
+ * Uses the admin v4 API_CLIENT — our endpoints live in admin-api.yaml
+ * (loaded from /api/am/admin/v4/swagger.yaml). The GOVERNANCE_CLIENT
+ * loads a different spec (/api/am/governance/v1/swagger.yaml — a separate
+ * WSO2 product feature) and would not see our routes.
  */
 export default class DiscoveryApi {
     constructor() {
         this.client = new APIClientFactory()
             .getAPIClient(
                 Utils.getCurrentEnvironment(),
-                Utils.CONST.GOVERNANCE_CLIENT,
+                Utils.CONST.API_CLIENT,
             ).client;
     }
 
