@@ -252,7 +252,8 @@ function GenericEndpoint(props) {
                                                 </Tooltip>
                                             </IconButton>
                                         }
-                                        {api.subtypeConfiguration?.subtype !== 'AIAPI' && (<IconButton
+                                        {api.subtypeConfiguration?.subtype !== 'AIAPI' && 
+                                         type !== 'awslambda' && (<IconButton
                                             className={classes.iconButton}
                                             aria-label='Security'
                                             onClick={() => setESConfigOpen(type, esCategory)}
