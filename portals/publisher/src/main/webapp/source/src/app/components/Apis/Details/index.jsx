@@ -124,10 +124,18 @@ const StyledBox = styled(Box)((
         flexDirection: 'column',
         paddingBottom: theme.spacing(3),
         overflow: 'auto',
+        overflowX: 'hidden', // Prevent horizontal scrolling
+        minWidth: 0, // Allow flex child to shrink below content size
+<<<<<<< Updated upstream
+        maxWidth: `calc(100vw - ${theme.custom.leftMenuWidth}px)`, // Constrain to viewport minus sidebar
+=======
+        maxWidth: `min(calc(100vw - ${theme.custom.leftMenuWidth}px), ${theme.custom.contentAreaWidth}px)`, // Constrain to viewport minus sidebar, respect contentAreaWidth
+>>>>>>> Stashed changes
     },
 
     [`& .${classes.contentInside}`]: {
-        width: 'calc(100% - 56px)',
+        width: '100%',
+        maxWidth: '100%', // Constrain to parent width
         paddingLeft: theme.spacing(3),
         paddingRight: theme.spacing(3),
         paddingTop: theme.spacing(2),
