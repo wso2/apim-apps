@@ -35,6 +35,7 @@ import Progress from 'AppComponents/Shared/Progress';
 import { app } from 'Settings';
 import isEqual from 'lodash.isequal';
 import ApplicationCreateBase from './Create/ApplicationCreateBase';
+import TemplateSelector from './Create/TemplateSelector';
 
 const PREFIX = 'ApplicationFormHandler';
 
@@ -84,6 +85,8 @@ class ApplicationFormHandler extends React.Component {
             isOrgAccessControlEnabled: false,
             applicationOwner: '',
             isOrgWideAppUpdateEnabled: false,
+            // null = template selector shown; false = skipped; object = template chosen
+            selectedTemplate: null,
         };
         this.handleAddChip = this.handleAddChip.bind(this);
         this.handleDeleteChip = this.handleDeleteChip.bind(this);
@@ -323,11 +326,17 @@ class ApplicationFormHandler extends React.Component {
             .catch((error) => {
                 const { response } = error;
                 if (response && response.body) {
-                    const message = response.body.description || intl.formatMessage({
-                        defaultMessage: 'Error while creating the application',
-                        id: 'Applications.Create.ApplicationFormHandler.error.while.creating.the.application',
-                    });
-                    Alert.error(message);
+                    const { error: violations } = response.body;
+                    if (Array.isArray(violations) && violations.length > 0) {
+                        // Governance backend returns Spectral rule violations in error[]
+                        violations.forEach((v) => Alert.error(v.message || v.description));
+                    } else {
+                        const message = response.body.description || intl.formatMessage({
+                            defaultMessage: 'Error while creating the application',
+                            id: 'Applications.Create.ApplicationFormHandler.error.while.creating.the.application',
+                        });
+                        Alert.error(message);
+                    }
                 } else {
                     Alert.error(error.message);
                 }
@@ -454,6 +463,26 @@ class ApplicationFormHandler extends React.Component {
     }
 
     /**
+     * Called when the developer selects a template in TemplateSelector.
+     * Applies the template's application-section defaults into applicationRequest,
+     * then advances past the selector to show the create form.
+     * @param {Object} template - The selected governance template object
+     */
+    handleTemplateSelect = (template) => {
+        const appConfig = template?.formConfig?.application ?? {};
+        this.setState((prevState) => {
+            const newRequest = { ...prevState.applicationRequest };
+            if (appConfig.throttlingPolicy?.defaultValue) {
+                newRequest.throttlingPolicy = appConfig.throttlingPolicy.defaultValue;
+            }
+            if (appConfig.tokenType?.defaultValue) {
+                newRequest.tokenType = appConfig.tokenType.defaultValue;
+            }
+            return { selectedTemplate: template, applicationRequest: newRequest };
+        });
+    }
+
+    /**
      * Check whether there are any changes in the form
      */
     hasFormChanged = () => {
@@ -469,9 +498,34 @@ class ApplicationFormHandler extends React.Component {
     render() {
         const {
             throttlingPolicyList, applicationRequest, isNameValid, allAppAttributes, isApplicationSharingEnabled,
-            isEdit, applicationOwner, isOrgWideAppUpdateEnabled, isOrgAccessControlEnabled,
+            isEdit, applicationOwner, isOrgWideAppUpdateEnabled, isOrgAccessControlEnabled, selectedTemplate,
         } = this.state;
         const { match: { params } } = this.props;
+
+        // Template selection gate: only for new applications, not edits.
+        // selectedTemplate===null means not yet decided; false means skipped; object means chosen.
+        if (!isEdit && selectedTemplate === null) {
+            return (
+                <StyledApplicationCreateBase title={(
+                    <Typography variant='h5' component='h1'>
+                        <FormattedMessage
+                            id='Applications.Create.ApplicationFormHandler.create.application.heading'
+                            defaultMessage='Create an application'
+                        />
+                    </Typography>
+                )}
+                >
+                    <Box py={4} mb={2} display='flex' justifyContent='center'>
+                        <Grid item xs={10} md={9}>
+                            <TemplateSelector
+                                onSelect={this.handleTemplateSelect}
+                                onSkip={() => this.setState({ selectedTemplate: false })}
+                            />
+                        </Grid>
+                    </Box>
+                </StyledApplicationCreateBase>
+            );
+        }
 
         const CreatePageTitle = (
             <>
@@ -545,6 +599,7 @@ class ApplicationFormHandler extends React.Component {
                                     isOrgAccessControlEnabled={isOrgAccessControlEnabled}
                                     handleDeleteChip={this.handleDeleteChip}
                                     handleAddChip={this.handleAddChip}
+                                    formConfig={selectedTemplate?.formConfig ?? {}}
                                     enable
                                 />
 

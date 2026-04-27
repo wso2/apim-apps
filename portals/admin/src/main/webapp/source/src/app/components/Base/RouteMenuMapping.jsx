@@ -42,6 +42,7 @@ import ListRoles from 'AppComponents//RolePermissions/ListRoles.jsx';
 import TenantConfSave from 'AppComponents/AdvancedSettings/TenantConfSave';
 import Policies from 'AppComponents/Governance/Policies';
 import RulesetCatalog from 'AppComponents/Governance/RulesetCatalog';
+import ListTemplates from 'AppComponents/Governance/Templates';
 import BusinessIcon from '@mui/icons-material/Business';
 import Organizations from 'AppComponents/Organizations/ListOrganizations';
 
@@ -50,6 +51,7 @@ import CategoryIcon from '@mui/icons-material/Category';
 import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import PolicyIcon from '@mui/icons-material/Policy';
 import RuleIcon from '@mui/icons-material/Rule';
+import LayersIcon from '@mui/icons-material/Layers';
 import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -369,6 +371,34 @@ const RouteMenuMapping = (intl) => [
                 path: '/governance/ruleset-catalog',
                 component: RulesetCatalog,
                 icon: <RuleIcon />,
+            },
+            {
+                id: 'Templates',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.governance.templates',
+                    defaultMessage: 'Templates',
+                }),
+                path: '/governance/templates',
+                component: ListTemplates,
+                icon: <LayersIcon />,
+                addEditPageDetails: [
+                    {
+                        id: 'Create Template',
+                        displayText: intl.formatMessage({
+                            id: 'Base.RouteMenuMapping.governance.templates.create',
+                            defaultMessage: 'Create Template',
+                        }),
+                        path: '/governance/templates/create',
+                    },
+                    {
+                        id: 'Edit Template',
+                        displayText: intl.formatMessage({
+                            id: 'Base.RouteMenuMapping.governance.templates.edit',
+                            defaultMessage: 'Edit Template',
+                        }),
+                        path: '/governance/templates/(.*?)$',
+                    },
+                ],
             },
         ],
     },

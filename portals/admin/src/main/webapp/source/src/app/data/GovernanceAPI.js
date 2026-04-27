@@ -334,6 +334,92 @@ class GovernanceAPI extends Resource {
             );
         });
     }
+
+    /**
+     * Get list of Devportal Governance templates
+     * @param {Object} [params] Optional query parameters (limit, offset)
+     * @returns {Promise} Promised templates list response
+     */
+    getDevportalGovernanceTemplates(params = {}) {
+        return this.client.then((client) => {
+            return client.apis['Devportal Governance Templates'].getDevportalGovernanceTemplates(
+                params,
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get the default Devportal Governance template for the organization
+     * @returns {Promise} Promised default template response
+     */
+    getDefaultDevportalGovernanceTemplate() {
+        return this.client.then((client) => {
+            return client.apis['Devportal Governance Templates'].getDefaultDevportalGovernanceTemplate(
+                {},
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get a Devportal Governance template by id
+     * @param {string} templateId Template id
+     * @returns {Promise} Promised template response
+     */
+    getDevportalGovernanceTemplateById(templateId) {
+        return this.client.then((client) => {
+            return client.apis['Devportal Governance Templates'].getDevportalGovernanceTemplateById(
+                { templateId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Create a new Devportal Governance template
+     * @param {Object} template Template object
+     * @returns {Promise} Promised created template response
+     */
+    createDevportalGovernanceTemplate(template) {
+        return this.client.then((client) => {
+            return client.apis['Devportal Governance Templates'].createDevportalGovernanceTemplate(
+                { 'Content-Type': 'application/json' },
+                { requestBody: template },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update a Devportal Governance template by id
+     * @param {string} templateId Template id
+     * @param {Object} template Updated template object
+     * @returns {Promise} Promised updated template response
+     */
+    updateDevportalGovernanceTemplateById(templateId, template) {
+        return this.client.then((client) => {
+            return client.apis['Devportal Governance Templates'].updateDevportalGovernanceTemplateById(
+                { templateId, 'Content-Type': 'application/json' },
+                { requestBody: template },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete a Devportal Governance template by id
+     * @param {string} templateId Template id
+     * @returns {Promise} Promised delete response
+     */
+    deleteDevportalGovernanceTemplate(templateId) {
+        return this.client.then((client) => {
+            return client.apis['Devportal Governance Templates'].deleteDevportalGovernanceTemplate(
+                { templateId },
+                this._requestMetaData(),
+            );
+        });
+    }
 }
 
 export default GovernanceAPI;

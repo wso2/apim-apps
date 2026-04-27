@@ -137,7 +137,10 @@ const ApplicationCreate = (props) => {
         isOrgAccessControlEnabled,
         handleAddChip,
         handleDeleteChip,
+        formConfig,
     } = props;
+
+    const isHidden = (fieldKey) => formConfig?.application?.[fieldKey]?.hidden === true;
     const description = applicationRequest.description || '';
     const showDescError = () => {
         const descLength = description.length;
@@ -186,46 +189,48 @@ const ApplicationCreate = (props) => {
                     })
                 }}
             />
-            <TextField
-                classes={{
-                    root: classes.mandatoryStarText,
-                }}
-                required
-                fullWidth
-                id='per-token-quota'
-                select
-                label={(
-                    <FormattedMessage
-                        defaultMessage='Shared Quota for Application Tokens'
-                        id='Shared.AppsAndKeys.ApplicationCreateForm.per.token.quota'
-                    />
-                )}
-                value={applicationRequest.throttlingPolicy}
-                name='throttlingPolicy'
-                onChange={handleChange}
-                helperText={(
-                    <FormattedMessage
-                        defaultMessage={`Assign API request quota per access token.
+            {!isHidden('throttlingPolicy') && (
+                <TextField
+                    classes={{
+                        root: classes.mandatoryStarText,
+                    }}
+                    required
+                    fullWidth
+                    id='per-token-quota'
+                    select
+                    label={(
+                        <FormattedMessage
+                            defaultMessage='Shared Quota for Application Tokens'
+                            id='Shared.AppsAndKeys.ApplicationCreateForm.per.token.quota'
+                        />
+                    )}
+                    value={applicationRequest.throttlingPolicy}
+                    name='throttlingPolicy'
+                    onChange={handleChange}
+                    helperText={(
+                        <FormattedMessage
+                            defaultMessage={`Assign API request quota per access token.
                             Allocated quota will be shared among all
                             the subscribed APIs of the application.`}
-                        id='Shared.AppsAndKeys.ApplicationCreateForm.assign.api.request'
-                    />
-                )}
-                margin='normal'
-                variant='outlined'
-                inputProps={{
-                    alt: intl.formatMessage({
-                        defaultMessage: 'Required',
-                        id: 'Shared.AppsAndKeys.ApplicationCreateForm.required.alt',
-                    })
-                }}
-            >
-                {throttlingPolicyList.map((policy) => (
-                    <MenuItem key={policy} value={policy}>
-                        {policy}
-                    </MenuItem>
-                ))}
-            </TextField>
+                            id='Shared.AppsAndKeys.ApplicationCreateForm.assign.api.request'
+                        />
+                    )}
+                    margin='normal'
+                    variant='outlined'
+                    inputProps={{
+                        alt: intl.formatMessage({
+                            defaultMessage: 'Required',
+                            id: 'Shared.AppsAndKeys.ApplicationCreateForm.required.alt',
+                        })
+                    }}
+                >
+                    {throttlingPolicyList.map((policy) => (
+                        <MenuItem key={policy} value={policy}>
+                            {policy}
+                        </MenuItem>
+                    ))}
+                </TextField>
+            )}
             <TextField
                 id='application-description'
                 margin='normal'
@@ -336,9 +341,11 @@ const ApplicationCreate = (props) => {
 };
 ApplicationCreate.defaultProps = {
     ApplicationCreate: null,
+    formConfig: {},
 };
 ApplicationCreate.propTypes = {
     classes: PropTypes.shape({}).isRequired,
+    formConfig: PropTypes.shape({}),
     applicationRequest: PropTypes.shape({}).isRequired,
     intl: PropTypes.shape({}).isRequired,
     isNameValid: PropTypes.bool.isRequired,
