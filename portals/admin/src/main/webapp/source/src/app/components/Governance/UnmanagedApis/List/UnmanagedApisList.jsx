@@ -6,7 +6,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-    Grid, Box, Typography, Alert, CircularProgress,
+    Grid, Box, Typography, Alert, Button, Skeleton,
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import DiscoveryApi from 'AppData/DiscoveryApi';
@@ -43,21 +43,45 @@ function extractErrorMessage(err) {
 }
 
 /**
- * Tiny placeholder shown in either summary card while loading.
+ * Skeleton placeholder shown in either summary card while loading. Uses
+ * the rectangular variant sized to match the rendered card so the layout
+ * doesn't jump on paint.
  */
 function LoadingCard() {
     return (
-        <Box sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: 280,
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 1,
-        }}
+        <Skeleton
+            variant='rectangular'
+            height={280}
+            sx={{ borderRadius: 1 }}
+            aria-label='Loading summary'
+        />
+    );
+}
+
+/**
+ * Skeleton placeholder for the findings table while loading. Renders a
+ * stack of row-shaped skeletons inside a bordered Paper-like box so the
+ * page height stays stable between loading and loaded states.
+ */
+function LoadingTable() {
+    return (
+        <Box
+            sx={{
+                p: 1,
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 1,
+            }}
+            aria-label='Loading findings'
         >
-            <CircularProgress />
+            {[0, 1, 2, 3, 4].map((i) => (
+                <Skeleton
+                    key={i}
+                    variant='rectangular'
+                    height={40}
+                    sx={{ my: 0.5, borderRadius: 0.5 }}
+                />
+            ))}
         </Box>
     );
 }
@@ -172,7 +196,22 @@ function UnmanagedApisList() {
             </Typography>
 
             {summaryError && (
-                <Alert severity='error' sx={{ mb: 2 }}>
+                <Alert
+                    severity='error'
+                    sx={{ mb: 2 }}
+                    action={(
+                        <Button
+                            color='inherit'
+                            size='small'
+                            onClick={fetchSummary}
+                        >
+                            <FormattedMessage
+                                id='Discovery.error.retry'
+                                defaultMessage='Retry'
+                            />
+                        </Button>
+                    )}
+                >
                     {summaryError}
                 </Alert>
             )}
@@ -206,15 +245,28 @@ function UnmanagedApisList() {
             />
 
             {listError && (
-                <Alert severity='error' sx={{ mb: 2 }}>
+                <Alert
+                    severity='error'
+                    sx={{ mb: 2 }}
+                    action={(
+                        <Button
+                            color='inherit'
+                            size='small'
+                            onClick={fetchList}
+                        >
+                            <FormattedMessage
+                                id='Discovery.error.retry'
+                                defaultMessage='Retry'
+                            />
+                        </Button>
+                    )}
+                >
                     {listError}
                 </Alert>
             )}
 
             {listLoading ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-                    <CircularProgress />
-                </Box>
+                <LoadingTable />
             ) : (
                 <FindingsTable
                     items={items}

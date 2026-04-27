@@ -48,6 +48,16 @@ const FindingsTable = ({
         }
     };
 
+    // Keyboard activation parity with click. Enter/Space on a focused row
+    // navigates to detail; everything else is left to the browser so
+    // standard tab order continues to work.
+    const handleRowKeyDown = (event, id) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            handleRow(id);
+        }
+    };
+
     const formatDate = (iso) => {
         if (!iso) return '';
         try {
@@ -60,7 +70,13 @@ const FindingsTable = ({
     return (
         <Paper variant='outlined'>
             <TableContainer>
-                <Table size='small'>
+                <Table
+                    size='small'
+                    aria-label={intl.formatMessage({
+                        id: 'Discovery.findings.table.ariaLabel',
+                        defaultMessage: 'Unmanaged API findings',
+                    })}
+                >
                     <TableHead>
                         <TableRow>
                             <TableCell>
@@ -130,7 +146,28 @@ const FindingsTable = ({
                                 key={row.id}
                                 hover
                                 onClick={() => handleRow(row.id)}
-                                sx={{ cursor: 'pointer' }}
+                                onKeyDown={(e) => handleRowKeyDown(e, row.id)}
+                                tabIndex={0}
+                                role='link'
+                                aria-label={intl.formatMessage(
+                                    {
+                                        id: 'Discovery.findings.row.ariaLabel',
+                                        defaultMessage: 'Open finding details for {method} {path} on {service}',
+                                    },
+                                    {
+                                        method: row.method || '',
+                                        path: row.normalizedPath || '',
+                                        service: row.serviceIdentity || '',
+                                    },
+                                )}
+                                sx={{
+                                    cursor: 'pointer',
+                                    '&:focus': {
+                                        outline: '2px solid',
+                                        outlineColor: 'primary.main',
+                                        outlineOffset: '-2px',
+                                    },
+                                }}
                             >
                                 <TableCell>{row.serviceIdentity}</TableCell>
                                 <TableCell>

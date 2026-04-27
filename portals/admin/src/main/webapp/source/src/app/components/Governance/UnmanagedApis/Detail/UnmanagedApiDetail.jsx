@@ -7,7 +7,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-    Box, Grid, Typography, Breadcrumbs, Link, Alert, CircularProgress,
+    Box, Grid, Typography, Breadcrumbs, Link, Alert, Button, Skeleton,
 } from '@mui/material';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
@@ -52,6 +52,7 @@ function UnmanagedApiDetail({ match }) {
     const [error, setError] = useState(null);
     const [notFound, setNotFound] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [reloadToken, setReloadToken] = useState(0);
 
     useEffect(() => {
         let cancelled = false;
@@ -80,7 +81,9 @@ function UnmanagedApiDetail({ match }) {
         return () => {
             cancelled = true;
         };
-    }, [id]);
+    }, [id, reloadToken]);
+
+    const handleRetry = () => setReloadToken((n) => n + 1);
 
     return (
         <Box p={3}>
@@ -100,8 +103,37 @@ function UnmanagedApiDetail({ match }) {
             </Breadcrumbs>
 
             {loading && (
-                <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-                    <CircularProgress />
+                <Box aria-label='Loading finding details'>
+                    <Skeleton variant='text' width='40%' height={48} />
+                    <Skeleton
+                        variant='text'
+                        width='25%'
+                        height={20}
+                        sx={{ mb: 2 }}
+                    />
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} md={4}>
+                            <Skeleton
+                                variant='rectangular'
+                                height={320}
+                                sx={{ borderRadius: 1 }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                            <Skeleton
+                                variant='rectangular'
+                                height={320}
+                                sx={{ borderRadius: 1 }}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                            <Skeleton
+                                variant='rectangular'
+                                height={320}
+                                sx={{ borderRadius: 1 }}
+                            />
+                        </Grid>
+                    </Grid>
                 </Box>
             )}
 
@@ -118,7 +150,23 @@ function UnmanagedApiDetail({ match }) {
             )}
 
             {!loading && !notFound && error && (
-                <Alert severity='error'>{error}</Alert>
+                <Alert
+                    severity='error'
+                    action={(
+                        <Button
+                            color='inherit'
+                            size='small'
+                            onClick={handleRetry}
+                        >
+                            <FormattedMessage
+                                id='Discovery.error.retry'
+                                defaultMessage='Retry'
+                            />
+                        </Button>
+                    )}
+                >
+                    {error}
+                </Alert>
             )}
 
             {!loading && !notFound && !error && detail && (
