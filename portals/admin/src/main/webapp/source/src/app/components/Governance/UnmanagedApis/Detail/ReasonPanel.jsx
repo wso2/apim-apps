@@ -11,10 +11,13 @@ import {
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
-const tagSx = {
-    shadow: { backgroundColor: '#FAECE7', color: '#712B13' },
-    drift: { backgroundColor: '#FBEAF0', color: '#72243E' },
-    internal: { backgroundColor: '#E6F1FB', color: '#0C447C' },
+// MUI Chip color names mapped per tag type. Theme-driven so Compliance,
+// Unmanaged APIs, and the rest of the admin portal all share the same
+// red/orange/blue palette automatically.
+const tagColor = {
+    shadow: 'error',
+    drift: 'warning',
+    internal: 'info',
 };
 
 /**
@@ -34,7 +37,10 @@ const tagSx = {
  * @returns {JSX} reason explanation block
  */
 const ReasonText = ({ classification, isInternal, sisterCount }) => {
-    if (classification === 'shadow' && isInternal) {
+    // BFF returns classification in uppercase ('SHADOW' / 'DRIFT'); we
+    // lowercase here so the reason templates match regardless of casing.
+    const c = String(classification || '').toLowerCase();
+    if (c === 'shadow' && isInternal) {
         return (
             <FormattedMessage
                 id='Discovery.reason.shadowInternal'
@@ -46,7 +52,7 @@ const ReasonText = ({ classification, isInternal, sisterCount }) => {
             />
         );
     }
-    if (classification === 'shadow') {
+    if (c === 'shadow') {
         return (
             <FormattedMessage
                 id='Discovery.reason.shadow'
@@ -58,7 +64,7 @@ const ReasonText = ({ classification, isInternal, sisterCount }) => {
             />
         );
     }
-    if (classification === 'drift' && isInternal) {
+    if (c === 'drift' && isInternal) {
         return (
             <FormattedMessage
                 id='Discovery.reason.driftInternal'
@@ -73,7 +79,7 @@ const ReasonText = ({ classification, isInternal, sisterCount }) => {
             />
         );
     }
-    if (classification === 'drift') {
+    if (c === 'drift') {
         return (
             <FormattedMessage
                 id='Discovery.reason.drift'
@@ -118,62 +124,69 @@ const ReasonPanel = ({ detail }) => {
         return null;
     }
     const sister = detail.serviceManagedAPIs || [];
+    const classification = String(detail.classification || '').toLowerCase();
     return (
-        <Card variant='outlined' sx={{ height: '100%' }}>
+        <Card elevation={3} sx={{ height: '100%' }}>
             <CardContent>
-                <Typography variant='h6' gutterBottom>
+                <Typography
+                    variant='body1'
+                    sx={{ fontWeight: 'bold', mb: 2 }}
+                >
                     <FormattedMessage
                         id='Discovery.detail.reason.title'
                         defaultMessage='Why this is a finding'
                     />
                 </Typography>
                 <Stack direction='row' spacing={1} sx={{ mb: 2 }}>
-                    {detail.classification === 'shadow' && (
+                    {classification === 'shadow' && (
                         <Chip
                             size='small'
+                            color={tagColor.shadow}
+                            variant='outlined'
                             label={(
                                 <FormattedMessage
                                     id='Discovery.tag.shadow'
                                     defaultMessage='Shadow'
                                 />
                             )}
-                            sx={tagSx.shadow}
                         />
                     )}
-                    {detail.classification === 'drift' && (
+                    {classification === 'drift' && (
                         <Chip
                             size='small'
+                            color={tagColor.drift}
+                            variant='outlined'
                             label={(
                                 <FormattedMessage
                                     id='Discovery.tag.drift'
                                     defaultMessage='Drift'
                                 />
                             )}
-                            sx={tagSx.drift}
                         />
                     )}
                     {detail.isInternal && (
                         <Chip
                             size='small'
+                            color={tagColor.internal}
+                            variant='outlined'
                             label={(
                                 <FormattedMessage
                                     id='Discovery.tag.internal'
                                     defaultMessage='Internal'
                                 />
                             )}
-                            sx={tagSx.internal}
                         />
                     )}
                 </Stack>
                 <Typography variant='body2' sx={{ mb: 2 }}>
                     <ReasonText
-                        classification={detail.classification}
+                        classification={classification}
                         isInternal={detail.isInternal}
                         sisterCount={sister.length}
                     />
                 </Typography>
 
-                {detail.classification === 'drift' && sister.length > 0 && (
+                {classification === 'drift' && sister.length > 0 && (
                     <>
                         <Divider sx={{ my: 2 }} />
                         <Typography

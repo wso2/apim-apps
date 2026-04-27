@@ -4,24 +4,24 @@
  * Licensed under the Apache License, Version 2.0.
  */
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {
+    useEffect, useState, useCallback,
+} from 'react';
+import PropTypes from 'prop-types';
 import {
-    Grid, Box, Typography, Alert, Button, Skeleton,
+    Grid, Card, CardContent, Typography, Alert, Button, Skeleton, Chip,
+    List, ListItemButton, ListItemIcon, ListItemText, Link,
 } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import DescriptionIcon from '@mui/icons-material/Description';
+import { withRouter } from 'react-router-dom';
+import { useIntl, FormattedMessage } from 'react-intl';
+import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
+import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
+import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
+import Configurations from 'Config';
 import DiscoveryApi from 'AppData/DiscoveryApi';
 import ApiCoverageCard from './ApiCoverageCard';
 import BreakdownCard from './BreakdownCard';
-import FindingsFilters from './FindingsFilters';
-import FindingsTable from './FindingsTable';
-import useStoredPreferences from '../hooks/useStoredPreferences';
-
-const DEFAULT_PREFS = {
-    classification: '',
-    service: '',
-    internal: '',
-    pageSize: 25,
-};
 
 /**
  * Best-effort error message extraction. Swagger client surfaces the
@@ -43,76 +43,25 @@ function extractErrorMessage(err) {
 }
 
 /**
- * Skeleton placeholder shown in either summary card while loading. Uses
- * the rectangular variant sized to match the rendered card so the layout
- * doesn't jump on paint.
- */
-function LoadingCard() {
-    return (
-        <Skeleton
-            variant='rectangular'
-            height={280}
-            sx={{ borderRadius: 1 }}
-            aria-label='Loading summary'
-        />
-    );
-}
-
-/**
- * Skeleton placeholder for the findings table while loading. Renders a
- * stack of row-shaped skeletons inside a bordered Paper-like box so the
- * page height stays stable between loading and loaded states.
- */
-function LoadingTable() {
-    return (
-        <Box
-            sx={{
-                p: 1,
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 1,
-            }}
-            aria-label='Loading findings'
-        >
-            {[0, 1, 2, 3, 4].map((i) => (
-                <Skeleton
-                    key={i}
-                    variant='rectangular'
-                    height={40}
-                    sx={{ my: 0.5, borderRadius: 0.5 }}
-                />
-            ))}
-        </Box>
-    );
-}
-
-/**
- * Top-level container for the Unmanaged APIs tab. Owns:
- *   - the summary fetch (one call on mount + on filter clear)
- *   - the list fetch (refetches on every filter / page change)
- *   - filter state, persisted to localStorage via useStoredPreferences
- *   - pagination state (page index in component state, page size in prefs)
+ * Top-level container for the Unmanaged APIs tab. Wraps everything in the
+ * standard admin-portal ContentBase (provides the page toolbar, the grey
+ * page background, the help icon slot, and the footer at the bottom of
+ * the viewport).
  *
- * Both fetches are independent — a slow list won't block the summary
- * cards rendering, and a failed summary won't block the table.
+ * Layout follows the Compliance Summary pattern exactly:
+ *   row 1: two donut summary cards (md=6 each)
+ *   row 2: full-width Findings card containing a ListBase table with
+ *          built-in search and per-column filter chips
  *
  * @returns {JSX} list page
  */
-function UnmanagedApisList() {
-    const [prefs, setPrefs] = useStoredPreferences(DEFAULT_PREFS);
+function UnmanagedApisList({ history }) {
+    const intl = useIntl();
 
     const [summary, setSummary] = useState(null);
-    const [summaryError, setSummaryError] = useState(null);
     const [summaryLoading, setSummaryLoading] = useState(true);
+    const [summaryError, setSummaryError] = useState(null);
 
-    const [items, setItems] = useState([]);
-    const [total, setTotal] = useState(0);
-    const [page, setPage] = useState(0);
-    const [listError, setListError] = useState(null);
-    const [listLoading, setListLoading] = useState(true);
-
-    // Summary fetch — fires on mount only; refresh after Clear via prefs reset
-    // implicitly re-triggers because the filter row state shifts.
     const fetchSummary = useCallback(() => {
         setSummaryLoading(true);
         setSummaryError(null);
@@ -128,160 +77,363 @@ function UnmanagedApisList() {
             });
     }, []);
 
-    // List fetch — fires on mount, on filter change, on page change, on
-    // pageSize change.
-    const fetchList = useCallback(() => {
-        setListLoading(true);
-        setListError(null);
-        new DiscoveryApi().listDiscoveredApis({
-            classification: prefs.classification || undefined,
-            service: prefs.service || undefined,
-            internal: prefs.internal || undefined,
-            limit: prefs.pageSize,
-            offset: page * prefs.pageSize,
-        })
-            .then((resp) => {
-                const body = resp.body || {};
-                setItems(body.list || []);
-                setTotal((body.pagination && body.pagination.total)
-                    || body.count || 0);
-            })
-            .catch((err) => {
-                setListError(extractErrorMessage(err));
-                setItems([]);
-                setTotal(0);
-            })
-            .finally(() => {
-                setListLoading(false);
-            });
-    }, [prefs.classification, prefs.service, prefs.internal, prefs.pageSize, page]);
+    useEffect(() => {
+        fetchSummary();
+    }, [fetchSummary]);
 
-    useEffect(() => { fetchSummary(); }, [fetchSummary]);
-    useEffect(() => { fetchList(); }, [fetchList]);
+    // ListBase apiCall: returns a flat array. We pull a generous limit
+    // (the BFF caps at the server-defined max) and let mui-datatables
+    // paginate + filter client-side. That matches the RulesetCatalog /
+    // Policies pattern in this same Governance section.
+    const apiCall = () => new DiscoveryApi()
+        .listDiscoveredApis({ limit: 500, offset: 0 })
+        .then((resp) => (resp.body && resp.body.list) || []);
 
-    const handleFilterChange = (next) => {
-        setPrefs({ ...prefs, ...next });
-        setPage(0); // any filter change resets to first page
+    // Column config — visible order matches columProps order.
+    // Hidden 'id' is index 0 so onRowClick can read it from rowData[0].
+    const columProps = [
+        {
+            name: 'id',
+            options: { display: false, filter: false },
+        },
+        {
+            name: 'method',
+            label: intl.formatMessage({
+                id: 'Discovery.column.method',
+                defaultMessage: 'Method',
+            }),
+            options: {
+                filter: false,
+                sort: true,
+                customBodyRender: (value) => (
+                    <Typography variant='body2' sx={{ fontWeight: 'bold' }}>
+                        {value || ''}
+                    </Typography>
+                ),
+                setCellProps: () => ({ style: { width: '8%' } }),
+            },
+        },
+        {
+            name: 'normalizedPath',
+            label: intl.formatMessage({
+                id: 'Discovery.column.path',
+                defaultMessage: 'Path',
+            }),
+            options: {
+                filter: false,
+                sort: true,
+                customBodyRender: (value) => (
+                    <Typography
+                        variant='body2'
+                        sx={{ fontFamily: 'monospace' }}
+                    >
+                        {value || ''}
+                    </Typography>
+                ),
+                setCellProps: () => ({ style: { width: '28%' } }),
+            },
+        },
+        {
+            name: 'serviceIdentity',
+            label: intl.formatMessage({
+                id: 'Discovery.column.service',
+                defaultMessage: 'Service',
+            }),
+            options: {
+                filter: false,
+                sort: true,
+                setCellProps: () => ({ style: { width: '24%' } }),
+            },
+        },
+        {
+            name: 'classification',
+            label: intl.formatMessage({
+                id: 'Discovery.column.classification',
+                defaultMessage: 'Classification',
+            }),
+            options: {
+                filter: true,
+                sort: true,
+                customBodyRender: (value) => {
+                    const c = String(value || '').toLowerCase();
+                    if (c === 'shadow') {
+                        return (
+                            <Chip
+                                label={intl.formatMessage({
+                                    id: 'Discovery.tag.shadow',
+                                    defaultMessage: 'Shadow',
+                                })}
+                                size='small'
+                                color='error'
+                                variant='outlined'
+                            />
+                        );
+                    }
+                    if (c === 'drift') {
+                        return (
+                            <Chip
+                                label={intl.formatMessage({
+                                    id: 'Discovery.tag.drift',
+                                    defaultMessage: 'Drift',
+                                })}
+                                size='small'
+                                color='warning'
+                                variant='outlined'
+                            />
+                        );
+                    }
+                    return null;
+                },
+                customFilterListOptions: {
+                    render: (v) => `Classification: ${String(v).charAt(0)
+                        + String(v).slice(1).toLowerCase()}`,
+                },
+                setCellProps: () => ({ style: { width: '12%' } }),
+            },
+        },
+        {
+            name: 'isInternal',
+            label: intl.formatMessage({
+                id: 'Discovery.column.reachability',
+                defaultMessage: 'Reachability',
+            }),
+            options: {
+                filter: true,
+                sort: true,
+                customBodyRender: (value) => (
+                    <Chip
+                        label={value
+                            ? intl.formatMessage({
+                                id: 'Discovery.tag.internal',
+                                defaultMessage: 'Internal',
+                            })
+                            : intl.formatMessage({
+                                id: 'Discovery.tag.external',
+                                defaultMessage: 'External',
+                            })}
+                        size='small'
+                        color={value ? 'info' : 'default'}
+                        variant='outlined'
+                    />
+                ),
+                customFilterListOptions: {
+                    render: (v) => `Reachability: ${v ? 'Internal' : 'External'}`,
+                },
+                filterOptions: {
+                    renderValue: (v) => (v ? 'Internal' : 'External'),
+                },
+                setCellProps: () => ({ style: { width: '12%' } }),
+            },
+        },
+        {
+            name: 'observationCount',
+            label: intl.formatMessage({
+                id: 'Discovery.column.observations',
+                defaultMessage: 'Obs.',
+            }),
+            options: {
+                filter: false,
+                sort: true,
+                customBodyRender: (value) => (
+                    <Typography variant='body2'>{value || 0}</Typography>
+                ),
+                setCellProps: () => ({ style: { width: '6%', textAlign: 'right' } }),
+                setCellHeaderProps: () => ({ style: { textAlign: 'right' } }),
+            },
+        },
+        {
+            name: 'lastSeenAt',
+            label: intl.formatMessage({
+                id: 'Discovery.column.lastSeen',
+                defaultMessage: 'Last seen',
+            }),
+            options: {
+                filter: false,
+                sort: true,
+                customBodyRender: (value) => {
+                    if (!value) return '—';
+                    try {
+                        return new Date(value).toLocaleString();
+                    } catch (e) {
+                        return value;
+                    }
+                },
+                setCellProps: () => ({ style: { width: '10%' } }),
+            },
+        },
+    ];
+
+    // mui-datatables options: row click navigates to detail, hover hint
+    // via cursor:pointer.
+    const tableOptions = {
+        onRowClick: (rowData) => {
+            const id = rowData[0];
+            if (id) {
+                history.push(`/governance/unmanaged-apis/${id}`);
+            }
+        },
+        setRowProps: () => ({ style: { cursor: 'pointer' } }),
     };
 
-    const handleClear = () => {
-        setPrefs(DEFAULT_PREFS);
-        setPage(0);
+    const emptyBoxProps = {
+        title: (
+            <Typography gutterBottom variant='h5' component='h2'>
+                <FormattedMessage
+                    id='Discovery.findings.empty.title'
+                    defaultMessage='No unmanaged APIs found'
+                />
+            </Typography>
+        ),
+        content: (
+            <Typography variant='body2' color='textSecondary' component='p'>
+                <FormattedMessage
+                    id='Discovery.findings.empty.content'
+                    defaultMessage={
+                        'No discovered traffic has been classified as unmanaged yet. '
+                        + 'The discovery server pulls a new cycle every few minutes; '
+                        + 'come back after some traffic has flowed through your services.'
+                    }
+                />
+            </Typography>
+        ),
     };
-
-    const serviceOptions = (summary && summary.byService)
-        ? summary.byService.map((s) => s.serviceIdentity)
-        : [];
 
     const subtitleId = (summary && summary.skipInternal === false)
         ? 'Discovery.subtitle.includeInternal'
         : 'Discovery.subtitle.default';
     const subtitleDefault = (summary && summary.skipInternal === false)
-        ? 'APIs detected in runtime traffic (including internal calls), classified by their governance status.'
-        : 'APIs detected in external runtime traffic, classified by their governance status.';
+        ? 'APIs detected in runtime traffic (including internal calls), '
+            + 'classified by their governance status.'
+        : 'APIs detected in external runtime traffic, classified by '
+            + 'their governance status.';
 
     return (
-        <Box p={3}>
-            <Typography variant='h4' gutterBottom>
-                <FormattedMessage
-                    id='Discovery.title'
-                    defaultMessage='Unmanaged APIs'
-                />
-            </Typography>
-            <Typography variant='body1' color='text.secondary' gutterBottom>
-                <FormattedMessage
-                    id={subtitleId}
-                    defaultMessage={subtitleDefault}
-                />
-            </Typography>
-
-            {summaryError && (
-                <Alert
-                    severity='error'
-                    sx={{ mb: 2 }}
-                    action={(
-                        <Button
-                            color='inherit'
-                            size='small'
-                            onClick={fetchSummary}
-                        >
-                            <FormattedMessage
-                                id='Discovery.error.retry'
-                                defaultMessage='Retry'
-                            />
-                        </Button>
-                    )}
-                >
-                    {summaryError}
-                </Alert>
+        <ContentBase
+            width='full'
+            pageStyle='paperLess'
+            title={intl.formatMessage({
+                id: 'Discovery.title',
+                defaultMessage: 'Unmanaged APIs',
+            })}
+            pageDescription={intl.formatMessage(
+                {
+                    id: subtitleId,
+                    defaultMessage: subtitleDefault,
+                },
             )}
-
-            <Grid container spacing={2} sx={{ mb: 3 }}>
+            help={(
+                <HelpBase>
+                    <List component='nav'>
+                        <ListItemButton>
+                            <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
+                                <DescriptionIcon />
+                            </ListItemIcon>
+                            <Link
+                                target='_blank'
+                                href={Configurations.app.docUrl
+                                    + 'governance/unmanaged-apis/'}
+                                underline='hover'
+                            >
+                                <ListItemText primary={(
+                                    <FormattedMessage
+                                        id='Discovery.help.link'
+                                        defaultMessage='About Unmanaged API discovery'
+                                    />
+                                )}
+                                />
+                            </Link>
+                        </ListItemButton>
+                    </List>
+                </HelpBase>
+            )}
+        >
+            <Grid container spacing={4} alignItems='left'>
+                {summaryError && (
+                    <Grid item xs={12}>
+                        <Alert
+                            severity='error'
+                            action={(
+                                <Button
+                                    color='inherit'
+                                    size='small'
+                                    onClick={fetchSummary}
+                                >
+                                    <FormattedMessage
+                                        id='Discovery.error.retry'
+                                        defaultMessage='Retry'
+                                    />
+                                </Button>
+                            )}
+                        >
+                            {summaryError}
+                        </Alert>
+                    </Grid>
+                )}
                 <Grid item xs={12} md={6}>
-                    {summaryLoading
-                        ? <LoadingCard />
-                        : <ApiCoverageCard summary={summary} />}
+                    {summaryLoading ? (
+                        <Skeleton
+                            variant='rectangular'
+                            height={280}
+                            sx={{ borderRadius: 1 }}
+                        />
+                    ) : (
+                        <ApiCoverageCard summary={summary} />
+                    )}
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    {summaryLoading
-                        ? <LoadingCard />
-                        : <BreakdownCard summary={summary} />}
+                    {summaryLoading ? (
+                        <Skeleton
+                            variant='rectangular'
+                            height={280}
+                            sx={{ borderRadius: 1 }}
+                        />
+                    ) : (
+                        <BreakdownCard summary={summary} />
+                    )}
+                </Grid>
+                <Grid item xs={12}>
+                    <Card
+                        elevation={3}
+                        sx={{
+                            '& .MuiTableCell-footer': { border: 0 },
+                        }}
+                    >
+                        <CardContent>
+                            <Typography
+                                variant='body1'
+                                sx={{ fontWeight: 'bold', mb: 2 }}
+                            >
+                                <FormattedMessage
+                                    id='Discovery.findings.title'
+                                    defaultMessage='Findings'
+                                />
+                            </Typography>
+                            <ListBase
+                                columProps={columProps}
+                                apiCall={apiCall}
+                                searchProps={{
+                                    active: true,
+                                    searchPlaceholder: intl.formatMessage({
+                                        id: 'Discovery.search.placeholder',
+                                        defaultMessage: 'Search findings by service or path',
+                                    }),
+                                }}
+                                emptyBoxProps={emptyBoxProps}
+                                options={tableOptions}
+                                useContentBase={false}
+                            />
+                        </CardContent>
+                    </Card>
                 </Grid>
             </Grid>
-
-            <Typography variant='h6' gutterBottom>
-                <FormattedMessage
-                    id='Discovery.findings.title'
-                    defaultMessage='Findings'
-                />
-            </Typography>
-
-            <FindingsFilters
-                filters={prefs}
-                serviceOptions={serviceOptions}
-                hideInternalFilter={summary && summary.skipInternal === true}
-                onChange={handleFilterChange}
-                onClear={handleClear}
-            />
-
-            {listError && (
-                <Alert
-                    severity='error'
-                    sx={{ mb: 2 }}
-                    action={(
-                        <Button
-                            color='inherit'
-                            size='small'
-                            onClick={fetchList}
-                        >
-                            <FormattedMessage
-                                id='Discovery.error.retry'
-                                defaultMessage='Retry'
-                            />
-                        </Button>
-                    )}
-                >
-                    {listError}
-                </Alert>
-            )}
-
-            {listLoading ? (
-                <LoadingTable />
-            ) : (
-                <FindingsTable
-                    items={items}
-                    total={total}
-                    page={page}
-                    rowsPerPage={prefs.pageSize}
-                    onPageChange={setPage}
-                    onRowsPerPageChange={(n) => {
-                        setPrefs({ ...prefs, pageSize: n });
-                        setPage(0);
-                    }}
-                />
-            )}
-        </Box>
+        </ContentBase>
     );
 }
 
-export default UnmanagedApisList;
+UnmanagedApisList.propTypes = {
+    history: PropTypes.shape({
+        push: PropTypes.func.isRequired,
+    }).isRequired,
+};
+
+export default withRouter(UnmanagedApisList);

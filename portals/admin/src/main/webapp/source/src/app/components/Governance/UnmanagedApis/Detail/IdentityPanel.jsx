@@ -11,10 +11,13 @@ import {
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
-const envKindChipSx = {
-    k8s: { backgroundColor: '#E6F1FB', color: '#0C447C' },
-    legacy: { backgroundColor: '#F2F2F2', color: '#444' },
-    unknown: { backgroundColor: '#FFF4E5', color: '#7A4A00' },
+// Maps env_kind (case-insensitive) to a MUI Chip color name. The BFF
+// returns these in uppercase (K8S / LEGACY / UNKNOWN); we lowercase
+// the lookup so future server-side casing changes don't break the UI.
+const envKindColor = {
+    k8s: 'info',
+    legacy: 'default',
+    unknown: 'warning',
 };
 
 /**
@@ -68,12 +71,16 @@ const IdentityPanel = ({ detail }) => {
     if (!detail) {
         return null;
     }
-    const envKind = detail.envKind || 'unknown';
+    const envKindRaw = detail.envKind || 'unknown';
+    const envKind = String(envKindRaw).toLowerCase();
 
     return (
-        <Card variant='outlined' sx={{ height: '100%' }}>
+        <Card elevation={3} sx={{ height: '100%' }}>
             <CardContent>
-                <Typography variant='h6' gutterBottom>
+                <Typography
+                    variant='body1'
+                    sx={{ fontWeight: 'bold', mb: 2 }}
+                >
                     <FormattedMessage
                         id='Discovery.detail.identity.title'
                         defaultMessage='Identity'
@@ -83,7 +90,8 @@ const IdentityPanel = ({ detail }) => {
                     <Chip
                         size='small'
                         label={envKind}
-                        sx={envKindChipSx[envKind] || envKindChipSx.unknown}
+                        color={envKindColor[envKind] || 'warning'}
+                        variant='outlined'
                     />
                 </Stack>
                 <Row

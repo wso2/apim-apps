@@ -8,9 +8,14 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     Box, Grid, Typography, Breadcrumbs, Link, Alert, Button, Skeleton,
+    List, ListItemButton, ListItemIcon, ListItemText,
 } from '@mui/material';
+import DescriptionIcon from '@mui/icons-material/Description';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
+import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
+import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
+import Configurations from 'Config';
 import DiscoveryApi from 'AppData/DiscoveryApi';
 import IdentityPanel from './IdentityPanel';
 import EvidencePanel from './EvidencePanel';
@@ -23,7 +28,7 @@ import ReasonPanel from './ReasonPanel';
 function extractErrorMessage(err) {
     if (err && err.response) {
         if (err.response.status === 404) {
-            return null; // sentinel — handler renders the dedicated 404 view
+            return null;
         }
         if (err.response.body) {
             return err.response.body.description
@@ -39,14 +44,15 @@ function extractErrorMessage(err) {
 }
 
 /**
- * Detail page for a single discovered API. Loads /apis/{id} and renders
- * the three panels in a Grid. Top of page has a breadcrumb back to the
- * list.
+ * Detail page for a single discovered API. Wraps the standard admin
+ * portal ContentBase (page toolbar + footer at viewport bottom) and
+ * renders the three Identity / Evidence / Reason panels in a Grid.
  *
  * @param {object} props component props
  * @returns {JSX} detail page
  */
 function UnmanagedApiDetail({ match }) {
+    const intl = useIntl();
     const id = match.params.discoveredApiId;
     const [detail, setDetail] = useState(null);
     const [error, setError] = useState(null);
@@ -86,115 +92,149 @@ function UnmanagedApiDetail({ match }) {
     const handleRetry = () => setReloadToken((n) => n + 1);
 
     return (
-        <Box p={3}>
-            <Breadcrumbs sx={{ mb: 2 }}>
-                <Link component={RouterLink} to='/governance/unmanaged-apis'>
-                    <FormattedMessage
-                        id='Discovery.detail.breadcrumb.list'
-                        defaultMessage='Unmanaged APIs'
-                    />
-                </Link>
-                <Typography color='text.primary'>
-                    <FormattedMessage
-                        id='Discovery.detail.breadcrumb.detail'
-                        defaultMessage='Finding detail'
-                    />
-                </Typography>
-            </Breadcrumbs>
-
-            {loading && (
-                <Box aria-label='Loading finding details'>
-                    <Skeleton variant='text' width='40%' height={48} />
-                    <Skeleton
-                        variant='text'
-                        width='25%'
-                        height={20}
-                        sx={{ mb: 2 }}
-                    />
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} md={4}>
-                            <Skeleton
-                                variant='rectangular'
-                                height={320}
-                                sx={{ borderRadius: 1 }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={4}>
-                            <Skeleton
-                                variant='rectangular'
-                                height={320}
-                                sx={{ borderRadius: 1 }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={4}>
-                            <Skeleton
-                                variant='rectangular'
-                                height={320}
-                                sx={{ borderRadius: 1 }}
-                            />
-                        </Grid>
-                    </Grid>
-                </Box>
+        <ContentBase
+            width='full'
+            pageStyle='paperLess'
+            title={intl.formatMessage({
+                id: 'Discovery.detail.title',
+                defaultMessage: 'Finding detail',
+            })}
+            help={(
+                <HelpBase>
+                    <List component='nav'>
+                        <ListItemButton>
+                            <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
+                                <DescriptionIcon />
+                            </ListItemIcon>
+                            <Link
+                                target='_blank'
+                                href={Configurations.app.docUrl
+                                    + 'governance/unmanaged-apis/'}
+                                underline='hover'
+                            >
+                                <ListItemText primary={(
+                                    <FormattedMessage
+                                        id='Discovery.detail.help.link'
+                                        defaultMessage='About finding details'
+                                    />
+                                )}
+                                />
+                            </Link>
+                        </ListItemButton>
+                    </List>
+                </HelpBase>
             )}
-
-            {!loading && notFound && (
-                <Alert severity='warning'>
-                    <FormattedMessage
-                        id='Discovery.detail.notFound'
-                        defaultMessage={
-                            'This finding no longer exists. It may have been '
-                            + 'resolved or its source service was removed.'
-                        }
-                    />
-                </Alert>
-            )}
-
-            {!loading && !notFound && error && (
-                <Alert
-                    severity='error'
-                    action={(
-                        <Button
-                            color='inherit'
-                            size='small'
-                            onClick={handleRetry}
-                        >
-                            <FormattedMessage
-                                id='Discovery.error.retry'
-                                defaultMessage='Retry'
-                            />
-                        </Button>
-                    )}
-                >
-                    {error}
-                </Alert>
-            )}
-
-            {!loading && !notFound && !error && detail && (
-                <>
-                    <Typography variant='h4' gutterBottom>
-                        {`${detail.method || ''} ${detail.normalizedPath || ''}`.trim()}
+        >
+            <Box>
+                <Breadcrumbs sx={{ mb: 2 }}>
+                    <Link component={RouterLink} to='/governance/unmanaged-apis' underline='hover'>
+                        <FormattedMessage
+                            id='Discovery.detail.breadcrumb.list'
+                            defaultMessage='Unmanaged APIs'
+                        />
+                    </Link>
+                    <Typography color='text.primary'>
+                        <FormattedMessage
+                            id='Discovery.detail.breadcrumb.detail'
+                            defaultMessage='Finding detail'
+                        />
                     </Typography>
-                    <Typography
-                        variant='body2'
-                        color='text.secondary'
-                        gutterBottom
+                </Breadcrumbs>
+
+                {loading && (
+                    <Box aria-label='Loading finding details'>
+                        <Skeleton variant='text' width='40%' height={48} />
+                        <Skeleton
+                            variant='text'
+                            width='25%'
+                            height={20}
+                            sx={{ mb: 2 }}
+                        />
+                        <Grid container spacing={4}>
+                            <Grid item xs={12} md={4}>
+                                <Skeleton
+                                    variant='rectangular'
+                                    height={320}
+                                    sx={{ borderRadius: 1 }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={4}>
+                                <Skeleton
+                                    variant='rectangular'
+                                    height={320}
+                                    sx={{ borderRadius: 1 }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={4}>
+                                <Skeleton
+                                    variant='rectangular'
+                                    height={320}
+                                    sx={{ borderRadius: 1 }}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Box>
+                )}
+
+                {!loading && notFound && (
+                    <Alert severity='warning'>
+                        <FormattedMessage
+                            id='Discovery.detail.notFound'
+                            defaultMessage={
+                                'This finding no longer exists. It may have been '
+                                + 'resolved or its source service was removed.'
+                            }
+                        />
+                    </Alert>
+                )}
+
+                {!loading && !notFound && error && (
+                    <Alert
+                        severity='error'
+                        action={(
+                            <Button
+                                color='inherit'
+                                size='small'
+                                onClick={handleRetry}
+                            >
+                                <FormattedMessage
+                                    id='Discovery.error.retry'
+                                    defaultMessage='Retry'
+                                />
+                            </Button>
+                        )}
                     >
-                        {detail.serviceIdentity}
-                    </Typography>
-                    <Grid container spacing={2} sx={{ mt: 2 }}>
-                        <Grid item xs={12} md={4}>
-                            <IdentityPanel detail={detail} />
+                        {error}
+                    </Alert>
+                )}
+
+                {!loading && !notFound && !error && detail && (
+                    <>
+                        <Typography variant='h5' gutterBottom>
+                            {`${detail.method || ''} ${detail.normalizedPath || ''}`.trim()}
+                        </Typography>
+                        <Typography
+                            variant='body2'
+                            color='text.secondary'
+                            gutterBottom
+                        >
+                            {detail.serviceIdentity}
+                        </Typography>
+                        <Grid container spacing={4} sx={{ mt: 2 }}>
+                            <Grid item xs={12} md={4}>
+                                <IdentityPanel detail={detail} />
+                            </Grid>
+                            <Grid item xs={12} md={4}>
+                                <EvidencePanel detail={detail} />
+                            </Grid>
+                            <Grid item xs={12} md={4}>
+                                <ReasonPanel detail={detail} />
+                            </Grid>
                         </Grid>
-                        <Grid item xs={12} md={4}>
-                            <EvidencePanel detail={detail} />
-                        </Grid>
-                        <Grid item xs={12} md={4}>
-                            <ReasonPanel detail={detail} />
-                        </Grid>
-                    </Grid>
-                </>
-            )}
-        </Box>
+                    </>
+                )}
+            </Box>
+        </ContentBase>
     );
 }
 

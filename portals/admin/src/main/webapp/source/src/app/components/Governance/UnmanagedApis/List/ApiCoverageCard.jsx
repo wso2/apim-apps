@@ -7,74 +7,66 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-    Card, CardContent, Typography, Box,
+    Card, CardContent, Typography, useTheme,
 } from '@mui/material';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
 import DonutChart from 'AppComponents/Shared/DonutChart';
 
 /**
  * Summary card #1: API Coverage. Donut splitting all discovered+managed
- * APIs into "managed" (governed) vs "unmanaged" (shadow + drift). Renders
- * the absolute total under the chart for at-a-glance scanning.
+ * APIs into "managed" (governed) vs "unmanaged" (shadow + drift). Mirrors
+ * the Compliance Summary "Policy Adherence" card pattern: Card elevation 3,
+ * bold subtitle, donut with counts inline in legend labels.
  *
  * @param {object} props component props
  * @param {object} props.summary the /summary response payload
- * @returns {JSX} card with donut + total
+ * @returns {JSX} card with donut
  */
 const ApiCoverageCard = ({ summary }) => {
     const intl = useIntl();
+    const theme = useTheme();
     if (!summary) {
         return null;
     }
-    const data = [
-        {
-            id: 0,
-            value: summary.managed || 0,
-            label: intl.formatMessage({
-                id: 'Discovery.summary.coverage.managed',
-                defaultMessage: 'Managed',
-            }),
-        },
-        {
-            id: 1,
-            value: summary.unmanaged || 0,
-            label: intl.formatMessage({
-                id: 'Discovery.summary.coverage.unmanaged',
-                defaultMessage: 'Unmanaged',
-            }),
-        },
-    ];
+    const managed = summary.managed || 0;
+    const unmanaged = summary.unmanaged || 0;
 
     return (
-        <Card sx={{ height: '100%' }}>
+        <Card elevation={3}>
             <CardContent>
-                <Typography variant='subtitle1' gutterBottom>
+                <Typography
+                    variant='body1'
+                    sx={{ fontWeight: 'bold', mb: 2 }}
+                >
                     <FormattedMessage
                         id='Discovery.summary.coverage.title'
                         defaultMessage='API Coverage'
                     />
                 </Typography>
-                <Typography variant='body2' color='text.secondary' gutterBottom>
-                    <FormattedMessage
-                        id='Discovery.summary.coverage.subtitle'
-                        defaultMessage='All discovered APIs by governance status'
-                    />
-                </Typography>
                 <DonutChart
-                    data={data}
-                    height={200}
-                    width={400}
-                    colors={['#1D9E75', '#D85A30']}
+                    data={[
+                        {
+                            id: 0,
+                            value: managed,
+                            label: intl.formatMessage({
+                                id: 'Discovery.summary.coverage.managed',
+                                defaultMessage: 'Managed ({count})',
+                            }, { count: managed }),
+                        },
+                        {
+                            id: 1,
+                            value: unmanaged,
+                            label: intl.formatMessage({
+                                id: 'Discovery.summary.coverage.unmanaged',
+                                defaultMessage: 'Unmanaged ({count})',
+                            }, { count: unmanaged }),
+                        },
+                    ]}
+                    colors={[
+                        theme.palette.charts.success,
+                        theme.palette.charts.error,
+                    ]}
                 />
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
-                    <Typography variant='body2' color='text.secondary'>
-                        <FormattedMessage
-                            id='Discovery.summary.coverage.total'
-                            defaultMessage='Total: {n}'
-                            values={{ n: summary.total || 0 }}
-                        />
-                    </Typography>
-                </Box>
             </CardContent>
         </Card>
     );
@@ -82,7 +74,6 @@ const ApiCoverageCard = ({ summary }) => {
 
 ApiCoverageCard.propTypes = {
     summary: PropTypes.shape({
-        total: PropTypes.number,
         managed: PropTypes.number,
         unmanaged: PropTypes.number,
     }),

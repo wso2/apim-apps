@@ -68,9 +68,12 @@ const EvidencePanel = ({ detail }) => {
     const statusCodes = detail.statusCodes || [];
 
     return (
-        <Card variant='outlined' sx={{ height: '100%' }}>
+        <Card elevation={3} sx={{ height: '100%' }}>
             <CardContent>
-                <Typography variant='h6' gutterBottom>
+                <Typography
+                    variant='body1'
+                    sx={{ fontWeight: 'bold', mb: 2 }}
+                >
                     <FormattedMessage
                         id='Discovery.detail.evidence.title'
                         defaultMessage='Evidence'
