@@ -41,6 +41,13 @@ const classes = {
     mandatoryStar: `${PREFIX}-mandatoryStar`
 };
 
+const gatewayTypeMap = {
+    'Regular': 'wso2/synapse',
+    'APK': 'wso2/apk',
+    'AWS': 'AWS',
+    'Azure' :'Azure',
+};
+
 const StyledAPICreateBase = styled(APICreateBase)((
     {
         theme
@@ -58,11 +65,34 @@ const APICreateStreamingAPI = (props) => {
     const intl = useIntl();
     const { data: settings, isLoading, error: settingsError } = usePublisherSettings();
     const [pageError, setPageError] = useState(null);
+    const [isAvailableGateway, setIsAvailableGateway] = useState(true);
     useEffect(() => {
         if (settingsError) {
             setPageError(settingsError.message);
         }
     }, [settingsError]);
+    useEffect(() => {
+        if (settings != null) {
+            // If the gateway type is not in the gatewayTypeMap, add it with both key and value equal to the type
+            if (settings.gatewayTypes) {
+                settings.gatewayTypes.forEach((type) => {
+                    if (!(type in gatewayTypeMap)) {
+                        gatewayTypeMap[type] = type;
+                    }
+                });
+            }
+
+            if (settings.gatewayTypes && settings.gatewayTypes.includes('Regular')) {
+                for (const env of settings.environment) {
+                    if (env.gatewayType === 'Regular') {
+                        setIsAvailableGateway(true);
+                        break;
+                    }
+                }
+            }
+        }
+    }, [isLoading]);
+
     const [isCreating, setIsCreating] = useState();
     const [isPublishing, setIsPublishing] = useState(false);
     const [isRevisioning, setIsRevisioning] = useState(false);
@@ -131,6 +161,7 @@ const APICreateStreamingAPI = (props) => {
             case 'context':
             case 'endpoint':
             case 'policies':
+            case 'gatewayType':
             case 'isFormValid':
                 return { ...currentState, [action]: value };
             case 'protocol':
@@ -158,6 +189,19 @@ const APICreateStreamingAPI = (props) => {
     function handleOnChange(event) {
         const { name: action, value } = event.target;
         inputsDispatcher({ action, value });
+        if (action === 'gatewayType') {
+            const settingsEnvList = settings && settings.environment;
+            if (settings && settings.gatewayTypes.length >= 2 && Object.values(gatewayTypeMap).includes(value)) {
+                for (const env of settingsEnvList) {
+                    const tmpEnv = gatewayTypeMap[env.gatewayType];
+                    if (tmpEnv === value) {
+                        setIsAvailableGateway(true);
+                        break;
+                    }
+                    setIsAvailableGateway(false);
+                }
+            }
+        }
     }
 
     /**
@@ -209,6 +253,7 @@ const APICreateStreamingAPI = (props) => {
             endpoint,
             type: apiType || protocol.toUpperCase(),
             policies,
+            gatewayType: apiInputs.gatewayType,
         };
 
         let endpointType = 'http';
@@ -303,7 +348,8 @@ const APICreateStreamingAPI = (props) => {
                         const envList1 = settings.environment;
                         let foundEnv = false;
                         envList1.forEach((env) => {
-                            if (!foundEnv && env.gatewayType === 'Regular' && getFirstVhost(env.name)) {
+                            const tmpEnv = gatewayTypeMap[env.gatewayType];
+                            if (!foundEnv && tmpEnv === apiInputs.gatewayType && getFirstVhost(env.name)) {
                                 body1.push({
                                     name: env.name,
                                     displayOnDevportal: true,
@@ -315,15 +361,26 @@ const APICreateStreamingAPI = (props) => {
                     }
                     setIsDeploying(true);
                     streamingApi.deployRevision(api.id, revisionId, body1)
-                        .then(() => {
+                        .then((res) => {
+                            setIsDeploying(false);
+
+                            // Check deployment status before publishing (same logic as APICreateDefault)
+                            const deploymentStatus = res.body[0].status;
+                            if (deploymentStatus === 'CREATED') {
+                                setIsPublishing(false);
+                                setIsPublishButtonClicked(false);
+                                history.push(`/apis/${api.id}/overview`);
+                                return;
+                            }
+
                             Alert.info(
                                 intl.formatMessage({
                                     id: 'Apis.Create.Default.APICreateDefault.streaming.revision.deployed.',
                                     defaultMessage: 'API Revision Deployed Successfully',
                                 }),
                             );
-                            setIsDeploying(false);
-                            // Publishing API after deploying
+
+                            // Publishing API after successful deployment
                             setIsPublishing(true);
                             api.publish()
                                 .then((response) => {
@@ -656,7 +713,7 @@ const APICreateStreamingAPI = (props) => {
                                     id='itest-id-apicreatedefault-createnpublish'
                                     variant='contained'
                                     color='primary'
-                                    disabled={isDeploying || isRevisioning || !isPublishable
+                                    disabled={!isAvailableGateway || isDeploying || isRevisioning || !isPublishable
                                         || !isAPICreatable || !apiInputs.isFormValid}
                                     onClick={createAndPublish}
                                 >
