@@ -1074,6 +1074,7 @@ class TokenManager extends React.Component {
                                             setValidating={this.setValidating}
                                             defaultTokenEndpoint={defaultTokenEndpoint}
                                             mode={mode}
+                                            formConfig={this.props.formConfig}
                                         />
                                         <div className={classes.generateWrapper}>
                                             <ScopeValidation
@@ -1318,6 +1319,7 @@ class TokenManager extends React.Component {
                                                         callbackError={hasError}
                                                         setValidating={this.setValidating}
                                                         defaultTokenEndpoint={defaultTokenEndpoint}
+                                                        formConfig={this.props.formConfig}
                                                     />
                                                     <div className={classes.generateWrapper}>
                                                         <ScopeValidation
@@ -1483,6 +1485,7 @@ TokenManager.contextType = Settings;
 TokenManager.defaultProps = {
     updateSubscriptionData: () => { },
     summary: false,
+    formConfig: null,
 };
 TokenManager.propTypes = {
     classes: PropTypes.instanceOf(Object).isRequired,
@@ -1497,6 +1500,7 @@ TokenManager.propTypes = {
     updateSubscriptionData: PropTypes.func,
     intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
     summary: PropTypes.bool,
+    formConfig: PropTypes.shape({}),
 };
 
 export default injectIntl((TokenManager));

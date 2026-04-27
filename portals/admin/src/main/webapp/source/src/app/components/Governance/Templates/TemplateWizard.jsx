@@ -27,7 +27,6 @@ import {
     Step,
     StepLabel,
     Stepper,
-    Typography,
 } from '@mui/material';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import Alert from 'AppComponents/Shared/Alert';

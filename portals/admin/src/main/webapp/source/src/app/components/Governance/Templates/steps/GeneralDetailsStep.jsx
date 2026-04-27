@@ -178,7 +178,10 @@ export default function GeneralDetailsStep({ templateState, dispatch }) {
                                 <Typography variant='caption' color='text.secondary'>
                                     <FormattedMessage
                                         id='Governance.Templates.Wizard.GeneralDetails.isDefault.helper'
-                                        defaultMessage='Applied as the fallback when a developer does not explicitly select a template'
+                                        defaultMessage={
+                                            'Applied as the fallback when a developer does not '
+                                            + 'explicitly select a template'
+                                        }
                                     />
                                 </Typography>
                             </Box>
@@ -209,7 +212,10 @@ export default function GeneralDetailsStep({ templateState, dispatch }) {
                                     <Typography variant='caption' color='text.secondary'>
                                         <FormattedMessage
                                             id='Governance.Templates.Wizard.GeneralDetails.isGlobal.helper'
-                                            defaultMessage='Visible to all organizations as a cross-tenant fallback; only manageable by Super Tenant admins'
+                                            defaultMessage={
+                                            'Visible to all organizations as a cross-tenant fallback; '
+                                            + 'only manageable by Super Tenant admins'
+                                        }
                                         />
                                     </Typography>
                                 </Box>

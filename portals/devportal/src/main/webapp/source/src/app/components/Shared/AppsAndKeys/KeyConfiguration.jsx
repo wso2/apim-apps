@@ -179,8 +179,19 @@ const KeyConfiguration = (props) => {
     const intl = useIntl();
     const {
         notFound, isUserOwner, keyManagerConfig, updateKeyRequest, keyRequest, updateHasError, callbackError, mode,
-        selectedApp, keyValue,
+        selectedApp, keyValue, formConfig,
     } = props;
+
+    // When the template hides grant types, lock the keyRequest to the forced defaultValue
+    useEffect(() => {
+        const kgCfg = formConfig?.keyGeneration;
+        if (!kgCfg?.grantTypes?.hidden) return;
+        const locked = Array.isArray(kgCfg.grantTypes.defaultValue) ? kgCfg.grantTypes.defaultValue : [];
+        if (keyRequest.selectedGrantTypes === null
+            || JSON.stringify(keyRequest.selectedGrantTypes) !== JSON.stringify(locked)) {
+            updateKeyRequest({ ...keyRequest, selectedGrantTypes: locked });
+        }
+    }, [formConfig]); // eslint-disable-line react-hooks/exhaustive-deps
     const {
         selectedGrantTypes, callbackUrl,
     } = keyRequest;
@@ -483,48 +494,50 @@ const KeyConfiguration = (props) => {
                         {mode !== 'MAPPED' && (() => {
                             const advancedConfigurations = (
                                 <>
-                                    {/* Grant Types */}
-                                    <TableRow>
-                                        <TableCell component='th' scope='row' className={classes.leftCol}>
-                                            <FormattedMessage
-                                                id='Shared.AppsAndKeys.KeyConfiguration.grant.types'
-                                                defaultMessage='Grant Types'
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className={classes.checkboxWrapperColumn} id='grant-types'>
-                                                {Object.keys(grantTypeDisplayListMap).map((key) => {
-                                                    const value = grantTypeDisplayListMap[key];
-                                                    return (
-                                                        <FormControlLabel
-                                                            control={(
-                                                                <Checkbox
-                                                                    id={key}
-                                                                    checked={!!(selectedGrantTypes &&
-                                                                        selectedGrantTypes.includes(key))}
-                                                                    onChange={(e) => handleChange('grantType', e)}
-                                                                    value={value}
-                                                                    disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
-                                                                    color='grey'
-                                                                    data-testid={key}
-                                                                />
-                                                            )}
-                                                            label={value}
-                                                            key={key}
-                                                        />
-                                                    );
-                                                })}
-                                            </div>
-                                            <FormHelperText>
+                                    {/* Grant Types — hidden when template governs them */}
+                                    {!formConfig?.keyGeneration?.grantTypes?.hidden && (
+                                        <TableRow>
+                                            <TableCell component='th' scope='row' className={classes.leftCol}>
                                                 <FormattedMessage
-                                                    defaultMessage={`The application can use the following grant types to generate 
-                                    Access Tokens. Based on the application requirement, you can enable or disable 
-                                    grant types for this application.`}
-                                                    id='Shared.AppsAndKeys.KeyConfiguration.the.application.can'
+                                                    id='Shared.AppsAndKeys.KeyConfiguration.grant.types'
+                                                    defaultMessage='Grant Types'
                                                 />
-                                            </FormHelperText>
-                                        </TableCell>
-                                    </TableRow>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className={classes.checkboxWrapperColumn} id='grant-types'>
+                                                    {Object.keys(grantTypeDisplayListMap).map((key) => {
+                                                        const value = grantTypeDisplayListMap[key];
+                                                        return (
+                                                            <FormControlLabel
+                                                                control={(
+                                                                    <Checkbox
+                                                                        id={key}
+                                                                        checked={!!(selectedGrantTypes &&
+                                                                            selectedGrantTypes.includes(key))}
+                                                                        onChange={(e) => handleChange('grantType', e)}
+                                                                        value={value}
+                                                                        disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
+                                                                        color='grey'
+                                                                        data-testid={key}
+                                                                    />
+                                                                )}
+                                                                label={value}
+                                                                key={key}
+                                                            />
+                                                        );
+                                                    })}
+                                                </div>
+                                                <FormHelperText>
+                                                    <FormattedMessage
+                                                        defaultMessage={`The application can use the following grant types to generate
+                                    Access Tokens. Based on the application requirement, you can enable or disable
+                                    grant types for this application.`}
+                                                        id='Shared.AppsAndKeys.KeyConfiguration.the.application.can'
+                                                    />
+                                                </FormHelperText>
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
 
                                     {/* Callback URL */}
                                     <TableRow>
@@ -629,6 +642,7 @@ KeyConfiguration.defaultProps = {
     notFound: false,
     validating: false,
     mode: null,
+    formConfig: null,
 };
 KeyConfiguration.propTypes = {
     classes: PropTypes.instanceOf(Object).isRequired,
@@ -651,6 +665,7 @@ KeyConfiguration.propTypes = {
         owner: PropTypes.string,
         hashEnabled: PropTypes.bool,
     }),
+    formConfig: PropTypes.shape({}),
 };
 
 

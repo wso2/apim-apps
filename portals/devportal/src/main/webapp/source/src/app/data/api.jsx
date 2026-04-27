@@ -1337,4 +1337,40 @@ export default class API extends Resource {
                 },
             }));
     }
+
+    /**
+     * Fetch a single Devportal Governance Template by ID.
+     * Used by the DevPortal to load the formConfig for an existing application's template.
+     *
+     * @param {string} templateId - The template UUID
+     * @returns {Promise<{body: Object}>} Resolves to swagger-client-shaped response with the template DTO
+     */
+    getDevportalGovernanceTemplateById(templateId) {
+        const user = AuthManager.getUser(Utils.getEnvironment().label);
+        const token = user ? user.getPartialToken() : '';
+
+        const headers = {
+            Accept: 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        };
+        if (window.location) {
+            const search = new URLSearchParams(window.location.search);
+            const tenant = search.get('tenant');
+            if (tenant) headers['X-WSO2-Tenant'] = tenant;
+        }
+
+        return fetch(`/api/am/governance/v1/templates/${encodeURIComponent(templateId)}`, {
+            credentials: 'include',
+            headers,
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    const err = new Error(res.statusText);
+                    err.status = res.status;
+                    throw err;
+                }
+                return res.json();
+            })
+            .then((json) => ({ body: json }));
+    }
 }

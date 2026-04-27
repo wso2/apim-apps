@@ -88,7 +88,12 @@ function AvailableRulesetRow({ ruleset, isBound, onAdd }) {
                 >
                     {ruleset.name}
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 0.5, mt: 0.5, flexWrap: 'wrap' }}>
+                <Box sx={{
+                    display: 'flex',
+                    gap: 0.5,
+                    mt: 0.5,
+                    flexWrap: 'wrap',
+                }}>
                     <Chip
                         label={Utils.mapRuleTypeToLabel(ruleset.ruleType)}
                         size='small'
@@ -708,8 +713,12 @@ export default function RulesetBindingsStep({ templateState, dispatch }) {
                                         binding={binding}
                                         ruleset={rulesetMap[binding.rulesetId]}
                                         keyManagers={keyManagers}
-                                        onOrderChange={(order) => updateBinding(binding.rulesetId, { bindingOrder: order })}
-                                        onScopeChange={(scopes) => updateBinding(binding.rulesetId, { keyManagerScopes: scopes })}
+                                        onOrderChange={(order) => updateBinding(
+                                            binding.rulesetId, { bindingOrder: order },
+                                        )}
+                                        onScopeChange={(scopes) => updateBinding(
+                                            binding.rulesetId, { keyManagerScopes: scopes },
+                                        )}
                                         onRemove={() => removeBinding(binding.rulesetId)}
                                     />
                                 ))

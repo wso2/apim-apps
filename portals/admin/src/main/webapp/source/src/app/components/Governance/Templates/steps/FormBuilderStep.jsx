@@ -76,8 +76,8 @@ function FieldRow({
     description,
     hidden,
     onToggleHidden,
-    defaultInput,    // JSX for the default-value control
-    noDefault,       // true = no default editor exists (e.g. additionalProperties)
+    defaultInput, // JSX for the default-value control
+    noDefault, // true = no default editor exists (e.g. additionalProperties)
 }) {
     const intl = useIntl();
     return (
@@ -136,7 +136,12 @@ function FieldRow({
                             defaultMessage: 'Default value is managed by the Key Manager configuration',
                         })}
                     >
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 0.5,
+                            mt: 0.5,
+                        }}>
                             <InfoOutlinedIcon fontSize='small' color='disabled' />
                             <Typography variant='caption' color='text.disabled'>
                                 <FormattedMessage
@@ -372,7 +377,9 @@ export default function FormBuilderStep({ templateState, dispatch }) {
                                 size='small'
                                 displayEmpty
                                 value={appThrottling.defaultValue}
-                                onChange={(e) => updateField('application', 'throttlingPolicy', 'defaultValue', e.target.value)}
+                                onChange={(e) => updateField(
+                                    'application', 'throttlingPolicy', 'defaultValue', e.target.value,
+                                )}
                             >
                                 <MenuItem value=''>
                                     <em>
@@ -410,7 +417,9 @@ export default function FormBuilderStep({ templateState, dispatch }) {
                                 fullWidth
                                 size='small'
                                 value={appTokenType.defaultValue}
-                                onChange={(e) => updateField('application', 'tokenType', 'defaultValue', e.target.value)}
+                                onChange={(e) => updateField(
+                                    'application', 'tokenType', 'defaultValue', e.target.value,
+                                )}
                             >
                                 {TOKEN_TYPES.map((t) => (
                                     <MenuItem key={t.value} value={t.value}>{t.label}</MenuItem>
@@ -441,7 +450,9 @@ export default function FormBuilderStep({ templateState, dispatch }) {
                                 size='small'
                                 placeholder='https://example.com/callback'
                                 value={appCallbackUrl.defaultValue}
-                                onChange={(e) => updateField('application', 'callbackUrl', 'defaultValue', e.target.value)}
+                                onChange={(e) => updateField(
+                                    'application', 'callbackUrl', 'defaultValue', e.target.value,
+                                )}
                             />
                         )}
                     />
@@ -491,7 +502,9 @@ export default function FormBuilderStep({ templateState, dispatch }) {
                                 size='small'
                                 displayEmpty
                                 value={subThrottling.defaultValue}
-                                onChange={(e) => updateField('subscription', 'throttlingPolicy', 'defaultValue', e.target.value)}
+                                onChange={(e) => updateField(
+                                    'subscription', 'throttlingPolicy', 'defaultValue', e.target.value,
+                                )}
                             >
                                 <MenuItem value=''>
                                     <em>
@@ -552,7 +565,9 @@ export default function FormBuilderStep({ templateState, dispatch }) {
                                 fullWidth
                                 size='small'
                                 value={keyGenKeyType.defaultValue}
-                                onChange={(e) => updateField('keyGeneration', 'keyType', 'defaultValue', e.target.value)}
+                                onChange={(e) => updateField(
+                                    'keyGeneration', 'keyType', 'defaultValue', e.target.value,
+                                )}
                             >
                                 {KEY_TYPES.map((k) => (
                                     <MenuItem key={k.value} value={k.value}>{k.label}</MenuItem>
@@ -584,7 +599,9 @@ export default function FormBuilderStep({ templateState, dispatch }) {
                                 size='small'
                                 displayEmpty
                                 value={grantTypesValue}
-                                onChange={(e) => updateField('keyGeneration', 'grantTypes', 'defaultValue', e.target.value)}
+                                onChange={(e) => updateField(
+                                    'keyGeneration', 'grantTypes', 'defaultValue', e.target.value,
+                                )}
                                 input={<OutlinedInput size='small' />}
                                 renderValue={(selected) => {
                                     if (selected.length === 0) {
@@ -598,7 +615,12 @@ export default function FormBuilderStep({ templateState, dispatch }) {
                                         );
                                     }
                                     return (
-                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                        <Box sx={{
+                                            display: 'flex',
+                                            flexWrap: 'wrap',
+                                            gap: 0.5,
+                                        }}
+                                        >
                                             {selected.map((val) => {
                                                 const gt = GRANT_TYPES.find((g) => g.value === val);
                                                 return (
@@ -623,7 +645,7 @@ export default function FormBuilderStep({ templateState, dispatch }) {
                                             color='text.secondary'
                                             sx={{ ml: 1 }}
                                         >
-                                            ({gt.value})
+                                            {`(${gt.value})`}
                                         </Typography>
                                     </MenuItem>
                                 ))}
@@ -696,7 +718,7 @@ export default function FormBuilderStep({ templateState, dispatch }) {
 
 FormBuilderStep.propTypes = {
     templateState: PropTypes.shape({
-        formConfig: PropTypes.object.isRequired,
+        formConfig: PropTypes.shape({}).isRequired,
     }).isRequired,
     dispatch: PropTypes.func.isRequired,
 };

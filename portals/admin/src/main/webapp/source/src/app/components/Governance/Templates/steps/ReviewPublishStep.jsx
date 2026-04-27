@@ -302,7 +302,11 @@ export default function ReviewPublishStep({ templateState }) {
                         defaultMessage: 'Description',
                     })}
                 >
-                    <Typography variant='body2' color={description ? 'text.primary' : 'text.secondary'} fontStyle={description ? 'normal' : 'italic'}>
+                    <Typography
+                        variant='body2'
+                        color={description ? 'text.primary' : 'text.secondary'}
+                        fontStyle={description ? 'normal' : 'italic'}
+                    >
                         {description || intl.formatMessage({
                             id: 'Governance.Templates.ReviewPublish.label.noDescription',
                             defaultMessage: 'No description provided',
@@ -567,7 +571,7 @@ ReviewPublishStep.propTypes = {
         status: PropTypes.string.isRequired,
         isDefault: PropTypes.bool.isRequired,
         isGlobal: PropTypes.bool.isRequired,
-        formConfig: PropTypes.object.isRequired,
-        rulesetBindings: PropTypes.array.isRequired,
+        formConfig: PropTypes.shape({}).isRequired,
+        rulesetBindings: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
     }).isRequired,
 };

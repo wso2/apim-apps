@@ -170,6 +170,7 @@ const SubscriptionSection = ({
     noSubscriptionsMessage,
     noSubscriptionsContent,
     entityNameColumn,
+    formConfig,
     ...otherProps
 }) => {
     return (
@@ -261,6 +262,7 @@ const SubscriptionSection = ({
                                                                 subscription={subscription}
                                                                 handleSubscriptionDelete={handleSubscriptionDelete}
                                                                 handleSubscriptionUpdate={handleSubscriptionUpdate}
+                                                                formConfig={formConfig}
                                                             />
                                                         );
                                                     })}
@@ -288,12 +290,14 @@ SubscriptionSection.propTypes = {
     noSubscriptionsMessage: PropTypes.node.isRequired,
     noSubscriptionsContent: PropTypes.node.isRequired,
     entityNameColumn: PropTypes.node.isRequired,
+    formConfig: PropTypes.shape({}),
 };
 
 SubscriptionSection.defaultProps = {
     subscriptions: [],
     subscriptionsNotFound: false,
     pseudoSubscriptions: false,
+    formConfig: null,
 };
 
 export default SubscriptionSection;
