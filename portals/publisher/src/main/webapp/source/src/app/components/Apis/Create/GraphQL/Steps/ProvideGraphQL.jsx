@@ -194,13 +194,24 @@ export default function ProvideGraphQL(props) {
     );
 
     function validateURL(value) {
-        const state = APIValidation.url.required().validate(value).error;
-        if (state === null) {
-            setIsValidating(true);
-            debouncedValidateURLOrEndpoint(apiInputs.inputValue);
+        // For GraphQL Endpoint, skip strict URL validation and allow domain names without protocol
+        if (inputType === ProvideGraphQL.INPUT_TYPES.ENDPOINT) {
+            if (value && value.trim() !== '') {
+                setIsValidating(true);
+                debouncedValidateURLOrEndpoint(apiInputs.inputValue);
+            } else {
+                setValidity({ ...isValid, url: { message: 'GraphQL Endpoint should not be empty' } });
+                onValidate(false);
+            }
         } else {
-            setValidity({ ...isValid, url: state });
-            onValidate(false);
+            const state = APIValidation.url.required().validate(value).error;
+            if (state === null) {
+                setIsValidating(true);
+                debouncedValidateURLOrEndpoint(apiInputs.inputValue);
+            } else {
+                setValidity({ ...isValid, url: state });
+                onValidate(false);
+            }
         }
     }
 
