@@ -227,23 +227,27 @@ export default function ApiProductCreateWrapper(props) {
                 return apiProduct;
             })
             .catch((error) => {
-                if (error.response) {
-                    Alert.error(error.response.body.description);
-                } else {
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.APIProductCreateWrapper.error.errorMessage.create.api.product',
-                        defaultMessage: 'Something went wrong while adding the API Product',
-                    }));
-                }
+                throw error;
             })
             .finally(() => setCreating(false));
         return promisedCreatedAPIProduct.finally(() => setCreating(false));
     };
 
     const createAPIProductOnly = () => {
-        createAPIProduct().then((apiProduct) => {
-            history.push(`/api-products/${apiProduct.id}/overview`);
-        });
+        createAPIProduct()
+            .then((apiProduct) => {
+                history.push(`/api-products/${apiProduct.id}/overview`);
+            })
+            .catch((error) => {
+                if (error.response) {
+                    Alert.error(error.response.body.description);
+                } else {
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.APIProductCreateWrapper.error.errorMessage.create.api.product',
+                        defaultMessage: 'Something went wrong while adding the API Product',
+                    }))
+                }
+            })
     };
 
     const createAndPublishAPIProduct = () => {
@@ -251,10 +255,6 @@ export default function ApiProductCreateWrapper(props) {
         createAPIProduct()
             .then((apiProduct) => {
                 setIsRevisioning(true);
-                Alert.info(intl.formatMessage({
-                    id: 'Apis.Create.APIProduct.APIProductCreateWrapper.created.success',
-                    defaultMessage: 'API Product created successfully',
-                }));
                 const body = {
                     description: 'Initial Revision',
                 };
@@ -328,7 +328,6 @@ export default function ApiProductCreateWrapper(props) {
                             })
                             .finally(() => {
                                 setIsPublishing(false);
-                                setIsPublishButtonClicked(false);
                             });
                     })
                     .catch((error) => {
@@ -353,7 +352,10 @@ export default function ApiProductCreateWrapper(props) {
                     }))
                 }
             })
-            .finally(() => setCreating(false));
+            .finally(() => {
+                setCreating(false);
+                setIsPublishButtonClicked(false);
+            });
     };
 
     if (isLoading) {
