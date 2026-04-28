@@ -1,11 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import FormLabel from '@mui/material/FormLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Tooltip from '@mui/material/Tooltip';
 import HelpOutline from '@mui/icons-material/HelpOutline';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 
 const PLAN_MAPPING_PROPERTY_PREFIX = 'plan_mapping.';
@@ -36,6 +44,10 @@ export default function GatewayPlanMapping(props) {
             [apiType]: [...(groups[apiType] || []), mappingValue],
         };
     }, {});
+    const groupedValuesForDisplay = {
+        ...groupedValues,
+        ...(!groupedValues.async && groupedValues.rest ? { async: groupedValues.rest } : {}),
+    };
     const apiTypeOrder = ['rest', 'async', 'ai-api', 'other'];
     const apiTypeLabels = {
         rest: (
@@ -64,26 +76,53 @@ export default function GatewayPlanMapping(props) {
         ),
     };
     const orderedApiTypes = [
-        ...apiTypeOrder.filter((apiType) => groupedValues[apiType]?.length > 0),
-        ...Object.keys(groupedValues).filter((apiType) => !apiTypeOrder.includes(apiType)),
+        ...apiTypeOrder.filter((apiType) => groupedValuesForDisplay[apiType]?.length > 0),
+        ...Object.keys(groupedValuesForDisplay).filter((apiType) => !apiTypeOrder.includes(apiType)),
     ];
 
     const getPlanMappingValue = (localPolicyId) => {
         return additionalProperties[`${PLAN_MAPPING_PROPERTY_PREFIX}${localPolicyId}`] || '';
     };
+    const tableStyles = {
+        '& .MuiTableCell-head': {
+            fontWeight: 500,
+            color: '#8A94A6',
+            fontSize: '0.8rem',
+            borderBottom: '1px solid #EEF1F6',
+            px: 2,
+            py: 1,
+        },
+        '& .MuiTableCell-body': {
+            fontSize: '0.75rem',
+            borderBottom: '1px solid #EEF1F6',
+            color: '#2F3441',
+            px: 2,
+            py: 1.5,
+            verticalAlign: 'middle',
+        },
+        '& .MuiTableRow-root:last-of-type .MuiTableCell-body': {
+            borderBottom: 'none',
+        },
+    };
 
     return (
         <Box mt={1}>
-            <Box display='flex' alignItems='center' mb={1}>
+            <Stack direction='row' spacing={1} alignItems='center' mb={0.75}>
                 {gatewayConfiguration.label && (
                     <FormLabel component='legend'>{gatewayConfiguration.label}</FormLabel>
                 )}
                 {gatewayConfiguration.tooltip && (
                     <Tooltip title={gatewayConfiguration.tooltip} placement='right-end' interactive>
-                        <HelpOutline fontSize='small' sx={{ ml: 0.5 }} />
+                        <HelpOutline fontSize='small' color='action' />
                     </Tooltip>
                 )}
-            </Box>
+            </Stack>
+            <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
+                <FormattedMessage
+                    id='GatewayEnvironments.PlanMapping.helper'
+                    defaultMessage='Map each local subscription plan to the corresponding gateway plan identifier.'
+                />
+            </Typography>
             {orderedApiTypes.length === 0 ? (
                 <FormHelperText>
                     <FormattedMessage
@@ -92,39 +131,64 @@ export default function GatewayPlanMapping(props) {
                     />
                 </FormHelperText>
             ) : orderedApiTypes.map((apiType) => (
-                <Box key={apiType} mb={2}>
-                    <Box fontWeight={500} mb={1}>
-                        {apiTypeLabels[apiType] || apiType}
-                    </Box>
+                <Box
+                    key={apiType}
+                    mb={2}
+                    sx={{
+                        border: (theme) => `1px solid ${theme.palette.divider}`,
+                        borderRadius: 1,
+                        overflow: 'hidden',
+                        backgroundColor: 'background.paper',
+                    }}
+                >
                     <Box
-                        display='grid'
-                        gridTemplateColumns='minmax(0, 1fr) minmax(0, 1fr)'
-                        columnGap={2}
-                        rowGap={1.5}
+                        display='flex'
+                        alignItems='center'
+                        px={2}
+                        py={1.25}
+                        sx={{ backgroundColor: 'action.hover' }}
                     >
-                        <Box fontWeight={500}>{leftLabel}</Box>
-                        <Box fontWeight={500}>{rightLabel}</Box>
-                        {groupedValues[apiType].map((mappingValue) => (
-                            <React.Fragment key={mappingValue.id}>
-                                <Box display='flex' alignItems='center' minHeight={56}>
-                                    {mappingValue.label || mappingValue.id}
-                                </Box>
-                                <TextField
-                                    id={`${gatewayConfiguration.name}.${mappingValue.id}`}
-                                    margin='dense'
-                                    name={mappingValue.id}
-                                    fullWidth
-                                    variant='outlined'
-                                    value={getPlanMappingValue(mappingValue.id)}
-                                    onChange={(event) => setAdditionalProperties(
-                                        `${PLAN_MAPPING_PROPERTY_PREFIX}${mappingValue.id}`,
-                                        event.target.value || undefined,
-                                    )}
-                                    disabled={isReadOnly}
-                                />
-                            </React.Fragment>
-                        ))}
+                        <Typography variant='subtitle2'>
+                            {apiTypeLabels[apiType] || apiType}
+                        </Typography>
                     </Box>
+                    <TableContainer>
+                        <Table size='small' sx={tableStyles}>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>{leftLabel}</TableCell>
+                                    <TableCell>{rightLabel}</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {groupedValuesForDisplay[apiType].map((mappingValue) => (
+                                    <TableRow key={`${apiType}.${mappingValue.id}`}>
+                                        <TableCell component='th' scope='row'>
+                                            <Typography variant='body2' fontWeight={500}>
+                                                {mappingValue.label || mappingValue.id}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <TextField
+                                                id={`${gatewayConfiguration.name}.${mappingValue.id}`}
+                                                margin='dense'
+                                                name={mappingValue.id}
+                                                fullWidth
+                                                variant='outlined'
+                                                value={getPlanMappingValue(mappingValue.id)}
+                                                onChange={(event) => setAdditionalProperties(
+                                                    `${PLAN_MAPPING_PROPERTY_PREFIX}${mappingValue.id}`,
+                                                    event.target.value || undefined,
+                                                )}
+                                                disabled={isReadOnly}
+                                                placeholder={mappingValue.label || mappingValue.id}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </Box>
             ))}
         </Box>
