@@ -596,6 +596,7 @@
   "GatewayEnvironments.PlanMapping.apiType.async": "Async APIs",
   "GatewayEnvironments.PlanMapping.apiType.other": "Other APIs",
   "GatewayEnvironments.PlanMapping.apiType.rest": "REST APIs",
+  "GatewayEnvironments.PlanMapping.helper": "Map each local subscription plan to the corresponding gateway plan identifier.",
   "GatewayEnvironments.PlanMapping.noCompatibleLocalPlans": "No local subscription plans match the supported API types of this gateway.",
   "Gateways.AddEditGateway.back.to.gateways": "Back to Gateways",
   "Gateways.AddEditGateway.loading.gateway.details": "Loading gateway details...",
