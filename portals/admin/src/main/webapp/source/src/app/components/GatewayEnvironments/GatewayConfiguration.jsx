@@ -58,6 +58,7 @@ export default function GatewayConfiguration(props) {
         connectorConfigurations.forEach((connectorConfig) => {
             const connectorConfigKey = parentKey ? `${parentKey}.${connectorConfig.name}` : connectorConfig.name;
             gatewayConfigPropertyNames.push(connectorConfig.name);
+
             if (connectorConfig.values && connectorConfig.values.length > 0) {
                 connectorConfig.values.forEach((value) => {
                     if (typeof value === 'object' && value.values) {

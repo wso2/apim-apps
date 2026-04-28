@@ -1287,7 +1287,7 @@ class Details extends Component {
                                     />
                                     {settings && settings.gatewayFeatureCatalog
                                         .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
-                                        .subscriptions.includes('subscriptions') &&
+                                        .subscriptions.includes("subscriptions") &&
                                         <Route
                                             path={Details.subPaths.SUBSCRIPTIONS}
                                             render={(props) => <Subscriptions {...props} api={api}
