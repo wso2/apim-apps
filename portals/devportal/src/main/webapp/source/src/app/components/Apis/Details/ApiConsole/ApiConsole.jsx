@@ -455,7 +455,10 @@ class ApiConsole extends React.Component {
             securitySchemeType, username, password, productionAccessToken, sandboxAccessToken, selectedKeyType,
             productionApiKey, sandboxApiKey, api, advAuthHeaderValue,
         } = this.state;
-        if ((api.advertiseInfo && api.advertiseInfo.advertised) || (api.gatewayVendor && api.gatewayVendor !== 'wso2')) {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            return advAuthHeaderValue;
+        }
+        if (api.gatewayVendor && api.gatewayVendor !== 'wso2' && securitySchemeType !== 'API-KEY') {
             return advAuthHeaderValue;
         }
         if (securitySchemeType === 'BASIC') {
