@@ -29,6 +29,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import CONSTANTS from 'AppData/Constants';
 import Alert from 'AppComponents/Shared/Alert';
+import { pickFirstEnabledUrl, pickFirstEnabledWSUrl, hasURLs } from 'AppComponents/Shared/EndpointUtils';
 import { useIntl } from 'react-intl';
 
 const PREFIX = 'AsyncApiUI';
@@ -75,33 +76,20 @@ export default function AsyncApiUI(props) {
     const { api } = useContext(ApiContext);
     const isAdvertised = api.advertiseInfo && api.advertiseInfo.advertised;
 
-    const getPreferredEndpoint = (URLsObj, apiType) => {
-      if (!URLsObj) return '';
-      if (apiType === CONSTANTS.API_TYPES.WS) {
-        // prefer ws, but if ws does not exist fall back to wss
-        if (URLsObj.ws) return URLsObj.ws;
-        if (URLsObj.wss) return URLsObj.wss;
-        return '';
-      }
-      // for non-WS APIs prefer http, but if http does not exist fall back to https
-      if (URLsObj.http) return URLsObj.http;
-      if (URLsObj.https) return URLsObj.https;
-      return '';
-    };
-    let initialEndpoint;
-    initialEndpoint = getPreferredEndpoint(URLs, api.type);
+    const getPreferredEndpoint = (URLsObj, apiType) => (
+        apiType === CONSTANTS.API_TYPES.WS
+            ? pickFirstEnabledWSUrl(URLsObj)
+            : pickFirstEnabledUrl(URLsObj)
+    );
 
-    let expandable = true;
-    if (!URLs || (!URLs.http && !URLs.https)) {
-        expandable = false;
-    }
+    const initialEndpoint = getPreferredEndpoint(URLs, api.type);
+    const expandable = hasURLs(URLs);
 
     const [allTopics, setAllTopics] = useState('');
     const [endPoint, setEndpoint] = useState(initialEndpoint);
 
     useEffect(() => {
-      const newInitialEndpoint = getPreferredEndpoint(URLs, api.type);
-      setEndpoint(newInitialEndpoint || '');
+        setEndpoint(getPreferredEndpoint(URLs, api.type));
     }, [URLs, api.type]);
 
     useEffect(() => {
@@ -242,10 +230,10 @@ export default function AsyncApiUI(props) {
                         id="api-endpoint-select"
                         value={endPoint}
                         displayEmpty
-                        disabled={!URLs || Object.keys(URLs).length === 0 || !Object.values(URLs).some(Boolean)}
+                        disabled={!expandable}
                         onChange={handleServerChange}
                     >
-                      {!URLs || Object.keys(URLs).length === 0 || !Object.values(URLs).some(Boolean) ? (
+                      {!expandable ? (
                         <MenuItem value='' disabled>
                           <em>No servers available</em>
                         </MenuItem>

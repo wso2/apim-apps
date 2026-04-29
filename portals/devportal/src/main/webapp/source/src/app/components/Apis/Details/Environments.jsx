@@ -32,6 +32,7 @@ import Box from '@mui/material/Box';
 import Icon from '@mui/material/Icon';
 import Divider from '@mui/material/Divider';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { pickFirstEnabledUrl, pickFirstEnabledWSUrl } from 'AppComponents/Shared/EndpointUtils';
 import { ApiContext } from './ApiContext';
 import GoToTryOut from './GoToTryOut';
 
@@ -117,38 +118,6 @@ function Environments(props) {
     const [urlCopied, setUrlCopied] = useState(false);
 
     const intl = useIntl();
-
-    const pickFirstEnabledUrl = (urls) => {
-        if (!urls || typeof urls !== 'object') {
-            return '';
-        }
-        // Check known protocol keys in explicit priority order.
-        const priorityKeys = ['https', 'wss', 'http', 'ws'];
-        for (const key of priorityKeys) {
-            const val = urls[key];
-            if (typeof val === 'string' && val.trim() !== '') {
-                return val;
-            }
-        }
-        // Fallback: return the first non-empty value for any other keys.
-        const firstUrl = Object.values(urls).find(
-            (val) => typeof val === 'string' && val.trim() !== '',
-        );
-        return firstUrl || '';
-    };
-    const pickFirstEnabledWSUrl = (urls) => {
-        if (!urls || typeof urls !== 'object') {
-            return '';
-        }
-        const keys = ['ws', 'wss'];
-        for (const key of keys) {
-            const val = urls[key];
-            if (typeof val === 'string' && val.trim() !== '') {
-                return val;
-            }
-        }
-        return '';
-    };
 
     const onCopy = () => {
         setUrlCopied(true);
