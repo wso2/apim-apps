@@ -3123,7 +3123,10 @@ export default function Environments() {
                                                                         helperText={getVhostHelperText(row.name,
                                                                             selectedVhostDeploy, true)}
                                                                     >
-                                                                        {row.vhosts?.map(
+                                                                        {row.vhosts?.filter(
+                                                                            (v) => !api.isWebSocket()
+                                                                                || hasValidWebSocketPorts(v),
+                                                                        ).map(
                                                                             (vhost) => (
                                                                                 <MenuItem
                                                                                     key={getHostValue(vhost,
@@ -3557,7 +3560,10 @@ export default function Environments() {
                                                             helperText={getVhostHelperText(row.name, selectedVhosts,
                                                                 true, 100)}
                                                         >
-                                                            {row.vhosts.map(
+                                                            {row.vhosts.filter(
+                                                                (v) => !api.isWebSocket()
+                                                                    || hasValidWebSocketPorts(v),
+                                                            ).map(
                                                                 (vhost) => (
                                                                     <MenuItem 
                                                                         key={getHostValue(vhost, api.isWebSocket())}
@@ -3781,7 +3787,10 @@ export default function Environments() {
                                                             helperText={getVhostHelperText(row.name, selectedVhosts,
                                                                 true, 100)}
                                                         >
-                                                            {row.vhosts.map(
+                                                            {row.vhosts.filter(
+                                                                (v) => !api.isWebSocket()
+                                                                    || hasValidWebSocketPorts(v),
+                                                            ).map(
                                                                 (vhost) => (
                                                                     <MenuItem
                                                                         key={getHostValue(vhost, api.isWebSocket())}

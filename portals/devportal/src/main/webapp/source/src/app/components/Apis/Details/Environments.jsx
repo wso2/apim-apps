@@ -122,7 +122,15 @@ function Environments(props) {
         if (!urls || typeof urls !== 'object') {
             return '';
         }
-        // Get all truthy values and return the first one, or '' if none are found.
+        // Check known protocol keys in explicit priority order.
+        const priorityKeys = ['https', 'wss', 'http', 'ws'];
+        for (const key of priorityKeys) {
+            const val = urls[key];
+            if (typeof val === 'string' && val.trim() !== '') {
+                return val;
+            }
+        }
+        // Fallback: return the first non-empty value for any other keys.
         const firstUrl = Object.values(urls).find(
             (val) => typeof val === 'string' && val.trim() !== '',
         );
@@ -338,7 +346,7 @@ function Environments(props) {
                                                         aria-label='Copy the API URL to clipboard'
                                                         size='large'
                                                         onClick={() => {
-                                                            navigator.clipboard.writeText(pickFirstEnabledUrl(
+                                                            navigator.clipboard.writeText(pickFirstEnabledWSUrl(
                                                                 selectedEndpoint.URLs,
                                                             )).then(onCopy);
                                                         }}
