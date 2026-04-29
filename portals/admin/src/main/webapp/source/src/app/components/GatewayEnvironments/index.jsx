@@ -21,7 +21,7 @@ import { Route, Switch } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import ListGWEnvironments from './ListGWEnviornments';
 import AddEditGWEnvironment from './AddEditGWEnvironment';
-import UniversalGatewayManagement from './UniversalGatewayManagement';
+import PlatformGatewayManagement from './PlatformGatewayManagement';
 
 /**
  * Renders the gateway environment routes.
@@ -34,8 +34,8 @@ const GatewayEnvironments = () => {
             <Route exact path='/settings/environments/create' component={AddEditGWEnvironment} />
             <Route
                 exact
-                path='/settings/environments/universal-gateways/:gatewayId'
-                component={UniversalGatewayManagement}
+                path='/settings/environments/platform-gateways/:gatewayId'
+                component={PlatformGatewayManagement}
             />
             <Route exact path='/settings/environments/:id' component={AddEditGWEnvironment} />
             <Route component={ResourceNotFound} />

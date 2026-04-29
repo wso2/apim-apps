@@ -75,6 +75,7 @@ function ViewCurl(props) {
         jwtToken,
         defaultTokenEndpoint,
         consumerSecretMasked,
+        consumerSecretRequired,
     } = props;
     const bas64Encoded = window.btoa(consumerKey + ':' + consumerSecret);
     const [showReal, setShowReal] = useState(false);
@@ -94,7 +95,8 @@ function ViewCurl(props) {
     let { tokenEndpoint } = keyManagerConfig;
     const isAzureAD = keyManagerConfig.type === 'AzureAD';
     const azureScope = isAzureAD ? ` -d "scope=api://${consumerKey}/.default"` : '';
-    const isConsumerSecretRequired = isMultipleClientSecretsEnabled(keyManagerConfig.additionalProperties) || consumerSecretMasked;
+    const isConsumerSecretRequired = isMultipleClientSecretsEnabled(keyManagerConfig.additionalProperties)
+        || consumerSecretMasked || consumerSecretRequired;
     const consumerSecretRequiredSnippet =
         <div>
             <span className={classes.command}> -u </span>
@@ -324,6 +326,8 @@ ViewCurl.propTypes = {
     apis: PropTypes.shape({}).isRequired,
     jwtToken: PropTypes.string,
     defaultTokenEndpoint: PropTypes.string,
+    consumerSecretMasked: PropTypes.bool,
+    consumerSecretRequired: PropTypes.bool,
 };
 
 export default injectIntl(ViewCurl);

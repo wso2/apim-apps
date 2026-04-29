@@ -19,7 +19,7 @@
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
-    Alert,
+    Alert as MuiAlert,
     Box,
     Button,
     CircularProgress,
@@ -49,7 +49,15 @@ import {
 } from '@mui/icons-material';
 import MUIDataTable from 'mui-datatables';
 import API from 'AppData/api';
+import Alert from 'AppComponents/Shared/Alert';
 
+/**
+ * LegacyApiKeys component for managing legacy API keys
+ * @param {object} props - Component props
+ * @param {string} props.keyType - Type of the key (PRODUCTION/SANDBOX)
+ * @param {object} props.selectedApp - Selected application object
+ * @returns {React.Component} LegacyApiKeys component
+ */
 export default function LegacyApiKeys({ keyType, selectedApp }) {
     const intl = useIntl();
 
@@ -118,10 +126,22 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
     const validityOptions = [
         { value: '30', label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.30days', defaultMessage: '30 Days' }) },
         { value: '90', label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.90days', defaultMessage: '90 Days' }) },
-        { value: '180', label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.6months', defaultMessage: '6 Months' }) },
+        {
+            value: '180',
+            label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.6months', defaultMessage: '6 Months' }),
+        },
         { value: '365', label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.1year', defaultMessage: '1 Year' }) },
-        { value: 'never', label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.never', defaultMessage: 'Never Expires' }) },
-        { value: 'custom', label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.custom', defaultMessage: 'Custom' }) },
+        {
+            value: 'never',
+            label: intl.formatMessage({
+                id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.never',
+                defaultMessage: 'Never Expires',
+            }),
+        },
+        {
+            value: 'custom',
+            label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.validity.custom', defaultMessage: 'Custom' }),
+        },
     ];
 
     // Restriction options
@@ -154,19 +174,31 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
 
     const handleLegacyGenerateKey = () => {
         if (!displayName.trim()) {
-            alert(intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.alert.enterName', defaultMessage: 'Please enter a name for the API key.' }));
+            Alert.error(intl.formatMessage({
+                id: 'Shared.AppsAndKeys.LegacyApiKeys.alert.enterName',
+                defaultMessage: 'Please enter a name for the API key.',
+            }));
             return;
         }
         if (restrictionType !== 'none' && !restrictionValue.trim()) {
             const restrictionOption = restrictionOptions.find((option) => option.value === restrictionType);
             const restrictionLabel = restrictionOption ? restrictionOption.label : '';
-            alert(intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.alert.enterRestrictionValue', defaultMessage: 'Please enter a {restrictionLabel} value.' }, { restrictionLabel: restrictionLabel.toLowerCase() }));
+            Alert.error(intl.formatMessage(
+                {
+                    id: 'Shared.AppsAndKeys.LegacyApiKeys.alert.enterRestrictionValue',
+                    defaultMessage: 'Please enter a {restrictionLabel} value.',
+                },
+                { restrictionLabel: restrictionLabel.toLowerCase() },
+            ));
             return;
         }
         if (validityPeriod === 'custom' && !customValidityDays) {
             const customDays = Number(customValidityDays);
             if (!Number.isInteger(customDays) || customDays <= 0) {
-                alert(intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.alert.invalidCustomDays', defaultMessage: 'Please enter a valid positive number of days for custom validity period.' }));
+                Alert.error(intl.formatMessage({
+                    id: 'Shared.AppsAndKeys.LegacyApiKeys.alert.invalidCustomDays',
+                    defaultMessage: 'Please enter a valid positive number of days for custom validity period.',
+                }));
                 return;
             }
         }
@@ -203,7 +235,10 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                 if (process.env.NODE_ENV !== 'production') {
                     console.error('Error generating legacy API key:', error);
                 }
-                alert(intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.alert.generateFailed', defaultMessage: 'Failed to generate API key. Please try again.' }));
+                Alert.error(intl.formatMessage({
+                    id: 'Shared.AppsAndKeys.LegacyApiKeys.alert.generateFailed',
+                    defaultMessage: 'Failed to generate API key. Please try again.',
+                }));
             });
     };
 
@@ -284,6 +319,24 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
         {
             name: 'keyName',
             label: intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.column.keyName', defaultMessage: 'Key Name' }),
+            options: {
+                customBodyRenderLite: (dataIndex) => {
+                    const keyData = legacyKeysData[dataIndex];
+                    const { keyName } = keyData;
+                    return (
+                        <Tooltip title={keyName || ''} placement='top'>
+                            <Box sx={{ maxWidth: '200px' }}>
+                                <Typography
+                                    variant='body2'
+                                    sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                                >
+                                    {keyName || '-'}
+                                </Typography>
+                            </Box>
+                        </Tooltip>
+                    );
+                },
+            },
         },
         {
             name: 'issuedOn',
@@ -348,11 +401,17 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                     if (lastUsed === 'NOT_USED') {
                         return (
                             <Typography variant='body2' color='text.secondary'>
-                                <FormattedMessage id='Shared.AppsAndKeys.LegacyApiKeys.table.never' defaultMessage='Never' />
+                                <FormattedMessage id='Shared.AppsAndKeys.LegacyApiKeys.table.notUsed' defaultMessage='Not Used' />
                             </Typography>
                         );
                     }
-                    if (!lastUsed) return '-';
+                    if (lastUsed == null) {
+                        return (
+                            <Typography variant='body2' color='text.secondary'>
+                                <FormattedMessage id='Shared.AppsAndKeys.LegacyApiKeys.table.notUsed' defaultMessage='Not Used' />
+                            </Typography>
+                        );
+                    }
                     try {
                         const date = new Date(lastUsed);
                         const dateOnly = date.toLocaleDateString('en-CA');
@@ -625,14 +684,14 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                     <Stack spacing={2} sx={{ pt: 1 }}>
                         {showToken && generatedApiKey && (
                             <>
-                                <Alert severity='warning' sx={{ mb: 0.5 }}>
+                                <MuiAlert severity='warning' sx={{ mb: 0.5 }}>
                                     <Typography variant='h6' component='h3' sx={{ mb: 0.5, fontSize: '0.95rem' }}>
                                         <FormattedMessage id='Shared.AppsAndKeys.LegacyApiKeys.copyAlert.title' defaultMessage='Please Copy the API Key' />
                                     </Typography>
                                     <Typography component='p' variant='body2' sx={{ fontSize: '0.875rem' }}>
                                         <FormattedMessage id='Shared.AppsAndKeys.LegacyApiKeys.generatedKey.alert.message' defaultMessage='Please copy this generated API Key value as it will be displayed only for the current browser session. (The API Key will not be visible in the UI after the page is refreshed.)' />
                                     </Typography>
-                                </Alert>
+                                </MuiAlert>
                                 <Box sx={{ mt: 1 }}>
                                     <Typography
                                         variant='subtitle2'
@@ -757,14 +816,14 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                     <Stack spacing={2} sx={{ pt: 1 }}>
                         {regeneratedApiKey && (
                             <>
-                                <Alert severity='warning' sx={{ mb: 0.5 }}>
+                                <MuiAlert severity='warning' sx={{ mb: 0.5 }}>
                                     <Typography variant='h6' component='h3' sx={{ mb: 0.5, fontSize: '0.95rem' }}>
                                         <FormattedMessage id='Shared.AppsAndKeys.LegacyApiKeys.copyAlert.title' defaultMessage='Please Copy the API Key' />
                                     </Typography>
                                     <Typography component='p' variant='body2' sx={{ fontSize: '0.875rem' }}>
                                         <FormattedMessage id='Shared.AppsAndKeys.LegacyApiKeys.regenerateKey.alert.message' defaultMessage='Please copy this regenerated API Key value as it will be displayed only for the current browser session. (The API Key will not be visible in the UI after the page is refreshed.)' />
                                     </Typography>
-                                </Alert>
+                                </MuiAlert>
                                 <Box sx={{ mt: 1 }}>
                                     <Typography
                                         variant='subtitle2'

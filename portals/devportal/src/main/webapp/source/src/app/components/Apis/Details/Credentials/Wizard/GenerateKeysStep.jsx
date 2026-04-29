@@ -168,7 +168,7 @@ const generateKeysStep = (props) => {
 
     const {
         currentStep, createdApp, incrementStep, setCreatedKeyType,
-        setStepStatus, stepStatuses, setCreatedSelectedTab, setGeneratedConsumerSecret,
+        setStepStatus, stepStatuses, setCreatedSelectedTab, setGeneratedConsumerSecret, setConsumerSecretRequired,
     } = props;
 
     useEffect(() => {
@@ -182,13 +182,16 @@ const generateKeysStep = (props) => {
                 // Selecting a key manager from the list of key managers.
                 let selectedKeyManager;
                 let multipleSecretsAllowed = false;
+                let consumerSecretRequired = false;
                 if (responseKeyManagerList.length > 0) {
                     const responseKeyManagerListDefault = responseKeyManagerList.filter((x) => x.name === 'Resident Key Manager');
                     selectedKeyManager = responseKeyManagerListDefault.length > 0 ? responseKeyManagerListDefault[0]
                         : responseKeyManagerList[0];
                     multipleSecretsAllowed = isMultipleClientSecretsEnabled(selectedKeyManager.additionalProperties);
+                    consumerSecretRequired = multipleSecretsAllowed || !!selectedKeyManager.enableTokenHashing;
                 }
                 setIsMultipleSecretsAllowed(multipleSecretsAllowed);
+                setConsumerSecretRequired(consumerSecretRequired);
 
                 // Filtering Grant Types for Token Exchange
                 const filteredGrantTypes = selectedKeyManager.availableGrantTypes
@@ -250,10 +253,10 @@ const generateKeysStep = (props) => {
             if (response.keyState === keyStates.CREATED || response.keyState === keyStates.REJECTED) {
                 setStepStatus(stepStatuses.BLOCKED);
             } else {
-                // Show the consumer secret in the dialog before advancing
-                if (isMultipleSecretsAllowed && response?.consumerSecret) {
+                // Only carry forward a generated secret when the backend returns one.
+                setGeneratedConsumerSecret(response?.consumerSecret || null);
+                if (response?.consumerSecret) {
                     setGeneratedSecret(response.consumerSecret);
-                    setGeneratedConsumerSecret(response.consumerSecret);
                     setSecretValueDialogOpen(true);
                 } else {
                     proceedToNextStep();
@@ -393,7 +396,7 @@ const generateKeysStep = (props) => {
                                     if (isMultipleSecretsAllowed) {
                                         setSecretCreateDialogOpen(true);
                                     } else {
-                                        generateKeys(); // Legacy behavior (backward compatible)
+                                        generateKeys();
                                     }
                                 }}
                                 nextActive={nextActive}

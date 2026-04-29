@@ -333,7 +333,7 @@ class ViewKeys extends React.Component {
     /**
      * Generate access token
      * */
-    generateAccessToken = (multipleSecretsAllowed) => {
+    generateAccessToken = (consumerSecretRequired) => {
         const { accessTokenRequest, consumerSecret } = this.state;
         const { selectedTab, intl } = this.props;
         this.setState({ isUpdating: true });
@@ -345,7 +345,7 @@ class ViewKeys extends React.Component {
                 accessTokenRequest.scopesSelected,
                 undefined,                        // isTokenExchange
                 undefined,                        // externalToken
-                multipleSecretsAllowed ? consumerSecret : undefined // consumerSecret
+                consumerSecretRequired ? consumerSecret : undefined // consumerSecret
             ))
             .then((response) => {
                 console.log('token generated successfully ' + response);
@@ -591,6 +591,7 @@ class ViewKeys extends React.Component {
         }
 
         const multipleSecretsAllowed = isMultipleClientSecretsEnabled(keyManagerConfig?.additionalProperties);
+        const consumerSecretRequired = multipleSecretsAllowed || hashEnabled;
         let secretCount;
         if (multipleSecretsAllowed) {
             secretCount = getClientSecretCount(keyManagerConfig?.additionalProperties);
@@ -648,7 +649,7 @@ class ViewKeys extends React.Component {
                                                 updateAccessTokenRequest={this.updateAccessTokenRequest}
                                                 accessTokenRequest={accessTokenRequest}
                                                 subscriptionScopes={subscriptionScopes}
-                                                multipleSecretsAllowed={multipleSecretsAllowed}
+                                                consumerSecretRequired={consumerSecretRequired}
                                                 onConsumerSecretChange={this.handleConsumerSecretChange}
                                             />
                                         )}
@@ -661,6 +662,7 @@ class ViewKeys extends React.Component {
                                             keys={{ consumerKey, consumerSecret }}
                                             keyType={keyType}
                                             keyManagerConfig={keyManagerConfig}
+                                            consumerSecretMasked={consumerSecretRequired}
                                         />
                                     </DialogContentText>
                                 )}
@@ -684,10 +686,10 @@ class ViewKeys extends React.Component {
                                 {isUpdating && <CircularProgress size={24} />}
                                 {!showToken && !showCurl && !isKeyJWT && !showSecretGen && (
                                     <Button
-                                        onClick={() => this.generateAccessToken(multipleSecretsAllowed)}
+                                        onClick={() => this.generateAccessToken(consumerSecretRequired)}
                                         color='primary'
                                         id='generate-access-token-generate-btn'
-                                        disabled={isUpdating || (multipleSecretsAllowed && !this.state.consumerSecret)}
+                                        disabled={isUpdating || (consumerSecretRequired && !this.state.consumerSecret)}
                                     >
                                         <FormattedMessage
                                             id='Shared.AppsAndKeys.ViewKeys.consumer.generate.btn'
@@ -717,7 +719,7 @@ class ViewKeys extends React.Component {
                                 hashEnabled={hashEnabled}
                             />
                         }
-                        {!hashEnabled && (
+                        <>
                             <div className={classes.tokenSection}>
                                 {(keyManagerConfig.enableTokenGeneration && supportedGrantTypesUnchanged
                                     && supportedGrantTypesUnchanged.find((a) => a.includes('client_credentials')))
@@ -752,8 +754,8 @@ class ViewKeys extends React.Component {
                                     />
                                 </Button>
                             </div>
-                        )}
-                        {supportedGrantTypesUnchanged && !supportedGrantTypesUnchanged.includes('client_credentials') && !hashEnabled && (
+                        </>
+                        {supportedGrantTypesUnchanged && !supportedGrantTypesUnchanged.includes('client_credentials') && (
                             <Typography variant='caption' gutterBottom>
                                 <FormattedMessage
                                     id='Shared.AppsAndKeys.ViewKeys.client.enable.client.credentials'

@@ -43,6 +43,12 @@ export default class Application extends Resource {
                 this[key] = kwargs[key];
             }
         }
+        if (this.applicationId == null && this.id != null) {
+            this.applicationId = this.id;
+        }
+        if (this.id == null && this.applicationId != null) {
+            this.id = this.applicationId;
+        }
     }
 
     /** *
@@ -81,8 +87,12 @@ export default class Application extends Resource {
      * @returns {promise} Set the fetched CS/CK into current instance and return keys array as Promise object
      */
     getKeys(keyType) {
+        const applicationId = this.applicationId != null ? this.applicationId : this.id;
+        if (applicationId == null || applicationId === '') {
+            return Promise.reject(new Error('Application ID is not available'));
+        }
         return this.client.then((client) => client.apis['Application Keys']
-            .get_applications__applicationId__oauth_keys({ applicationId: this.applicationId }))
+            .get_applications__applicationId__oauth_keys({ applicationId }))
             .then((keysResponse) => {
                 const keys = keysResponse.obj.list;
                 this._setKeys(keys);
@@ -423,6 +433,9 @@ export default class Application extends Resource {
     }
 
     static get(id) {
+        if (id == null || id === '') {
+            return Promise.reject(new Error('Application ID is not available'));
+        }
         const apiClient = new APIClientFactory().getAPIClient(Utils.getEnvironment());
         const promisedGet = apiClient.client.then((client) => {
             return client.apis.Applications.get_applications__applicationId_(

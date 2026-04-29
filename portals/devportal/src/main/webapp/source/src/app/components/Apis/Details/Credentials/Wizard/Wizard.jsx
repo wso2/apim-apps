@@ -114,6 +114,7 @@ class Wizard extends Component {
             createdSelectedTab: '',
             stepStatus: 'PROCEED',
             generatedConsumerSecret: null,
+            consumerSecretRequired: false,
         };
     }
 
@@ -162,6 +163,10 @@ class Wizard extends Component {
         this.setState({ generatedConsumerSecret: secret });
     };
 
+    setConsumerSecretRequired = (consumerSecretRequired) => {
+        this.setState({ consumerSecretRequired });
+    };
+
     /**
      * Increment the current step or next step by 1
      */
@@ -178,6 +183,8 @@ class Wizard extends Component {
     handleReset = () => {
         this.setState({
             currentStep: 0,
+            generatedConsumerSecret: null,
+            consumerSecretRequired: false,
         });
     };
 
@@ -224,6 +231,7 @@ class Wizard extends Component {
                                     setCreatedToken={this.setCreatedToken}
                                     handleReset={this.handleReset}
                                     setGeneratedConsumerSecret={this.setGeneratedConsumerSecret}
+                                    setConsumerSecretRequired={this.setConsumerSecretRequired}
                                 />
                             </>
                         )}

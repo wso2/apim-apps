@@ -3,6 +3,19 @@ import PropTypes from 'prop-types';
 import 'swagger-ui-react/swagger-ui.css';
 import SwaggerUILib from 'swagger-ui-react';
 import CustomPadLock from './CustomPadLock';
+import GenerateCurlExecute from './GenerateCurlExecute';
+import isPlatformGatewayApi from './platformGateway';
+
+const generateCurlTryoutPlugin = () => ({
+    wrapComponents: {
+        execute: (_, system) => (props) => (
+            <GenerateCurlExecute
+                {...props}
+                getSystem={system.getSystem}
+            />
+        ),
+    },
+});
 
 const disableAuthorizeAndInfoPlugin = function (spec) {
     return {
@@ -48,19 +61,29 @@ const SwaggerUI = (props) => {
             const { context } = api;
             const currentSecuritySchemeType = securitySchemeRef.current;
             const currentAuthHeader = authorizationHeaderRef.current;
+            const rawToken = accessTokenProvider();
+            const token = (rawToken === undefined || rawToken === null) ? '' : String(rawToken).trim();
+            const hasToken = token !== '' && token.toLowerCase() !== 'undefined' && token.toLowerCase() !== 'null';
+            req.headers = req.headers || {};
             const patternToCheck = `${context}/*`;
             if (currentSecuritySchemeType === 'API-KEY') {
-                req.headers[currentAuthHeader] = accessTokenProvider();
-            } else if (currentSecuritySchemeType === 'BASIC') {
-                req.headers[currentAuthHeader] = 'Basic ' + accessTokenProvider();
-            } else if (currentSecuritySchemeType === 'TEST') {
-                req.headers[currentAuthHeader] = accessTokenProvider();
-            } else if (api.advertiseInfo && api.advertiseInfo.advertised) {
-                if (currentAuthHeader) {
-                    req.headers[currentAuthHeader] = accessTokenProvider();
+                if (currentAuthHeader && hasToken) {
+                    req.headers[currentAuthHeader] = token;
                 }
-            } else {
-                req.headers[currentAuthHeader] = 'Bearer ' + accessTokenProvider();
+            } else if (currentSecuritySchemeType === 'BASIC') {
+                if (currentAuthHeader && hasToken) {
+                    req.headers[currentAuthHeader] = `Basic ${token}`;
+                }
+            } else if (currentSecuritySchemeType === 'TEST') {
+                if (currentAuthHeader && hasToken) {
+                    req.headers[currentAuthHeader] = token;
+                }
+            } else if (api.advertiseInfo && api.advertiseInfo.advertised) {
+                if (currentAuthHeader && hasToken) {
+                    req.headers[currentAuthHeader] = token;
+                }
+            } else if (currentAuthHeader && hasToken) {
+                req.headers[currentAuthHeader] = `Bearer ${token}`;
             }
             if (url.endsWith(patternToCheck)) {
                 req.url = url.substring(0, url.length - 2);
@@ -71,7 +94,12 @@ const SwaggerUI = (props) => {
             return req;
         },
         defaultModelExpandDepth: -1,
-        plugins: [disableAuthorizeAndInfoPlugin(spec)],
+        plugins: [
+            disableAuthorizeAndInfoPlugin(spec),
+            ...(isPlatformGatewayApi(api)
+                ? [generateCurlTryoutPlugin()]
+                : []),
+        ],
     };
     const [render, setRender] = useState();
     const [layoutRender, setlayoutRender] = useState();

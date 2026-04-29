@@ -134,6 +134,9 @@ function AddEditRuleset(props) {
         documentationLink,
         ruleCategory,
     } = state;
+    const rulesetTypeOptions = artifactType === 'MCP'
+        ? CONSTS.RULESET_TYPES.filter((option) => option.value !== 'API_DEFINITION')
+        : CONSTS.RULESET_TYPES;
 
     const isGenericRuleset = ruleCategory === 'GENERIC';
 
@@ -173,6 +176,12 @@ function AddEditRuleset(props) {
                 });
         }
     }, [id]);
+
+    useEffect(() => {
+        if (artifactType === 'MCP' && ruleType === 'API_DEFINITION') {
+            dispatch({ field: 'ruleType', value: '' });
+        }
+    }, [artifactType, ruleType]);
 
     const onChange = (e) => {
         dispatch({ field: e.target.name, value: e.target.value });
@@ -594,7 +603,7 @@ function AddEditRuleset(props) {
                                         required
                                         variant='outlined'
                                     >
-                                        {CONSTS.RULESET_TYPES.map((option) => (
+                                        {rulesetTypeOptions.map((option) => (
                                             <MenuItem key={option.value} value={option.value}>
                                                 {option.label}
                                             </MenuItem>

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/** Carbon APIConstants.WSO2_API_PLATFORM_GATEWAY wire value. */
+const API_PLATFORM_GATEWAY = 'APIPlatform';
+
 const CONSTS = {
     API: 'API',
     APIProduct: 'APIProduct',
@@ -82,22 +85,23 @@ const CONSTS = {
         PRODUCTION: 'default_production_endpoint',
         SANDBOX: 'default_sandbox_endpoint',
     },
+    API_PLATFORM_GATEWAY,
     GATEWAY_TYPE: {
         synapse: 'Synapse',
         choreoConnect: 'ChoreoConnect',
-        apiPlatform: 'Universal',
+        apiPlatform: API_PLATFORM_GATEWAY,
     },
     CREATE_API_GATEWAYS: {
         'wso2/synapse': {
             value: 'wso2/synapse',
-            name: 'Universal Gateway - Classic',
-            description: 'Synapse based API gateway embedded in APIM runtime.',
+            name: 'Universal Gateway',
+            description: 'Enterprise-grade self-hosted Synapse gateway.',
             isNew: false,
         },
         'wso2/apk': {
             value: 'wso2/apk',
-            name: 'Kubernetes Gateway - Classic',
-            description: 'API gateway running on Kubernetes.',
+            name: 'Kubernetes Gateway v1.3',
+            description: 'Kubernetes-native gateway runtime.',
             isNew: false,
         },
         AWS: {
@@ -112,10 +116,10 @@ const CONSTS = {
             description: 'API gateway offered by Azure cloud.',
             isNew: false,
         },
-        Universal: {
-            value: 'Universal',
-            name: 'Universal Gateway',
-            description: 'API gateway for platform-managed policies.',
+        APIPlatform: {
+            value: API_PLATFORM_GATEWAY,
+            name: 'API Platform Gateway',
+            description: 'New lightweight, self-hosted API Platform gateway.',
             isNew: true,
         }
     },

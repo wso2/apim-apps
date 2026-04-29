@@ -212,14 +212,6 @@ const RouteMenuMapping = (intl) => [
         icon: <GamesIcon />,
         addEditPageDetails: [
             {
-                id: 'Universal Gateway',
-                displayText: intl.formatMessage({
-                    id: 'Base.RouteMenuMapping.gateways.items.UniversalGateways',
-                    defaultMessage: 'Universal Gateways',
-                }),
-                path: '/settings/environments/universal-gateway',
-            },
-            {
                 id: 'Add Gateway Environment',
                 displayText: intl.formatMessage({
                     id: 'Base.RouteMenuMapping.gateways.items.Adding',
@@ -234,6 +226,14 @@ const RouteMenuMapping = (intl) => [
                     defaultMessage: 'Edit Gateway Environment',
                 }),
                 path: '/settings/gateways/(.*?)$',
+            },
+            {
+                id: 'API Platform Gateway',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.gateways.items.APIPlatformGateway',
+                    defaultMessage: 'API Platform Gateway',
+                }),
+                path: '/settings/environments/platform-gateways/(.*?)$',
             },
         ],
     },

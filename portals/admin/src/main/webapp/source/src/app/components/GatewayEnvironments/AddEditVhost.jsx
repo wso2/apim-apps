@@ -41,7 +41,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import {
     createDefaultVhost,
     WSO2_GATEWAY_TYPES,
-} from './UniversalGatewayUtils';
+} from './PlatformGatewayUtils';
 
 const StyledSpan = styled('span')(({ theme }) => ({
     color: theme.palette.error.dark,

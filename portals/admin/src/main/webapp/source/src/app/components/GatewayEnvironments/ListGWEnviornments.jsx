@@ -44,7 +44,7 @@ import {
     getGatewayStatusChipProps,
     resolvePlatformGatewayStatus,
     WSO2_SELF_HOSTED_GATEWAY_TYPES,
-} from './UniversalGatewayUtils';
+} from './PlatformGatewayUtils';
 import Utils from '../../data/Utils';
 
 const WSO2_LISTING_GATEWAY_TYPES = WSO2_SELF_HOSTED_GATEWAY_TYPES;
@@ -244,7 +244,7 @@ const GatewayEditButton = ({ dataRow }) => {
     const handleClick = () => {
         if (dataRow.isPlatformGateway && dataRow.platformGatewayId) {
             history.push(
-                `/settings/environments/universal-gateways/${dataRow.platformGatewayId}`,
+                `/settings/environments/platform-gateways/${dataRow.platformGatewayId}`,
             );
             return;
         }
@@ -414,13 +414,30 @@ export default function ListGWEnviornments() {
         id: idColumnIndex,
     };
 
+    // Helper: universal gateways store full URL in `host`
+    // regular gateways store hostname only — avoid prepending https:// twice.
+    const formatVhostDisplayUrl = (vhost) => {
+        const host = vhost.host || '';
+        const contextPart = vhost.httpContext
+            ? `/${String(vhost.httpContext).replace(/^\//g, '')}`
+            : '';
+        if (/^https?:\/\//i.test(host)) {
+            return host + contextPart;
+        }
+        // API may send httpsPort as string "443"; strict === 443 failed and produced a bogus ":443" suffix.
+        const portRaw = vhost.httpsPort;
+        const portNum = portRaw === undefined || portRaw === null || portRaw === ''
+            ? NaN
+            : Number(portRaw);
+        const portPart = Number.isFinite(portNum) && portNum !== 443 ? `:${portNum}` : '';
+        return `https://${host}${portPart}${contextPart}`;
+    };
+
     // Helper function to render virtual hosts
     const renderVhosts = (vhosts) => {
         return vhosts.map((vhost) => (
             <div key={`${vhost.host}:${vhost.httpsPort}`}>
-                {'https://' + vhost.host + (vhost.httpsPort === 443 ? ''
-                    : ':' + vhost.httpsPort) + (vhost.httpContext ? '/'
-                        + vhost.httpContext.replace(/^\//g, '') : '')}
+                {formatVhostDisplayUrl(vhost)}
             </div>
         ));
     };
@@ -438,10 +455,10 @@ export default function ListGWEnviornments() {
     };
 
     const renderGatewayType = (gatewayType) => {
-        if (gatewayType === 'Universal') {
+        if (gatewayType === CONSTS.API_PLATFORM_GATEWAY) {
             return intl.formatMessage({
-                id: 'Gateways.AddEditGateway.title.universal',
-                defaultMessage: 'Universal Gateway',
+                id: 'Gateways.AddEditGateway.title.platform',
+                defaultMessage: 'API Platform Gateway',
             });
         }
         return gatewayType || '-';
@@ -460,7 +477,7 @@ export default function ListGWEnviornments() {
         const gatewayType = getRowValue(tableMeta, 'gatewayTypeDisplay') || 'Regular';
         const normalizedGatewayType = String(gatewayType).toLowerCase();
         const isRegularGateway = normalizedGatewayType === 'regular';
-        const isPlatformGateway = normalizedGatewayType === 'universal'
+        const isPlatformGateway = normalizedGatewayType === 'apiplatform'
             || normalizedGatewayType.includes('platform gateway');
         const isDisabled = !(isRegularGateway || isPlatformGateway);
         const gatewayStatus = getRowValue(tableMeta, 'gatewayStatus');
@@ -728,7 +745,7 @@ export default function ListGWEnviornments() {
                     variant='contained'
                     size='small'
                     startIcon={<AddIcon />}
-                    sx={styles.emptyStateButton}
+                    sx={styles.primaryButton}
                 >
                     {intl.formatMessage({
                         id: 'Gateways.ListGatewayEnvironments.addThirdPartyGateway',

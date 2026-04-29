@@ -75,9 +75,8 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
     },
 
     [`& .${classes.logoWrapper}`]: {
-        padding: 0,
-        paddingLeft: theme.spacing(1),
-        height: 50,
+        padding: theme.spacing(1.5, 2),
+        height: 'auto',
     },
 }));
 

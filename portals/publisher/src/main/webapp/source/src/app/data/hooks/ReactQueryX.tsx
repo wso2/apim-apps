@@ -19,7 +19,7 @@ NOTE: ReactQueryX is a simple state management implementation to manage data fet
 This is meant to be used for fetch and use data in READONLY manner, Do not support data mutations,
 DO NOT extend this implementation to allow data mutations, If come up with such requirement use ReactQuery or SWR
 */
-import React, { useContext, useEffect, useState, FC } from "react";
+import React, { useContext, useEffect, useState, ReactNode } from 'react';
 
 type NTCacheContextType = {
   cache: {
@@ -29,7 +29,7 @@ type NTCacheContextType = {
 const NTCacheContext = React.createContext<NTCacheContextType>({ cache: {} });
 const { Provider: NTCacheProvider } = NTCacheContext;
 
-export const QueryClientProviderX = ({ children }: { children: FC }) => {
+export const QueryClientProviderX = ({ children }: { children: ReactNode }) => {
   const { current: cache } = React.useRef({});
   return <NTCacheProvider value={{ cache }}>{children}</NTCacheProvider>;
 };

@@ -56,6 +56,10 @@ const styles = {
     },
 };
 
+/**
+ * Component to list and manage APIs with search and pagination functionality.
+ * @returns {JSX.Element} The ListApis component.
+ */
 export default function ListApis() {
     const intl = useIntl();
     const [loading, setLoading] = useState(false);
@@ -66,9 +70,11 @@ export default function ListApis() {
     const [provider, setProvider] = useState('');
 
     /**
-    * API call to get api list
-    * @returns {Promise}.
-    */
+     * API call to get api list.
+     * @param {number} pageNo - The page number.
+     * @param {string} query - The search query.
+     * @returns {Promise} Promise with API list.
+     */
     function apiCall(pageNo, query = provider) {
         setLoading(true);
         const restApi = new API();
@@ -100,6 +106,11 @@ export default function ListApis() {
         });
     }, [rowsPerPage]);
 
+    /**
+     * Handles page change event.
+     * @param {object} event - The event object.
+     * @param {number} pageNo - The new page number.
+     */
     function handleChangePage(event, pageNo) {
         setPage(pageNo);
         apiCall(pageNo).then((result) => {
@@ -107,6 +118,10 @@ export default function ListApis() {
         });
     }
 
+    /**
+     * Handles rows per page change event.
+     * @param {object} event - The event object.
+     */
     function handleChangeRowsPerPage(event) {
         const nextRowsPerPage = event.target.value;
         const rowsPerPageRatio = rowsPerPage / nextRowsPerPage;
@@ -115,6 +130,9 @@ export default function ListApis() {
         setRowsPerPage(nextRowsPerPage);
     }
 
+    /**
+     * Clears the search query and resets the API list.
+     */
     function clearSearch() {
         setPage(0);
         setProvider('');
@@ -123,6 +141,10 @@ export default function ListApis() {
         });
     }
 
+    /**
+     * Updates the search query state.
+     * @param {object} event - The event object.
+     */
     function setQuery(event) {
         const newQuery = event.target.value;
         if (newQuery === '') {
@@ -132,6 +154,10 @@ export default function ListApis() {
         }
     }
 
+    /**
+     * Filters APIs based on search query.
+     * @param {object} e - The event object.
+     */
     function filterApps(e) {
         e.preventDefault();
         setPage(0);

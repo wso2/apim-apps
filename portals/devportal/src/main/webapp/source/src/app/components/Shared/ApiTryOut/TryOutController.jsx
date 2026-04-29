@@ -50,6 +50,7 @@ import CONSTANTS from '../../../data/Constants';
 import SelectAppPanel from './SelectAppPanel';
 import { isMultipleClientSecretsEnabled } from 'AppComponents/Shared/AppsAndKeys/Secrets/util';
 import Alert from 'AppComponents/Shared/Alert';
+import isPlatformGatewayApi from '../../Apis/Details/ApiConsole/platformGateway';
 
 const PREFIX = 'TryOutController';
 
@@ -194,6 +195,7 @@ function TryOutController(props) {
     const apiID = api.id;
     const restApi = new Api();
     const user = AuthManager.getUser();
+    const isPlatformGateway = isPlatformGatewayApi(api);
     const isSubValidationDisabled = api.tiers && api.tiers.length === 1
             && api.tiers[0].tierName.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
 
@@ -439,6 +441,9 @@ function TryOutController(props) {
      */
     function updateApplication() {
         if (api.lifeCycleStatus) {
+            if (selectedApplication == null || String(selectedApplication).trim() === '') {
+                return;
+            }
             let accessToken;
             let keyType;
             if (isSubValidationDisabled) {
@@ -482,6 +487,21 @@ function TryOutController(props) {
                         setKSGenerated(false);
                     }
                     setKeys(appKeys);
+                })
+                .catch((err) => {
+                    if (process.env.NODE_ENV !== 'production') {
+                        // eslint-disable-next-line no-console
+                        console.warn('TryOutController: could not load application keys', err);
+                    }
+                    setKeys([]);
+                    setProductionAccessToken('');
+                    setSandboxAccessToken('');
+                    setProductionApiKey('');
+                    setSandboxApiKey('');
+                    setKSGenerated(false);
+                    setConsumerSecret('');
+                    setShowToken(false);
+                    handleAccessTokenChange({ newAccessToken: '' });
                 });
         }
     }
@@ -590,10 +610,23 @@ function TryOutController(props) {
     let authorizationHeader = api.authorizationHeader ? api.authorizationHeader : 'Authorization';
     let prefix = 'Bearer';
     if (api && api.securityScheme) {
-        isApiKeyEnabled = api.securityScheme.includes('api_key');
-        isBasicAuthEnabled = api.securityScheme.includes('basic_auth');
-        isOAuthEnabled = api.securityScheme.includes('oauth2');
-        isTestKeyEnabled = api.securityScheme.includes('test_auth');
+        const securitySchemeValues = Array.isArray(api.securityScheme)
+            ? api.securityScheme
+            : (typeof api.securityScheme === 'string'
+                ? api.securityScheme.split(',')
+                : [api.securityScheme]);
+        const securitySchemes = new Set(
+            securitySchemeValues.map((s) => String(s).trim().toLowerCase()).filter(Boolean),
+        );
+        isApiKeyEnabled = securitySchemes.has('api_key');
+        isBasicAuthEnabled = securitySchemes.has('basic_auth');
+        isOAuthEnabled = securitySchemes.has('oauth2');
+        isTestKeyEnabled = securitySchemes.has('test_auth');
+        if (isPlatformGateway) {
+            // For Platform APIs, only show OAuth/API Key when mapped headers are available from hub policies.
+            isApiKeyEnabled = isApiKeyEnabled && !!api.apiKeyHeader;
+            isOAuthEnabled = isOAuthEnabled && !!api.authorizationHeader;
+        }
         if (isApiKeyEnabled && securitySchemeType === 'API-KEY') {
             authorizationHeader = api.apiKeyHeader ? api.apiKeyHeader : 'ApiKey';
             prefix = '';
@@ -603,17 +636,27 @@ function TryOutController(props) {
             prefix = '';
         }
     }
-    const isPrototypedAPI = api.lifeCycleStatus && api.lifeCycleStatus.toLowerCase() === 'prototyped';
-    const isPublished = api.lifeCycleStatus.toLowerCase() === 'published';
+    const lifeCycleStatus = (api.lifeCycleStatus || '').toLowerCase();
+    const isPrototypedAPI = lifeCycleStatus === 'prototyped';
+    const isPublished = lifeCycleStatus === 'published';
     const showSecurityType = isPublished || isPrototypedAPI;
+    let selectedSchemeEnabled = false;
+    if (securitySchemeType === 'API-KEY') {
+        selectedSchemeEnabled = isApiKeyEnabled;
+    } else if (securitySchemeType === 'BASIC') {
+        selectedSchemeEnabled = isBasicAuthEnabled;
+    } else if (securitySchemeType === 'TEST') {
+        selectedSchemeEnabled = isTestKeyEnabled;
+    } else {
+        selectedSchemeEnabled = isOAuthEnabled;
+    }
 
     const authHeader = `${authorizationHeader}: ${prefix}`;
 
     const isMultipleClientSecretsAllowed = isMultipleClientSecretsEnabled(selectedKMObject?.additionalProperties);
 
-    const isConsumerSecretRequired = isMultipleClientSecretsAllowed && securitySchemeType === 'OAUTH' &&
-        selectedKMObject && !selectedKMObject.enableTokenHashing;
-
+    const isConsumerSecretRequired = selectedKMObject && (isMultipleClientSecretsAllowed || selectedKMObject.enableTokenHashing) 
+        && securitySchemeType === 'OAUTH';
     // Consumer secret is now collected via dialog, so GET TEST KEY is always enabled.
 
     useEffect(() => {
@@ -756,7 +799,8 @@ function TryOutController(props) {
                         )}
                     {subscriptions && subscriptions.length === 0 && securitySchemeType !== 'TEST'
                     && securitySchemeType !== 'BASIC' && (api.gatewayVendor === 'wso2' || !api.gatewayVendor)
-                        && (!api.advertiseInfo || !api.advertiseInfo.advertised) && !isSubValidationDisabled ? (
+                        && (!api.advertiseInfo || !api.advertiseInfo.advertised)
+                        && !isSubValidationDisabled && !isPlatformGateway ? (
                             <Grid x={8} md={6} className={classes.tokenType} item>
                                 <Box mb={1} alignItems='center'>
                                     <Typography variant='body1'>
@@ -774,7 +818,8 @@ function TryOutController(props) {
                             </Grid>
                         ) : (
                             (!ksGenerated && securitySchemeType === 'OAUTH') && (!api.advertiseInfo
-                                || !api.advertiseInfo.advertised) && (api.gatewayVendor === 'wso2' || !api.gatewayVendor) && (
+                                || !api.advertiseInfo.advertised) && (api.gatewayVendor === 'wso2' || !api.gatewayVendor)
+                                && !isPlatformGateway && (
                                 <Grid x={8} md={6} className={classes.tokenType} item>
                                     <Box mb={1} alignItems='center'>
                                         <Typography variant='body1'>
@@ -935,7 +980,8 @@ function TryOutController(props) {
                                         </Grid>
                                     </>
                                 )}
-                                {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST' && (
+                                {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
+                                    && selectedSchemeEnabled && (
                                     <TextField
                                         fullWidth
                                         margin='normal'
@@ -987,7 +1033,7 @@ function TryOutController(props) {
                                 )}
                                 {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
                                 && securitySchemeType !== 'API-KEY'
-                                && selectedKMObject && !selectedKMObject.enableTokenHashing && (
+                                && selectedKMObject && selectedSchemeEnabled && (
                                     <>
                                         <Button
                                             onClick={securitySchemeType === 'API-KEY' ? generateApiKey

@@ -16,11 +16,11 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import {
-    Alert,
+    Alert as MuiAlert,
     Box,
     Button,
     CircularProgress,
@@ -49,7 +49,18 @@ import API from 'AppData/api';
 import { getBasePath } from 'AppUtils/utils';
 import { mdiOpenInNew } from '@mdi/js';
 import { Icon as MDIcon } from '@mdi/react';
+import Alert from 'AppComponents/Shared/Alert';
 
+/**
+ * Component for managing API key associations for an application.
+ * Displays associated API keys and allows users to associate/dissociate keys with subscribed APIs.
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.keyType - The type of key (e.g., 'PRODUCTION' or 'SANDBOX')
+ * @param {Object} props.selectedApp - The selected application object
+ * @param {string} props.selectedApp.appId - The ID of the selected application
+ * @returns {JSX.Element} The API key listing component
+ */
 export default function ApiKeyListing({ keyType, selectedApp }) {
     const intl = useIntl();
     const { settings } = React.useContext(SettingsContext);
@@ -129,11 +140,17 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
 
     const handleAssociateKey = () => {
         if (!selectedAPI) {
-            alert(intl.formatMessage({ id: 'Shared.AppsAndKeys.ApiKeyListing.alert.selectApi', defaultMessage: 'Please select an API first.' }));
+            Alert.error(intl.formatMessage({
+                id: 'Shared.AppsAndKeys.ApiKeyListing.alert.selectApi',
+                defaultMessage: 'Please select an API first.',
+            }));
             return;
         }
         if (!selectedExistingKey) {
-            alert(intl.formatMessage({ id: 'Shared.AppsAndKeys.ApiKeyListing.alert.selectKey', defaultMessage: 'Please select an existing API key to associate.' }));
+            Alert.error(intl.formatMessage({
+                id: 'Shared.AppsAndKeys.ApiKeyListing.alert.selectKey',
+                defaultMessage: 'Please select an existing API key to associate.',
+            }));
             return;
         }
         const restApi = new API();
@@ -146,9 +163,12 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
             .catch((error) => {
                 console.error('Error associating key:', error);
                 handleCloseAssociateModal();
-                setAssociateErrorMessage(
-                    error.response?.body?.description || intl.formatMessage({ id: 'Shared.AppsAndKeys.ApiKeyListing.error.associateFailed', defaultMessage: 'Failed to associate API key. Please try again.' }),
-                );
+                const errorMessage = error.response?.body?.description
+                    || intl.formatMessage({
+                        id: 'Shared.AppsAndKeys.ApiKeyListing.error.associateFailed',
+                        defaultMessage: 'Failed to associate API key. Please try again.',
+                    });
+                setAssociateErrorMessage(errorMessage);
                 setAssociateErrorOpen(true);
             });
     };
@@ -232,6 +252,24 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
         {
             name: 'keyName',
             label: intl.formatMessage({ id: 'Shared.AppsAndKeys.ApiKeyListing.column.keyName', defaultMessage: 'Key Name' }),
+            options: {
+                customBodyRenderLite: (dataIndex) => {
+                    const keyData = associatedKeysData[dataIndex];
+                    const { keyName } = keyData;
+                    return (
+                        <Tooltip title={keyName || ''} placement='top'>
+                            <Box sx={{ maxWidth: '200px' }}>
+                                <Typography
+                                    variant='body2'
+                                    sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                                >
+                                    {keyName || '-'}
+                                </Typography>
+                            </Box>
+                        </Tooltip>
+                    );
+                },
+            },
         },
         {
             name: 'apiName',
@@ -324,7 +362,13 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
                             </Typography>
                         );
                     }
-                    if (!lastUsed) return '-';
+                    if (lastUsed == null) {
+                        return (
+                            <Typography variant='body2' color='text.secondary'>
+                                <FormattedMessage id='Shared.AppsAndKeys.ApiKeyListing.table.notUsed' defaultMessage='Not Used' />
+                            </Typography>
+                        );
+                    }
                     try {
                         const date = new Date(lastUsed);
                         const dateOnly = date.toLocaleDateString('en-CA'); // YYYY-MM-DD format in local timezone
@@ -373,6 +417,9 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
         },
     ];
 
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+
     const options = {
         selectableRows: 'none',
         filter: false,
@@ -380,10 +427,18 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
         download: false,
         print: false,
         viewColumns: false,
-        pagination: false,
+        pagination: true,
         sort: false,
         responsive: 'standard',
         tableBodyMaxHeight: '520px',
+        page,
+        rowsPerPage,
+        rowsPerPageOptions: [5, 10, 25],
+        onChangePage: (currentPage) => setPage(currentPage),
+        onChangeRowsPerPage: (numberOfRows) => {
+            setRowsPerPage(numberOfRows);
+            setPage(0);
+        },
     };
 
     return (
@@ -621,9 +676,12 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
                     <FormattedMessage id='Shared.AppsAndKeys.ApiKeyListing.dissociateSuccess.title' defaultMessage='Association Removed' />
                 </DialogTitle>
                 <DialogContent>
-                    <Alert severity='success' sx={{ mb: 1 }}>
-                        <FormattedMessage id='Shared.AppsAndKeys.ApiKeyListing.dissociateSuccess.message' defaultMessage='API key association has been successfully removed.' />
-                    </Alert>
+                    <MuiAlert severity='success' sx={{ mb: 1 }}>
+                        <FormattedMessage
+                            id='Shared.AppsAndKeys.ApiKeyListing.dissociateSuccess.message'
+                            defaultMessage='API Key association has been successfully removed.'
+                        />
+                    </MuiAlert>
                 </DialogContent>
                 <DialogActions>
                     <Button
@@ -671,9 +729,12 @@ export default function ApiKeyListing({ keyType, selectedApp }) {
                     <FormattedMessage id='Shared.AppsAndKeys.ApiKeyListing.associateSuccess.title' defaultMessage='Association Successful' />
                 </DialogTitle>
                 <DialogContent>
-                    <Alert severity='success' sx={{ mb: 1 }}>
-                        <FormattedMessage id='Shared.AppsAndKeys.ApiKeyListing.associateSuccess.message' defaultMessage='API key has been successfully associated with the application.' />
-                    </Alert>
+                    <MuiAlert severity='success' sx={{ mb: 1 }}>
+                        <FormattedMessage
+                            id='Shared.AppsAndKeys.ApiKeyListing.associateSuccess.message'
+                            defaultMessage='API key has been successfully associated with the application.'
+                        />
+                    </MuiAlert>
                 </DialogContent>
                 <DialogActions>
                     <Button

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/** Carbon APIConstants.WSO2_API_PLATFORM_GATEWAY wire value. */
+const API_PLATFORM_GATEWAY = 'APIPlatform';
+
 const CONSTS = {
     HTTP_METHODS: ['get', 'put', 'post', 'delete', 'patch', 'head', 'options'],
     errorCodes: {
@@ -35,6 +38,7 @@ const CONSTS = {
         KEY_GENERATION: 'KEY_GENERATION',
         ADD_SECRET: 'ADD_SECRET',
     },
+    API_PLATFORM_GATEWAY,
 };
 
 export default CONSTS;

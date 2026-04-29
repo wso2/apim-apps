@@ -140,4 +140,4 @@ All known issues of WSO2 API Manager are filed at:
 
 
 --------------------------------------------------------------------------------
-(c) Copyright 2021 - 2025 WSO2 LLC.
+(c) Copyright 2021 - 2026 WSO2 LLC.
