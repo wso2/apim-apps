@@ -404,6 +404,7 @@ function UnmanagedApisList({ history }) {
                                 emptyBoxProps={emptyBoxProps}
                                 options={tableOptions}
                                 useContentBase={false}
+                                showActionColumn={false}
                             />
                         </CardContent>
                     </Card>
