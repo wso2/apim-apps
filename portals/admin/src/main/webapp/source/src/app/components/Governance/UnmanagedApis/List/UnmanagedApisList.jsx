@@ -237,35 +237,18 @@ function UnmanagedApisList({ history }) {
                 customBodyRender: (value) => (
                     <Typography variant='body2'>{value || 0}</Typography>
                 ),
-                setCellProps: () => ({ style: { width: '6%', textAlign: 'right' } }),
+                setCellProps: () => ({ style: { width: '8%', textAlign: 'right' } }),
                 setCellHeaderProps: () => ({ style: { textAlign: 'right' } }),
-            },
-        },
-        {
-            name: 'lastSeenAt',
-            label: intl.formatMessage({
-                id: 'Discovery.column.lastSeen',
-                defaultMessage: 'Last seen',
-            }),
-            options: {
-                filter: false,
-                sort: true,
-                customBodyRender: (value) => {
-                    if (!value) return '—';
-                    try {
-                        return new Date(value).toLocaleString();
-                    } catch (e) {
-                        return value;
-                    }
-                },
-                setCellProps: () => ({ style: { width: '10%' } }),
             },
         },
     ];
 
     // mui-datatables options: row click navigates to detail, hover hint
-    // via cursor:pointer.
+    // via cursor:pointer. selectableRows: 'none' suppresses the default
+    // checkbox/Actions column — this is a read-only governance view
+    // with no per-row actions.
     const tableOptions = {
+        selectableRows: 'none',
         onRowClick: (rowData) => {
             const id = rowData[0];
             if (id) {
