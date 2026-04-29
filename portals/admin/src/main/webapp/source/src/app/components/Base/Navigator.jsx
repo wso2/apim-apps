@@ -116,6 +116,20 @@ function Navigator(props) {
         routeMenuMapping = routeMenuMapping.filter((menu) => menu.id !== 'Reports');
     }
 
+    // Hide "Unmanaged APIs" under Governance unless the API Discovery
+    // integration is explicitly enabled in deployment.toml.
+    if (!settings.discoveryEnabled) {
+        routeMenuMapping = routeMenuMapping.map((menu) => {
+            if (menu.id === 'Governance' && menu.children) {
+                return {
+                    ...menu,
+                    children: menu.children.filter((child) => child.id !== 'Unmanaged APIs'),
+                };
+            }
+            return menu;
+        });
+    }
+
     const isWorkflowManager = hasPermission(CONSTS.Roles.WORKFLOW_MANAGER);
     const isSettingsManager = hasPermission(CONSTS.Roles.SETTINGS_MANAGER);
     const isPolicyManager = hasPermission(CONSTS.Roles.POLICY_MANAGER);
