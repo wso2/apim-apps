@@ -10,9 +10,15 @@ import RadioGroup from '@mui/material/RadioGroup';
 import { FormattedMessage } from 'react-intl';
 import InputLabel from '@mui/material/InputLabel';
 import FormHelperText from '@mui/material/FormHelperText';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CustomGatewayInputField from 'AppComponents/GatewayEnvironments/CustomGatewayInputField';
+import GatewayPlanMapping from './GatewayPlanMapping';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
+const PLAN_MAPPING_PROPERTY_PREFIX = 'plan_mapping.';
 
 // Styled wrapper to mimic TextField's outlined style
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
@@ -167,7 +173,10 @@ export default function GatewayConfiguration(props) {
 
         // Clear any properties in additionalProperties that are not in the current valid set
         Object.keys(additionalProperties).forEach((propName) => {
-            if (!currentValidProperties.includes(propName)) {
+            if (
+                !currentValidProperties.includes(propName)
+                && !propName.startsWith(PLAN_MAPPING_PROPERTY_PREFIX)
+            ) {
                 setAdditionalProperties(propName, undefined);
             }
         });
@@ -207,7 +216,15 @@ export default function GatewayConfiguration(props) {
                 });
             }
         }
-        if (gatewayConfiguration.type === 'input') {
+        if (gatewayConfiguration.type === 'mapping') {
+            return (
+                <GatewayPlanMapping
+                    gatewayConfiguration={gatewayConfiguration}
+                    additionalProperties={additionalProperties}
+                    setAdditionalProperties={setAdditionalProperties}
+                />
+            );
+        } else if (gatewayConfiguration.type === 'input') {
             if (gatewayConfiguration.mask) {
                 return (
                     <FormControl variant='outlined' fullWidth disabled={disabled}>
@@ -333,9 +350,25 @@ export default function GatewayConfiguration(props) {
         });
     };
 
+    const regularConfigurations = gatewayConfigurations.filter((config) => config.type !== 'mapping');
+    const mappingConfigurations = gatewayConfigurations.filter((config) => config.type === 'mapping');
+
     return (
         <div>
-            {renderConnectorConfigurations(gatewayConfigurations)}
+            {renderConnectorConfigurations(regularConfigurations)}
+            {mappingConfigurations.length > 0 && (
+                <Accordion sx={{ mt: 2 }}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <FormattedMessage
+                            id='GatewayEnvironments.GatewayConfiguration.advancedSettings'
+                            defaultMessage='Advanced Settings'
+                        />
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        {renderConnectorConfigurations(mappingConfigurations)}
+                    </AccordionDetails>
+                </Accordion>
+            )}
         </div>
     );
 }
