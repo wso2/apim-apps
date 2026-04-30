@@ -94,6 +94,7 @@ const CONSTS = {
         { value: 'API_DEFINITION', label: 'Definition' },
         { value: 'API_METADATA', label: 'Metadata' },
         { value: 'API_DOCUMENTATION', label: 'Documentation' },
+        { value: 'GENERIC', label: 'Generic' },
     ],
     ARTIFACT_TYPES: [
         { value: 'REST_API', label: 'REST API' },

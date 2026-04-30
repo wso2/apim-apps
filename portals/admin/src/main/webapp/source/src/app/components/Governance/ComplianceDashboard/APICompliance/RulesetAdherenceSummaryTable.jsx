@@ -154,7 +154,7 @@ export default function RulesetAdherenceSummaryTable({ complianceData }) {
             options: {
                 customBodyRender: (value, tableMeta) => {
                     // Count the number of errors, warnings, and info messages in the violations
-                    const violations = tableMeta.rowData[3];
+                    const violations = tableMeta.rowData[3] || [];
                     const counts = violations.reduce((acc, { severity }) => {
                         acc[severity.toLowerCase()] += 1;
                         return acc;

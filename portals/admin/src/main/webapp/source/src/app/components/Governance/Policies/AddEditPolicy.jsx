@@ -1005,6 +1005,8 @@ function AddEditPolicy(props) {
                             />
                         </Typography>
                     </Grid>
+
+                    {/* Rulesets Section */}
                     <Grid item xs={12} md={12} lg={12}>
                         <Box component='div' m={1}>
                             <RulesetSelector

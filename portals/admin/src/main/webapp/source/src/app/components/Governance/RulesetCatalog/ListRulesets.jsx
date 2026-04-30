@@ -129,6 +129,10 @@ export default function ListRulesets() {
             },
         },
         {
+            name: 'ruleCategory',
+            options: { display: false },
+        },
+        {
             name: 'ruleType',
             label: intl.formatMessage({
                 id: 'Governance.Rulesets.List.column.rulesetType',
@@ -137,12 +141,18 @@ export default function ListRulesets() {
             options: {
                 filter: true,
                 sort: false,
-                customBodyRender: (value) => (
-                    <Chip
-                        label={Utils.mapRuleTypeToLabel(value)}
-                        size='small'
-                    />
-                ),
+                customBodyRender: (value, tableMeta) => {
+                    const ruleCategory = tableMeta.rowData[3];
+                    const label = ruleCategory === 'GENERIC'
+                        ? Utils.mapRuleTypeToLabel(ruleCategory)
+                        : Utils.mapRuleTypeToLabel(value);
+                    return (
+                        <Chip
+                            label={label}
+                            size='small'
+                        />
+                    );
+                },
                 setCellProps: () => ({
                     style: {
                         width: '15%',

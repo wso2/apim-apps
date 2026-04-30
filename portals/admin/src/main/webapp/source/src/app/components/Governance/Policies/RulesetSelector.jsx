@@ -38,7 +38,6 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import Utils from 'AppData/Utils';
 import { styled } from '@mui/material/styles';
 
-// Move getChipStyles from AddEditPolicy
 const getChipStyles = (type) => {
     switch (type) {
         case 'API_DEFINITION':
@@ -61,6 +60,22 @@ const getChipStyles = (type) => {
     }
 };
 
+const getCategoryChipStyles = (category, isActive) => {
+    const styles = {
+        GENERIC: {
+            color: isActive ? '#fff' : '#E65100',
+            borderColor: '#E65100',
+            backgroundColor: isActive ? '#E65100' : 'transparent',
+        },
+        SPECTRAL: {
+            color: isActive ? '#fff' : '#0277BD',
+            borderColor: '#0277BD',
+            backgroundColor: isActive ? '#0277BD' : 'transparent',
+        },
+    };
+    return styles[category] || {};
+};
+
 const PREFIX = 'RulesetSelector';
 
 const classes = {
@@ -76,6 +91,8 @@ const classes = {
     documentationLink: `${PREFIX}-documentationLink`,
     documentationIcon: `${PREFIX}-documentationIcon`,
     pagination: `${PREFIX}-pagination`,
+    categoryFilterBar: `${PREFIX}-categoryFilterBar`,
+    categoryChip: `${PREFIX}-categoryChip`,
 };
 
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -155,6 +172,16 @@ const StyledBox = styled(Box)(({ theme }) => ({
         display: 'flex',
         justifyContent: 'center',
     },
+    [`& .${classes.categoryFilterBar}`]: {
+        display: 'flex',
+        gap: theme.spacing(1),
+        marginBottom: theme.spacing(2),
+        alignItems: 'center',
+    },
+    [`& .${classes.categoryChip}`]: {
+        cursor: 'pointer',
+        fontWeight: 500,
+    },
 }));
 
 function RulesetSelector({
@@ -165,13 +192,18 @@ function RulesetSelector({
 }) {
     const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(1);
+    const [categoryFilter, setCategoryFilter] = useState('ALL');
     const itemsPerPage = 6;
 
+    const categories = [...new Set(availableRulesets.map((r) => r.ruleCategory))].filter(Boolean);
+
     const filteredRulesets = availableRulesets.filter(
-        (ruleset) => (
-            ruleset.name.toLowerCase().includes(searchQuery.toLowerCase())
-            || ruleset.description.toLowerCase().includes(searchQuery.toLowerCase())
-        ),
+        (ruleset) => {
+            const matchesCategory = categoryFilter === 'ALL' || ruleset.ruleCategory === categoryFilter;
+            const matchesSearch = ruleset.name.toLowerCase().includes(searchQuery.toLowerCase())
+                || (ruleset.description && ruleset.description.toLowerCase().includes(searchQuery.toLowerCase()));
+            return matchesCategory && matchesSearch;
+        },
     );
 
     const paginatedRulesets = filteredRulesets.slice(
@@ -200,6 +232,31 @@ function RulesetSelector({
                             onDelete={() => onRulesetDeselect(ruleset)}
                             color='primary'
                             variant='outlined'
+                        />
+                    ))}
+                </Box>
+            )}
+
+            {/* Category Filter */}
+            {categories.length > 1 && (
+                <Box className={classes.categoryFilterBar}>
+                    <Chip
+                        label='All'
+                        size='small'
+                        variant={categoryFilter === 'ALL' ? 'filled' : 'outlined'}
+                        color={categoryFilter === 'ALL' ? 'primary' : 'default'}
+                        onClick={() => { setCategoryFilter('ALL'); setPage(1); }}
+                        className={classes.categoryChip}
+                    />
+                    {categories.map((cat) => (
+                        <Chip
+                            key={cat}
+                            label={cat}
+                            size='small'
+                            variant='outlined'
+                            onClick={() => { setCategoryFilter(cat); setPage(1); }}
+                            className={classes.categoryChip}
+                            sx={getCategoryChipStyles(cat, categoryFilter === cat)}
                         />
                     ))}
                 </Box>
@@ -262,21 +319,37 @@ function RulesetSelector({
                                 >
                                     {ruleset.name}
                                 </Typography>
-                                <Box sx={{ mb: 1.5, display: 'flex', gap: 1 }}>
-                                    <Chip
-                                        label={Utils.mapRuleTypeToLabel(ruleset.ruleType)}
-                                        size='small'
-                                        variant='outlined'
-                                        className={classes.chip}
-                                        sx={{
-                                            ...getChipStyles(ruleset.ruleType),
-                                        }}
-                                    />
-                                    <Chip
-                                        label={Utils.mapArtifactTypeToLabel(ruleset.artifactType)}
-                                        size='small'
-                                        className={classes.chip}
-                                    />
+                                <Box sx={{
+                                    mb: 1.5, display: 'flex', gap: 0.5, flexWrap: 'wrap',
+                                }}
+                                >
+                                    {ruleset.ruleCategory && (
+                                        <Chip
+                                            label={ruleset.ruleCategory}
+                                            size='small'
+                                            variant='outlined'
+                                            className={classes.chip}
+                                            sx={getCategoryChipStyles(ruleset.ruleCategory, false)}
+                                        />
+                                    )}
+                                    {ruleset.ruleType && (
+                                        <Chip
+                                            label={Utils.mapRuleTypeToLabel(ruleset.ruleType)}
+                                            size='small'
+                                            variant='outlined'
+                                            className={classes.chip}
+                                            sx={{
+                                                ...getChipStyles(ruleset.ruleType),
+                                            }}
+                                        />
+                                    )}
+                                    {ruleset.artifactType && (
+                                        <Chip
+                                            label={Utils.mapArtifactTypeToLabel(ruleset.artifactType)}
+                                            size='small'
+                                            className={classes.chip}
+                                        />
+                                    )}
                                 </Box>
                                 <Typography
                                     variant='body2'
