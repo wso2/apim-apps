@@ -28,7 +28,6 @@ export default function GatewayPlanMapping(props) {
         gatewayConfiguration,
         additionalProperties = {},
         setAdditionalProperties = () => {},
-        isReadOnly = false,
     } = props;
 
     const leftLabel = gatewayConfiguration?.labels?.left || 'Key';
@@ -180,7 +179,6 @@ export default function GatewayPlanMapping(props) {
                                                     `${PLAN_MAPPING_PROPERTY_PREFIX}${mappingValue.id}`,
                                                     event.target.value || undefined,
                                                 )}
-                                                disabled={isReadOnly}
                                                 placeholder={mappingValue.label || mappingValue.id}
                                             />
                                         </TableCell>
@@ -218,11 +216,9 @@ GatewayPlanMapping.propTypes = {
         PropTypes.arrayOf(PropTypes.string),
     ])),
     setAdditionalProperties: PropTypes.func,
-    isReadOnly: PropTypes.bool,
 };
 
 GatewayPlanMapping.defaultProps = {
     additionalProperties: {},
     setAdditionalProperties: () => {},
-    isReadOnly: false,
 };

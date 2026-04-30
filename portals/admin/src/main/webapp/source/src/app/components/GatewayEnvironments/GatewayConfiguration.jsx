@@ -48,7 +48,7 @@ const StyledFormControl = styled(FormControl)(({ theme }) => ({
 export default function GatewayConfiguration(props) {
     const {
         gatewayConfigurations, additionalProperties = {}, setAdditionalProperties = () => {}, gatewayId,
-        hasErrors, validating, isReadOnly = false,
+        hasErrors, validating,
     } = props;
 
     const getAllNestedGatewayConfigPropertyNames = (connectorConfigurations, parentKey = '') => {
@@ -197,7 +197,7 @@ export default function GatewayConfiguration(props) {
 
     const getComponent = (gatewayConfiguration) => {
         let value = '';
-        const disabled = isReadOnly || Boolean(gatewayConfiguration.updateDisabled && gatewayId);
+        const disabled = Boolean(gatewayConfiguration.updateDisabled && gatewayId);
         if (additionalProperties[gatewayConfiguration.name]) {
             value = additionalProperties[gatewayConfiguration.name];
         } else if (!gatewayId && (gatewayConfiguration.default
@@ -222,7 +222,6 @@ export default function GatewayConfiguration(props) {
                     gatewayConfiguration={gatewayConfiguration}
                     additionalProperties={additionalProperties}
                     setAdditionalProperties={setAdditionalProperties}
-                    isReadOnly={isReadOnly}
                 />
             );
         } else if (gatewayConfiguration.type === 'input') {
