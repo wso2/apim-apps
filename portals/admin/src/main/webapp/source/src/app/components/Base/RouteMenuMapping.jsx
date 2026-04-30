@@ -50,6 +50,7 @@ import CategoryIcon from '@mui/icons-material/Category';
 import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import PolicyIcon from '@mui/icons-material/Policy';
 import RuleIcon from '@mui/icons-material/Rule';
+import SearchIcon from '@mui/icons-material/Search';
 import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -74,6 +75,7 @@ import ListApis from '../APISettings/ListApis';
 import UsageReport from '../APISettings/UsageReport';
 import ListLabels from '../Labels/ListLabels';
 import ComplianceDashboard from '../Governance/ComplianceDashboard';
+import UnmanagedApis from '../Governance/UnmanagedApis';
 import ExportConsumptionData from '../ConsumptionData/ExportConsumptionData';
 
 const RouteMenuMapping = (intl) => [
@@ -369,6 +371,16 @@ const RouteMenuMapping = (intl) => [
                 path: '/governance/ruleset-catalog',
                 component: RulesetCatalog,
                 icon: <RuleIcon />,
+            },
+            {
+                id: 'Unmanaged APIs',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.governance.unmanaged.apis',
+                    defaultMessage: 'Unmanaged APIs',
+                }),
+                path: '/governance/unmanaged-apis',
+                component: UnmanagedApis,
+                icon: <SearchIcon />,
             },
         ],
     },
