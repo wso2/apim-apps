@@ -647,7 +647,7 @@ class DetailsLegacy extends React.Component {
                                     id='left-menu-credentials'
                                 />
                             )}
-                            {user && showCredentials && api?.securityScheme?.includes('api_key') && (
+                            {user && api?.securityScheme?.includes('api_key') && (
                                 <LeftMenuItem
                                     text={(
                                         <FormattedMessage

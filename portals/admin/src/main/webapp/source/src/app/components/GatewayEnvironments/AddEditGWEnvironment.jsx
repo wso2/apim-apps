@@ -1260,9 +1260,26 @@ function AddEditGWEnvironment(props) {
                 const { response } = error;
                 if (response?.body) {
                     setPlanMappingErrors(extractPlanMappingErrors(response.body));
-                    Alert.error(response.body.description);
+                    Alert.error(
+                        response.body.description
+                        || error?.message
+                        || intl.formatMessage({
+                            id: 'GatewayEnvironments.AddEditGWEnvironment.save.failed',
+                            defaultMessage: 'Save failed',
+                        }),
+                    );
                 } else {
                     setPlanMappingErrors({});
+                    const statusSuffix = response?.status
+                        ? ` (${response.status}${response?.statusText ? ` ${response.statusText}` : ''})`
+                        : '';
+                    Alert.error(
+                        error?.message
+                        || `${intl.formatMessage({
+                            id: 'GatewayEnvironments.AddEditGWEnvironment.save.failed',
+                            defaultMessage: 'Save failed',
+                        })}${statusSuffix}`,
+                    );
                 }
                 setSaving(false);
             });
