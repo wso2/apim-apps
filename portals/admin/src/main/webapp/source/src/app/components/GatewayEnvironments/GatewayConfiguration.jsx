@@ -48,7 +48,7 @@ const StyledFormControl = styled(FormControl)(({ theme }) => ({
 export default function GatewayConfiguration(props) {
     const {
         gatewayConfigurations, additionalProperties = {}, setAdditionalProperties = () => {}, gatewayId,
-        hasErrors, validating,
+        hasErrors, validating, planMappingErrors = {},
     } = props;
 
     const getAllNestedGatewayConfigPropertyNames = (connectorConfigurations, parentKey = '') => {
@@ -222,6 +222,7 @@ export default function GatewayConfiguration(props) {
                     gatewayConfiguration={gatewayConfiguration}
                     additionalProperties={additionalProperties}
                     setAdditionalProperties={setAdditionalProperties}
+                    planMappingErrors={planMappingErrors}
                 />
             );
         } else if (gatewayConfiguration.type === 'input') {
@@ -383,4 +384,5 @@ GatewayConfiguration.defaultProps = {
     />,
     hasErrors: () => {},
     validating: false,
+    planMappingErrors: {},
 };

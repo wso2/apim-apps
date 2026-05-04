@@ -80,6 +80,8 @@ import {
 } from './PlatformGatewayUtils';
 
 const PREFIX = 'AddEditGWEnvironment';
+const PLAN_MAPPING_PROPERTY_PREFIX = 'plan_mapping.';
+const FEDERATED_GATEWAY_VALIDATION_ERROR_CODE = 900520;
 
 const classes = {
     pageContent: `${PREFIX}-pageContent`,
@@ -365,6 +367,23 @@ const getGatewayConfigValidationError = (value, formatMessage) => {
     return false;
 };
 
+const extractPlanMappingErrors = (responseBody) => {
+    const rowErrors = {};
+    if (!responseBody
+        || responseBody.code !== FEDERATED_GATEWAY_VALIDATION_ERROR_CODE
+        || !Array.isArray(responseBody.error)) {
+        return rowErrors;
+    }
+
+    responseBody.error.forEach((errorItem) => {
+        const fieldKey = errorItem?.message;
+        if (fieldKey && fieldKey.startsWith(PLAN_MAPPING_PROPERTY_PREFIX)) {
+            rowErrors[fieldKey] = errorItem.description || 'Invalid external plan assignment';
+        }
+    });
+    return rowErrors;
+};
+
 /**
  * Reducer
  * @param {JSON} state State
@@ -414,6 +433,7 @@ function AddEditGWEnvironment(props) {
     const [supportedModes, setSupportedModes] = useState([]);
     const [validating, setValidating] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [planMappingErrors, setPlanMappingErrors] = useState({});
     const { gatewayTypes } = settings;
     const gatewayVersions = useMemo(() => getPlatformGatewayVersions(settings), [settings]);
     const {
@@ -637,6 +657,10 @@ function AddEditGWEnvironment(props) {
             setRoles(permissions.roles);
         }
     }, [permissions]);
+
+    useEffect(() => {
+        setPlanMappingErrors({});
+    }, [gatewayType]);
 
     useEffect(() => {
         if (!platformHeaderEditMode) {
@@ -881,6 +905,13 @@ function AddEditGWEnvironment(props) {
     };
 
     const setAdditionalProperties = (key, value) => {
+        if (key && planMappingErrors[key]) {
+            setPlanMappingErrors((prevErrors) => {
+                const updatedErrors = { ...prevErrors };
+                delete updatedErrors[key];
+                return updatedErrors;
+            });
+        }
         const clonedAdditionalProperties = cloneDeep(additionalProperties);
         if (value === undefined) {
             delete clonedAdditionalProperties[key];
@@ -1189,6 +1220,7 @@ function AddEditGWEnvironment(props) {
 
         promiseAPICall
             .then((result) => {
+                setPlanMappingErrors({});
                 if (id) {
                     Alert.success(
                         `${name} ${intl.formatMessage({
@@ -1226,8 +1258,11 @@ function AddEditGWEnvironment(props) {
             })
             .catch((error) => {
                 const { response } = error;
-                if (response.body) {
+                if (response?.body) {
+                    setPlanMappingErrors(extractPlanMappingErrors(response.body));
                     Alert.error(response.body.description);
+                } else {
+                    setPlanMappingErrors({});
                 }
                 setSaving(false);
             });
@@ -2382,6 +2417,9 @@ function AddEditGWEnvironment(props) {
                                                         }
                                                         validating={
                                                             validating
+                                                        }
+                                                        planMappingErrors={
+                                                            planMappingErrors
                                                         }
                                                         gatewayId={cloneDeep(
                                                             id,

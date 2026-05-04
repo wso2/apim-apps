@@ -11,12 +11,11 @@ import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import FormLabel from '@mui/material/FormLabel';
 import FormHelperText from '@mui/material/FormHelperText';
-import Tooltip from '@mui/material/Tooltip';
-import HelpOutline from '@mui/icons-material/HelpOutline';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 
 const PLAN_MAPPING_PROPERTY_PREFIX = 'plan_mapping.';
+const PLAN_MAPPING_TABLE_MAX_HEIGHT = 343;
 
 /**
  * Gateway plan mapping configuration.
@@ -28,6 +27,7 @@ export default function GatewayPlanMapping(props) {
         gatewayConfiguration,
         additionalProperties = {},
         setAdditionalProperties = () => {},
+        planMappingErrors = {},
     } = props;
 
     const leftLabel = gatewayConfiguration?.labels?.left || 'Key';
@@ -43,44 +43,43 @@ export default function GatewayPlanMapping(props) {
             [apiType]: [...(groups[apiType] || []), mappingValue],
         };
     }, {});
-    const groupedValuesForDisplay = {
-        ...groupedValues,
-        ...(!groupedValues.async && groupedValues.rest ? { async: groupedValues.rest } : {}),
-    };
     const apiTypeOrder = ['rest', 'async', 'ai-api', 'other'];
     const apiTypeLabels = {
         rest: (
             <FormattedMessage
                 id='GatewayEnvironments.PlanMapping.apiType.rest'
-                defaultMessage='REST APIs'
+                defaultMessage='REST API Subscription Policies'
             />
         ),
         async: (
             <FormattedMessage
                 id='GatewayEnvironments.PlanMapping.apiType.async'
-                defaultMessage='Async APIs'
+                defaultMessage='Async API Subscription Policies'
             />
         ),
         'ai-api': (
             <FormattedMessage
                 id='GatewayEnvironments.PlanMapping.apiType.ai'
-                defaultMessage='AI APIs'
+                defaultMessage='AI API Subscription Policies'
             />
         ),
         other: (
             <FormattedMessage
                 id='GatewayEnvironments.PlanMapping.apiType.other'
-                defaultMessage='Other APIs'
+                defaultMessage='Other API Subscription Policies'
             />
         ),
     };
     const orderedApiTypes = [
-        ...apiTypeOrder.filter((apiType) => groupedValuesForDisplay[apiType]?.length > 0),
-        ...Object.keys(groupedValuesForDisplay).filter((apiType) => !apiTypeOrder.includes(apiType)),
+        ...apiTypeOrder.filter((apiType) => groupedValues[apiType]?.length > 0),
+        ...Object.keys(groupedValues).filter((apiType) => !apiTypeOrder.includes(apiType)),
     ];
 
     const getPlanMappingValue = (localPolicyId) => {
         return additionalProperties[`${PLAN_MAPPING_PROPERTY_PREFIX}${localPolicyId}`] || '';
+    };
+    const getPlanMappingError = (localPolicyId) => {
+        return planMappingErrors[`${PLAN_MAPPING_PROPERTY_PREFIX}${localPolicyId}`] || '';
     };
     const tableStyles = {
         '& .MuiTableCell-head': {
@@ -110,18 +109,12 @@ export default function GatewayPlanMapping(props) {
                 {gatewayConfiguration.label && (
                     <FormLabel component='legend'>{gatewayConfiguration.label}</FormLabel>
                 )}
-                {gatewayConfiguration.tooltip && (
-                    <Tooltip title={gatewayConfiguration.tooltip} placement='right-end' interactive>
-                        <HelpOutline fontSize='small' color='action' />
-                    </Tooltip>
-                )}
             </Stack>
-            <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
-                <FormattedMessage
-                    id='GatewayEnvironments.PlanMapping.helper'
-                    defaultMessage='Map each local subscription plan to the corresponding gateway plan identifier.'
-                />
-            </Typography>
+            {gatewayConfiguration.tooltip && (
+                <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
+                    {gatewayConfiguration.tooltip}
+                </Typography>
+            )}
             {orderedApiTypes.length === 0 ? (
                 <FormHelperText>
                     <FormattedMessage
@@ -151,8 +144,13 @@ export default function GatewayPlanMapping(props) {
                             {apiTypeLabels[apiType] || apiType}
                         </Typography>
                     </Box>
-                    <TableContainer>
-                        <Table size='small' sx={tableStyles}>
+                    <TableContainer
+                        sx={{
+                            maxHeight: PLAN_MAPPING_TABLE_MAX_HEIGHT,
+                            overflowY: 'auto',
+                        }}
+                    >
+                        <Table stickyHeader size='small' sx={tableStyles}>
                             <TableHead>
                                 <TableRow>
                                     <TableCell>{leftLabel}</TableCell>
@@ -160,30 +158,35 @@ export default function GatewayPlanMapping(props) {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {groupedValuesForDisplay[apiType].map((mappingValue) => (
-                                    <TableRow key={`${apiType}.${mappingValue.id}`}>
-                                        <TableCell component='th' scope='row'>
-                                            <Typography variant='body2' fontWeight={500}>
-                                                {mappingValue.label || mappingValue.id}
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell>
-                                            <TextField
-                                                id={`${gatewayConfiguration.name}.${mappingValue.id}`}
-                                                margin='dense'
-                                                name={mappingValue.id}
-                                                fullWidth
-                                                variant='outlined'
-                                                value={getPlanMappingValue(mappingValue.id)}
-                                                onChange={(event) => setAdditionalProperties(
-                                                    `${PLAN_MAPPING_PROPERTY_PREFIX}${mappingValue.id}`,
-                                                    event.target.value || undefined,
-                                                )}
-                                                placeholder={mappingValue.label || mappingValue.id}
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                {groupedValues[apiType].map((mappingValue) => {
+                                    const fieldError = getPlanMappingError(mappingValue.id);
+                                    return (
+                                        <TableRow key={`${apiType}.${mappingValue.id}`}>
+                                            <TableCell component='th' scope='row'>
+                                                <Typography variant='body2' fontWeight={500}>
+                                                    {mappingValue.label || mappingValue.id}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <TextField
+                                                    id={`${gatewayConfiguration.name}.${mappingValue.id}`}
+                                                    margin='dense'
+                                                    name={mappingValue.id}
+                                                    fullWidth
+                                                    variant='outlined'
+                                                    value={getPlanMappingValue(mappingValue.id)}
+                                                    error={Boolean(fieldError)}
+                                                    helperText={fieldError || undefined}
+                                                    onChange={(event) => setAdditionalProperties(
+                                                        `${PLAN_MAPPING_PROPERTY_PREFIX}${mappingValue.id}`,
+                                                        event.target.value || undefined,
+                                                    )}
+                                                    placeholder={mappingValue.label || mappingValue.id}
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
                             </TableBody>
                         </Table>
                     </TableContainer>
@@ -216,9 +219,11 @@ GatewayPlanMapping.propTypes = {
         PropTypes.arrayOf(PropTypes.string),
     ])),
     setAdditionalProperties: PropTypes.func,
+    planMappingErrors: PropTypes.objectOf(PropTypes.string),
 };
 
 GatewayPlanMapping.defaultProps = {
     additionalProperties: {},
     setAdditionalProperties: () => {},
+    planMappingErrors: {},
 };
