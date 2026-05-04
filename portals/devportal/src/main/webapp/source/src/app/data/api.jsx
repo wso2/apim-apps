@@ -91,7 +91,7 @@ export default class API extends Resource {
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
     getDocumentsByAPIId(id, callback = null) {
-        const limit = app.documentCount || 1000;
+        const limit = app.documentCount || 25;
         const promiseGet = this.client.then((client) => {
             return client.apis['API Documents'].get_apis__apiId__documents({ apiId: id, limit }, this._requestMetaData());
         });
