@@ -267,7 +267,7 @@ export default class MCPServer extends Resource {
      * @returns {Promise} - Promise resolving to the API response.
      */
     getDocuments(mcpServerId, callback = null) {
-        const limit = app.documentCount || 25;
+        const limit = app.documentCount || 100;
         const promise = this.client.then((client) => {
             return client.apis['MCP Server Documents'].getMCPServerDocuments(
                 { mcpServerId, limit },
