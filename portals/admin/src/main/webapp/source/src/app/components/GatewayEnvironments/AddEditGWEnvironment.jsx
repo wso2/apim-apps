@@ -80,7 +80,6 @@ import {
 } from './PlatformGatewayUtils';
 
 const PREFIX = 'AddEditGWEnvironment';
-const PLAN_MAPPING_PROPERTY_PREFIX = 'plan_mapping.';
 const FEDERATED_GATEWAY_VALIDATION_ERROR_CODE = 900520;
 
 const classes = {
@@ -377,7 +376,7 @@ const extractPlanMappingErrors = (responseBody) => {
 
     responseBody.error.forEach((errorItem) => {
         const fieldKey = errorItem?.message;
-        if (fieldKey && fieldKey.startsWith(PLAN_MAPPING_PROPERTY_PREFIX)) {
+        if (fieldKey && fieldKey.startsWith('plan_mapping.')) {
             rowErrors[fieldKey] = errorItem.description || 'Invalid external plan assignment';
         }
     });

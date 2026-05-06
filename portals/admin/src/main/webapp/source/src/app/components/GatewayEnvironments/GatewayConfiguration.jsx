@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -18,7 +18,7 @@ import CustomGatewayInputField from 'AppComponents/GatewayEnvironments/CustomGat
 import GatewayPlanMapping from './GatewayPlanMapping';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
-const PLAN_MAPPING_PROPERTY_PREFIX = 'plan_mapping.';
+const PLAN_MAPPING_CONFIG_TYPE = 'plan_mapping';
 
 // Styled wrapper to mimic TextField's outlined style
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
@@ -50,6 +50,12 @@ export default function GatewayConfiguration(props) {
         gatewayConfigurations, additionalProperties = {}, setAdditionalProperties = () => {}, gatewayId,
         hasErrors, validating, planMappingErrors = {}, supportedApiTypes = [],
     } = props;
+
+    const mappingConfigurationNames = useMemo(() => {
+        return gatewayConfigurations
+            .filter((config) => config.type === PLAN_MAPPING_CONFIG_TYPE)
+            .map((config) => config.name);
+    }, [gatewayConfigurations]);
 
     const getAllNestedGatewayConfigPropertyNames = (connectorConfigurations, parentKey = '') => {
         const gatewayConfigPropertyNames = [];
@@ -173,9 +179,12 @@ export default function GatewayConfiguration(props) {
 
         // Clear any properties in additionalProperties that are not in the current valid set
         Object.keys(additionalProperties).forEach((propName) => {
+            const isMappingProperty = mappingConfigurationNames.some((configName) => (
+                propName.startsWith(`${configName}.`)
+            ));
             if (
                 !currentValidProperties.includes(propName)
-                && !propName.startsWith(PLAN_MAPPING_PROPERTY_PREFIX)
+                && !isMappingProperty
             ) {
                 setAdditionalProperties(propName, undefined);
             }
@@ -216,7 +225,7 @@ export default function GatewayConfiguration(props) {
                 });
             }
         }
-        if (gatewayConfiguration.type === 'mapping') {
+        if (gatewayConfiguration.type === PLAN_MAPPING_CONFIG_TYPE) {
             return (
                 <GatewayPlanMapping
                     gatewayConfiguration={gatewayConfiguration}
@@ -352,8 +361,12 @@ export default function GatewayConfiguration(props) {
         });
     };
 
-    const regularConfigurations = gatewayConfigurations.filter((config) => config.type !== 'mapping');
-    const mappingConfigurations = gatewayConfigurations.filter((config) => config.type === 'mapping');
+    const regularConfigurations = gatewayConfigurations.filter(
+        (config) => config.type !== PLAN_MAPPING_CONFIG_TYPE,
+    );
+    const mappingConfigurations = gatewayConfigurations.filter(
+        (config) => config.type === PLAN_MAPPING_CONFIG_TYPE,
+    );
 
     return (
         <div>

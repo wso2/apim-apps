@@ -22,7 +22,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage } from 'react-intl';
 
-const PLAN_MAPPING_PROPERTY_PREFIX = 'plan_mapping.';
+const DEFAULT_LEFT_COLUMN_LABEL = 'WSO2 Subscription Policy';
 const PLAN_MAPPING_TABLE_MAX_HEIGHT = 400;
 const NON_MAPPABLE_SUBSCRIPTION_POLICIES = [
     'Unauthenticated',
@@ -108,15 +108,12 @@ export default function GatewayPlanMapping(props) {
         };
     }, [restApi]);
 
-    const leftLabel = gatewayConfiguration?.labels?.left || 'Key';
-    const rightLabel = gatewayConfiguration?.labels?.right || gatewayConfiguration.label || 'Value';
+    const leftLabel = DEFAULT_LEFT_COLUMN_LABEL;
+    const rightLabel = gatewayConfiguration?.default || gatewayConfiguration.label || 'Value';
+    const planMappingPropertyPrefix = `${gatewayConfiguration.name}.`;
     const values = useMemo(() => {
-        const generatedValues = buildPlanMappingValues(subscriptionPolicies, supportedApiTypes);
-        if (generatedValues.length > 0) {
-            return generatedValues;
-        }
-        return Array.isArray(gatewayConfiguration.values) ? gatewayConfiguration.values : [];
-    }, [gatewayConfiguration.values, subscriptionPolicies, supportedApiTypes]);
+        return buildPlanMappingValues(subscriptionPolicies, supportedApiTypes);
+    }, [subscriptionPolicies, supportedApiTypes]);
     const compatibleValues = useMemo(() => {
         return values.filter((mappingValue) => (
             mappingValue && typeof mappingValue === 'object' && mappingValue.policyName
@@ -124,9 +121,9 @@ export default function GatewayPlanMapping(props) {
     }, [values]);
 
     const getPlanMappingError = (localPolicyName) => {
-        return planMappingErrors[`${PLAN_MAPPING_PROPERTY_PREFIX}${localPolicyName}`] || '';
+        return planMappingErrors[`${planMappingPropertyPrefix}${localPolicyName}`] || '';
     };
-    const getPlanMappingPropertyKey = (localPolicyName) => `${PLAN_MAPPING_PROPERTY_PREFIX}${localPolicyName}`;
+    const getPlanMappingPropertyKey = (localPolicyName) => `${planMappingPropertyPrefix}${localPolicyName}`;
     const mappedValues = compatibleValues.filter((mappingValue) => {
         const propertyKey = getPlanMappingPropertyKey(mappingValue.policyName);
         return Boolean((additionalProperties[propertyKey] || '').trim());
@@ -234,7 +231,7 @@ export default function GatewayPlanMapping(props) {
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{ width: '45%' }}>{leftLabel}</TableCell>
-                            <TableCell align='left' sx={{ width: '55%' }}>{rightLabel}</TableCell>
+                            <TableCell sx={{ width: '55%' }}>{rightLabel}</TableCell>
                             <TableCell align='right' sx={{ width: 50 }}>
                                 <FormattedMessage
                                     id='GatewayEnvironments.PlanMapping.action'
@@ -279,7 +276,7 @@ export default function GatewayPlanMapping(props) {
                                     ))}
                                 </TextField>
                             </TableCell>
-                            <TableCell align='right' sx={{ width: '55%' }}>
+                            <TableCell sx={{ width: '55%' }}>
                                 <TextField
                                     id='planMappingRemotePlan'
                                     label={rightLabel}
@@ -334,7 +331,7 @@ export default function GatewayPlanMapping(props) {
                                             {mappingValue.label || mappingValue.policyName}
                                         </Typography>
                                     </TableCell>
-                                    <TableCell align='right' sx={{ width: '55%' }}>
+                                    <TableCell sx={{ width: '55%' }}>
                                         <Typography
                                             variant='body1'
                                             gutterBottom
@@ -343,7 +340,7 @@ export default function GatewayPlanMapping(props) {
                                             {displayValue}
                                         </Typography>
                                         {getPlanMappingError(mappingValue.policyName) && (
-                                            <FormHelperText error sx={{ textAlign: 'right' }}>
+                                            <FormHelperText error>
                                                 {getPlanMappingError(mappingValue.policyName)}
                                             </FormHelperText>
                                         )}
@@ -389,10 +386,7 @@ GatewayPlanMapping.propTypes = {
         name: PropTypes.string,
         label: PropTypes.string,
         tooltip: PropTypes.string,
-        labels: PropTypes.shape({
-            left: PropTypes.string,
-            right: PropTypes.string,
-        }),
+        default: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
         values: PropTypes.arrayOf(PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.shape({
