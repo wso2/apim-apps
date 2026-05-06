@@ -143,9 +143,12 @@ export default function ListRulesets() {
                 sort: false,
                 customBodyRender: (value, tableMeta) => {
                     const ruleCategory = tableMeta.rowData[3];
-                    const label = ruleCategory === 'GENERIC'
-                        ? Utils.mapRuleTypeToLabel(ruleCategory)
-                        : Utils.mapRuleTypeToLabel(value);
+                    let label = Utils.mapRuleTypeToLabel(value);
+                    if (ruleCategory === 'GENERIC') {
+                        label = Utils.mapRuleTypeToLabel(ruleCategory);
+                    } else if (ruleCategory === 'EXTERNAL') {
+                        label = 'External';
+                    }
                     return (
                         <Chip
                             label={label}
