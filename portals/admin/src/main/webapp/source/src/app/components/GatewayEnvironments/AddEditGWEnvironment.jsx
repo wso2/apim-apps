@@ -430,6 +430,7 @@ function AddEditGWEnvironment(props) {
     const [invalidRoles, setInvalidRoles] = useState([]);
     const [roleValidity, setRoleValidity] = useState(true);
     const [gatewayConfigurations, setGatewayConfiguration] = useState([]);
+    const [selectedGatewaySupportedApiTypes, setSelectedGatewaySupportedApiTypes] = useState([]);
     const [supportedModes, setSupportedModes] = useState([]);
     const [validating, setValidating] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -681,7 +682,7 @@ function AddEditGWEnvironment(props) {
     ]);
 
     useEffect(() => {
-        const config = settings.gatewayConfiguration.filter(
+        const config = (settings.gatewayConfiguration || []).filter(
             (t) => t.type === gatewayType,
         )[0];
         if (
@@ -691,11 +692,13 @@ function AddEditGWEnvironment(props) {
         ) {
             setGatewayConfiguration([]);
             setSupportedModes([]);
+            setSelectedGatewaySupportedApiTypes([]);
         } else {
             setGatewayConfiguration(config.configurations || []);
             setSupportedModes(config.supportedModes || []);
+            setSelectedGatewaySupportedApiTypes(config.supportedApiTypes || []);
         }
-    }, [gatewayType]);
+    }, [gatewayType, settings.gatewayConfiguration]);
 
     let permissionType = '';
     if (permissions) {
@@ -2423,6 +2426,7 @@ function AddEditGWEnvironment(props) {
                                                         gatewayConfigurations={
                                                             gatewayConfigurations
                                                         }
+                                                        supportedApiTypes={selectedGatewaySupportedApiTypes}
                                                         additionalProperties={cloneDeep(
                                                             additionalProperties,
                                                         )}

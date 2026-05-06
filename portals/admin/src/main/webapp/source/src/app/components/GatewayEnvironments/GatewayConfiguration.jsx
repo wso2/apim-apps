@@ -48,7 +48,7 @@ const StyledFormControl = styled(FormControl)(({ theme }) => ({
 export default function GatewayConfiguration(props) {
     const {
         gatewayConfigurations, additionalProperties = {}, setAdditionalProperties = () => {}, gatewayId,
-        hasErrors, validating, planMappingErrors = {},
+        hasErrors, validating, planMappingErrors = {}, supportedApiTypes = [],
     } = props;
 
     const getAllNestedGatewayConfigPropertyNames = (connectorConfigurations, parentKey = '') => {
@@ -220,6 +220,7 @@ export default function GatewayConfiguration(props) {
             return (
                 <GatewayPlanMapping
                     gatewayConfiguration={gatewayConfiguration}
+                    supportedApiTypes={supportedApiTypes}
                     additionalProperties={additionalProperties}
                     setAdditionalProperties={setAdditionalProperties}
                     planMappingErrors={planMappingErrors}
@@ -385,4 +386,5 @@ GatewayConfiguration.defaultProps = {
     hasErrors: () => {},
     validating: false,
     planMappingErrors: {},
+    supportedApiTypes: [],
 };
