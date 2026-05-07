@@ -86,6 +86,8 @@ const EditorContainer = styled(Box)(({ theme }) => ({
     },
 }));
 
+const DEFAULT_EXTERNAL_RULE_TYPE = 'API_DEFINITION';
+
 function reducer(state, { field, value }) {
     const nextState = cloneDeep(state);
     switch (field) {
@@ -112,6 +114,7 @@ function AddEditRuleset(props) {
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [pendingFile, setPendingFile] = useState(null);
     const [rulesetValidationError, setRulesetValidationError] = useState(null);
+    const [externalHeaderChanges, setExternalHeaderChanges] = useState(false);
     const intl = useIntl();
     const { match: { params: { id } }, history } = props;
 
@@ -208,17 +211,16 @@ function AddEditRuleset(props) {
     }, [id]);
 
     useEffect(() => {
-        if (!isExternalRuleset && artifactType === 'MCP' && ruleType === 'API_DEFINITION') {
+        if (artifactType === 'MCP' && ruleType === 'API_DEFINITION') {
             dispatch({ field: 'ruleType', value: '' });
         }
-    }, [artifactType, isExternalRuleset, ruleType]);
+    }, [artifactType]); // Remove ruleType from dependency array
 
-    // Auto-set default ruleType for EXTERNAL rulesets
     useEffect(() => {
         if (isExternalRuleset && !ruleType) {
-            dispatch({ field: 'ruleType', value: 'API_DEFINITION' });
+            dispatch({ field: 'ruleType', value: DEFAULT_EXTERNAL_RULE_TYPE });
         }
-    }, [isExternalRuleset, ruleType]);
+    }, [isExternalRuleset]); // Remove ruleType from dependency array
 
     const onChange = (e) => {
         dispatch({ field: e.target.name, value: e.target.value });
@@ -326,6 +328,7 @@ function AddEditRuleset(props) {
             <ExternalRulesetForm
                 rulesetContent={rulesetContent}
                 onContentChange={handleEditorChange}
+                onChangeDetected={setExternalHeaderChanges}
             />
         );
     } else {
@@ -429,10 +432,10 @@ function AddEditRuleset(props) {
                 break;
 
             case 'ruleType':
-                // Skip ruleType validation for external rulesets as it has a default value
                 if (isExternalRuleset) {
-                    error = false;
-                } else if (!fieldValue) {
+                    break;
+                }
+                if (!fieldValue) {
                     error = intl.formatMessage({
                         id: 'Governance.Rulesets.AddEdit.form.ruletype.required',
                         defaultMessage: 'Rule type is required',
@@ -492,11 +495,6 @@ function AddEditRuleset(props) {
         return false;
     };
 
-    const getDefaultRuleTypeForExternal = () => {
-        // Ensure external rulesets always have a ruleType value on save
-        return ruleType || 'API_DEFINITION';
-    };
-
     const formSave = () => {
         setValidating(true);
         setRulesetValidationError(null);
@@ -511,18 +509,30 @@ function AddEditRuleset(props) {
         setSaving(true);
 
         const file = new File([rulesetContent], `${name}.yaml`);
-        let resolvedRuleType = ruleType;
+
+        // Determine effective rule category
+        let effectiveRuleCategory;
         if (isExternalRuleset) {
-            resolvedRuleType = getDefaultRuleTypeForExternal();
+            effectiveRuleCategory = 'EXTERNAL';
+        } else {
+            effectiveRuleCategory = ruleCategory || 'SPECTRAL';
+        }
+
+        // Determine effective rule type
+        let effectiveRuleType;
+        if (isExternalRuleset) {
+            effectiveRuleType = DEFAULT_EXTERNAL_RULE_TYPE;
         } else if (ruleType === 'GENERIC') {
-            resolvedRuleType = 'API_DEFINITION';
+            effectiveRuleType = 'API_DEFINITION';
+        } else {
+            effectiveRuleType = ruleType;
         }
 
         const body = {
             ...state,
             provider: AuthManager.getUser().name,
-            ruleCategory: isExternalRuleset ? 'EXTERNAL' : (ruleCategory || 'SPECTRAL'),
-            ruleType: resolvedRuleType,
+            ruleCategory: effectiveRuleCategory,
+            ruleType: effectiveRuleType,
             rulesetContent: file,
         };
 
@@ -798,7 +808,7 @@ function AddEditRuleset(props) {
                                 variant='contained'
                                 color='primary'
                                 onClick={formSave}
-                                disabled={saving}
+                                disabled={saving || (isExternalRuleset && !externalHeaderChanges)}
                             >
                                 {(() => {
                                     if (saving) {

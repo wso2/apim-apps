@@ -31,7 +31,6 @@ import {
 import {
     Box,
     Button,
-    Chip,
     Divider,
     Grid,
     IconButton,
@@ -130,13 +129,26 @@ function updateHeadersInYaml(yamlText, ruleKey, rows) {
     }
 }
 
-function ExternalRulesetForm({ rulesetContent, onContentChange }) {
+function ExternalRulesetForm({ rulesetContent, onContentChange, onChangeDetected }) {
     const intl = useIntl();
     const lastSyncedYaml = useRef('');
     const [headerState, setHeaderState] = useState({
         rows: [],
         ruleKey: null,
     });
+    const [originalRows, setOriginalRows] = useState([]);
+
+    // Detect if there are unsaved changes
+    useEffect(() => {
+        const hasChanges = headerState.rows.some((row, idx) => {
+            const original = originalRows[idx];
+            return !original || row.key !== original.key || row.value !== original.value;
+        }) || headerState.rows.length !== originalRows.length;
+
+        if (onChangeDetected) {
+            onChangeDetected(hasChanges);
+        }
+    }, [headerState.rows, originalRows, onChangeDetected]);
 
     useEffect(() => {
         if (!rulesetContent || rulesetContent === lastSyncedYaml.current) {
@@ -144,7 +156,12 @@ function ExternalRulesetForm({ rulesetContent, onContentChange }) {
         }
 
         const parsed = extractHeadersFromYaml(rulesetContent);
-        setHeaderState(parsed);
+        // Keep only security headers (case-insensitive match)
+        const securityRows = (parsed.rows || [])
+            .filter((r) => String(r.category || '').toUpperCase() === 'SECURITY')
+            .map((r) => ({ ...r, isEdited: false }));
+        setHeaderState({ ...parsed, rows: securityRows });
+        setOriginalRows(securityRows.map((r) => ({ ...r }))); // Store a copy of original rows
         lastSyncedYaml.current = rulesetContent;
     }, [rulesetContent]);
 
@@ -157,7 +174,9 @@ function ExternalRulesetForm({ rulesetContent, onContentChange }) {
     const updateHeaderRow = (rowIndex, field, value) => {
         setHeaderState((prev) => {
             const rows = prev.rows.map((row, index) => (
-                index === rowIndex ? { ...row, [field]: value } : row
+                index === rowIndex
+                    ? { ...row, [field]: value, isEdited: field === 'value' ? true : row.isEdited }
+                    : row
             ));
             const nextState = { ...prev, rows };
             syncHeaders(rows, nextState);
@@ -174,6 +193,7 @@ function ExternalRulesetForm({ rulesetContent, onContentChange }) {
                     key: '',
                     value: '',
                     category: 'Security',
+                    isEdited: false,
                 },
             ];
             const nextState = { ...prev, rows };
@@ -234,16 +254,16 @@ function ExternalRulesetForm({ rulesetContent, onContentChange }) {
                         <Typography variant='body2' color='textSecondary'>
                             <FormattedMessage
                                 id='Governance.Rulesets.ExternalForm.headers.empty'
-                                defaultMessage='No headers were found in this ruleset.'
+                                defaultMessage='No security headers were found in this ruleset.'
                             />
                         </Typography>
                     )}
 
                     {headerState.rows.map((row, index) => {
                         const isEditable = String(row.category || '').toUpperCase() === 'SECURITY';
-                        const rowKey = row.id || `${row.category || 'header'}-${row.key || 'key'}-${
-                            row.value || 'value'
-                        }`;
+                        const rowKey = row.id
+                            || `${row.category || 'header'}-${row.key || 'key'}-${row.value || 'value'}`;
+
                         return (
                             <Paper
                                 key={rowKey}
@@ -251,15 +271,7 @@ function ExternalRulesetForm({ rulesetContent, onContentChange }) {
                                 sx={{ p: 1.5 }}
                             >
                                 <Grid container spacing={1.5} alignItems='center'>
-                                    <Grid item xs={12} md={2}>
-                                        <Chip
-                                            label={row.category || 'Standard'}
-                                            size='small'
-                                            color={isEditable ? 'error' : 'default'}
-                                            variant={isEditable ? 'filled' : 'outlined'}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={3}>
+                                    <Grid item xs={12} md={4}>
                                         <TextField
                                             margin='dense'
                                             fullWidth
@@ -272,7 +284,7 @@ function ExternalRulesetForm({ rulesetContent, onContentChange }) {
                                             disabled={!isEditable}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} md={5}>
+                                    <Grid item xs={12} md={7}>
                                         <TextField
                                             margin='dense'
                                             fullWidth
@@ -280,21 +292,13 @@ function ExternalRulesetForm({ rulesetContent, onContentChange }) {
                                                 id: 'Governance.Rulesets.ExternalForm.headers.value',
                                                 defaultMessage: 'Header Value',
                                             })}
-                                            value={row.value}
+                                            placeholder={intl.formatMessage({
+                                                id: 'Governance.Rulesets.ExternalForm.headers.value.placeholder',
+                                                defaultMessage: 'Enter new token',
+                                            })}
+                                            value={row.isEdited ? row.value : ''}
                                             onChange={(e) => updateHeaderRow(index, 'value', e.target.value)}
                                             disabled={!isEditable}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={10} md={1}>
-                                        <TextField
-                                            margin='dense'
-                                            fullWidth
-                                            label={intl.formatMessage({
-                                                id: 'Governance.Rulesets.ExternalForm.headers.category',
-                                                defaultMessage: 'Category',
-                                            })}
-                                            value={row.category || 'Standard'}
-                                            disabled
                                         />
                                     </Grid>
                                     <Grid item xs={2} md={1} sx={{ textAlign: 'right' }}>
@@ -331,6 +335,11 @@ function ExternalRulesetForm({ rulesetContent, onContentChange }) {
 ExternalRulesetForm.propTypes = {
     rulesetContent: PropTypes.string.isRequired,
     onContentChange: PropTypes.func.isRequired,
+    onChangeDetected: PropTypes.func,
+};
+
+ExternalRulesetForm.defaultProps = {
+    onChangeDetected: null,
 };
 
 export default ExternalRulesetForm;
