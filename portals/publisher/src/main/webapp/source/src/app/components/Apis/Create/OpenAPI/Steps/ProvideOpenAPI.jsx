@@ -163,8 +163,7 @@ export default function ProvideOpenAPI(props) {
                     onValidate(isValidURL);
                     setIsValidating(false);
                 }).catch((error) => {
-                    setValidity({ url: { message: error.response?.body?.description
-                        || error.message,
+                    setValidity({ url: { message: error.message,
                     } });
                     onValidate(false);
                     setIsValidating(false);
