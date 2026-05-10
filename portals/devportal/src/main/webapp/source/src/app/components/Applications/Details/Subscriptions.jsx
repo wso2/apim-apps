@@ -774,6 +774,7 @@ class SubscriptionsBase extends React.Component {
                                         handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
                                         searchText={searchText}
                                         entityType='API'
+                                        formConfig={this.props.formConfig}
                                     />
                                 </Box>
                             </StyledDialog>
@@ -870,6 +871,7 @@ class SubscriptionsBase extends React.Component {
                                         handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
                                         searchText={searchText}
                                         entityType='MCP'
+                                        formConfig={this.props.formConfig}
                                     />
                                 </Box>
                             </StyledDialog>
@@ -924,6 +926,10 @@ Subscriptions.propTypes = {
     }).isRequired,
     getApplication: PropTypes.func.isRequired,
     formConfig: PropTypes.shape({}),
+};
+
+Subscriptions.defaultProps = {
+    formConfig: null,
 };
 
 export default injectIntl(Subscriptions);

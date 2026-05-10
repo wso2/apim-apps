@@ -18,7 +18,6 @@ import APIClientFactory from './APIClientFactory';
 import Resource from './Resource';
 import Wsdl from './Wsdl';
 import Utils from './Utils';
-import AuthManager from './AuthManager';
 
 /**
  * An abstract representation of an API
@@ -1299,8 +1298,7 @@ export default class API extends Resource {
      * @returns {Promise<{body: {list: Array}}>}  Resolves to swagger-client-shaped response
      */
     getDevportalGovernanceTemplates(params = {}) {
-        const user = AuthManager.getUser(Utils.getEnvironment().label);
-        const token = user ? user.getPartialToken() : '';
+        const token = Utils.getCookie('WSO2_AM_TOKEN_1', Utils.getEnvironment().label) || '';
 
         const queryParams = new URLSearchParams({
             limit: params.limit ?? 25,
@@ -1346,8 +1344,7 @@ export default class API extends Resource {
      * @returns {Promise<{body: Object}>} Resolves to swagger-client-shaped response with the template DTO
      */
     getDevportalGovernanceTemplateById(templateId) {
-        const user = AuthManager.getUser(Utils.getEnvironment().label);
-        const token = user ? user.getPartialToken() : '';
+        const token = Utils.getCookie('WSO2_AM_TOKEN_1', Utils.getEnvironment().label) || '';
 
         const headers = {
             Accept: 'application/json',

@@ -24,6 +24,7 @@ import {
     Button,
     Chip,
     CircularProgress,
+    Collapse,
     Divider,
     Grid,
     IconButton,
@@ -36,8 +37,9 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
 import PublicIcon from '@mui/icons-material/Public';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
@@ -51,6 +53,108 @@ import Utils from 'AppData/Utils';
 // Internally we represent that as this sentinel so MUI Select has a value to display.
 const ALL_KM_VALUE = '__all_key_managers__';
 
+function cleanYamlScalar(value = '') {
+    return String(value)
+        .replace(/\s+#.*$/, '')
+        .replace(/^['"]|['"]$/g, '')
+        .trim();
+}
+
+function getIndent(line) {
+    const match = String(line).match(/^ */);
+    return match ? match[0].length : 0;
+}
+
+function normalizeGiven(value) {
+    if (Array.isArray(value)) return value.join(', ');
+    return String(value ?? '').trim();
+}
+
+function buildRulePreview(name, rule = {}) {
+    const message = rule.message || rule.description || '';
+    const severity = rule.severity || '';
+    const given = normalizeGiven(rule.given);
+    return {
+        name,
+        message: String(message),
+        severity: String(severity),
+        given,
+    };
+}
+
+function parseJsonRuleset(content) {
+    try {
+        const parsed = JSON.parse(content);
+        if (!parsed?.rules || typeof parsed.rules !== 'object') return [];
+        return Object.entries(parsed.rules).map(([name, rule]) => buildRulePreview(name, rule));
+    } catch (error) {
+        return [];
+    }
+}
+
+function parseYamlRuleset(content) {
+    const lines = String(content ?? '').split(/\r?\n/);
+    const rulesLineIndex = lines.findIndex((line) => /^\s*rules\s*:/.test(line));
+    if (rulesLineIndex === -1) return [];
+
+    const rulesIndent = getIndent(lines[rulesLineIndex]);
+    let ruleIndent = null;
+    let currentRule = null;
+    let insideRules = true;
+    const rules = [];
+
+    lines.slice(rulesLineIndex + 1).forEach((line) => {
+        if (!insideRules) return;
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) return;
+
+        const indent = getIndent(line);
+        if (indent <= rulesIndent) {
+            insideRules = false;
+            return;
+        }
+
+        const ruleHeader = line.match(/^\s*(['"]?[^:'"]+['"]?)\s*:\s*(?:#.*)?$/);
+        if (ruleHeader && (ruleIndent === null || indent === ruleIndent)) {
+            ruleIndent = indent;
+            currentRule = {
+                name: cleanYamlScalar(ruleHeader[1]),
+                message: '',
+                severity: '',
+                given: '',
+            };
+            rules.push(currentRule);
+            return;
+        }
+
+        if (!currentRule || indent <= ruleIndent) return;
+
+        const property = line.match(/^\s*(description|message|severity|given)\s*:\s*(.*)$/);
+        if (property) {
+            const [, key, value] = property;
+            currentRule[key] = cleanYamlScalar(value);
+        }
+    });
+
+    return rules.map((rule) => buildRulePreview(rule.name, rule));
+}
+
+function deriveRulesetRules(content) {
+    const jsonRules = parseJsonRuleset(content);
+    if (jsonRules.length > 0) return jsonRules;
+    return parseYamlRuleset(content);
+}
+
+function getGuardSummary(ruleset) {
+    if (ruleset?.ruleType === 'APP_OAUTH') {
+        return 'Key Manager and OAuth application settings';
+    }
+    if (ruleset?.ruleType === 'APP_INFO') {
+        return 'Application details';
+    }
+    return Utils.mapRuleTypeToLabel(ruleset?.ruleType);
+}
+
 // ─── Available-ruleset row (left pane) ────────────────────────────────────────
 
 /**
@@ -58,14 +162,13 @@ const ALL_KM_VALUE = '__all_key_managers__';
  * Shows name, ruleType chip, artifactType chip, and an Add button.
  * The Add button is replaced with a "Bound" chip when already added.
  */
-function AvailableRulesetRow({ ruleset, isBound, onAdd }) {
+function AvailableRulesetRow({
+    ruleset, isBound, onAdd, expanded, onToggle, preview, loadingPreview,
+}) {
     const intl = useIntl();
     return (
         <Box
             sx={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                justifyContent: 'space-between',
                 p: 1.5,
                 mb: 1,
                 borderRadius: 1,
@@ -75,62 +178,199 @@ function AvailableRulesetRow({ ruleset, isBound, onAdd }) {
                 transition: 'border-color 0.2s',
             }}
         >
-            {/* Ruleset info */}
-            <Box sx={{ flex: 1, minWidth: 0, mr: 1 }}>
-                <Typography
-                    variant='body2'
-                    fontWeight={500}
-                    sx={{
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                    }}
-                >
-                    {ruleset.name}
-                </Typography>
-                <Box sx={{
+            <Box
+                role='button'
+                tabIndex={0}
+                onClick={onToggle}
+                onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') onToggle();
+                }}
+                sx={{
                     display: 'flex',
-                    gap: 0.5,
-                    mt: 0.5,
-                    flexWrap: 'wrap',
-                }}>
-                    <Chip
-                        label={Utils.mapRuleTypeToLabel(ruleset.ruleType)}
-                        size='small'
-                        variant='outlined'
-                        sx={{ height: 16, '& .MuiChip-label': { px: '6px', fontSize: '0.6rem' } }}
-                    />
-                    <Chip
-                        label={Utils.mapArtifactTypeToLabel(ruleset.artifactType)}
-                        size='small'
-                        sx={{ height: 16, '& .MuiChip-label': { px: '6px', fontSize: '0.6rem' } }}
+                    alignItems: 'flex-start',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer',
+                    outline: 'none',
+                }}
+            >
+                {/* Ruleset info */}
+                <Box sx={{ flex: 1, minWidth: 0, mr: 1 }}>
+                    <Typography
+                        variant='body2'
+                        fontWeight={500}
+                        sx={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                        }}
+                    >
+                        {ruleset.name}
+                    </Typography>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            gap: 0.5,
+                            mt: 0.5,
+                            flexWrap: 'wrap',
+                        }}
+                    >
+                        <Chip
+                            label={Utils.mapRuleTypeToLabel(ruleset.ruleType)}
+                            size='small'
+                            variant='outlined'
+                            sx={{ height: 16, '& .MuiChip-label': { px: '6px', fontSize: '0.6rem' } }}
+                        />
+                        <Chip
+                            label={Utils.mapArtifactTypeToLabel(ruleset.artifactType)}
+                            size='small'
+                            sx={{ height: 16, '& .MuiChip-label': { px: '6px', fontSize: '0.6rem' } }}
+                        />
+                    </Box>
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    {/* Action */}
+                    {isBound ? (
+                        <Chip
+                            label={intl.formatMessage({
+                                id: 'Governance.Templates.RulesetBindings.bound.chip',
+                                defaultMessage: 'Bound',
+                            })}
+                            size='small'
+                            color='primary'
+                            variant='filled'
+                        />
+                    ) : (
+                        <Tooltip
+                            title={intl.formatMessage({
+                                id: 'Governance.Templates.RulesetBindings.add.tooltip',
+                                defaultMessage: 'Add to template',
+                            })}
+                        >
+                            <IconButton
+                                size='medium'
+                                color='primary'
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    onAdd();
+                                }}
+                                sx={{ '& svg': { fontSize: '1.5rem' } }}
+                            >
+                                <AddIcon />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                    <ExpandMoreIcon
+                        fontSize='small'
+                        sx={{
+                            color: 'text.secondary',
+                            transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                            transition: 'transform 0.2s',
+                        }}
                     />
                 </Box>
             </Box>
-
-            {/* Action */}
-            {isBound ? (
-                <Chip
-                    label={intl.formatMessage({
-                        id: 'Governance.Templates.RulesetBindings.bound.chip',
-                        defaultMessage: 'Bound',
-                    })}
-                    size='small'
-                    color='primary'
-                    variant='filled'
-                />
-            ) : (
-                <Tooltip
-                    title={intl.formatMessage({
-                        id: 'Governance.Templates.RulesetBindings.add.tooltip',
-                        defaultMessage: 'Add to template',
-                    })}
+            <Collapse in={expanded} timeout='auto' unmountOnExit>
+                <Box
+                    sx={{
+                        mt: 1.5,
+                        pt: 1.5,
+                        borderTop: '1px solid',
+                        borderColor: 'divider',
+                    }}
                 >
-                    <IconButton size='small' color='primary' onClick={onAdd}>
-                        <AddCircleOutlineIcon fontSize='small' />
-                    </IconButton>
-                </Tooltip>
-            )}
+                    <Typography variant='caption' color='text.secondary' display='block'>
+                        <FormattedMessage
+                            id='Governance.Templates.RulesetBindings.preview.guards'
+                            defaultMessage='Guards: {target}'
+                            values={{ target: getGuardSummary(ruleset) }}
+                        />
+                    </Typography>
+                    {ruleset.description && (
+                        <Typography variant='caption' color='text.secondary' display='block' sx={{ mt: 0.5 }}>
+                            {ruleset.description}
+                        </Typography>
+                    )}
+                    {loadingPreview ? (
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                                mt: 1,
+                            }}
+                        >
+                            <CircularProgress size={14} />
+                            <Typography variant='caption' color='text.secondary'>
+                                <FormattedMessage
+                                    id='Governance.Templates.RulesetBindings.preview.loading'
+                                    defaultMessage='Reading ruleset content…'
+                                />
+                            </Typography>
+                        </Box>
+                    ) : (
+                        <Box sx={{ mt: 1 }}>
+                            <Typography variant='caption' fontWeight={700} color='text.secondary' display='block'>
+                                <FormattedMessage
+                                    id='Governance.Templates.RulesetBindings.preview.rules'
+                                    defaultMessage='Rules enforced'
+                                />
+                            </Typography>
+                            {(preview?.rules ?? []).some((rule) => rule.message) ? (
+                                <Box
+                                    sx={{
+                                        mt: 0.5,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: 0.5,
+                                    }}
+                                >
+                                    {preview.rules.filter((rule) => rule.message).map((rule) => (
+                                        <Typography
+                                            key={rule.name}
+                                            variant='caption'
+                                            color='text.primary'
+                                            display='block'
+                                            sx={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}
+                                        >
+                                            {rule.message}
+                                        </Typography>
+                                    ))}
+                                </Box>
+                            ) : (
+                                <Typography variant='caption' color='text.secondary' display='block' sx={{ mt: 0.5 }}>
+                                    <FormattedMessage
+                                        id='Governance.Templates.RulesetBindings.preview.noDerivedRules'
+                                        defaultMessage='Rule details could not be derived from the ruleset content.'
+                                    />
+                                </Typography>
+                            )}
+                            {preview?.content && preview.rules.length === 0 && (
+                                <Box
+                                    component='pre'
+                                    sx={{
+                                        mt: 1,
+                                        m: 0,
+                                        p: 1,
+                                        bgcolor: 'grey.50',
+                                        border: '1px solid',
+                                        borderColor: 'divider',
+                                        borderRadius: 1,
+                                        maxHeight: 120,
+                                        overflow: 'auto',
+                                        whiteSpace: 'pre-wrap',
+                                        overflowWrap: 'anywhere',
+                                        wordBreak: 'break-all',
+                                        fontSize: '0.68rem',
+                                    }}
+                                >
+                                    {preview.content.slice(0, 1500)}
+                                </Box>
+                            )}
+                        </Box>
+                    )}
+                </Box>
+            </Collapse>
         </Box>
     );
 }
@@ -139,11 +379,28 @@ AvailableRulesetRow.propTypes = {
     ruleset: PropTypes.shape({
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
+        description: PropTypes.string,
         ruleType: PropTypes.string.isRequired,
         artifactType: PropTypes.string.isRequired,
     }).isRequired,
     isBound: PropTypes.bool.isRequired,
     onAdd: PropTypes.func.isRequired,
+    expanded: PropTypes.bool.isRequired,
+    onToggle: PropTypes.func.isRequired,
+    loadingPreview: PropTypes.bool.isRequired,
+    preview: PropTypes.shape({
+        content: PropTypes.string,
+        rules: PropTypes.arrayOf(PropTypes.shape({
+            name: PropTypes.string.isRequired,
+            message: PropTypes.string,
+            severity: PropTypes.string,
+            given: PropTypes.string,
+        })),
+    }),
+};
+
+AvailableRulesetRow.defaultProps = {
+    preview: null,
 };
 
 // ─── Bound-ruleset card (right pane) ─────────────────────────────────────────
@@ -154,10 +411,11 @@ AvailableRulesetRow.propTypes = {
  * Controls:
  *  - Binding order: integer TextField
  *  - Key Manager scope: multi-Select with sentinel ALL_KM_VALUE for global scope
+ *    (only shown when ruleType === 'APP_OAUTH')
  *  - Remove button
  *
  * KM scope behaviour:
- *  - Value `[ALL_KM_VALUE]` → payload `keyManagerScopes: []` (all key managers)
+ *  - Value `[ALL_KM_VALUE]` → payload `keyManagerScopes: []` (all allowed KMs)
  *  - Value `['km-uuid-1', ...]` → payload `keyManagerScopes: [{ keyManagerUuid: ... }]`
  *
  * The sentinel is mapped in/out only at this component boundary; the DTO never
@@ -167,7 +425,7 @@ function BoundRulesetCard({
     binding,
     ruleset,
     keyManagers,
-    onOrderChange,
+    allowedKeyManagerNames,
     onScopeChange,
     onRemove,
 }) {
@@ -177,6 +435,12 @@ function BoundRulesetCard({
     const selectValue = binding.keyManagerScopes.length === 0
         ? [ALL_KM_VALUE]
         : binding.keyManagerScopes.map((s) => s.keyManagerUuid);
+
+    // Filter KM list to those allowed by the template's formConfig.
+    // If allowedKeyManagerNames is empty the template permits all KMs.
+    const eligibleKeyManagers = allowedKeyManagerNames.length === 0
+        ? keyManagers
+        : keyManagers.filter((km) => allowedKeyManagerNames.includes(km.name));
 
     const handleKmChange = (event) => {
         const raw = event.target.value; // string[] from MUI multi-select
@@ -201,6 +465,7 @@ function BoundRulesetCard({
     };
 
     const rulesetName = ruleset?.name || binding.rulesetId;
+    const isOAuth = ruleset?.ruleType === 'APP_OAUTH';
     const isGlobalScope = binding.keyManagerScopes.length === 0;
 
     return (
@@ -222,7 +487,14 @@ function BoundRulesetCard({
                     mb: 1.5,
                 }}
             >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        minWidth: 0,
+                    }}
+                >
                     <Typography
                         variant='body2'
                         fontWeight={600}
@@ -255,149 +527,139 @@ function BoundRulesetCard({
 
             {/* Controls */}
             <Grid container spacing={2} alignItems='flex-start'>
-                {/* Binding order */}
-                <Grid item xs={12} sm={4}>
-                    <Typography variant='caption' color='text.secondary' display='block' gutterBottom>
-                        <FormattedMessage
-                            id='Governance.Templates.RulesetBindings.order.label'
-                            defaultMessage='Evaluation Order'
-                        />
-                    </Typography>
-                    <TextField
-                        type='number'
-                        size='small'
-                        fullWidth
-                        value={binding.bindingOrder}
-                        onChange={(e) => onOrderChange(Math.max(0, Number(e.target.value)))}
-                        inputProps={{ min: 0, step: 1 }}
-                        helperText={intl.formatMessage({
-                            id: 'Governance.Templates.RulesetBindings.order.helper',
-                            defaultMessage: 'Lower = evaluated first',
-                        })}
-                    />
-                </Grid>
-
-                {/* Key Manager scope */}
-                <Grid item xs={12} sm={8}>
-                    <Typography variant='caption' color='text.secondary' display='block' gutterBottom>
-                        <FormattedMessage
-                            id='Governance.Templates.RulesetBindings.scope.label'
-                            defaultMessage='Key Manager Scope'
-                        />
-                    </Typography>
-                    <Select
-                        multiple
-                        fullWidth
-                        size='small'
-                        value={selectValue}
-                        onChange={handleKmChange}
-                        input={<OutlinedInput size='small' />}
-                        renderValue={(selected) => {
-                            if (selected.includes(ALL_KM_VALUE) || selected.length === 0) {
+                {/* Key Manager scope — only relevant for APP_OAUTH rulesets */}
+                {isOAuth && (
+                    <Grid item xs={12}>
+                        <Typography variant='caption' color='text.secondary' display='block' gutterBottom>
+                            <FormattedMessage
+                                id='Governance.Templates.RulesetBindings.scope.label'
+                                defaultMessage='Key Manager Scope'
+                            />
+                        </Typography>
+                        <Select
+                            multiple
+                            fullWidth
+                            size='small'
+                            value={selectValue}
+                            onChange={handleKmChange}
+                            input={<OutlinedInput size='small' />}
+                            renderValue={(selected) => {
+                                if (selected.includes(ALL_KM_VALUE) || selected.length === 0) {
+                                    return (
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                            <PublicIcon fontSize='small' color='success' />
+                                            <Typography variant='body2' color='success.main'>
+                                                <FormattedMessage
+                                                    id='Governance.Templates.RulesetBindings.scope.allKm'
+                                                    defaultMessage='All Allowed Key Managers'
+                                                />
+                                            </Typography>
+                                        </Box>
+                                    );
+                                }
                                 return (
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                        <PublicIcon fontSize='small' color='success' />
-                                        <Typography variant='body2' color='success.main'>
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                        {selected.map((kmId) => {
+                                            const km = keyManagers.find((k) => k.id === kmId);
+                                            return (
+                                                <Chip
+                                                    key={kmId}
+                                                    label={km?.name || kmId}
+                                                    size='small'
+                                                    icon={<VpnKeyIcon />}
+                                                />
+                                            );
+                                        })}
+                                    </Box>
+                                );
+                            }}
+                            MenuProps={{ PaperProps: { style: { maxHeight: 260 } } }}
+                        >
+                            {/* "All Allowed Key Managers" sentinel option */}
+                            <MenuItem value={ALL_KM_VALUE}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <PublicIcon fontSize='small' color='success' />
+                                    <Box>
+                                        <Typography variant='body2'>
                                             <FormattedMessage
-                                                id='Governance.Templates.RulesetBindings.scope.allKm'
-                                                defaultMessage='All Key Managers'
+                                                id='Governance.Templates.RulesetBindings.scope.allKm.option'
+                                                defaultMessage='All Allowed Key Managers'
+                                            />
+                                        </Typography>
+                                        <Typography variant='caption' color='text.secondary'>
+                                            <FormattedMessage
+                                                id='Governance.Templates.RulesetBindings.scope.allKm.desc'
+                                                defaultMessage='Applies to every Key Manager permitted by this template'
                                             />
                                         </Typography>
                                     </Box>
-                                );
-                            }
-                            return (
-                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                    {selected.map((kmId) => {
-                                        const km = keyManagers.find((k) => k.id === kmId);
-                                        return (
-                                            <Chip
-                                                key={kmId}
-                                                label={km?.name || kmId}
-                                                size='small'
-                                                icon={<VpnKeyIcon />}
-                                            />
-                                        );
-                                    })}
                                 </Box>
-                            );
-                        }}
-                        MenuProps={{ PaperProps: { style: { maxHeight: 260 } } }}
-                    >
-                        {/* "All Key Managers" sentinel option */}
-                        <MenuItem value={ALL_KM_VALUE}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <PublicIcon fontSize='small' color='success' />
-                                <Box>
-                                    <Typography variant='body2'>
-                                        <FormattedMessage
-                                            id='Governance.Templates.RulesetBindings.scope.allKm.option'
-                                            defaultMessage='All Key Managers (Global)'
-                                        />
-                                    </Typography>
-                                    <Typography variant='caption' color='text.secondary'>
-                                        <FormattedMessage
-                                            id='Governance.Templates.RulesetBindings.scope.allKm.desc'
-                                            defaultMessage='Ruleset applies regardless of which Key Manager issues the token'
-                                        />
-                                    </Typography>
-                                </Box>
-                            </Box>
-                        </MenuItem>
+                            </MenuItem>
 
-                        {/* Divider before specific KMs */}
-                        {keyManagers.length > 0 && <Divider />}
+                            {/* Divider before specific KMs */}
+                            {eligibleKeyManagers.length > 0 && <Divider />}
 
-                        {/* Individual Key Manager options */}
-                        {keyManagers.map((km) => (
-                            <MenuItem key={km.id} value={km.id}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%' }}>
-                                    <VpnKeyIcon fontSize='small' color='action' />
-                                    <Box sx={{ flex: 1, minWidth: 0 }}>
-                                        <Typography variant='body2'>{km.name}</Typography>
-                                        {km.description && (
-                                            <Typography
-                                                variant='caption'
-                                                color='text.secondary'
-                                                sx={{
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis',
-                                                    whiteSpace: 'nowrap',
-                                                    display: 'block',
-                                                }}
-                                            >
-                                                {km.description}
-                                            </Typography>
+                            {/* Individual Key Manager options */}
+                            {eligibleKeyManagers.map((km) => (
+                                <MenuItem key={km.id} value={km.id}>
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 1,
+                                            width: '100%',
+                                        }}
+                                    >
+                                        <VpnKeyIcon fontSize='small' color='action' />
+                                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                                            <Typography variant='body2'>{km.name}</Typography>
+                                            {km.description && (
+                                                <Typography
+                                                    variant='caption'
+                                                    color='text.secondary'
+                                                    sx={{
+                                                        overflow: 'hidden',
+                                                        textOverflow: 'ellipsis',
+                                                        whiteSpace: 'nowrap',
+                                                        display: 'block',
+                                                    }}
+                                                >
+                                                    {km.description}
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                        {km.isGlobal && (
+                                            <Chip label='Global' size='small' variant='outlined' />
                                         )}
                                     </Box>
-                                    {km.isGlobal && (
-                                        <Chip label='Global' size='small' variant='outlined' />
-                                    )}
-                                </Box>
-                            </MenuItem>
-                        ))}
+                                </MenuItem>
+                            ))}
 
-                        {keyManagers.length === 0 && (
-                            <MenuItem disabled>
-                                <Typography variant='body2' color='text.secondary'>
-                                    <FormattedMessage
-                                        id='Governance.Templates.RulesetBindings.scope.noKm'
-                                        defaultMessage='No Key Managers configured'
-                                    />
-                                </Typography>
-                            </MenuItem>
+                            {eligibleKeyManagers.length === 0 && (
+                                <MenuItem disabled>
+                                    <Typography variant='body2' color='text.secondary'>
+                                        <FormattedMessage
+                                            id='Governance.Templates.RulesetBindings.scope.noKm'
+                                            defaultMessage='No Key Managers configured'
+                                        />
+                                    </Typography>
+                                </MenuItem>
+                            )}
+                        </Select>
+
+                        {isGlobalScope && (
+                            <Typography variant='caption' color='text.secondary' display='block' sx={{ mt: 0.5 }}>
+                                <FormattedMessage
+                                    id='Governance.Templates.RulesetBindings.scope.global.hint'
+                                    defaultMessage={
+                                        'Select specific Key Managers to restrict '
+                                        + 'when this ruleset is enforced'
+                                    }
+                                />
+                            </Typography>
                         )}
-                    </Select>
-
-                    {isGlobalScope && (
-                        <Typography variant='caption' color='text.secondary' display='block' sx={{ mt: 0.5 }}>
-                            <FormattedMessage
-                                id='Governance.Templates.RulesetBindings.scope.global.hint'
-                                defaultMessage='Select specific Key Managers to restrict when this ruleset is enforced'
-                            />
-                        </Typography>
-                    )}
-                </Grid>
+                    </Grid>
+                )}
             </Grid>
         </Paper>
     );
@@ -420,7 +682,7 @@ BoundRulesetCard.propTypes = {
         name: PropTypes.string.isRequired,
         isGlobal: PropTypes.bool,
     })).isRequired,
-    onOrderChange: PropTypes.func.isRequired,
+    allowedKeyManagerNames: PropTypes.arrayOf(PropTypes.string).isRequired,
     onScopeChange: PropTypes.func.isRequired,
     onRemove: PropTypes.func.isRequired,
 };
@@ -453,17 +715,29 @@ export default function RulesetBindingsStep({ templateState, dispatch }) {
     const [keyManagers, setKeyManagers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const [expandedRulesetId, setExpandedRulesetId] = useState(null);
+    const [rulesetPreviews, setRulesetPreviews] = useState({});
+    const [loadingPreviewIds, setLoadingPreviewIds] = useState({});
+
+    // Derive the allowed KM name list from enabled KM governance entries.
+    // Empty array means "no restriction" (all KMs are eligible).
+    const allowedKeyManagerNames = useMemo(() => {
+        const kms = templateState.formConfig?.keyManagers ?? {};
+        return Object.entries(kms)
+            .filter(([, kmc]) => kmc?.enabled === true)
+            .map(([name]) => name);
+    }, [templateState.formConfig]);
 
     // ── Data fetch ────────────────────────────────────────────────────────────
     useEffect(() => {
         const govApi = new GovernanceAPI();
         const adminApi = new API();
 
+        const emptyKmRes = { body: { list: [] } };
         Promise.all([
             govApi.getRulesets({ limit: 200, offset: 0 }),
-            adminApi.getKeyManagersList(),
-            // Global KMs are visible to all tenant admins; gracefully ignore 403s
-            adminApi.getGlobalKeyManagersList().catch(() => ({ body: { list: [] } })),
+            adminApi.getKeyManagersList().catch(() => emptyKmRes),
+            adminApi.getGlobalKeyManagersList().catch(() => emptyKmRes),
         ])
             .then(([rulesetRes, localKmRes, globalKmRes]) => {
                 setAllRulesets(rulesetRes.body.list || []);
@@ -481,7 +755,7 @@ export default function RulesetBindingsStep({ templateState, dispatch }) {
             .catch(() => {
                 Alert.error(intl.formatMessage({
                     id: 'Governance.Templates.RulesetBindings.fetch.error',
-                    defaultMessage: 'Failed to load rulesets or Key Managers',
+                    defaultMessage: 'Failed to load rulesets',
                 }));
             })
             .finally(() => setLoading(false));
@@ -502,7 +776,10 @@ export default function RulesetBindingsStep({ templateState, dispatch }) {
     );
 
     const filteredRulesets = useMemo(
-        () => allRulesets.filter((r) => r.name.toLowerCase().includes(search.toLowerCase())),
+        () => allRulesets.filter(
+            (r) => r.artifactType === 'APPLICATION'
+                && r.name.toLowerCase().includes(search.toLowerCase()),
+        ),
         [allRulesets, search],
     );
 
@@ -538,6 +815,41 @@ export default function RulesetBindingsStep({ templateState, dispatch }) {
                 b.rulesetId === rulesetId ? { ...b, ...patch } : b
             )),
         });
+    };
+
+    const toggleRulesetPreview = (ruleset) => {
+        if (expandedRulesetId === ruleset.id) {
+            setExpandedRulesetId(null);
+            return;
+        }
+        setExpandedRulesetId(ruleset.id);
+        if (rulesetPreviews[ruleset.id] || loadingPreviewIds[ruleset.id]) return;
+
+        setLoadingPreviewIds((prev) => ({ ...prev, [ruleset.id]: true }));
+        new GovernanceAPI()
+            .getRulesetContent(ruleset.id)
+            .then((contentResult) => {
+                const content = contentResult.text ?? '';
+                setRulesetPreviews((prev) => ({
+                    ...prev,
+                    [ruleset.id]: {
+                        content,
+                        rules: deriveRulesetRules(content),
+                    },
+                }));
+            })
+            .catch(() => {
+                setRulesetPreviews((prev) => ({
+                    ...prev,
+                    [ruleset.id]: {
+                        content: '',
+                        rules: [],
+                    },
+                }));
+            })
+            .finally(() => {
+                setLoadingPreviewIds((prev) => ({ ...prev, [ruleset.id]: false }));
+            });
     };
 
     // ── Render ────────────────────────────────────────────────────────────────
@@ -625,7 +937,10 @@ export default function RulesetBindingsStep({ templateState, dispatch }) {
                                         ) : (
                                             <FormattedMessage
                                                 id='Governance.Templates.RulesetBindings.available.empty'
-                                                defaultMessage='No rulesets found. Create rulesets in the Ruleset Catalog first.'
+                                                defaultMessage={
+                                                    'No rulesets found. Create rulesets in '
+                                                    + 'the Ruleset Catalog first.'
+                                                }
                                             />
                                         )}
                                     </Typography>
@@ -637,6 +952,10 @@ export default function RulesetBindingsStep({ templateState, dispatch }) {
                                         ruleset={ruleset}
                                         isBound={boundIds.has(ruleset.id)}
                                         onAdd={() => addBinding(ruleset)}
+                                        expanded={expandedRulesetId === ruleset.id}
+                                        onToggle={() => toggleRulesetPreview(ruleset)}
+                                        preview={rulesetPreviews[ruleset.id]}
+                                        loadingPreview={!!loadingPreviewIds[ruleset.id]}
                                     />
                                 ))
                             )}
@@ -692,7 +1011,7 @@ export default function RulesetBindingsStep({ templateState, dispatch }) {
                                         color: 'text.secondary',
                                     }}
                                 >
-                                    <AddCircleOutlineIcon sx={{ fontSize: 48, opacity: 0.3 }} />
+                                    <AddIcon sx={{ fontSize: 48, opacity: 0.3 }} />
                                     <Typography variant='body2'>
                                         <FormattedMessage
                                             id='Governance.Templates.RulesetBindings.bound.empty.title'
@@ -702,7 +1021,7 @@ export default function RulesetBindingsStep({ templateState, dispatch }) {
                                     <Typography variant='caption'>
                                         <FormattedMessage
                                             id='Governance.Templates.RulesetBindings.bound.empty.hint'
-                                            defaultMessage='Click the + button next to a ruleset on the left to add it'
+                                            defaultMessage='Click the + icon next to a ruleset on the left to add it'
                                         />
                                     </Typography>
                                 </Box>
@@ -713,9 +1032,7 @@ export default function RulesetBindingsStep({ templateState, dispatch }) {
                                         binding={binding}
                                         ruleset={rulesetMap[binding.rulesetId]}
                                         keyManagers={keyManagers}
-                                        onOrderChange={(order) => updateBinding(
-                                            binding.rulesetId, { bindingOrder: order },
-                                        )}
+                                        allowedKeyManagerNames={allowedKeyManagerNames}
                                         onScopeChange={(scopes) => updateBinding(
                                             binding.rulesetId, { keyManagerScopes: scopes },
                                         )}
@@ -768,6 +1085,11 @@ export default function RulesetBindingsStep({ templateState, dispatch }) {
 
 RulesetBindingsStep.propTypes = {
     templateState: PropTypes.shape({
+        formConfig: PropTypes.shape({
+            keyManagers: PropTypes.objectOf(PropTypes.shape({
+                enabled: PropTypes.bool,
+            })),
+        }),
         rulesetBindings: PropTypes.arrayOf(PropTypes.shape({
             rulesetId: PropTypes.string.isRequired,
             bindingOrder: PropTypes.number.isRequired,

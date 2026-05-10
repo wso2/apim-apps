@@ -140,7 +140,16 @@ const ApplicationCreate = (props) => {
         formConfig,
     } = props;
 
-    const isHidden = (fieldKey) => formConfig?.application?.[fieldKey]?.hidden === true;
+    const isHiddenValue = (value) => value === true || value === 'true';
+    const isRequiredValue = (value) => value === true || value === 'true';
+    const isHidden = (fieldKey) => isHiddenValue(formConfig?.application?.[fieldKey]?.hidden);
+    const isTemplateRequired = (fieldKey) => isRequiredValue(formConfig?.application?.[fieldKey]?.required);
+    const isAttributeHidden = (attributeName) => {
+        return isHiddenValue(formConfig?.application?.attributes?.[attributeName]?.hidden);
+    };
+    const isTemplateAttributeRequired = (attributeName) => {
+        return isRequiredValue(formConfig?.application?.attributes?.[attributeName]?.required);
+    };
     const description = applicationRequest.description || '';
     const showDescError = () => {
         const descLength = description.length;
@@ -231,29 +240,35 @@ const ApplicationCreate = (props) => {
                     ))}
                 </TextField>
             )}
-            <TextField
-                id='application-description'
-                margin='normal'
-                variant='outlined'
-                fullWidth
-                multiline
-                rows={4}
-                value={description}
-                label={intl.formatMessage({
-                    defaultMessage: 'Application Description',
-                    id: 'Shared.AppsAndKeys.ApplicationCreateForm.application.description.label',
-                })}
-                helperText={showDescError()}
-                name='description'
-                onChange={handleChange}
-                placeholder={intl.formatMessage({
-                    defaultMessage: 'My Mobile Application',
-                    id: 'Shared.AppsAndKeys.ApplicationCreateForm.my.mobile.application.placeholder',
-                })}
-                error={description !== '' && description.length > 512}
-                onBlur={(e) => validateDescription(e.target.value)}
+            {!isHidden('description') && (
+                <TextField
+                    id='application-description'
+                    classes={isTemplateRequired('description') ? {
+                        root: classes.mandatoryStarText,
+                    } : undefined}
+                    margin='normal'
+                    variant='outlined'
+                    fullWidth
+                    required={isTemplateRequired('description')}
+                    multiline
+                    rows={4}
+                    value={description}
+                    label={intl.formatMessage({
+                        defaultMessage: 'Application Description',
+                        id: 'Shared.AppsAndKeys.ApplicationCreateForm.application.description.label',
+                    })}
+                    helperText={showDescError()}
+                    name='description'
+                    onChange={handleChange}
+                    placeholder={intl.formatMessage({
+                        defaultMessage: 'My Mobile Application',
+                        id: 'Shared.AppsAndKeys.ApplicationCreateForm.my.mobile.application.placeholder',
+                    })}
+                    error={description !== '' && description.length > 512}
+                    onBlur={(e) => validateDescription(e.target.value)}
 
-            />
+                />
+            )}
             {
                 isOrgAccessControlEnabled && sessionStorage.getItem('userOrganization') && (
                     <Box display='flex' flexDirection='row' sx={{ pt: 1 }}>
@@ -284,14 +299,15 @@ const ApplicationCreate = (props) => {
 
             {allAppAttributes && (
                 Object.entries(allAppAttributes).map((item) => (
-                    item[1].hidden !== 'true' ? (
+                    item[1].hidden !== 'true' && !isAttributeHidden(item[1].attribute) ? (
                         <TextField
                             classes={{
                                 root: classes.mandatoryStarText,
                             }}
                             margin='normal'
                             variant='outlined'
-                            required={isRequiredAttribute(item[1].attribute)}
+                            required={isRequiredAttribute(item[1].attribute)
+                                || isTemplateAttributeRequired(item[1].attribute)}
                             label={item[1].attribute}
                             value={getAttributeValue(item[1].attribute)}
                             helperText={item[1].description}
@@ -311,7 +327,7 @@ const ApplicationCreate = (props) => {
                         />
                     ) : (null)))
             )}
-            {isApplicationSharingEnabled && (
+            {isApplicationSharingEnabled && !isHidden('groups') && (
                 <ChipInput
                     label={(
                         <FormattedMessage
@@ -327,6 +343,7 @@ const ApplicationCreate = (props) => {
                     margin='normal'
                     variant='outlined'
                     fullWidth
+                    required={isTemplateRequired('groups')}
                     {...applicationRequest}
                     value={applicationRequest.groups || []}
                     onAdd={(chip) => handleAddChip(chip, applicationRequest.groups)}

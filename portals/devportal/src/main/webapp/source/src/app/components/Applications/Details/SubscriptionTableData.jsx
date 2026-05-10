@@ -407,7 +407,7 @@ class SubscriptionTableData extends React.Component {
                             onClick={this.handleRequestOpenEditMenu}
                             startIcon={<Icon>edit</Icon>}
                             disabled={tiers.length === 0 || status === SUBSCRIPTION_STATUS.BLOCKED
-                                || status === SUBSCRIPTION_STATUS.PROD_ONLY_BLOCKED}
+                                || status === SUBSCRIPTION_STATUS.PROD_ONLY_BLOCKED || isSubTierHidden}
                         >
                             <FormattedMessage
                                 id='Applications.Details.SubscriptionTableData.edit.text'
@@ -470,7 +470,10 @@ class SubscriptionTableData extends React.Component {
                                                             <Box>
                                                                 <FormattedMessage
                                                                     id='Applications.Details.SubscriptionTableData.tier.governed'
-                                                                    defaultMessage='The throttling policy for this subscription is managed by your organization template and cannot be changed.'
+                                                                    defaultMessage={
+                                                                        'The throttling policy for this subscription is managed '
+                                                                        + 'by your organization template and cannot be changed.'
+                                                                    }
                                                                 />
                                                                 <Box mt={1}>
                                                                     <FormattedMessage
@@ -542,7 +545,8 @@ class SubscriptionTableData extends React.Component {
                                 <Button
                                     variant='contained'
                                     disabled={(status === SUBSCRIPTION_STATUS.BLOCKED || status === SUBSCRIPTION_STATUS.ON_HOLD
-                                        || status === SUBSCRIPTION_STATUS.REJECTED || status === SUBSCRIPTION_STATUS.TIER_UPDATE_PENDING)}
+                                        || status === SUBSCRIPTION_STATUS.REJECTED
+                                        || status === SUBSCRIPTION_STATUS.TIER_UPDATE_PENDING || isSubTierHidden)}
                                     dense
                                     color='primary'
                                     onClick={() => this.handleSubscriptionTierUpdate(apiId,

@@ -95,6 +95,12 @@ class ApplicationFormHandler extends React.Component {
         this.backLink = props.location.pathname.indexOf('/fromView') === -1 ? '/applications/' : `/applications/${params.application_id}/`;
     }
 
+    isTemplateTruthy = (value) => value === true || value === 'true';
+
+    isTemplateHidden = (fieldConfig) => this.isTemplateTruthy(fieldConfig?.hidden);
+
+    isTemplateRequired = (fieldConfig) => this.isTemplateTruthy(fieldConfig?.required);
+
     /**
      * Get all the throttling Policies from backend and
      * update the state
@@ -268,16 +274,17 @@ class ApplicationFormHandler extends React.Component {
     validateAttributes = (attributes) => {
         const { intl } = this.props;
         const { allAppAttributes } = this.state;
+        const configuredAttributes = allAppAttributes ?? [];
         let isValidAttribute = true;
         const attributeNameList = Object.keys(attributes);
-        if (allAppAttributes.length > 0) {
-            for (let i = 0; i < allAppAttributes.length; i++) {
-                if (allAppAttributes[i].required === 'true' && allAppAttributes[i].hidden !== 'true') {
-                    if (attributeNameList.indexOf(allAppAttributes[i].attribute) === -1) {
+        if (configuredAttributes.length > 0) {
+            for (let i = 0; i < configuredAttributes.length; i++) {
+                if (configuredAttributes[i].required === 'true' && configuredAttributes[i].hidden !== 'true') {
+                    if (attributeNameList.indexOf(configuredAttributes[i].attribute) === -1) {
                         isValidAttribute = false;
-                    } else if (attributeNameList.indexOf(allAppAttributes[i].attribute) > -1
-                    && (!attributes[allAppAttributes[i].attribute]
-                        || attributes[allAppAttributes[i].attribute].trim() === '')) {
+                    } else if (attributeNameList.indexOf(configuredAttributes[i].attribute) > -1
+                    && (!attributes[configuredAttributes[i].attribute]
+                        || attributes[configuredAttributes[i].attribute].trim() === '')) {
                         isValidAttribute = false;
                     }
                 }
@@ -293,6 +300,51 @@ class ApplicationFormHandler extends React.Component {
         }
     };
 
+    validateTemplateRequiredFields = () => {
+        const { intl } = this.props;
+        const {
+            selectedTemplate, applicationRequest, isApplicationSharingEnabled, allAppAttributes,
+        } = this.state;
+        if (!selectedTemplate?.formConfig?.application) {
+            return Promise.resolve(true);
+        }
+        const appConfig = selectedTemplate.formConfig.application;
+        const isBlank = (value) => value === null || value === undefined || String(value).trim() === '';
+        const missingFields = [];
+        if (this.isTemplateRequired(appConfig.description)
+            && !this.isTemplateHidden(appConfig.description)
+            && isBlank(applicationRequest.description)) {
+            missingFields.push('description');
+        }
+        if (isApplicationSharingEnabled
+            && this.isTemplateRequired(appConfig.groups)
+            && !this.isTemplateHidden(appConfig.groups)
+            && (!applicationRequest.groups || applicationRequest.groups.length === 0)) {
+            missingFields.push('groups');
+        }
+        const configuredAttributes = new Map(
+            (allAppAttributes ?? []).map((attr) => [attr.attribute, attr]),
+        );
+        Object.entries(appConfig.attributes ?? {}).forEach(([attributeName, attributeConfig]) => {
+            const serverAttribute = configuredAttributes.get(attributeName);
+            if (!serverAttribute || serverAttribute.hidden === 'true') {
+                return;
+            }
+            if (this.isTemplateRequired(attributeConfig)
+                && !this.isTemplateHidden(attributeConfig)
+                && isBlank(applicationRequest.attributes?.[attributeName])) {
+                missingFields.push(attributeName);
+            }
+        });
+        if (missingFields.length > 0) {
+            return Promise.reject(new Error(intl.formatMessage({
+                id: 'Applications.Create.ApplicationFormHandler.template.required.error',
+                defaultMessage: 'Please fill all required template fields',
+            })));
+        }
+        return Promise.resolve(true);
+    };
+
     /**
      * Validate and send the application create
      * request to the backend
@@ -305,6 +357,7 @@ class ApplicationFormHandler extends React.Component {
         this.validateName(applicationRequest.name)
             .then(() => this.validateDescription(applicationRequest.description))
             .then(() => this.validateAttributes(applicationRequest.attributes))
+            .then(() => this.validateTemplateRequiredFields())
             .then(() => api.createApplication(applicationRequest))
             .then((response) => {
                 if (response.body.status === 'CREATED') {
@@ -470,13 +523,51 @@ class ApplicationFormHandler extends React.Component {
      */
     handleTemplateSelect = (template) => {
         const appConfig = template?.formConfig?.application ?? {};
+        const hasDefault = (fieldConfig) => fieldConfig
+            && fieldConfig.defaultValue !== undefined
+            && fieldConfig.defaultValue !== null
+            && !(Array.isArray(fieldConfig.defaultValue) && fieldConfig.defaultValue.length === 0)
+            && fieldConfig.defaultValue !== '';
+        const toGroups = (value) => {
+            if (Array.isArray(value)) {
+                return value.map((item) => String(item).trim()).filter(Boolean);
+            }
+            return String(value ?? '')
+                .split(',')
+                .map((item) => item.trim())
+                .filter(Boolean);
+        };
         this.setState((prevState) => {
             const newRequest = { ...prevState.applicationRequest };
-            if (appConfig.throttlingPolicy?.defaultValue) {
+            const configuredAttributes = prevState.allAppAttributes
+                ? new Map(prevState.allAppAttributes.map((attr) => [attr.attribute, attr]))
+                : null;
+            if (template?.id) {
+                newRequest.templateId = template.id;
+            }
+            if (hasDefault(appConfig.throttlingPolicy)) {
                 newRequest.throttlingPolicy = appConfig.throttlingPolicy.defaultValue;
             }
-            if (appConfig.tokenType?.defaultValue) {
+            if (hasDefault(appConfig.description)) {
+                newRequest.description = appConfig.description.defaultValue;
+            }
+            if (hasDefault(appConfig.tokenType)) {
                 newRequest.tokenType = appConfig.tokenType.defaultValue;
+            }
+            if (prevState.isApplicationSharingEnabled && hasDefault(appConfig.groups)) {
+                newRequest.groups = toGroups(appConfig.groups.defaultValue);
+            }
+            if (appConfig.attributes) {
+                newRequest.attributes = { ...(newRequest.attributes ?? {}) };
+                Object.entries(appConfig.attributes).forEach(([attributeName, attributeConfig]) => {
+                    const serverAttribute = configuredAttributes?.get(attributeName);
+                    if (configuredAttributes && (!serverAttribute || serverAttribute.hidden === 'true')) {
+                        return;
+                    }
+                    if (hasDefault(attributeConfig)) {
+                        newRequest.attributes[attributeName] = attributeConfig.defaultValue;
+                    }
+                });
             }
             return { selectedTemplate: template, applicationRequest: newRequest };
         });
@@ -504,26 +595,26 @@ class ApplicationFormHandler extends React.Component {
 
         // Template selection gate: only for new applications, not edits.
         // selectedTemplate===null means not yet decided; false means skipped; object means chosen.
+        // The gallery is rendered OUTSIDE ApplicationCreateBase's md={6} wrapper because the
+        // form-style ~50%-width container made every card stack into a single column even
+        // though there was room for 3+. The actual create form (below) still uses the narrow
+        // wrapper; only the selection step gets the full width.
         if (!isEdit && selectedTemplate === null) {
             return (
-                <StyledApplicationCreateBase title={(
-                    <Typography variant='h5' component='h1'>
+                <Box mt={5} px={{ xs: 2, md: 4 }} pb={4} sx={{ width: '100%' }}>
+                    <Typography variant='h5' component='h1' sx={{ mb: 3 }}>
                         <FormattedMessage
-                            id='Applications.Create.ApplicationFormHandler.create.application.heading'
-                            defaultMessage='Create an application'
+                            id='Applications.Create.ApplicationFormHandler.choose.template.heading'
+                            defaultMessage='Choose a Template'
                         />
                     </Typography>
-                )}
-                >
-                    <Box py={4} mb={2} display='flex' justifyContent='center'>
-                        <Grid item xs={10} md={9}>
-                            <TemplateSelector
-                                onSelect={this.handleTemplateSelect}
-                                onSkip={() => this.setState({ selectedTemplate: false })}
-                            />
-                        </Grid>
-                    </Box>
-                </StyledApplicationCreateBase>
+                    <TemplateSelector
+                        onSelect={this.handleTemplateSelect}
+                        onSkip={() => this.setState({ selectedTemplate: false })}
+                        allAppAttributes={allAppAttributes}
+                        isApplicationSharingEnabled={isApplicationSharingEnabled}
+                    />
+                </Box>
             );
         }
 

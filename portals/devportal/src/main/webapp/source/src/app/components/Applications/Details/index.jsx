@@ -202,9 +202,11 @@ class Details extends Component {
         client.getApplication(applicationId)
             .then((response) => {
                 const application = response.obj;
-                this.setState({ application });
-                // If this app was created with a governance template, load its formConfig
-                if (application.templateId) {
+                const governanceFormConfig = application.governanceFormConfig ?? null;
+                this.setState({ application, formConfig: governanceFormConfig });
+                // Older backends only expose the template id; prefer the captured
+                // snapshot formConfig when it is present on the application.
+                if (!governanceFormConfig && application.templateId) {
                     client.getDevportalGovernanceTemplateById(application.templateId)
                         .then((templateRes) => {
                             this.setState({ formConfig: templateRes.body.formConfig ?? null });

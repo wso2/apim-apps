@@ -408,6 +408,21 @@ class GovernanceAPI extends Resource {
     }
 
     /**
+     * Dry-run validation of a template's hidden field defaults against its bound rulesets.
+     * Returns violations that would block publishing without modifying the template.
+     * @param {string} templateId Template id
+     * @returns {Promise} Promised { hasViolations, violations[] } response
+     */
+    validateTemplateDefaults(templateId) {
+        return this.client.then((client) => {
+            return client.apis['Devportal Governance Templates'].validateTemplateDefaults(
+                { templateId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * Delete a Devportal Governance template by id
      * @param {string} templateId Template id
      * @returns {Promise} Promised delete response
