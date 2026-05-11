@@ -428,8 +428,11 @@ export default function AddEditAiServiceProvider(props) {
             setSaving(false);
             history.push('/settings/ai-service-providers/');
         } catch (e) {
-            if (e.message) {
-                Alert.error(e.message);
+            const { response, message } = e;
+            if (response && response.body) {
+                Alert.error(response.body.description);
+            } else if (message) {
+                Alert.error(message);
             }
             setSaving(false);
         }
