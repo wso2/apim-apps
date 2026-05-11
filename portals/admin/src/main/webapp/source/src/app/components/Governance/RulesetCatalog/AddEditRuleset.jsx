@@ -57,7 +57,9 @@ import Utils from 'AppData/Utils';
 
 import * as monaco from 'monaco-editor';
 import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
+import yaml from 'js-yaml';
 import GenericRulesetForm from './GenericRulesetForm';
+import ExternalRulesetForm from './ExternalRulesetForm';
 
 // load Monaco from node_modules instead of CDN
 loader.config({ monaco });
@@ -83,6 +85,8 @@ const EditorContainer = styled(Box)(({ theme }) => ({
         overflow: 'hidden',
     },
 }));
+
+const DEFAULT_EXTERNAL_RULE_TYPE = 'API_DEFINITION';
 
 function reducer(state, { field, value }) {
     const nextState = cloneDeep(state);
@@ -110,6 +114,7 @@ function AddEditRuleset(props) {
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [pendingFile, setPendingFile] = useState(null);
     const [rulesetValidationError, setRulesetValidationError] = useState(null);
+    const [externalHeaderChanges, setExternalHeaderChanges] = useState(false);
     const intl = useIntl();
     const { match: { params: { id } }, history } = props;
 
@@ -139,6 +144,7 @@ function AddEditRuleset(props) {
         : CONSTS.RULESET_TYPES;
 
     const isGenericRuleset = ruleCategory === 'GENERIC';
+    const isExternalRuleset = ruleCategory === 'EXTERNAL';
 
     useEffect(() => {
         const restApi = new GovernanceAPI();
@@ -162,6 +168,33 @@ function AddEditRuleset(props) {
                 .then((contentResult) => {
                     const { text } = contentResult;
                     dispatch({ field: 'rulesetContent', value: text });
+                    // Parse YAML content and populate general details if not present
+                    try {
+                        const parsed = yaml.load(text) || {};
+                        if (parsed.name) {
+                            dispatch({ field: 'name', value: parsed.name });
+                        }
+                        if (parsed.description) {
+                            dispatch({ field: 'description', value: parsed.description });
+                        }
+                        if (parsed.documentationLink) {
+                            dispatch({ field: 'documentationLink', value: parsed.documentationLink });
+                        }
+                        if (parsed.provider) {
+                            dispatch({ field: 'provider', value: parsed.provider });
+                        }
+                        if (parsed.ruleType) {
+                            dispatch({ field: 'ruleType', value: parsed.ruleType });
+                        }
+                        if (parsed.artifactType) {
+                            dispatch({ field: 'artifactType', value: parsed.artifactType });
+                        }
+                        if (parsed.ruleCategory) {
+                            dispatch({ field: 'ruleCategory', value: parsed.ruleCategory });
+                        }
+                    } catch (e) {
+                        // ignore parse errors and keep existing metadata
+                    }
                 })
                 .catch((error) => {
                     const { response } = error;
@@ -181,7 +214,13 @@ function AddEditRuleset(props) {
         if (artifactType === 'MCP' && ruleType === 'API_DEFINITION') {
             dispatch({ field: 'ruleType', value: '' });
         }
-    }, [artifactType, ruleType]);
+    }, [artifactType]); // Remove ruleType from dependency array
+
+    useEffect(() => {
+        if (isExternalRuleset && !ruleType) {
+            dispatch({ field: 'ruleType', value: DEFAULT_EXTERNAL_RULE_TYPE });
+        }
+    }, [isExternalRuleset]); // Remove ruleType from dependency array
 
     const onChange = (e) => {
         dispatch({ field: e.target.name, value: e.target.value });
@@ -275,6 +314,88 @@ function AddEditRuleset(props) {
         Utils.downloadContent(rulesetContent, `${name || 'ruleset'}.yaml`);
     };
 
+    let rulesetEditor;
+    if (isGenericRuleset) {
+        rulesetEditor = (
+            <GenericRulesetForm
+                rulesetContent={rulesetContent}
+                onContentChange={handleEditorChange}
+                rulesetName={name}
+            />
+        );
+    } else if (isExternalRuleset) {
+        rulesetEditor = (
+            <ExternalRulesetForm
+                rulesetContent={rulesetContent}
+                onContentChange={handleEditorChange}
+                onChangeDetected={setExternalHeaderChanges}
+            />
+        );
+    } else {
+        rulesetEditor = (
+            <Paper variant='outlined'>
+                <EditorToolbar>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button
+                            component='label'
+                            variant='contained'
+                            startIcon={<CloudUploadIcon />}
+                            size='small'
+                        >
+                            <FormattedMessage
+                                id='Governance.Rulesets.AddEdit.button.upload'
+                                defaultMessage='Upload File'
+                            />
+                            <input
+                                type='file'
+                                hidden
+                                accept='.yaml,.yml,.json'
+                                onChange={handleFileUpload}
+                            />
+                        </Button>
+                        <Button
+                            variant='contained'
+                            startIcon={<CloudDownloadIcon />}
+                            size='small'
+                            onClick={handleDownload}
+                        >
+                            <FormattedMessage
+                                id='Governance.Rulesets.AddEdit.button.download'
+                                defaultMessage='Download'
+                            />
+                        </Button>
+                    </Box>
+                </EditorToolbar>
+                <EditorContainer>
+                    <MonacoEditor
+                        height='100%'
+                        defaultLanguage='yaml'
+                        value={rulesetContent}
+                        onChange={handleEditorChange}
+                        theme='light'
+                        options={{
+                            minimap: { enabled: false },
+                            lineNumbers: 'on',
+                            scrollBeyondLastLine: false,
+                        }}
+                    />
+                </EditorContainer>
+            </Paper>
+        );
+    }
+
+    const rulesetContentDescription = isExternalRuleset ? (
+        <FormattedMessage
+            id='Governance.Rulesets.AddEdit.content.external.description'
+            defaultMessage='Only security headers can be updated for EXTERNAL rulesets.'
+        />
+    ) : (
+        <FormattedMessage
+            id='Governance.Rulesets.AddEdit.content.description'
+            defaultMessage='Define the ruleset content in YAML or JSON format'
+        />
+    );
+
     const hasErrors = (fieldName, fieldValue, validatingActive) => {
         let error = false;
         if (!validatingActive) {
@@ -311,6 +432,9 @@ function AddEditRuleset(props) {
                 break;
 
             case 'ruleType':
+                if (isExternalRuleset) {
+                    break;
+                }
                 if (!fieldValue) {
                     error = intl.formatMessage({
                         id: 'Governance.Rulesets.AddEdit.form.ruletype.required',
@@ -385,11 +509,30 @@ function AddEditRuleset(props) {
         setSaving(true);
 
         const file = new File([rulesetContent], `${name}.yaml`);
+
+        // Determine effective rule category
+        let effectiveRuleCategory;
+        if (isExternalRuleset) {
+            effectiveRuleCategory = 'EXTERNAL';
+        } else {
+            effectiveRuleCategory = ruleCategory || 'SPECTRAL';
+        }
+
+        // Determine effective rule type
+        let effectiveRuleType;
+        if (isExternalRuleset) {
+            effectiveRuleType = DEFAULT_EXTERNAL_RULE_TYPE;
+        } else if (ruleType === 'GENERIC') {
+            effectiveRuleType = 'API_DEFINITION';
+        } else {
+            effectiveRuleType = ruleType;
+        }
+
         const body = {
             ...state,
             provider: AuthManager.getUser().name,
-            ruleCategory: ruleCategory || 'SPECTRAL',
-            ruleType: ruleType === 'GENERIC' ? 'API_DEFINITION' : ruleType,
+            ruleCategory: effectiveRuleCategory,
+            ruleType: effectiveRuleType,
             rulesetContent: file,
         };
 
@@ -506,6 +649,7 @@ function AddEditRuleset(props) {
                                 name='name'
                                 value={name}
                                 onChange={onChange}
+                                disabled={isExternalRuleset}
                                 label={(
                                     <span>
                                         <FormattedMessage
@@ -525,6 +669,7 @@ function AddEditRuleset(props) {
                                 name='description'
                                 value={description}
                                 onChange={onChange}
+                                disabled={isExternalRuleset}
                                 label={(
                                     <FormattedMessage
                                         id='Governance.Rulesets.AddEdit.form.description'
@@ -546,6 +691,7 @@ function AddEditRuleset(props) {
                                 name='documentationLink'
                                 value={documentationLink}
                                 onChange={onChange}
+                                disabled={isExternalRuleset}
                                 label={(
                                     <FormattedMessage
                                         id='Governance.Rulesets.AddEdit.form.documentation'
@@ -565,6 +711,7 @@ function AddEditRuleset(props) {
                                         name='artifactType'
                                         value={artifactType}
                                         onChange={onChange}
+                                        disabled={isExternalRuleset}
                                         label={(
                                             <FormattedMessage
                                                 id='Governance.Rulesets.AddEdit.form.artifact.type'
@@ -591,6 +738,7 @@ function AddEditRuleset(props) {
                                         name='ruleType'
                                         value={ruleType}
                                         onChange={onChange}
+                                        disabled={isExternalRuleset}
                                         label={(
                                             <FormattedMessage
                                                 id='Governance.Rulesets.AddEdit.form.ruleset.type'
@@ -630,72 +778,14 @@ function AddEditRuleset(props) {
                                 />
                             </Typography>
                             <Typography color='inherit' variant='caption' component='p'>
-                                <FormattedMessage
-                                    id='Governance.Rulesets.AddEdit.content.description'
-                                    defaultMessage='Define the ruleset content in YAML or JSON format'
-                                />
+                                {rulesetContentDescription}
                             </Typography>
                         </Grid>
                     )}
 
                     <Grid item xs={12} md={12} lg={12}>
                         <Box component='div' m={1}>
-                            {isGenericRuleset ? (
-                                <GenericRulesetForm
-                                    rulesetContent={rulesetContent}
-                                    onContentChange={handleEditorChange}
-                                    rulesetName={name}
-                                />
-                            ) : (
-                                <Paper variant='outlined'>
-                                    <EditorToolbar>
-                                        <Box sx={{ display: 'flex', gap: 1 }}>
-                                            <Button
-                                                component='label'
-                                                variant='contained'
-                                                startIcon={<CloudUploadIcon />}
-                                                size='small'
-                                            >
-                                                <FormattedMessage
-                                                    id='Governance.Rulesets.AddEdit.button.upload'
-                                                    defaultMessage='Upload File'
-                                                />
-                                                <input
-                                                    type='file'
-                                                    hidden
-                                                    accept='.yaml,.yml,.json'
-                                                    onChange={handleFileUpload}
-                                                />
-                                            </Button>
-                                            <Button
-                                                variant='contained'
-                                                startIcon={<CloudDownloadIcon />}
-                                                size='small'
-                                                onClick={handleDownload}
-                                            >
-                                                <FormattedMessage
-                                                    id='Governance.Rulesets.AddEdit.button.download'
-                                                    defaultMessage='Download'
-                                                />
-                                            </Button>
-                                        </Box>
-                                    </EditorToolbar>
-                                    <EditorContainer>
-                                        <MonacoEditor
-                                            height='100%'
-                                            defaultLanguage='yaml'
-                                            value={rulesetContent}
-                                            onChange={handleEditorChange}
-                                            theme='light'
-                                            options={{
-                                                minimap: { enabled: false },
-                                                lineNumbers: 'on',
-                                                scrollBeyondLastLine: false,
-                                            }}
-                                        />
-                                    </EditorContainer>
-                                </Paper>
-                            )}
+                            {rulesetEditor}
                         </Box>
                         {validating && hasErrors('rulesetContent', rulesetContent, true) && (
                             <Box sx={{ color: 'error.main', pl: 2, pb: 1 }}>
@@ -718,7 +808,7 @@ function AddEditRuleset(props) {
                                 variant='contained'
                                 color='primary'
                                 onClick={formSave}
-                                disabled={saving}
+                                disabled={saving || (isExternalRuleset && !externalHeaderChanges)}
                             >
                                 {(() => {
                                     if (saving) {
