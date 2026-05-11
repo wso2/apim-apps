@@ -31,7 +31,6 @@ import {
 import {
     Box,
     Button,
-    Divider,
     Grid,
     IconButton,
     Paper,
@@ -232,7 +231,7 @@ function ExternalRulesetForm({ rulesetContent, onContentChange, onChangeDetected
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
                                 id='Governance.Rulesets.ExternalForm.headers.description'
-                                defaultMessage='Standard headers are read-only. Security headers can be edited.'
+                                defaultMessage='Security headers can be edited.'
                             />
                         </Typography>
                     </Box>
@@ -318,14 +317,6 @@ function ExternalRulesetForm({ rulesetContent, onContentChange, onChangeDetected
                     })}
                 </Stack>
 
-                <Divider sx={{ my: 2 }} />
-
-                <Typography color='inherit' variant='caption' component='p' sx={{ mb: 1 }}>
-                    <FormattedMessage
-                        id='Governance.Rulesets.ExternalForm.headers.note'
-                        defaultMessage='Security header values are written back into the YAML file when you save.'
-                    />
-                </Typography>
             </Paper>
 
         </Stack>
