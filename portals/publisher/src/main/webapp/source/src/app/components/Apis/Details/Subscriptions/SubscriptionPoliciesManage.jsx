@@ -27,6 +27,7 @@ import FormGroup from '@mui/material/FormGroup';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Paper from '@mui/material/Paper';
+import TablePagination from '@mui/material/TablePagination';
 import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
 import { isRestricted } from 'AppData/AuthManager';
@@ -74,7 +75,7 @@ const Root = styled('div')((
  * @param {object} props - Props passed to the component
  * @returns {JSX.Element} The SubscriptionPoliciesManage component
  * */
-class SubscriptionPoliciesManage extends Component {
+export class SubscriptionPoliciesManage extends Component {
 
     /**
      * constructor
@@ -82,39 +83,77 @@ class SubscriptionPoliciesManage extends Component {
      */
     constructor(props) {
         super(props);
+        const rowsPerPage = Configurations.app.subscriptionPolicyLimit || 25;
         this.state = {
-            subscriptionPolicies: {},
+            subscriptionPolicies: [],
             isMutualSslOnly: false,
             isAsyncAPI: false,
+            page: 0,
+            rowsPerPage,
+            totalPolicies: 0,
         };
         this.handleChange = this.handleChange.bind(this);
+        this.fetchPolicies = this.fetchPolicies.bind(this);
+        this.handleChangePage = this.handleChangePage.bind(this);
+        this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
     }
 
     componentDidMount() {
         const { api } = this.props;
         const isAsyncAPI = (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE' || api.type === 'ASYNC');
-        this.setState( {isAsyncAPI});
         const securityScheme = [...api.securityScheme];
         const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
-        && securityScheme.includes('mutualssl_mandatory');
-        this.setState({ isMutualSslOnly });
-        const limit = Configurations.app.subscriptionPolicyLimit;
+            && securityScheme.includes('mutualssl_mandatory');
+
+        this.setState({
+            isAsyncAPI,
+            isMutualSslOnly,
+        }, () => this.fetchPolicies(0, this.state.rowsPerPage, isAsyncAPI));
+    }
+
+    fetchPolicies(page, rowsPerPage, isAsyncAPIOverride = this.state.isAsyncAPI) {
+        const { api } = this.props;
+        const offset = page > 0 ? rowsPerPage * page : 0;
         const isAiApi = api?.subtypeConfiguration?.subtype?.toLowerCase().includes('aiapi') ?? false;
         let policyPromise;
-        if (isAsyncAPI) {
+        if (isAsyncAPIOverride) {
             policyPromise = API.asyncAPIPolicies();
         } else {
-            policyPromise = API.policies('subscription', limit || undefined, isAiApi);
+            policyPromise = API.policies(
+                'subscription',
+                rowsPerPage || undefined,
+                isAiApi,
+                undefined,
+                offset || undefined,
+            );
         }
         policyPromise
             .then((res) => {
-                this.setState({ subscriptionPolicies: res.body.list });
+                const subscriptionPolicies = res.body.list || [];
+                const totalPolicies = isAsyncAPIOverride
+                    ? subscriptionPolicies.length
+                    : res.body?.pagination?.total || res.body.count || subscriptionPolicies.length;
+                this.setState({
+                    subscriptionPolicies,
+                    page,
+                    rowsPerPage,
+                    totalPolicies,
+                });
             })
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
                     console.error(error);
                 }
             });
+    }
+
+    handleChangePage(event, newPage) {
+        this.fetchPolicies(newPage, this.state.rowsPerPage);
+    }
+
+    handleChangeRowsPerPage(event) {
+        const rowsPerPage = parseInt(event.target.value, 10);
+        this.fetchPolicies(0, rowsPerPage);
     }
 
     /**
@@ -175,7 +214,9 @@ class SubscriptionPoliciesManage extends Component {
      */
     render() {
         const {  api, policies } = this.props;
-        const { subscriptionPolicies } = this.state;
+        const {
+            subscriptionPolicies, isAsyncAPI, page, rowsPerPage, totalPolicies,
+        } = this.state;
 
         /*
         Following logic is to identify migrated users policies.
@@ -187,13 +228,15 @@ class SubscriptionPoliciesManage extends Component {
         */
         let migratedCase = false;
         let preMigrationPolicies;
-        if (Object.keys(subscriptionPolicies).length !== 0 && api.policies && api.policies.length > 0) {
+        if (subscriptionPolicies.length !== 0 && api.policies && api.policies.length > 0) {
             preMigrationPolicies = api.policies.filter((apiPolicy) => {
                 const samePolicies = subscriptionPolicies.filter((subPolicy) => apiPolicy === subPolicy.displayName);
                 return samePolicies.length === 0;
             });
             migratedCase = preMigrationPolicies.length > 0;
         }
+
+        const rowsPerPageOptions = Array.from(new Set([10, rowsPerPage, 25, 50])).sort((a, b) => a - b);
 
         const getPolicyDetails = (policy) => {
             const details = [];
@@ -248,27 +291,27 @@ class SubscriptionPoliciesManage extends Component {
                 <Paper className={classes.subscriptionPoliciesPaper}>
                     <FormControl className={classes.formControl}>
                         <FormGroup>
-                            { subscriptionPolicies && Object.entries(subscriptionPolicies).map((value) => {
-                                if (value[1].displayName.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)) {
+                            { subscriptionPolicies && subscriptionPolicies.map((policy) => {
+                                if (policy.displayName.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)) {
                                     return null; // Skip rendering for "Default"
                                 }
                                 return (
                                     <FormControlLabel
-                                        data-testid={'policy-checkbox-' + value[1].displayName.toLowerCase()}
-                                        key={value[1].displayName}
+                                        data-testid={'policy-checkbox-' + policy.displayName.toLowerCase()}
+                                        key={policy.displayName}
                                         control={(
                                             <Checkbox
                                                 disabled={this.isCreateOrPublishRestricted()}
                                                 color='primary'
-                                                checked={policies.includes(value[1].displayName)}
+                                                checked={policies.includes(policy.displayName)}
                                                 onChange={(e) => this.handleChange(e)}
-                                                name={value[1].displayName}
+                                                name={policy.displayName}
                                             />
                                         )}
                                         label={
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                {value[1].displayName + ' : ' + value[1].description}
-                                                <Tooltip title={getPolicyDetails(value[1])}>
+                                                {policy.displayName + ' : ' + policy.description}
+                                                <Tooltip title={getPolicyDetails(policy)}>
                                                     <InfoIcon
                                                         color='action'
                                                         style={{ marginLeft: 5, fontSize: 20, cursor: 'default' }}
@@ -311,6 +354,19 @@ class SubscriptionPoliciesManage extends Component {
                             )}
                         </FormGroup>
                     </FormControl>
+                    {!isAsyncAPI && totalPolicies > rowsPerPage && (
+                        <Box display='flex' justifyContent='flex-end'>
+                            <TablePagination
+                                component='div'
+                                count={totalPolicies}
+                                page={page}
+                                onPageChange={this.handleChangePage}
+                                rowsPerPage={rowsPerPage}
+                                onRowsPerPageChange={this.handleChangeRowsPerPage}
+                                rowsPerPageOptions={rowsPerPageOptions}
+                            />
+                        </Box>
+                    )}
                 </Paper>
             </Root>)
         );
@@ -320,9 +376,11 @@ class SubscriptionPoliciesManage extends Component {
 SubscriptionPoliciesManage.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
-    api: PropTypes.shape({ policies: PropTypes.arrayOf(PropTypes.shape({})) }).isRequired,
+    api: PropTypes.shape({
+        policies: PropTypes.arrayOf(PropTypes.string),
+    }).isRequired,
     setPolices: PropTypes.func.isRequired,
-    policies: PropTypes.shape({}).isRequired,
+    policies: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default injectIntl((SubscriptionPoliciesManage));
