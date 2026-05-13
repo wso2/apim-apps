@@ -38,6 +38,7 @@
   "Admin.KeyManager.label.DisplayName": "Display Name",
   "Admin.KeyManager.label.Enable.EnableOAithAppCreation": "Oauth App Creation",
   "Admin.KeyManager.label.Enable.OutOfBandProvisioning": "Out Of Band Provisioning",
+  "Admin.KeyManager.label.Enable.ProvisionedAppValidation": "Provisioned App Validation",
   "Admin.KeyManager.label.Enable.TokenGen": "Token Generation",
   "Admin.KeyManager.label.Scopes.Claim": "Scopes Claim URI",
   "Admin.KeyManager.label.allow.exchange.token": "Token Exchange",
