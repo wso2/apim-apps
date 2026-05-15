@@ -24,6 +24,7 @@ import MCPRouteGuard from 'AppComponents/Shared/MCPRouteGuard';
 
 import Listing from './Listing/Listing';
 import APICreateWithAI from './Create/CreateAPIWithAI/APICreateWithAI';
+import DiscoverAPIs from './Discover/DiscoverAPIs';
 
 /* if needs to pre fetch use 'webpackPrefetch: true' */
 
@@ -85,6 +86,8 @@ const Apis = () => {
                 key={Date.now()}
                 render={(props) => <Listing {...props} isAPIProduct={false} />}
             />
+            <Route path='/apis/discover' component={DiscoverAPIs} />
+
             <Route path='/apis/create' component={DeferredAPICreateRoutes} />
             <Route path='/apis/design-assistant' component={DefferedAIApiCreateRoutes} />
             <Route
@@ -97,8 +100,8 @@ const Apis = () => {
                     }
                 }}
             />
-            <Route 
-                path='/mcp-servers/create' 
+            <Route
+                path='/mcp-servers/create'
                 render={(props) => (
                     <MCPRouteGuard>
                         <DeferredAPICreateRoutes {...props} />

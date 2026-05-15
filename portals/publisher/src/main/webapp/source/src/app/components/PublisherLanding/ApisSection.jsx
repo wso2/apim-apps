@@ -23,6 +23,7 @@ import { Link } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
+import ExploreIcon from '@mui/icons-material/Explore';
 import Configurations from 'Config';
 import { isRestricted } from 'AppData/AuthManager';
 import CONSTS from 'AppData/Constants';
@@ -114,16 +115,31 @@ const ApisSection = ({ data, totalCount, onDelete }) => {
                             <FormattedMessage id='Publisher.Landing.apis.section.title' defaultMessage='APIs' />
                         </Typography>
                     </div>
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        component={Link}
-                        disabled={isRestricted(['apim:api_create', 'apim:api_manage'])}
-                        to='/apis/create'
-                        startIcon={<AddIcon />}
-                    >
-                        <FormattedMessage id='Publisher.Landing.create.api.button' defaultMessage='Create API' />
-                    </Button>
+                    <Box display='flex' gap={2}>
+                        <Button
+                            variant='outlined'
+                            color='primary'
+                            component={Link}
+                            disabled={isRestricted(['apim:api_create', 'apim:api_manage'])}
+                            to='/apis/discover'
+                            startIcon={<ExploreIcon />}
+                        >
+                            <FormattedMessage
+                                id='Publisher.Landing.discover.apis.button'
+                                defaultMessage='Discover APIs'
+                            />
+                        </Button>
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            component={Link}
+                            disabled={isRestricted(['apim:api_create', 'apim:api_manage'])}
+                            to='/apis/create'
+                            startIcon={<AddIcon />}
+                        >
+                            <FormattedMessage id='Publisher.Landing.create.api.button' defaultMessage='Create API' />
+                        </Button>
+                    </Box>
                 </div>
                 {data.length === 0 ? (
                     <Box
