@@ -116,8 +116,13 @@ export class SubscriptionPoliciesManage extends Component {
         const offset = page > 0 ? rowsPerPage * page : 0;
         const isAiApi = api?.subtypeConfiguration?.subtype?.toLowerCase().includes('aiapi') ?? false;
         let policyPromise;
+        let asyncPolicyLimit;
         if (isAsyncAPIOverride) {
-            policyPromise = API.asyncAPIPolicies();
+            asyncPolicyLimit = rowsPerPage ? rowsPerPage + 1 : undefined;
+            policyPromise = API.asyncAPIPolicies(
+                asyncPolicyLimit,
+                offset || undefined,
+            );
         } else {
             policyPromise = API.policies(
                 'subscription',
@@ -129,10 +134,15 @@ export class SubscriptionPoliciesManage extends Component {
         }
         policyPromise
             .then((res) => {
-                const subscriptionPolicies = res.body.list || [];
-                const totalPolicies = isAsyncAPIOverride
-                    ? subscriptionPolicies.length
-                    : res.body?.pagination?.total || res.body.count || subscriptionPolicies.length;
+                const policies = res.body.list || [];
+                const subscriptionPolicies = isAsyncAPIOverride && rowsPerPage
+                    ? policies.slice(0, rowsPerPage)
+                    : policies;
+                let totalPolicies = res.body?.pagination?.total;
+                if (totalPolicies === undefined || totalPolicies === null) {
+                    const hasNextPage = isAsyncAPIOverride && rowsPerPage && policies.length > rowsPerPage;
+                    totalPolicies = offset + subscriptionPolicies.length + (hasNextPage ? 1 : 0);
+                }
                 this.setState({
                     subscriptionPolicies,
                     page,
@@ -215,7 +225,7 @@ export class SubscriptionPoliciesManage extends Component {
     render() {
         const {  api, policies } = this.props;
         const {
-            subscriptionPolicies, isAsyncAPI, page, rowsPerPage, totalPolicies,
+            subscriptionPolicies, page, rowsPerPage, totalPolicies,
         } = this.state;
 
         /*
@@ -354,7 +364,7 @@ export class SubscriptionPoliciesManage extends Component {
                             )}
                         </FormGroup>
                     </FormControl>
-                    {!isAsyncAPI && totalPolicies > rowsPerPage && (
+                    {totalPolicies > rowsPerPage && (
                         <Box display='flex' justifyContent='flex-end'>
                             <TablePagination
                                 component='div'
