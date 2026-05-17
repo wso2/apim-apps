@@ -477,6 +477,25 @@ const AddEditAIEndpoint = ({
         }
     }, [state]);
 
+    // Auto-configure endpoint security for UMI — no credentials needed from the user.
+    // set it immediately when the component mounts (or when the deployment stage changes).
+    useEffect(() => {
+        if (llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'umi' &&
+            llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled === true) {
+            const envType = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production
+                ? 'production' : 'sandbox';
+            const existing = state.endpointConfig.endpoint_security?.[envType];
+            // Only set if not already persisted to avoid unnecessary re-renders
+            if (!existing || existing.type !== 'umi') {
+                saveEndpointSecurityConfig({
+                    ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
+                    type: 'umi',
+                    enabled: true,
+                }, envType);
+            }
+        }
+    }, [llmProviderEndpointConfiguration, state.deploymentStage]);
+
     /**
      * Method to test the endpoint.
      * @param {String} endpointURL Endpoint URL 
@@ -881,6 +900,9 @@ const AddEditAIEndpoint = ({
     const IS_AWS_SIGV4_AUTH_ENABLED = (config) =>
         config?.authenticationConfiguration?.enabled === true &&
         config?.authenticationConfiguration?.type === 'aws';
+    const IS_UMI_AUTH_ENABLED = (config) =>
+        config?.authenticationConfiguration?.enabled === true &&
+        config?.authenticationConfiguration?.type === 'umi';
     return (
         <StyledGrid container justifyContent='center'>
             <Grid item sm={12} md={12} lg={8}>
@@ -1217,6 +1239,22 @@ const AddEditAIEndpoint = ({
                                 </>
                             )}
 
+                            {/* User Managed Identity (UMI) Auth Info */}
+                            {IS_UMI_AUTH_ENABLED(llmProviderEndpointConfiguration) && (
+                                <Grid item xs={12}>
+                                    <Typography variant='body2' color='textSecondary'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.AIEndpoints.Edit.umi.info'
+                                            defaultMessage={
+                                                'Azure User Managed Identity (UMI) authentication is configured. '
+                                                + 'The gateway will automatically acquire and inject a Bearer token '
+                                                + 'using the pod\'s AKS Workload Identity.'
+                                            }
+                                        />
+                                    </Typography>
+                                </Grid>
+                            )}
+                            
                         </Grid>
 
                         {/* Action Buttons */}
