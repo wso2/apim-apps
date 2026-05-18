@@ -225,7 +225,7 @@ export class SubscriptionPoliciesManage extends Component {
     render() {
         const {  api, policies } = this.props;
         const {
-            subscriptionPolicies, page, rowsPerPage, totalPolicies,
+            subscriptionPolicies, isAsyncAPI, page, rowsPerPage, totalPolicies,
         } = this.state;
 
         /*
@@ -238,7 +238,7 @@ export class SubscriptionPoliciesManage extends Component {
         */
         let migratedCase = false;
         let preMigrationPolicies;
-        if (subscriptionPolicies.length !== 0 && api.policies && api.policies.length > 0) {
+        if (isAsyncAPI && subscriptionPolicies.length !== 0 && api.policies && api.policies.length > 0) {
             preMigrationPolicies = api.policies.filter((apiPolicy) => {
                 const samePolicies = subscriptionPolicies.filter((subPolicy) => apiPolicy === subPolicy.displayName);
                 return samePolicies.length === 0;
@@ -364,7 +364,7 @@ export class SubscriptionPoliciesManage extends Component {
                             )}
                         </FormGroup>
                     </FormControl>
-                    {totalPolicies > rowsPerPage && (
+                    {totalPolicies > Math.min(...rowsPerPageOptions) && (
                         <Box display='flex' justifyContent='flex-end'>
                             <TablePagination
                                 component='div'
