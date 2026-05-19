@@ -463,6 +463,16 @@ const AddEditAIEndpoint = ({
 
     const url = getBasePath(apiObject.apiType) + apiObject.id + '/endpoints';
 
+    const IS_APIKEY_AUTH_ENABLED = (config) =>
+        config?.authenticationConfiguration?.enabled === true &&
+        config?.authenticationConfiguration?.type === 'apikey';
+    const IS_AWS_SIGV4_AUTH_ENABLED = (config) =>
+        config?.authenticationConfiguration?.enabled === true &&
+        config?.authenticationConfiguration?.type === 'aws';
+    const IS_UMI_AUTH_ENABLED = (config) =>
+        config?.authenticationConfiguration?.enabled === true &&
+        config?.authenticationConfiguration?.type === 'umi';
+
     useEffect(() => {
         try {
             if (state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production) {
@@ -478,23 +488,32 @@ const AddEditAIEndpoint = ({
     }, [state]);
 
     // Auto-configure endpoint security for UMI — no credentials needed from the user.
-    // set it immediately when the component mounts (or when the deployment stage changes).
+    // Runs on mount, when the deployment stage changes, or when the security config
+    // is externally reset, to ensure UMI is always applied for UMI-type providers.
+    const currentEnvType = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production
+        ? 'production' : 'sandbox';
+    const currentSecurity = state.endpointConfig.endpoint_security?.[currentEnvType];
+    const currentSecurityType = currentSecurity?.type;
+    const isCurrentSecurityEnabled = currentSecurity?.enabled === true;
+
     useEffect(() => {
-        if (llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'umi' &&
-            llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled === true) {
-            const envType = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production
-                ? 'production' : 'sandbox';
-            const existing = state.endpointConfig.endpoint_security?.[envType];
-            // Only set if not already persisted to avoid unnecessary re-renders
-            if (!existing || existing.type !== 'umi') {
-                saveEndpointSecurityConfig({
-                    ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
-                    type: 'umi',
-                    enabled: true,
-                }, envType);
-            }
+        if (
+            IS_UMI_AUTH_ENABLED(llmProviderEndpointConfiguration)
+            && (currentSecurityType !== 'umi' || !isCurrentSecurityEnabled)
+        ) {
+            saveEndpointSecurityConfig({
+                ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
+                type: 'umi',
+                enabled: true,
+            }, currentEnvType);
         }
-    }, [llmProviderEndpointConfiguration, state.deploymentStage]);
+    }, [
+        llmProviderEndpointConfiguration?.authenticationConfiguration?.type,
+        llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled,
+        currentEnvType,
+        currentSecurityType,
+        isCurrentSecurityEnabled,
+    ]);
 
     /**
      * Method to test the endpoint.
@@ -894,15 +913,6 @@ const AddEditAIEndpoint = ({
         }, envType);
     };
 
-    const IS_APIKEY_AUTH_ENABLED = (config) =>
-        config?.authenticationConfiguration?.enabled === true &&
-        config?.authenticationConfiguration?.type === 'apikey';
-    const IS_AWS_SIGV4_AUTH_ENABLED = (config) =>
-        config?.authenticationConfiguration?.enabled === true &&
-        config?.authenticationConfiguration?.type === 'aws';
-    const IS_UMI_AUTH_ENABLED = (config) =>
-        config?.authenticationConfiguration?.enabled === true &&
-        config?.authenticationConfiguration?.type === 'umi';
     return (
         <StyledGrid container justifyContent='center'>
             <Grid item sm={12} md={12} lg={8}>
@@ -1248,7 +1258,7 @@ const AddEditAIEndpoint = ({
                                             defaultMessage={
                                                 'Azure User Managed Identity (UMI) authentication is configured. '
                                                 + 'The gateway will automatically acquire and inject a Bearer token '
-                                                + 'using the pod\'s AKS Workload Identity.'
+                                                + 'using the configured Azure Workload Identity.'
                                             }
                                         />
                                     </Typography>

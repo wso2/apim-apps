@@ -1104,7 +1104,7 @@ export default function AddEditAiServiceProvider(props) {
                                                         id='Admin.AiVendor.form.llm.auth.umi.info'
                                                         defaultMessage={
                                                             'Azure User Managed Identity (UMI) authentication will '
-                                                            + 'be used. The gateway pod must have the AKS Workload '
+                                                            + 'be used. The gateway must have the Azure Workload '
                                                             + 'Identity webhook configured with the appropriate '
                                                             + 'AZURE_TENANT_ID, AZURE_CLIENT_ID, and '
                                                             + 'AZURE_FEDERATED_TOKEN_FILE environment variables. '
