@@ -31,7 +31,7 @@
   "APIKeys.ListApiKeys.value.never": "Never",
   "Admin.Addons.Help.Base.title": "Help",
   "Admin.AiVendor.form.llm.auth.aws.service.label": "AWS Service Name",
-  "Admin.AiVendor.form.llm.auth.umi.info": "Azure User Managed Identity (UMI) authentication will be used. The gateway pod must have the AKS Workload Identity webhook configured with the appropriate AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_FEDERATED_TOKEN_FILE environment variables. No credentials need to be stored.",
+  "Admin.AiVendor.form.llm.auth.umi.info": "Azure User Managed Identity (UMI) authentication will be used. The gateway must have the Azure Workload Identity webhook configured with the appropriate AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_FEDERATED_TOKEN_FILE environment variables. No credentials need to be stored.",
   "Admin.AiVendor.label.apiVersion": "API Version",
   "Admin.GatewayEnvironment.form.type": "Gateway Environment Type",
   "Admin.KeyManager.form.type": "Key Manager Type",
