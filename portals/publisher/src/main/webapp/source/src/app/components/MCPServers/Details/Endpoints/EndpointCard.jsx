@@ -16,14 +16,16 @@
  * under the License.
  */
 
-import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import React, { useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Typography,
     IconButton,
     Card,
     CardContent,
     CardActions,
+    Button,
+    CircularProgress,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -37,6 +39,8 @@ import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
 import { styled } from '@mui/material/styles';
 import { isRestricted } from 'AppData/AuthManager';
 import { useHistory } from 'react-router-dom';
+import MCPServer from 'AppData/MCPServer';
+import Alert from 'AppComponents/Shared/Alert';
 
 const PREFIX = 'EndpointCard';
 
@@ -102,13 +106,53 @@ const EndpointCard = ({
     isDeleting,
     onDelete,
     endpointType,
+    onDefinitionUpdate,
 }) => {
     const history = useHistory();
-    const [open, setOpen] = React.useState(false);
+    const intl = useIntl();
+    const [open, setOpen] = useState(false);
+    const [editedDefinition, setEditedDefinition] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
 
     const toggleDefinitionViewDrawer = (state) => () => {
+        if (state) {
+            setEditedDefinition(null);
+        }
         setOpen(state);
     }
+
+    const handleDefinitionSave = () => {
+        if (editedDefinition === null) return;
+        setIsSaving(true);
+        const payload = {
+            ...endpoint,
+            endpointConfig: typeof endpoint.endpointConfig === 'string'
+                ? endpoint.endpointConfig
+                : JSON.stringify(endpoint.endpointConfig),
+            definition: editedDefinition,
+        };
+        MCPServer.updateMCPServerBackend(apiObject.id, endpoint.id, payload)
+            .then(() => {
+                Alert.success(intl.formatMessage({
+                    id: 'MCPServers.Details.Endpoints.EndpointCard.definition.save.success',
+                    defaultMessage: 'Backend API definition updated successfully',
+                }));
+                setEditedDefinition(null);
+                if (onDefinitionUpdate) {
+                    onDefinitionUpdate();
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                Alert.error(intl.formatMessage({
+                    id: 'MCPServers.Details.Endpoints.EndpointCard.definition.save.error',
+                    defaultMessage: 'Error updating backend API definition',
+                }));
+            })
+            .finally(() => {
+                setIsSaving(false);
+            });
+    };
 
     const getEndpointUrl = () => {
         let endpointConfig;
@@ -166,7 +210,12 @@ const EndpointCard = ({
 
     const editorOptions = {
         selectOnLineNumbers: true,
-        readOnly: true,
+        readOnly: isRestricted([
+            'apim:mcp_server_create',
+            'apim:mcp_server_manage',
+            'apim:mcp_server_publish',
+            'apim:mcp_server_import_export',
+        ], apiObject),
         minimap: {
             enabled: false,
         },
@@ -218,12 +267,44 @@ const EndpointCard = ({
                             <Box
                                 role='presentation'
                                 sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-                                <Typography variant='h6' sx={{ p: 2, flexShrink: 0 }}>
-                                    <FormattedMessage
-                                        id='Apis.Details.Endpoints.AIEndpoints.EndpointCard.backend.api.definition'
-                                        defaultMessage='Backend API Definition'
-                                    />
-                                </Typography>
+                                <Box sx={{
+                                    p: 2,
+                                    flexShrink: 0,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                }}>
+                                    <Typography variant='h6'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.AIEndpoints.EndpointCard.backend.api.definition'
+                                            defaultMessage='Backend API Definition'
+                                        />
+                                    </Typography>
+                                    <Button
+                                        variant='contained'
+                                        color='primary'
+                                        size='small'
+                                        onClick={handleDefinitionSave}
+                                        disabled={
+                                            editedDefinition === null
+                                            || isSaving
+                                            || isRestricted([
+                                                'apim:mcp_server_create',
+                                                'apim:mcp_server_manage',
+                                                'apim:mcp_server_publish',
+                                                'apim:mcp_server_import_export',
+                                            ], apiObject)
+                                        }
+                                    >
+                                        {isSaving ? (
+                                            <CircularProgress size={16} sx={{ mr: 1 }} />
+                                        ) : null}
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.AIEndpoints.EndpointCard.definition.update'
+                                            defaultMessage='Update'
+                                        />
+                                    </Button>
+                                </Box>
                                 <Box
                                     sx={{
                                         flex: 1,
@@ -240,6 +321,7 @@ const EndpointCard = ({
                                         value={getApiDefinition()}
                                         options={editorOptions}
                                         theme='vs-dark'
+                                        onChange={(value) => setEditedDefinition(value)}
                                     />
                                 </Box>
                             </Box>
@@ -317,6 +399,11 @@ EndpointCard.propTypes = {
         id: PropTypes.string,
     }).isRequired,
     endpointType: PropTypes.oneOf(['PRODUCTION', 'SANDBOX']).isRequired,
+    onDefinitionUpdate: PropTypes.func,
+};
+
+EndpointCard.defaultProps = {
+    onDefinitionUpdate: null,
 };
 
 export default EndpointCard;
