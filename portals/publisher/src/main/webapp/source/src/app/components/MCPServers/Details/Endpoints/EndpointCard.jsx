@@ -122,14 +122,30 @@ const EndpointCard = ({
     }
 
     const handleDefinitionSave = () => {
-        if (editedDefinition === null) return;
+        const trimmed = (editedDefinition ?? '').trim();
+        if (!trimmed) {
+            Alert.error(intl.formatMessage({
+                id: 'MCPServers.Details.Endpoints.EndpointCard.definition.empty',
+                defaultMessage: 'API definition cannot be empty',
+            }));
+            return;
+        }
+        try {
+            JSON.parse(trimmed);
+        } catch (e) {
+            Alert.error(intl.formatMessage({
+                id: 'MCPServers.Details.Endpoints.EndpointCard.definition.invalid.json',
+                defaultMessage: 'API definition is not valid JSON',
+            }));
+            return;
+        }
         setIsSaving(true);
         const payload = {
             ...endpoint,
             endpointConfig: typeof endpoint.endpointConfig === 'string'
                 ? endpoint.endpointConfig
                 : JSON.stringify(endpoint.endpointConfig),
-            definition: editedDefinition,
+            definition: trimmed,
         };
         MCPServer.updateMCPServerBackend(apiObject.id, endpoint.id, payload)
             .then(() => {
@@ -300,7 +316,7 @@ const EndpointCard = ({
                                             <CircularProgress size={16} sx={{ mr: 1 }} />
                                         ) : null}
                                         <FormattedMessage
-                                            id='Apis.Details.Endpoints.AIEndpoints.EndpointCard.definition.update'
+                                            id='MCPServers.Details.Endpoints.EndpointCard.definition.update'
                                             defaultMessage='Update'
                                         />
                                     </Button>
