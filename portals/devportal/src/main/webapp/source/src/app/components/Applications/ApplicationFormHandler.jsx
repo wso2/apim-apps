@@ -291,6 +291,15 @@ class ApplicationFormHandler extends React.Component {
     };
 
     /**
+     * Check if application groups contain leading or trailing whitespace
+     * @returns {boolean} whether application groups contain leading or trailing whitespace
+     */
+    hasInvalidApplicationGroup = () => {
+        const { applicationRequest } = this.state;
+        return (applicationRequest.groups || []).some((group) => group !== group.trim());
+    }
+
+    /**
      * Validate and send the application create
      * request to the backend
      * @memberof ApplicationFormHandler
@@ -523,6 +532,12 @@ class ApplicationFormHandler extends React.Component {
                 </Typography>
             </>
         );
+        const isSaveDisabled = this.hasInvalidApplicationGroup()
+            || (isEdit && (
+                (!isOrgWideAppUpdateEnabled
+                    && AuthManager.getUser().name.toLowerCase() !== applicationOwner.toLowerCase())
+                || !this.hasFormChanged()
+            ));
         return (
             params.application_id && applicationRequest.throttlingPolicy === ''
                 ? <Progress />
@@ -555,13 +570,7 @@ class ApplicationFormHandler extends React.Component {
                                             variant='contained'
                                             color='primary'
                                             onClick={isEdit ? this.saveEdit : this.saveApplication}
-                                            disabled={
-                                                isEdit && (
-                                                    (!isOrgWideAppUpdateEnabled
-                                                    && AuthManager.getUser().name.toLowerCase() !== applicationOwner.toLowerCase())
-                                                    || !this.hasFormChanged()
-                                                )
-                                            }
+                                            disabled={isSaveDisabled}
                                             className={classes.button}
                                         >
                                             <FormattedMessage
