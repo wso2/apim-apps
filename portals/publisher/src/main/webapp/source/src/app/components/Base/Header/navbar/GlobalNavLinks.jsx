@@ -161,21 +161,25 @@ function GlobalNavLinks(props) {
                                 defaultMessage='Services'
                             />
                         </GlobalNavLink>
-                        <GlobalNavLink
-                            id='scope'
-                            to='/scopes'
-                            type='scopes'
-                            title={intl.formatMessage({
-                                id: 'Base.Header.navbar.GlobalNavBar.title.scopes',
-                                defaultMessage: 'Scopes',
-                            })}
-                            active={selected === 'scopes'}
-                        >
-                            <FormattedMessage
-                                id='Base.Header.navbar.GlobalNavBar.scopes'
-                                defaultMessage='Scopes'
-                            />
-                        </GlobalNavLink>
+                    </div>
+                )}
+                <GlobalNavLink
+                    id='scope'
+                    to='/scopes'
+                    type='scopes'
+                    title={intl.formatMessage({
+                        id: 'Base.Header.navbar.GlobalNavBar.title.scopes',
+                        defaultMessage: 'Scopes',
+                    })}
+                    active={selected === 'scopes'}
+                >
+                    <FormattedMessage
+                        id='Base.Header.navbar.GlobalNavBar.scopes'
+                        defaultMessage='Scopes'
+                    />
+                </GlobalNavLink>
+                {gateway && (settings && !settings.portalConfigurationOnlyModeEnabled) && (
+                    <div>
                         <GlobalNavLink
                             id='policies'
                             to='/policies'

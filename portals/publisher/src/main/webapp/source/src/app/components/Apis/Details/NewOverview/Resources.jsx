@@ -109,6 +109,17 @@ class Resources extends React.Component {
     }
 
     componentDidMount() {
+        this.fetchSwagger();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.api.id !== this.props.api.id) {
+            this.setState({ paths: null, notFound: false });
+            this.fetchSwagger();
+        }
+    }
+
+    fetchSwagger() {
         const { id } = this.props.api;
         const promisedAPI = this.restApi.getSwagger(id);
         promisedAPI
