@@ -74,7 +74,7 @@ describe("Anonymous view apis", () => {
 
         // intercepting overview page network calls
         cy.intercept('GET', '**/apis/**/comments**').as('getComments');
-        cy.intercept('GET', '**/apis/**/documents').as('getDocuments');
+        cy.intercept('GET', '**/apis/**/documents**').as('getDocuments');
         cy.intercept('GET', '**/throttling-policies/subscription').as('getSubscriptionPolicies');
         cy.intercept('GET', '**/apis/**/thumbnail').as('getThumbnail');
 
