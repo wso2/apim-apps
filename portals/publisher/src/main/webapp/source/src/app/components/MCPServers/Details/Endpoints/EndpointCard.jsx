@@ -231,7 +231,7 @@ const EndpointCard = ({
             'apim:mcp_server_manage',
             'apim:mcp_server_publish',
             'apim:mcp_server_import_export',
-        ], apiObject),
+        ], apiObject) || apiObject.isRevision,
         minimap: {
             enabled: false,
         },
@@ -310,6 +310,7 @@ const EndpointCard = ({
                                                 'apim:mcp_server_publish',
                                                 'apim:mcp_server_import_export',
                                             ], apiObject)
+                                            || apiObject.isRevision
                                         }
                                     >
                                         {isSaving ? (
@@ -413,6 +414,7 @@ EndpointCard.propTypes = {
     isDeleting: PropTypes.bool.isRequired,
     apiObject: PropTypes.shape({
         id: PropTypes.string,
+        isRevision: PropTypes.bool,
     }).isRequired,
     endpointType: PropTypes.oneOf(['PRODUCTION', 'SANDBOX']).isRequired,
     onDefinitionUpdate: PropTypes.func,
