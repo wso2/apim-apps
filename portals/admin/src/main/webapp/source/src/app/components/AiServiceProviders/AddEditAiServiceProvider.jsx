@@ -429,8 +429,9 @@ export default function AddEditAiServiceProvider(props) {
             history.push('/settings/ai-service-providers/');
         } catch (e) {
             const { response, message } = e;
-            if (response && response.body) {
-                Alert.error(response.body.description);
+            const backendDescription = response?.body?.description;
+            if (backendDescription) {
+                Alert.error(backendDescription);
             } else if (message) {
                 Alert.error(message);
             }
