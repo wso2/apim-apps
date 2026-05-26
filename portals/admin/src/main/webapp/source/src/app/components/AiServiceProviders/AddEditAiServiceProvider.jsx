@@ -434,6 +434,11 @@ export default function AddEditAiServiceProvider(props) {
                 Alert.error(backendDescription);
             } else if (message) {
                 Alert.error(message);
+            } else {
+                Alert.error(intl.formatMessage({
+                    id: 'AiServiceProviders.AddEditAiServiceProvider.save.error.generic',
+                    defaultMessage: 'An error occurred while saving the AI Service Provider.',
+                }));
             }
             setSaving(false);
         }
