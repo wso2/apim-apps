@@ -8,7 +8,7 @@
         "node": ">=22.0.0"
     },
     "scripts": {
-        "test:ci": "echo \"No tests specified\"",
+        "test:ci": "CI=true jest --silent --ci --runInBand source/Tests/Unit/",
         "test:ci2": "CI=true jest --silent --ci --watchAll=false --watch=false --coverage --coverageReporters=cobertura",
         "test": "DEBUG_PRINT_LIMIT=9000 jest --watch",
         "test:coverage": "jest --silent --coverage .; python3 -m http.server -d coverage/",
