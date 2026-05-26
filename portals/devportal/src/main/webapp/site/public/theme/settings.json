@@ -9,6 +9,7 @@
             "host": "localhost"
         },
         "subscriptionLimit": 1000,
+        "documentCount": 100,
         "subscribeApplicationLimit": 5000,
         "isPassive": true,
         "singleLogout": {
