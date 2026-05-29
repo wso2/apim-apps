@@ -271,14 +271,21 @@ function DocList(props) {
 
     const getDocumentOrder = (type) => {
     const order = documentTypeOrder.indexOf(type);
-    return order === -1 ? -1 : order;
-    };
-    
+    return order === -1 ? documentTypeOrder.length : order;
+};
+
     const sortDocuments = (a, b) => {
-        const typeOrder = getDocumentOrder(a.type) - getDocumentOrder(b.type);
+        const aOrder = getDocumentOrder(a.type);
+        const bOrder = getDocumentOrder(b.type);
+    
+        const typeOrder = aOrder - bOrder;
     
         if (typeOrder !== 0) {
             return typeOrder;
+        }
+    
+        if (a.type !== b.type) {
+            return String(a.type).localeCompare(String(b.type));
         }
     
         return a.name.localeCompare(b.name);
