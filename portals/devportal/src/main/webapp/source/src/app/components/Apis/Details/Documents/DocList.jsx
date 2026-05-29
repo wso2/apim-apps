@@ -269,6 +269,23 @@ function DocList(props) {
         }),
     };
 
+    const getDocumentOrder = (type) => {
+    const order = documentTypeOrder.indexOf(type);
+    return order === -1 ? -1 : order;
+    };
+    
+    const sortDocuments = (a, b) => {
+        const typeOrder = getDocumentOrder(a.type) - getDocumentOrder(b.type);
+    
+        if (typeOrder !== 0) {
+            return typeOrder;
+        }
+    
+        return a.name.localeCompare(b.name);
+    };
+    
+    const sortedDocuments = [...documentList].sort(sortDocuments);
+    
     const [viewDocument, setViewDocument] = useState(selectedDoc);
     useEffect(() => {
         setbreadcrumbDocument(viewDocument.name);
@@ -293,13 +310,7 @@ function DocList(props) {
                     value={selectedDoc}
                     id='document-autocomplete'
                     className={classes.autocomplete}
-                    options={documentList.sort((a, b) => {
-                        const getOrder = (type) => {
-                            const order = documentTypeOrder.indexOf(type);
-                            return order === -1 ? -1 : order;
-                        };
-                        return getOrder(a.type) - getOrder(b.type);
-                    })}
+                    options={sortedDocuments}
                     groupBy={(document) => {
                         if (document.type in documentTypes) {
                             return documentTypes[document.type];
