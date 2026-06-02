@@ -25,6 +25,8 @@ import Link from '@mui/material/Link';
 import { Link as RouterLink } from 'react-router-dom';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import Icon from '@mui/material/Icon';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 
 const PREFIX = 'ApiBreadcrumbs';
 
@@ -44,6 +46,7 @@ const StyledPaper = styled(Paper)((
 ) => ({
     [`&.${classes.root}`]: {
         padding: theme.spacing(1, 3),
+        paddingInline: theme.spacing(3),
     },
 
     [`& .${classes.link}`]: {
@@ -58,7 +61,7 @@ const StyledPaper = styled(Paper)((
     },
 
     [`& .${classes.icon}`]: {
-        marginRight: theme.spacing(0.5),
+        marginInlineEnd: theme.spacing(0.5),
         width: 20,
         height: 20,
     },
@@ -80,9 +83,13 @@ const StyledPaper = styled(Paper)((
 export default function ApiBreadcrumbs(props) {
     const theme = useTheme();
     const { selectedTag } = props;
+    const isRtl = theme.direction === 'rtl';
     return (
         <StyledPaper elevation={0} className={classes.root}>
-            <Breadcrumbs aria-label='breadcrumb'>
+            <Breadcrumbs
+                separator={isRtl ? <NavigateBeforeIcon fontSize='small' /> : <NavigateNextIcon fontSize='small' />}
+                aria-label='breadcrumb'
+            >
                 <RouterLink
                     to={theme.custom.tagWise.active && theme.custom.tagWise.style === 'page' ? '/api-groups' : '/apis'}
                     className={classes.apiGroup}
