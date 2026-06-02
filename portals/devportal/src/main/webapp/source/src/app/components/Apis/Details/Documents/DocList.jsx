@@ -116,7 +116,7 @@ const Root = styled('div')((
     },
 
     [`& .${classes.nested}`]: {
-        paddingLeft: theme.spacing(3),
+        paddingInlineStart: theme.spacing(3),
         paddingTop: 3,
         paddingBottom: 3,
     },
@@ -136,20 +136,20 @@ const Root = styled('div')((
     },
 
     [`& .${classes.titleSub}`]: {
-        marginLeft: theme.spacing(2),
+        marginInlineStart: theme.spacing(2),
         padding: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
 
     [`& .${classes.selectDocuments}`]: {
-        marginLeft: theme.spacing(2),
+        marginInlineStart: theme.spacing(2),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
 
     [`& .${classes.generateCredentialWrapper}`]: {
-        marginLeft: 0,
+        marginInlineStart: 0,
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
     },
@@ -167,7 +167,7 @@ const Root = styled('div')((
     },
 
     [`& .${classes.docLinkRoot}`]: {
-        paddingLeft: 0,
+        paddingInlineStart: 0,
         color: theme.palette.text.primary,
     },
 
@@ -175,7 +175,7 @@ const Root = styled('div')((
         height: '100%',
         padding: '20px 0 0 0',
         cursor: 'pointer',
-        marginLeft: '-20px',
+        marginInlineStart: '-20px',
         display: 'block',
         minWidth: 'inherit',
         flexDirection: 'column',
@@ -192,7 +192,7 @@ const Root = styled('div')((
 
     [`& .${classes.toggleWrapper}`]: {
         position: 'relative',
-        paddingLeft: 20,
+        paddingInlineStart: 20,
         background: theme.custom.apiDetailPages.documentBackground,
     },
 
@@ -203,8 +203,8 @@ const Root = styled('div')((
 
     [`& .${classes.docContainer}`]: {
         display: 'flex',
-        marginLeft: 20,
-        marginRight: 20,
+        marginInlineStart: 20,
+        marginInlineEnd: 20,
         marginTop: 20,
     },
 
