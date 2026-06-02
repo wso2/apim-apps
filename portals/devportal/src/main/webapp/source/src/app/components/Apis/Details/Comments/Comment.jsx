@@ -462,7 +462,7 @@ class Comment extends React.Component {
                                                     : comment.createdBy}
                                             </Typography>
                                             <Tooltip title={comment.createdTime} aria-label={comment.createdTime}>
-                                                <Typography noWrap className={classes.commentText} variant='caption'>
+                                                <Typography noWrap className={classes.commentText} variant='caption' dir='ltr'>
                                                     {dayjs(comment.createdTime).fromNow()}
                                                 </Typography>
                                             </Tooltip>
@@ -507,7 +507,7 @@ class Comment extends React.Component {
                                                                         ? reply.commenterInfo.fullName : reply.createdBy}
                                                                 </Typography>
                                                                 <Tooltip title={comment.createdTime} aria-label={comment.createdTime}>
-                                                                    <Typography noWrap className={classes.commentText} variant='caption'>
+                                                                    <Typography noWrap className={classes.commentText} variant='caption' dir='ltr'>
                                                                         {dayjs(reply.createdTime).fromNow()}
                                                                     </Typography>
                                                                 </Tooltip>
