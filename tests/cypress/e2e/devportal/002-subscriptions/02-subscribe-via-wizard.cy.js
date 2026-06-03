@@ -69,14 +69,8 @@ describe("Anonymous view apis", () => {
 
                 cy.wait('@generateKeys', { timeout: Cypress.env('largeTimeout') });
 
-                // The secret-value dialog always appears at this step. The previous conditional
-                // `$body.find(...).length > 0` guard was a synchronous, non-retrying check that
-                // raced React's re-render: cy.wait('@generateKeys') resolves as soon as the HTTP
-                // response lands, but SecretValueDialog only mounts after the subsequent re-render.
-                // On slower (LAN-IP) transport the find() ran before the dialog mounted, returned
-                // 0, skipped the close click, and left the modal open — so the frontend never
-                // issued GET /oauth-keys and the later cy.wait('@oauthKeys') timed out. A retrying
-                // assertion waits for the dialog to actually mount before closing it.
+                // Retry-until-visible: the dialog mounts a few ms after @generateKeys
+                // resolves, which a one-shot find() can miss on LAN-IP transport.
                 cy.get('[data-testid="secret-value-dialog"]', { timeout: Cypress.env('largeTimeout') })
                     .should('be.visible');
                 cy.get('[data-testid="secret-dialog-close"]', { timeout: Cypress.env('largeTimeout') })

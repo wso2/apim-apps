@@ -18,20 +18,23 @@ import Utils from "@support/utils";
 
 describe("Mock the api response and test it", () => {
     const { publisher, password, } = Utils.getUserInfo();
-    const productName = Utils.generateName();
     const productVersion = '1.0.0';
-    const apiName = Utils.generateName();
+    // Generated per attempt (not a describe-scope const) so a leaked API/Product
+    // doesn't make every retry collide and fail import-openapi.
+    let productName;
+    let apiName;
     let testApiID;
     beforeEach(function () {
+        // Stable apipstest/prodpstest prefixes so purgePetstoreArtifacts can
+        // find leftovers regardless of the random suffix.
+        apiName = `apipstest${Utils.generateRandomNumber()}`;
+        productName = `prodpstest${Utils.generateRandomNumber()}`;
         cy.loginToPublisher(publisher, password);
+        // Free the petstore scopes before import; beforeEach so it re-runs per retry.
+        Utils.purgePetstoreArtifacts();
     })
 
-    it("Mock the api response and test it", {
-        retries: {
-            runMode: 3,
-            openMode: 0,
-        },
-    }, () => {
+    it("Mock the api response and test it", () => {
         Cypress.on('uncaught:exception', (err, runnable) => {
             // returning false here prevents Cypress from
             // failing the test
@@ -50,12 +53,27 @@ describe("Mock the api response and test it", () => {
         cy.wait(3000);
         cy.get('#itest-id-apiversion-input', {timeout: Cypress.env('largeTimeout')});
         cy.document().then((doc) => {
+            // Override the auto-filled petstore title with a unique name so a
+            // leaked API from a prior run can't collide and disable Create.
+            cy.get('#itest-id-apiname-input').clear();
+            cy.get('#itest-id-apiname-input').type(apiName);
             cy.get('#itest-id-apicontext-input').clear();
             cy.get('#itest-id-apicontext-input').type(apiName);
             cy.get('#itest-id-apiversion-input').click();
             const version = doc.querySelector('#itest-id-apiversion-input').value;
-            // finish the wizard
-            cy.get('#open-api-create-btn').should('not.have.class', 'Mui-disabled').click({force:true});
+            // Assert on the network response so a server error fails fast
+            // instead of timing out on URL polling.
+            cy.intercept('POST', '**/apis/import-openapi').as('importOpenApi');
+            cy.get('#open-api-create-btn').should('not.have.class', 'Mui-disabled').should('be.enabled').click();
+            cy.wait('@importOpenApi', { timeout: Cypress.env('largeTimeout') }).then((interception) => {
+                const sc = interception && interception.response && interception.response.statusCode;
+                if (sc !== 201) {
+                    // The 400 has no server-side ERROR log; the response body is
+                    // the only place the real reason appears.
+                    cy.task('log', `[import-openapi] status=${sc} body=${JSON.stringify(interception && interception.response && interception.response.body)}`);
+                }
+                expect(sc, 'import-openapi response status').to.eq(201);
+            });
             cy.url().should('contains', 'overview').then(url => {
                 testApiID = /apis\/(.*?)\/overview/.exec(url)[1];
                 cy.log("API ID", testApiID);
@@ -117,6 +135,6 @@ describe("Mock the api response and test it", () => {
         });
     });
     afterEach(() => {
-        Utils.deleteAPI(testApiID);
+        Utils.cleanupProductAndApi(productName, apiName);
     })
 })
