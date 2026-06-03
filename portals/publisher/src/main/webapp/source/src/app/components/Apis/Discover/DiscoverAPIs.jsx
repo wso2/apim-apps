@@ -14,6 +14,7 @@ import {
     TableRow,
     CircularProgress,
     Alert,
+    Chip,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
@@ -37,12 +38,68 @@ const Root = styled('div')(({ theme }) => ({
     },
 }));
 
+// How often (ms) to poll the status endpoint while a task is PENDING
+const POLL_INTERVAL_MS = 2000;
+// Maximum time (ms) to wait before giving up on a task
+const POLL_TIMEOUT_MS = 120000;
+
+/**
+ * Single poll attempt: checks GET /federated-apis/status/{taskId} once.
+ * Returns the result array if COMPLETED, throws if FAILED, or returns null if still PENDING.
+ */
+const pollOnce = (taskId, basePath, token) => {
+    return fetch(`${basePath}/federated-apis/status/${taskId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+        },
+    }).then((res) => {
+        if (!res.ok) {
+            throw new Error(`Status check failed for task ${taskId} (HTTP ${res.status})`);
+        }
+        return res.json();
+    }).then((data) => {
+        if (data.status === 'COMPLETED') {
+            return data.result || [];
+        }
+        if (data.status === 'FAILED') {
+            throw new Error(data.error || `Task ${taskId} failed on the server.`);
+        }
+        return null; // still PENDING
+    });
+};
+
+/**
+ * Polls GET /federated-apis/status/{taskId} using tail-recursive promises until
+ * the task is COMPLETED or FAILED, or until the timeout is reached.
+ *
+ * @returns {Promise<Array>} The flat API list from the COMPLETED task result.
+ */
+const pollTaskStatus = (taskId, basePath, token, startTime = Date.now()) => {
+    if (Date.now() - startTime >= POLL_TIMEOUT_MS) {
+        return Promise.reject(
+            new Error(`Discovery timed out after ${POLL_TIMEOUT_MS / 1000}s for task ${taskId}.`)
+        );
+    }
+    return new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS))
+        .then(() => pollOnce(taskId, basePath, token))
+        .then((result) => {
+            if (result !== null) {
+                return result; // COMPLETED
+            }
+            // Still PENDING — recurse
+            return pollTaskStatus(taskId, basePath, token, startTime);
+        });
+};
+
+
 const DiscoverAPIs = () => {
     const { data: settings, isLoading } = usePublisherSettings();
     const [selectedGateways, setSelectedGateways] = useState([]);
     const [step, setStep] = useState(1);
     const [discoveredAPIs, setDiscoveredAPIs] = useState([]);
     const [discovering, setDiscovering] = useState(false);
+    const [discoveringStatus, setDiscoveringStatus] = useState('');
     const [error, setError] = useState(null);
     const [importingStates, setImportingStates] = useState({});
 
@@ -66,6 +123,7 @@ const DiscoverAPIs = () => {
         setStep(2);
         setDiscovering(true);
         setError(null);
+        setDiscoveredAPIs([]);
 
         try {
             const token = AuthManager.getUser().getPartialToken();
@@ -73,8 +131,10 @@ const DiscoverAPIs = () => {
 
             const results = await Promise.all(
                 selectedGateways.map(async (gw) => {
-                    const newResponse = await fetch(
-                        `${basePath}/federated-apis/discover/new?environment=${gw}`,
+                    // Step 1: Submit the async discovery task — server returns 202 with {taskId, status}
+                    setDiscoveringStatus(`Submitting discovery for ${gw}...`);
+                    const submitResponse = await fetch(
+                        `${basePath}/federated-apis/discover?environment=${gw}`,
                         {
                             method: 'POST',
                             headers: {
@@ -84,50 +144,43 @@ const DiscoverAPIs = () => {
                         }
                     );
 
-                    const updatedResponse = await fetch(
-                        `${basePath}/federated-apis/discover/updates?environment=${gw}`,
-                        {
-                            method: 'POST',
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                                Accept: 'application/json',
-                            },
-                        }
-                    );
-
-                    if (!newResponse.ok || !updatedResponse.ok) {
-                        throw new Error(`Failed to discover APIs from ${gw}`);
+                    // 202 is success for async submission
+                    if (!submitResponse.ok && submitResponse.status !== 202) {
+                        throw new Error(`Failed to start discovery for ${gw} (HTTP ${submitResponse.status})`);
                     }
 
-                    const newData = await newResponse.json();
-                    const updatedData = await updatedResponse.json();
+                    const submitData = await submitResponse.json();
+                    const { taskId } = submitData;
 
-                    const newItems = newData.map((item) => ({
-                        ...item,
-                        gatewayName: gw,
-                        isUpdate: false,
-                    }));
-                    const updatedItems = updatedData.map((item) => ({
-                        ...item,
-                        gatewayName: gw,
-                        isUpdate: true,
-                    }));
+                    if (!taskId) {
+                        throw new Error(`No task ID returned for gateway ${gw}`);
+                    }
 
-                    return [...newItems, ...updatedItems];
+                    // Step 2: Poll GET /status/{taskId} until COMPLETED or FAILED
+                    setDiscoveringStatus(`Discovering APIs from ${gw} (task: ${taskId.substring(0, 8)}...)...`);
+                    const apiList = await pollTaskStatus(taskId, basePath, token);
+
+                    // Backend returns a flat array: [{apiName, version, status, gatewayName, ...}]
+                    return apiList;
                 })
             );
 
-            // Flatten the array of arrays
+            // Flatten results from all selected gateways into one list
             setDiscoveredAPIs(results.flat());
         } catch (err) {
             setError(err.message);
         } finally {
             setDiscovering(false);
+            setDiscoveringStatus('');
         }
     };
 
-    const handleAction = async (api, gatewayName, isUpdate) => {
-        setImportingStates((prev) => ({ ...prev, [api.id]: 'importing' }));
+    const handleAction = async (item) => {
+        const apiId = item.id;
+        const { gatewayName } = item;
+        const isUpdate = item.status === 'UPDATE';
+
+        setImportingStates((prev) => ({ ...prev, [apiId]: 'importing' }));
         try {
             const token = AuthManager.getUser().getPartialToken();
             const basePath = Utils.getSwaggerURL().replace('/swagger.yaml', '');
@@ -140,23 +193,25 @@ const DiscoverAPIs = () => {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
                 },
-                body: JSON.stringify([api.id]),
+                body: JSON.stringify([apiId]),
             });
 
             if (!response.ok) {
                 throw new Error(`Failed to ${isUpdate ? 'update' : 'import'} API`);
             }
 
-            setImportingStates((prev) => ({ ...prev, [api.id]: 'success' }));
+            setImportingStates((prev) => ({ ...prev, [apiId]: 'success' }));
         } catch (err) {
             console.error(err);
-            setImportingStates((prev) => ({ ...prev, [api.id]: 'error' }));
+            setImportingStates((prev) => ({ ...prev, [apiId]: 'error' }));
         }
     };
 
     const renderAction = (item) => {
-        const { api, gatewayName, isUpdate } = item;
-        const importState = importingStates[api.id];
+        const apiId = item.id;
+        const isUpdate = item.status === 'UPDATE';
+        const importState = importingStates[apiId];
+
         if (importState === 'success') {
             return (
                 <Button disabled color='success'>
@@ -169,7 +224,7 @@ const DiscoverAPIs = () => {
         }
 
         let buttonColor = 'primary';
-        let buttonText = 'Create';
+        let buttonText = 'Import';
 
         if (importState === 'error') {
             buttonColor = 'error';
@@ -184,7 +239,7 @@ const DiscoverAPIs = () => {
                 variant='contained'
                 size='small'
                 color={buttonColor}
-                onClick={() => handleAction(api, gatewayName, isUpdate)}
+                onClick={() => handleAction(item)}
             >
                 {buttonText}
             </Button>
@@ -257,7 +312,9 @@ const DiscoverAPIs = () => {
                     {discovering ? (
                         <Box display='flex' flexDirection='column' alignItems='center' my={5}>
                             <CircularProgress />
-                            <Typography mt={2}>Discovering APIs...</Typography>
+                            <Typography mt={2}>
+                                {discoveringStatus || 'Discovering APIs...'}
+                            </Typography>
                         </Box>
                     ) : (
                         <>
@@ -283,33 +340,37 @@ const DiscoverAPIs = () => {
                                                 <TableCell>Version</TableCell>
                                                 <TableCell>Description</TableCell>
                                                 <TableCell>Context</TableCell>
-                                                <TableCell>Gateway Name</TableCell>
-                                                <TableCell>Gateway Type</TableCell>
+                                                <TableCell>Gateway</TableCell>
+                                                <TableCell>Status</TableCell>
                                                 <TableCell>Discovered At</TableCell>
                                                 <TableCell align='right'>Actions</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {discoveredAPIs.map((item) => {
-                                                const { api } = item;
-                                                const gwData = gateways.find((g) => g.name === item.gatewayName);
-                                                const gwType = gwData ? gwData.gatewayType : 'External';
-
-                                                return (
-                                                    <TableRow key={api.id}>
-                                                        <TableCell>{api.name}</TableCell>
-                                                        <TableCell>{api.version}</TableCell>
-                                                        <TableCell>{api.description || '-'}</TableCell>
-                                                        <TableCell>{api.context}</TableCell>
-                                                        <TableCell>{item.gatewayName}</TableCell>
-                                                        <TableCell>{gwType}</TableCell>
-                                                        <TableCell>{new Date().toLocaleString()}</TableCell>
-                                                        <TableCell align='right'>
-                                                            {renderAction(item)}
-                                                        </TableCell>
-                                                    </TableRow>
-                                                );
-                                            })}
+                                            {discoveredAPIs.map((item) => (
+                                                <TableRow key={item.id || `${item.apiName}-${item.version}`}>
+                                                    <TableCell>{item.apiName}</TableCell>
+                                                    <TableCell>{item.version}</TableCell>
+                                                    <TableCell>{item.description || '-'}</TableCell>
+                                                    <TableCell>{item.context || '-'}</TableCell>
+                                                    <TableCell>{item.gatewayName}</TableCell>
+                                                    <TableCell>
+                                                        <Chip
+                                                            label={item.status}
+                                                            color={item.status === 'NEW' ? 'success' : 'warning'}
+                                                            size='small'
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {item.discoveredAt
+                                                            ? new Date(item.discoveredAt).toLocaleString()
+                                                            : new Date().toLocaleString()}
+                                                    </TableCell>
+                                                    <TableCell align='right'>
+                                                        {renderAction(item)}
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
