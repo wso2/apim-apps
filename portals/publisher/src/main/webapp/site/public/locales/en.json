@@ -1069,6 +1069,7 @@
   "Apis.Details.Endpoints.UploadCustomBackend.config.save.button": "Save",
   "Apis.Details.Endpoints.UploadCustomBackend.invalid.file": "Invalid file type",
   "Apis.Details.Endpoints.add.new.endpoint": "Add Sandbox Endpoint",
+  "Apis.Details.Environments.Environments\n                                                                            .select.vhost": "Select Access URL",
   "Apis.Details.Environments.Environments\n                                                                    .select.vhost": "Select Access URL",
   "Apis.Details.Environments.Environments.APIGateways": "Gateways",
   "Apis.Details.Environments.Environments.Create.Revision.Deploy": "Create new revision and deploy",
