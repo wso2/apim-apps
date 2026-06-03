@@ -293,12 +293,16 @@ function DocList(props) {
                     value={selectedDoc}
                     id='document-autocomplete'
                     className={classes.autocomplete}
-                    options={documentList.sort((a, b) => {
+                    options={[...documentList].sort((a, b) => {
                         const getOrder = (type) => {
                             const order = documentTypeOrder.indexOf(type);
                             return order === -1 ? -1 : order;
                         };
-                        return getOrder(a.type) - getOrder(b.type);
+                        const typeDiff = getOrder(a.type) - getOrder(b.type);
+                        if (typeDiff !== 0) return typeDiff;
+                        const caseInsensitiveDiff = a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+                        if (caseInsensitiveDiff !== 0) return caseInsensitiveDiff;
+                        return b.name.localeCompare(a.name);
                     })}
                     groupBy={(document) => {
                         if (document.type in documentTypes) {
