@@ -506,7 +506,7 @@ class Comment extends React.Component {
                                                                     {(reply.commenterInfo && reply.commenterInfo.fullName)
                                                                         ? reply.commenterInfo.fullName : reply.createdBy}
                                                                 </Typography>
-                                                                <Tooltip title={comment.createdTime} aria-label={comment.createdTime}>
+                                                                <Tooltip title={reply.createdTime} aria-label={reply.createdTime}>
                                                                     <Typography noWrap className={classes.commentText} variant='caption' dir='ltr'>
                                                                         {dayjs(reply.createdTime).fromNow()}
                                                                     </Typography>
