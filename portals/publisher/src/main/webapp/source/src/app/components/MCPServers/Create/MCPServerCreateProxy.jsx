@@ -232,10 +232,11 @@ const MCPServerCreateProxy = (props) => {
             .catch((error) => {
                 if (error.response && error.response.body) {
                     const errorMessage =
-                        error.response.body.description
-                        || error.response.body.message
+                        error.response?.body?.description
+                        || error.response?.body?.message
+                        || error.message
                         || intl.formatMessage({
-                            id: 'MCPServers.Create.MCPServerCreateProxy.validation.error',
+                            id: 'MCPServers.Create.MCPServerCreateProxy.validation.error.detail',
                             defaultMessage: 'Failed to validate MCP Server URL.',
                         });
 
