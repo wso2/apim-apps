@@ -127,7 +127,11 @@ export default function ProvideOpenAPI(props) {
             const handleValidationError = (error) => {
                 const errorMessage = error.response?.body?.description
                     || error.response?.body?.message
-                    || error.message;
+                    || error.message
+                    || intl.formatMessage({
+                        id: 'Apis.Create.OpenAPI.Steps.ProvideOpenAPI.url.validation.error',
+                        defaultMessage: 'Failed to validate the OpenAPI URL. Please try again.',
+                    });
                 setValidity({ url: { message: errorMessage } });
                 onValidate(false);
                 setIsValidating(false);
