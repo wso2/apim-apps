@@ -156,8 +156,8 @@ export default function ProvideGraphQL(props) {
                     inputsDispatcher({ action: 'graphQLInfo', value: graphQLInfo });
                     setValidity({ isValidURL, file: null });
                 } else {
-                    let errorMessage = response.body.description
-                        || response.body.message || response.body.errorMessage;
+                    let errorMessage = response.body?.description
+                        || response.body?.message || response.body?.errorMessage;
                     if (!errorMessage) {
                         if (inputType === ProvideGraphQL.INPUT_TYPES.ENDPOINT) {
                             errorMessage = 'Error occurred while generating GraphQL schema from endpoint';
@@ -178,7 +178,7 @@ export default function ProvideGraphQL(props) {
                 setValidity({ url: { message: error.response?.body?.description
                     || error.response?.body?.message
                     || error.message,
-                } });
+                }});
                 onValidate(false);
                 setIsValidating(false);
                 console.error(error);

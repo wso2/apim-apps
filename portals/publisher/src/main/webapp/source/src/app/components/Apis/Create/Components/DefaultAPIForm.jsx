@@ -24,7 +24,7 @@ import { InputAdornment, IconButton, Icon, Select, MenuItem, InputLabel, Box } f
 import CircularProgress from '@mui/material/CircularProgress';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import APIValidation from 'AppData/APIValidation';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -142,6 +142,7 @@ export default function DefaultAPIForm(props) {
     const [isUpdating, setUpdating] = useState(false);
     const [isErrorCode, setIsErrorCode] = useState(false);
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
+    const intl = useIntl();
 
     /**
      * Generate gradient background based on gateway name
@@ -411,8 +412,11 @@ export default function DefaultAPIForm(props) {
             })
             .catch((error) => {
                 const message = error.response?.body?.description
-                || error.response?.body?.message
-                || 'Error while validating endpoint URL';
+                    || error.response?.body?.message
+                    || intl.formatMessage({
+                        id: 'Apis.Create.Components.DefaultAPIForm.endpoint.validation.error',
+                        defaultMessage: 'Error while validating endpoint URL',
+                    });
                 setStatusCode(message);
                 setIsErrorCode(true);
                 setIsEndpointValid(false);
