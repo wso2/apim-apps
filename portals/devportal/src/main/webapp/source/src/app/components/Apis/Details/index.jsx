@@ -180,18 +180,18 @@ const Root = styled('div')((
         [`& .${classes.leftMenu}`]: {
             backgroundColor: theme.custom.leftMenu.background,
             backgroundImage: `url(${app.context}${theme.custom.leftMenu.backgroundImage})`,
-            textAlign: 'left',
+            textAlign: 'start',
             fontFamily: theme.typography.fontFamily,
             position: 'absolute',
             bottom: 0,
-            paddingLeft: leftMenuPaddingLeft,
+            paddingInlineStart: leftMenuPaddingLeft,
         },
         [`& .${classes.leftMenuHorizontal}`]: {
             top: theme.custom.infoBar.height,
             overflowX: 'auto',
             position: 'static',
             display: 'flex',
-            left: 0,
+            insetInlineStart: 0,
         },
         [`& .${classes.leftMenuVerticalLeft}`]: {
             width: theme.custom.leftMenu.width,
@@ -199,13 +199,13 @@ const Root = styled('div')((
                 width: 50,
             },
             top: 0,
-            left: 0,
+            insetInlineStart: 0,
             overflowY: 'auto',
         },
         [`& .${classes.leftMenuVerticalLeftMinView}`]: {
             width: 50,
             top: 0,
-            left: 0,
+            insetInlineStart: 0,
             overflowY: 'auto',
         },
         [`& .${classes.leftMenuVerticalRight}`]: {
@@ -214,17 +214,17 @@ const Root = styled('div')((
                 width: 50,
             },
             top: 0,
-            right: 0,
+            insetInlineEnd: 0,
             overflowY: 'auto',
         },
         [`& .${classes.leftMenuVerticalRightMinView}`]: {
             width: 50,
             top: 0,
-            right: 0,
+            insetInlineEnd: 0,
             overflowY: 'auto',
         },
         [`& .${classes.leftLInkMain}`]: {
-            borderRight: 'solid 1px ' + theme.custom.leftMenu.background,
+            borderInlineEnd: 'solid 1px ' + theme.custom.leftMenu.background,
             cursor: 'pointer',
             background: theme.custom.leftMenu.rootBackground,
             color: theme.palette.getContrastText(theme.custom.leftMenu.rootBackground),
@@ -238,7 +238,7 @@ const Root = styled('div')((
             fontSize: 18,
             color: theme.palette.grey[500],
             textDecoration: 'none',
-            paddingLeft: theme.spacing(2),
+            paddingInlineStart: theme.spacing(2),
         },
         [`& .${classes.detailsContent}`]: {
             display: 'flex',
@@ -249,11 +249,11 @@ const Root = styled('div')((
             flex: 1,
             flexGrow: 1,
             flexDirection: 'column',
-            marginLeft: shiftToLeft,
-            marginRight: shiftToRight,
+            marginInlineStart: shiftToLeft,
+            marginInlineEnd: shiftToRight,
             [theme.breakpoints.down('md')]: {
-                marginLeft: shiftToLeft !== 0 && 50,
-                marginRight: shiftToRight !== 0 && 50,
+                marginInlineStart: shiftToLeft !== 0 && 50,
+                marginInlineEnd: shiftToRight !== 0 && 50,
             },
             paddingBottom: theme.spacing(3),
             overflowX: 'hidden',
@@ -263,20 +263,20 @@ const Root = styled('div')((
             flex: 1,
             flexGrow: 1,
             flexDirection: 'column',
-            marginLeft: shiftToLeftMinView,
-            marginRight: shiftToRightMinView,
+            marginInlineStart: shiftToLeftMinView,
+            marginInlineEnd: shiftToRightMinView,
             paddingBottom: theme.spacing(3),
             overflowX: 'hidden',
             minHeight: 'calc(100vh - 114px)',
         },
         [`& .${classes.shiftLeft}`]: {
-            marginLeft: 0,
+            marginInlineStart: 0,
         },
         [`& .${classes.contentLoader}`]: {
             paddingTop: theme.spacing(3),
         },
         [`& .${classes.contentLoaderRightMenu}`]: {
-            paddingRight: theme.custom.leftMenu.width,
+            paddingInlineEnd: theme.custom.leftMenu.width,
         },
         [`& .${classes.expandIcon}`]: {
             color: '#ffffff',
@@ -288,7 +288,8 @@ const Root = styled('div')((
             display: 'none',
         },
         [`& .${classes.accordianSummary}`]: {
-            padding: '0 12px 0 5px',
+            paddingInlineEnd: 12,
+            paddingInlineStart: 5,
             [theme.breakpoints.down('md')]: {
                 padding: 0,
             },
@@ -301,13 +302,13 @@ const Root = styled('div')((
             paddingBottom: 0,
             margin: 0,
             [theme.breakpoints.down('md')]: {
-                paddingLeft: 0,
-                paddingRight: 0,
+                paddingInlineStart: 0,
+                paddingInlineEnd: 0,
             },
         },
         [`& .${classes.accordionDetailsMinView}`]: {
-            paddingLeft: 0,
-            paddingRight: 0,
+            paddingInlineStart: 0,
+            paddingInlineEnd: 0,
         },
         [`& .${classes.leftMenuVerticalRightDrawerIcon}`]: {
             transform: 'rotate(180deg)',
@@ -825,40 +826,68 @@ class DetailsLegacy extends React.Component {
                                     onClick={this.handleDrawerClose}
                                     onKeyDown={this.handleDrawerClose}
                                     style={{
-                                        width: 100, paddingLeft: '15px', position: 'absolute', bottom: 0, cursor: 'pointer',
+                                        width: 100, paddingInlineStart: '15px', position: 'absolute', bottom: 0, cursor: 'pointer',
                                     }}
                                 >
-                                    <ArrowBackIosIcon
-                                        fontSize='medium'
-                                        style={{ color: 'white' }}
-                                        className={
-                                            classNames(
-                                                {
-                                                    [classes.leftMenuVerticalRightDrawerIcon]: position === 'vertical-right',
-                                                },
-                                            )
-                                        }
-                                    />
+                                    {theme.direction === 'rtl' ? (
+                                        <ArrowForwardIosIcon
+                                            fontSize='medium'
+                                            style={{ color: 'white' }}
+                                            className={
+                                                classNames(
+                                                    {
+                                                        [classes.leftMenuVerticalRightDrawerIcon]: position === 'vertical-right',
+                                                    },
+                                                )
+                                            }
+                                        />
+                                    ) : (
+                                        <ArrowBackIosIcon
+                                            fontSize='medium'
+                                            style={{ color: 'white' }}
+                                            className={
+                                                classNames(
+                                                    {
+                                                        [classes.leftMenuVerticalRightDrawerIcon]: position === 'vertical-right',
+                                                    },
+                                                )
+                                            }
+                                        />
+                                    )}
                                 </div>
                             ) : (
                                 <div
                                     onClick={this.handleDrawerOpen}
                                     onKeyDown={this.handleDrawerOpen}
                                     style={{
-                                        paddingLeft: '15px', position: 'absolute', bottom: 0, cursor: 'pointer',
+                                        paddingInlineStart: '15px', position: 'absolute', bottom: 0, cursor: 'pointer',
                                     }}
                                 >
-                                    <ArrowForwardIosIcon
-                                        fontSize='medium'
-                                        style={{ color: 'white' }}
-                                        className={
-                                            classNames(
-                                                {
-                                                    [classes.leftMenuVerticalRightDrawerIcon]: position === 'vertical-right',
-                                                },
-                                            )
-                                        }
-                                    />
+                                    {theme.direction === 'rtl' ? (
+                                        <ArrowBackIosIcon
+                                            fontSize='medium'
+                                            style={{ color: 'white' }}
+                                            className={
+                                                classNames(
+                                                    {
+                                                        [classes.leftMenuVerticalRightDrawerIcon]: position === 'vertical-right',
+                                                    },
+                                                )
+                                            }
+                                        />
+                                    ) : (
+                                        <ArrowForwardIosIcon
+                                            fontSize='medium'
+                                            style={{ color: 'white' }}
+                                            className={
+                                                classNames(
+                                                    {
+                                                        [classes.leftMenuVerticalRightDrawerIcon]: position === 'vertical-right',
+                                                    },
+                                                )
+                                            }
+                                        />
+                                    )}
                                 </div>
 
                             )}
@@ -901,7 +930,7 @@ class DetailsLegacy extends React.Component {
 
 DetailsLegacy.propTypes = {
     classes: PropTypes.shape({}).isRequired,
-    theme: PropTypes.shape({}).isRequired,
+    theme: PropTypes.shape({ direction: PropTypes.string }).isRequired,
     match: PropTypes.shape({}).isRequired,
     intl: PropTypes.shape({
         formatMessage: PropTypes.func,
