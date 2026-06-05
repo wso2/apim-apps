@@ -62,6 +62,17 @@ const tasksReducer = (state, action) => {
     return { ...state, [name]: { ...state[name], ...status } };
 };
 /**
+ * Returns true if the API has subscriptions disabled (uses DefaultSubscriptionless plan).
+ * @param {Object} api
+ * @returns {boolean}
+ */
+export function isSubscriptionlessAPI(api) {
+    return !!(api.tiers && api.tiers.length === 1
+        && (api.tiers[0].tierName.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)
+            || api.tiers[0].tierName.includes(CONSTANTS.DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN)));
+}
+
+/**
  *
  * @returns {JSX} rendered output
  */
@@ -87,6 +98,7 @@ export default function GoToTryOut() {
             || api.type === CONSTANTS.API_TYPES.SSE
             || api.type === CONSTANTS.API_TYPES.ASYNC));
     const isPrototypedAPI = api.lifeCycleStatus && api.lifeCycleStatus.toLowerCase() === 'prototyped';
+    const isSubValidationDisabled = isSubscriptionlessAPI(api);
 
     const getKeyRequest = async () => {
         const promisedKeyManagers = restApi.getKeyManagers();
@@ -208,7 +220,8 @@ export default function GoToTryOut() {
         if (api.tiers && api.tiers.length > 0) {
             throttlingPolicy = api.tiers[0].tierName;
         } else {
-            history.push('/apis/' + api.id + '/test');
+            history.push('/apis/' + api.id + '/api-console');
+            return;
         }
         setShowStatus(true);
         // Get the request for key generation using the key managers.
@@ -221,12 +234,14 @@ export default function GoToTryOut() {
         // Generate consumer key and secret
         const generatedKeys = await taskManager(generateKeys(keyRequest, defaultApplication.value), 'generate');
         setConsumerSecretValue(generatedKeys?.consumerSecret);
-        // Subscribe this API to the default application
-        await taskManager(restApi.subscribe(
-            api.id,
-            defaultApplication.value,
-            throttlingPolicy,
-        ), 'subscribe');
+        // Subscribe this API to the default application (skip for subscription-disabled APIs)
+        if (!isSubValidationDisabled) {
+            await taskManager(restApi.subscribe(
+                api.id,
+                defaultApplication.value,
+                throttlingPolicy,
+            ), 'subscribe');
+        }
     };
 
     Object.values(tasksStatus)
@@ -335,28 +350,30 @@ export default function GoToTryOut() {
                             justifyContent='center'
                             alignItems='center'
                         >
-                            <TaskState
-                                completed={tasksStatus.subscribe.completed}
-                                errors={tasksStatus.subscribe.errors}
-                                inProgress={tasksStatus.subscribe.inProgress}
-                                completedMessage={(
+                            {!isSubValidationDisabled && (
+                                <TaskState
+                                    completed={tasksStatus.subscribe.completed}
+                                    errors={tasksStatus.subscribe.errors}
+                                    inProgress={tasksStatus.subscribe.inProgress}
+                                    completedMessage={(
+                                        <FormattedMessage
+                                            id='Apis.Details.GoToTryOut.popup.subscribe.complete.success'
+                                            defaultMessage='API subscribed to DefaultApplication successfully!'
+                                        />
+                                    )}
+                                    inProgressMessage={(
+                                        <FormattedMessage
+                                            id='Apis.Details.GoToTryOut.popup.subscribe.inprogress'
+                                            defaultMessage='API subscribing to DefaultApplication ...'
+                                        />
+                                    )}
+                                >
                                     <FormattedMessage
-                                        id='Apis.Details.GoToTryOut.popup.subscribe.complete.success'
-                                        defaultMessage='API subscribe to DefaultApplication successfully!'
+                                        id='Apis.Details.GoToTryOut.popup.subscribe.complete'
+                                        defaultMessage='API subscribed to DefaultApplication'
                                     />
-                                )}
-                                inProgressMessage={(
-                                    <FormattedMessage
-                                        id='Apis.Details.GoToTryOut.popup.subscribe.inprogress'
-                                        defaultMessage='API subscribing to DefaultApplication ...'
-                                    />
-                                )}
-                            >
-                                <FormattedMessage
-                                    id='Apis.Details.GoToTryOut.popup.subscribe.complete'
-                                    defaultMessage='API subscribe to DefaultApplication'
-                                />
-                            </TaskState>
+                                </TaskState>
+                            )}
                             <TaskState
                                 completed={tasksStatus.prepare.completed}
                                 errors={tasksStatus.prepare.errors}
