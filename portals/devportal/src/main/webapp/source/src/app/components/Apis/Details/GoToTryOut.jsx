@@ -62,6 +62,17 @@ const tasksReducer = (state, action) => {
     return { ...state, [name]: { ...state[name], ...status } };
 };
 /**
+ * Returns true if the API has subscriptions disabled (uses DefaultSubscriptionless plan).
+ * @param {Object} api
+ * @returns {boolean}
+ */
+export function isSubscriptionlessAPI(api) {
+    return !!(api.tiers && api.tiers.length === 1
+        && (api.tiers[0].tierName.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)
+            || api.tiers[0].tierName.includes(CONSTANTS.DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN)));
+}
+
+/**
  *
  * @returns {JSX} rendered output
  */
@@ -87,9 +98,7 @@ export default function GoToTryOut() {
             || api.type === CONSTANTS.API_TYPES.SSE
             || api.type === CONSTANTS.API_TYPES.ASYNC));
     const isPrototypedAPI = api.lifeCycleStatus && api.lifeCycleStatus.toLowerCase() === 'prototyped';
-    const isSubValidationDisabled = api.tiers && api.tiers.length === 1
-        && (api.tiers[0].tierName.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)
-            || api.tiers[0].tierName.includes(CONSTANTS.DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN));
+    const isSubValidationDisabled = isSubscriptionlessAPI(api);
 
     const getKeyRequest = async () => {
         const promisedKeyManagers = restApi.getKeyManagers();
