@@ -29,6 +29,7 @@
     "license": "Apache-2.0",
     "dependencies": {
         "@asyncapi/react-component": "2.6.3",
+        "@emotion/cache": "11.14.0",
         "@emotion/react": "11.14.0",
         "@emotion/styled": "11.14.1",
         "@graphiql/plugin-explorer": "5.1.1",
@@ -87,6 +88,8 @@
         "react-syntax-highlighter": "15.6.1",
         "remark-gfm": "3.0.1",
         "stream-browserify": "3.0.0",
+        "stylis": "4.4.0",
+        "stylis-plugin-rtl": "2.1.1",
         "swagger-client": "3.37.1",
         "swagger-ui-react": "5.32.1",
         "url": "0.11.3",
