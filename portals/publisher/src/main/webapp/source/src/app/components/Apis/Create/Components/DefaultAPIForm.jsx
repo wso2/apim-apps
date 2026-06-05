@@ -408,7 +408,16 @@ export default function DefaultAPIForm(props) {
                         setIsEndpointValid(false);
                     }
                 }
-            }).finally(() => {
+            })
+            .catch((error) => {
+                const message = error.response?.body?.description
+                || error.response?.body?.message
+                || 'Error while validating endpoint URL';
+                setStatusCode(message);
+                setIsErrorCode(true);
+                setIsEndpointValid(false);
+            })
+            .finally(() => {
                 setUpdating(false);
             });
     }
