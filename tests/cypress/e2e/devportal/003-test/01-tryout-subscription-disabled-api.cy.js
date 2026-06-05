@@ -46,6 +46,12 @@ describe("Try Out for subscription-disabled API", () => {
             cy.get('#left-menu-itemsubscriptions').click();
             cy.get('[data-testid="policy-checkbox-unlimited"]').click();
             cy.get('#subscriptions-save-btn').click();
+            // Confirm the caution dialog if it appears (shown when existing subscribers are present)
+            cy.get('body').then(($body) => {
+                if ($body.find('button:contains("Yes")').length > 0) {
+                    cy.contains('button', 'Yes').click();
+                }
+            });
             cy.get('[data-testid="policy-checkbox-unlimited"] input').should('not.be.checked');
 
             // Publish and deploy via Publisher UI (same pattern as other e2e tests)
