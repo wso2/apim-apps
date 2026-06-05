@@ -96,6 +96,8 @@ describe("Try Out for subscription-disabled API", () => {
     });
 
     afterEach(() => {
-        Utils.deleteAPI(testApiId);
+        if (testApiId) {
+            Utils.deleteAPI(testApiId);
+        }
     });
 });
