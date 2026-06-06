@@ -21,6 +21,7 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import Progress from 'AppComponents/Shared/Progress';
 import AuthManager from 'AppData/AuthManager';
 import MCPRouteGuard from 'AppComponents/Shared/MCPRouteGuard';
+import FederatedAPIDiscoveryRouteGuard from 'AppComponents/Shared/FederatedAPIDiscoveryRouteGuard';
 
 import Listing from './Listing/Listing';
 import APICreateWithAI from './Create/CreateAPIWithAI/APICreateWithAI';
@@ -86,7 +87,16 @@ const Apis = () => {
                 key={Date.now()}
                 render={(props) => <Listing {...props} isAPIProduct={false} />}
             />
-            <Route path='/apis/discover' component={DiscoverAPIs} />
+            <Route
+                exact
+                path='/apis/discover'
+                key={Date.now()}
+                render={(props) => (
+                    <FederatedAPIDiscoveryRouteGuard>
+                        <DiscoverAPIs {...props} />
+                    </FederatedAPIDiscoveryRouteGuard>
+                )}
+            />
 
             <Route path='/apis/create' component={DeferredAPICreateRoutes} />
             <Route path='/apis/design-assistant' component={DefferedAIApiCreateRoutes} />
