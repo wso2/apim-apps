@@ -2247,6 +2247,7 @@
   "MCPServers.Create.MCPServerCreateDefault.wizard.two": "Select Operations for Tool Generation",
   "MCPServers.Create.MCPServerCreateProxy.advancedConfig": "Advanced Configurations",
   "MCPServers.Create.MCPServerCreateProxy.advancedConfig.tooltip": "If the MCP Server is protected, ensure to provide the security credentials (Authentication header and value) to authenticate with the server.",
+  "MCPServers.Create.MCPServerCreateProxy.appendMCPPath.label": "Append /mcp to backend URL",
   "MCPServers.Create.MCPServerCreateProxy.back": "Back",
   "MCPServers.Create.MCPServerCreateProxy.cancel": "Cancel",
   "MCPServers.Create.MCPServerCreateProxy.create": "Create",
