@@ -307,7 +307,7 @@ const MCPServerCreateProxy = (props) => {
         const newMCPServer = new MCPServer(additionalProperties);
         const promisedCreatedMCPServer = newMCPServer.createMCPServerUsingMCPServerURL(
             mcpServerUrl,
-            securityInfo
+            securityInfo,
         );
         promisedCreatedMCPServer
             .then((mcpServer) => {

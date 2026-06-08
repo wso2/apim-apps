@@ -207,7 +207,7 @@ class MCPServer extends Resource {
             payload = {
                 requestBody: {
                     url: mcpServerUrl,
-                    additionalProperties: apiData,
+                    additionalProperties: { ...apiData },
                     securityInfo: securityInfo || {
                         isSecure: false,
                         header: '',
@@ -319,7 +319,7 @@ class MCPServer extends Resource {
                         isSecure: false,
                         header: '',
                         value: ''
-                    }
+                    },
                 }
             };
             return client.apis.Validation.validateThirdPartyMCPServer(
