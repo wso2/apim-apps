@@ -102,11 +102,16 @@ class SubscriptionTableData extends React.Component {
      * @memberof SubscriptionTableData
      */
     componentDidMount() {
-        const { subscription } = this.props;
+        const { subscription, formConfig } = this.props;
         this.checkIfWebhookAPI();
         this.checkIfMonetizedAPI(subscription.apiId);
         this.checkIfDynamicUsagePolicy(subscription.subscriptionId);
         this.populateSubscriptionTiers(subscription.apiId);
+        // If the template hides the tier selector, pre-lock selectedTier to the forced defaultValue
+        const subTierCfg = formConfig?.subscription?.throttlingPolicy;
+        if (subTierCfg?.hidden && subTierCfg?.defaultValue) {
+            this.setState({ selectedTier: subTierCfg.defaultValue });
+        }
     }
 
     /**
@@ -292,6 +297,9 @@ class SubscriptionTableData extends React.Component {
         const {
             openMenu, isMonetizedAPI, isDynamicUsagePolicy, openMenuEdit, selectedTier, tiers, isWebhookAPI, callbackLinkAnchor,
         } = this.state;
+        const { formConfig } = this.props;
+        const subTierCfg = formConfig?.subscription?.throttlingPolicy;
+        const isSubTierHidden = !!subTierCfg?.hidden;
         const isSubValidationDisabled = tiers && tiers.length === 1
             && tiers[0].value.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
         const link = (
@@ -399,7 +407,7 @@ class SubscriptionTableData extends React.Component {
                             onClick={this.handleRequestOpenEditMenu}
                             startIcon={<Icon>edit</Icon>}
                             disabled={tiers.length === 0 || status === SUBSCRIPTION_STATUS.BLOCKED
-                                || status === SUBSCRIPTION_STATUS.PROD_ONLY_BLOCKED}
+                                || status === SUBSCRIPTION_STATUS.PROD_ONLY_BLOCKED || isSubTierHidden}
                         >
                             <FormattedMessage
                                 id='Applications.Details.SubscriptionTableData.edit.text'
@@ -458,7 +466,24 @@ class SubscriptionTableData extends React.Component {
                                                                     + ' before editing the tier'}
                                                             />
                                                         )
-                                                        : (
+                                                        : isSubTierHidden ? (
+                                                            <Box>
+                                                                <FormattedMessage
+                                                                    id='Applications.Details.SubscriptionTableData.tier.governed'
+                                                                    defaultMessage={
+                                                                        'The throttling policy for this subscription is managed '
+                                                                        + 'by your organization template and cannot be changed.'
+                                                                    }
+                                                                />
+                                                                <Box mt={1}>
+                                                                    <FormattedMessage
+                                                                        id='Applications.Details.SubscriptionTableData.tier.governed.value'
+                                                                        defaultMessage='Applied tier: {tier}'
+                                                                        values={{ tier: subTierCfg?.defaultValue || throttlingPolicy }}
+                                                                    />
+                                                                </Box>
+                                                            </Box>
+                                                        ) : (
                                                             <div>
                                                                 <Autocomplete
                                                                     id='application-policy'
@@ -520,7 +545,8 @@ class SubscriptionTableData extends React.Component {
                                 <Button
                                     variant='contained'
                                     disabled={(status === SUBSCRIPTION_STATUS.BLOCKED || status === SUBSCRIPTION_STATUS.ON_HOLD
-                                        || status === SUBSCRIPTION_STATUS.REJECTED || status === SUBSCRIPTION_STATUS.TIER_UPDATE_PENDING)}
+                                        || status === SUBSCRIPTION_STATUS.REJECTED
+                                        || status === SUBSCRIPTION_STATUS.TIER_UPDATE_PENDING || isSubTierHidden)}
                                     dense
                                     color='primary'
                                     onClick={() => this.handleSubscriptionTierUpdate(apiId,
@@ -619,5 +645,9 @@ SubscriptionTableData.propTypes = {
     }).isRequired,
     handleSubscriptionDelete: PropTypes.func.isRequired,
     handleSubscriptionUpdate: PropTypes.func.isRequired,
+    formConfig: PropTypes.shape({}),
+};
+SubscriptionTableData.defaultProps = {
+    formConfig: null,
 };
 export default SubscriptionTableData;

@@ -617,6 +617,7 @@ class SubscriptionsBase extends React.Component {
                                 onAddClick={this.handleOpenDialog}
                                 handleSubscriptionDelete={this.handleSubscriptionDelete}
                                 handleSubscriptionUpdate={this.handleSubscriptionUpdate}
+                                formConfig={this.props.formConfig}
                                 noSubscriptionsMessage={(
                                     <FormattedMessage
                                         id='Applications.Details.Subscriptions.no.api.subscriptions'
@@ -659,6 +660,7 @@ class SubscriptionsBase extends React.Component {
                                 onAddClick={this.handleOpenMcpDialog}
                                 handleSubscriptionDelete={this.handleSubscriptionDelete}
                                 handleSubscriptionUpdate={this.handleSubscriptionUpdate}
+                                formConfig={this.props.formConfig}
                                 noSubscriptionsMessage={(
                                     <FormattedMessage
                                         id='Applications.Details.Subscriptions.no.mcp.subscriptions'
@@ -772,6 +774,7 @@ class SubscriptionsBase extends React.Component {
                                         handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
                                         searchText={searchText}
                                         entityType='API'
+                                        formConfig={this.props.formConfig}
                                     />
                                 </Box>
                             </StyledDialog>
@@ -868,6 +871,7 @@ class SubscriptionsBase extends React.Component {
                                         handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
                                         searchText={searchText}
                                         entityType='MCP'
+                                        formConfig={this.props.formConfig}
                                     />
                                 </Box>
                             </StyledDialog>
@@ -891,6 +895,11 @@ SubscriptionsBase.propTypes = {
     }).isRequired,
     apisAccessible: PropTypes.bool.isRequired,
     mcpServersAccessible: PropTypes.bool.isRequired,
+    formConfig: PropTypes.shape({}),
+};
+
+SubscriptionsBase.defaultProps = {
+    formConfig: null,
 };
 
 /**
@@ -916,6 +925,11 @@ Subscriptions.propTypes = {
         applicationId: PropTypes.string.isRequired,
     }).isRequired,
     getApplication: PropTypes.func.isRequired,
+    formConfig: PropTypes.shape({}),
+};
+
+Subscriptions.defaultProps = {
+    formConfig: null,
 };
 
 export default injectIntl(Subscriptions);

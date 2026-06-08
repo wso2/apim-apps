@@ -225,7 +225,7 @@ class APICardView extends React.Component {
         }
 
         const {
-            handleSubscribe, applicationId, intl, entityType,
+            handleSubscribe, applicationId, intl, entityType, formConfig,
         } = this.props;
         const isMCPServersRoute = entityType === 'MCP';
         const columns = [
@@ -316,6 +316,7 @@ class APICardView extends React.Component {
                                     apiId={apiId}
                                     handleSubscribe={(app, api, policy) => handleSubscribe(app, api, policy)}
                                     applicationId={applicationId}
+                                    formConfig={formConfig}
                                 />
                             );
                         }
@@ -396,6 +397,7 @@ APICardView.propTypes = {
     apisNotFound: PropTypes.bool,
     setTenantDomain: PropTypes.func,
     entityType: PropTypes.oneOf(['API', 'MCP']),
+    formConfig: PropTypes.shape({}),
 };
 
 APICardView.defaultProps = {
@@ -404,5 +406,6 @@ APICardView.defaultProps = {
     apisNotFound: false,
     setTenantDomain: () => {},
     entityType: 'API',
+    formConfig: null,
 };
 export default injectIntl((APICardView));

@@ -72,6 +72,7 @@ function ApplicationCreateBase(props) {
                         </Grid>
                     </Grid>
                 </Grid>
+                <Grid item sm={0} md={3} />
             </Grid>
         </StyledBox>
     );

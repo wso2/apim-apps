@@ -318,7 +318,7 @@ class AuthManager {
 AuthManager.CONST = {
     USER_SCOPES:
         'apim:api_key apim:app_manage apim:app_update apim:dedicated_gateway apim:self-signup '
-        + 'apim:store_settings apim:sub_alert_manage apim:sub_manage apim:subscribe openid',
+        + 'apim:gov_template_read apim:store_settings apim:sub_alert_manage apim:sub_manage apim:subscribe openid',
 };
 
 export default AuthManager;

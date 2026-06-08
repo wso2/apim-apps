@@ -1288,4 +1288,88 @@ export default class API extends Resource {
             return client.apis.Users.organizationInformation(this._requestMetaData());
         });
     }
+
+    /**
+     * Fetch published Devportal Governance Templates from the governance REST API.
+     * The governance API lives outside the devportal swagger spec, so this method
+     * uses a direct fetch() with the same auth headers the swagger-client interceptor uses.
+     * Only PUBLISHED templates are returned; the list is empty on any error so callers
+     * can fail open to the un-governed form.
+     *
+     * @param {Object} params - Optional query params: { limit, offset }
+     * @returns {Promise<{body: {list: Array}}>}  Resolves to swagger-client-shaped response
+     */
+    getDevportalGovernanceTemplates(params = {}) {
+        const token = Utils.getCookie('WSO2_AM_TOKEN_1', Utils.getEnvironment().label) || '';
+
+        const queryParams = new URLSearchParams({
+            limit: params.limit ?? 25,
+            offset: params.offset ?? 0,
+        });
+
+        // Mirror the tenant header logic from APIClient._getRequestInterceptor
+        const headers = {
+            Accept: 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        };
+        if (window.location) {
+            const search = new URLSearchParams(window.location.search);
+            const tenant = search.get('tenant');
+            if (tenant) headers['X-WSO2-Tenant'] = tenant;
+        }
+
+        return fetch(`/api/am/governance/v1/templates?${queryParams}`, {
+            credentials: 'include',
+            headers,
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    const err = new Error(res.statusText);
+                    err.status = res.status;
+                    throw err;
+                }
+                return res.json();
+            })
+            .then((json) => ({
+                body: {
+                    list: (json.list ?? []).filter((t) => t.status === 'PUBLISHED'),
+                    count: json.count ?? 0,
+                },
+            }));
+    }
+
+    /**
+     * Fetch a single Devportal Governance Template by ID.
+     * Used by the DevPortal to load the formConfig for an existing application's template.
+     *
+     * @param {string} templateId - The template UUID
+     * @returns {Promise<{body: Object}>} Resolves to swagger-client-shaped response with the template DTO
+     */
+    getDevportalGovernanceTemplateById(templateId) {
+        const token = Utils.getCookie('WSO2_AM_TOKEN_1', Utils.getEnvironment().label) || '';
+
+        const headers = {
+            Accept: 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        };
+        if (window.location) {
+            const search = new URLSearchParams(window.location.search);
+            const tenant = search.get('tenant');
+            if (tenant) headers['X-WSO2-Tenant'] = tenant;
+        }
+
+        return fetch(`/api/am/governance/v1/templates/${encodeURIComponent(templateId)}`, {
+            credentials: 'include',
+            headers,
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    const err = new Error(res.statusText);
+                    err.status = res.status;
+                    throw err;
+                }
+                return res.json();
+            })
+            .then((json) => ({ body: json }));
+    }
 }
