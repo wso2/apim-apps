@@ -633,8 +633,7 @@ class DetailsLegacy extends React.Component {
                                 open={open}
                                 id='left-menu-overview'
                             />
-                            {user && showCredentials && !isSubValidationDisabled
-                                && (api.gatewayVendor === 'wso2' || !api.gatewayVendor || api.gatewayType === 'solace') && (
+                            {user && showCredentials && !isSubValidationDisabled && (
                                 <LeftMenuItem
                                     text={(
                                         <FormattedMessage
