@@ -199,7 +199,7 @@ class MCPServer extends Resource {
      * @param {Object} [securityInfo] - Security information for the MCP Server.
      * @returns {Promise<MCPServer>} A promise that resolves to the created MCPServer instance.
      */
-    createMCPServerUsingMCPServerURL(mcpServerUrl, securityInfo = null) {
+    createMCPServerUsingMCPServerURL(mcpServerUrl, securityInfo = null, appendMCPPath = false) {
         let payload;
         const promisedCreate = this.client.then(client => {
             const apiData = this.getDataFromSpecFields(client);
@@ -207,7 +207,7 @@ class MCPServer extends Resource {
             payload = {
                 requestBody: {
                     url: mcpServerUrl,
-                    additionalProperties: apiData,
+                    additionalProperties: { ...apiData, appendMCPPath },
                     securityInfo: securityInfo || {
                         isSecure: false,
                         header: '',
@@ -302,7 +302,7 @@ class MCPServer extends Resource {
      * @param {string} [securityInfo.value] - The security header value.
      * @returns {Promise} A promise that resolves to the validation result.
      */
-    static validateThirdPartyMCPServerUrl(url, securityInfo = null) {
+    static validateThirdPartyMCPServerUrl(url, securityInfo = null, appendMCPPath = false) {
         const apiClient = new APIClientFactory()
             .getAPIClient(
                 Utils.getCurrentEnvironment(),
@@ -319,7 +319,8 @@ class MCPServer extends Resource {
                         isSecure: false,
                         header: '',
                         value: ''
-                    }
+                    },
+                    appendMCPPath,
                 }
             };
             return client.apis.Validation.validateThirdPartyMCPServer(

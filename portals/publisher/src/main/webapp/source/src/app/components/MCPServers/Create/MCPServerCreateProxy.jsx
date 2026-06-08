@@ -39,6 +39,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import Tooltip from '@mui/material/Tooltip';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { Link } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -157,6 +159,11 @@ const MCPServerCreateProxy = (props) => {
         securityValue: '',
     });
 
+    const [appendMCPPathOverride, setAppendMCPPathOverride] = useState(null);
+    const appendMCPPath = appendMCPPathOverride !== null
+        ? appendMCPPathOverride
+        : (settings && settings.mcpPathAppendEnabled) || false;
+
     /**
      * Handle input change events
      * @param {Object} event - The event triggered by the input change
@@ -212,7 +219,7 @@ const MCPServerCreateProxy = (props) => {
             value: securityValue || ''
         };
 
-        MCPServer.validateThirdPartyMCPServerUrl(mcpServerUrl, securityInfo)
+        MCPServer.validateThirdPartyMCPServerUrl(mcpServerUrl, securityInfo, appendMCPPath)
             .then((response) => {
                 const { body } = response;
                 if (body.isValid) {
@@ -307,7 +314,8 @@ const MCPServerCreateProxy = (props) => {
         const newMCPServer = new MCPServer(additionalProperties);
         const promisedCreatedMCPServer = newMCPServer.createMCPServerUsingMCPServerURL(
             mcpServerUrl,
-            securityInfo
+            securityInfo,
+            appendMCPPath,
         );
         promisedCreatedMCPServer
             .then((mcpServer) => {
@@ -506,6 +514,29 @@ const MCPServerCreateProxy = (props) => {
                                                     }}
                                                 />
                                             </Grid>
+                                            {settings && settings.mcpPathAppendEnabled && (
+                                                <Grid item xs={12} sx={{ mt: 1 }}>
+                                                    <FormControlLabel
+                                                        control={(
+                                                            <Switch
+                                                                id='append-mcp-path-switch'
+                                                                checked={appendMCPPath}
+                                                                onChange={({ target: { checked } }) => {
+                                                                    setAppendMCPPathOverride(checked);
+                                                                }}
+                                                                color='primary'
+                                                            />
+                                                        )}
+                                                        label={(
+                                                            <FormattedMessage
+                                                                id={'MCPServers.Create.MCPServerCreateProxy.'
+                                                                    + 'appendMCPPath.label'}
+                                                                defaultMessage='Append /mcp to backend URL'
+                                                            />
+                                                        )}
+                                                    />
+                                                </Grid>
+                                            )}
                                         </Grid>
                                     </AccordionDetails>
                                 </Accordion>
