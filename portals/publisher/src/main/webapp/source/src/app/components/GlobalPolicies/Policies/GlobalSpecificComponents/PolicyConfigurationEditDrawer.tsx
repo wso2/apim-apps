@@ -101,11 +101,26 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
     }, [policyObj]);
 
     /**
-     * Find the editing operation flow policy
+     * Find the editing operation flow policy.
+     * First try to find by uuid, then fall back to matching by policy identifiers.
      */
-    const operationFlowPolicy = (globalLevelPolicies)[
-        currentFlow
-    ].find((policy: any) => policy.uuid === policyObj?.uniqueKey);
+    let operationFlowPolicy = undefined;
+    if (globalLevelPolicies && globalLevelPolicies[currentFlow]) {
+        // Try to find by uuid first
+        operationFlowPolicy = globalLevelPolicies[currentFlow].find(
+            (policy: any) => policy.uuid === policyObj?.uniqueKey
+        );
+        
+        // If not found by uuid, try to find by policy identifiers as fallback
+        if (!operationFlowPolicy && policyObj) {
+            operationFlowPolicy = globalLevelPolicies[currentFlow].find(
+                (policy: any) => 
+                    policy.policyId === policyObj.id &&
+                    policy.policyName === policyObj.name &&
+                    policy.policyVersion === policyObj.version
+            );
+        }
+    }
 
     const globalPolicy: GlobalPolicy = operationFlowPolicy || {
         policyName: policyObj?.name,
