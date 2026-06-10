@@ -413,6 +413,7 @@ export default function DefaultAPIForm(props) {
             .catch((error) => {
                 const message = error.response?.body?.description
                     || error.response?.body?.message
+                    || error.message
                     || intl.formatMessage({
                         id: 'Apis.Create.Components.DefaultAPIForm.endpoint.validation.error',
                         defaultMessage: 'Error while validating endpoint URL',
