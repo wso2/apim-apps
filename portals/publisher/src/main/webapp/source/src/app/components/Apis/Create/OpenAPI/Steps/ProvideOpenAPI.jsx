@@ -48,8 +48,9 @@ import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
 import Utils from 'AppData/Utils';
-import {  
+import {
     getLinterResultsFromContent } from "../../../Details/APIDefinition/Linting/Linting";
+import getValidationErrorsFromError from './validationErrorUtils';
 import ValidationResults from './ValidationResults';
 
 const PREFIX = 'ProvideOpenAPI';
@@ -133,6 +134,12 @@ export default function ProvideOpenAPI(props) {
                         defaultMessage: 'Failed to validate the OpenAPI URL. Please try again.',
                     });
                 setValidity({ url: { message: errorMessage } });
+                // Surface a rejected validation (e.g. an SSRF block, HTTP 400 "not trusted")
+                // in the Validation Errors card, matching the isValid:false path.
+                setValidationErrors(getValidationErrorsFromError(error, intl.formatMessage({
+                    id: 'Apis.Create.OpenAPI.create.api.openapi.validation.error',
+                    defaultMessage: 'Error while validating OpenAPI definition',
+                })));
                 onValidate(false);
                 setIsValidating(false);
                 console.error(error);
@@ -234,6 +241,7 @@ export default function ProvideOpenAPI(props) {
                         validFile = file;
                         inputsDispatcher({ action: 'preSetAPI', value: info });
                         setValidity({ ...isValid, file: null });
+                        setValidationErrors([]);
                     } else {
                         setValidity({
                             ...isValid, file: {
@@ -255,6 +263,12 @@ export default function ProvideOpenAPI(props) {
                             })
                         }
                     });
+                    // Surface a rejected validation (e.g. an SSRF block, HTTP 400 "not trusted")
+                    // in the Validation Errors card, matching the isValid:false path above.
+                    setValidationErrors(getValidationErrorsFromError(error, intl.formatMessage({
+                        id: 'Apis.Create.OpenAPI.create.api.openapi.validation.error',
+                        defaultMessage: 'Error while validating OpenAPI definition',
+                    })));
                     console.error(error);
                 })
                 .finally(() => {
@@ -273,6 +287,7 @@ export default function ProvideOpenAPI(props) {
                         validFile = file;
                         inputsDispatcher({ action: 'preSetAPI', value: info });
                         setValidity({ ...isValid, file: null });
+                        setValidationErrors([]);
                     } else {
                         setValidity({
                             ...isValid, file: {
@@ -294,6 +309,12 @@ export default function ProvideOpenAPI(props) {
                             })
                         }
                     });
+                    // Surface a rejected validation (e.g. an SSRF block, HTTP 400 "not trusted")
+                    // in the Validation Errors card, matching the isValid:false path above.
+                    setValidationErrors(getValidationErrorsFromError(error, intl.formatMessage({
+                        id: 'Apis.Create.OpenAPI.create.api.openapi.validation.error',
+                        defaultMessage: 'Error while validating OpenAPI definition',
+                    })));
                     console.error(error);
                 })
                 .finally(() => {
