@@ -180,6 +180,7 @@
   "Apis.Create.OpenAPI.create.api.form.file.label": "OpenAPI File/Archive",
   "Apis.Create.OpenAPI.create.api.form.url.label": "OpenAPI URL",
   "Apis.Create.OpenAPI.create.api.openapi.content.validation.failed": "OpenAPI content validation failed!",
+  "Apis.Create.OpenAPI.create.api.openapi.validation.error": "Error while validating OpenAPI definition",
   "Apis.Create.OpenAPI.create.api.url.helper.text": "Click away to validate the URL",
   "Apis.Create.OpenAPI.create.api.url.label": "OpenAPI URL",
   "Apis.Create.OpenAPI.create.api.url.placeholder": "Enter OpenAPI URL",
