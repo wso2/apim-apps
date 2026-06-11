@@ -15,7 +15,12 @@ import {
     CircularProgress,
     Alert,
     Chip,
+    TextField,
+    TablePagination,
+    InputAdornment,
 } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { styled } from '@mui/material/styles';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import AuthManager from 'AppData/AuthManager';
@@ -113,6 +118,9 @@ const DiscoverAPIs = () => {
     const [discoveryResults, setDiscoveryResults] = useState({});
     const [discovering, setDiscovering] = useState(false);
     const [error, setError] = useState(null);
+    const [searchQueries, setSearchQueries] = useState({});
+    const [pages, setPages] = useState({});
+    const [rowsPerPage, setRowsPerPage] = useState({});
     const [importingStates, setImportingStates] = useState({});
 
     if (isLoading) {
@@ -131,10 +139,71 @@ const DiscoverAPIs = () => {
         );
     };
 
+    const handleRetryGateway = async (gw) => {
+        setDiscoveryResults((prev) => ({
+            ...prev,
+            [gw]: {
+                status: 'pending',
+                statusText: 'Retrying discovery...',
+                apis: [],
+            },
+        }));
+
+        try {
+            const token = AuthManager.getUser().getPartialToken();
+            const basePath = Utils.getSwaggerURL().replace('/swagger.yaml', '');
+
+            const submitResponse = await fetch(
+                `${basePath}/federated-apis/discover?environment=${gw}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: 'application/json',
+                    },
+                }
+            );
+
+            if (!submitResponse.ok && submitResponse.status !== 202) {
+                throw new Error(`Failed to start discovery (HTTP ${submitResponse.status})`);
+            }
+
+            const submitData = await submitResponse.json();
+            const { taskId } = submitData;
+
+            if (!taskId) {
+                throw new Error('No task ID returned');
+            }
+
+            setDiscoveryResults((prev) => ({
+                ...prev,
+                [gw]: {
+                    ...prev[gw],
+                    statusText: `Polling task ${taskId.substring(0, 8)}...`,
+                },
+            }));
+
+            const apiList = await pollTaskStatus(taskId, basePath, token);
+
+            setDiscoveryResults((prev) => ({
+                ...prev,
+                [gw]: { status: 'success', apis: apiList },
+            }));
+        } catch (err) {
+            setDiscoveryResults((prev) => ({
+                ...prev,
+                [gw]: { status: 'error', error: err.message, apis: [] },
+            }));
+        }
+    };
+
     const handleDiscover = async () => {
         setStep(2);
         setDiscovering(true);
         setError(null);
+        setSearchQueries({});
+        setPages({});
+        setRowsPerPage({});
 
         // Initialize results with pending state for all selected gateways
         const initialResults = {};
@@ -288,11 +357,42 @@ const DiscoverAPIs = () => {
     };
 
     const renderGatewayResults = (gwName, res) => {
+        if (res.status === 'pending') {
+            return (
+                <Paper
+                    variant='outlined'
+                    sx={{
+                        p: 4,
+                        textAlign: 'center',
+                        borderRadius: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 2,
+                    }}
+                >
+                    <CircularProgress size={32} />
+                    <Typography color='textSecondary'>{res.statusText || 'Discovering...'}</Typography>
+                </Paper>
+            );
+        }
+
         if (res.status === 'error') {
             return (
-                <Alert severity='error' sx={{ mb: 2 }}>
-                    {res.error || 'Unknown error occurred during discovery.'}
-                </Alert>
+                <Box sx={{ mb: 2 }}>
+                    <Alert severity='error' sx={{ mb: 1 }}>
+                        {res.error || 'Unknown error occurred during discovery.'}
+                    </Alert>
+                    <Button
+                        variant='outlined'
+                        size='small'
+                        color='error'
+                        startIcon={<RefreshIcon />}
+                        onClick={() => handleRetryGateway(gwName)}
+                    >
+                        Retry Discovery
+                    </Button>
+                </Box>
             );
         }
 
@@ -306,49 +406,107 @@ const DiscoverAPIs = () => {
             );
         }
 
-        return (
-            <TableContainer component={Paper} variant='outlined' sx={{ borderRadius: 2 }}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>API Name</TableCell>
-                            <TableCell>Version</TableCell>
-                            <TableCell>Description</TableCell>
-                            <TableCell>Context</TableCell>
-                            <TableCell>Status</TableCell>
-                            <TableCell>Discovered At</TableCell>
-                            <TableCell align='right'>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {res.apis.map((item) => {
-                            const isNew = item.status === 'NEW';
-                            const date = item.discoveredAt
-                                ? new Date(item.discoveredAt)
-                                : new Date();
-                            const dateStr = date.toLocaleString();
+        const query = (searchQueries[gwName] || '').toLowerCase();
+        const filteredApis = res.apis.filter((item) =>
+            (item.apiName && item.apiName.toLowerCase().includes(query)) ||
+            (item.version && item.version.toLowerCase().includes(query)) ||
+            (item.description && item.description.toLowerCase().includes(query)) ||
+            (item.context && item.context.toLowerCase().includes(query))
+        );
 
-                            return (
-                                <TableRow key={item.id || `${item.apiName}-${item.version}`}>
-                                    <TableCell>{item.apiName}</TableCell>
-                                    <TableCell>{item.version}</TableCell>
-                                    <TableCell>{item.description || '-'}</TableCell>
-                                    <TableCell>{item.context || '-'}</TableCell>
-                                    <TableCell>
-                                        <Chip
-                                            label={item.status}
-                                            color={isNew ? 'success' : 'warning'}
-                                            size='small'
-                                        />
-                                    </TableCell>
-                                    <TableCell>{dateStr}</TableCell>
-                                    <TableCell align='right'>{renderAction(item)}</TableCell>
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+        const page = pages[gwName] || 0;
+        const rpp = rowsPerPage[gwName] || 5;
+        const paginatedApis = filteredApis.slice(page * rpp, page * rpp + rpp);
+
+        return (
+            <Box>
+                <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                    <TextField
+                        size='small'
+                        placeholder='Search APIs...'
+                        value={searchQueries[gwName] || ''}
+                        onChange={(e) => {
+                            setSearchQueries(prev => ({ ...prev, [gwName]: e.target.value }));
+                            setPages(prev => ({ ...prev, [gwName]: 0 }));
+                        }}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position='start'>
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                        }}
+                        sx={{ width: 250 }}
+                    />
+                </Box>
+
+                {filteredApis.length === 0 ? (
+                    <Paper variant='outlined' sx={{ p: 3, textAlign: 'center', borderRadius: 2 }}>
+                        <Typography color='textSecondary'>
+                            No matching discovered APIs found.
+                        </Typography>
+                    </Paper>
+                ) : (
+                    <>
+                        <TableContainer component={Paper} variant='outlined' sx={{ borderRadius: 2 }}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>API Name</TableCell>
+                                        <TableCell>Version</TableCell>
+                                        <TableCell>Description</TableCell>
+                                        <TableCell>Context</TableCell>
+                                        <TableCell>Status</TableCell>
+                                        <TableCell>Discovered At</TableCell>
+                                        <TableCell align='right'>Actions</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {paginatedApis.map((item) => {
+                                        const isNew = item.status === 'NEW';
+                                        const date = item.discoveredAt
+                                            ? new Date(item.discoveredAt)
+                                            : new Date();
+                                        const dateStr = date.toLocaleString();
+
+                                        return (
+                                            <TableRow key={item.id || `${item.apiName}-${item.version}`}>
+                                                <TableCell>{item.apiName}</TableCell>
+                                                <TableCell>{item.version}</TableCell>
+                                                <TableCell>{item.description || '-'}</TableCell>
+                                                <TableCell>{item.context || '-'}</TableCell>
+                                                <TableCell>
+                                                    <Chip
+                                                        label={item.status}
+                                                        color={isNew ? 'success' : 'warning'}
+                                                        size='small'
+                                                    />
+                                                </TableCell>
+                                                <TableCell>{dateStr}</TableCell>
+                                                <TableCell align='right'>{renderAction(item)}</TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            component='div'
+                            count={filteredApis.length}
+                            rowsPerPage={rpp}
+                            page={page}
+                            onPageChange={(event, newPage) => {
+                                setPages(prev => ({ ...prev, [gwName]: newPage }));
+                            }}
+                            onRowsPerPageChange={(event) => {
+                                setRowsPerPage(prev => ({ ...prev, [gwName]: parseInt(event.target.value, 10) }));
+                                setPages(prev => ({ ...prev, [gwName]: 0 }));
+                            }}
+                        />
+                    </>
+                )}
+            </Box>
         );
     };
 
@@ -358,6 +516,7 @@ const DiscoverAPIs = () => {
     );
 
     const hasErrors = Object.values(discoveryResults).some((r) => r.status === 'error');
+    const isAnyPending = Object.values(discoveryResults).some((r) => r.status === 'pending');
 
     return (
         <Root>
@@ -495,7 +654,7 @@ const DiscoverAPIs = () => {
                                 </Button>
                             </Box>
 
-                            {totalApisCount === 0 && !hasErrors ? (
+                            {totalApisCount === 0 && !hasErrors && !isAnyPending ? (
                                 <Paper sx={{ p: 4, textAlign: 'center', borderRadius: 2 }} variant='outlined'>
                                     <Typography>No new APIs discovered from the selected gateways.</Typography>
                                 </Paper>
