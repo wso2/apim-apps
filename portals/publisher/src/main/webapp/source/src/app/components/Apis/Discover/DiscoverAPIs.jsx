@@ -340,7 +340,7 @@ const DiscoverAPIs = () => {
             buttonColor = 'error';
             buttonText = 'Retry';
         } else if (isUpdate) {
-            buttonColor = 'secondary';
+            buttonColor = 'success';
             buttonText = 'Update';
         }
 
@@ -456,6 +456,7 @@ const DiscoverAPIs = () => {
                                         <TableCell>Version</TableCell>
                                         <TableCell>Description</TableCell>
                                         <TableCell>Context</TableCell>
+                                        <TableCell>API Type / Protocol</TableCell>
                                         <TableCell>Status</TableCell>
                                         <TableCell>Discovered At</TableCell>
                                         <TableCell align='right'>Actions</TableCell>
@@ -475,10 +476,11 @@ const DiscoverAPIs = () => {
                                                 <TableCell>{item.version}</TableCell>
                                                 <TableCell>{item.description || '-'}</TableCell>
                                                 <TableCell>{item.context || '-'}</TableCell>
+                                                <TableCell>{item.apiType || 'HTTP'}</TableCell>
                                                 <TableCell>
                                                     <Chip
                                                         label={item.status}
-                                                        color={isNew ? 'success' : 'warning'}
+                                                        color={isNew ? 'success' : 'primary'}
                                                         size='small'
                                                     />
                                                 </TableCell>
@@ -614,6 +616,9 @@ const DiscoverAPIs = () => {
                                     displayStatusText = result.error;
                                 }
 
+                                const gwObj = gateways.find((g) => g.name === gw);
+                                const gwType = gwObj ? (gwObj.gatewayType || 'External').toUpperCase() : '';
+
                                 return (
                                     <Paper
                                         variant='outlined'
@@ -634,7 +639,9 @@ const DiscoverAPIs = () => {
                                             {result.status === 'error' && (
                                                 <Chip label='Failed' color='error' size='small' />
                                             )}
-                                            <Typography sx={{ fontWeight: 'bold' }}>{gw}</Typography>
+                                            <Typography sx={{ fontWeight: 'bold' }}>
+                                                {gw}{gwType ? ` (${gwType})` : ''}
+                                            </Typography>
                                         </Box>
                                         <Typography variant='body2' color='textSecondary'>
                                             {displayStatusText}
@@ -662,11 +669,13 @@ const DiscoverAPIs = () => {
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                                     {Object.entries(discoveryResults).map(([gwName, res]) => {
                                         const isDone = res.status === 'success';
+                                        const gwObj = gateways.find((g) => g.name === gwName);
+                                        const gwType = gwObj ? (gwObj.gatewayType || 'External').toUpperCase() : '';
                                         return (
                                             <Box key={gwName}>
                                                 <Box display='flex' alignItems='center' gap={1} mb={2}>
                                                     <Typography variant='subtitle1' sx={{ fontWeight: 'bold' }}>
-                                                        Gateway: {gwName}
+                                                        Gateway: {gwName}{gwType ? ` (${gwType})` : ''}
                                                     </Typography>
                                                     {isDone ? (
                                                         <Chip
