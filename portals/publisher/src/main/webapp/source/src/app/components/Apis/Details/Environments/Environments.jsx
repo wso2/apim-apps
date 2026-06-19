@@ -826,7 +826,7 @@ useEffect(() => {
                 }
             })
         }
-    }, [api.id, api.apiType, isMCPServer]);
+    }, [api.id, api.apiType, isMCPServer, allExternalGateways]);
 
     const toggleOpenConfirmDelete = (revisionName, revisionId) => {
         setRevisionToDelete([revisionName, revisionId]);
