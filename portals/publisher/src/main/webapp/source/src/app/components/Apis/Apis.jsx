@@ -26,6 +26,7 @@ import FederatedAPIDiscoveryRouteGuard from 'AppComponents/Shared/FederatedAPIDi
 import Listing from './Listing/Listing';
 import APICreateWithAI from './Create/CreateAPIWithAI/APICreateWithAI';
 import DiscoverAPIs from './Discover/DiscoverAPIs';
+import DiscoveryResults from './Discover/DiscoveryResults';
 
 /* if needs to pre fetch use 'webpackPrefetch: true' */
 
@@ -94,6 +95,16 @@ const Apis = () => {
                 render={(props) => (
                     <FederatedAPIDiscoveryRouteGuard>
                         <DiscoverAPIs {...props} />
+                    </FederatedAPIDiscoveryRouteGuard>
+                )}
+            />
+            <Route
+                exact
+                path='/apis/discover/apis'
+                key={Date.now()}
+                render={(props) => (
+                    <FederatedAPIDiscoveryRouteGuard>
+                        <DiscoveryResults {...props} />
                     </FederatedAPIDiscoveryRouteGuard>
                 )}
             />
