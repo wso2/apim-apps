@@ -20,8 +20,9 @@ import { styled } from '@mui/material/styles';
 import { useHistory, Link } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Typography from '@mui/material/Typography';
-import { Link as MUILink } from '@mui/material';
+import { Link as MUILink, useTheme } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import Box from '@mui/material/Box';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
@@ -42,7 +43,7 @@ const Root = styled('div')((
     [`&.${classes.root}`]: {
         paddingTop: theme.spacing(),
         paddingBottom: theme.spacing(),
-        paddingLeft: theme.spacing(3),
+        paddingInlineStart: theme.spacing(3),
         background: theme.custom.infoBar.background || '#ffffff',
         color: theme.palette.getContrastText(theme.custom.infoBar.background || '#ffffff'),
         borderBottom: 'solid 1px ' + theme.palette.grey.A200,
@@ -58,6 +59,8 @@ const Root = styled('div')((
 export default function Breadcrumb(props) {
     const { api } = useContext(ApiContext);
     const { breadcrumbDocument } = props;
+    const theme = useTheme();
+    const isRtl = theme.direction === 'rtl';
 
     const history = useHistory();
     const intl = useIntl();
@@ -151,7 +154,10 @@ export default function Breadcrumb(props) {
             <Box display='flex' flexDirection='row' alignItems='center'>
                 <Typography color='textPrimary' component='h1' variant='h6'>{selected.text}</Typography>
                 <VerticalDivider height={15} />
-                <Breadcrumbs separator={<NavigateNextIcon fontSize='small' />} aria-label='breadcrumb'>
+                <Breadcrumbs
+                    separator={isRtl ? <NavigateBeforeIcon fontSize='small' /> : <NavigateNextIcon fontSize='small' />}
+                    aria-label='breadcrumb'
+                >
                     <MUILink
                         color='textPrimary'
                         to={basePath + api.id + '/overview'}

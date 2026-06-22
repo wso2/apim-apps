@@ -18,20 +18,21 @@ import Utils from "@support/utils";
 
 describe("Mock the api response and test it", () => {
     const { publisher, password, } = Utils.getUserInfo();
-    const productName = Utils.generateName();
     const productVersion = '1.0.0';
-    const apiName = Utils.generateName();
+    // Per-attempt unique names with stable apipstest/prodpstest prefixes so
+    // purgePetstoreArtifacts can find leftovers and free the petstore scopes.
+    let productName;
+    let apiName;
     let testApiID;
     beforeEach(function () {
+        apiName = `apipstest${Utils.generateRandomNumber()}`;
+        productName = `prodpstest${Utils.generateRandomNumber()}`;
         cy.loginToPublisher(publisher, password);
+        // Free the petstore scopes before import; beforeEach so it re-runs per retry.
+        Utils.purgePetstoreArtifacts();
     })
 
-    it("Mock the api response and test it", {
-        retries: {
-            runMode: 3,
-            openMode: 0,
-        },
-    }, () => {
+    it("Mock the api response and test it", () => {
         cy.visit(`/publisher/apis/create/openapi`, {timeout: Cypress.env('largeTimeout')}).wait(5000);
         cy.get('#open-api-file-select-radio').click();
         cy.wait(5000);
@@ -45,6 +46,10 @@ describe("Mock the api response and test it", () => {
         cy.wait(3000);
         cy.get('#itest-id-apiversion-input', {timeout: Cypress.env('largeTimeout')});
         cy.document().then((doc) => {
+            // Override the auto-filled petstore title with a unique name so a
+            // leaked API from a prior run can't collide and disable Create.
+            cy.get('#itest-id-apiname-input').clear();
+            cy.get('#itest-id-apiname-input').type(apiName);
             cy.get('#itest-id-apicontext-input').clear();
             cy.get('#itest-id-apicontext-input').type(apiName);
             cy.get('#itest-id-apiversion-input').click();
@@ -112,6 +117,6 @@ describe("Mock the api response and test it", () => {
         });
     });
     afterEach(() => {
-        Utils.deleteAPI(testApiID);
+        Utils.cleanupProductAndApi(productName, apiName);
     })
 })
