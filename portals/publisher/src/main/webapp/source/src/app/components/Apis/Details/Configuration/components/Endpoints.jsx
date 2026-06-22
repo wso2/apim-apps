@@ -92,10 +92,10 @@ function Endpoints(props) {
     const showEndpoint = (type) => {
         if (api.apiType === MCPServer.CONSTS.MCP && endpointConfig) {
             if (type === 'prod') {
-                return endpointConfig.production_endpoints && endpointConfig.production_endpoints.url;
+                return endpointConfig.production_endpoints?.url;
             }
             if (type === 'sand') {
-                return endpointConfig.sandbox_endpoints && endpointConfig.sandbox_endpoints.url;
+                return endpointConfig.sandbox_endpoints?.url;
             }
         } else if (api.endpointConfig) {
             if (type === 'prod') {
@@ -255,6 +255,15 @@ function Endpoints(props) {
 
 Endpoints.propTypes = {
     api: PropTypes.shape({}).isRequired,
+    endpointConfig: PropTypes.shape({
+        production_endpoints: PropTypes.shape({ url: PropTypes.string }),
+        sandbox_endpoints: PropTypes.shape({ url: PropTypes.string }),
+    }),
+    endpointSecurity: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
+
+Endpoints.defaultProps = {
+    endpointConfig: null,
 };
 
 export default withAPI(Endpoints);
