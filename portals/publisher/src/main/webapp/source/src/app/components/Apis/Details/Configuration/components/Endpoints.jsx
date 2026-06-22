@@ -92,10 +92,10 @@ function Endpoints(props) {
     const showEndpoint = (type) => {
         if (api.apiType === MCPServer.CONSTS.MCP && endpointConfig) {
             if (type === 'prod') {
-                return endpointConfig.production_endpoints.url;
+                return endpointConfig.production_endpoints && endpointConfig.production_endpoints.url;
             }
             if (type === 'sand') {
-                return endpointConfig.sandbox_endpoints.url;
+                return endpointConfig.sandbox_endpoints && endpointConfig.sandbox_endpoints.url;
             }
         } else if (api.endpointConfig) {
             if (type === 'prod') {
