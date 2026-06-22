@@ -838,9 +838,10 @@ class TokenManager extends React.Component {
                         <Box mb={1}>
                             <Typography variant='h5' className={classes.keyTitle}>
                                 {this.toTitleCase(keyType)}
+                                {' '}
                                 <FormattedMessage
-                                    id='Shared.AppsAndKeyhandleCloses.TokenManager.oauth2.keys.main.title'
-                                    defaultMessage=' OAuth2 Keys'
+                                    id='Shared.AppsAndKeys.TokenManager.oauth2.keys.main.title'
+                                    defaultMessage='OAuth2 Keys'
                                 />
                             </Typography>
                         </Box>
@@ -973,9 +974,10 @@ class TokenManager extends React.Component {
                     <Box mb={1}>
                         <Typography variant='h5' className={classes.keyTitle}>
                             {this.toTitleCase(keyType)}
+                            {' '}
                             <FormattedMessage
                                 id='Shared.AppsAndKeys.TokenManager.oauth2.keys.main.title'
-                                defaultMessage=' OAuth2 Keys'
+                                defaultMessage='OAuth2 Keys'
                             />
                         </Typography>
                     </Box>

@@ -17,20 +17,45 @@
  */
 
 import Utils from "@support/utils";
-import tenantConfigJson from "../../../fixtures/api_artifacts/tenant-conf.json";
 import lifecycleConfigJson from "../../../fixtures/api_artifacts/lifecycle.json";
 
 describe("Adding a custom lifecyce state", () => {
 const adminUsername = 'admin';
 const adminPassword = 'admin';
 const superTenant = 'carbon.super';
-const defaultTenantConfig = JSON.parse(JSON.stringify(tenantConfigJson));
 const lifecycleConfig = JSON.parse(JSON.stringify(lifecycleConfigJson));
 const apiName = Utils.generateName();
 const apiVersion = '1.0.0';
 
+// Capture live tenant-config so after() can restore it; the shipped fixture
+// only carries 11 of 30+ sections, so PUT-ing it would strip the rest.
+let capturedTenantConfig = null;
+
     before(function () {
-        defaultTenantConfig['LifeCycle'] = lifecycleConfig;
+        cy.intercept('GET', '**/api/am/admin/v4/tenant-config', (req) => {
+            req.continue((res) => {
+                if (!capturedTenantConfig && res.body && typeof res.body === 'object') {
+                    capturedTenantConfig = JSON.parse(JSON.stringify(res.body));
+                }
+            });
+        });
+
+        cy.loginToAdmin(adminUsername, adminPassword);
+        cy.get('[data-testid="Advanced-child-link"]').click();
+        cy.wait(3000);
+        cy.logoutFromAdminPortal();
+    })
+
+    after(function () {
+        if (!capturedTenantConfig) {
+            cy.log('tenant-config capture missing; skipping restore (suite may have failed in before hook)');
+            return;
+        }
+        // Clear cookies first: a leftover publisher session redirects /admin past
+        // the login form, breaking portalLogin's visibility gate.
+        cy.clearCookies();
+        cy.clearLocalStorage();
+        cy.updateTenantConfig(adminUsername, adminPassword, superTenant, capturedTenantConfig);
     })
 
     it.only("Updating the Advanced configurations with the New Custom LifeCycle States", () => {
@@ -40,7 +65,13 @@ const apiVersion = '1.0.0';
             }
         });
 
-        cy.updateTenantConfig(adminUsername, adminPassword, superTenant, defaultTenantConfig);
+        // PATCH only the LifeCycle field of the captured live tenant-config —
+        // don't replace the whole document with the sparse fixture.
+        expect(capturedTenantConfig, 'tenant-config must be captured in before hook').to.exist;
+        const tenantConfigForTest = JSON.parse(JSON.stringify(capturedTenantConfig));
+        tenantConfigForTest['LifeCycle'] = lifecycleConfig;
+
+        cy.updateTenantConfig(adminUsername, adminPassword, superTenant, tenantConfigForTest);
     });
 
     it.only("Create and publish API and Check newly added State", () => {

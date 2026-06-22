@@ -58,7 +58,13 @@ const StyledFormControl = styled(FormControl)((
     },
 
     [`& .${classes.langText}`]: {
-        textIndent: theme.spacing(1),
+        paddingInlineStart: theme.spacing(1),
+    },
+
+    '& .MuiMenuItem-root': {
+        [`& .${classes.langText}`]: {
+            paddingInlineStart: theme.spacing(1),
+        },
     },
 }));
 
@@ -97,6 +103,13 @@ export default function LanguageSelector() {
                     value={language}
                     onChange={handleChange}
                     className={classes.listTextSmall}
+                    MenuProps={{
+                        sx: {
+                            [`& .${classes.langText}`]: {
+                                paddingInlineStart: 1,
+                            },
+                        },
+                    }}
                 >
                     {languages.map((lang) => (
                         <MenuItem value={lang.key}>
