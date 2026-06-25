@@ -108,7 +108,7 @@ describe("Endpoint certificate usage testing", () => {
 
     it.only("Has correct warning message", () => {
         // Expected warning message
-        const expectedMessage = `${alias} is used by ${random_number} other APIs`;
+        const expectedMessage = `${alias} is used by ${random_number} APIs.`;
 
         // Test for correct warning message
         cy.get('#delete-cert-btn').click({ force: true });
