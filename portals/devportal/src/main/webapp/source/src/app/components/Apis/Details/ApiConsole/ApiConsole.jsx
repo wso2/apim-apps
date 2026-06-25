@@ -683,6 +683,7 @@ class ApiConsole extends React.Component {
                 </Paper>
                 <Paper className={classes.swaggerUIPaper} dir='ltr'>
                     <SwaggerUI
+                        key={selectedEnvironment}
                         api={this.state.api}
                         accessTokenProvider={this.accessTokenProvider}
                         spec={swaggerSpec}
