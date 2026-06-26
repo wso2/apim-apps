@@ -428,8 +428,17 @@ export default function AddEditAiServiceProvider(props) {
             setSaving(false);
             history.push('/settings/ai-service-providers/');
         } catch (e) {
-            if (e.message) {
-                Alert.error(e.message);
+            const { response, message } = e;
+            const backendDescription = response?.body?.description;
+            if (backendDescription) {
+                Alert.error(backendDescription);
+            } else if (message) {
+                Alert.error(message);
+            } else {
+                Alert.error(intl.formatMessage({
+                    id: 'AiServiceProviders.AddEditAiServiceProvider.save.error.generic',
+                    defaultMessage: 'An error occurred while saving the AI Service Provider.',
+                }));
             }
             setSaving(false);
         }
