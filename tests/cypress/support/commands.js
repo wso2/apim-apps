@@ -1330,12 +1330,17 @@ Cypress.Commands.add('selfSignUpNewUser', (username, password, firstName, lastNa
     cy.get('#itest-devportal-sign-in').click({ force: true });
     cy.get('#registerLink').click();
     cy.get('#username').type(username);
-    cy.get('#registrationSubmit').click();
 
-    // Uncaught ReferenceError: Handlebars is not defined
-    Cypress.on('uncaught:exception', (err, runnable) => {
-        return false;
+    // Submitting the username navigates to the create account form, which is rendered with Handlebars
+    // and can throw "Uncaught ReferenceError: Handlebars is not defined" while loading. Suppress only
+    // that specific error so any other genuine exception still fails the test.
+    Cypress.on('uncaught:exception', (err) => {
+        if (err.message.includes('Handlebars is not defined')) {
+            return false;
+        }
+        return true;
     });
+    cy.get('#registrationSubmit').click();
 
     cy.get('[name="http://wso2.org/claims/givenname"]').type(firstName);
     cy.get('[name="http://wso2.org/claims/lastname"]').type(lastName);
