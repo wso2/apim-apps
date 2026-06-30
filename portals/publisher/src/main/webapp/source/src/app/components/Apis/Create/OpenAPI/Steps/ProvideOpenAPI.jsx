@@ -124,6 +124,20 @@ export default function ProvideOpenAPI(props) {
 
     const validateURLDebounced = useCallback(
         debounce((newURL) => { // Example: https://codesandbox.io/s/debounce-example-l7fq3?file=/src/App.js
+            const handleValidationError = (error) => {
+                const errorMessage = error.response?.body?.description
+                    || error.response?.body?.message
+                    || error.message
+                    || intl.formatMessage({
+                        id: 'Apis.Create.OpenAPI.Steps.ProvideOpenAPI.url.validation.error',
+                        defaultMessage: 'Failed to validate the OpenAPI URL. Please try again.',
+                    });
+                setValidity({ url: { message: errorMessage } });
+                onValidate(false);
+                setIsValidating(false);
+                console.error(error);
+            };
+
             if (isMCPServer) {
                 MCPServer.validateOpenAPIByUrl(newURL, { returnContent: true }).then((response) => {
                     const {
@@ -162,12 +176,7 @@ export default function ProvideOpenAPI(props) {
                     }
                     onValidate(isValidURL);
                     setIsValidating(false);
-                }).catch((error) => {
-                    setValidity({ url: { message: error.message } });
-                    onValidate(false);
-                    setIsValidating(false);
-                    console.error(error);
-                });
+                }).catch(handleValidationError);
             } else {
                 API.validateOpenAPIByUrl(newURL, { returnContent: true }).then((response) => {
                     const {
@@ -197,13 +206,7 @@ export default function ProvideOpenAPI(props) {
                     }
                     onValidate(isValidURL);
                     setIsValidating(false);
-                }).catch((error) => {
-                    setValidity({ url: { message: error.message } });
-                    onValidate(false);
-                    setIsValidating(false);
-                    console.error(error);
-                    
-                });
+                }).catch(handleValidationError);
             }
         }, 750),
         [],

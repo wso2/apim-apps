@@ -226,7 +226,14 @@ export default function ProvideAsyncAPI(props) {
                 onValidate(isValidURL);
                 setIsValidating(false);
             }).catch((error) => {
-                setValidity({ url: { message: error.message } });
+                setValidity({ url: { message: error.response?.body?.description
+                    || error.response?.body?.message
+                    || error.message
+                    || intl.formatMessage({
+                        id: 'Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.url.validation.error',
+                        defaultMessage: 'Failed to validate the AsyncAPI URL. Please try again.',
+                    }),
+                } });
                 onValidate(false);
                 setIsValidating(false);
                 console.error(error);
