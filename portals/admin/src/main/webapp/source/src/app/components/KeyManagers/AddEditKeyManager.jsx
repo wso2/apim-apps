@@ -400,6 +400,13 @@ function AddEditKeyManager(props) {
                 }
                 break;
             case 'keyconfig':
+                if (fieldValue === '' || (Array.isArray(fieldValue) && !fieldValue.length)) {
+                    error = intl.formatMessage({
+                        id: 'KeyManagers.AddEditKeyManager.is.empty.error.key.config',
+                        defaultMessage: 'Required field is empty.',
+                    });
+                }
+                break;
             case 'displayName':
             case 'issuer':
             case 'clientRegistrationEndpoint':
@@ -472,7 +479,9 @@ function AddEditKeyManager(props) {
         const checkConfigErrors = (configurations) => {
             for (const config of configurations) {
                 if (config.required && (!additionalProperties[config.name]
-                    || additionalProperties[config.name] === '')) {
+                    || additionalProperties[config.name] === ''
+                    || (Array.isArray(additionalProperties[config.name])
+                    && !additionalProperties[config.name].length))) {
                     return true;
                 }
 

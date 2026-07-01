@@ -346,7 +346,14 @@ const KeyConfiguration = (props) => {
         if (config.multiple && typeof defaultValue === 'string' && defaultValue === '') {
             defaultValue = [];
         }
-        return isPreviousValueSet ? additionalProperties[config.name] : defaultValue;
+        const previousValue = isPreviousValueSet ? additionalProperties[config.name] : defaultValue;
+        // A multi-select field must always resolve to an array so the multi-select renders correctly,
+        // even if the stored/default value arrives as a comma-separated string.
+        if (config.type === 'select' && config.multiple && !Array.isArray(previousValue)) {
+            return (typeof previousValue === 'string' && previousValue !== '')
+                ? previousValue.split(',').map((item) => item.trim()) : [];
+        }
+        return previousValue;
     };
     /**
      *
