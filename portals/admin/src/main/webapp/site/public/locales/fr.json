@@ -294,6 +294,7 @@
   "AiServiceProviders.AddEditAiServiceProvider.model.providers": "Model Provider(s)",
   "AiServiceProviders.AddEditAiServiceProvider.model.providers.description": "Configure model provider(s) for the AI Service Provider",
   "AiServiceProviders.AddEditAiServiceProvider.multi.model.provider": "Multi Model Provider",
+  "AiServiceProviders.AddEditAiServiceProvider.save.error.generic": "An error occurred while saving the AI Service Provider.",
   "AiServiceProviders.AddEditAiServiceProvider.single.model.provider": "Single Model Provider",
   "AiServiceProviders.AddEditAiServiceProvider.title.edit": "AI Service Provider - Edit",
   "AiServiceProviders.AddEditAiServiceProvider.title.new": "AI Service Provider - Create new",
