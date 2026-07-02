@@ -163,10 +163,15 @@ export default function ExportConsumptionData() {
             })
             .catch((error) => {
                 const { response, message } = error;
-                if (response && response.body) {
+                if (response && response.body && response.body.description) {
                     Alert.error(response.body.description);
                 } else if (message) {
                     Alert.error(message);
+                } else {
+                    Alert.error(intl.formatMessage({
+                        id: 'ExportConsumptionData.error.export',
+                        defaultMessage: 'Failed to export consumption data.',
+                    }));
                 }
             })
             .finally(() => setLoading(false));
