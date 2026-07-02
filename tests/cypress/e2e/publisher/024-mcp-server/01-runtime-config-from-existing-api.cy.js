@@ -37,7 +37,7 @@ describe("MCP Server (from existing API) — runtime configuration endpoint disp
         cy.loginToPublisher(publisher, password);
     });
 
-    it.only("runtime configuration page renders correctly for MCP server created from existing API", () => {
+    it("runtime configuration page renders correctly for MCP server created from existing API", () => {
         Utils.addMCPServerFromExistingAPI({}).then((id) => {
             mcpServerId = id;
 

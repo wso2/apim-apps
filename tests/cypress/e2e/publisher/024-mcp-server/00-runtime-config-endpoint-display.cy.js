@@ -40,7 +40,7 @@ describe("MCP Server — runtime configuration endpoint display", () => {
         cy.loginToPublisher(publisher, password);
     });
 
-    it.only("runtime configuration page renders correctly after sandbox endpoint is removed via UI", () => {
+    it("runtime configuration page renders correctly after sandbox endpoint is removed via UI", () => {
         // Step 1 — create the MCP server. The spec includes a servers entry so APIM
         // auto-creates a backend with production_endpoints.url set.
         Utils.addMCPServer({}).then((id) => {
