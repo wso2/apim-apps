@@ -51,6 +51,17 @@ Cypress.Commands.add('carbonLogin', (username, password) => {
     cy.visit(`/carbon/admin/login.jsp`);
     cy.get('#txtUserName').type(username);
     cy.get('#txtPassword').type(password);
+
+    // After login the carbon console dashboard loads template.js, where a YUI preload-attach timer can
+    // fire hideSection before the target DOM node exists, intermittently throwing
+    // "Cannot read properties of null (reading 'style')". This is a benign race in the carbon console
+    // itself, so suppress only that specific error rather than failing the test on it.
+    Cypress.on('uncaught:exception', (err) => {
+        if (err.message.includes("Cannot read properties of null (reading 'style')")) {
+            return false;
+        }
+        return true;
+    });
     cy.get('form').submit();
 })
 
