@@ -219,16 +219,18 @@ const TryOutConsole = () => {
     const isAdvertised = api.advertiseInfo && api.advertiseInfo.advertised;
     const setServersSpec = (spec, serverUrl) => {
         let schemes;
-        const [protocol, host] = serverUrl.split('://');
-        if (protocol === 'http') {
+        const parsed = new URL(serverUrl);
+        if (parsed.protocol === 'http:') {
             schemes = ['http'];
-        } else if (protocol === 'https') {
+        } else if (parsed.protocol === 'https:') {
             schemes = ['https'];
         }
+        const basePath = parsed.pathname !== '/' ? parsed.pathname : (spec.basePath || '/');
         return {
             ...spec,
             schemes,
-            host,
+            host: parsed.host,
+            basePath,
         };
     };
     const updatedOasDefinition = useMemo(() => {
