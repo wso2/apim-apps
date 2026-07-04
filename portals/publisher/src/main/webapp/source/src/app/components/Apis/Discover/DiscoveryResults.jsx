@@ -36,18 +36,16 @@ import {
     TablePagination,
     InputAdornment,
     Tooltip,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
     Checkbox,
     IconButton,
+    Select,
+    MenuItem,
+    FormControl,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import InfoIcon from '@mui/icons-material/Info';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import EditIcon from '@mui/icons-material/Edit';
 import { styled } from '@mui/material/styles';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import AuthManager from 'AppData/AuthManager';
@@ -115,6 +113,72 @@ const pollTaskStatus = (taskId, basePath, token, startTime = Date.now()) => {
         });
 };
 
+/**
+ * Map rawError to a friendly explanation
+ */
+const getFriendlyErrorMessage = (rawError) => {
+    if (!rawError) {
+        return 'Discovery failed due to a server error or invalid gateway response. '
+            + 'Please inspect the gateway logs.';
+    }
+    const errLower = rawError.toLowerCase();
+    if (
+        errLower.includes('aadsts')
+        || errLower.includes('unauthorized')
+        || errLower.includes('401')
+        || errLower.includes('invalid_client')
+        || errLower.includes('invalid client')
+        || errLower.includes('invalid_grant')
+        || errLower.includes('invalid grant')
+        || errLower.includes('forbidden')
+        || errLower.includes('403')
+        || errLower.includes('invalid key')
+        || errLower.includes('credentials')
+        || errLower.includes('api key')
+        || errLower.includes('service account')
+    ) {
+        return 'Authentication failed. Please verify the credentials, API keys, '
+            + 'or certificates configured for this gateway in the Admin portal.';
+    } else if (
+        errLower.includes('tenant')
+        || errLower.includes('project_id')
+        || errLower.includes('project')
+        || errLower.includes('not found')
+        || errLower.includes('404')
+        || errLower.includes('resource not found')
+        || errLower.includes('environment')
+        || errLower.includes('workspace')
+        || errLower.includes('organization')
+    ) {
+        return 'Resource not found or configuration is invalid. Please verify the project ID, '
+            + 'tenant, organization, or environment/workspace settings configured '
+            + 'for this gateway in the Admin portal.';
+    } else if (
+        errLower.includes('timeout')
+        || errLower.includes('timed out')
+        || errLower.includes('connect')
+        || errLower.includes('connection refused')
+        || errLower.includes('dns')
+        || errLower.includes('resolve')
+        || errLower.includes('unreachable')
+        || errLower.includes('host')
+        || errLower.includes('network')
+    ) {
+        return 'Network connection issue. The third-party gateway is unreachable. '
+            + 'Please verify network connectivity, firewall rules, and the host URL config.';
+    } else if (
+        errLower.includes('429')
+        || errLower.includes('too many requests')
+        || errLower.includes('rate limit')
+        || errLower.includes('quota')
+    ) {
+        return 'Rate limit exceeded. The third-party gateway rejected the requests '
+            + 'because the quota or rate limit has been reached. Please try again later.';
+    }
+    return 'Discovery failed due to a server error or invalid gateway response. '
+        + 'Please inspect the gateway logs.';
+};
+
 const DiscoveryResults = (props) => {
     const { history, location } = props;
     const selectedGateways = (location.state && location.state.selectedGateways) || [];
@@ -124,17 +188,48 @@ const DiscoveryResults = (props) => {
     const [discovering, setDiscovering] = useState(false);
     const [error, setError] = useState(null);
     const [searchQueries, setSearchQueries] = useState({});
+    const [statusFilters, setStatusFilters] = useState({});
     const [pages, setPages] = useState({});
     const [rowsPerPage, setRowsPerPage] = useState({});
     const [importingStates, setImportingStates] = useState({});
-    const [customizedApis, setCustomizedApis] = useState({});
-    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-    const [editingApi, setEditingApi] = useState(null);
-    const [editedDisplayName, setEditedDisplayName] = useState('');
-    const [editedDescription, setEditedDescription] = useState('');
+
     const [selectedApis, setSelectedApis] = useState({});
     const [importErrors, setImportErrors] = useState({});
+    const [lastDiscoveredAt, setLastDiscoveredAt] = useState(null);
     const discoveryTriggered = useRef(false);
+
+    // Load cached results from DB on mount
+    const loadCachedResults = async (gw) => {
+        try {
+            const token = AuthManager.getUser().getPartialToken();
+            const basePath = Utils.getSwaggerURL().replace('/swagger.yaml', '');
+            const response = await fetch(
+                `${basePath}/federated-apis/cached?environment=${gw}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: 'application/json',
+                    },
+                }
+            );
+            if (response.ok) {
+                const data = await response.json();
+                if (data.lastDiscoveredAt) {
+                    setLastDiscoveredAt(data.lastDiscoveredAt);
+                }
+                if (data.result && data.result.length > 0) {
+                    setDiscoveryResults((prev) => ({
+                        ...prev,
+                        [gw]: { status: 'success', apis: data.result },
+                    }));
+                    return true;
+                }
+            }
+        } catch (err) {
+            console.warn('Failed to load cached results:', err);
+        }
+        return false;
+    };
 
     useEffect(() => {
         if (!location.state || !location.state.selectedGateways || location.state.selectedGateways.length === 0) {
@@ -146,6 +241,7 @@ const DiscoveryResults = (props) => {
         setDiscovering(true);
         setError(null);
         setSearchQueries({});
+        setStatusFilters({});
         setPages({});
         setRowsPerPage({});
         setImportingStates({});
@@ -209,6 +305,13 @@ const DiscoveryResults = (props) => {
 
                         const apiList = await pollTaskStatus(taskId, basePath, token);
 
+                        // Update lastDiscoveredAt from the result
+                        if (apiList.length > 0 && apiList[0].discoveredAt) {
+                            setLastDiscoveredAt(apiList[0].discoveredAt);
+                        } else {
+                            setLastDiscoveredAt(new Date().toISOString());
+                        }
+
                         setDiscoveryResults((prev) => ({
                             ...prev,
                             [gw]: { status: 'success', apis: apiList },
@@ -229,10 +332,19 @@ const DiscoveryResults = (props) => {
     };
 
     useEffect(() => {
-        if (selectedGateways.length > 0 && !discoveryTriggered.current) {
-            discoveryTriggered.current = true;
-            handleDiscover();
-        }
+        const initDiscovery = async () => {
+            if (selectedGateways.length > 0 && !discoveryTriggered.current) {
+                discoveryTriggered.current = true;
+                // Try loading from cache first
+                const gw = selectedGateways[0];
+                const hasCached = await loadCachedResults(gw);
+                if (!hasCached) {
+                    // No cache - trigger fresh discovery
+                    handleDiscover();
+                }
+            }
+        };
+        initDiscovery();
     }, [selectedGateways]);
 
     const handleRetryGateway = async (gw) => {
@@ -281,6 +393,13 @@ const DiscoveryResults = (props) => {
 
             const apiList = await pollTaskStatus(taskId, basePath, token);
 
+            // Update lastDiscoveredAt from the result
+            if (apiList.length > 0 && apiList[0].discoveredAt) {
+                setLastDiscoveredAt(apiList[0].discoveredAt);
+            } else {
+                setLastDiscoveredAt(new Date().toISOString());
+            }
+
             setDiscoveryResults((prev) => ({
                 ...prev,
                 [gw]: { status: 'success', apis: apiList },
@@ -304,14 +423,7 @@ const DiscoveryResults = (props) => {
             const basePath = Utils.getSwaggerURL().replace('/swagger.yaml', '');
             const endpoint = isUpdate ? 'update' : 'import';
 
-            const customData = customizedApis[apiId];
-            const payload = customData
-                ? JSON.stringify({
-                    id: apiId,
-                    displayName: customData.displayName,
-                    description: customData.description,
-                })
-                : apiId;
+            const payload = apiId;
 
             const url = `${basePath}/federated-apis/${endpoint}?environment=${gatewayName}`;
             const response = await fetch(url, {
@@ -348,10 +460,11 @@ const DiscoveryResults = (props) => {
             );
         } catch (err) {
             console.error(err);
+            const friendly = getFriendlyErrorMessage(err.message);
             setImportingStates((prev) => ({ ...prev, [apiId]: 'error' }));
-            setImportErrors((prev) => ({ ...prev, [apiId]: err.message }));
+            setImportErrors((prev) => ({ ...prev, [apiId]: friendly }));
             APIMAlert.error(
-                `Failed to ${isUpdate ? 'update' : 'import'} API "${item.apiName}": ${err.message}`
+                `Failed to ${isUpdate ? 'update' : 'import'} API "${item.apiName}": ${friendly}`
             );
         }
     };
@@ -371,14 +484,7 @@ const DiscoveryResults = (props) => {
                 const basePath = Utils.getSwaggerURL().replace('/swagger.yaml', '');
                 const endpoint = isUpdate ? 'update' : 'import';
 
-                const customData = customizedApis[apiId];
-                const payload = customData
-                    ? JSON.stringify({
-                        id: apiId,
-                        displayName: customData.displayName,
-                        description: customData.description,
-                    })
-                    : apiId;
+                const payload = apiId;
 
                 const url = `${basePath}/federated-apis/${endpoint}?environment=${gwName}`;
                 const response = await fetch(url, {
@@ -415,10 +521,11 @@ const DiscoveryResults = (props) => {
                 );
             } catch (err) {
                 console.error(err);
+                const friendly = getFriendlyErrorMessage(err.message);
                 setImportingStates((prev) => ({ ...prev, [apiId]: 'error' }));
-                setImportErrors((prev) => ({ ...prev, [apiId]: err.message }));
+                setImportErrors((prev) => ({ ...prev, [apiId]: friendly }));
                 APIMAlert.error(
-                    `Failed to ${isUpdate ? 'update' : 'import'} API "${item.apiName}": ${err.message}`
+                    `Failed to ${isUpdate ? 'update' : 'import'} API "${item.apiName}": ${friendly}`
                 );
             }
         }
@@ -464,24 +571,6 @@ const DiscoveryResults = (props) => {
                     </Tooltip>
                 )}
                 <Button
-                    variant='outlined'
-                    size='small'
-                    color='primary'
-                    startIcon={<EditIcon />}
-                    onClick={() => {
-                        setEditingApi(item);
-                        setEditedDisplayName(
-                            customizedApis[item.id]?.displayName || item.apiName
-                        );
-                        setEditedDescription(
-                            customizedApis[item.id]?.description || item.description || ''
-                        );
-                        setIsEditDialogOpen(true);
-                    }}
-                >
-                    Edit
-                </Button>
-                <Button
                     variant='contained'
                     size='small'
                     color={buttonColor}
@@ -516,65 +605,7 @@ const DiscoveryResults = (props) => {
 
         if (res.status === 'error') {
             const rawError = res.error || 'Unknown error occurred during discovery.';
-            
-            // Map rawError to a friendly explanation
-            let friendlyMessage = 'Discovery failed due to a server error or invalid gateway response. '
-                + 'Please inspect the gateway logs.';
-            const errLower = rawError.toLowerCase();
-            
-            if (
-                errLower.includes('aadsts')
-                || errLower.includes('unauthorized')
-                || errLower.includes('401')
-                || errLower.includes('invalid_client')
-                || errLower.includes('invalid client')
-                || errLower.includes('invalid_grant')
-                || errLower.includes('invalid grant')
-                || errLower.includes('forbidden')
-                || errLower.includes('403')
-                || errLower.includes('invalid key')
-                || errLower.includes('credentials')
-                || errLower.includes('api key')
-                || errLower.includes('service account')
-            ) {
-                friendlyMessage = 'Authentication failed. Please verify the credentials, API keys, '
-                    + 'or certificates configured for this gateway in the Admin portal.';
-            } else if (
-                errLower.includes('tenant')
-                || errLower.includes('project_id')
-                || errLower.includes('project')
-                || errLower.includes('not found')
-                || errLower.includes('404')
-                || errLower.includes('resource not found')
-                || errLower.includes('environment')
-                || errLower.includes('workspace')
-                || errLower.includes('organization')
-            ) {
-                friendlyMessage = 'Resource not found or configuration is invalid. '
-                    + 'Please verify the project ID, tenant, organization, or environment/workspace '
-                    + 'settings configured for this gateway in the Admin portal.';
-            } else if (
-                errLower.includes('timeout')
-                || errLower.includes('timed out')
-                || errLower.includes('connect')
-                || errLower.includes('connection refused')
-                || errLower.includes('dns')
-                || errLower.includes('resolve')
-                || errLower.includes('unreachable')
-                || errLower.includes('host')
-                || errLower.includes('network')
-            ) {
-                friendlyMessage = 'Network connection issue. The third-party gateway is unreachable. '
-                    + 'Please verify network connectivity, firewall rules, and the host URL config.';
-            } else if (
-                errLower.includes('429')
-                || errLower.includes('too many requests')
-                || errLower.includes('rate limit')
-                || errLower.includes('quota')
-            ) {
-                friendlyMessage = 'Rate limit exceeded. The third-party gateway rejected the requests '
-                    + 'because the quota or rate limit has been reached. Please try again later.';
-            }
+            const friendlyMessage = getFriendlyErrorMessage(rawError);
 
             return (
                 <Box sx={{ mb: 2 }}>
@@ -607,12 +638,21 @@ const DiscoveryResults = (props) => {
         }
 
         const query = (searchQueries[gwName] || '').toLowerCase();
-        const filteredApis = res.apis.filter((item) =>
-            (item.apiName && item.apiName.toLowerCase().includes(query)) ||
-            (item.version && item.version.toLowerCase().includes(query)) ||
-            (item.description && item.description.toLowerCase().includes(query)) ||
-            (item.context && item.context.toLowerCase().includes(query))
-        );
+        const statusFilter = statusFilters[gwName] || 'ALL';
+        const filteredApis = res.apis.filter((item) => {
+            const matchesQuery =
+                (item.apiName && item.apiName.toLowerCase().includes(query)) ||
+                (item.version && item.version.toLowerCase().includes(query)) ||
+                (item.description && item.description.toLowerCase().includes(query)) ||
+                (item.context && item.context.toLowerCase().includes(query));
+
+            const matchesStatus =
+                statusFilter === 'ALL' ||
+                (statusFilter === 'NEW' && item.status === 'NEW') ||
+                (statusFilter === 'UPDATE' && item.status === 'UPDATE');
+
+            return matchesQuery && matchesStatus;
+        });
 
         const page = pages[gwName] || 0;
         const rpp = rowsPerPage[gwName] || 5;
@@ -668,21 +708,14 @@ const DiscoveryResults = (props) => {
                                         <TableCell>Version</TableCell>
                                         <TableCell>Description</TableCell>
                                         <TableCell>Context</TableCell>
-                                        <TableCell>API Type / Protocol</TableCell>
+                                        <TableCell>Protocol</TableCell>
                                         <TableCell>Status</TableCell>
-                                        <TableCell>Discovered At</TableCell>
                                         <TableCell align='right'>Actions</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {paginatedApis.map((item) => {
                                         const isNew = item.status === 'NEW';
-                                        const date = item.discoveredAt
-                                            ? new Date(item.discoveredAt)
-                                            : new Date();
-                                        const dateOnlyStr = date.toLocaleDateString();
-                                        const dateTimeStr = date.toLocaleString();
-
                                         return (
                                             <TableRow key={item.id || `${item.apiName}-${item.version}`}>
                                                 <TableCell padding='checkbox'>
@@ -707,13 +740,12 @@ const DiscoveryResults = (props) => {
                                                     />
                                                 </TableCell>
                                                 <TableCell>
-                                                    {customizedApis[item.id]?.displayName || item.apiName}
+                                                    {item.apiName}
                                                 </TableCell>
                                                 <TableCell>{item.version}</TableCell>
                                                 <TableCell>
                                                     {(() => {
-                                                        const fullDesc = customizedApis[item.id]?.description
-                                                            || item.description;
+                                                        const fullDesc = item.description;
                                                         if (!fullDesc) return '-';
                                                         if (fullDesc.length <= 50) return fullDesc;
                                                         const truncated = fullDesc.substring(0, 47) + '...';
@@ -727,18 +759,23 @@ const DiscoveryResults = (props) => {
                                                     })()}
                                                 </TableCell>
                                                 <TableCell>{item.context || '-'}</TableCell>
-                                                <TableCell>{item.apiType || 'HTTP'}</TableCell>
+                                                <TableCell>
+                                                    {(() => {
+                                                        const type = item.apiType || 'HTTP';
+                                                        const typeUpper = type.toUpperCase();
+                                                        if (typeUpper === 'HTTP') return 'REST';
+                                                        if (typeUpper === 'WS') return 'WebSocket';
+                                                        if (typeUpper === 'WEBSOCKET') return 'WebSocket';
+                                                        return typeUpper;
+                                                    })()}
+                                                </TableCell>
                                                 <TableCell>
                                                     <Chip
                                                         label={item.status}
                                                         color={isNew ? 'success' : 'primary'}
                                                         size='small'
+                                                        variant='outlined'
                                                     />
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Tooltip title={dateTimeStr} arrow>
-                                                        <span>{dateOnlyStr}</span>
-                                                    </Tooltip>
                                                 </TableCell>
                                                 <TableCell align='right'>{renderAction(item)}</TableCell>
                                             </TableRow>
@@ -839,7 +876,8 @@ const DiscoveryResults = (props) => {
                             } else if (result.status === 'success') {
                                 displayStatusText = `${result.apis.length} APIs discovered`;
                             } else {
-                                displayStatusText = result.error;
+                                const friendly = getFriendlyErrorMessage(result.error);
+                                displayStatusText = friendly;
                             }
 
                             const gwObj = gateways.find((g) => g.name === gw);
@@ -869,7 +907,16 @@ const DiscoveryResults = (props) => {
                                             {gw}{gwType ? ` (${gwType})` : ''}
                                         </Typography>
                                     </Box>
-                                    <Typography variant='body2' color='textSecondary'>
+                                    <Typography
+                                        variant='body2'
+                                        color='textSecondary'
+                                        sx={{
+                                            ml: 2,
+                                            textAlign: 'right',
+                                            wordBreak: 'break-word',
+                                            maxWidth: '70%',
+                                        }}
+                                    >
                                         {displayStatusText}
                                     </Typography>
                                 </Paper>
@@ -879,14 +926,54 @@ const DiscoveryResults = (props) => {
                 ) : (
                     <>
                         <Box display='flex' justifyContent='space-between' alignItems='center' mb={3}>
-                            <Typography variant='h6'>
-                                Discovered APIs ({totalApisCount})
-                            </Typography>
+                            <Box display='flex' alignItems='center' gap={2}>
+                                {lastDiscoveredAt && (
+                                    <Typography
+                                        variant='subtitle1'
+                                        sx={{
+                                            fontWeight: 'bold',
+                                            color: '#1a3c73',
+                                            fontSize: '1rem',
+                                            backgroundColor: '#E8F0FE',
+                                            py: 0.75,
+                                            px: 1.5,
+                                            borderRadius: '6px',
+                                        }}
+                                    >
+                                        Last Discovered: {new Date(lastDiscoveredAt).toLocaleString()}
+                                    </Typography>
+                                )}
+                            </Box>
+                            <Button
+                                variant='outlined'
+                                size='small'
+                                startIcon={<RefreshIcon />}
+                                disabled={discovering}
+                                onClick={handleDiscover}
+                            >
+                                Refresh
+                            </Button>
                         </Box>
 
                         {totalApisCount === 0 && !hasErrors && !isAnyPending ? (
                             <Paper sx={{ p: 4, textAlign: 'center', borderRadius: 2 }} variant='outlined'>
-                                <Typography>No new APIs discovered from the selected gateways.</Typography>
+                                <Typography>
+                                    {lastDiscoveredAt
+                                        ? 'No new or updated APIs discovered from this gateway.'
+                                        : 'No previous discovery data. Click Refresh to discover APIs.'}
+                                </Typography>
+                                {!lastDiscoveredAt && (
+                                    <Button
+                                        variant='contained'
+                                        color='primary'
+                                        sx={{ mt: 2 }}
+                                        startIcon={<RefreshIcon />}
+                                        onClick={handleDiscover}
+                                        disabled={discovering}
+                                    >
+                                        Discover Now
+                                    </Button>
+                                )}
                             </Paper>
                         ) : (
                             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -961,6 +1048,22 @@ const DiscoveryResults = (props) => {
                                                             }
                                                             return null;
                                                         })()}
+                                                        <FormControl size='small' sx={{ minWidth: 140 }}>
+                                                            <Select
+                                                                value={statusFilters[gwName] || 'ALL'}
+                                                                onChange={(e) => {
+                                                                    setStatusFilters((prev) => ({
+                                                                        ...prev,
+                                                                        [gwName]: e.target.value,
+                                                                    }));
+                                                                    setPages((prev) => ({ ...prev, [gwName]: 0 }));
+                                                                }}
+                                                            >
+                                                                <MenuItem value='ALL'>All APIs</MenuItem>
+                                                                <MenuItem value='NEW'>New APIs</MenuItem>
+                                                                <MenuItem value='UPDATE'>Updated APIs</MenuItem>
+                                                            </Select>
+                                                        </FormControl>
                                                         <TextField
                                                             size='small'
                                                             placeholder='Search APIs...'
@@ -993,57 +1096,7 @@ const DiscoveryResults = (props) => {
                     </>
                 )}
             </Box>
-            <Dialog
-                open={isEditDialogOpen}
-                onClose={() => setIsEditDialogOpen(false)}
-                fullWidth
-                maxWidth='sm'
-            >
-                <DialogTitle>Edit API Details</DialogTitle>
-                <DialogContent dividers>
-                    <Box display='flex' flexDirection='column' gap={3} sx={{ mt: 1 }}>
-                        <TextField
-                            label='Display Name'
-                            variant='outlined'
-                            fullWidth
-                            value={editedDisplayName}
-                            onChange={(e) => setEditedDisplayName(e.target.value)}
-                        />
-                        <TextField
-                            label='Description'
-                            variant='outlined'
-                            fullWidth
-                            multiline
-                            rows={3}
-                            value={editedDescription}
-                            onChange={(e) => setEditedDescription(e.target.value)}
-                        />
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setIsEditDialogOpen(false)} color='secondary'>
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            if (editingApi) {
-                                setCustomizedApis((prev) => ({
-                                    ...prev,
-                                    [editingApi.id]: {
-                                        displayName: editedDisplayName,
-                                        description: editedDescription,
-                                    },
-                                }));
-                            }
-                            setIsEditDialogOpen(false);
-                        }}
-                        variant='contained'
-                        color='primary'
-                    >
-                        Save
-                    </Button>
-                </DialogActions>
-            </Dialog>
+
         </Root>
     );
 };

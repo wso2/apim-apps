@@ -31,6 +31,7 @@ import SoapAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/SoapAPIMenu';
 import GraphqlAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/GraphqlAPIMenu';
 import StreamingAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/StreamingAPIMenu';
 import DesignAssistantMenu from './Menus/DesignAssistantMenu';
+import DiscoverAPIsCard from './Menus/DiscoverAPIsCard';
 import AIAPIMenu from './Menus/AIAPIMenu';
 
 const PREFIX = 'APILanding';
@@ -49,6 +50,7 @@ const APILanding = () => {
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
     const { data: settings } = usePublisherSettings();
+    const isFederatedAPIDiscoveryEnabled = settings && settings.isFederatedAPIDiscoveryEnabled;
     const [gateway, setGatewayType] = useState(true);
     const [pageMode, setPageMode] = useState('default');
     const location = useLocation();
@@ -203,17 +205,25 @@ const APILanding = () => {
                                     }
                                     <AIAPIMenu icon={aiApiIcon} />
                                 </Grid>
-                                {settings.designAssistantEnabled && (
+                                {(settings.designAssistantEnabled || isFederatedAPIDiscoveryEnabled) && (
                                     <Grid
                                         item
                                         sx={{
                                             display: 'flex',
+                                            flexDirection: { xs: 'column', md: 'row' },
                                             justifyContent: 'center',
+                                            alignItems: 'center',
+                                            gap: 3,
                                             width: '100%',
                                             mt: '15px',
                                         }}
                                     >
-                                        <DesignAssistantMenu />
+                                        {settings.designAssistantEnabled && (
+                                            <DesignAssistantMenu />
+                                        )}
+                                        {isFederatedAPIDiscoveryEnabled && (
+                                            <DiscoverAPIsCard />
+                                        )}
                                     </Grid>
                                 )}
                             </Grid>

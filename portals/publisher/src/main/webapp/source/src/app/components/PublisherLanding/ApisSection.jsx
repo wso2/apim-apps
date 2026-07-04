@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, Tooltip } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
@@ -120,19 +120,31 @@ const ApisSection = ({ data, totalCount, onDelete }) => {
                     </div>
                     <Box display='flex' gap={2}>
                         {isFederatedAPIDiscoveryEnabled && (
-                            <Button
-                                variant='outlined'
-                                color='primary'
-                                component={Link}
-                                disabled={isRestricted(['apim:api_create', 'apim:api_manage'])}
-                                to='/apis/discover'
-                                startIcon={<ExploreIcon />}
+                            <Tooltip
+                                title={
+                                    <FormattedMessage
+                                        id='Apis.Listing.components.TopMenu.discover.apis.tooltip'
+                                        defaultMessage={
+                                            'Discover and import APIs '
+                                            + 'from your third party gateways'
+                                        }
+                                    />
+                                }
                             >
-                                <FormattedMessage
-                                    id='Publisher.Landing.discover.apis.button'
-                                    defaultMessage='Discover APIs'
-                                />
-                            </Button>
+                                <Button
+                                    variant='outlined'
+                                    color='primary'
+                                    component={Link}
+                                    disabled={isRestricted(['apim:api_create', 'apim:api_manage'])}
+                                    to='/apis/discover'
+                                    startIcon={<ExploreIcon />}
+                                >
+                                    <FormattedMessage
+                                        id='Publisher.Landing.discover.apis.button'
+                                        defaultMessage='Discover APIs'
+                                    />
+                                </Button>
+                            </Tooltip>
                         )}
                         <Button
                             variant='contained'

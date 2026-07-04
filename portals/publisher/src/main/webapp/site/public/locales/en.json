@@ -2402,6 +2402,7 @@
   "Publisher.Landing.create.mcp.button": "Create MCP Server",
   "Publisher.Landing.description": "Let's get started!",
   "Publisher.Landing.discover.apis.button": "Discover APIs",
+  "Publisher.Landing.discover.apis.card.title": "Discover APIs",
   "Publisher.Landing.error.title": "Error Loading Data",
   "Publisher.Landing.mcpServers.section.title": "MCP Servers",
   "Publisher.Landing.no.api.products.message.line1": "No API Products found.",

@@ -21,17 +21,13 @@ import {
     Box,
     Typography,
     Button,
-    Checkbox,
+    Radio,
     Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
     CircularProgress,
     Link as MuiLink,
     Tooltip,
+    Grid,
+    useTheme,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
@@ -51,13 +47,21 @@ const Root = styled('div')(({ theme }) => ({
 }));
 
 const DiscoverAPIs = (props) => {
+    const theme = useTheme();
     const { history, location } = props;
     const { data: settings, isLoading } = usePublisherSettings();
     const handleBackClick = useBackNavigation('/apis');
 
-    // Initialize selectedGateways from history location state if navigating back
-    const initialSelected = (location.state && location.state.selectedGateways) || [];
-    const [selectedGateways, setSelectedGateways] = useState(initialSelected);
+    let initialSelected = null;
+    if (location.state && location.state.selectedGateways) {
+        if (Array.isArray(location.state.selectedGateways)) {
+            const [firstGateway] = location.state.selectedGateways;
+            initialSelected = firstGateway;
+        } else {
+            initialSelected = location.state.selectedGateways;
+        }
+    }
+    const [selectedGateway, setSelectedGateway] = useState(initialSelected);
 
     if (isLoading) {
         return <CircularProgress />;
@@ -67,28 +71,35 @@ const DiscoverAPIs = (props) => {
         (env) => !env.provider.toLowerCase().includes('wso2')
     );
 
-    const handleToggleGateway = (gatewayName) => {
-        setSelectedGateways((prev) =>
-            prev.includes(gatewayName)
-                ? prev.filter((g) => g !== gatewayName)
-                : [...prev, gatewayName]
-        );
+    const handleSelectGateway = (gatewayName) => {
+        setSelectedGateway(gatewayName);
     };
 
-    const handleSelectAllGateways = (event) => {
-        if (event.target.checked) {
-            setSelectedGateways(gateways.map((gw) => gw.name));
-        } else {
-            setSelectedGateways([]);
+    const getGatewayChipColor = (gwType) => {
+        const type = (gwType || '').toUpperCase();
+        if (type.includes('AWS')) {
+            return '#FF9900';
         }
+        if (type.includes('KONG')) {
+            return '#1A5C96';
+        }
+        if (type.includes('APIGEE')) {
+            return '#F27318';
+        }
+        if (type.includes('AZURE')) {
+            return '#0078D4';
+        }
+        return '#4d4d4d';
     };
 
     const handleDiscover = () => {
         history.push({
             pathname: '/apis/discover/apis',
-            state: { selectedGateways },
+            state: { selectedGateways: [selectedGateway] },
         });
     };
+
+    const selectedGatewayObj = gateways.find((gw) => gw.name === selectedGateway);
 
     return (
         <Root>
@@ -145,68 +156,110 @@ const DiscoverAPIs = (props) => {
                 ) : (
                     <>
                         <Typography variant='h6' gutterBottom sx={{ mb: 2 }}>
-                            Select Gateways
+                            Select a Gateway
                         </Typography>
-                        <TableContainer component={Paper} variant='outlined' sx={{ borderRadius: 2, mb: 4 }}>
-                            <Table aria-label='gateways table'>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell padding='checkbox'>
-                                            <Checkbox
-                                                indeterminate={
-                                                    selectedGateways.length > 0
-                                                    && selectedGateways.length < gateways.length
-                                                }
-                                                checked={
-                                                    gateways.length > 0
-                                                    && selectedGateways.length === gateways.length
-                                                }
-                                                onChange={handleSelectAllGateways}
-                                                color='primary'
-                                            />
-                                        </TableCell>
-                                        <TableCell sx={{ fontWeight: 'bold' }}>Gateway Name</TableCell>
-                                        <TableCell sx={{ fontWeight: 'bold' }}>Gateway Type</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {gateways.map((gw) => {
-                                        const isSelected = selectedGateways.includes(gw.name);
-                                        return (
-                                            <TableRow
-                                                key={gw.name}
-                                                hover
-                                                onClick={() => handleToggleGateway(gw.name)}
-                                                role='checkbox'
-                                                aria-checked={isSelected}
-                                                selected={isSelected}
-                                                sx={{ cursor: 'pointer' }}
+                        <Grid container spacing={3} sx={{ mb: 4 }}>
+                            {gateways.map((gw) => {
+                                const isSelected = selectedGateway === gw.name;
+                                return (
+                                    <Grid item xs={12} sm={6} md={4} key={gw.name}>
+                                        <Paper
+                                            onClick={() => handleSelectGateway(gw.name)}
+                                            variant='outlined'
+                                            sx={{
+                                                p: 3,
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                position: 'relative',
+                                                cursor: 'pointer',
+                                                borderRadius: 3,
+                                                border: isSelected
+                                                    ? `2px solid ${theme.palette.primary.main}`
+                                                    : '1px solid #e0e0e0',
+                                                backgroundColor: isSelected
+                                                    ? 'rgba(25, 118, 210, 0.04)'
+                                                    : '#ffffff',
+                                                transition: 'all 0.2s ease-in-out',
+                                                boxShadow: isSelected ? 2 : 0,
+                                                '&:hover': {
+                                                    boxShadow: 3,
+                                                    borderColor: isSelected
+                                                        ? theme.palette.primary.main
+                                                        : '#999999',
+                                                    transform: 'translateY(-2px)',
+                                                },
+                                            }}
+                                        >
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'flex-start',
+                                                    mb: 2,
+                                                }}
                                             >
-                                                <TableCell padding='checkbox'>
-                                                    <Checkbox
-                                                        checked={isSelected}
-                                                        color='primary'
-                                                    />
-                                                </TableCell>
-                                                <TableCell>{gw.displayName || gw.name}</TableCell>
-                                                <TableCell>{gw.gatewayType || 'External'}</TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
+                                                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                    <Typography
+                                                        variant='h6'
+                                                        sx={{
+                                                            fontWeight: 'bold',
+                                                            color: '#1a3c73',
+                                                            fontSize: '1.1rem',
+                                                            fontFamily: theme.typography.fontFamily,
+                                                        }}
+                                                    >
+                                                        {gw.displayName || gw.name}
+                                                    </Typography>
+                                                    <Box
+                                                        sx={{
+                                                            display: 'inline-flex',
+                                                            alignSelf: 'flex-start',
+                                                            alignItems: 'center',
+                                                            px: 1.5,
+                                                            py: 0.5,
+                                                            mt: 1,
+                                                            borderRadius: '4px',
+                                                            fontSize: '0.75rem',
+                                                            fontWeight: 'bold',
+                                                            textTransform: 'uppercase',
+                                                            fontFamily: theme.typography.fontFamily,
+                                                            border: `1px solid ${getGatewayChipColor(
+                                                                gw.gatewayType
+                                                            )}`,
+                                                            color: getGatewayChipColor(gw.gatewayType),
+                                                            backgroundColor: '#ffffff',
+                                                        }}
+                                                    >
+                                                        {gw.gatewayType || 'External'}
+                                                    </Box>
+                                                </Box>
+                                                <Radio
+                                                    checked={isSelected}
+                                                    onChange={() => handleSelectGateway(gw.name)}
+                                                    value={gw.name}
+                                                    name='gateway-selection'
+                                                    color='primary'
+                                                    sx={{ p: 0 }}
+                                                />
+                                            </Box>
+                                        </Paper>
+                                    </Grid>
+                                );
+                            })}
+                        </Grid>
 
                         <div className='actions'>
-                            <Tooltip title='Discover and import APIs from your third party gateways.'>
+                            <Tooltip title='Discover and import APIs from your third party gateway.'>
                                 <span>
                                     <Button
                                         variant='contained'
                                         color='primary'
-                                        disabled={selectedGateways.length === 0}
+                                        disabled={!selectedGateway}
                                         onClick={handleDiscover}
                                     >
-                                        Discover APIs from {selectedGateways.length} gateway(s)
+                                        {selectedGateway
+                                            ? `Discover APIs from ${selectedGatewayObj?.displayName || selectedGateway}`
+                                            : 'Select a gateway to discover APIs'}
                                     </Button>
                                 </span>
                             </Tooltip>
