@@ -218,8 +218,13 @@ const TryOutConsole = () => {
 
     const isAdvertised = api.advertiseInfo && api.advertiseInfo.advertised;
     const setServersSpec = (spec, serverUrl) => {
+        let parsed;
+        try {
+            parsed = new URL(serverUrl);
+        } catch (error) {
+            return spec;
+        }
         let schemes;
-        const parsed = new URL(serverUrl);
         if (parsed.protocol === 'http:') {
             schemes = ['http'];
         } else if (parsed.protocol === 'https:') {
