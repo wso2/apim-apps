@@ -39,9 +39,7 @@ const DiscoverAPIsCard = () => {
     }
 
     let height = 140;
-    if (isSmallScreen) {
-        height = 140;
-    } else if (isMediumScreen) {
+    if (isMediumScreen) {
         height = 150;
     }
 
