@@ -291,6 +291,34 @@ const DiscoveryResults = (props) => {
         }
     }, [location.state, history]);
 
+    const discoverGateway = async (gw, token, basePath) => {
+        const submitResponse = await fetch(
+            `${basePath}/federated-apis/discover?environment=${gw}`,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: 'application/json',
+                },
+            }
+        );
+        if (!submitResponse.ok && submitResponse.status !== 202) {
+            throw new Error(`Failed to start discovery (HTTP ${submitResponse.status})`);
+        }
+        const submitData = await submitResponse.json();
+        const { taskId } = submitData;
+        if (!taskId) {
+            throw new Error('No task ID returned');
+        }
+        const apiList = await pollTaskStatus(taskId, basePath, token);
+        if (apiList.length > 0 && apiList[0].discoveredAt) {
+            setLastDiscoveredAt(apiList[0].discoveredAt);
+        } else {
+            setLastDiscoveredAt(new Date().toISOString());
+        }
+        return apiList;
+    };
+
     const handleDiscover = async () => {
         setDiscovering(true);
         setError(null);
@@ -326,46 +354,7 @@ const DiscoveryResults = (props) => {
                                 statusText: 'Discovering...',
                             },
                         }));
-
-                        const submitResponse = await fetch(
-                            `${basePath}/federated-apis/discover?environment=${gw}`,
-                            {
-                                method: 'POST',
-                                headers: {
-                                    Authorization: `Bearer ${token}`,
-                                    Accept: 'application/json',
-                                },
-                            }
-                        );
-
-                        if (!submitResponse.ok && submitResponse.status !== 202) {
-                            throw new Error(`Failed to start discovery (HTTP ${submitResponse.status})`);
-                        }
-
-                        const submitData = await submitResponse.json();
-                        const { taskId } = submitData;
-
-                        if (!taskId) {
-                            throw new Error('No task ID returned');
-                        }
-
-                        setDiscoveryResults((prev) => ({
-                            ...prev,
-                            [gw]: {
-                                ...prev[gw],
-                                statusText: 'Discovering...',
-                            },
-                        }));
-
-                        const apiList = await pollTaskStatus(taskId, basePath, token);
-
-                        // Update lastDiscoveredAt from the result
-                        if (apiList.length > 0 && apiList[0].discoveredAt) {
-                            setLastDiscoveredAt(apiList[0].discoveredAt);
-                        } else {
-                            setLastDiscoveredAt(new Date().toISOString());
-                        }
-
+                        const apiList = await discoverGateway(gw, token, basePath);
                         setDiscoveryResults((prev) => ({
                             ...prev,
                             [gw]: { status: 'success', apis: apiList },
@@ -402,58 +391,14 @@ const DiscoveryResults = (props) => {
     }, [selectedGateways]);
 
     const handleRetryGateway = async (gw) => {
-        setDiscoveryResults((prev) => ({
-            ...prev,
-            [gw]: {
-                status: 'pending',
-                statusText: 'Discovering...',
-                apis: [],
-            },
-        }));
-
         try {
             const token = AuthManager.getUser().getPartialToken();
             const basePath = Utils.getSwaggerURL().replace('/swagger.yaml', '');
-
-            const submitResponse = await fetch(
-                `${basePath}/federated-apis/discover?environment=${gw}`,
-                {
-                    method: 'POST',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        Accept: 'application/json',
-                    },
-                }
-            );
-
-            if (!submitResponse.ok && submitResponse.status !== 202) {
-                throw new Error(`Failed to start discovery (HTTP ${submitResponse.status})`);
-            }
-
-            const submitData = await submitResponse.json();
-            const { taskId } = submitData;
-
-            if (!taskId) {
-                throw new Error('No task ID returned');
-            }
-
             setDiscoveryResults((prev) => ({
                 ...prev,
-                [gw]: {
-                    ...prev[gw],
-                    statusText: 'Discovering...',
-                },
+                [gw]: { status: 'pending', statusText: 'Discovering...', apis: [] },
             }));
-
-            const apiList = await pollTaskStatus(taskId, basePath, token);
-
-            // Update lastDiscoveredAt from the result
-            if (apiList.length > 0 && apiList[0].discoveredAt) {
-                setLastDiscoveredAt(apiList[0].discoveredAt);
-            } else {
-                setLastDiscoveredAt(new Date().toISOString());
-            }
-
+            const apiList = await discoverGateway(gw, token, basePath);
             setDiscoveryResults((prev) => ({
                 ...prev,
                 [gw]: { status: 'success', apis: apiList },
