@@ -61,13 +61,13 @@ const Apis = () => {
             <Route
                 exact
                 path='/apis'
-                key={Date.now()}
+                key='apis'
                 render={(props) => <Listing {...props} isAPIProduct={false} />}
             />
             <Route
                 exact
                 path='/api-products'
-                key={Date.now()}
+                key='api-products'
                 render={(props) => {
                     return <Listing {...props} isAPIProduct />;
                 }}
@@ -75,7 +75,7 @@ const Apis = () => {
             <Route
                 exact
                 path='/mcp-servers'
-                key={Date.now()}
+                key='mcp-servers'
                 render={(props) => (
                     <MCPRouteGuard>
                         <Listing {...props} isMCPServer />
@@ -85,13 +85,13 @@ const Apis = () => {
             <Route
                 exact
                 path='/search'
-                key={Date.now()}
+                key='search'
                 render={(props) => <Listing {...props} isAPIProduct={false} />}
             />
             <Route
                 exact
                 path='/apis/discover'
-                key={Date.now()}
+                key='apis-discover'
                 render={(props) => (
                     <FederatedAPIDiscoveryRouteGuard>
                         <DiscoverAPIs {...props} />
@@ -101,7 +101,7 @@ const Apis = () => {
             <Route
                 exact
                 path='/apis/discover/apis'
-                key={Date.now()}
+                key='apis-discover-apis'
                 render={(props) => (
                     <FederatedAPIDiscoveryRouteGuard>
                         <DiscoveryResults {...props} />

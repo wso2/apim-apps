@@ -50,7 +50,7 @@ const APILanding = () => {
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
     const { data: settings } = usePublisherSettings();
-    const isFederatedAPIDiscoveryEnabled = settings && settings.isFederatedAPIDiscoveryEnabled;
+    const isFederatedAPIDiscoveryEnabled = settings?.isFederatedAPIDiscoveryEnabled;
     const [gateway, setGatewayType] = useState(true);
     const [pageMode, setPageMode] = useState('default');
     const location = useLocation();

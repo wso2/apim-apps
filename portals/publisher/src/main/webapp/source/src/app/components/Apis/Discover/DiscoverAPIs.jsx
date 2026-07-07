@@ -17,6 +17,7 @@
  */
 
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
     Box,
     Typography,
@@ -53,7 +54,7 @@ const DiscoverAPIs = (props) => {
     const handleBackClick = useBackNavigation('/apis');
 
     let initialSelected = null;
-    if (location.state && location.state.selectedGateways) {
+    if (location.state?.selectedGateways) {
         if (Array.isArray(location.state.selectedGateways)) {
             const [firstGateway] = location.state.selectedGateways;
             initialSelected = firstGateway;
@@ -277,6 +278,20 @@ const DiscoverAPIs = (props) => {
             </Box>
         </Root>
     );
+};
+
+DiscoverAPIs.propTypes = {
+    history: PropTypes.shape({
+        push: PropTypes.func,
+    }).isRequired,
+    location: PropTypes.shape({
+        state: PropTypes.shape({
+            selectedGateways: PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.arrayOf(PropTypes.string),
+            ]),
+        }),
+    }).isRequired,
 };
 
 export default DiscoverAPIs;

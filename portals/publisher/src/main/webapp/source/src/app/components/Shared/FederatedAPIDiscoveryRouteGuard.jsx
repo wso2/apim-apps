@@ -37,7 +37,7 @@ const FederatedAPIDiscoveryRouteGuard = ({ children }) => {
         return <Progress per={80} message='Loading app settings ...' />;
     }
     
-    const isFederatedAPIDiscoveryEnabled = settings && settings.isFederatedAPIDiscoveryEnabled;
+    const isFederatedAPIDiscoveryEnabled = settings?.isFederatedAPIDiscoveryEnabled;
 
     if (!isFederatedAPIDiscoveryEnabled) {
         const resourceNotFoundMessage = {

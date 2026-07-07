@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable no-unused-vars, react/prop-types */
 /*
  * Copyright (c) 2026, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -31,13 +31,27 @@ const DiscoverAPIsCard = () => {
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const isMediumScreen = useMediaQuery(theme.breakpoints.between('md', 'lg'));
 
+    let maxWidth = 500;
+    if (isSmallScreen) {
+        maxWidth = 250;
+    } else if (isMediumScreen) {
+        maxWidth = 400;
+    }
+
+    let height = 140;
+    if (isSmallScreen) {
+        height = 140;
+    } else if (isMediumScreen) {
+        height = 150;
+    }
+
     return (
         <Paper
             square={false}
             elevation={4}
             sx={{
-                maxWidth: isSmallScreen ? 250 : isMediumScreen ? 400 : 500,
-                height: isSmallScreen ? 140 : isMediumScreen ? 150 : 140, 
+                maxWidth,
+                height, 
                 display: 'flex',
                 justifyContent: 'center', alignItems: 'center',
                 transition: 'all 0.3s ease-in-out',
@@ -54,13 +68,26 @@ const DiscoverAPIsCard = () => {
                 />
                 <Box p={1} border={0}
                     sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', flexGrow: 1 }}>
-                    <Typography sx={{ color: '#1a3c73', fontWeight: 'bold', fontSize: '1.25rem', fontFamily: theme.typography.fontFamily }}>
+                    <Typography sx={{
+                        color: '#1a3c73',
+                        fontWeight: 'bold',
+                        fontSize: '1.25rem',
+                        fontFamily: theme.typography.fontFamily,
+                    }}>
                         <FormattedMessage
                             id='Publisher.Landing.discover.apis.card.title'
                             defaultMessage='Discover APIs'
                         />
                     </Typography>
-                    <Typography sx={{ color: '#1a3c73', mt: 0.5, mb: 1.5, textAlign: 'left', lineHeight: 1.2, fontSize: '0.875rem', fontFamily: theme.typography.fontFamily }}>
+                    <Typography sx={{
+                        color: '#1a3c73',
+                        mt: 0.5,
+                        mb: 1.5,
+                        textAlign: 'left',
+                        lineHeight: 1.2,
+                        fontSize: '0.875rem',
+                        fontFamily: theme.typography.fontFamily,
+                    }}>
                         <FormattedMessage
                             id='Apis.Listing.components.TopMenu.discover.apis.tooltip'
                             defaultMessage='Discover and import APIs from your third party gateways'

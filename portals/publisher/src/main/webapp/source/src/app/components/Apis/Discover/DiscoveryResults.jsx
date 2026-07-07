@@ -18,6 +18,7 @@
 
 /* eslint-disable no-await-in-loop */
 import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import {
     Box,
     Typography,
@@ -179,9 +180,62 @@ const getFriendlyErrorMessage = (rawError) => {
         + 'Please inspect the gateway logs.';
 };
 
+/**
+ * Helper to import/update a single API from a federated gateway.
+ */
+const importSingleApi = async (item, gwName, setImportingStates, setSelectedApis, setImportErrors) => {
+    const apiId = item.id;
+    const isUpdate = item.status === 'UPDATE';
+    const actionLabel = isUpdate ? 'update' : 'import';
+    setImportingStates((prev) => ({ ...prev, [apiId]: 'importing' }));
+    try {
+        const token = AuthManager.getUser().getPartialToken();
+        const basePath = Utils.getSwaggerURL().replace('/swagger.yaml', '');
+        const url = `${basePath}/federated-apis/${actionLabel}?environment=${gwName}`;
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify([apiId]),
+        });
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const backendMsg = errorData.message || `Failed to ${actionLabel} API`;
+            throw new Error(backendMsg);
+        }
+        setImportingStates((prev) => ({ ...prev, [apiId]: 'success' }));
+        setSelectedApis((prev) => {
+            const next = { ...prev };
+            delete next[apiId];
+            return next;
+        });
+        setImportErrors((prev) => {
+            const next = { ...prev };
+            delete next[apiId];
+            return next;
+        });
+        APIMAlert.success(
+            isUpdate
+                ? `API "${item.apiName}" updated successfully`
+                : `API "${item.apiName}" imported successfully`
+        );
+    } catch (err) {
+        console.error(err);
+        const friendly = getFriendlyErrorMessage(err.message);
+        setImportingStates((prev) => ({ ...prev, [apiId]: 'error' }));
+        setImportErrors((prev) => ({ ...prev, [apiId]: friendly }));
+        APIMAlert.error(
+            `Failed to ${actionLabel} API "${item.apiName}": ${friendly}`
+        );
+    }
+};
+
 const DiscoveryResults = (props) => {
     const { history, location } = props;
-    const selectedGateways = (location.state && location.state.selectedGateways) || [];
+    const selectedGateways = location.state?.selectedGateways || [];
 
     const { data: settings, isLoading } = usePublisherSettings();
     const [discoveryResults, setDiscoveryResults] = useState({});
@@ -232,7 +286,7 @@ const DiscoveryResults = (props) => {
     };
 
     useEffect(() => {
-        if (!location.state || !location.state.selectedGateways || location.state.selectedGateways.length === 0) {
+        if (!location.state?.selectedGateways?.length) {
             history.replace('/apis/discover');
         }
     }, [location.state, history]);
@@ -413,60 +467,7 @@ const DiscoveryResults = (props) => {
     };
 
     const handleAction = async (item) => {
-        const apiId = item.id;
-        const { gatewayName } = item;
-        const isUpdate = item.status === 'UPDATE';
-
-        setImportingStates((prev) => ({ ...prev, [apiId]: 'importing' }));
-        try {
-            const token = AuthManager.getUser().getPartialToken();
-            const basePath = Utils.getSwaggerURL().replace('/swagger.yaml', '');
-            const endpoint = isUpdate ? 'update' : 'import';
-
-            const payload = apiId;
-
-            const url = `${basePath}/federated-apis/${endpoint}?environment=${gatewayName}`;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                },
-                body: JSON.stringify([payload]),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                const backendMsg = errorData.message || `Failed to ${isUpdate ? 'update' : 'import'} API`;
-                throw new Error(backendMsg);
-            }
-
-            setImportingStates((prev) => ({ ...prev, [apiId]: 'success' }));
-            setSelectedApis((prev) => {
-                const next = { ...prev };
-                delete next[apiId];
-                return next;
-            });
-            setImportErrors((prev) => {
-                const next = { ...prev };
-                delete next[apiId];
-                return next;
-            });
-            APIMAlert.success(
-                isUpdate
-                    ? `API "${item.apiName}" updated successfully`
-                    : `API "${item.apiName}" imported successfully`
-            );
-        } catch (err) {
-            console.error(err);
-            const friendly = getFriendlyErrorMessage(err.message);
-            setImportingStates((prev) => ({ ...prev, [apiId]: 'error' }));
-            setImportErrors((prev) => ({ ...prev, [apiId]: friendly }));
-            APIMAlert.error(
-                `Failed to ${isUpdate ? 'update' : 'import'} API "${item.apiName}": ${friendly}`
-            );
-        }
+        await importSingleApi(item, item.gatewayName, setImportingStates, setSelectedApis, setImportErrors);
     };
 
     const handleBulkImport = async (gwName, gwApis) => {
@@ -476,58 +477,7 @@ const DiscoveryResults = (props) => {
         if (toImport.length === 0) return;
 
         for (const item of toImport) {
-            const apiId = item.id;
-            const isUpdate = item.status === 'UPDATE';
-            setImportingStates((prev) => ({ ...prev, [apiId]: 'importing' }));
-            try {
-                const token = AuthManager.getUser().getPartialToken();
-                const basePath = Utils.getSwaggerURL().replace('/swagger.yaml', '');
-                const endpoint = isUpdate ? 'update' : 'import';
-
-                const payload = apiId;
-
-                const url = `${basePath}/federated-apis/${endpoint}?environment=${gwName}`;
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                        Accept: 'application/json',
-                    },
-                    body: JSON.stringify([payload]),
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    const backendMsg = errorData.message || `Failed to ${isUpdate ? 'update' : 'import'} API`;
-                    throw new Error(backendMsg);
-                }
-
-                setImportingStates((prev) => ({ ...prev, [apiId]: 'success' }));
-                setSelectedApis((prev) => {
-                    const next = { ...prev };
-                    delete next[apiId];
-                    return next;
-                });
-                setImportErrors((prev) => {
-                    const next = { ...prev };
-                    delete next[apiId];
-                    return next;
-                });
-                APIMAlert.success(
-                    isUpdate
-                        ? `API "${item.apiName}" updated successfully`
-                        : `API "${item.apiName}" imported successfully`
-                );
-            } catch (err) {
-                console.error(err);
-                const friendly = getFriendlyErrorMessage(err.message);
-                setImportingStates((prev) => ({ ...prev, [apiId]: 'error' }));
-                setImportErrors((prev) => ({ ...prev, [apiId]: friendly }));
-                APIMAlert.error(
-                    `Failed to ${isUpdate ? 'update' : 'import'} API "${item.apiName}": ${friendly}`
-                );
-            }
+            await importSingleApi(item, gwName, setImportingStates, setSelectedApis, setImportErrors);
         }
     };
 
@@ -641,10 +591,10 @@ const DiscoveryResults = (props) => {
         const statusFilter = statusFilters[gwName] || 'ALL';
         const filteredApis = res.apis.filter((item) => {
             const matchesQuery =
-                (item.apiName && item.apiName.toLowerCase().includes(query)) ||
-                (item.version && item.version.toLowerCase().includes(query)) ||
-                (item.description && item.description.toLowerCase().includes(query)) ||
-                (item.context && item.context.toLowerCase().includes(query));
+                item.apiName?.toLowerCase().includes(query) ||
+                item.version?.toLowerCase().includes(query) ||
+                item.description?.toLowerCase().includes(query) ||
+                item.context?.toLowerCase().includes(query);
 
             const matchesStatus =
                 statusFilter === 'ALL' ||
@@ -669,6 +619,89 @@ const DiscoveryResults = (props) => {
         const isSomeSelected = selectedCheckableFilteredApis.length > 0
             && selectedCheckableFilteredApis.length < checkableFilteredApis.length;
 
+        const handleSelectAll = (e) => {
+            const { checked } = e.target;
+            const next = { ...selectedApis };
+            checkableFilteredApis.forEach((item) => {
+                if (checked) {
+                    next[item.id] = true;
+                } else {
+                    delete next[item.id];
+                }
+            });
+            setSelectedApis(next);
+        };
+
+        const handleRowCheck = (e, item) => {
+            const { checked } = e.target;
+            const next = { ...selectedApis };
+            if (checked) {
+                next[item.id] = true;
+            } else {
+                delete next[item.id];
+            }
+            setSelectedApis(next);
+        };
+
+        const renderDescription = (desc) => {
+            if (!desc) return '-';
+            if (desc.length <= 50) return desc;
+            const truncated = desc.substring(0, 47) + '...';
+            return (
+                <Tooltip title={desc} arrow>
+                    <span style={{ cursor: 'pointer' }}>
+                        {truncated}
+                    </span>
+                </Tooltip>
+            );
+        };
+
+        const renderProtocol = (type) => {
+            const typeUpper = (type || 'HTTP').toUpperCase();
+            if (typeUpper === 'HTTP') return 'REST';
+            if (typeUpper === 'WS') return 'WebSocket';
+            if (typeUpper === 'WEBSOCKET') return 'WebSocket';
+            return typeUpper;
+        };
+
+        const renderRow = (item) => {
+            const isNew = item.status === 'NEW';
+            return (
+                <TableRow key={item.id || `${item.apiName}-${item.version}`}>
+                    <TableCell padding='checkbox'>
+                        <Checkbox
+                            checked={!!selectedApis[item.id]}
+                            disabled={
+                                importingStates[item.id] === 'success'
+                                || importingStates[item.id] === 'importing'
+                            }
+                            onChange={(e) => handleRowCheck(e, item)}
+                        />
+                    </TableCell>
+                    <TableCell>
+                        {item.apiName}
+                    </TableCell>
+                    <TableCell>{item.version}</TableCell>
+                    <TableCell>
+                        {renderDescription(item.description)}
+                    </TableCell>
+                    <TableCell>{item.context || '-'}</TableCell>
+                    <TableCell>
+                        {renderProtocol(item.apiType)}
+                    </TableCell>
+                    <TableCell>
+                        <Chip
+                            label={item.status}
+                            color={isNew ? 'success' : 'primary'}
+                            size='small'
+                            variant='outlined'
+                        />
+                    </TableCell>
+                    <TableCell align='right'>{renderAction(item)}</TableCell>
+                </TableRow>
+            );
+        };
+
         return (
             <Box>
                 {filteredApis.length === 0 ? (
@@ -688,20 +721,7 @@ const DiscoveryResults = (props) => {
                                                 indeterminate={isSomeSelected}
                                                 checked={isAllSelected}
                                                 disabled={checkableFilteredApis.length === 0}
-                                                onChange={(e) => {
-                                                    const { checked } = e.target;
-                                                    setSelectedApis((prev) => {
-                                                        const next = { ...prev };
-                                                        checkableFilteredApis.forEach((item) => {
-                                                            if (checked) {
-                                                                next[item.id] = true;
-                                                            } else {
-                                                                delete next[item.id];
-                                                            }
-                                                        });
-                                                        return next;
-                                                    });
-                                                }}
+                                                onChange={handleSelectAll}
                                             />
                                         </TableCell>
                                         <TableCell>API Name</TableCell>
@@ -714,73 +734,7 @@ const DiscoveryResults = (props) => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {paginatedApis.map((item) => {
-                                        const isNew = item.status === 'NEW';
-                                        return (
-                                            <TableRow key={item.id || `${item.apiName}-${item.version}`}>
-                                                <TableCell padding='checkbox'>
-                                                    <Checkbox
-                                                        checked={!!selectedApis[item.id]}
-                                                        disabled={
-                                                            importingStates[item.id] === 'success'
-                                                            || importingStates[item.id] === 'importing'
-                                                        }
-                                                        onChange={(e) => {
-                                                            const { checked } = e.target;
-                                                            setSelectedApis((prev) => {
-                                                                const next = { ...prev };
-                                                                if (checked) {
-                                                                    next[item.id] = true;
-                                                                } else {
-                                                                    delete next[item.id];
-                                                                }
-                                                                return next;
-                                                            });
-                                                        }}
-                                                    />
-                                                </TableCell>
-                                                <TableCell>
-                                                    {item.apiName}
-                                                </TableCell>
-                                                <TableCell>{item.version}</TableCell>
-                                                <TableCell>
-                                                    {(() => {
-                                                        const fullDesc = item.description;
-                                                        if (!fullDesc) return '-';
-                                                        if (fullDesc.length <= 50) return fullDesc;
-                                                        const truncated = fullDesc.substring(0, 47) + '...';
-                                                        return (
-                                                            <Tooltip title={fullDesc} arrow>
-                                                                <span style={{ cursor: 'pointer' }}>
-                                                                    {truncated}
-                                                                </span>
-                                                            </Tooltip>
-                                                        );
-                                                    })()}
-                                                </TableCell>
-                                                <TableCell>{item.context || '-'}</TableCell>
-                                                <TableCell>
-                                                    {(() => {
-                                                        const type = item.apiType || 'HTTP';
-                                                        const typeUpper = type.toUpperCase();
-                                                        if (typeUpper === 'HTTP') return 'REST';
-                                                        if (typeUpper === 'WS') return 'WebSocket';
-                                                        if (typeUpper === 'WEBSOCKET') return 'WebSocket';
-                                                        return typeUpper;
-                                                    })()}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Chip
-                                                        label={item.status}
-                                                        color={isNew ? 'success' : 'primary'}
-                                                        size='small'
-                                                        variant='outlined'
-                                                    />
-                                                </TableCell>
-                                                <TableCell align='right'>{renderAction(item)}</TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
+                                    {paginatedApis.map(renderRow)}
                                 </TableBody>
                             </Table>
                         </TableContainer>
@@ -796,7 +750,7 @@ const DiscoveryResults = (props) => {
                             onRowsPerPageChange={(event) => {
                                 setRowsPerPage(prev => ({
                                     ...prev,
-                                    [gwName]: parseInt(event.target.value, 10),
+                                    [gwName]: Number.parseInt(event.target.value, 10),
                                 }));
                                 setPages(prev => ({ ...prev, [gwName]: 0 }));
                             }}
@@ -1099,6 +1053,18 @@ const DiscoveryResults = (props) => {
 
         </Root>
     );
+};
+
+DiscoveryResults.propTypes = {
+    history: PropTypes.shape({
+        push: PropTypes.func,
+        replace: PropTypes.func,
+    }).isRequired,
+    location: PropTypes.shape({
+        state: PropTypes.shape({
+            selectedGateways: PropTypes.arrayOf(PropTypes.string),
+        }),
+    }).isRequired,
 };
 
 export default DiscoveryResults;

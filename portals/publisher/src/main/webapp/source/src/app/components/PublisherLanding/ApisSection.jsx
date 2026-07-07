@@ -108,7 +108,7 @@ const ApisSection = ({ data, totalCount, onDelete }) => {
     const theme = useTheme();
     const { noDataIcon } = theme.custom.landingPage.icons;
     const { data: settings } = usePublisherSettings();
-    const isFederatedAPIDiscoveryEnabled = settings && settings.isFederatedAPIDiscoveryEnabled;
+    const isFederatedAPIDiscoveryEnabled = settings?.isFederatedAPIDiscoveryEnabled;
     return (
         <Root>
             <div className={classes.root}>

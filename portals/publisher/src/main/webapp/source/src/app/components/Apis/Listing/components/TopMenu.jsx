@@ -138,7 +138,7 @@ function TopMenu(props) {
         data, setListType, count, isAPIProduct, isMCPServer, listType, showToggle, query,
     } = props;
     const { data: settings } = usePublisherSettings();
-    const isFederatedAPIDiscoveryEnabled = settings && settings.isFederatedAPIDiscoveryEnabled;
+    const isFederatedAPIDiscoveryEnabled = settings?.isFederatedAPIDiscoveryEnabled;
 
     const isAPIAccessRestricted = () => {
         return isRestricted(['apim:api_create', 'apim:api_manage']);
