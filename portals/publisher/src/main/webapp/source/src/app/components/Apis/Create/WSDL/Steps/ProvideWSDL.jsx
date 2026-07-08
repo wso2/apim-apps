@@ -43,8 +43,9 @@ import CheckIcon from '@mui/icons-material/Check';
 
 import APIValidation from 'AppData/APIValidation';
 import Wsdl from 'AppData/Wsdl';
-import Banner from 'AppComponents/Shared/Banner';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
+import getValidationErrorsFromError from 'AppComponents/Apis/Create/OpenAPI/Steps/validationErrorUtils';
+import ValidationResults from 'AppComponents/Apis/Create/OpenAPI/Steps/ValidationResults';
 
 const PREFIX = 'ProvideWSDL';
 
@@ -77,9 +78,26 @@ export default function ProvideWSDL(props) {
 
     const [isError, setValidity] = useState(); // If valid value is `null` else an error object will be there
     const [isValidating, setIsValidating] = useState(false);
+    const [validationErrors, setValidationErrors] = useState([]);
     const isCreateMode = apiInputs.mode === 'create';
 
     const intl = useIntl();
+
+    const wsdlValidationErrorTitle = intl.formatMessage({
+        id: 'Apis.Create.WSDL.validation.error.title',
+        defaultMessage: 'Error while validating the WSDL definition',
+    });
+
+    /**
+     * Clear the validation state and the selected file/URL, bringing back the drop zone.
+     */
+    function reset() {
+        setValidationErrors([]);
+        setValidity();
+        inputsDispatcher({ action: 'inputValue', value: null });
+        inputsDispatcher({ action: 'isFormValid', value: false });
+        onValidate(false);
+    }
     /**
      * Handles WSDL validation response and returns the state.
      *
@@ -91,30 +109,34 @@ export default function ProvideWSDL(props) {
         const isWSDLValid = response.body.isValid;
         let success = false;
         if (isWSDLValid) {
+            setValidationErrors([]);
             if (type === 'file') {
                 setValidity({ ...isError, file: null });
             } else {
                 setValidity({ ...isError, url: null });
             }
             success = true;
-        } else if (type === 'file') {
-            setValidity({
-                ...isError, file: {
-                    message: intl.formatMessage({
-                        id: 'Apis.Create.WSDL.content.validation.file.failed',
-                        defaultMessage: 'WSDL content validation failed!',
-                    }),
-                }
-            });
         } else {
-            setValidity({
-                ...isError, url: {
-                    message: intl.formatMessage({
-                        id: 'Apis.Create.WSDL.content.validation.url.failed',
-                        defaultMessage: 'Invalid WSDL URL!',
-                    }),
-                }
-            });
+            setValidationErrors(response.body.errors || []);
+            if (type === 'file') {
+                setValidity({
+                    ...isError, file: {
+                        message: intl.formatMessage({
+                            id: 'Apis.Create.WSDL.content.validation.file.failed',
+                            defaultMessage: 'WSDL content validation failed!',
+                        }),
+                    }
+                });
+            } else {
+                setValidity({
+                    ...isError, url: {
+                        message: intl.formatMessage({
+                            id: 'Apis.Create.WSDL.content.validation.url.failed',
+                            defaultMessage: 'Invalid WSDL URL!',
+                        }),
+                    }
+                });
+            }
         }
         onValidate(isWSDLValid);
         setIsValidating(false);
@@ -132,14 +154,16 @@ export default function ProvideWSDL(props) {
             id: 'Apis.Create.WSDL.validation.error.response',
             defaultMessage: 'Error occurred during validation',
         });
-        if (error.response && error.response.body.description) {
+        if (error.response && error.response.body && error.response.body.description) {
             message = error.response.body.description;
         }
+        setValidationErrors(getValidationErrorsFromError(error, wsdlValidationErrorTitle));
         if (type === 'file') {
             setValidity({ ...isError, file: { message } });
         } else {
             setValidity({ ...isError, url: { message } });
         }
+        onValidate(false);
         setIsValidating(false);
     }
 
@@ -172,11 +196,14 @@ export default function ProvideWSDL(props) {
         if (state === null) {
             setIsValidating(true);
             Wsdl.validateFileOrArchive(file).then((response) => {
-                if (handleWSDLValidationResponse(response, 'file')) {
-                    inputsDispatcher({ action: 'inputValue', value: file });
-                }
+                handleWSDLValidationResponse(response, 'file');
             }).catch((error) => {
                 handleWSDLValidationErrorResponse(error, 'file');
+            }).finally(() => {
+                // Set the file as the input value regardless of validity so the uploaded-file row
+                // (name + delete) replaces the drop zone and the ValidationResults panel shows below,
+                // matching the OpenAPI flow. The delete icon calls reset() to bring the drop zone back.
+                inputsDispatcher({ action: 'inputValue', value: file });
             });
         } else {
             setValidity({ ...isError, file: state });
@@ -214,10 +241,7 @@ export default function ProvideWSDL(props) {
                         <IconButton
                             edge='end'
                             aria-label='delete'
-                            onClick={() => {
-                                inputsDispatcher({ action: 'inputValue', value: null });
-                                inputsDispatcher({ action: 'isFormValid', value: false });
-                            }}
+                            onClick={reset}
                             size='large'>
                             <DeleteIcon />
                         </IconButton>
@@ -390,19 +414,6 @@ export default function ProvideWSDL(props) {
                         </RadioGroup>
                     </FormControl>
                 </Grid>
-                {isError && isError.file
-                    && (
-                        <Grid item md={11}>
-                            <Banner
-                                onClose={() => setValidity({ file: null })}
-                                disableActions
-                                dense
-                                paperProps={{ elevation: 1 }}
-                                type='error'
-                                message={isError.file.message}
-                            />
-                        </Grid>
-                    )}
                 <Grid item md={11}>
                     {isFileInput ? renderFileUpload()
                         : (
@@ -444,6 +455,14 @@ export default function ProvideWSDL(props) {
                         )}
 
                 </Grid>
+                <ValidationResults
+                    inputValue={apiInputs.inputValue}
+                    isValidating={isValidating}
+                    isLinting={false}
+                    validationErrors={validationErrors}
+                    linterResults={[]}
+                    onLinterLineSelect={() => {}}
+                />
             </Grid>
         </>
     );
