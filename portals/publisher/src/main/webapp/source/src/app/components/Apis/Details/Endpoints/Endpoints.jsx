@@ -172,8 +172,8 @@ function Endpoints(props) {
             }
             case 'endpointImplementationType': { // set implementation status
                 const { endpointType, implementationType } = value;
-                const config = createEndpointConfig(endpointType);
-                if (endpointType === 'prototyped') {
+                if (endpointType === 'prototyped' || endpointType === 'INLINE') {
+                    const config = createEndpointConfig('prototyped');
                     if (implementationType === 'mock') {
                         api.generateMockScripts(api.id).then((res) => { // generates mock/sample payloads
                             setSwagger(res.obj);
@@ -182,6 +182,7 @@ function Endpoints(props) {
                     }
                     return { ...initState, endpointConfig: config, endpointImplementationType: 'ENDPOINT' };
                 }
+                const config = createEndpointConfig(endpointType);
                 return { ...initState, endpointConfig: config };
             }
             case 'endpointSecurity': { // set endpoint security
