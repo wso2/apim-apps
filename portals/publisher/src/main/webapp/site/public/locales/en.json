@@ -214,6 +214,7 @@
   "Apis.Create.WSDL.url.label": "WSDL URL",
   "Apis.Create.WSDL.url.placeholder": "Enter WSDL URL",
   "Apis.Create.WSDL.validation.error.response": "Error occurred during validation",
+  "Apis.Create.WSDL.validation.error.title": "Error while validating the WSDL definition",
   "Apis.Create.asyncAPI.Components.SelectPolicies.business.plans": "Protocol",
   "Apis.Create.streaming.Components.SelectPolicies.business.plans": "Protocol",
   "Apis.Create.streaming.Components.create.and.publish.btn": "Create & Publish",
