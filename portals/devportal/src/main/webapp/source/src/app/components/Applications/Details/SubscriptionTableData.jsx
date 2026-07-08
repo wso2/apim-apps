@@ -399,7 +399,8 @@ class SubscriptionTableData extends React.Component {
                             onClick={this.handleRequestOpenEditMenu}
                             startIcon={<Icon>edit</Icon>}
                             disabled={tiers.length === 0 || status === SUBSCRIPTION_STATUS.BLOCKED
-                                || status === SUBSCRIPTION_STATUS.PROD_ONLY_BLOCKED}
+                                || status === SUBSCRIPTION_STATUS.PROD_ONLY_BLOCKED
+                                || apiInfo.lifeCycleStatus === 'DEPRECATED'}
                         >
                             <FormattedMessage
                                 id='Applications.Details.SubscriptionTableData.edit.text'
