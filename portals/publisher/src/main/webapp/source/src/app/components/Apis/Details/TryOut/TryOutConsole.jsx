@@ -221,7 +221,7 @@ const TryOutConsole = () => {
         let parsed;
         try {
             parsed = new URL(serverUrl);
-        } catch (error) {
+        } catch {
             return spec;
         }
         let schemes;
