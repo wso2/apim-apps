@@ -648,6 +648,75 @@ const Policies: React.FC = () => {
         }
     };
 
+    /**
+     * Checks whether a given policy is currently attached to any flow.
+     * Either at API level or on any operation. 
+     * Used to warn users before they delete a policy that is still referenced by the local flow state.
+     * @param {string} policyId The catalog policyId of the policy being deleted.
+     * @returns {boolean} true if the policy is attached to any flow.
+     */
+    const isPolicyAttachedToAnyFlow = (policyId: string): boolean => {
+        const hasPolicy = (list: any[] = []) =>
+            list.some((policy: any) => policy.policyId === policyId);
+
+        if (isPolicyHubGateway) {
+            return (
+                hasPolicy(apiLevelPolicies) ||
+                apiOperations.some((operation: any) =>
+                    hasPolicy(operation.operationHubPolicies),
+                )
+            );
+        }
+
+        // Iterating through the policy lists of request, response and fault flows
+        return (
+            Object.values(apiLevelPolicies).some((policyList: any) =>
+                hasPolicy(policyList),
+            ) ||
+            apiOperations.some(
+                (operation: any) =>
+                    operation.operationPolicies &&
+                    Object.values(operation.operationPolicies).some(
+                        (policyList: any) => hasPolicy(policyList),
+                    ),
+            )
+        );
+    };
+
+    /**
+     * Removes every attachment of the given policyId from the local flow state.
+     * Covers the API level and all operations, across all flows.
+     * Called after a policy is deleted so a stale policyId is never sent on Save.
+     * @param {string} policyId The catalog policyId of the policy that was deleted.
+     */
+    const removePolicyFromAllFlows = (policyId: string) => {
+        const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
+        const newApiOperations: any = cloneDeep(apiOperations);
+
+        if (isPolicyHubGateway) {
+            removePolicyById(newApiLevelPolicies, policyId);
+            newApiOperations.forEach((operation: any) => {
+                removePolicyById(operation.operationHubPolicies || [], policyId);
+            });
+        } else {
+            // Iterating through the policy lists of request, response and fault flows
+            Object.values(newApiLevelPolicies).forEach((policyList: any) =>
+                removePolicyById(policyList, policyId),
+            );
+            newApiOperations.forEach((operation: any) => {
+                if (operation.operationPolicies) {
+                    Object.values(operation.operationPolicies).forEach(
+                        (policyList: any) =>
+                            removePolicyById(policyList, policyId),
+                    );
+                }
+            });
+        }
+
+        setApiLevelPolicies(newApiLevelPolicies);
+        setApiOperations(newApiOperations);
+    };
+
     const removeApiLevelPolicy = (uuid: string, currentFlow: string) => {
         const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
         const policyList =
@@ -886,6 +955,8 @@ const Policies: React.FC = () => {
             updateAllApiOperations,
             deleteApiOperation,
             rearrangeApiOperations,
+            isPolicyAttachedToAnyFlow,
+            removePolicyFromAllFlows,
         }),
         [
             apiOperations,
@@ -894,6 +965,8 @@ const Policies: React.FC = () => {
             updateAllApiOperations,
             deleteApiOperation,
             rearrangeApiOperations,
+            isPolicyAttachedToAnyFlow,
+            removePolicyFromAllFlows,
         ],
     );
 
