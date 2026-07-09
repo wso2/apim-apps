@@ -284,10 +284,13 @@ function AddEditKeyManager(props) {
                 console.error('Error when fetching organizations: ' + error);
             });
     };
-    const updateKeyManagerConnectorConfiguration = (keyManagerType) => {
+    const updateKeyManagerConnectorConfiguration = (keyManagerType, shouldResetTokenMode = false) => {
         if (keyManagerType === 'tokenExchange') {
             setEnableDirectToken(false);
             setEnableExchangeToken(true);
+        } else if (shouldResetTokenMode) {
+            setEnableDirectToken(true);
+            setEnableExchangeToken(false);
         }
         if (settings.keyManagerConfiguration) {
             settings.keyManagerConfiguration.map(({
@@ -462,7 +465,7 @@ function AddEditKeyManager(props) {
             }
         } else {
             if (e.target.name === 'type') {
-                updateKeyManagerConnectorConfiguration(e.target.value);
+                updateKeyManagerConnectorConfiguration(e.target.value, true);
             }
             if (e.target.name === 'enableSelfValidationJWT') {
                 dispatch({ field: e.target.name, value: e.target.value === 'selfValidate' });
