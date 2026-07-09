@@ -138,7 +138,6 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
                 }
                 isApiRevision={isApiRevision}
             />
-            <FlowArrow arrowDirection={arrowDirection === 'left' ? 'right' : 'left'} />
         </Box>
     );
 
