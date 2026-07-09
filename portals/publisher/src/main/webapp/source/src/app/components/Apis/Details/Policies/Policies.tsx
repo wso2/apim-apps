@@ -690,31 +690,44 @@ const Policies: React.FC = () => {
      * @param {string} policyId The catalog policyId of the policy that was deleted.
      */
     const removePolicyFromAllFlows = (policyId: string) => {
-        const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
-        const newApiOperations: any = cloneDeep(apiOperations);
-
         if (isPolicyHubGateway) {
-            removePolicyById(newApiLevelPolicies, policyId);
-            newApiOperations.forEach((operation: any) => {
-                removePolicyById(operation.operationHubPolicies || [], policyId);
+            setApiLevelPolicies((prevPolicies: any) => {
+                const newApiLevelPolicies = cloneDeep(prevPolicies);
+                removePolicyById(newApiLevelPolicies, policyId);
+                return newApiLevelPolicies;
+            });
+            setApiOperations((prevOperations: any) => {
+                const newApiOperations = cloneDeep(prevOperations);
+                newApiOperations.forEach((operation: any) => {
+                    removePolicyById(
+                        operation.operationHubPolicies || [],
+                        policyId,
+                    );
+                });
+                return newApiOperations;
             });
         } else {
-            // Iterating through the policy lists of request, response and fault flows
-            Object.values(newApiLevelPolicies).forEach((policyList: any) =>
-                removePolicyById(policyList, policyId),
-            );
-            newApiOperations.forEach((operation: any) => {
-                if (operation.operationPolicies) {
-                    Object.values(operation.operationPolicies).forEach(
-                        (policyList: any) =>
-                            removePolicyById(policyList, policyId),
-                    );
-                }
+            setApiLevelPolicies((prevPolicies: any) => {
+                const newApiLevelPolicies = cloneDeep(prevPolicies);
+                // Iterating through the policy lists of request, response and fault flows
+                Object.values(newApiLevelPolicies).forEach((policyList: any) =>
+                    removePolicyById(policyList, policyId),
+                );
+                return newApiLevelPolicies;
+            });
+            setApiOperations((prevOperations: any) => {
+                const newApiOperations = cloneDeep(prevOperations);
+                newApiOperations.forEach((operation: any) => {
+                    if (operation.operationPolicies) {
+                        Object.values(operation.operationPolicies).forEach(
+                            (policyList: any) =>
+                                removePolicyById(policyList, policyId),
+                        );
+                    }
+                });
+                return newApiOperations;
             });
         }
-
-        setApiLevelPolicies(newApiLevelPolicies);
-        setApiOperations(newApiOperations);
     };
 
     const removeApiLevelPolicy = (uuid: string, currentFlow: string) => {
