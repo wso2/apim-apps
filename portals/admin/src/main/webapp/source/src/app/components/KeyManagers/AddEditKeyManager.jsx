@@ -465,7 +465,7 @@ function AddEditKeyManager(props) {
             }
         } else {
             if (e.target.name === 'type') {
-                updateKeyManagerConnectorConfiguration(e.target.value, true);
+                updateKeyManagerConnectorConfiguration(e.target.value, type === 'tokenExchange');
             }
             if (e.target.name === 'enableSelfValidationJWT') {
                 dispatch({ field: e.target.name, value: e.target.value === 'selfValidate' });
