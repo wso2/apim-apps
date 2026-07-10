@@ -51,6 +51,17 @@ Cypress.Commands.add('carbonLogin', (username, password) => {
     cy.visit(`/carbon/admin/login.jsp`);
     cy.get('#txtUserName').type(username);
     cy.get('#txtPassword').type(password);
+
+    // After login the carbon console dashboard loads template.js, where a YUI preload-attach timer can
+    // fire hideSection before the target DOM node exists, intermittently throwing
+    // "Cannot read properties of null (reading 'style')". This is a benign race in the carbon console
+    // itself, so suppress only that specific error rather than failing the test on it.
+    Cypress.on('uncaught:exception', (err) => {
+        if (err.message.includes("Cannot read properties of null (reading 'style')")) {
+            return false;
+        }
+        return true;
+    });
     cy.get('form').submit();
 })
 
@@ -1257,6 +1268,100 @@ Cypress.Commands.add('enableSelfSignUpInCarbonPortal', (username, password, tena
     cy.get('#idp-mgt-edit-local-form').submit();
     cy.get('[class="ui-button ui-corner-all ui-widget"]').click();
     cy.carbonLogout();
+})
+
+/**
+ * Configures the dev portal self registration settings that drive the username
+ * unavailable behaviour. These checkboxes live in the carbon console under
+ * Main -> Identity -> Identity Providers -> Resident -> User Onboarding -> Self Registration.
+ *
+ * @param {string} username carbon admin username (e.g. 'admin' / 'admin@wso2.com')
+ * @param {string} password carbon admin password
+ * @param {string} tenant tenant domain
+ * @param {boolean} showUsernameUnavailability toggles "Display message if username unavailable"
+ *                  (renders the "username already taken" error when an existing username is entered)
+ * @param {boolean} sendConfirmationEmail toggles "Send sign up confirmation email". Since the
+ *                  confirmation email requires the account to be locked until verification, this
+ *                  also toggles "Lock user account on creation" which is a prerequisite for it.
+ */
+Cypress.Commands.add('configureSelfSignUpInCarbonPortal', (username, password, tenant = 'carbon.super',
+    showUsernameUnavailability, sendConfirmationEmail) => {
+    Cypress.log({
+        name: 'Configure Self SignUp In Carbon Portal',
+        message: `for ${tenant} | showUsernameUnavailability: ${showUsernameUnavailability}`
+            + ` | sendConfirmationEmail: ${sendConfirmationEmail}`
+    })
+
+    cy.carbonLogin(username, password);
+    cy.get('[style="background-image: url(../idpmgt/images/resident-idp.png);"]').click();
+    cy.contains('User Onboarding').click();
+    cy.contains('Self Registration').click();
+
+    // Self registration must remain enabled for all the scenarios.
+    cy.get('[value="SelfRegistration.Enable"]').check({ force: true });
+
+    // "Display message if username unavailable"
+    if (showUsernameUnavailability) {
+        cy.get('[value="SelfRegistration.ShowUsernameUnavailability"]').check({ force: true });
+    } else {
+        cy.get('[value="SelfRegistration.ShowUsernameUnavailability"]').uncheck({ force: true });
+    }
+
+    // "Send sign up confirmation email". "Lock user account on creation" must be enabled when the
+    // confirmation email is enabled, otherwise it is disabled to preserve the default behaviour.
+    if (sendConfirmationEmail) {
+        cy.get('[value="SelfRegistration.LockOnCreation"]').check({ force: true });
+        cy.get('[value="SelfRegistration.NotifyAccountConfirmation"]').check({ force: true });
+    } else {
+        cy.get('[value="SelfRegistration.NotifyAccountConfirmation"]').uncheck({ force: true });
+        cy.get('[value="SelfRegistration.LockOnCreation"]').uncheck({ force: true });
+    }
+
+    cy.get('#idp-mgt-edit-local-form').submit();
+    cy.get('[class="ui-button ui-corner-all ui-widget"]').click();
+    cy.carbonLogout();
+})
+
+/**
+ * Completes the full dev portal self sign up flow (username step + create account form) and asserts
+ * the final information dialog message. Unlike `addNewUserUsingSelfSignUp`, the expected success
+ * message is parameterized so the same flow can be reused for the different configuration scenarios
+ * (e.g. "User registration completed successfully" vs "Confirmation link has been sent to your email").
+ *
+ * @param {string} expectedMessage message expected on the final information dialog
+ */
+Cypress.Commands.add('selfSignUpNewUser', (username, password, firstName, lastName, email, tenant,
+    expectedMessage = 'User registration completed successfully') => {
+    Cypress.log({
+        name: 'Self SignUp New User',
+        message: `${username} for ${tenant}`
+    })
+
+    cy.visit(`${Utils.getAppOrigin()}/devportal/apis?tenant=${tenant}`);
+    cy.get('#itest-devportal-sign-in').click({ force: true });
+    cy.get('#registerLink').click();
+    cy.get('#username').type(username);
+
+    // Submitting the username navigates to the create account form, which is rendered with Handlebars
+    // and can throw "Uncaught ReferenceError: Handlebars is not defined" while loading. Suppress only
+    // that specific error so any other genuine exception still fails the test.
+    Cypress.on('uncaught:exception', (err) => {
+        if (err.message.includes('Handlebars is not defined')) {
+            return false;
+        }
+        return true;
+    });
+    cy.get('#registrationSubmit').click();
+
+    cy.get('[name="http://wso2.org/claims/givenname"]').type(firstName);
+    cy.get('[name="http://wso2.org/claims/lastname"]').type(lastName);
+    cy.get('#password').type(password);
+    cy.get('#password2').type(password);
+    cy.get('[name="http://wso2.org/claims/emailaddress"]').type(email);
+    cy.get('#termsCheckbox').check();
+    cy.get('#registrationSubmit').click();
+    cy.contains(expectedMessage).should('exist');
+    cy.get('[type="button"]').click();
 })
 
 Cypress.Commands.add('checkUserHasGivenRoles', (username, password, tenant = 'carbon.super', user, userRoles = []) => {
