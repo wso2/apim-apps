@@ -167,6 +167,9 @@ const SubscriptionSection = ({
     onAddClick,
     handleSubscriptionDelete,
     handleSubscriptionUpdate,
+    getAPIById,
+    getMCPServerById,
+    getSubscriptionPolicyByName,
     noSubscriptionsMessage,
     noSubscriptionsContent,
     entityNameColumn,
@@ -261,6 +264,9 @@ const SubscriptionSection = ({
                                                                 subscription={subscription}
                                                                 handleSubscriptionDelete={handleSubscriptionDelete}
                                                                 handleSubscriptionUpdate={handleSubscriptionUpdate}
+                                                                getAPIById={getAPIById}
+                                                                getMCPServerById={getMCPServerById}
+                                                                getSubscriptionPolicyByName={getSubscriptionPolicyByName}
                                                             />
                                                         );
                                                     })}
@@ -285,6 +291,9 @@ SubscriptionSection.propTypes = {
     onAddClick: PropTypes.func.isRequired,
     handleSubscriptionDelete: PropTypes.func.isRequired,
     handleSubscriptionUpdate: PropTypes.func.isRequired,
+    getAPIById: PropTypes.func.isRequired,
+    getMCPServerById: PropTypes.func.isRequired,
+    getSubscriptionPolicyByName: PropTypes.func.isRequired,
     noSubscriptionsMessage: PropTypes.node.isRequired,
     noSubscriptionsContent: PropTypes.node.isRequired,
     entityNameColumn: PropTypes.node.isRequired,
