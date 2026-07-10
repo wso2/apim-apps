@@ -279,11 +279,13 @@ class TokenManager extends React.Component {
         this.isOrgWideAppUpdateEnabled();
     }
 
-    componentDidUpdate(nextProps) {
-        const { keyType: nextKeyType } = nextProps;
-        const { keyType: prevKeyType } = this.props;
-        if (nextKeyType !== prevKeyType) {
+    componentDidUpdate(prevProps) {
+        const { keyType } = this.props;
+        if (prevProps.keyType !== keyType) {
             this.loadApplication();
+        }
+        if (prevProps.formConfig !== this.props.formConfig) {
+            this.syncSelectedTabWithGovernance();
         }
     }
 
@@ -356,6 +358,26 @@ class TokenManager extends React.Component {
         }
         return isEnabled;
     }
+
+    getVisibleKeyManagers = (keyManagers = []) => {
+        const kmConfig = this.props.formConfig?.keyManagers;
+        if (!kmConfig) return keyManagers;
+        return keyManagers.filter((km) => {
+            const entry = kmConfig[km.name];
+            return entry && entry.enabled !== false;
+        });
+    };
+
+    syncSelectedTabWithGovernance = () => {
+        const { keyManagers, selectedTab } = this.state;
+        if (!keyManagers) {
+            return;
+        }
+        const visibleKeyManagers = this.getVisibleKeyManagers(keyManagers);
+        if (visibleKeyManagers.length > 0 && !visibleKeyManagers.find((km) => km.name === selectedTab)) {
+            this.handleTabChange(null, visibleKeyManagers[0].name);
+        }
+    };
 
     getMultipleSecretsAllowed = (keyManager) => {
         return isMultipleClientSecretsEnabled(keyManager?.additionalProperties);
@@ -431,11 +453,23 @@ class TokenManager extends React.Component {
                         this.setState({ keyManagers: [] });
                         return;
                     }
+                    const visibleKeyManagerList = this.getVisibleKeyManagers(responseKeyManagerList);
+                    if (visibleKeyManagerList.length === 0) {
+                        this.setState({
+                            keys: response[1],
+                            keyManagers: responseKeyManagerList,
+                            selectedTab: null,
+                            importDisabled: false,
+                            mode: null,
+                        });
+                        return;
+                    }
                     // Selecting a key manager from the list of key managers.
                     let { selectedTab } = this.state;
-                    if (!selectedTab && responseKeyManagerList.length > 0) {
-                        selectedTab = responseKeyManagerList.find((x) => x.name === 'Resident Key Manager') ? 'Resident Key Manager'
-                            : responseKeyManagerList[0].name;
+                    if (!selectedTab || !visibleKeyManagerList.find((x) => x.name === selectedTab)) {
+                        selectedTab = visibleKeyManagerList.find((x) => x.name === 'Resident Key Manager')
+                            ? 'Resident Key Manager'
+                            : visibleKeyManagerList[0].name;
                     }
                     const selectdKM = responseKeyManagerList.find((x) => x.name === selectedTab);
                     const isMultipleSecretsAllowed = this.getMultipleSecretsAllowed(selectdKM);
@@ -789,12 +823,7 @@ class TokenManager extends React.Component {
     }
 
     getKeyManagerIdentifier() {
-        const { keyManagers, selectedTab } = this.state;
-        const selectedKMObject = keyManagers.filter((item) => item.name === selectedTab);
-        if (selectedKMObject && selectedKMObject.length === 1) {
-            return selectedKMObject[0].id;
-        }
-        return selectedTab;
+        return this.state.selectedTab;
     }
 
     setValidating = (validatingState) => {
@@ -836,6 +865,15 @@ class TokenManager extends React.Component {
             initialValidityTime, initialScopes, importDisabled, mode, tokenType, isOrgWideAppUpdateEnabled, isAccordionExpanded,
         } = this.state;
 
+        // Filter KM list to only those permitted by the governance template.
+        // Empty/absent allowedKeyManagers means no restriction — show all.
+        const visibleKeyManagers = keyManagers ? this.getVisibleKeyManagers(keyManagers) : keyManagers;
+
+        // If the currently selected tab was filtered out, fall back to the first visible KM.
+        const effectiveTab = visibleKeyManagers && visibleKeyManagers.find((km) => km.name === selectedTab)
+            ? selectedTab
+            : (visibleKeyManagers && visibleKeyManagers[0]?.name);
+
         if (keyManagers && keyManagers.length === 0) {
             return (
                 <Root>
@@ -861,6 +899,28 @@ class TokenManager extends React.Component {
                                 <FormattedMessage
                                     id='Shared.AppsAndKeys.TokenManager.no.km.content'
                                     defaultMessage='No Key Managers active to generate keys.'
+                                />
+                            </Typography>
+                        </InlineMessage>
+                    </div>
+                </Root>
+            );
+        }
+        if (keyManagers && visibleKeyManagers && visibleKeyManagers.length === 0) {
+            return (
+                <Root>
+                    <div className={classes.root}>
+                        <InlineMessage type='info' className={classes.dialogContainer}>
+                            <Typography variant='h5' component='h3'>
+                                <FormattedMessage
+                                    id='Shared.AppsAndKeys.TokenManager.no.allowed.km'
+                                    defaultMessage='No Allowed Key Managers'
+                                />
+                            </Typography>
+                            <Typography component='p'>
+                                <FormattedMessage
+                                    id='Shared.AppsAndKeys.TokenManager.no.allowed.km.content'
+                                    defaultMessage='This application template does not allow any currently enabled Key Manager.'
                                 />
                             </Typography>
                         </InlineMessage>
@@ -948,12 +1008,13 @@ class TokenManager extends React.Component {
         if (key && (key.keyState === this.keyStates.CREATED || key.keyState === this.keyStates.REJECTED)) {
             return <Root><WaitingForApproval keyState={key.keyState} states={this.keyStates} /></Root>;
         }
+        const hasSelectedGrantTypes = keyRequest.selectedGrantTypes.length > 0;
         return (
             <Root>
-                {(keyManagers && keyManagers.length > 1) && (
+                {(visibleKeyManagers && visibleKeyManagers.length > 1) && (
                     <AppBar position='static' color='default'>
                         <Tabs
-                            value={selectedTab}
+                            value={effectiveTab}
                             onChange={this.handleTabChange}
                             indicatorColor='primary'
                             textColor='primary'
@@ -961,7 +1022,7 @@ class TokenManager extends React.Component {
                             scrollButtons='auto'
                             aria-label='scrollable auto tabs example'
                         >
-                            {keyManagers.map((keymanager) => (
+                            {visibleKeyManagers.map((keymanager) => (
                                 <Tab
                                     label={keymanager.displayName || keymanager.name}
                                     value={keymanager.name}
@@ -986,10 +1047,10 @@ class TokenManager extends React.Component {
                             />
                         </Typography>
                     </Box>
-                    {(keyManagers && keyManagers.length > 0) && keyManagers.map((keymanager) => (
+                    {(visibleKeyManagers && visibleKeyManagers.length > 0) && visibleKeyManagers.map((keymanager) => (
                         <div>
                             {keymanager.tokenType === 'DIRECT' && (
-                                <TabPanel value={selectedTab} index={keymanager.name} className={classes.tabPanel}>
+                                <TabPanel value={effectiveTab} index={keymanager.name} className={classes.tabPanel}>
                                     <Box display='flex' flexDirection='row'>
                                         <Typography className={classes.subTitle} variant='h6' component='h6'>
                                             <FormattedMessage
@@ -1081,6 +1142,9 @@ class TokenManager extends React.Component {
                                             setValidating={this.setValidating}
                                             defaultTokenEndpoint={defaultTokenEndpoint}
                                             mode={mode}
+                                            formConfig={this.props.formConfig?.keyManagers?.[keymanager.name]
+                                                ? { keyGeneration: this.props.formConfig.keyManagers[keymanager.name] }
+                                                : null}
                                         />
                                         <div className={classes.generateWrapper}>
                                             <ScopeValidation
@@ -1130,7 +1194,8 @@ class TokenManager extends React.Component {
                                                             color='primary'
                                                             className={classes.button}
                                                             onClick={key ? this.updateKeys : this.handleGenerateKeysClick}
-                                                            disabled={hasError || (isLoading || !keymanager.enableOAuthAppCreation)
+                                                            disabled={!hasSelectedGrantTypes || hasError
+                                                                || (isLoading || !keymanager.enableOAuthAppCreation)
                                                                 || (mode && mode === 'MAPPED')
                                                                 || (isKeyManagerAllowed
                                                                     && !isKeyManagerAllowed(keymanager.name)
@@ -1170,7 +1235,7 @@ class TokenManager extends React.Component {
                                 </TabPanel>
                             )}
                             {keymanager.tokenType === 'EXCHANGED' && (
-                                <TabPanel value={selectedTab} index={keymanager.name} className={classes.tabPanel}>
+                                <TabPanel value={effectiveTab} index={keymanager.name} className={classes.tabPanel}>
                                     <Typography className={classes.subTitle} variant='h6' component='h6'>
                                         <FormattedMessage
                                             defaultMessage='Token Generation'
@@ -1210,7 +1275,7 @@ class TokenManager extends React.Component {
                                 </TabPanel>
                             )}
                             {keymanager.tokenType === 'BOTH' && (
-                                <TabPanel value={selectedTab} index={keymanager.name} className={classes.tabPanel}>
+                                <TabPanel value={effectiveTab} index={keymanager.name} className={classes.tabPanel}>
                                     <Box m={2}>
                                         <Box m={2}>
                                             <Box display='flex' alignItems='center'>
@@ -1325,6 +1390,9 @@ class TokenManager extends React.Component {
                                                         callbackError={hasError}
                                                         setValidating={this.setValidating}
                                                         defaultTokenEndpoint={defaultTokenEndpoint}
+                                                        formConfig={this.props.formConfig?.keyManagers?.[keymanager.name]
+                                                            ? { keyGeneration: this.props.formConfig.keyManagers[keymanager.name] }
+                                                            : null}
                                                     />
                                                     <div className={classes.generateWrapper}>
                                                         <ScopeValidation
@@ -1341,6 +1409,7 @@ class TokenManager extends React.Component {
                                                                         onClick={
                                                                             key ? this.updateKeys : this.generateKeys
                                                                         }
+                                                                        disabled={!hasSelectedGrantTypes}
 
                                                                     >
                                                                         {key ? 'Update keys' : 'Generate Keys'}
@@ -1361,6 +1430,9 @@ class TokenManager extends React.Component {
                                                                         color='primary'
                                                                         className={classes.button}
                                                                         onClick={key ? this.updateKeys : this.handleGenerateKeysClick}
+                                                                        disabled={!hasSelectedGrantTypes || hasError
+                                                                            || (isLoading || !keymanager.enableOAuthAppCreation)
+                                                                            || (mode && mode === 'MAPPED')}
 
                                                                     >
                                                                         {key ? 'Update' : 'Generate Keys'}
@@ -1390,7 +1462,7 @@ class TokenManager extends React.Component {
                                             </>
                                         )}
                                         {(tokenType === 'EXCHANGED' && isResidentKeyManagerTokensAvailable) && (
-                                            <TabPanel value={selectedTab} index={keymanager.name} className={classes.tabPanel}>
+                                            <TabPanel value={effectiveTab} index={keymanager.name} className={classes.tabPanel}>
                                                 <Typography className={classes.subTitle} variant='h6' component='h6'>
                                                     <FormattedMessage
                                                         defaultMessage='Token Generation'
@@ -1490,6 +1562,7 @@ TokenManager.contextType = Settings;
 TokenManager.defaultProps = {
     updateSubscriptionData: () => { },
     summary: false,
+    formConfig: null,
 };
 TokenManager.propTypes = {
     classes: PropTypes.instanceOf(Object).isRequired,
@@ -1504,6 +1577,7 @@ TokenManager.propTypes = {
     updateSubscriptionData: PropTypes.func,
     intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
     summary: PropTypes.bool,
+    formConfig: PropTypes.shape({}),
 };
 
 export default injectIntl((TokenManager));

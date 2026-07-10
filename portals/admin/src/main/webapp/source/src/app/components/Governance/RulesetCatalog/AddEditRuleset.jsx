@@ -130,9 +130,19 @@ function AddEditRuleset(props) {
         rulesetContent,
         documentationLink,
     } = state;
-    const rulesetTypeOptions = artifactType === 'MCP'
-        ? CONSTS.RULESET_TYPES.filter((option) => option.value !== 'API_DEFINITION')
-        : CONSTS.RULESET_TYPES;
+    const CONSUMER_ARTIFACT_TYPES = ['APPLICATION'];
+    const CONSUMER_RULE_TYPES = ['APP_INFO', 'APP_OAUTH'];
+    const rulesetTypeOptions = (() => {
+        if (CONSUMER_ARTIFACT_TYPES.includes(artifactType)) {
+            return CONSTS.RULESET_TYPES.filter((o) => CONSUMER_RULE_TYPES.includes(o.value));
+        }
+        if (artifactType === 'MCP') {
+            return CONSTS.RULESET_TYPES.filter(
+                (o) => !CONSUMER_RULE_TYPES.includes(o.value) && o.value !== 'API_DEFINITION',
+            );
+        }
+        return CONSTS.RULESET_TYPES.filter((o) => !CONSUMER_RULE_TYPES.includes(o.value));
+    })();
 
     useEffect(() => {
         const restApi = new GovernanceAPI();
@@ -168,7 +178,13 @@ function AddEditRuleset(props) {
     }, [id]);
 
     useEffect(() => {
-        if (artifactType === 'MCP' && ruleType === 'API_DEFINITION') {
+        const isConsumerArtifact = CONSUMER_ARTIFACT_TYPES.includes(artifactType);
+        const isConsumerRuleType = CONSUMER_RULE_TYPES.includes(ruleType);
+        if (isConsumerArtifact && !isConsumerRuleType && ruleType !== '') {
+            dispatch({ field: 'ruleType', value: '' });
+        } else if (!isConsumerArtifact && isConsumerRuleType) {
+            dispatch({ field: 'ruleType', value: '' });
+        } else if (artifactType === 'MCP' && ruleType === 'API_DEFINITION') {
             dispatch({ field: 'ruleType', value: '' });
         }
     }, [artifactType, ruleType]);

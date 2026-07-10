@@ -146,7 +146,19 @@ const ApplicationCreate = (props) => {
         isOrgAccessControlEnabled,
         handleAddChip,
         handleDeleteChip,
+        formConfig,
     } = props;
+
+    const isHiddenValue = (value) => value === true || value === 'true';
+    const isRequiredValue = (value) => value === true || value === 'true';
+    const isHidden = (fieldKey) => isHiddenValue(formConfig?.application?.[fieldKey]?.hidden);
+    const isTemplateRequired = (fieldKey) => isRequiredValue(formConfig?.application?.[fieldKey]?.required);
+    const isAttributeHidden = (attributeName) => {
+        return isHiddenValue(formConfig?.application?.attributes?.[attributeName]?.hidden);
+    };
+    const isTemplateAttributeRequired = (attributeName) => {
+        return isRequiredValue(formConfig?.application?.attributes?.[attributeName]?.required);
+    };
     const description = applicationRequest.description || '';
     const hasGroupWhitespace = (group) => group !== group.trim();
     const applicationGroups = applicationRequest.groups || [];
@@ -217,69 +229,77 @@ const ApplicationCreate = (props) => {
                     })
                 }}
             />
-            <TextField
-                classes={{
-                    root: classes.mandatoryStarText,
-                }}
-                required
-                fullWidth
-                id='per-token-quota'
-                select
-                label={(
-                    <FormattedMessage
-                        defaultMessage='Shared Quota for Application Tokens'
-                        id='Shared.AppsAndKeys.ApplicationCreateForm.per.token.quota'
-                    />
-                )}
-                value={applicationRequest.throttlingPolicy}
-                name='throttlingPolicy'
-                onChange={handleChange}
-                helperText={(
-                    <FormattedMessage
-                        defaultMessage={`Assign API request quota per access token.
+            {!isHidden('throttlingPolicy') && (
+                <TextField
+                    classes={{
+                        root: classes.mandatoryStarText,
+                    }}
+                    required
+                    fullWidth
+                    id='per-token-quota'
+                    select
+                    label={(
+                        <FormattedMessage
+                            defaultMessage='Shared Quota for Application Tokens'
+                            id='Shared.AppsAndKeys.ApplicationCreateForm.per.token.quota'
+                        />
+                    )}
+                    value={applicationRequest.throttlingPolicy}
+                    name='throttlingPolicy'
+                    onChange={handleChange}
+                    helperText={(
+                        <FormattedMessage
+                            defaultMessage={`Assign API request quota per access token.
                             Allocated quota will be shared among all
                             the subscribed APIs of the application.`}
-                        id='Shared.AppsAndKeys.ApplicationCreateForm.assign.api.request'
-                    />
-                )}
-                margin='normal'
-                variant='outlined'
-                inputProps={{
-                    alt: intl.formatMessage({
-                        defaultMessage: 'Required',
-                        id: 'Shared.AppsAndKeys.ApplicationCreateForm.required.alt',
-                    })
-                }}
-            >
-                {throttlingPolicyList.map((policy) => (
-                    <MenuItem key={policy} value={policy}>
-                        {policy}
-                    </MenuItem>
-                ))}
-            </TextField>
-            <TextField
-                id='application-description'
-                margin='normal'
-                variant='outlined'
-                fullWidth
-                multiline
-                rows={4}
-                value={description}
-                label={intl.formatMessage({
-                    defaultMessage: 'Application Description',
-                    id: 'Shared.AppsAndKeys.ApplicationCreateForm.application.description.label',
-                })}
-                helperText={showDescError()}
-                name='description'
-                onChange={handleChange}
-                placeholder={intl.formatMessage({
-                    defaultMessage: 'My Mobile Application',
-                    id: 'Shared.AppsAndKeys.ApplicationCreateForm.my.mobile.application.placeholder',
-                })}
-                error={description !== '' && description.length > 512}
-                onBlur={(e) => validateDescription(e.target.value)}
+                            id='Shared.AppsAndKeys.ApplicationCreateForm.assign.api.request'
+                        />
+                    )}
+                    margin='normal'
+                    variant='outlined'
+                    inputProps={{
+                        alt: intl.formatMessage({
+                            defaultMessage: 'Required',
+                            id: 'Shared.AppsAndKeys.ApplicationCreateForm.required.alt',
+                        })
+                    }}
+                >
+                    {throttlingPolicyList.map((policy) => (
+                        <MenuItem key={policy} value={policy}>
+                            {policy}
+                        </MenuItem>
+                    ))}
+                </TextField>
+            )}
+            {!isHidden('description') && (
+                <TextField
+                    id='application-description'
+                    classes={isTemplateRequired('description') ? {
+                        root: classes.mandatoryStarText,
+                    } : undefined}
+                    margin='normal'
+                    variant='outlined'
+                    fullWidth
+                    required={isTemplateRequired('description')}
+                    multiline
+                    rows={4}
+                    value={description}
+                    label={intl.formatMessage({
+                        defaultMessage: 'Application Description',
+                        id: 'Shared.AppsAndKeys.ApplicationCreateForm.application.description.label',
+                    })}
+                    helperText={showDescError()}
+                    name='description'
+                    onChange={handleChange}
+                    placeholder={intl.formatMessage({
+                        defaultMessage: 'My Mobile Application',
+                        id: 'Shared.AppsAndKeys.ApplicationCreateForm.my.mobile.application.placeholder',
+                    })}
+                    error={description !== '' && description.length > 512}
+                    onBlur={(e) => validateDescription(e.target.value)}
 
-            />
+                />
+            )}
             {
                 isOrgAccessControlEnabled && sessionStorage.getItem('userOrganization') && (
                     <Box display='flex' flexDirection='row' sx={{ pt: 1 }}>
@@ -310,14 +330,15 @@ const ApplicationCreate = (props) => {
 
             {allAppAttributes && (
                 Object.entries(allAppAttributes).map((item) => (
-                    item[1].hidden !== 'true' ? (
+                    item[1].hidden !== 'true' && !isAttributeHidden(item[1].attribute) ? (
                         <TextField
                             classes={{
                                 root: classes.mandatoryStarText,
                             }}
                             margin='normal'
                             variant='outlined'
-                            required={isRequiredAttribute(item[1].attribute)}
+                            required={isRequiredAttribute(item[1].attribute)
+                                || isTemplateAttributeRequired(item[1].attribute)}
                             label={item[1].attribute}
                             value={getAttributeValue(item[1].attribute)}
                             helperText={item[1].description}
@@ -337,7 +358,7 @@ const ApplicationCreate = (props) => {
                         />
                     ) : (null)))
             )}
-            {isApplicationSharingEnabled && (
+            {isApplicationSharingEnabled && !isHidden('groups') && (
                 <ChipInput
                     label={(
                         <FormattedMessage
@@ -360,6 +381,7 @@ const ApplicationCreate = (props) => {
                     margin='normal'
                     variant='outlined'
                     fullWidth
+                    required={isTemplateRequired('groups')}
                     {...applicationRequest}
                     value={orderedApplicationGroups}
                     chipRenderer={renderGroupChip}
@@ -382,9 +404,11 @@ const ApplicationCreate = (props) => {
 };
 ApplicationCreate.defaultProps = {
     ApplicationCreate: null,
+    formConfig: {},
 };
 ApplicationCreate.propTypes = {
     classes: PropTypes.shape({}).isRequired,
+    formConfig: PropTypes.shape({}),
     applicationRequest: PropTypes.shape({}).isRequired,
     intl: PropTypes.shape({}).isRequired,
     isNameValid: PropTypes.bool.isRequired,

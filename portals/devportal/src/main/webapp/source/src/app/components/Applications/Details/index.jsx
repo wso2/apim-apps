@@ -182,6 +182,7 @@ class Details extends Component {
         super(props);
         this.state = {
             application: null,
+            formConfig: null,
         };
         this.getApplication = this.getApplication.bind(this);
     }
@@ -198,10 +199,22 @@ class Details extends Component {
     getApplication = () => {
         const client = new API();
         const applicationId = this.props.match.params.application_uuid;
-        const promisedApplication = client.getApplication(applicationId);
-        promisedApplication
+        client.getApplication(applicationId)
             .then((response) => {
-                this.setState({ application: response.obj });
+                const application = response.obj;
+                const governanceFormConfig = application.governanceFormConfig ?? null;
+                this.setState({ application, formConfig: governanceFormConfig });
+                // Older backends only expose the template id; prefer the captured
+                // snapshot formConfig when it is present on the application.
+                if (!governanceFormConfig && application.templateId) {
+                    client.getDevportalGovernanceTemplateById(application.templateId)
+                        .then((templateRes) => {
+                            this.setState({ formConfig: templateRes.body.formConfig ?? null });
+                        })
+                        .catch(() => {
+                            // Fail open — unresolvable template leaves formConfig null
+                        });
+                }
                 return Promise.all([response]);
             })
             .catch((error) => {
@@ -235,11 +248,13 @@ class Details extends Component {
     };
 
     renderManager = (application, keyType, secScheme) => {
+        const { formConfig } = this.state;
         return (
             <Paper>
                 {secScheme === 'oauth' && (
                     <TokenManager
                         keyType={keyType}
+                        formConfig={formConfig}
                         selectedApp={{
                             appId: application.applicationId,
                             label: application.name,
@@ -289,7 +304,7 @@ class Details extends Component {
         const {
             match, intl,
         } = this.props;
-        const { notFound, application } = this.state;
+        const { notFound, application, formConfig } = this.state;
         const pathPrefix = '/applications/' + match.params.application_uuid;
         const redirectUrl = pathPrefix + '/overview';
         const rootIconSize = 42;
@@ -494,7 +509,11 @@ class Details extends Component {
                             <Route
                                 path='/applications/:applicationId/subscriptions'
                                 render={() => (
-                                    <Subscriptions application={application} getApplication={this.getApplication} />
+                                    <Subscriptions
+                                        application={application}
+                                        getApplication={this.getApplication}
+                                        formConfig={formConfig}
+                                    />
                                 )}
                             />
                             <Route component={ResourceNotFound} />

@@ -64,6 +64,8 @@ const CONSTS = {
             'apim:gov_result_read',
             'apim:gov_rule_read',
             'apim:gov_rule_manage',
+            'apim:gov_template_read',
+            'apim:gov_template_manage',
         ],
         SETTINGS_MANAGER: [
             'apim:app_owner_change',
@@ -90,15 +92,21 @@ const CONSTS = {
         { value: 'API_DEPLOY', label: 'Deploy' },
         { value: 'API_PUBLISH', label: 'Publish' },
     ],
+    // APP_SUBSCRIPTION intentionally absent — subscription governance is out of runtime
+    // scope. The backend enum still has the value for snapshot back-compat, but admins
+    // should not be able to author new APP_SUBSCRIPTION rulesets via the UI.
     RULESET_TYPES: [
         { value: 'API_DEFINITION', label: 'Definition' },
         { value: 'API_METADATA', label: 'Metadata' },
         { value: 'API_DOCUMENTATION', label: 'Documentation' },
+        { value: 'APP_INFO', label: 'App Info' },
+        { value: 'APP_OAUTH', label: 'App OAuth' },
     ],
     ARTIFACT_TYPES: [
         { value: 'REST_API', label: 'REST API' },
         { value: 'ASYNC_API', label: 'Async API' },
         { value: 'MCP', label: 'MCP' },
+        { value: 'APPLICATION', label: 'Application' },
     ],
     SEVERITY_LEVELS: [
         { value: 'ERROR', label: 'Error' },

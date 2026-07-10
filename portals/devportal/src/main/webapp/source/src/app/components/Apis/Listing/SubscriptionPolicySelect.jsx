@@ -23,7 +23,7 @@ import Button from '@mui/material/Button';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
-import { useTheme } from '@mui/material';
+import { Typography, useTheme } from '@mui/material';
 import { ScopeValidation, resourceMethods, resourcePaths } from '../../Shared/ScopeValidation';
 
 const PREFIX = 'SubscriptionPolicySelectLegacy';
@@ -80,7 +80,21 @@ class SubscriptionPolicySelectLegacy extends React.Component {
     componentDidMount() {
         const { policies } = this.props;
 
-        this.setState({ selectedPolicy: policies[0] });
+        this.setState({ selectedPolicy: this.getGovernedPolicy() || policies[0] });
+    }
+
+    componentDidUpdate(prevProps) {
+        const governedPolicy = this.getGovernedPolicy();
+        const previousGovernedPolicy = this.getGovernedPolicy(prevProps);
+        if (governedPolicy !== previousGovernedPolicy || this.props.policies !== prevProps.policies) {
+            this.setState({ selectedPolicy: governedPolicy || this.props.policies[0] });
+        }
+    }
+
+    getGovernedPolicy(props = this.props) {
+        const tierConfig = props.formConfig?.subscription?.throttlingPolicy;
+        const hidden = tierConfig?.hidden === true || tierConfig?.hidden === 'true';
+        return hidden ? tierConfig?.defaultValue : null;
     }
 
     /**
@@ -92,32 +106,44 @@ class SubscriptionPolicySelectLegacy extends React.Component {
             policies, apiId, handleSubscribe, applicationId,
         } = this.props;
         const { selectedPolicy } = this.state;
+        const governedPolicy = this.getGovernedPolicy();
+        const effectivePolicy = governedPolicy || selectedPolicy;
 
         return (
             policies
             && (
                 <Root className={classes.root}>
-                    <Autocomplete
-                        id='policy-select'
-                        disableClearable
-                        options={policies}
-                        value={selectedPolicy}
-                        onChange={(e, value) => {
-                            this.setState({ selectedPolicy: value });
-                        }}
-                        style={{ width: 150 }}
-                        renderInput={(params) => (<TextField size='small' variant='standard' {...params} />)}
-                        renderOption={(props, policy) => (
-                            <MenuItem
-                                {...props}
-                                value={policy}
-                                key={policy}
-                                id={'policy-select-' + policy}
-                            >
-                                {policy}
-                            </MenuItem>
-                        )}
-                    />
+                    {governedPolicy ? (
+                        <Typography variant='body2' sx={{ minWidth: 150, alignSelf: 'center' }}>
+                            <FormattedMessage
+                                id='Apis.Listing.SubscriptionPolicySelect.governed.policy'
+                                defaultMessage='Business Plan: {policy}'
+                                values={{ policy: governedPolicy }}
+                            />
+                        </Typography>
+                    ) : (
+                        <Autocomplete
+                            id='policy-select'
+                            disableClearable
+                            options={policies}
+                            value={selectedPolicy}
+                            onChange={(e, value) => {
+                                this.setState({ selectedPolicy: value });
+                            }}
+                            style={{ width: 150 }}
+                            renderInput={(params) => (<TextField size='small' variant='standard' {...params} />)}
+                            renderOption={(props, policy) => (
+                                <MenuItem
+                                    {...props}
+                                    value={policy}
+                                    key={policy}
+                                    id={'policy-select-' + policy}
+                                >
+                                    {policy}
+                                </MenuItem>
+                            )}
+                        />
+                    )}
                     <ScopeValidation
                         resourcePath={resourcePaths.SUBSCRIPTIONS}
                         resourceMethod={resourceMethods.POST}
@@ -128,7 +154,7 @@ class SubscriptionPolicySelectLegacy extends React.Component {
                             color='grey'
                             className={classes.buttonGap}
                             onClick={() => {
-                                handleSubscribe(applicationId, apiId, selectedPolicy);
+                                handleSubscribe(applicationId, apiId, effectivePolicy);
                             }}
                             id={'policy-subscribe-btn-' + apiId}
                         >
@@ -150,11 +176,16 @@ SubscriptionPolicySelectLegacy.propTypes = {
     apiId: PropTypes.string.isRequired,
     handleSubscribe: PropTypes.func.isRequired,
     applicationId: PropTypes.string.isRequired,
+    formConfig: PropTypes.shape({}),
+};
+
+SubscriptionPolicySelectLegacy.defaultProps = {
+    formConfig: null,
 };
 
 function SubscriptionPolicySelect(props) {
     const {
-        key, policies, apiId, handleSubscribe, applicationId,
+        key, policies, apiId, handleSubscribe, applicationId, formConfig,
     } = props;
     const theme = useTheme();
     return (
@@ -164,6 +195,7 @@ function SubscriptionPolicySelect(props) {
             apiId={apiId}
             handleSubscribe={handleSubscribe}
             applicationId={applicationId}
+            formConfig={formConfig}
             theme={theme}
         />
     );
