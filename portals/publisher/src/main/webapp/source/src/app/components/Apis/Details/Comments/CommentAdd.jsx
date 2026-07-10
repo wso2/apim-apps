@@ -26,7 +26,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import CommentsAPI from 'AppData/Comments';
 import MCPServer from 'AppData/MCPServer';
-import { isRestricted } from 'AppData/AuthManager';
+import AuthManager from 'AppData/AuthManager';
 
 const PREFIX = 'CommentAdd';
 
@@ -192,12 +192,8 @@ class CommentAdd extends React.Component {
      * @returns {boolean} - True if access is restricted, false otherwise
      */
     isAccessRestricted() {
-        const { api } = this.props;
-        if (api.apiType.toUpperCase() === MCPServer.CONSTS.MCP) {
-            return isRestricted(['apim:comment_write', 'apim:comment_manage'], api);
-        } else {
-            return isRestricted(['apim:api_create', 'apim:api_publish'], api);
-        }
+        const user = AuthManager.getUser();
+        return !user.scopes.includes("apim:comment_write") && !user.scopes.includes("apim:comment_manage");
     }
 
     /**
