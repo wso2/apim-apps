@@ -42,6 +42,7 @@ import { useAreApisAccessible, useAreMcpServersAccessible } from 'AppUtils/Porta
 import SubscriptionSection from './SubscriptionSection';
 
 const PREFIX = 'Subscriptions';
+
 const SUBSCRIPTIONS_PER_PAGE = 10;
 // Backend page size used while walking the subscriptions list in the background. Bigger than
 // SUBSCRIPTIONS_PER_PAGE to reduce round-trips, far smaller than a bulk "fetch everything" call.
@@ -314,8 +315,11 @@ class SubscriptionsBase extends React.Component {
      */
     componentDidMount() {
         this.mounted = true;
-        this.ensureLoaded(SUBSCRIPTIONS_PER_PAGE, SUBSCRIPTIONS_PER_PAGE)
-            .then(() => this.refreshDerivedState());
+        const { apisAccessible, mcpServersAccessible } = this.props;
+        this.ensureLoaded(
+            apisAccessible ? SUBSCRIPTIONS_PER_PAGE : 0,
+            mcpServersAccessible ? SUBSCRIPTIONS_PER_PAGE : 0,
+        ).then(() => this.refreshDerivedState());
     }
 
     componentWillUnmount() {
@@ -364,7 +368,11 @@ class SubscriptionsBase extends React.Component {
     getAPIById(apiUUID) {
         if (!this.apiDetailsById[apiUUID]) {
             const apiClient = new Api();
-            this.apiDetailsById[apiUUID] = apiClient.getAPIById(apiUUID).then(parseResponseData);
+            this.apiDetailsById[apiUUID] = apiClient.getAPIById(apiUUID).then(parseResponseData)
+                .catch((error) => {
+                    delete this.apiDetailsById[apiUUID];
+                    throw error;
+                });
         }
         return this.apiDetailsById[apiUUID];
     }
@@ -372,7 +380,11 @@ class SubscriptionsBase extends React.Component {
     getMCPServerById(apiUUID) {
         if (!this.mcpDetailsById[apiUUID]) {
             const mcpClient = new MCPServer();
-            this.mcpDetailsById[apiUUID] = mcpClient.getMCPServerById(apiUUID).then(parseResponseData);
+            this.mcpDetailsById[apiUUID] = mcpClient.getMCPServerById(apiUUID).then(parseResponseData)
+                .catch((error) => {
+                    delete this.mcpDetailsById[apiUUID];
+                    throw error;
+                });
         }
         return this.mcpDetailsById[apiUUID];
     }
@@ -382,7 +394,11 @@ class SubscriptionsBase extends React.Component {
             const apiClient = new Api();
             this.subscriptionPoliciesByName[policyName] = apiClient
                 .getTierByName(policyName, 'subscription')
-                .then(parseResponseData);
+                .then(parseResponseData)
+                .catch((error) => {
+                    delete this.subscriptionPoliciesByName[policyName];
+                    throw error;
+                });
         }
         return this.subscriptionPoliciesByName[policyName];
     }
@@ -445,13 +461,27 @@ class SubscriptionsBase extends React.Component {
                     if (!this.mounted || requestId !== this.subscriptionsRequestId) {
                         return;
                     }
-                    this.fullyLoaded = true;
                     const { status } = error;
                     if (status === 404) {
+                        // The application itself wasn't found — a genuinely terminal state.
+                        this.fullyLoaded = true;
                         this.setState({ subscriptionsNotFound: true, subscriptionsLoaded: true });
-                    } else if (status === 401) {
-                        this.setState({ isAuthorize: false });
+                        return;
                     }
+                    if (status === 401) {
+                        this.fullyLoaded = true;
+                        this.setState({ isAuthorize: false });
+                        return;
+                    }
+                    // Transient failure (5xx/network) — do not mark the walk complete, so a later
+                    // ensureLoaded call (e.g. the user retrying pagination) resumes from this same
+                    // backendOffset instead of being permanently short-circuited.
+                    this.loadChain = null;
+                    this.setState({ subscriptionsLoaded: true });
+                    Alert.error(this.props.intl.formatMessage({
+                        id: 'Applications.Details.Subscriptions.error.loading.subscriptions',
+                        defaultMessage: 'Error occurred while loading subscriptions',
+                    }));
                 });
         };
 
@@ -557,8 +587,9 @@ class SubscriptionsBase extends React.Component {
         this.subscriptionsRequestId += 1;
         this.resetAccumulation();
         const { apiPage, mcpPage } = this.state;
-        const requiredApi = (apiPage + 1) * SUBSCRIPTIONS_PER_PAGE;
-        const requiredMcp = (mcpPage + 1) * SUBSCRIPTIONS_PER_PAGE;
+        const { apisAccessible, mcpServersAccessible } = this.props;
+        const requiredApi = apisAccessible ? (apiPage + 1) * SUBSCRIPTIONS_PER_PAGE : 0;
+        const requiredMcp = mcpServersAccessible ? (mcpPage + 1) * SUBSCRIPTIONS_PER_PAGE : 0;
         this.ensureLoaded(requiredApi, requiredMcp).then(() => this.refreshDerivedState());
     }
 

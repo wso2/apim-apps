@@ -37,7 +37,6 @@ import { FormattedMessage } from 'react-intl';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
 import PropTypes from 'prop-types';
 import CONSTANTS from 'AppData/Constants';
-import Subscription from 'AppData/Subscription';
 import { getBasePath } from 'AppUtils/utils';
 import { mdiOpenInNew } from '@mdi/js';
 import { Icon as MDIcon } from '@mdi/react';
@@ -103,7 +102,7 @@ class SubscriptionTableData extends React.Component {
         this.mounted = true;
         this.checkIfWebhookAPI();
         this.populateAPIData(subscription.apiId);
-        this.checkIfDynamicUsagePolicy(subscription.subscriptionId);
+        this.checkIfDynamicUsagePolicy(subscription.throttlingPolicy);
     }
 
     componentWillUnmount() {
@@ -208,26 +207,19 @@ class SubscriptionTableData extends React.Component {
 
     /**
      * Check if the policy is dynamic usage type
-     * @param {string} subscriptionUUID subscription UUID
+     * @param {string} throttlingPolicy throttling policy name, already available on the subscription
      */
-    checkIfDynamicUsagePolicy(subscriptionUUID) {
-        const client = new Subscription();
-        const promisedSubscription = client.getSubscription(subscriptionUUID);
-        promisedSubscription.then((response) => {
-            if (this.mounted && response && response.body) {
-                const subscriptionData = JSON.parse(response.data);
-                if (subscriptionData.throttlingPolicy) {
-                    const { getSubscriptionPolicyByName } = this.props;
-                    const promisedPolicy = getSubscriptionPolicyByName(subscriptionData.throttlingPolicy);
-                    promisedPolicy.then((policyData) => {
-                        if (this.mounted
-                            && policyData
-                            && policyData.monetizationAttributes
-                            && policyData.monetizationAttributes.billingType === 'DYNAMICRATE') {
-                            this.setState({ isDynamicUsagePolicy: true });
-                        }
-                    });
-                }
+    checkIfDynamicUsagePolicy(throttlingPolicy) {
+        if (!throttlingPolicy) {
+            return;
+        }
+        const { getSubscriptionPolicyByName } = this.props;
+        getSubscriptionPolicyByName(throttlingPolicy).then((policyData) => {
+            if (this.mounted
+                && policyData
+                && policyData.monetizationAttributes
+                && policyData.monetizationAttributes.billingType === 'DYNAMICRATE') {
+                this.setState({ isDynamicUsagePolicy: true });
             }
         });
     }
