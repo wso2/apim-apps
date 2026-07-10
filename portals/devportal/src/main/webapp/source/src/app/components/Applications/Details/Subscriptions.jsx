@@ -29,7 +29,6 @@ import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import SearchIcon from '@mui/icons-material/Search';
-import TablePagination from '@mui/material/TablePagination';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Progress from 'AppComponents/Shared/Progress';
 import Alert from 'AppComponents/Shared/Alert';
@@ -44,6 +43,9 @@ import SubscriptionSection from './SubscriptionSection';
 
 const PREFIX = 'Subscriptions';
 const SUBSCRIPTIONS_PER_PAGE = 10;
+// Backend page size used while walking the subscriptions list in the background. Bigger than
+// SUBSCRIPTIONS_PER_PAGE to reduce round-trips, far smaller than a bulk "fetch everything" call.
+const FETCH_CHUNK_SIZE = 25;
 
 /**
  * Parse a swagger-client response body, handling both string and pre-parsed payloads.
@@ -72,6 +74,14 @@ function isPseudoSubscription(subscription) {
         && throttlingPolicies[0].includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN));
 }
 
+function isApiSubscription(subscription) {
+    return Boolean(subscription.apiInfo) && subscription.apiInfo.type !== 'MCP';
+}
+
+function isMcpSubscription(subscription) {
+    return Boolean(subscription.apiInfo) && subscription.apiInfo.type === 'MCP';
+}
+
 const classes = {
     searchRoot: `${PREFIX}-searchRoot`,
     searchBar: `${PREFIX}-searchBar`,
@@ -90,7 +100,6 @@ const classes = {
     searchResults: `${PREFIX}-searchResults`,
     clearSearchIcon: `${PREFIX}-clearSearchIcon`,
     subsTable: `${PREFIX}-subsTable`,
-    pagination: `${PREFIX}-pagination`,
     closeButton: `${PREFIX}-closeButton`,
 };
 
@@ -159,19 +168,6 @@ const Root = styled('div')((
             '&:last-child': {
                 borderRight: 'none',
             },
-        },
-    },
-
-    [`& .${classes.pagination}`]: {
-        display: 'flex',
-        justifyContent: 'flex-end',
-        borderTop: `1px solid ${theme.palette.divider}`,
-        '& .MuiTablePagination-toolbar': {
-            minHeight: 48,
-            paddingRight: 0,
-        },
-        '& .MuiTablePagination-displayedRows': {
-            margin: 0,
         },
     },
 
@@ -257,9 +253,13 @@ class SubscriptionsBase extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            subscriptions: null,
-            apiSubscriptions: null,
-            mcpSubscriptions: null,
+            subscriptionsLoaded: false,
+            apiSubscriptions: [],
+            mcpSubscriptions: [],
+            apiCount: -1,
+            mcpCount: -1,
+            apiPage: 0,
+            mcpPage: 0,
             apisNotFound: false,
             subscriptionsNotFound: false,
             isAuthorize: true,
@@ -268,16 +268,14 @@ class SubscriptionsBase extends React.Component {
             searchText: '',
             pseudoSubscriptions: false,
             pseudoMcpSubscriptions: false,
-            subscriptionCount: 0,
-            subscriptionOffset: 0,
             dialogSubscriptions: null,
             dialogMcpSubscriptions: null,
         };
         this.checkSubValidationDisabled = this.checkSubValidationDisabled.bind(this);
         this.checkMcpSubValidationDisabled = this.checkMcpSubValidationDisabled.bind(this);
+        this.checkTypeValidationDisabled = this.checkTypeValidationDisabled.bind(this);
         this.handleSubscriptionDelete = this.handleSubscriptionDelete.bind(this);
         this.handleSubscriptionUpdate = this.handleSubscriptionUpdate.bind(this);
-        this.updateSubscriptions = this.updateSubscriptions.bind(this);
         this.handleSubscribe = this.handleSubscribe.bind(this);
         this.handleOpenDialog = this.handleOpenDialog.bind(this);
         this.handleOpenMcpDialog = this.handleOpenMcpDialog.bind(this);
@@ -285,23 +283,28 @@ class SubscriptionsBase extends React.Component {
         this.handleSearchTextTmpChange = this.handleSearchTextTmpChange.bind(this);
         this.handleClearSearch = this.handleClearSearch.bind(this);
         this.handleEnterPress = this.handleEnterPress.bind(this);
-        this.handleSubscriptionPageChange = this.handleSubscriptionPageChange.bind(this);
+        this.handleApiPageChange = this.handleApiPageChange.bind(this);
+        this.handleMcpPageChange = this.handleMcpPageChange.bind(this);
         this.updateDialogSubscriptions = this.updateDialogSubscriptions.bind(this);
         this.getAPIById = this.getAPIById.bind(this);
         this.getMCPServerById = this.getMCPServerById.bind(this);
         this.getSubscriptionPolicyByName = this.getSubscriptionPolicyByName.bind(this);
-        this.getFullSubscriptions = this.getFullSubscriptions.bind(this);
         this.resetAPIDetailsCache = this.resetAPIDetailsCache.bind(this);
-        this.loadAllSubscriptions = this.loadAllSubscriptions.bind(this);
+        this.resetAccumulation = this.resetAccumulation.bind(this);
+        this.ensureLoaded = this.ensureLoaded.bind(this);
+        this.refreshDerivedState = this.refreshDerivedState.bind(this);
+        this.refetchAfterMutation = this.refetchAfterMutation.bind(this);
+
         this.apiDetailsById = {};
         this.mcpDetailsById = {};
         this.subscriptionPoliciesByName = {};
-        this.fullSubscriptionsPromise = null;
         this.searchTextTmp = '';
         this.mounted = false;
         this.subscriptionsRequestId = 0;
         this.dialogLoadRequestId = 0;
         this.mcpDialogLoadRequestId = 0;
+
+        this.resetAccumulation();
     }
 
     /**
@@ -311,8 +314,8 @@ class SubscriptionsBase extends React.Component {
      */
     componentDidMount() {
         this.mounted = true;
-        const { applicationId } = this.props.application;
-        this.updateSubscriptions(applicationId);
+        this.ensureLoaded(SUBSCRIPTIONS_PER_PAGE, SUBSCRIPTIONS_PER_PAGE)
+            .then(() => this.refreshDerivedState());
     }
 
     componentWillUnmount() {
@@ -323,31 +326,27 @@ class SubscriptionsBase extends React.Component {
     }
 
     handleOpenDialog() {
-        const { applicationId } = this.props.application;
         this.searchTextTmp = '';
-        this.dialogLoadRequestId += 1;
         this.setState((prevState) => ({
             openDialog: !prevState.openDialog,
             searchText: '',
             dialogSubscriptions: null,
         }), () => {
             if (this.state.openDialog) {
-                this.updateDialogSubscriptions(applicationId, false);
+                this.updateDialogSubscriptions(false);
             }
         });
     }
 
     handleOpenMcpDialog() {
-        const { applicationId } = this.props.application;
         this.searchTextTmp = '';
-        this.mcpDialogLoadRequestId += 1;
         this.setState((prevState) => ({
             openMcpDialog: !prevState.openMcpDialog,
             searchText: '',
             dialogMcpSubscriptions: null,
         }), () => {
             if (this.state.openMcpDialog) {
-                this.updateDialogSubscriptions(applicationId, true);
+                this.updateDialogSubscriptions(true);
             }
         });
     }
@@ -389,200 +388,200 @@ class SubscriptionsBase extends React.Component {
     }
 
     /**
-     * Load every subscription for the application, used when the current page alone
-     * isn't enough to answer a question (pseudo-subscription check, subscribe dialogs).
-     * @param {*} applicationId application id
-     * @param {number} offset subscription list offset
-     * @param {Array} accumulatedSubscriptions subscriptions collected from previous chunks
-     * @returns {Promise<Array>} the full subscription list
+     * Reset the background subscription accumulator. Called on mount and after any mutation
+     * (delete/update/subscribe), since those can shift backend offsets in ways that are not
+     * safe to patch incrementally.
      */
-    loadAllSubscriptions(applicationId, offset = 0, accumulatedSubscriptions = []) {
-        const client = new Subscription();
-        const subscriptionLimit = app.subscriptionLimit || 1000;
-        return client.getSubscriptions(null, applicationId, subscriptionLimit, offset)
-            .then((response) => {
-                const { body } = response;
-                const pagination = body.pagination || {};
-                const subscriptionList = body.list || [];
-                const subscriptions = accumulatedSubscriptions.concat(subscriptionList);
-                const total = pagination.total || subscriptions.length;
-                const limit = pagination.limit || subscriptionLimit;
-                const currentOffset = pagination.offset || offset;
-                const nextOffset = currentOffset + limit;
-
-                if (subscriptions.length < total && subscriptionList.length > 0) {
-                    return this.loadAllSubscriptions(applicationId, nextOffset, subscriptions);
-                }
-                return subscriptions;
-            });
+    resetAccumulation() {
+        this.combinedSubscriptions = [];
+        this.backendOffset = 0;
+        this.combinedTotal = null;
+        this.fullyLoaded = false;
+        this.loadChain = null;
+        this.resetAPIDetailsCache();
     }
 
     /**
-     * Fetch (and cache for this subscription state) the complete, unpaginated subscription list.
-     * @param {*} applicationId application id
-     * @returns {Promise<Array>} the full subscription list
+     * Walk the subscriptions list in the background (small chunks, not a bulk fetch) until
+     * at least `requiredApiCount` API-type and `requiredMcpCount` MCP-type subscriptions have
+     * been accumulated, or the full list has been exhausted. Pass Infinity for either count to
+     * force a complete walk (needed for the "all pseudo" check and the subscribe dialogs, which
+     * both need the definitive full per-type list).
+     * @param {number} requiredApiCount minimum accumulated API-type subscriptions needed
+     * @param {number} requiredMcpCount minimum accumulated MCP-type subscriptions needed
+     * @returns {Promise<void>}
      */
-    getFullSubscriptions(applicationId) {
-        if (!this.fullSubscriptionsPromise) {
-            this.fullSubscriptionsPromise = this.loadAllSubscriptions(applicationId);
+    ensureLoaded(requiredApiCount, requiredMcpCount) {
+        const { applicationId } = this.props.application;
+        const requestId = this.subscriptionsRequestId;
+
+        const step = () => {
+            if (!this.mounted || requestId !== this.subscriptionsRequestId) {
+                return Promise.resolve();
+            }
+            const apiSoFar = this.combinedSubscriptions.filter(isApiSubscription).length;
+            const mcpSoFar = this.combinedSubscriptions.filter(isMcpSubscription).length;
+            if (this.fullyLoaded || (apiSoFar >= requiredApiCount && mcpSoFar >= requiredMcpCount)) {
+                return Promise.resolve();
+            }
+            const client = new Subscription();
+            return client.getSubscriptions(null, applicationId, FETCH_CHUNK_SIZE, this.backendOffset)
+                .then((response) => {
+                    if (!this.mounted || requestId !== this.subscriptionsRequestId) {
+                        return undefined;
+                    }
+                    const { body } = response;
+                    const pagination = body.pagination || {};
+                    const list = body.list || [];
+                    this.combinedSubscriptions = this.combinedSubscriptions.concat(list);
+                    this.combinedTotal = pagination.total ?? this.combinedTotal ?? this.combinedSubscriptions.length;
+                    this.backendOffset = (pagination.offset ?? this.backendOffset) + (pagination.limit ?? list.length);
+                    if (list.length === 0 || this.combinedSubscriptions.length >= this.combinedTotal) {
+                        this.fullyLoaded = true;
+                    }
+                    return step();
+                })
+                .catch((error) => {
+                    if (!this.mounted || requestId !== this.subscriptionsRequestId) {
+                        return;
+                    }
+                    this.fullyLoaded = true;
+                    const { status } = error;
+                    if (status === 404) {
+                        this.setState({ subscriptionsNotFound: true, subscriptionsLoaded: true });
+                    } else if (status === 401) {
+                        this.setState({ isAuthorize: false });
+                    }
+                });
+        };
+
+        this.loadChain = (this.loadChain || Promise.resolve()).then(step);
+        return this.loadChain;
+    }
+
+    /**
+     * Recompute the visible page slices, per-type counts and pseudo-subscription flags from the
+     * background accumulator, then re-render. Called after every ensureLoaded resolution.
+     */
+    refreshDerivedState() {
+        if (!this.mounted) {
+            return;
         }
-        return this.fullSubscriptionsPromise;
+        const apiAccum = this.combinedSubscriptions.filter(isApiSubscription);
+        const mcpAccum = this.combinedSubscriptions.filter(isMcpSubscription);
+
+        this.setState((prevState) => {
+            let { apiPage, mcpPage } = prevState;
+            if (this.fullyLoaded) {
+                const maxApiPage = Math.max(0, Math.ceil(apiAccum.length / SUBSCRIPTIONS_PER_PAGE) - 1);
+                const maxMcpPage = Math.max(0, Math.ceil(mcpAccum.length / SUBSCRIPTIONS_PER_PAGE) - 1);
+                apiPage = Math.min(apiPage, maxApiPage);
+                mcpPage = Math.min(mcpPage, maxMcpPage);
+            }
+            const apiStart = apiPage * SUBSCRIPTIONS_PER_PAGE;
+            const mcpStart = mcpPage * SUBSCRIPTIONS_PER_PAGE;
+            return {
+                apiPage,
+                mcpPage,
+                apiSubscriptions: apiAccum.slice(apiStart, apiStart + SUBSCRIPTIONS_PER_PAGE),
+                mcpSubscriptions: mcpAccum.slice(mcpStart, mcpStart + SUBSCRIPTIONS_PER_PAGE),
+                apiCount: this.fullyLoaded ? apiAccum.length : -1,
+                mcpCount: this.fullyLoaded ? mcpAccum.length : -1,
+                subscriptionsLoaded: true,
+            };
+        }, () => {
+            this.checkSubValidationDisabled();
+            this.checkMcpSubValidationDisabled();
+        });
     }
 
     /**
      * Shared implementation backing checkSubValidationDisabled / checkMcpSubValidationDisabled.
-     * The current page's subset of a given type may not represent every subscription of that
-     * type, so when the page subset looks fully pseudo, the full list is loaded to confirm.
-     * @param {*} subList current page's subscriptions of one type (API or MCP)
-     * @param {*} applicationId application id
-     * @param {*} requestId current subscriptions request id
-     * @param {*} options.stateKey state field to update
-     * @param {*} options.filterFn predicate selecting subscriptions of this type from a full list
+     * Accumulated-so-far data may not represent every subscription of a type, so when what has
+     * been seen looks fully pseudo but the walk isn't complete, force a full walk to confirm.
+     * @param {Function} filterFn predicate selecting subscriptions of one type
+     * @param {string} stateKey state field to update
      */
-    checkTypeValidationDisabled(subList, applicationId, requestId, { stateKey, filterFn }) {
-        if (!this.mounted || requestId !== this.subscriptionsRequestId) {
-            return;
-        }
-        if (!subList || subList.length === 0 || !subList.every(isPseudoSubscription)) {
+    checkTypeValidationDisabled(filterFn, stateKey) {
+        const typeAccum = this.combinedSubscriptions.filter(filterFn);
+        if (typeAccum.length === 0 || !typeAccum.every(isPseudoSubscription)) {
             this.setState({ [stateKey]: false });
             return;
         }
-        this.getFullSubscriptions(applicationId)
-            .then((allSubscriptions) => {
-                if (!this.mounted || requestId !== this.subscriptionsRequestId) {
-                    return;
-                }
-                const fullTypeList = allSubscriptions.filter(filterFn);
-                this.setState({
-                    [stateKey]: fullTypeList.length > 0 && fullTypeList.every(isPseudoSubscription),
-                });
-            })
-            .catch(() => {
-                if (this.mounted && requestId === this.subscriptionsRequestId) {
-                    this.setState({ [stateKey]: false });
-                }
-            });
-    }
-
-    /**
-     *
-     * Check if the subscription validation is disabled
-     * @param {*} subList Subscriptions list reponse object
-     * @param {*} applicationId application id
-     * @param {*} requestId current subscriptions request id
-     */
-    checkSubValidationDisabled(subList, applicationId, requestId) {
-        this.checkTypeValidationDisabled(subList, applicationId, requestId, {
-            stateKey: 'pseudoSubscriptions',
-            filterFn: (sub) => sub.apiInfo && sub.apiInfo.type !== 'MCP',
+        if (this.fullyLoaded) {
+            this.setState({ [stateKey]: true });
+            return;
+        }
+        const requestId = this.subscriptionsRequestId;
+        this.ensureLoaded(Infinity, Infinity).then(() => {
+            if (!this.mounted || requestId !== this.subscriptionsRequestId) {
+                return;
+            }
+            this.refreshDerivedState();
         });
     }
 
-    /**
-     *
-     * Check if the MCP subscription validation is disabled
-     * @param {*} subList MCP Subscriptions list response object
-     * @param {*} applicationId application id
-     * @param {*} requestId current subscriptions request id
-     */
-    checkMcpSubValidationDisabled(subList, applicationId, requestId) {
-        this.checkTypeValidationDisabled(subList, applicationId, requestId, {
-            stateKey: 'pseudoMcpSubscriptions',
-            filterFn: (sub) => sub.apiInfo && sub.apiInfo.type === 'MCP',
-        });
+    checkSubValidationDisabled() {
+        this.checkTypeValidationDisabled(isApiSubscription, 'pseudoSubscriptions');
     }
 
-    /**
-     *
-     * Update subscriptions list of Application
-     * @param {*} applicationId application id
-     * @param {number} offset subscription list offset
-     * @memberof Subscriptions
-     */
-    updateSubscriptions(applicationId, offset = 0) {
-        const requestId = ++this.subscriptionsRequestId;
-        this.resetAPIDetailsCache();
-        this.fullSubscriptionsPromise = null;
-        const client = new Subscription();
-        const promisedSubscriptions = client.getSubscriptions(null, applicationId, SUBSCRIPTIONS_PER_PAGE, offset);
-        promisedSubscriptions
-            .then((response) => {
-                if (!this.mounted || requestId !== this.subscriptionsRequestId) {
-                    return;
-                }
-                const { body } = response;
-                const allSubscriptions = body.list || [];
-                const pagination = body.pagination || {};
-                const apiSubscriptions = allSubscriptions.filter((sub) => sub.apiInfo && sub.apiInfo.type !== 'MCP');
-                const mcpSubscriptions = allSubscriptions.filter((sub) => sub.apiInfo && sub.apiInfo.type === 'MCP');
-
-                this.setState({
-                    subscriptions: allSubscriptions,
-                    apiSubscriptions,
-                    mcpSubscriptions,
-                    subscriptionCount: pagination.total ?? allSubscriptions.length,
-                    subscriptionOffset: pagination.offset ?? offset,
-                });
-                this.checkSubValidationDisabled(apiSubscriptions, applicationId, requestId);
-                this.checkMcpSubValidationDisabled(mcpSubscriptions, applicationId, requestId);
-            })
-            .catch((error) => {
-                if (!this.mounted || requestId !== this.subscriptionsRequestId) {
-                    return;
-                }
-                const { status } = error;
-                if (status === 404) {
-                    this.setState({ subscriptionsNotFound: true });
-                } else if (status === 401) {
-                    this.setState({ isAuthorize: false });
-                }
-            });
+    checkMcpSubValidationDisabled() {
+        this.checkTypeValidationDisabled(isMcpSubscription, 'pseudoMcpSubscriptions');
     }
 
     /**
      * Update the full, unpaginated list backing a subscribe dialog (API or MCP).
-     * @param {*} applicationId application id
      * @param {boolean} isMcp whether this is refreshing the MCP Server dialog
      * @returns {Promise<void>}
      * @memberof Subscriptions
      */
-    updateDialogSubscriptions(applicationId, isMcp) {
+    updateDialogSubscriptions(isMcp) {
         const requestId = isMcp ? ++this.mcpDialogLoadRequestId : ++this.dialogLoadRequestId;
-        return this.getFullSubscriptions(applicationId)
-            .then((allSubscriptions) => {
-                const currentRequestId = isMcp ? this.mcpDialogLoadRequestId : this.dialogLoadRequestId;
-                const dialogOpen = isMcp ? this.state.openMcpDialog : this.state.openDialog;
-                if (!this.mounted || requestId !== currentRequestId
-                    || !dialogOpen || this.props.application.applicationId !== applicationId) {
-                    return;
-                }
-                const filtered = allSubscriptions.filter((sub) => (
-                    isMcp ? sub.apiInfo && sub.apiInfo.type === 'MCP' : sub.apiInfo && sub.apiInfo.type !== 'MCP'
-                ));
-                this.setState(isMcp ? { dialogMcpSubscriptions: filtered } : { dialogSubscriptions: filtered });
-            })
-            .catch((error) => {
-                const currentRequestId = isMcp ? this.mcpDialogLoadRequestId : this.dialogLoadRequestId;
-                if (!this.mounted || requestId !== currentRequestId) {
-                    return;
-                }
-                const { status } = error;
-                if (status === 401) {
-                    this.setState({ isAuthorize: false });
-                } else {
-                    this.setState(isMcp ? { dialogMcpSubscriptions: [] } : { dialogSubscriptions: [] });
-                }
-            });
+        return this.ensureLoaded(Infinity, Infinity).then(() => {
+            const currentRequestId = isMcp ? this.mcpDialogLoadRequestId : this.dialogLoadRequestId;
+            const dialogOpen = isMcp ? this.state.openMcpDialog : this.state.openDialog;
+            if (!this.mounted || requestId !== currentRequestId || !dialogOpen) {
+                return;
+            }
+            const filtered = this.combinedSubscriptions.filter(isMcp ? isMcpSubscription : isApiSubscription);
+            this.setState(isMcp ? { dialogMcpSubscriptions: filtered } : { dialogSubscriptions: filtered });
+            this.refreshDerivedState();
+        });
     }
 
     /**
-     * Handle a page change on the shared subscriptions table pagination control.
+     * Re-walk the subscriptions list from scratch after a mutation (delete/update/subscribe),
+     * refilling only up to whichever pages are currently visible in each section.
+     */
+    refetchAfterMutation() {
+        this.subscriptionsRequestId += 1;
+        this.resetAccumulation();
+        const { apiPage, mcpPage } = this.state;
+        const requiredApi = (apiPage + 1) * SUBSCRIPTIONS_PER_PAGE;
+        const requiredMcp = (mcpPage + 1) * SUBSCRIPTIONS_PER_PAGE;
+        this.ensureLoaded(requiredApi, requiredMcp).then(() => this.refreshDerivedState());
+    }
+
+    /**
+     * Handle a page change on the API subscriptions pagination control.
      * @param {*} event unused MUI event
      * @param {number} page requested page
      */
-    handleSubscriptionPageChange(event, page) {
-        const { applicationId } = this.props.application;
-        this.updateSubscriptions(applicationId, page * SUBSCRIPTIONS_PER_PAGE);
+    handleApiPageChange(event, page) {
+        const required = (page + 1) * SUBSCRIPTIONS_PER_PAGE;
+        this.setState({ apiPage: page });
+        this.ensureLoaded(required, 0).then(() => this.refreshDerivedState());
+    }
+
+    /**
+     * Handle a page change on the MCP Server subscriptions pagination control.
+     * @param {*} event unused MUI event
+     * @param {number} page requested page
+     */
+    handleMcpPageChange(event, page) {
+        const required = (page + 1) * SUBSCRIPTIONS_PER_PAGE;
+        this.setState({ mcpPage: page });
+        this.ensureLoaded(0, required).then(() => this.refreshDerivedState());
     }
 
     /**
@@ -610,8 +609,7 @@ class SubscriptionsBase extends React.Component {
                         defaultMessage: 'Subscription Deletion Request Created!',
                         id: 'Applications.Details.Subscriptions.request.created',
                     }));
-                    const { applicationId } = this.props.application;
-                    this.updateSubscriptions(applicationId);
+                    this.refetchAfterMutation();
                     return;
                 }
                 if (response.status !== 200 && response.status !== 201) {
@@ -622,12 +620,7 @@ class SubscriptionsBase extends React.Component {
                     }));
                     return;
                 }
-                const { subscriptions, subscriptionOffset } = this.state;
-                const nextOffset = subscriptions.length === 1 && subscriptionOffset > 0
-                    ? subscriptionOffset - SUBSCRIPTIONS_PER_PAGE
-                    : subscriptionOffset;
-                const { applicationId } = this.props.application;
-                this.updateSubscriptions(applicationId, nextOffset);
+                this.refetchAfterMutation();
                 this.props.getApplication();
             })
             .catch((error) => {
@@ -687,8 +680,7 @@ class SubscriptionsBase extends React.Component {
                         id: 'Applications.Details.Subscriptions.business.plan.updated',
                     }));
                 }
-                const { subscriptionOffset } = this.state;
-                this.updateSubscriptions(applicationId, subscriptionOffset);
+                this.refetchAfterMutation();
                 this.props.getApplication();
             })
             .catch((error) => {
@@ -748,13 +740,13 @@ class SubscriptionsBase extends React.Component {
                             defaultMessage: 'Subscription successful',
                         }));
                     }
-                    const { subscriptionOffset, openDialog, openMcpDialog } = this.state;
-                    this.updateSubscriptions(applicationId, subscriptionOffset);
+                    const { openDialog, openMcpDialog } = this.state;
+                    this.refetchAfterMutation();
                     if (openDialog) {
-                        this.updateDialogSubscriptions(applicationId, false);
+                        this.updateDialogSubscriptions(false);
                     }
                     if (openMcpDialog) {
-                        this.updateDialogSubscriptions(applicationId, true);
+                        this.updateDialogSubscriptions(true);
                     }
                     this.props.getApplication();
                 }
@@ -805,15 +797,17 @@ class SubscriptionsBase extends React.Component {
             openDialog,
             openMcpDialog,
             searchText,
-            subscriptions,
+            subscriptionsLoaded,
             apiSubscriptions,
             mcpSubscriptions,
+            apiCount,
+            mcpCount,
+            apiPage,
+            mcpPage,
             apisNotFound,
             subscriptionsNotFound,
             pseudoSubscriptions,
             pseudoMcpSubscriptions,
-            subscriptionCount,
-            subscriptionOffset,
             dialogSubscriptions,
             dialogMcpSubscriptions,
         } = this.state;
@@ -827,7 +821,7 @@ class SubscriptionsBase extends React.Component {
         } = this.props;
         const { applicationId } = application;
 
-        if (subscriptions) {
+        if (subscriptionsLoaded) {
             return (
                 <Root>
                     <Box className={classes.root}>
@@ -867,6 +861,10 @@ class SubscriptionsBase extends React.Component {
                                 getAPIById={this.getAPIById}
                                 getMCPServerById={this.getMCPServerById}
                                 getSubscriptionPolicyByName={this.getSubscriptionPolicyByName}
+                                paginationCount={apiCount}
+                                paginationPage={apiPage}
+                                rowsPerPage={SUBSCRIPTIONS_PER_PAGE}
+                                onPaginationPageChange={this.handleApiPageChange}
                                 noSubscriptionsMessage={(
                                     <FormattedMessage
                                         id='Applications.Details.Subscriptions.no.api.subscriptions'
@@ -912,6 +910,10 @@ class SubscriptionsBase extends React.Component {
                                 getAPIById={this.getAPIById}
                                 getMCPServerById={this.getMCPServerById}
                                 getSubscriptionPolicyByName={this.getSubscriptionPolicyByName}
+                                paginationCount={mcpCount}
+                                paginationPage={mcpPage}
+                                rowsPerPage={SUBSCRIPTIONS_PER_PAGE}
+                                onPaginationPageChange={this.handleMcpPageChange}
                                 noSubscriptionsMessage={(
                                     <FormattedMessage
                                         id='Applications.Details.Subscriptions.no.mcp.subscriptions'
@@ -931,18 +933,6 @@ class SubscriptionsBase extends React.Component {
                                     />
                                 )}
                                 data-testid='mcp-subscriptions-section'
-                            />
-                        )}
-
-                        {(apisAccessible || mcpServersAccessible) && subscriptionCount > 0 && (
-                            <TablePagination
-                                className={classes.pagination}
-                                component='div'
-                                count={subscriptionCount}
-                                page={Math.floor(subscriptionOffset / SUBSCRIPTIONS_PER_PAGE)}
-                                rowsPerPage={SUBSCRIPTIONS_PER_PAGE}
-                                rowsPerPageOptions={[]}
-                                onPageChange={this.handleSubscriptionPageChange}
                             />
                         )}
 
