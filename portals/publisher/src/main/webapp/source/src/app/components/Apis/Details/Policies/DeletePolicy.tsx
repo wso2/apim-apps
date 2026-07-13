@@ -110,6 +110,16 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                 />
             </DialogTitle>
             <DialogContent>
+                {isUsedInFlow && (
+                    <DialogContentText>
+                        <FormattedMessage
+                            id='Apis.Details.Policies.DeletePolicy.delete.confirm.usedInFlow'
+                            defaultMessage={'{policy} is currently attached to one or more flows. '
+                                + 'Deleting it will also remove it from those flows.'}
+                            values={{ policy: policyName }}
+                        />
+                    </DialogContentText>
+                )}
                 <DialogContentText>
                     <FormattedMessage
                         id='Apis.Details.Policies.DeletePolicy.delete.confirm.content'
@@ -117,16 +127,6 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                         values={{ policy: policyName }}
                     />
                 </DialogContentText>
-                {isUsedInFlow && (
-                    <DialogContentText color='error'>
-                        <FormattedMessage
-                            id='Apis.Details.Policies.DeletePolicy.delete.confirm.usedInFlow'
-                            defaultMessage={'"{policy}" is currently attached to one or more flows. '
-                                + 'Deleting it will also remove it from those flows.'}
-                            values={{ policy: policyName }}
-                        />
-                    </DialogContentText>
-                )}
             </DialogContent>
             <DialogActions>
                 <Button
