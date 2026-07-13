@@ -23,8 +23,8 @@ import { ExpandMore } from '@mui/icons-material';
 import { FormattedMessage } from "react-intl";
 import LinterUI from "AppComponents/Apis/Details/APIDefinition/LinterUI/LinterUI";
 import APILintingSummary from "AppComponents/Apis/Details/APIDefinition/Linting/APILintingSummary";
-import {  
-    spectralSeverityMap as severityMap } from "../../../Details/APIDefinition/Linting/Linting"
+import {
+    spectralSeverityMap as severityMap } from "AppComponents/Apis/Details/APIDefinition/Linting/Linting"
 
 type APILintingProps = {
     inputValue: any,
