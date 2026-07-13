@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Radio from '@mui/material/Radio';
@@ -44,8 +44,8 @@ import CheckIcon from '@mui/icons-material/Check';
 import APIValidation from 'AppData/APIValidation';
 import Wsdl from 'AppData/Wsdl';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
-import getValidationErrorsFromError from 'AppComponents/Apis/Create/OpenAPI/Steps/validationErrorUtils';
-import ValidationResults from 'AppComponents/Apis/Create/OpenAPI/Steps/ValidationResults';
+import getValidationErrorsFromError from 'AppComponents/Apis/Create/Components/validationErrorUtils';
+import ValidationResults from 'AppComponents/Apis/Create/Components/ValidationResults';
 
 const PREFIX = 'ProvideWSDL';
 
@@ -98,6 +98,11 @@ export default function ProvideWSDL(props) {
         inputsDispatcher({ action: 'isFormValid', value: false });
         onValidate(false);
     }
+
+    // Clear validation state when the input type changes so a stale error does not linger.
+    useEffect(() => {
+        reset();
+    }, [apiInputs.inputType]);
     /**
      * Handles WSDL validation response and returns the state.
      *
@@ -154,7 +159,7 @@ export default function ProvideWSDL(props) {
             id: 'Apis.Create.WSDL.validation.error.response',
             defaultMessage: 'Error occurred during validation',
         });
-        if (error.response && error.response.body && error.response.body.description) {
+        if (error.response?.body?.description) {
             message = error.response.body.description;
         }
         setValidationErrors(getValidationErrorsFromError(error, wsdlValidationErrorTitle));
@@ -200,9 +205,7 @@ export default function ProvideWSDL(props) {
             }).catch((error) => {
                 handleWSDLValidationErrorResponse(error, 'file');
             }).finally(() => {
-                // Set the file as the input value regardless of validity so the uploaded-file row
-                // (name + delete) replaces the drop zone and the ValidationResults panel shows below,
-                // matching the OpenAPI flow. The delete icon calls reset() to bring the drop zone back.
+                // Set the file as input value even when invalid so the uploaded-file row replaces the drop zone.
                 inputsDispatcher({ action: 'inputValue', value: file });
             });
         } else {
@@ -323,10 +326,10 @@ export default function ProvideWSDL(props) {
 
     return (
         <>
-            <Grid container spacing={5}>
+            <Grid container>
                 {isCreateMode
                 && (
-                    <Grid item md={12}>
+                    <Grid item md={12} sx={{ mb: 2 }}>
                         <FormControl component='fieldset'>
                             <FormLabel component='legend'>
                                 <>
@@ -344,9 +347,9 @@ export default function ProvideWSDL(props) {
                                 onChange={
                                     (event) => {
                                         inputsDispatcher({ action: 'type', value: event.target.value });
-                                        inputsDispatcher({ action: 'isFormValid', value: false });
-                                        inputsDispatcher({ action: 'inputValue', value: null });
                                         inputsDispatcher({ action: 'inputType', value: 'url' });
+                                        // Clear validation state so a stale error does not linger on type change.
+                                        reset();
                                     }
                                 }
                             >
@@ -374,7 +377,7 @@ export default function ProvideWSDL(props) {
                         </FormControl>
                     </Grid>
                 )}
-                <Grid item md={12}>
+                <Grid item md={12} sx={{ mb: 2 }}>
                     <FormControl component='fieldset'>
                         <FormLabel component='legend'>
                             <>
@@ -414,7 +417,7 @@ export default function ProvideWSDL(props) {
                         </RadioGroup>
                     </FormControl>
                 </Grid>
-                <Grid item md={11}>
+                <Grid item xs={12}>
                     {isFileInput ? renderFileUpload()
                         : (
                             <TextField

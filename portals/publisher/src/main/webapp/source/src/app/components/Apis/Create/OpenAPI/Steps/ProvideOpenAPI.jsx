@@ -48,10 +48,10 @@ import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
 import Utils from 'AppData/Utils';
+import getValidationErrorsFromError from 'AppComponents/Apis/Create/Components/validationErrorUtils';
+import ValidationResults from 'AppComponents/Apis/Create/Components/ValidationResults';
 import {
     getLinterResultsFromContent } from "../../../Details/APIDefinition/Linting/Linting";
-import getValidationErrorsFromError from './validationErrorUtils';
-import ValidationResults from './ValidationResults';
 
 const PREFIX = 'ProvideOpenAPI';
 
