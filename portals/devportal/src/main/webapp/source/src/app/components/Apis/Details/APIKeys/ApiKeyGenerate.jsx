@@ -37,6 +37,10 @@ import {
 import { ContentCopy, Refresh } from '@mui/icons-material';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
+import {
+    isValidPermittedIPList,
+    isValidPermittedRefererList,
+} from 'AppComponents/Shared/AppsAndKeys/constraintValidator';
 
 /**
  * Custom hook for managing API key generation and regeneration operations
@@ -54,6 +58,7 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
     const [customValidityDays, setCustomValidityDays] = React.useState('');
     const [restrictionType, setRestrictionType] = React.useState('none');
     const [restrictionValue, setRestrictionValue] = React.useState('');
+    const [restrictionError, setRestrictionError] = React.useState('');
 
     // Generation modal state
     const [generationModalOpen, setGenerationModalOpen] = React.useState(false);
@@ -140,6 +145,7 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
         setCustomValidityDays('');
         setRestrictionType('none');
         setRestrictionValue('');
+        setRestrictionError('');
         setShowToken(false);
         setApikey(null);
         // Refresh the API keys list after closing
@@ -164,6 +170,26 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
                 },
                 { restrictionLabel: restrictionLabel.toLowerCase() },
             ));
+            return;
+        }
+        if (restrictionType === 'ip' && !isValidPermittedIPList(restrictionValue)) {
+            const message = intl.formatMessage({
+                id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.invalidIPRestriction',
+                defaultMessage: 'Invalid IP address. Enter a valid IPv4/IPv6 address or CIDR range,'
+                    + ' separating multiple values with commas.',
+            });
+            setRestrictionError(message);
+            Alert.error(message);
+            return;
+        }
+        if (restrictionType === 'referrer' && !isValidPermittedRefererList(restrictionValue)) {
+            const message = intl.formatMessage({
+                id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.invalidRefererRestriction',
+                defaultMessage: 'Invalid referrer. Enter a URL or a pattern with * wildcards'
+                    + ' (e.g. https://example.com/*), separating multiple values with commas.',
+            });
+            setRestrictionError(message);
+            Alert.error(message);
             return;
         }
         if (validityPeriod === 'custom' && !customValidityDays) {
@@ -436,6 +462,8 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
         setRestrictionType,
         restrictionValue,
         setRestrictionValue,
+        restrictionError,
+        setRestrictionError,
         generationModalOpen,
         isGenerating,
         apikey,
