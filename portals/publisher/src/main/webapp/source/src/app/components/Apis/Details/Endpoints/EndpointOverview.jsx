@@ -54,6 +54,12 @@ import EndpointSecurity from './GeneralConfiguration/EndpointSecurity';
 import Credentials from './AWSLambda/Credentials.jsx';
 import ServiceEndpoint from './ServiceEndpoint';
 import CustomBackend from './CustomBackend';
+import {
+    ENDPOINT_TYPE_PROTOTYPED,
+    ENDPOINT_IMPLEMENTATION_TYPE_INLINE,
+    ENDPOINT_IMPLEMENTATION_TYPE_ENDPOINT,
+    ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS,
+} from './endpointConstants';
 
 const PREFIX = 'EndpointOverview';
 
@@ -162,11 +168,11 @@ const endpointTypes = [
     { key: 'http', value: 'HTTP/REST Endpoint' },
     { key: 'default', value: 'Dynamic Endpoints' },
     { key: 'address', value: 'HTTP/SOAP Endpoint' },
-    { key: 'prototyped', value: 'Prototype Endpoint' },
-    { key: 'INLINE', value: 'Mock Implementation' },
+    { key: ENDPOINT_TYPE_PROTOTYPED, value: 'Prototype Endpoint' },
+    { key: ENDPOINT_IMPLEMENTATION_TYPE_INLINE, value: 'Mock Implementation' },
     { key: 'awslambda', value: 'AWS Lambda' },
     { key: 'service', value: 'Service Endpoint' },
-    { key: 'MOCKED_OAS', value: 'Mock Implementation' },
+    { key: ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS, value: 'Mock Implementation' },
     { key: 'sequence_backend', value: 'Sequence Backend' },
     { key: 'ws', value: 'Websocket Endpoint' },
 ];
@@ -237,12 +243,12 @@ function EndpointOverview(props) {
      * */
     const getEndpointType = (apiObject) => {
         const type = apiObject.endpointConfig && apiObject.endpointConfig.endpoint_type;
-        if (apiObject.endpointImplementationType === 'INLINE') {
+        if (apiObject.endpointImplementationType === ENDPOINT_IMPLEMENTATION_TYPE_INLINE) {
             return endpointTypes[4];
-        } else if (apiObject.endpointImplementationType === 'MOCKED_OAS') {
+        } else if (apiObject.endpointImplementationType === ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS) {
             return endpointTypes[7];
-        } else if (apiObject.endpointImplementationType === 'ENDPOINT'
-            && apiObject.endpointConfig.implementation_status === 'prototyped'
+        } else if (apiObject.endpointImplementationType === ENDPOINT_IMPLEMENTATION_TYPE_ENDPOINT
+            && apiObject.endpointConfig.implementation_status === ENDPOINT_TYPE_PROTOTYPED
             && api.lifeCycleStatus === 'PROTOTYPED') {
             return endpointTypes[3];
         } else if (type === 'http') {
@@ -322,7 +328,7 @@ function EndpointOverview(props) {
                 { key: 'service', value: 'Service Endpoint' },
                 { key: 'address', value: 'HTTP/SOAP Endpoint' },
                 { key: 'default', value: 'Dynamic Endpoints' },
-                { key: 'INLINE', value: 'Mock Implementation' },
+                { key: ENDPOINT_IMPLEMENTATION_TYPE_INLINE, value: 'Mock Implementation' },
                 { key: 'awslambda', value: 'AWS Lambda' },
             ];
         }
@@ -361,7 +367,7 @@ function EndpointOverview(props) {
         if (epType.key === 'service') {
             getServices();
         }
-        if (epType.key !== 'INLINE' || epType.key !== 'MOCKED_OAS') {
+        if (epType.key !== ENDPOINT_IMPLEMENTATION_TYPE_INLINE || epType.key !== ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS) {
             setEndpointCategory({
                 prod: !!endpointConfig.production_endpoints,
                 sandbox: !!endpointConfig.sandbox_endpoints,
@@ -563,8 +569,8 @@ function EndpointOverview(props) {
         setTypeChangeConfirmation({ openDialog: false, serviceInfo: false });
         setIsCustomBackendSelected(false);
         const selectedKey = typeChangeConfirmation.type || value;
-        if (selectedKey === 'INLINE' || selectedKey === 'MOCKED_OAS') {
-            const tmpConfig = createEndpointConfig('prototyped');
+        if (selectedKey === ENDPOINT_IMPLEMENTATION_TYPE_INLINE || selectedKey === ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS) {
+            const tmpConfig = createEndpointConfig(ENDPOINT_TYPE_PROTOTYPED);
             endpointsDispatcher({
                 action: 'set_inline_or_mocked_oas',
                 value: {
@@ -572,12 +578,12 @@ function EndpointOverview(props) {
                     endpointImplementationType: selectedKey,
                 },
             });
-        } else if (selectedKey === 'prototyped') {
+        } else if (selectedKey === ENDPOINT_TYPE_PROTOTYPED) {
             const tmpConfig = createEndpointConfig(selectedKey);
             endpointsDispatcher({
                 action: 'set_prototyped',
                 value: {
-                    endpointImplementationType: 'ENDPOINT',
+                    endpointImplementationType: ENDPOINT_IMPLEMENTATION_TYPE_ENDPOINT,
                     endpointConfig: tmpConfig,
                 },
             });
@@ -586,7 +592,7 @@ function EndpointOverview(props) {
             endpointsDispatcher({
                 action: 'select_endpoint_type',
                 value: {
-                    endpointImplementationType: 'ENDPOINT',
+                    endpointImplementationType: ENDPOINT_IMPLEMENTATION_TYPE_ENDPOINT,
                     endpointConfig: { ...generatedEndpointConfig },
                 },
             });
@@ -596,7 +602,7 @@ function EndpointOverview(props) {
             endpointsDispatcher({
                 action: 'select_endpoint_type',
                 value: {
-                    endpointImplementationType: 'ENDPOINT',
+                    endpointImplementationType: ENDPOINT_IMPLEMENTATION_TYPE_ENDPOINT,
                     endpointConfig: { ...generatedEndpointConfig },
                 },
             });
@@ -605,7 +611,7 @@ function EndpointOverview(props) {
             endpointsDispatcher({
                 action: 'select_endpoint_type',
                 value: {
-                    endpointImplementationType: 'ENDPOINT',
+                    endpointImplementationType: ENDPOINT_IMPLEMENTATION_TYPE_ENDPOINT,
                     endpointConfig: { ...generatedEndpointConfig },
                 },
             });
@@ -780,7 +786,8 @@ function EndpointOverview(props) {
                             aria-label='EndpointType'
                             name='endpointType'
                             className={classes.radioGroup}
-                            value={endpointType.key === 'MOCKED_OAS' ? 'INLINE' : endpointType.key}
+                            value={endpointType.key === ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS
+                                ? ENDPOINT_IMPLEMENTATION_TYPE_INLINE : endpointType.key}
                             onChange={handleEndpointTypeSelect}
                         >
                             {supportedEnpointTypes.map((endpoint) => {
@@ -802,7 +809,8 @@ function EndpointOverview(props) {
                     </FormControl>
                 </Grid>
                 <Grid item xs={12}>
-                    {(endpointType.key === 'INLINE' || endpointType.key === 'MOCKED_OAS') ? 
+                    {(endpointType.key === ENDPOINT_IMPLEMENTATION_TYPE_INLINE
+                        || endpointType.key === ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS) ?
                         iff(Object.keys(swaggerDef.paths).length !== 0, 
                             <MockImplEndpoints 
                                 key={endpointType.key}
@@ -954,7 +962,7 @@ function EndpointOverview(props) {
                                                     )
                                                     : (
                                                         <>
-                                                            {endpointType.key === 'prototyped'
+                                                            {endpointType.key === ENDPOINT_TYPE_PROTOTYPED
                                                                 ? (
                                                                     <Typography>
                                                                         <FormattedMessage
@@ -1094,7 +1102,8 @@ function EndpointOverview(props) {
                                                                     : (
                                                                         <GenericEndpoint
                                                                             autoFocus
-                                                                            name={endpointType.key === 'prototyped'
+                                                                            name={endpointType.key
+                                                                                === ENDPOINT_TYPE_PROTOTYPED
                                                                                 ? (
                                                                                     <FormattedMessage
                                                                                         id={'Apis.Details.Endpoints.'
@@ -1127,7 +1136,7 @@ function EndpointOverview(props) {
                                                                         />
                                                                     )}
                                                             </Collapse>
-                                                            {endpointType.key === 'prototyped' ? <div />
+                                                            {endpointType.key === ENDPOINT_TYPE_PROTOTYPED ? <div />
                                                                 : (
                                                                     <div>
                                                                         {componentValidator.includes("typeSANDBOX") &&
@@ -1294,8 +1303,10 @@ function EndpointOverview(props) {
                             </Paper>
                         )}
                 </Grid>
-                {endpointType.key === 'INLINE' || endpointType.key === 'MOCKED_OAS' || 
-                    endpointType.key === 'prototyped' || endpointType.key === 'awslambda' || api.type === 'WS' || endpointType.key === 'sequence_backend'
+                {endpointType.key === ENDPOINT_IMPLEMENTATION_TYPE_INLINE
+                    || endpointType.key === ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS
+                    || endpointType.key === ENDPOINT_TYPE_PROTOTYPED || endpointType.key === 'awslambda'
+                    || api.type === 'WS' || endpointType.key === 'sequence_backend'
                     ? <div />
                     : (
                         <Grid item xs={12}>
@@ -1313,10 +1324,10 @@ function EndpointOverview(props) {
                         </Grid>
                     )}
                 {
-                    endpointType.key === 'INLINE'
-                        || endpointType.key === 'MOCKED_OAS'
+                    endpointType.key === ENDPOINT_IMPLEMENTATION_TYPE_INLINE
+                        || endpointType.key === ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS
                         || endpointType.key === 'default'
-                        || endpointType.key === 'prototyped'
+                        || endpointType.key === ENDPOINT_TYPE_PROTOTYPED
                         || endpointType.key === 'sequence_backend'
                         || api.type === 'WS'
                         || endpointType.key === 'awslambda'
