@@ -172,7 +172,7 @@ class MCPServer extends Resource {
      * @returns {Promise<MCPServer>} A promise that resolves to the created MCPServer instance.
      */
     createMCPServerUsingExistingAPI() {
-        const promisedCreate = this.client.then(client => {
+        const promisedCreate = this.client.then(async (client) => {
             const apiData = this.getDataFromSpecFields(client);
             const data = {};
 
@@ -181,9 +181,28 @@ class MCPServer extends Resource {
                     data[apiAttribute] = this[apiAttribute];
                 }
             });
+            let openAPIVersion = 'v3';
+            const backendApiId = data.operations?.[0]?.apiOperationMapping?.apiId;
+            if (backendApiId) {
+                try {
+                    const swaggerResponse = await client.apis.APIs.getAPISwagger(
+                        { apiId: backendApiId },
+                        this._requestMetaData(),
+                    );
+                    const definition = typeof swaggerResponse.body === 'string'
+                        ? JSON.parse(swaggerResponse.body)
+                        : swaggerResponse.body;
+                    if (definition && definition.swagger
+                        && String(definition.swagger).startsWith('2.')) {
+                        openAPIVersion = 'v2';
+                    }
+                } catch (error) {
+                    console.error('Error detecting the OpenAPI version of the referenced API:', error);
+                }
+            }
 
             return client.apis['MCP Servers'].createMCPServerFromAPI(
-                { 'Content-Type': 'application/json' },
+                { 'Content-Type': 'application/json', openAPIVersion },
                 { requestBody: data },
                 this._requestMetaData(),
             );
