@@ -151,3 +151,76 @@ const validateConstraint = (inputValue, constraint, intl, messages) => {
 };
 
 export default validateConstraint;
+
+/*
+ * Validators for the API Key Security Restriction inputs (permittedIP / permittedReferer).
+ *
+ * The gateway treats both values as comma separated lists
+ * (org.wso2.carbon.apimgt.gateway.utils.ApiKeyAuthenticatorUtils#validateAPIKeyRestrictions):
+ *   - Each permittedIP entry is matched via APIUtil.isIpInNetwork, which accepts plain
+ *     IPv4/IPv6 addresses as well as CIDR notation (e.g. 10.0.0.0/24).
+ *   - Each permittedReferer entry is matched literally against the Referer header,
+ *     with '*' acting as a wildcard (e.g. https://example.com/*).
+ *
+ * The IPv4/IPv6 patterns below are the same patterns used by the Admin Portal
+ * (Throttling/Blacklist/AddEdit.jsx) so that both portals accept identical formats.
+ */
+
+const IPV4_PATTERN = '(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}'
+    + '([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])';
+const IPV6_PATTERN = '(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:)'
+    + '{1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}'
+    + '(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}'
+    + '(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)'
+    + '|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,'
+    + '1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:('
+    + '(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))';
+
+const IPV4_REGEX = new RegExp(`^${IPV4_PATTERN}$`);
+const IPV6_REGEX = new RegExp(`^${IPV6_PATTERN}$`);
+const IPV4_CIDR_REGEX = new RegExp(`^${IPV4_PATTERN}/([0-9]|[12][0-9]|3[0-2])$`);
+const IPV6_CIDR_REGEX = new RegExp(`^${IPV6_PATTERN}/([0-9]|[1-9][0-9]|1[01][0-9]|12[0-8])$`);
+
+/**
+ * Validates the value entered for an IP based API key restriction.
+ * Accepts a single entry or a comma separated list, where each entry is a valid
+ * IPv4 address, IPv6 address, or a CIDR range of either family.
+ *
+ * @param {string} value - The raw user input.
+ * @returns {boolean} true if every entry is a valid IP address or CIDR range.
+ */
+export const isValidPermittedIPList = (value) => {
+    if (!value || !value.trim()) {
+        return false;
+    }
+    return value.split(',').every((entry) => {
+        const ip = entry.trim();
+        return ip !== ''
+            && (IPV4_REGEX.test(ip)
+                || IPV6_REGEX.test(ip)
+                || IPV4_CIDR_REGEX.test(ip)
+                || IPV6_CIDR_REGEX.test(ip));
+    });
+};
+
+/**
+ * Validates the value entered for a referrer based API key restriction.
+ * Accepts a single entry or a comma separated list. The gateway matches each entry
+ * literally (with '*' wildcards) against the Referer header, so entries are kept
+ * permissive: each one must be non empty, contain no whitespace, and look like a
+ * URL, host or wildcard pattern (contain at least one of '.', ':', '/' or '*').
+ *
+ * @param {string} value - The raw user input.
+ * @returns {boolean} true if every entry is a plausible referrer pattern.
+ */
+export const isValidPermittedRefererList = (value) => {
+    if (!value || !value.trim()) {
+        return false;
+    }
+    return value.split(',').every((entry) => {
+        const referer = entry.trim();
+        return referer !== ''
+            && !/\s/.test(referer)
+            && /[.:/*]/.test(referer);
+    });
+};
