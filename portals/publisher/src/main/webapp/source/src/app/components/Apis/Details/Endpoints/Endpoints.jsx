@@ -37,8 +37,15 @@ import MCPServerEndpoints from 'AppComponents/MCPServers/Details/Endpoints/Endpo
 import EndpointOverview from './EndpointOverview';
 import AIEndpoints from './AIEndpoints/AIEndpoints';
 import { createEndpointConfig, getEndpointTemplateByType } from './endpointUtils';
-import { API_SECURITY_KEY_TYPE_PRODUCTION, 
+import { API_SECURITY_KEY_TYPE_PRODUCTION,
     API_SECURITY_KEY_TYPE_SANDBOX } from '../Configuration/components/APISecurity/components/apiSecurityConstants';
+import {
+    ENDPOINT_TYPE_PROTOTYPED,
+    ENDPOINT_IMPLEMENTATION_TYPE_INLINE,
+    ENDPOINT_IMPLEMENTATION_TYPE_ENDPOINT,
+    ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS,
+    ENDPOINT_IMPLEMENTATION_METHOD_MOCK,
+} from './endpointConstants';
 
 const PREFIX = 'Endpoints';
 
@@ -172,15 +179,23 @@ function Endpoints(props) {
             }
             case 'endpointImplementationType': { // set implementation status
                 const { endpointType, implementationType } = value;
-                if (endpointType === 'prototyped' || endpointType === 'INLINE') {
-                    const config = createEndpointConfig('prototyped');
-                    if (implementationType === 'mock') {
+                if (endpointType === ENDPOINT_TYPE_PROTOTYPED || endpointType === ENDPOINT_IMPLEMENTATION_TYPE_INLINE) {
+                    const config = createEndpointConfig(ENDPOINT_TYPE_PROTOTYPED);
+                    if (implementationType === ENDPOINT_IMPLEMENTATION_METHOD_MOCK) {
                         api.generateMockScripts(api.id).then((res) => { // generates mock/sample payloads
                             setSwagger(res.obj);
                         });
-                        return { ...initState, endpointConfig: config, endpointImplementationType: 'INLINE' };
+                        return {
+                            ...initState,
+                            endpointConfig: config,
+                            endpointImplementationType: ENDPOINT_IMPLEMENTATION_TYPE_INLINE,
+                        };
                     }
-                    return { ...initState, endpointConfig: config, endpointImplementationType: 'ENDPOINT' };
+                    return {
+                        ...initState,
+                        endpointConfig: config,
+                        endpointImplementationType: ENDPOINT_IMPLEMENTATION_TYPE_ENDPOINT,
+                    };
                 }
                 const config = createEndpointConfig(endpointType);
                 return { ...initState, endpointConfig: config };
@@ -202,7 +217,7 @@ function Endpoints(props) {
             }
             case 'set_inline_or_mocked_oas': {
                 const { endpointImplementationType, endpointConfig } = value;
-                if (endpointImplementationType === 'INLINE') {
+                if (endpointImplementationType === ENDPOINT_IMPLEMENTATION_TYPE_INLINE) {
                     api.generateMockScripts(api.id).then((res) => { // generates mock/sample payloads
                         setSwagger(res.obj);
                     });
@@ -329,7 +344,8 @@ function Endpoints(props) {
                     });
             }
         }
-        if (endpointImplementationType === 'INLINE' || endpointImplementationType === 'MOCKED_OAS') {
+        if (endpointImplementationType === ENDPOINT_IMPLEMENTATION_TYPE_INLINE
+            || endpointImplementationType === ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS) {
             api.updateSwagger(swagger).then((resp) => {
                 setSwagger(resp.obj);
             }).then(() => {
@@ -436,7 +452,8 @@ function Endpoints(props) {
                     });
             }
         }
-        if (endpointImplementationType === 'INLINE' || endpointImplementationType === 'MOCKED_OAS') {
+        if (endpointImplementationType === ENDPOINT_IMPLEMENTATION_TYPE_INLINE
+            || endpointImplementationType === ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS) {
             api.updateSwagger(swagger).then((resp) => {
                 setSwagger(resp.obj);
             }).then(() => {
@@ -678,8 +695,9 @@ function Endpoints(props) {
             }
         } else {
             let isValidEndpoint = false;
-            if (endpointConfig.implementation_status === 'prototyped' && api.lifeCycleStatus === 'PROTOTYPED') {
-                if (implementationType === 'ENDPOINT') {
+            if (endpointConfig.implementation_status === ENDPOINT_TYPE_PROTOTYPED
+                && api.lifeCycleStatus === 'PROTOTYPED') {
+                if (implementationType === ENDPOINT_IMPLEMENTATION_TYPE_ENDPOINT) {
                     if (endpointConfig.production_endpoints && endpointConfig.production_endpoints.url === '') {
                         return {
                             isValid: false,

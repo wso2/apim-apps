@@ -33,6 +33,10 @@ import {
     CardActions,
 } from '@mui/material';
 import PropTypes from 'prop-types';
+import {
+    ENDPOINT_IMPLEMENTATION_TYPE_INLINE,
+    ENDPOINT_IMPLEMENTATION_METHOD_MOCK,
+} from './endpointConstants';
 
 const PREFIX = 'NewEndpointCreate';
 
@@ -97,7 +101,7 @@ function NewEndpointCreate(props) {
         componentValidator,
     } = props;
     const intl = useIntl();
-    const [endpointImplType, setImplType] = useState('mock');
+    const [endpointImplType, setImplType] = useState(ENDPOINT_IMPLEMENTATION_METHOD_MOCK);
     const endpointTypes = [
         {
             type: 'http',
@@ -152,7 +156,7 @@ function NewEndpointCreate(props) {
             disabled: ['SOAPTOREST', 'GRAPHQL', 'SSE', 'SOAP', 'HTTP'],
         },
         {
-            type: 'INLINE',
+            type: ENDPOINT_IMPLEMENTATION_TYPE_INLINE,
             name: intl.formatMessage({
                 id: 'Apis.Details.Endpoints.NewEndpointCreate.create.prototype.endpoint',
                 defaultMessage: 'Mock Implementation',
