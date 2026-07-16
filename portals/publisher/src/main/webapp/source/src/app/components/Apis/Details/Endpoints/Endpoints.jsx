@@ -279,90 +279,98 @@ function Endpoints(props) {
      *
      * @param {boolean} isRedirect Used for dynamic endpoints to redirect to the runtime config page.
      */
-    const handleSave = (isRedirect) => {
-
-        const { endpointConfig, endpointImplementationType, serviceInfo } = apiObject;
-        if (endpointConfig.endpoint_type === 'service') {
-            endpointConfig.endpoint_type = 'http';
+    /**
+     * Delete/ upload the production and sandbox sequence backends based on the current backend lists.
+     */
+    const updateSequenceBackends = () => {
+        if (productionBackendList?.length === 0 || (productionBackendList?.length > 0
+            && productionBackendList[0].content)) {
+            api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_PRODUCTION, api.id).then(() => {
+                Alert.success('Production Sequence backend deleted successfully');
+            })
+                .catch(() => {
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
+                        defaultMessage: 'Error Deleting Production Sequence Backend',
+                    }));
+                });
         }
-        setUpdating(true);
-        if (endpointConfig.endpoint_type === 'sequence_backend') {
-            if (productionBackendList?.length === 0 || (productionBackendList?.length > 0
-                && productionBackendList[0].content)) {
-                api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_PRODUCTION, api.id).then(() => {
-                    Alert.success('Production Sequence backend deleted successfully');
-                })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
-                            defaultMessage: 'Error Deleting Production Sequence Backend',
-                        }));
-                    });
-            }
 
-            if (sandBoxBackendList?.length === 0 || (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content)) {
-                api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_SANDBOX, api.id).then(() => {
-                    Alert.success('Sandbox Sequence backend deleted successfully');
-                })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
-                            defaultMessage: 'Error Deleting Sandbox Sequence Backend',
-                        }));
-                    });
-            }
-            if (productionBackendList?.length > 0 && productionBackendList[0].content) {
-                const productionBackend = productionBackendList[0];
-                api.uploadCustomBackend(productionBackend.content, API_SECURITY_KEY_TYPE_PRODUCTION, api.id)
-                    .then(() => {
-                        Alert.success('Custom backend uploaded successfully');
-                    })
-                    .catch((error) => {
-                        const backendMessage = error?.response?.body?.description;
-                        Alert.error(
-                            backendMessage || intl.formatMessage({
-                                id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
-                                defaultMessage: 'Error Uploading Production Sequence Backend',
-                            }),
-                        );
-                    });
-            }
-            if (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content) {
-                const sandBackend = sandBoxBackendList[0];
-                api.uploadCustomBackend(sandBackend.content, API_SECURITY_KEY_TYPE_SANDBOX, api.id)
-                    .then(() => {
-                        Alert.success('Custom backend uploaded successfully');
-                    })
-                    .catch((error) => {
-                        const backendMessage = error?.response?.body?.description;
-                        Alert.error(
-                            backendMessage || intl.formatMessage({
-                                id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
-                                defaultMessage: 'Error Uploading Sandbox Sequence Backend',
-                            }),
-                        );
-                    });
-            }
+        if (sandBoxBackendList?.length === 0 || (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content)) {
+            api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_SANDBOX, api.id).then(() => {
+                Alert.success('Sandbox Sequence backend deleted successfully');
+            })
+                .catch(() => {
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
+                        defaultMessage: 'Error Deleting Sandbox Sequence Backend',
+                    }));
+                });
         }
+        if (productionBackendList?.length > 0 && productionBackendList[0].content) {
+            const productionBackend = productionBackendList[0];
+            api.uploadCustomBackend(productionBackend.content, API_SECURITY_KEY_TYPE_PRODUCTION, api.id)
+                .then(() => {
+                    Alert.success('Custom backend uploaded successfully');
+                })
+                .catch((error) => {
+                    const backendMessage = error?.response?.body?.description;
+                    Alert.error(
+                        backendMessage || intl.formatMessage({
+                            id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
+                            defaultMessage: 'Error Uploading Production Sequence Backend',
+                        }),
+                    );
+                });
+        }
+        if (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content) {
+            const sandBackend = sandBoxBackendList[0];
+            api.uploadCustomBackend(sandBackend.content, API_SECURITY_KEY_TYPE_SANDBOX, api.id)
+                .then(() => {
+                    Alert.success('Custom backend uploaded successfully');
+                })
+                .catch((error) => {
+                    const backendMessage = error?.response?.body?.description;
+                    Alert.error(
+                        backendMessage || intl.formatMessage({
+                            id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
+                            defaultMessage: 'Error Uploading Sandbox Sequence Backend',
+                        }),
+                    );
+                });
+        }
+    };
+
+    /**
+     * Update the swagger (for INLINE/ MOCKED_OAS implementations) or the API object, then invoke the completion
+     * callback. Shared by handleSave and handleSaveAndDeploy, which only differ in the update payload and what
+     * happens once the update settles.
+     *
+     * @param {string} endpointImplementationType The api implementation type (INLINE/ ENDPOINT/ MOCKED_OAS).
+     * @param {object} updatePayload The payload to send via updateAPI for INLINE/ MOCKED_OAS implementations.
+     * @param {Function} onComplete Callback invoked once the update settles.
+     */
+    const persistEndpointConfig = (endpointImplementationType, updatePayload, onComplete) => {
         if (endpointImplementationType === ENDPOINT_IMPLEMENTATION_TYPE_INLINE
             || endpointImplementationType === ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS) {
             api.updateSwagger(swagger).then((resp) => {
                 setSwagger(resp.obj);
-            }).then(() => {
-                updateAPI({ endpointConfig, endpointImplementationType, serviceInfo })
-                    .catch((error) => {
-                        if (error.response) {
-                            Alert.error(error.response.body.description);
-                        } else {
-                            Alert.error('Error occurred while updating endpoint configurations');
-                        }
-                    });
-            }).finally(() => {
-                setUpdating(false);
-                if (isRedirect) {
-                    history.push('/apis/' + api.id + '/policies');
-                }
-            });
+            }).then(() => updateAPI(updatePayload)
+                .catch((error) => {
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        Alert.error('Error occurred while updating endpoint configurations');
+                    }
+                }))
+                .catch((error) => {
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        Alert.error('Error occurred while updating endpoint configurations');
+                    }
+                })
+                .finally(onComplete);
         } else {
             const apiObjectCopy = cloneDeep(apiObject);
             if (apiObjectCopy.endpointConfig.endpoint_type === 'service') {
@@ -376,13 +384,34 @@ function Endpoints(props) {
                         Alert.error('Error occurred while updating endpoint configurations');
                     }
                 })
-                .finally(() => {
-                    setUpdating(false);
-                    if (isRedirect) {
-                        history.push('/apis/' + api.id + '/policies');
-                    }
-                });
+                .finally(onComplete);
         }
+    };
+
+    /**
+     * Method to update the api.
+     *
+     * @param {boolean} isRedirect Used for dynamic endpoints to redirect to the runtime config page.
+     */
+    const handleSave = (isRedirect) => {
+        const { endpointConfig, endpointImplementationType, serviceInfo } = apiObject;
+        if (endpointConfig.endpoint_type === 'service') {
+            endpointConfig.endpoint_type = 'http';
+        }
+        setUpdating(true);
+        if (endpointConfig.endpoint_type === 'sequence_backend') {
+            updateSequenceBackends();
+        }
+        persistEndpointConfig(
+            endpointImplementationType,
+            { endpointConfig, endpointImplementationType, serviceInfo },
+            () => {
+                setUpdating(false);
+                if (isRedirect) {
+                    history.push('/apis/' + api.id + '/policies');
+                }
+            },
+        );
     };
 
     const handleSaveAndDeploy = () => {
@@ -392,103 +421,17 @@ function Endpoints(props) {
         }
         setUpdating(true);
         if (endpointConfig.endpoint_type === 'sequence_backend') {
-            if (productionBackendList?.length === 0
-                || (productionBackendList?.length > 0 && productionBackendList[0].content)) {
-                api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_PRODUCTION, api.id)
-                    .then(() => {
-                        Alert.success('Production Sequence backend deleted successfully');
-                    })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
-                            defaultMessage: 'Error Deleting Production Sequence Backend',
-                        }));
-                    });
-            }
-
-            if (sandBoxBackendList?.length === 0
-                || (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content)) {
-                api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_SANDBOX, api.id)
-                    .then(() => {
-                        Alert.success('Sandbox Sequence backend deleted successfully');
-                    })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
-                            defaultMessage: 'Error Deleting Sandbox Sequence Backend',
-                        }));
-                    });
-            }
-            if (productionBackendList?.length > 0 && productionBackendList[0].content) {
-                const productionBackend = productionBackendList[0];
-                api.uploadCustomBackend(productionBackend.content, API_SECURITY_KEY_TYPE_PRODUCTION, api.id)
-                    .then(() => {
-                        Alert.success('Custom backend uploaded successfully');
-                    })
-                    .catch((error) => {
-                        const backendMessage = error?.response?.body?.description;
-                        Alert.error(
-                            backendMessage || intl.formatMessage({
-                                id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
-                                defaultMessage: 'Error Uploading Production Sequence Backend',
-                            }),
-                        );
-                    });
-            }
-            if (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content) {
-                const sandBackend = sandBoxBackendList[0];
-                api.uploadCustomBackend(sandBackend.content, API_SECURITY_KEY_TYPE_SANDBOX, api.id)
-                    .then(() => {
-                        Alert.success('Custom backend uploaded successfully');
-                    })
-                    .catch((error) => {
-                        const backendMessage = error?.response?.body?.description;
-                        Alert.error(
-                            backendMessage || intl.formatMessage({
-                                id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
-                                defaultMessage: 'Error Uploading Sandbox Sequence Backend',
-                            }),
-                        );
-                    });
-            }
+            updateSequenceBackends();
         }
-        if (endpointImplementationType === ENDPOINT_IMPLEMENTATION_TYPE_INLINE
-            || endpointImplementationType === ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS) {
-            api.updateSwagger(swagger).then((resp) => {
-                setSwagger(resp.obj);
-            }).then(() => {
-                updateAPI({ endpointConfig, endpointImplementationType, endpointSecurity, serviceInfo })
-                    .catch((error) => {
-                        if (error.response) {
-                            Alert.error(error.response.body.description);
-                        } else {
-                            Alert.error('Error occurred while updating endpoint configurations');
-                        }
-                    }); 
-            }).finally(() => history.push({
+        persistEndpointConfig(
+            endpointImplementationType,
+            { endpointConfig, endpointImplementationType, endpointSecurity, serviceInfo },
+            () => history.push({
                 pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
                     : `/apis/${api.id}/deployments`,
                 state: 'deploy',
-            }));
-        } else {
-            const apiObjectCopy = cloneDeep(apiObject);
-            if (apiObjectCopy.endpointConfig.endpoint_type === 'service') {
-                apiObjectCopy.endpointConfig.endpoint_type = 'http';
-            }
-            updateAPI(apiObjectCopy)
-                .catch((error) => {
-                    if (error.response) {
-                        Alert.error(error.response.body.description);
-                    } else {
-                        Alert.error('Error occurred while updating endpoint configurations');
-                    }
-                })
-                .finally(() => history.push({
-                    pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
-                        : `/apis/${api.id}/deployments`,
-                    state: 'deploy',
-                }));
-        }
+            }),
+        );
     };
 
     /**
