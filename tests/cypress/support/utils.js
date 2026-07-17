@@ -229,6 +229,120 @@ export default class Utils {
         });
     }
 
+    /**
+     * Create an MCP Server from a minimal OpenAPI spec (multipart upload).
+     * Returns a Cypress.Promise that resolves to the new MCP server's id.
+     */
+    static addMCPServer(data) {
+        let { name, version, context } = data || {};
+        name = name || Utils.generateName();
+        version = version || '1.0.0';
+        context = context || ('/' + name.replace(/[^A-Z0-9]/ig, '_'));
+
+        const additionalProps = JSON.stringify({
+            name,
+            version,
+            context,
+            policies: ['Unlimited'],
+        });
+        // Minimal valid OpenAPI 3.0 spec with a server URL so APIM auto-creates a
+        // production backend; single-quoted inner JSON avoids shell escaping issues
+        const specJson = JSON.stringify({
+            openapi: '3.0.0',
+            info: { title: name, version },
+            servers: [{ url: 'https://petstore.swagger.io/v2' }],
+            paths: {},
+        });
+
+        return new Cypress.Promise((resolve, reject) => {
+            try {
+                Utils.getApiToken().then((token) => {
+                    const tmpFile = `/tmp/mcp_spec_${name}.json`;
+                    cy.exec(`printf '%s' '${specJson.replace(/'/g, "'\\''")}' > ${tmpFile}`).then(() => {
+                        const curl = `curl -k -X POST \
+                            -F "file=@${tmpFile};type=application/json" \
+                            -F "additionalProperties=${additionalProps.replace(/"/g, '\\"')}" \
+                            -H "Authorization: Bearer ${token}" \
+                            "${Cypress.config().baseUrl}/api/am/publisher/v4/mcp-servers/generate-from-openapi"`;
+                        cy.exec(curl).then((result) => {
+                            cy.exec(`rm -f ${tmpFile}`, { failOnNonZeroExit: false });
+                            let parsed;
+                            try {
+                                parsed = JSON.parse(result.stdout);
+                            } catch (e) {
+                                throw new Error(`addMCPServer: non-JSON response. body=${result.stdout}`);
+                            }
+                            if (!parsed || !parsed.id) {
+                                throw new Error(`addMCPServer: server returned no id. body=${result.stdout}`);
+                            }
+                            resolve(parsed.id);
+                        });
+                    });
+                });
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
+
+    /**
+     * Create an MCP Server using an existing API's properties via generate-from-api.
+     * No OpenAPI spec is needed; APIM creates the server from the supplied metadata.
+     * A backend may or may not be auto-created — callers should check /backends.
+     * Resolves with the new MCP server's id.
+     */
+    static addMCPServerFromExistingAPI(data) {
+        let { name, version, context } = data || {};
+        name = name || Utils.generateName();
+        version = version || '1.0.0';
+        context = context || ('/' + name.replace(/[^A-Z0-9]/ig, '_'));
+
+        const body = JSON.stringify({
+            name,
+            version,
+            context,
+            policies: ['Unlimited'],
+            transport: ['http', 'https'],
+            operations: [],
+        });
+
+        return new Cypress.Promise((resolve, reject) => {
+            try {
+                Utils.getApiToken().then((token) => {
+                    const curl = `curl -k -s -X POST \
+                        -H "Content-Type: application/json" \
+                        -H "Authorization: Bearer ${token}" \
+                        -d '${body.replace(/'/g, "'\\''")}' \
+                        "${Cypress.config().baseUrl}/api/am/publisher/v4/mcp-servers/generate-from-api"`;
+                    cy.exec(curl).then((result) => {
+                        let parsed;
+                        try {
+                            parsed = JSON.parse(result.stdout);
+                        } catch (e) {
+                            throw new Error(`addMCPServerFromExistingAPI: non-JSON response. body=${result.stdout}`);
+                        }
+                        if (!parsed || !parsed.id) {
+                            throw new Error(`addMCPServerFromExistingAPI: server returned no id. body=${result.stdout}`);
+                        }
+                        resolve(parsed.id);
+                    });
+                });
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
+    static deleteMCPServer(mcpServerId) {
+        if (!mcpServerId) return;
+        Cypress.on('uncaught:exception', () => false);
+        return Utils.getApiToken().then((token) => {
+            const curl = `curl -k -X DELETE \
+                        -H "Authorization: Bearer ${token}" \
+                        "${Cypress.config().baseUrl}/api/am/publisher/v4/mcp-servers/${mcpServerId}"`;
+            return cy.exec(curl, { failOnNonZeroExit: false });
+        });
+    }
+
     static deleteAPIProduct(productId) {
         if (!productId) return;
         Cypress.on('uncaught:exception', () => false);
