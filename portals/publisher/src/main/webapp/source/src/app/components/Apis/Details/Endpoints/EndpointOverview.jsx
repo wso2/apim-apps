@@ -367,7 +367,7 @@ function EndpointOverview(props) {
         if (epType.key === 'service') {
             getServices();
         }
-        if (epType.key !== ENDPOINT_IMPLEMENTATION_TYPE_INLINE || epType.key !== ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS) {
+        if (epType.key !== ENDPOINT_IMPLEMENTATION_TYPE_INLINE && epType.key !== ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS) {
             setEndpointCategory({
                 prod: !!endpointConfig.production_endpoints,
                 sandbox: !!endpointConfig.sandbox_endpoints,
