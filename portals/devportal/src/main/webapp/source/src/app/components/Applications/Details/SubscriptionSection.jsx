@@ -24,6 +24,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import TablePagination from '@mui/material/TablePagination';
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import Icon from '@mui/material/Icon';
@@ -44,6 +45,7 @@ const classes = {
     genericMessageWrapper: `${PREFIX}-genericMessageWrapper`,
     subsTable: `${PREFIX}-subsTable`,
     sectionContainer: `${PREFIX}-sectionContainer`,
+    pagination: `${PREFIX}-pagination`,
 };
 
 const Root = styled('div')((
@@ -151,6 +153,19 @@ const Root = styled('div')((
         tableLayout: 'fixed',
         width: '100%',
     },
+
+    [`& .${classes.pagination}`]: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+        borderTop: `1px solid ${theme.palette.divider}`,
+        '& .MuiTablePagination-toolbar': {
+            minHeight: 48,
+            paddingRight: 0,
+        },
+        '& .MuiTablePagination-displayedRows': {
+            margin: 0,
+        },
+    },
 }));
 
 /**
@@ -167,6 +182,13 @@ const SubscriptionSection = ({
     onAddClick,
     handleSubscriptionDelete,
     handleSubscriptionUpdate,
+    getAPIById,
+    getMCPServerById,
+    getSubscriptionPolicyByName,
+    paginationCount,
+    paginationPage,
+    rowsPerPage,
+    onPaginationPageChange,
     noSubscriptionsMessage,
     noSubscriptionsContent,
     entityNameColumn,
@@ -220,52 +242,66 @@ const SubscriptionSection = ({
                                     {subscriptionsNotFound ? (
                                         <ResourceNotFound />
                                     ) : (
-                                        <Table className={classes.subsTable}>
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell className={classes.firstCell}>
-                                                        {entityNameColumn}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <FormattedMessage
-                                                            id='Applications.Details.Subscriptions.subscription.state'
-                                                            defaultMessage='Lifecycle State'
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <FormattedMessage
-                                                            id='Applications.Details.Subscriptions.business.plan'
-                                                            defaultMessage='Business Plan'
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <FormattedMessage
-                                                            id='Applications.Details.Subscriptions.Status'
-                                                            defaultMessage='Subscription Status'
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <FormattedMessage
-                                                            id='Applications.Details.Subscriptions.action'
-                                                            defaultMessage='Action'
-                                                        />
-                                                    </TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                {subscriptions
-                                                    && subscriptions.map((subscription) => {
-                                                        return (
-                                                            <SubscriptionTableData
-                                                                key={subscription.subscriptionId}
-                                                                subscription={subscription}
-                                                                handleSubscriptionDelete={handleSubscriptionDelete}
-                                                                handleSubscriptionUpdate={handleSubscriptionUpdate}
+                                        <>
+                                            <Table className={classes.subsTable}>
+                                                <TableHead>
+                                                    <TableRow>
+                                                        <TableCell className={classes.firstCell}>
+                                                            {entityNameColumn}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <FormattedMessage
+                                                                id='Applications.Details.Subscriptions.subscription.state'
+                                                                defaultMessage='Lifecycle State'
                                                             />
-                                                        );
-                                                    })}
-                                            </TableBody>
-                                        </Table>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <FormattedMessage
+                                                                id='Applications.Details.Subscriptions.business.plan'
+                                                                defaultMessage='Business Plan'
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <FormattedMessage
+                                                                id='Applications.Details.Subscriptions.Status'
+                                                                defaultMessage='Subscription Status'
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <FormattedMessage
+                                                                id='Applications.Details.Subscriptions.action'
+                                                                defaultMessage='Action'
+                                                            />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                    {subscriptions
+                                                        && subscriptions.map((subscription) => {
+                                                            return (
+                                                                <SubscriptionTableData
+                                                                    key={subscription.subscriptionId}
+                                                                    subscription={subscription}
+                                                                    handleSubscriptionDelete={handleSubscriptionDelete}
+                                                                    handleSubscriptionUpdate={handleSubscriptionUpdate}
+                                                                    getAPIById={getAPIById}
+                                                                    getMCPServerById={getMCPServerById}
+                                                                    getSubscriptionPolicyByName={getSubscriptionPolicyByName}
+                                                                />
+                                                            );
+                                                        })}
+                                                </TableBody>
+                                            </Table>
+                                            <TablePagination
+                                                className={classes.pagination}
+                                                component='div'
+                                                count={paginationCount}
+                                                page={paginationPage}
+                                                rowsPerPage={rowsPerPage}
+                                                rowsPerPageOptions={[]}
+                                                onPageChange={onPaginationPageChange}
+                                            />
+                                        </>
                                     )}
                                 </Box>
                             )}
@@ -285,6 +321,13 @@ SubscriptionSection.propTypes = {
     onAddClick: PropTypes.func.isRequired,
     handleSubscriptionDelete: PropTypes.func.isRequired,
     handleSubscriptionUpdate: PropTypes.func.isRequired,
+    getAPIById: PropTypes.func.isRequired,
+    getMCPServerById: PropTypes.func.isRequired,
+    getSubscriptionPolicyByName: PropTypes.func.isRequired,
+    paginationCount: PropTypes.number.isRequired,
+    paginationPage: PropTypes.number.isRequired,
+    rowsPerPage: PropTypes.number.isRequired,
+    onPaginationPageChange: PropTypes.func.isRequired,
     noSubscriptionsMessage: PropTypes.node.isRequired,
     noSubscriptionsContent: PropTypes.node.isRequired,
     entityNameColumn: PropTypes.node.isRequired,
