@@ -138,7 +138,7 @@ export default function ProvideOpenAPI(props) {
                         id: 'Apis.Create.OpenAPI.Steps.ProvideOpenAPI.url.validation.error',
                         defaultMessage: 'Failed to validate the OpenAPI URL. Please try again.',
                     });
-                setValidity({ url: { message: errorMessage } });
+                setValidity({ ...isValid, url: { message: errorMessage } });
                 setValidationErrors(getValidationErrorsFromError(error, openApiValidationErrorTitle));
                 onValidate(false);
                 setIsValidating(false);

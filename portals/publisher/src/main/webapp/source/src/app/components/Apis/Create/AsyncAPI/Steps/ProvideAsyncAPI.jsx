@@ -226,7 +226,7 @@ export default function ProvideAsyncAPI(props) {
                 onValidate(isValidURL);
                 setIsValidating(false);
             }).catch((error) => {
-                setValidity({ url: { message: error.response?.body?.description
+                setValidity({ ...isValid, url: { message: error.response?.body?.description
                     || error.response?.body?.message
                     || error.message
                     || intl.formatMessage({
