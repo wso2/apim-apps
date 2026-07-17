@@ -375,7 +375,6 @@ class DetailsLegacy extends React.Component {
             if (user != null) {
                 this.setState({ open: user.isSideBarOpen });
                 const restApi = new Api();
-                existingSubscriptions = restApi.getSubscriptions(this.api_uuid, null);
                 const subscriptionLimit = app.subscribeApplicationLimit || 5000;
                 existingSubscriptions = restApi.getSubscriptions(this.api_uuid, null, subscriptionLimit);
                 promisedApplications = restApi.getAllApplications(null, subscriptionLimit);
