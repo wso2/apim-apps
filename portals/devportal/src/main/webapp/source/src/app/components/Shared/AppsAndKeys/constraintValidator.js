@@ -42,6 +42,35 @@ export const VALIDATOR_TYPES = {
     REGEX: 'REGEX',
 };
 
+/*
+ * Validators for the API Key Security Restriction inputs (permittedIP / permittedReferer).
+ *
+ * The gateway treats both values as comma separated lists
+ * (org.wso2.carbon.apimgt.gateway.utils.ApiKeyAuthenticatorUtils#validateAPIKeyRestrictions):
+ *   - Each permittedIP entry is matched via APIUtil.isIpInNetwork, which accepts plain
+ *     IPv4/IPv6 addresses as well as CIDR notation (e.g. 10.0.0.0/24).
+ *   - Each permittedReferer entry is matched literally against the Referer header,
+ *     with '*' acting as a wildcard (e.g. https://example.com/*).
+ *
+ * The IPv4/IPv6 patterns below are the same patterns used by the Admin Portal
+ * (Throttling/Blacklist/AddEdit.jsx) so that both portals accept identical formats.
+ */
+
+const IPV4_PATTERN = String.raw`(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}`
+    + String.raw`([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])`;
+const IPV6_PATTERN = String.raw`(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:)`
+    + String.raw`{1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}`
+    + String.raw`(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}`
+    + String.raw`(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)`
+    + String.raw`|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,`
+    + String.raw`1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:(`
+    + String.raw`(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))`;
+
+const IPV4_REGEX = new RegExp(`^${IPV4_PATTERN}$`);
+const IPV6_REGEX = new RegExp(`^${IPV6_PATTERN}$`);
+const IPV4_CIDR_REGEX = new RegExp(`^${IPV4_PATTERN}/([0-9]|[12][0-9]|3[0-2])$`);
+const IPV6_CIDR_REGEX = new RegExp(`^${IPV6_PATTERN}/([0-9]|[1-9][0-9]|1[01][0-9]|12[0-8])$`);
+
 /**
  * Returns a localized hint string for a constraint.
  * @param {object|null|undefined} constraint - The constraint object from config.
@@ -150,37 +179,6 @@ const validateConstraint = (inputValue, constraint, intl, messages) => {
     }
 };
 
-export default validateConstraint;
-
-/*
- * Validators for the API Key Security Restriction inputs (permittedIP / permittedReferer).
- *
- * The gateway treats both values as comma separated lists
- * (org.wso2.carbon.apimgt.gateway.utils.ApiKeyAuthenticatorUtils#validateAPIKeyRestrictions):
- *   - Each permittedIP entry is matched via APIUtil.isIpInNetwork, which accepts plain
- *     IPv4/IPv6 addresses as well as CIDR notation (e.g. 10.0.0.0/24).
- *   - Each permittedReferer entry is matched literally against the Referer header,
- *     with '*' acting as a wildcard (e.g. https://example.com/*).
- *
- * The IPv4/IPv6 patterns below are the same patterns used by the Admin Portal
- * (Throttling/Blacklist/AddEdit.jsx) so that both portals accept identical formats.
- */
-
-const IPV4_PATTERN = '(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}'
-    + '([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])';
-const IPV6_PATTERN = '(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:)'
-    + '{1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}'
-    + '(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}'
-    + '(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)'
-    + '|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,'
-    + '1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:('
-    + '(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))';
-
-const IPV4_REGEX = new RegExp(`^${IPV4_PATTERN}$`);
-const IPV6_REGEX = new RegExp(`^${IPV6_PATTERN}$`);
-const IPV4_CIDR_REGEX = new RegExp(`^${IPV4_PATTERN}/([0-9]|[12][0-9]|3[0-2])$`);
-const IPV6_CIDR_REGEX = new RegExp(`^${IPV6_PATTERN}/([0-9]|[1-9][0-9]|1[01][0-9]|12[0-8])$`);
-
 /**
  * Validates the value entered for an IP based API key restriction.
  * Accepts a single entry or a comma separated list, where each entry is a valid
@@ -190,7 +188,7 @@ const IPV6_CIDR_REGEX = new RegExp(`^${IPV6_PATTERN}/([0-9]|[1-9][0-9]|1[01][0-9
  * @returns {boolean} true if every entry is a valid IP address or CIDR range.
  */
 export const isValidPermittedIPList = (value) => {
-    if (!value || !value.trim()) {
+    if (!value?.trim()) {
         return false;
     }
     return value.split(',').every((entry) => {
@@ -214,7 +212,7 @@ export const isValidPermittedIPList = (value) => {
  * @returns {boolean} true if every entry is a plausible referrer pattern.
  */
 export const isValidPermittedRefererList = (value) => {
-    if (!value || !value.trim()) {
+    if (!value?.trim()) {
         return false;
     }
     return value.split(',').every((entry) => {
@@ -224,3 +222,27 @@ export const isValidPermittedRefererList = (value) => {
             && /[.:/*]/.test(referer);
     });
 };
+
+/**
+ * Validates the value entered for an API key Security Restriction and returns a
+ * localized error message, or an empty string when the value is acceptable.
+ * Message descriptors are supplied by the caller (same pattern as validateConstraint)
+ * so that their IDs remain extractable from the calling .jsx component.
+ *
+ * @param {string} restrictionType - The selected restriction type ('none', 'ip' or 'referrer').
+ * @param {string} restrictionValue - The raw user input.
+ * @param {object} intl - The intl object for formatMessage.
+ * @param {object} messages - defineMessages result with invalidIPRestriction and invalidRefererRestriction.
+ * @returns {string} Localized error message, or '' if valid.
+ */
+export const validateRestrictionValue = (restrictionType, restrictionValue, intl, messages) => {
+    if (restrictionType === 'ip' && !isValidPermittedIPList(restrictionValue)) {
+        return intl.formatMessage(messages.invalidIPRestriction);
+    }
+    if (restrictionType === 'referrer' && !isValidPermittedRefererList(restrictionValue)) {
+        return intl.formatMessage(messages.invalidRefererRestriction);
+    }
+    return '';
+};
+
+export default validateConstraint;

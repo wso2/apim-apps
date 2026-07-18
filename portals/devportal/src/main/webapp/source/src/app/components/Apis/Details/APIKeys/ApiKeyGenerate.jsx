@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import {
     Alert as MuiAlert,
     Box,
@@ -37,10 +37,21 @@ import {
 import { ContentCopy, Refresh } from '@mui/icons-material';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
-import {
-    isValidPermittedIPList,
-    isValidPermittedRefererList,
-} from 'AppComponents/Shared/AppsAndKeys/constraintValidator';
+import { validateRestrictionValue } from 'AppComponents/Shared/AppsAndKeys/constraintValidator';
+
+// Message descriptors for validation errors
+const restrictionMessages = defineMessages({
+    invalidIPRestriction: {
+        id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.invalidIPRestriction',
+        defaultMessage: 'Invalid IP address. Enter a valid IPv4/IPv6 address or CIDR range,'
+            + ' separating multiple values with commas.',
+    },
+    invalidRefererRestriction: {
+        id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.invalidRefererRestriction',
+        defaultMessage: 'Invalid referrer. Enter a URL or a pattern with * wildcards'
+            + ' (e.g. https://example.com/*), separating multiple values with commas.',
+    },
+})
 
 /**
  * Custom hook for managing API key generation and regeneration operations
@@ -172,24 +183,10 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
             ));
             return;
         }
-        if (restrictionType === 'ip' && !isValidPermittedIPList(restrictionValue)) {
-            const message = intl.formatMessage({
-                id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.invalidIPRestriction',
-                defaultMessage: 'Invalid IP address. Enter a valid IPv4/IPv6 address or CIDR range,'
-                    + ' separating multiple values with commas.',
-            });
-            setRestrictionError(message);
-            Alert.error(message);
-            return;
-        }
-        if (restrictionType === 'referrer' && !isValidPermittedRefererList(restrictionValue)) {
-            const message = intl.formatMessage({
-                id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.invalidRefererRestriction',
-                defaultMessage: 'Invalid referrer. Enter a URL or a pattern with * wildcards'
-                    + ' (e.g. https://example.com/*), separating multiple values with commas.',
-            });
-            setRestrictionError(message);
-            Alert.error(message);
+        const restrictionMessage = validateRestrictionValue(restrictionType, restrictionValue, intl, restrictionMessages);
+        if (restrictionMessage) {
+            setRestrictionError(restrictionMessage);
+            Alert.error(restrictionMessage);
             return;
         }
         if (validityPeriod === 'custom' && !customValidityDays) {
