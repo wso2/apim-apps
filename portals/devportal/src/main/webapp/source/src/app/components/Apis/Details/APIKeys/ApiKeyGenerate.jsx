@@ -37,8 +37,7 @@ import {
 import { ContentCopy, Refresh } from '@mui/icons-material';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
-import { validateRestrictionValue } from 'AppComponents/Shared/AppsAndKeys/constraintValidator';
-import { restrictionMessages } from 'AppComponents/Shared/AppsAndKeys/LegacyApiKeys';
+import { validateRestrictionOrAlert } from 'AppComponents/Shared/AppsAndKeys/LegacyApiKeys';
 
 /**
  * Custom hook for managing API key generation and regeneration operations
@@ -170,12 +169,7 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
             ));
             return;
         }
-        const restrictionMessage = validateRestrictionValue(restrictionType, restrictionValue, intl, restrictionMessages);
-        if (restrictionMessage) {
-            setRestrictionError(restrictionMessage);
-            Alert.error(restrictionMessage);
-            return;
-        }
+        if (!validateRestrictionOrAlert(restrictionType, restrictionValue, intl, setRestrictionError)) return;
         if (validityPeriod === 'custom' && !customValidityDays) {
             const customDays = Number(customValidityDays);
             if (!Number.isInteger(customDays) || customDays <= 0) {

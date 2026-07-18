@@ -66,6 +66,15 @@ export const restrictionMessages = defineMessages({
     },
 });
 
+export const validateRestrictionOrAlert = (restrictionType, restrictionValue, intl, setRestrictionError) => {
+    const message = validateRestrictionValue(restrictionType, restrictionValue, intl, restrictionMessages);
+    if (message) {
+        setRestrictionError(message);
+        Alert.error(message);
+        return false;
+    }
+    return true;
+};
 /**
  * LegacyApiKeys component for managing legacy API keys
  * @param {object} props - Component props
@@ -209,12 +218,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
             ));
             return;
         }
-        const restrictionMessage = validateRestrictionValue(restrictionType, restrictionValue, intl, restrictionMessages);
-        if (restrictionMessage) {
-            setRestrictionError(restrictionMessage);
-            Alert.error(restrictionMessage);
-            return;
-        }
+        if (!validateRestrictionOrAlert(restrictionType, restrictionValue, intl, setRestrictionError)) return;
         if (validityPeriod === 'custom' && !customValidityDays) {
             const customDays = Number(customValidityDays);
             if (!Number.isInteger(customDays) || customDays <= 0) {
