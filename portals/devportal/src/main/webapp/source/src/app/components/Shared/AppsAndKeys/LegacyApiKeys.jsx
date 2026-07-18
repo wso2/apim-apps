@@ -52,19 +52,19 @@ import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import { validateRestrictionValue } from 'AppComponents/Shared/AppsAndKeys/constraintValidator';
 
-// Message descriptors for validation errors
-const restrictionMessages = defineMessages({
+// Message descriptors for the Security Restriction validation errors, shared with the per-API key generation dialog (ApiKeyGenerate).
+export const restrictionMessages = defineMessages({
     invalidIPRestriction: {
-        id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.invalidIPRestriction',
+        id: 'Shared.AppsAndKeys.LegacyApiKeys.alert.invalidIPRestriction',
         defaultMessage: 'Invalid IP address. Enter a valid IPv4/IPv6 address or CIDR range,'
             + ' separating multiple values with commas.',
     },
     invalidRefererRestriction: {
-        id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.invalidRefererRestriction',
+        id: 'Shared.AppsAndKeys.LegacyApiKeys.alert.invalidRefererRestriction',
         defaultMessage: 'Invalid referrer. Enter a URL or a pattern with * wildcards'
             + ' (e.g. https://example.com/*), separating multiple values with commas.',
     },
-})
+});
 
 /**
  * LegacyApiKeys component for managing legacy API keys

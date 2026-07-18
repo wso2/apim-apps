@@ -48,8 +48,6 @@
   "Apis.Details.APIKeys.ApiKeyGenerate.alert.enterName": "Please enter a name for the API key.",
   "Apis.Details.APIKeys.ApiKeyGenerate.alert.enterRestrictionValue": "Please enter a {restrictionLabel} value.",
   "Apis.Details.APIKeys.ApiKeyGenerate.alert.invalidCustomDays": "Please enter a valid positive number of days for custom validity period.",
-  "Apis.Details.APIKeys.ApiKeyGenerate.alert.invalidIPRestriction": "Invalid IP address. Enter a valid IPv4/IPv6 address or CIDR range, separating multiple values with commas.",
-  "Apis.Details.APIKeys.ApiKeyGenerate.alert.invalidRefererRestriction": "Invalid referrer. Enter a URL or a pattern with * wildcards (e.g. https://example.com/*), separating multiple values with commas.",
   "Apis.Details.APIKeys.ApiKeyGenerate.alert.regenerateFailed": "Failed to regenerate API Key. Please try again.",
   "Apis.Details.APIKeys.ApiKeyGenerate.button.close": "Close",
   "Apis.Details.APIKeys.ApiKeyGenerate.button.regenerate": "Regenerate",
