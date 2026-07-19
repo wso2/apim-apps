@@ -22,6 +22,7 @@ import {
     Alert as MuiAlert,
     Box,
     Button,
+    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
@@ -64,6 +65,8 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
     // Regenerate modal state
     const [regenerateModalOpen, setRegenerateModalOpen] = React.useState(false);
     const [regeneratedApiKey, setRegeneratedApiKey] = React.useState(null);
+    const [isRegenerating, setIsRegenerating] = React.useState(false);
+    const [regeneratingKeyUUID, setRegeneratingKeyUUID] = React.useState(null);
 
     // Validity period options
     const validityOptions = [
@@ -233,6 +236,11 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
 
     // Regenerate handlers
     const handleRegenerateKey = (keyData) => {
+        if (isRegenerating) {
+            return;
+        }
+        setIsRegenerating(true);
+        setRegeneratingKeyUUID(keyData.keyUUID);
         const restApi = new API();
         restApi.regenerateApiApiKey(apiUUID, keyData.keyUUID)
             .then((response) => {
@@ -243,12 +251,16 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
                 };
                 setRegeneratedApiKey(regeneratedKey);
                 setRegenerateModalOpen(true);
+                setIsRegenerating(false);
+                setRegeneratingKeyUUID(null);
                 setTimeout(() => {
                     refreshApiKeys();
                 }, 500);
             })
             .catch((error) => {
                 console.error('Error regenerating key:', error);
+                setIsRegenerating(false);
+                setRegeneratingKeyUUID(null);
                 Alert.error(intl.formatMessage({
                     id: 'Apis.Details.APIKeys.ApiKeyGenerate.alert.regenerateFailed',
                     defaultMessage: 'Failed to regenerate API Key. Please try again.',
@@ -263,16 +275,24 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
     };
 
     // Render regenerate button
-    const renderRegenerateButton = (keyData) => (
-        <Button
-            variant='outlined'
-            size='small'
-            startIcon={<Refresh />}
-            onClick={() => handleRegenerateKey(keyData)}
-        >
-            <FormattedMessage id='Apis.Details.APIKeys.ApiKeyGenerate.button.regenerate' defaultMessage='Regenerate' />
-        </Button>
-    );
+    const renderRegenerateButton = (keyData) => {
+        const isThisKeyRegenerating = isRegenerating && regeneratingKeyUUID === keyData.keyUUID;
+        return (
+            <Button
+                variant='outlined'
+                size='small'
+                startIcon={isThisKeyRegenerating ? <CircularProgress size={16} /> : <Refresh />}
+                onClick={() => handleRegenerateKey(keyData)}
+                disabled={isRegenerating}
+            >
+                {isThisKeyRegenerating ? (
+                    <FormattedMessage id='Apis.Details.APIKeys.ApiKeyGenerate.button.regenerating' defaultMessage='Regenerating...' />
+                ) : (
+                    <FormattedMessage id='Apis.Details.APIKeys.ApiKeyGenerate.button.regenerate' defaultMessage='Regenerate' />
+                )}
+            </Button>
+        );
+    };
 
     // Render dialogs
     const renderDialogs = () => (
@@ -438,6 +458,8 @@ export default function ApiKeyGenerate(apiUUID, refreshApiKeys) {
         setRestrictionValue,
         generationModalOpen,
         isGenerating,
+        isRegenerating,
+        regeneratingKeyUUID,
         apikey,
         showToken,
         validityOptions,
