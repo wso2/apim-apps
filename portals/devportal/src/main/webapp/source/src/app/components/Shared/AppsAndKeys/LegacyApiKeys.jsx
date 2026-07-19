@@ -68,8 +68,8 @@ export const restrictionMessages = defineMessages({
 
 export const validateRestrictionOrAlert = (restrictionType, restrictionValue, intl, setRestrictionError) => {
     const message = validateRestrictionValue(restrictionType, restrictionValue, intl, restrictionMessages);
+    setRestrictionError(message);
     if (message) {
-        setRestrictionError(message);
         Alert.error(message);
         return false;
     }
