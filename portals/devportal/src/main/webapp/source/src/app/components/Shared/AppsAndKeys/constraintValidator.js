@@ -43,19 +43,11 @@ export const VALIDATOR_TYPES = {
 };
 
 /*
- * Validators for the API Key Security Restriction inputs (permittedIP / permittedReferer).
- *
- * The gateway treats both values as comma separated lists
- * (org.wso2.carbon.apimgt.gateway.utils.ApiKeyAuthenticatorUtils#validateAPIKeyRestrictions):
- *   - Each permittedIP entry is matched via APIUtil.isIpInNetwork, which accepts plain
- *     IPv4/IPv6 addresses as well as CIDR notation (e.g. 10.0.0.0/24).
- *   - Each permittedReferer entry is matched literally against the Referer header,
- *     with '*' acting as a wildcard (e.g. https://example.com/*).
- *
- * The IPv4/IPv6 patterns below are the same patterns used by the Admin Portal
- * (Throttling/Blacklist/AddEdit.jsx) so that both portals accept identical formats.
+ * Validators for API key security restrictions.
+ * IP validation supports IPv4, IPv6, and CIDR ranges.
+ * Referer values are validated separately and support '*' wildcards.
+ * The IPv4/IPv6 patterns are reused from the Admin Portal blacklist form (Throttling/Blacklist/AddEdit.jsx) so both portals accept the same formats.
  */
-
 const IPV4_PATTERN = String.raw`(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}`
     + '([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])';
 const IPV6_PATTERN = '(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:)'
@@ -180,9 +172,7 @@ const validateConstraint = (inputValue, constraint, intl, messages) => {
 };
 
 /**
- * Validates the value entered for an IP based API key restriction.
- * Accepts a single entry or a comma separated list, where each entry is a valid
- * IPv4 address, IPv6 address, or a CIDR range of either family.
+ * Checks an IP based restriction value: a single IPv4/IPv6 address or CIDR range, or a comma separated list of them.
  *
  * @param {string} value - The raw user input.
  * @returns {boolean} true if every entry is a valid IP address or CIDR range.
@@ -202,11 +192,8 @@ export const isValidPermittedIPList = (value) => {
 };
 
 /**
- * Validates the value entered for a referrer based API key restriction.
- * Accepts a single entry or a comma separated list. The gateway matches each entry
- * literally (with '*' wildcards) against the Referer header, so entries are kept
- * permissive: each one must be non empty, contain no whitespace, and look like a
- * URL, host or wildcard pattern (contain at least one of '.', ':', '/' or '*').
+ * Validates a permitted referrer value.
+ * Supports single or comma-separated entries with '*' wildcards.
  *
  * @param {string} value - The raw user input.
  * @returns {boolean} true if every entry is a plausible referrer pattern.
@@ -223,11 +210,8 @@ export const isValidPermittedRefererList = (value) => {
     });
 };
 
-/**
- * Validates the value entered for an API key Security Restriction and returns a
- * localized error message, or an empty string when the value is acceptable.
- * Message descriptors are supplied by the caller (same pattern as validateConstraint)
- * so that their IDs remain extractable from the calling .jsx component.
+/** 
+ * Validates an API key security restriction value and returns the corresponding localized validation message.
  *
  * @param {string} restrictionType - The selected restriction type ('none', 'ip' or 'referrer').
  * @param {string} restrictionValue - The raw user input.
