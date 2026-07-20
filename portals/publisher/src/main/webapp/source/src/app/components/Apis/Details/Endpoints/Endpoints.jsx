@@ -282,64 +282,75 @@ function Endpoints(props) {
     /**
      * Delete/ upload the production and sandbox sequence backends based on the current backend lists.
      */
-    const updateSequenceBackends = () => {
-        if (productionBackendList?.length === 0 || (productionBackendList?.length > 0
-            && productionBackendList[0].content)) {
-            api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_PRODUCTION, api.id).then(() => {
-                Alert.success('Production Sequence backend deleted successfully');
-            })
-                .catch(() => {
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
-                        defaultMessage: 'Error Deleting Production Sequence Backend',
-                    }));
-                });
-        }
+    const deleteSequenceBackendOf = (keyType, deleteErrorMessage) => api
+        .deleteSequenceBackend(keyType, api.id)
+        .then(() => {
+            Alert.success(keyType === API_SECURITY_KEY_TYPE_PRODUCTION
+                ? 'Production Sequence backend deleted successfully'
+                : 'Sandbox Sequence backend deleted successfully');
+        })
+        .catch(() => {
+            Alert.error(deleteErrorMessage);
+        });
 
-        if (sandBoxBackendList?.length === 0 || (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content)) {
-            api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_SANDBOX, api.id).then(() => {
-                Alert.success('Sandbox Sequence backend deleted successfully');
-            })
-                .catch(() => {
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
-                        defaultMessage: 'Error Deleting Sandbox Sequence Backend',
-                    }));
-                });
-        }
-        if (productionBackendList?.length > 0 && productionBackendList[0].content) {
-            const productionBackend = productionBackendList[0];
-            api.uploadCustomBackend(productionBackend.content, API_SECURITY_KEY_TYPE_PRODUCTION, api.id)
-                .then(() => {
-                    Alert.success('Custom backend uploaded successfully');
-                })
-                .catch((error) => {
-                    const backendMessage = error?.response?.body?.description;
-                    Alert.error(
-                        backendMessage || intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
-                            defaultMessage: 'Error Uploading Production Sequence Backend',
-                        }),
-                    );
-                });
-        }
-        if (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content) {
-            const sandBackend = sandBoxBackendList[0];
-            api.uploadCustomBackend(sandBackend.content, API_SECURITY_KEY_TYPE_SANDBOX, api.id)
-                .then(() => {
-                    Alert.success('Custom backend uploaded successfully');
-                })
-                .catch((error) => {
-                    const backendMessage = error?.response?.body?.description;
-                    Alert.error(
-                        backendMessage || intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
-                            defaultMessage: 'Error Uploading Sandbox Sequence Backend',
-                        }),
-                    );
-                });
-        }
+    const uploadSequenceBackendOf = (keyType, content, uploadErrorMessage) => api
+        .uploadCustomBackend(content, keyType, api.id)
+        .then(() => {
+            Alert.success('Custom backend uploaded successfully');
+        })
+        .catch((error) => {
+            const backendMessage = error?.response?.body?.description;
+            Alert.error(backendMessage || uploadErrorMessage);
+        });
+
+    /**
+     * Delete a sequence backend of the given type, then, only once that delete has settled, upload its
+     * replacement content if any was provided. Chaining the upload off the delete's promise (rather than
+     * firing both at once) keeps the two requests deterministic instead of racing against each other.
+     */
+    const updateSequenceBackendOf = (keyType, backendList, deleteErrorMessage, uploadErrorMessage) => {
+        const shouldDelete = backendList?.length === 0
+            || (backendList?.length > 0 && backendList[0].content);
+        const shouldUpload = backendList?.length > 0 && backendList[0].content;
+
+        const deletePromise = shouldDelete
+            ? deleteSequenceBackendOf(keyType, deleteErrorMessage)
+            : Promise.resolve();
+
+        return deletePromise.then(() => {
+            if (shouldUpload) {
+                return uploadSequenceBackendOf(keyType, backendList[0].content, uploadErrorMessage);
+            }
+            return Promise.resolve();
+        });
     };
+
+    const updateSequenceBackends = () => Promise.all([
+        updateSequenceBackendOf(
+            API_SECURITY_KEY_TYPE_PRODUCTION,
+            productionBackendList,
+            intl.formatMessage({
+                id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
+                defaultMessage: 'Error Deleting Production Sequence Backend',
+            }),
+            intl.formatMessage({
+                id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
+                defaultMessage: 'Error Uploading Production Sequence Backend',
+            }),
+        ),
+        updateSequenceBackendOf(
+            API_SECURITY_KEY_TYPE_SANDBOX,
+            sandBoxBackendList,
+            intl.formatMessage({
+                id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
+                defaultMessage: 'Error Deleting Sandbox Sequence Backend',
+            }),
+            intl.formatMessage({
+                id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
+                defaultMessage: 'Error Uploading Sandbox Sequence Backend',
+            }),
+        ),
+    ]);
 
     /**
      * Update the swagger (for INLINE/ MOCKED_OAS implementations) or the API object, then invoke the completion
@@ -399,19 +410,21 @@ function Endpoints(props) {
             endpointConfig.endpoint_type = 'http';
         }
         setUpdating(true);
-        if (endpointConfig.endpoint_type === 'sequence_backend') {
-            updateSequenceBackends();
-        }
-        persistEndpointConfig(
-            endpointImplementationType,
-            { endpointConfig, endpointImplementationType, serviceInfo },
-            () => {
-                setUpdating(false);
-                if (isRedirect) {
-                    history.push('/apis/' + api.id + '/policies');
-                }
-            },
-        );
+        const sequenceBackendsUpdated = endpointConfig.endpoint_type === 'sequence_backend'
+            ? updateSequenceBackends()
+            : Promise.resolve();
+        sequenceBackendsUpdated.then(() => {
+            persistEndpointConfig(
+                endpointImplementationType,
+                { endpointConfig, endpointImplementationType, serviceInfo },
+                () => {
+                    setUpdating(false);
+                    if (isRedirect) {
+                        history.push('/apis/' + api.id + '/policies');
+                    }
+                },
+            );
+        });
     };
 
     const handleSaveAndDeploy = () => {
@@ -420,18 +433,20 @@ function Endpoints(props) {
             endpointConfig.endpoint_type = 'http';
         }
         setUpdating(true);
-        if (endpointConfig.endpoint_type === 'sequence_backend') {
-            updateSequenceBackends();
-        }
-        persistEndpointConfig(
-            endpointImplementationType,
-            { endpointConfig, endpointImplementationType, endpointSecurity, serviceInfo },
-            () => history.push({
-                pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
-                    : `/apis/${api.id}/deployments`,
-                state: 'deploy',
-            }),
-        );
+        const sequenceBackendsUpdated = endpointConfig.endpoint_type === 'sequence_backend'
+            ? updateSequenceBackends()
+            : Promise.resolve();
+        sequenceBackendsUpdated.then(() => {
+            persistEndpointConfig(
+                endpointImplementationType,
+                { endpointConfig, endpointImplementationType, endpointSecurity, serviceInfo },
+                () => history.push({
+                    pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
+                        : `/apis/${api.id}/deployments`,
+                    state: 'deploy',
+                }),
+            );
+        });
     };
 
     /**
