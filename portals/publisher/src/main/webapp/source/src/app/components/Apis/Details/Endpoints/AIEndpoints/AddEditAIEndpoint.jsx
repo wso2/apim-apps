@@ -463,6 +463,16 @@ const AddEditAIEndpoint = ({
 
     const url = getBasePath(apiObject.apiType) + apiObject.id + '/endpoints';
 
+    const IS_APIKEY_AUTH_ENABLED = (config) =>
+        config?.authenticationConfiguration?.enabled === true &&
+        config?.authenticationConfiguration?.type === 'apikey';
+    const IS_AWS_SIGV4_AUTH_ENABLED = (config) =>
+        config?.authenticationConfiguration?.enabled === true &&
+        config?.authenticationConfiguration?.type === 'aws';
+    const IS_UMI_AUTH_ENABLED = (config) =>
+        config?.authenticationConfiguration?.enabled === true &&
+        config?.authenticationConfiguration?.type === 'umi';
+
     useEffect(() => {
         try {
             if (state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production) {
@@ -476,6 +486,34 @@ const AddEditAIEndpoint = ({
             console.error('Failed to extract endpoint URL from the endpoint object', error);
         }
     }, [state]);
+
+    // Auto-configure endpoint security for UMI — no credentials needed from the user.
+    // Runs on mount, when the deployment stage changes, or when the security config
+    // is externally reset, to ensure UMI is always applied for UMI-type providers.
+    const currentEnvType = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production
+        ? 'production' : 'sandbox';
+    const currentSecurity = state.endpointConfig.endpoint_security?.[currentEnvType];
+    const currentSecurityType = currentSecurity?.type;
+    const isCurrentSecurityEnabled = currentSecurity?.enabled === true;
+
+    useEffect(() => {
+        if (
+            IS_UMI_AUTH_ENABLED(llmProviderEndpointConfiguration)
+            && (currentSecurityType !== 'umi' || !isCurrentSecurityEnabled)
+        ) {
+            saveEndpointSecurityConfig({
+                ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
+                type: 'umi',
+                enabled: true,
+            }, currentEnvType);
+        }
+    }, [
+        llmProviderEndpointConfiguration?.authenticationConfiguration?.type,
+        llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled,
+        currentEnvType,
+        currentSecurityType,
+        isCurrentSecurityEnabled,
+    ]);
 
     /**
      * Method to test the endpoint.
@@ -875,12 +913,6 @@ const AddEditAIEndpoint = ({
         }, envType);
     };
 
-    const IS_APIKEY_AUTH_ENABLED = (config) =>
-        config?.authenticationConfiguration?.enabled === true &&
-        config?.authenticationConfiguration?.type === 'apikey';
-    const IS_AWS_SIGV4_AUTH_ENABLED = (config) =>
-        config?.authenticationConfiguration?.enabled === true &&
-        config?.authenticationConfiguration?.type === 'aws';
     return (
         <StyledGrid container justifyContent='center'>
             <Grid item sm={12} md={12} lg={8}>
@@ -1217,6 +1249,22 @@ const AddEditAIEndpoint = ({
                                 </>
                             )}
 
+                            {/* User Managed Identity (UMI) Auth Info */}
+                            {IS_UMI_AUTH_ENABLED(llmProviderEndpointConfiguration) && (
+                                <Grid item xs={12}>
+                                    <Typography variant='body2' color='textSecondary'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.AIEndpoints.Edit.umi.info'
+                                            defaultMessage={
+                                                'Azure User Managed Identity (UMI) authentication is configured. '
+                                                + 'The gateway will automatically acquire and inject a Bearer token '
+                                                + 'using the configured Azure Workload Identity.'
+                                            }
+                                        />
+                                    </Typography>
+                                </Grid>
+                            )}
+                            
                         </Grid>
 
                         {/* Action Buttons */}
