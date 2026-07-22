@@ -22,7 +22,7 @@ export default function CustomSplitButton(props) {
     const [open, setOpen] = useState(false);
     const {
         advertiseInfo, handleSave, handleSaveAndDeploy, isUpdating, api, id, isValidSequenceBackend,
-        isCustomBackendSelected
+        isCustomBackendSelected, showOnlySaveButton
     } = props;
     const intl = useIntl();
     const options = [
@@ -106,59 +106,63 @@ export default function CustomSplitButton(props) {
                         ref={anchorRef}
                         aria-label='split button'
                         disabled={isUpdating || (!isValidSequenceBackend && isCustomBackendSelected)
-                            || api.initiatedFromGateway}
+                            || (api.initiatedFromGateway && !showOnlySaveButton)}
                     >
                         <Button
                             onClick={handleClick}
                             disabled={isUpdating || (!isValidSequenceBackend && isCustomBackendSelected)
-                                || api.initiatedFromGateway}
+                                || (api.initiatedFromGateway && !showOnlySaveButton)}
                             data-testid = 'custom-select-save-button'
                             style={{ minWidth: '120px' }}
                             id={id}
                         >
-                            {options[selectedIndex].label}
+                            {showOnlySaveButton ? options[1].label : options[selectedIndex].label}
                             {isUpdating && <CircularProgress size={24} />}
                         </Button>
-                        <Button
-                            color='primary'
-                            size='small'
-                            aria-controls={open ? 'split-button-menu' : undefined}
-                            aria-expanded={open ? 'true' : undefined}
-                            aria-label='select merge strategy'
-                            aria-haspopup='menu'
-                            onClick={handleToggle}
-                        >
-                            <ArrowDropDownIcon />
-                        </Button>
-                    </ButtonGroup>
-                    <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
-                        {({ TransitionProps, placement }) => (
-                            <Grow
-                                {...TransitionProps}
-                                style={{
-                                    transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
-                                }}
+                        {!showOnlySaveButton && (
+                            <Button
+                                color='primary'
+                                size='small'
+                                aria-controls={open ? 'split-button-menu' : undefined}
+                                aria-expanded={open ? 'true' : undefined}
+                                aria-label='select merge strategy'
+                                aria-haspopup='menu'
+                                onClick={handleToggle}
                             >
-                                <Paper>
-                                    <ClickAwayListener onClickAway={handleClose}>
-                                        <MenuList id='split-button-menu'>
-                                            {options.map((option, index) => (
-                                                <MenuItem
-                                                    key={option.key}
-                                                    selected={index === selectedIndex}
-                                                    onClick={(event) => handleOptionSelect(event, index)}
-                                                    disabled={(option.key === 'Save and deploy'
-                                                        && isDeployButtonDisabled)}
-                                                >
-                                                    {option.label}
-                                                </MenuItem>
-                                            ))}
-                                        </MenuList>
-                                    </ClickAwayListener>
-                                </Paper>
-                            </Grow>
+                                <ArrowDropDownIcon />
+                            </Button>
                         )}
-                    </Popper>
+                    </ButtonGroup>
+                    {!showOnlySaveButton && (
+                        <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+                            {({ TransitionProps, placement }) => (
+                                <Grow
+                                    {...TransitionProps}
+                                    style={{
+                                        transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
+                                    }}
+                                >
+                                    <Paper>
+                                        <ClickAwayListener onClickAway={handleClose}>
+                                            <MenuList id='split-button-menu'>
+                                                {options.map((option, index) => (
+                                                    <MenuItem
+                                                        key={option.key}
+                                                        selected={index === selectedIndex}
+                                                        onClick={(event) => handleOptionSelect(event, index)}
+                                                        disabled={(option.key === 'Save and deploy'
+                                                            && isDeployButtonDisabled)}
+                                                    >
+                                                        {option.label}
+                                                    </MenuItem>
+                                                ))}
+                                            </MenuList>
+                                        </ClickAwayListener>
+                                    </Paper>
+                                </Grow>
+                            )}
+                        </Popper>
+                    )}
                 </Grid>
             )}
         </Grid>
@@ -168,6 +172,7 @@ export default function CustomSplitButton(props) {
 CustomSplitButton.defaultProps = {
     isCustomBackendSelected: false,
     isValidSequenceBackend: true,
+    showOnlySaveButton: false,
 };
 CustomSplitButton.propTypes = {
     api: PropTypes.shape({}).isRequired,
@@ -176,4 +181,5 @@ CustomSplitButton.propTypes = {
     isUpdating: PropTypes.bool.isRequired,
     isValidSequenceBackend: PropTypes.bool,
     isCustomBackendSelected: PropTypes.bool,
+    showOnlySaveButton: PropTypes.bool,
 };

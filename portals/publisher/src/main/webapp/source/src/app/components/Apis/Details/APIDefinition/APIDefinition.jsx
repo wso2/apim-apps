@@ -827,7 +827,7 @@ class APIDefinition extends React.Component {
                             size='small'
                             className={classes.button}
                             onClick={this.openEditor}
-                            disabled={isRestricted(['apim:api_create'], api) || api.initiatedFromGateway}
+                            disabled={isRestricted(['apim:api_create'], api)}
                         >
                             <EditRounded className={classes.buttonIcon} />
                             <FormattedMessage
@@ -842,8 +842,7 @@ class APIDefinition extends React.Component {
                                 className={classes.button}
                                 onClick={this.openEditor}
                                 disabled={isRestricted(['apim:api_create'], api) || api.isRevision
-                                || (settings && settings.portalConfigurationOnlyModeEnabled) 
-                                || api.initiatedFromGateway}
+                                || (settings && settings.portalConfigurationOnlyModeEnabled)}
                                 id='edit-definition-btn'
                             >
                                 <EditRounded className={classes.buttonIcon} />
@@ -1098,6 +1097,7 @@ class APIDefinition extends React.Component {
                                 handleSave={this.handleSave}
                                 handleSaveAndDeploy={this.handleSaveAndDeploy}
                                 isUpdating={isUpdating}
+                                showOnlySaveButton={api.initiatedFromGateway}
                             />
                         </Grid>
                     </Grid>
