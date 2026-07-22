@@ -1066,13 +1066,25 @@ class APIDefinition extends React.Component {
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id='alert-dialog-description'>
-                        <FormattedMessage
-                            id='Apis.Details.APIDefinition.APIDefinition.api.definition.save.confirmation'
-                            defaultMessage={
-                                'Are you sure you want to save the API Definition? This might affect the'
-                                + ' existing resources.'
-                            }
-                        />
+                        {api.initiatedFromGateway ? (
+                            <FormattedMessage
+                                id={'Apis.Details.APIDefinition.APIDefinition.api.definition.save'
+                                    + '.confirmation.gateway'}
+                                defaultMessage={
+                                    'Are you sure you want to save the API Definition? This will only'
+                                    + ' affect the developer portal content and will not change the'
+                                    + ' existing deployment.'
+                                }
+                            />
+                        ) : (
+                            <FormattedMessage
+                                id='Apis.Details.APIDefinition.APIDefinition.api.definition.save.confirmation'
+                                defaultMessage={
+                                    'Are you sure you want to save the API Definition? This might affect the'
+                                    + ' existing resources.'
+                                }
+                            />
+                        )}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
