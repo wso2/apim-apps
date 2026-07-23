@@ -76,6 +76,7 @@ function ViewCurl(props) {
         defaultTokenEndpoint,
         consumerSecretMasked,
         consumerSecretRequired,
+        supportedGrantTypes,
     } = props;
     const bas64Encoded = window.btoa(consumerKey + ':' + consumerSecret);
     const [showReal, setShowReal] = useState(false);
@@ -109,127 +110,145 @@ function ViewCurl(props) {
             ? `-u "${consumerKey}:<CONSUMER_SECRET>"`
             : `-H "Authorization: Basic ${bas64Encoded}"`
     };
+    const showPasswordGrantCurl = !supportedGrantTypes || supportedGrantTypes.includes('password');
+    const showClientCredentialsGrantCurl = !supportedGrantTypes || supportedGrantTypes.includes('client_credentials');
 
     if (keyManagerConfig.alias === null) {
         return (
             <Root>
-                <Typography>
-                    <FormattedMessage
-                        id='Shared.AppsAndKeys.ViewCurl.help'
-                        defaultMessage='The following cURL command shows how to generate an access token using
-                            the Password Grant type.'
-                    />
-                </Typography>
+                {showPasswordGrantCurl && (
+                    <div>
+                        <Typography>
+                            <FormattedMessage
+                                id='Shared.AppsAndKeys.ViewCurl.help'
+                                defaultMessage='The following cURL command shows how to generate an access token using
+                                    the Password Grant type.'
+                            />
+                        </Typography>
 
-                <div className={classes.contentWrapper}>
-                    <div className={classes.code} dir='ltr'>
-                        <div>
-                            <span className={classes.command}>curl -k -X POST </span> {tokenEndpoint}
-                            <span className={classes.command}> -d </span>{' '}
-                            {'"grant_type=password&username=Username&password=Password"'}
-                        </div>
-                        {isConsumerSecretRequired ? (consumerSecretRequiredSnippet) : (
-                            <div>
-                                <span className={classes.command}> -H </span>
-                                {'"Authorization: Basic'}
-                                <a onClick={applyReal} className={classes.encodeVisible}>
-                                    {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
-                                </a>
-                                {'"'}
+                        <div className={classes.contentWrapper}>
+                            <div className={classes.code} dir='ltr'>
+                                <div>
+                                    <span className={classes.command}>curl -k -X POST </span> {tokenEndpoint}
+                                    <span className={classes.command}> -d </span>{' '}
+                                    {'"grant_type=password&username=Username&password=Password"'}
+                                </div>
+                                {isConsumerSecretRequired ? (consumerSecretRequiredSnippet) : (
+                                    <div>
+                                        <span className={classes.command}> -H </span>
+                                        {'"Authorization: Basic'}
+                                        <a onClick={applyReal} className={classes.encodeVisible}>
+                                            {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
+                                        </a>
+                                        {'"'}
+                                    </div>
+                                )}
                             </div>
-                        )}
+                            <div>
+                                <Tooltip
+                                    title={
+                                        tokenCopied
+                                            ? intl.formatMessage({
+                                                defaultMessage: 'Copied',
+                                                id: 'Shared.AppsAndKeys.ViewCurl.copied',
+                                            })
+                                            : intl.formatMessage({
+                                                defaultMessage: 'Copy to clipboard',
+                                                id: 'Shared.AppsAndKeys.ViewCurl.copy.to.clipboard',
+                                            })
+                                    }
+                                    placement='right'
+                                >
+                                    <IconButton
+                                        id = 'copy-to-clipbord-icon'
+                                        aria-label='Copy to clipboard'
+                                        size="large"
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(`curl -k -X POST ${tokenEndpoint} -d ` +
+                                                '"grant_type=password&username=Username&password=Password" ' +
+                                                `${getAuthSnippetString()}`).then(onCopy)
+                                        }}
+                                    >
+                                        <FileCopy color='secondary'/>
+                                    </IconButton>
+                                </Tooltip>
+                            </div>
+                        </div>
                     </div>
+                )}
+                {showClientCredentialsGrantCurl && (
                     <div>
-                        <Tooltip
-                            title={
-                                tokenCopied
-                                    ? intl.formatMessage({
-                                        defaultMessage: 'Copied',
-                                        id: 'Shared.AppsAndKeys.ViewCurl.copied',
-                                    })
-                                    : intl.formatMessage({
-                                        defaultMessage: 'Copy to clipboard',
-                                        id: 'Shared.AppsAndKeys.ViewCurl.copy.to.clipboard',
-                                    })
-                            }
-                            placement='right'
-                        >
-                            <IconButton
-                                id = 'copy-to-clipbord-icon'
-                                aria-label='Copy to clipboard'
-                                size="large"
-                                onClick={() => {
-                                    navigator.clipboard.writeText(`curl -k -X POST ${tokenEndpoint} -d ` +
-                                        '"grant_type=password&username=Username&password=Password" ' +
-                                        `${getAuthSnippetString()}`).then(onCopy)
-                                }}
-                            >
-                                <FileCopy color='secondary'/>
-                            </IconButton>
-                        </Tooltip>
-                    </div>
-                </div>
-                <Typography>
-                    <FormattedMessage
-                        id='Shared.AppsAndKeys.ViewCurl.help.in.a.similar'
-                        defaultMessage={`In a similar manner, you can generate an access token using the
-                    Client Credentials grant type with the following cURL command.`}
-                    />
-                </Typography>
-                <div className={classes.contentWrapper}>
-                    <div className={classes.code} dir='ltr'>
-                        <div>
-                            <span className={classes.command}>curl -k -X POST </span> {tokenEndpoint}
-                            <span className={classes.command}> -d </span>{' '}
-                            {'"grant_type=client_credentials"'}
-                            {isAzureAD && (
-                              <>
-                                <span className={classes.command}> -d </span>
-                                {' '}
-                                {`"scope=api://${consumerKey}/.default"`}
-                              </>
+                        <Typography>
+                            {showPasswordGrantCurl ? (
+                                <FormattedMessage
+                                    id='Shared.AppsAndKeys.ViewCurl.help.in.a.similar'
+                                    defaultMessage={`In a similar manner, you can generate an access token using the
+                                Client Credentials grant type with the following cURL command.`}
+                                />
+                            ) : (
+                                <FormattedMessage
+                                    id='Shared.AppsAndKeys.ViewCurl.help.client.credentials'
+                                    defaultMessage='The following cURL command shows how to generate an access token using the Client Credentials Grant type.'
+                                />
                             )}
-                        </div>
-                        {isConsumerSecretRequired ? (consumerSecretRequiredSnippet) : (
-                            <div>
-                                <span className={classes.command}> -H </span>
-                                {'"Authorization: Basic'}
-                                <a onClick={applyReal} className={classes.encodeVisible}>
-                                    {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
-                                </a>
-                                {'"'}
+                        </Typography>
+
+                        <div className={classes.contentWrapper}>
+                            <div className={classes.code} dir='ltr'>
+                                <div>
+                                    <span className={classes.command}>curl -k -X POST </span> {tokenEndpoint}
+                                    <span className={classes.command}> -d </span>{' '}
+                                    {'"grant_type=client_credentials"'}
+                                    {isAzureAD && (
+                                      <>
+                                        <span className={classes.command}> -d </span>
+                                        {' '}
+                                        {`"scope=api://${consumerKey}/.default"`}
+                                      </>
+                                    )}
+                                </div>
+                                {isConsumerSecretRequired ? (consumerSecretRequiredSnippet) : (
+                                    <div>
+                                        <span className={classes.command}> -H </span>
+                                        {'"Authorization: Basic'}
+                                        <a onClick={applyReal} className={classes.encodeVisible}>
+                                            {showReal ? ' ' + bas64Encoded : ' Base64(consumer-key:consumer-secret)'}
+                                        </a>
+                                        {'"'}
+                                    </div>
+                                )}
                             </div>
-                        )}
+                            <div>
+                                <Tooltip
+                                    title={
+                                        tokenCopied
+                                            ? intl.formatMessage({
+                                                defaultMessage: 'Copied',
+                                                id: 'Shared.AppsAndKeys.ViewCurl.copied',
+                                            })
+                                            : intl.formatMessage({
+                                                defaultMessage: 'Copy to clipboard',
+                                                id: 'Shared.AppsAndKeys.ViewCurl.copy.to.clipboard',
+                                            })
+                                    }
+                                    placement='right'
+                                >
+                                    <IconButton
+                                        id = 'copy-to-clipbord-icon'
+                                        aria-label='Copy to clipboard'
+                                        size="large"
+                                        onClick={() => {navigator.clipboard.writeText(`curl -k -X POST ${tokenEndpoint} -d ` +
+                                          '"grant_type=client_credentials"' + azureScope + ' ' +
+                                            `${getAuthSnippetString()}`).then(onCopy)
+                                        }}
+                                    >
+                                        <FileCopy color='secondary'/>
+                                    </IconButton>
+                                </Tooltip>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <Tooltip
-                            title={
-                                tokenCopied
-                                    ? intl.formatMessage({
-                                        defaultMessage: 'Copied',
-                                        id: 'Shared.AppsAndKeys.ViewCurl.copied',
-                                    })
-                                    : intl.formatMessage({
-                                        defaultMessage: 'Copy to clipboard',
-                                        id: 'Shared.AppsAndKeys.ViewCurl.copy.to.clipboard',
-                                    })
-                            }
-                            placement='right'
-                        >
-                            <IconButton
-                                id = 'copy-to-clipbord-icon'
-                                aria-label='Copy to clipboard'
-                                size="large"
-                                onClick={() => {navigator.clipboard.writeText(`curl -k -X POST ${tokenEndpoint} -d ` +
-                                  '"grant_type=client_credentials"' + azureScope + ' ' +
-                                    `${getAuthSnippetString()}`).then(onCopy)
-                                }}
-                            >
-                                <FileCopy color='secondary'/>
-                            </IconButton>
-                        </Tooltip>
-                    </div>
-                </div>
+                )}
             </Root>
         );
     } else {
@@ -328,6 +347,7 @@ ViewCurl.propTypes = {
     defaultTokenEndpoint: PropTypes.string,
     consumerSecretMasked: PropTypes.bool,
     consumerSecretRequired: PropTypes.bool,
+    supportedGrantTypes: PropTypes.array,
 };
 
 export default injectIntl(ViewCurl);
