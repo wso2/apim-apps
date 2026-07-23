@@ -48,9 +48,10 @@ import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
 import Utils from 'AppData/Utils';
-import {  
+import getValidationErrorsFromError from 'AppComponents/Apis/Create/Components/validationErrorUtils';
+import ValidationResults from 'AppComponents/Apis/Create/Components/ValidationResults';
+import {
     getLinterResultsFromContent } from "../../../Details/APIDefinition/Linting/Linting";
-import ValidationResults from './ValidationResults';
 
 const PREFIX = 'ProvideOpenAPI';
 
@@ -90,6 +91,11 @@ export default function ProvideOpenAPI(props) {
     
     const intl = useIntl();
 
+    const openApiValidationErrorTitle = intl.formatMessage({
+        id: 'Apis.Create.OpenAPI.create.api.openapi.validation.error',
+        defaultMessage: 'Error while validating OpenAPI definition',
+    });
+
     function lint(content) {
         // Validate and linting
         setIsLinting(true);
@@ -124,6 +130,21 @@ export default function ProvideOpenAPI(props) {
 
     const validateURLDebounced = useCallback(
         debounce((newURL) => { // Example: https://codesandbox.io/s/debounce-example-l7fq3?file=/src/App.js
+            const handleValidationError = (error) => {
+                const errorMessage = error.response?.body?.description
+                    || error.response?.body?.message
+                    || error.message
+                    || intl.formatMessage({
+                        id: 'Apis.Create.OpenAPI.Steps.ProvideOpenAPI.url.validation.error',
+                        defaultMessage: 'Failed to validate the OpenAPI URL. Please try again.',
+                    });
+                setValidity({ ...isValid, url: { message: errorMessage } });
+                setValidationErrors(getValidationErrorsFromError(error, openApiValidationErrorTitle));
+                onValidate(false);
+                setIsValidating(false);
+                console.error(error);
+            };
+
             if (isMCPServer) {
                 MCPServer.validateOpenAPIByUrl(newURL, { returnContent: true }).then((response) => {
                     const {
@@ -162,12 +183,7 @@ export default function ProvideOpenAPI(props) {
                     }
                     onValidate(isValidURL);
                     setIsValidating(false);
-                }).catch((error) => {
-                    setValidity({ url: { message: error.message } });
-                    onValidate(false);
-                    setIsValidating(false);
-                    console.error(error);
-                });
+                }).catch(handleValidationError);
             } else {
                 API.validateOpenAPIByUrl(newURL, { returnContent: true }).then((response) => {
                     const {
@@ -197,13 +213,7 @@ export default function ProvideOpenAPI(props) {
                     }
                     onValidate(isValidURL);
                     setIsValidating(false);
-                }).catch((error) => {
-                    setValidity({ url: { message: error.message } });
-                    onValidate(false);
-                    setIsValidating(false);
-                    console.error(error);
-                    
-                });
+                }).catch(handleValidationError);
             }
         }, 750),
         [],
@@ -231,6 +241,7 @@ export default function ProvideOpenAPI(props) {
                         validFile = file;
                         inputsDispatcher({ action: 'preSetAPI', value: info });
                         setValidity({ ...isValid, file: null });
+                        setValidationErrors([]);
                     } else {
                         setValidity({
                             ...isValid, file: {
@@ -252,6 +263,7 @@ export default function ProvideOpenAPI(props) {
                             })
                         }
                     });
+                    setValidationErrors(getValidationErrorsFromError(error, openApiValidationErrorTitle));
                     console.error(error);
                 })
                 .finally(() => {
@@ -270,6 +282,7 @@ export default function ProvideOpenAPI(props) {
                         validFile = file;
                         inputsDispatcher({ action: 'preSetAPI', value: info });
                         setValidity({ ...isValid, file: null });
+                        setValidationErrors([]);
                     } else {
                         setValidity({
                             ...isValid, file: {
@@ -291,6 +304,7 @@ export default function ProvideOpenAPI(props) {
                             })
                         }
                     });
+                    setValidationErrors(getValidationErrorsFromError(error, openApiValidationErrorTitle));
                     console.error(error);
                 })
                 .finally(() => {
