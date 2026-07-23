@@ -741,19 +741,24 @@ class ViewKeys extends React.Component {
                                             />
                                         </Button>
                                     )}
-                                <Button
-                                    id='curl-to-generate-access-token-btn'
-                                    variant='outlined'
-                                    size='small'
-                                    color='grey'
-                                    className={classes.margin}
-                                    onClick={this.handleClickOpenCurl}
-                                >
-                                    <FormattedMessage
-                                        id='Shared.AppsAndKeys.ViewKeys.curl.to.generate'
-                                        defaultMessage='CURL to Generate Access Token'
-                                    />
-                                </Button>
+                                {supportedGrantTypesUnchanged
+                                    && (supportedGrantTypesUnchanged.includes('password')
+                                        || supportedGrantTypesUnchanged.includes('client_credentials'))
+                                    && (
+                                        <Button
+                                            id='curl-to-generate-access-token-btn'
+                                            variant='outlined'
+                                            size='small'
+                                            color='grey'
+                                            className={classes.margin}
+                                            onClick={this.handleClickOpenCurl}
+                                        >
+                                            <FormattedMessage
+                                                id='Shared.AppsAndKeys.ViewKeys.curl.to.generate'
+                                                defaultMessage='CURL to Generate Access Token'
+                                            />
+                                        </Button>
+                                    )}
                             </div>
                         </>
                         {supportedGrantTypesUnchanged && !supportedGrantTypesUnchanged.includes('client_credentials') && (
