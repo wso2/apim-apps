@@ -49,8 +49,7 @@ import GetAppIcon from '@mui/icons-material/GetApp';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { styled } from '@mui/material/styles';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
-import AuthManager from 'AppData/AuthManager';
-import Utils from 'AppData/Utils';
+import API from 'AppData/api';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { FormattedMessage } from 'react-intl';
 import APIMAlert from 'AppComponents/Shared/Alert';
@@ -73,18 +72,9 @@ const POLL_TIMEOUT_MS = 120000;
 /**
  * Single poll attempt: checks GET /federated-apis/status/{taskId} once.
  */
-const pollOnce = (taskId, basePath, token) => {
-    return fetch(`${basePath}/federated-apis/status/${taskId}`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/json',
-        },
-    }).then((res) => {
-        if (!res.ok) {
-            throw new Error(`Status check failed for task ${taskId} (HTTP ${res.status})`);
-        }
-        return res.json();
-    }).then((data) => {
+const pollOnce = (taskId) => {
+    return API.getFederatedAPIDiscoveryStatus(taskId).then((response) => {
+        const data = response.body || response.obj;
         if (data.status === 'COMPLETED') {
             return data.result || [];
         }
@@ -96,21 +86,32 @@ const pollOnce = (taskId, basePath, token) => {
 };
 
 /**
- * Polls GET /federated-apis/status/{taskId} until COMPLETED or FAILED.
+ * Polls GET /federated-apis/status/{taskId} until COMPLETED, FAILED, or component unmounted.
  */
-const pollTaskStatus = (taskId, basePath, token, startTime = Date.now()) => {
+const pollTaskStatus = (taskId, isMounted, startTime = Date.now()) => {
+    if (isMounted && !isMounted.current) {
+        return Promise.reject(new Error('COMPONENT_UNMOUNTED'));
+    }
     if (Date.now() - startTime >= POLL_TIMEOUT_MS) {
         return Promise.reject(
             new Error(`Discovery timed out after ${POLL_TIMEOUT_MS / 1000}s for task ${taskId}.`)
         );
     }
     return new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS))
-        .then(() => pollOnce(taskId, basePath, token))
+        .then(() => {
+            if (isMounted && !isMounted.current) {
+                throw new Error('COMPONENT_UNMOUNTED');
+            }
+            return pollOnce(taskId);
+        })
         .then((result) => {
+            if (isMounted && !isMounted.current) {
+                throw new Error('COMPONENT_UNMOUNTED');
+            }
             if (result !== null) {
                 return result; // COMPLETED
             }
-            return pollTaskStatus(taskId, basePath, token, startTime);
+            return pollTaskStatus(taskId, isMounted, startTime);
         });
 };
 
@@ -189,20 +190,9 @@ const importSingleApi = async (item, gwName, setImportingStates, setSelectedApis
     const actionLabel = isUpdate ? 'update' : 'import';
     setImportingStates((prev) => ({ ...prev, [apiId]: 'importing' }));
     try {
-        const token = AuthManager.getUser().getPartialToken();
-        const basePath = Utils.getSwaggerURL().replace('/swagger.yaml', '');
-        const url = `${basePath}/federated-apis/${actionLabel}?environment=${gwName}`;
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            },
-            body: JSON.stringify([apiId]),
-        });
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
+        const response = await API.importFederatedAPIs(actionLabel, gwName, [apiId]);
+        if (!response.ok && response.status !== 200 && response.status !== 201) {
+            const errorData = response.body || {};
             const backendMsg = errorData.message || `Failed to ${actionLabel} API`;
             throw new Error(backendMsg);
         }
@@ -251,23 +241,22 @@ const DiscoveryResults = (props) => {
     const [importErrors, setImportErrors] = useState({});
     const [lastDiscoveredAt, setLastDiscoveredAt] = useState(null);
     const discoveryTriggered = useRef(false);
+    const isMounted = useRef(true);
+
+    useEffect(() => {
+        isMounted.current = true;
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
 
     // Load cached results from DB on mount
     const loadCachedResults = async (gw) => {
         try {
-            const token = AuthManager.getUser().getPartialToken();
-            const basePath = Utils.getSwaggerURL().replace('/swagger.yaml', '');
-            const response = await fetch(
-                `${basePath}/federated-apis/cached?environment=${gw}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        Accept: 'application/json',
-                    },
-                }
-            );
-            if (response.ok) {
-                const data = await response.json();
+            const response = await API.getCachedFederatedAPIs(gw);
+            if (!isMounted.current) return false;
+            if (response.ok || response.status === 200) {
+                const data = response.body || response.obj;
                 if (data.lastDiscoveredAt) {
                     setLastDiscoveredAt(data.lastDiscoveredAt);
                 }
@@ -291,26 +280,19 @@ const DiscoveryResults = (props) => {
         }
     }, [location.state, history]);
 
-    const discoverGateway = async (gw, token, basePath) => {
-        const submitResponse = await fetch(
-            `${basePath}/federated-apis/discover?environment=${gw}`,
-            {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: 'application/json',
-                },
-            }
-        );
-        if (!submitResponse.ok && submitResponse.status !== 202) {
+    const discoverGateway = async (gw) => {
+        const submitResponse = await API.discoverFederatedAPIs(gw);
+        if (!isMounted.current) return [];
+        if (!submitResponse.ok && submitResponse.status !== 202 && submitResponse.status !== 200) {
             throw new Error(`Failed to start discovery (HTTP ${submitResponse.status})`);
         }
-        const submitData = await submitResponse.json();
+        const submitData = submitResponse.body || submitResponse.obj;
         const { taskId } = submitData;
         if (!taskId) {
             throw new Error('No task ID returned');
         }
-        const apiList = await pollTaskStatus(taskId, basePath, token);
+        const apiList = await pollTaskStatus(taskId, isMounted);
+        if (!isMounted.current) return [];
         if (apiList.length > 0 && apiList[0].discoveredAt) {
             setLastDiscoveredAt(apiList[0].discoveredAt);
         } else {
@@ -341,12 +323,10 @@ const DiscoveryResults = (props) => {
         setDiscoveryResults(initialResults);
 
         try {
-            const token = AuthManager.getUser().getPartialToken();
-            const basePath = Utils.getSwaggerURL().replace('/swagger.yaml', '');
-
             await Promise.all(
                 selectedGateways.map(async (gw) => {
                     try {
+                        if (!isMounted.current) return;
                         setDiscoveryResults((prev) => ({
                             ...prev,
                             [gw]: {
@@ -354,12 +334,14 @@ const DiscoveryResults = (props) => {
                                 statusText: 'Discovering...',
                             },
                         }));
-                        const apiList = await discoverGateway(gw, token, basePath);
+                        const apiList = await discoverGateway(gw);
+                        if (!isMounted.current) return;
                         setDiscoveryResults((prev) => ({
                             ...prev,
                             [gw]: { status: 'success', apis: apiList },
                         }));
                     } catch (err) {
+                        if (err.message === 'COMPONENT_UNMOUNTED' || !isMounted.current) return;
                         setDiscoveryResults((prev) => ({
                             ...prev,
                             [gw]: { status: 'error', error: err.message, apis: [] },
@@ -368,9 +350,13 @@ const DiscoveryResults = (props) => {
                 })
             );
         } catch (err) {
-            setError(err.message);
+            if (err.message !== 'COMPONENT_UNMOUNTED' && isMounted.current) {
+                setError(err.message);
+            }
         } finally {
-            setDiscovering(false);
+            if (isMounted.current) {
+                setDiscovering(false);
+            }
         }
     };
 
@@ -381,7 +367,7 @@ const DiscoveryResults = (props) => {
                 // Try loading from cache first
                 const gw = selectedGateways[0];
                 const hasCached = await loadCachedResults(gw);
-                if (!hasCached) {
+                if (!hasCached && isMounted.current) {
                     // No cache - trigger fresh discovery
                     handleDiscover();
                 }
@@ -392,18 +378,19 @@ const DiscoveryResults = (props) => {
 
     const handleRetryGateway = async (gw) => {
         try {
-            const token = AuthManager.getUser().getPartialToken();
-            const basePath = Utils.getSwaggerURL().replace('/swagger.yaml', '');
+            if (!isMounted.current) return;
             setDiscoveryResults((prev) => ({
                 ...prev,
                 [gw]: { status: 'pending', statusText: 'Discovering...', apis: [] },
             }));
-            const apiList = await discoverGateway(gw, token, basePath);
+            const apiList = await discoverGateway(gw);
+            if (!isMounted.current) return;
             setDiscoveryResults((prev) => ({
                 ...prev,
                 [gw]: { status: 'success', apis: apiList },
             }));
         } catch (err) {
+            if (err.message === 'COMPONENT_UNMOUNTED' || !isMounted.current) return;
             setDiscoveryResults((prev) => ({
                 ...prev,
                 [gw]: { status: 'error', error: err.message, apis: [] },

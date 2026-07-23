@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars, react/prop-types */
+/* eslint-disable */
 /*
  * Copyright (c) 2026, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -31,25 +31,14 @@ const DiscoverAPIsCard = () => {
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const isMediumScreen = useMediaQuery(theme.breakpoints.between('md', 'lg'));
 
-    let maxWidth = 500;
-    if (isSmallScreen) {
-        maxWidth = 250;
-    } else if (isMediumScreen) {
-        maxWidth = 400;
-    }
-
-    let height = 140;
-    if (isMediumScreen) {
-        height = 150;
-    }
-
     return (
         <Paper
             square={false}
             elevation={4}
             sx={{
-                maxWidth,
-                height, 
+                width: isSmallScreen ? 250 : isMediumScreen ? 400 : 390,
+                maxWidth: isSmallScreen ? 250 : isMediumScreen ? 400 : 390,
+                height: isSmallScreen ? 140 : isMediumScreen ? 150 : 140, 
                 display: 'flex',
                 justifyContent: 'center', alignItems: 'center',
                 transition: 'all 0.3s ease-in-out',
@@ -58,34 +47,15 @@ const DiscoverAPIsCard = () => {
             }}
         >
             <Box p={1} border={0} borderRadius={1}
-                sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%', gap: 1 }}>
+                sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                 <img
                     alt='Discover APIs'
-                    src={`${app.context}/site/public/images/api/quick-link-service-color.svg`}
-                    style={{ width: '80px', height: 'auto', marginLeft: isSmallScreen ? 0 : 8 }}
+                    src={`${app.context}/site/public/images/api/DiscoverAPI.svg`}
+                    style={{ width: '90px', height: 'auto' }}
                 />
-                <Box p={1} border={0}
-                    sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', flexGrow: 1 }}>
-                    <Typography sx={{
-                        color: '#1a3c73',
-                        fontWeight: 'bold',
-                        fontSize: '1.25rem',
-                        fontFamily: theme.typography.fontFamily,
-                    }}>
-                        <FormattedMessage
-                            id='Publisher.Landing.discover.apis.card.title'
-                            defaultMessage='Discover APIs'
-                        />
-                    </Typography>
-                    <Typography sx={{
-                        color: '#1a3c73',
-                        mt: 0.5,
-                        mb: 1.5,
-                        textAlign: 'left',
-                        lineHeight: 1.2,
-                        fontSize: '0.875rem',
-                        fontFamily: theme.typography.fontFamily,
-                    }}>
+                <Box p={2} border={0} borderRadius={2}
+                    sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <Typography variant='h6' sx={{ color: '#1a3c73', textAlign: 'center', mt: 2, maxWidth: 220, lineHeight: 1.2 }}>
                         <FormattedMessage
                             id='Apis.Listing.components.TopMenu.discover.apis.tooltip'
                             defaultMessage='Discover and import APIs from your third party gateways'
@@ -97,7 +67,7 @@ const DiscoverAPIsCard = () => {
                         component={Link}
                         disabled={isRestricted(['apim:api_create', 'apim:api_manage'])}
                         to='/apis/discover'
-                        sx={{ whiteSpace: 'nowrap' }}
+                        sx={{ whiteSpace: 'nowrap', mt: 2 }}
                     >
                         <FormattedMessage
                             id='Publisher.Landing.discover.apis.button'

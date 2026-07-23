@@ -221,7 +221,7 @@ const APILanding = () => {
                                         {settings.designAssistantEnabled && (
                                             <DesignAssistantMenu />
                                         )}
-                                        {isFederatedAPIDiscoveryEnabled && (
+                                        {isFederatedAPIDiscoveryEnabled && pageMode !== 'create' && (
                                             <DiscoverAPIsCard />
                                         )}
                                     </Grid>

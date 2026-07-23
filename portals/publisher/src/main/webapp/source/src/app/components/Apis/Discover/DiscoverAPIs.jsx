@@ -30,7 +30,7 @@ import {
     Grid,
     useTheme,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { styled, alpha } from '@mui/material/styles';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { Link } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -90,7 +90,27 @@ const DiscoverAPIs = (props) => {
         if (type.includes('AZURE')) {
             return '#0078D4';
         }
-        return '#4d4d4d';
+        return theme.palette.text.secondary;
+    };
+
+    const getGatewayDescription = (gw) => {
+        if (gw.description) {
+            return gw.description;
+        }
+        const type = (gw.gatewayType || '').toUpperCase();
+        if (type.includes('AWS')) {
+            return 'Discover and import REST, HTTP & WebSocket APIs from AWS API Gateway.';
+        }
+        if (type.includes('KONG')) {
+            return 'Sync API services and routes managed in Kong Enterprise Gateway.';
+        }
+        if (type.includes('APIGEE')) {
+            return 'Discover and import API proxies from Google Cloud Apigee.';
+        }
+        if (type.includes('AZURE')) {
+            return 'Discover API endpoints and specs managed in Azure API Management.';
+        }
+        return 'Discover and import APIs configured on this external gateway.';
     };
 
     const handleDiscover = () => {
@@ -118,9 +138,17 @@ const DiscoverAPIs = (props) => {
                 </Button>
             </Box>
             <div className='header'>
-                <Typography variant='h4'>Discover APIs</Typography>
+                <Typography variant='h4'>
+                    <FormattedMessage
+                        id='Apis.Discover.DiscoverAPIs.title'
+                        defaultMessage='Discover APIs'
+                    />
+                </Typography>
                 <Typography variant='subtitle1' color='textSecondary'>
-                    Discover and import APIs from federated gateways into WSO2 API Manager.
+                    <FormattedMessage
+                        id='Apis.Discover.DiscoverAPIs.subtitle'
+                        defaultMessage='Discover and import APIs from federated gateways into WSO2 API Manager.'
+                    />
                 </Typography>
             </div>
 
@@ -135,12 +163,19 @@ const DiscoverAPIs = (props) => {
                         textAlign: 'center',
                     }}>
                         <Typography variant='h5' gutterBottom sx={{ fontWeight: 'bold' }}>
-                            No available gateways
+                            <FormattedMessage
+                                id='Apis.Discover.DiscoverAPIs.no.gateways.title'
+                                defaultMessage='No available gateways'
+                            />
                         </Typography>
                         <Typography variant='body1' color='textSecondary' sx={{ mb: 2, maxWidth: 450 }}>
-                            There are no external/federated gateways configured in the system.
-                            {' '}
-                            You can add them from the Admin portal.
+                            <FormattedMessage
+                                id='Apis.Discover.DiscoverAPIs.no.gateways.description'
+                                defaultMessage={
+                                    'There are no external/federated gateways configured in the system. '
+                                    + 'You can add them from the Admin portal.'
+                                }
+                            />
                         </Typography>
                         <MuiLink
                             href={
@@ -151,13 +186,19 @@ const DiscoverAPIs = (props) => {
                             rel='noopener noreferrer'
                             sx={{ textDecoration: 'underline', fontWeight: 'bold' }}
                         >
-                            Learn more
+                            <FormattedMessage
+                                id='Apis.Discover.DiscoverAPIs.learn.more'
+                                defaultMessage='Learn more'
+                            />
                         </MuiLink>
                     </Box>
                 ) : (
                     <>
                         <Typography variant='h6' gutterBottom sx={{ mb: 2 }}>
-                            Select a Gateway
+                            <FormattedMessage
+                                id='Apis.Discover.DiscoverAPIs.select.gateway'
+                                defaultMessage='Select a Gateway'
+                            />
                         </Typography>
                         <Grid container spacing={3} sx={{ mb: 4 }}>
                             {gateways.map((gw) => {
@@ -168,81 +209,117 @@ const DiscoverAPIs = (props) => {
                                             onClick={() => handleSelectGateway(gw.name)}
                                             variant='outlined'
                                             sx={{
-                                                p: 3,
+                                                p: 2.5,
                                                 display: 'flex',
                                                 flexDirection: 'column',
+                                                justifyContent: 'space-between',
                                                 position: 'relative',
                                                 cursor: 'pointer',
                                                 borderRadius: 3,
+                                                minHeight: 135,
                                                 border: isSelected
                                                     ? `2px solid ${theme.palette.primary.main}`
-                                                    : '1px solid #e0e0e0',
+                                                    : `1px solid ${theme.palette.divider}`,
                                                 backgroundColor: isSelected
-                                                    ? 'rgba(25, 118, 210, 0.04)'
-                                                    : '#ffffff',
+                                                    ? alpha(theme.palette.primary.main, 0.04)
+                                                    : theme.palette.background.paper,
                                                 transition: 'all 0.2s ease-in-out',
                                                 boxShadow: isSelected ? 2 : 0,
                                                 '&:hover': {
                                                     boxShadow: 3,
                                                     borderColor: isSelected
                                                         ? theme.palette.primary.main
-                                                        : '#999999',
+                                                        : theme.palette.action.disabledBackground,
                                                     transform: 'translateY(-2px)',
                                                 },
                                             }}
                                         >
-                                            <Box
-                                                sx={{
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'flex-start',
-                                                    mb: 2,
-                                                }}
-                                            >
-                                                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                                                    <Typography
-                                                        variant='h6'
-                                                        sx={{
-                                                            fontWeight: 'bold',
-                                                            color: '#1a3c73',
-                                                            fontSize: '1.1rem',
-                                                            fontFamily: theme.typography.fontFamily,
-                                                        }}
-                                                    >
-                                                        {gw.displayName || gw.name}
-                                                    </Typography>
-                                                    <Box
-                                                        sx={{
-                                                            display: 'inline-flex',
-                                                            alignSelf: 'flex-start',
-                                                            alignItems: 'center',
-                                                            px: 1.5,
-                                                            py: 0.5,
-                                                            mt: 1,
-                                                            borderRadius: '4px',
-                                                            fontSize: '0.75rem',
-                                                            fontWeight: 'bold',
-                                                            textTransform: 'uppercase',
-                                                            fontFamily: theme.typography.fontFamily,
-                                                            border: `1px solid ${getGatewayChipColor(
-                                                                gw.gatewayType
-                                                            )}`,
-                                                            color: getGatewayChipColor(gw.gatewayType),
-                                                            backgroundColor: '#ffffff',
-                                                        }}
-                                                    >
-                                                        {gw.gatewayType || 'External'}
+                                            <Box>
+                                                <Box
+                                                    sx={{
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'flex-start',
+                                                        mb: 1,
+                                                    }}
+                                                >
+                                                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                        <Typography
+                                                            variant='h6'
+                                                            sx={{
+                                                                fontWeight: 'bold',
+                                                                color: theme.palette.text.primary,
+                                                                fontSize: '1.05rem',
+                                                                fontFamily: theme.typography.fontFamily,
+                                                            }}
+                                                        >
+                                                            {gw.displayName || gw.name}
+                                                        </Typography>
+                                                        <Box
+                                                            sx={{
+                                                                display: 'inline-flex',
+                                                                alignSelf: 'flex-start',
+                                                                alignItems: 'center',
+                                                                px: 1.2,
+                                                                py: 0.3,
+                                                                mt: 0.8,
+                                                                borderRadius: '4px',
+                                                                fontSize: '0.7rem',
+                                                                fontWeight: 'bold',
+                                                                textTransform: 'uppercase',
+                                                                fontFamily: theme.typography.fontFamily,
+                                                                border: `1px solid ${getGatewayChipColor(
+                                                                    gw.gatewayType
+                                                                )}`,
+                                                                color: getGatewayChipColor(gw.gatewayType),
+                                                                backgroundColor: theme.palette.background.paper,
+                                                            }}
+                                                        >
+                                                            {gw.gatewayType || 'External'}
+                                                        </Box>
                                                     </Box>
+                                                    <Radio
+                                                        checked={isSelected}
+                                                        onChange={() => handleSelectGateway(gw.name)}
+                                                        value={gw.name}
+                                                        name='gateway-selection'
+                                                        color='primary'
+                                                        sx={{ p: 0 }}
+                                                    />
                                                 </Box>
-                                                <Radio
-                                                    checked={isSelected}
-                                                    onChange={() => handleSelectGateway(gw.name)}
-                                                    value={gw.name}
-                                                    name='gateway-selection'
-                                                    color='primary'
-                                                    sx={{ p: 0 }}
-                                                />
+                                                <Typography
+                                                    variant='body2'
+                                                    color='textSecondary'
+                                                    sx={{
+                                                        mt: 1.2,
+                                                        fontSize: '0.85rem',
+                                                        lineHeight: 1.4,
+                                                    }}
+                                                >
+                                                    {getGatewayDescription(gw)}
+                                                </Typography>
                                             </Box>
+                                            {gw.vhosts && gw.vhosts.length > 0 && (
+                                                <Box
+                                                    sx={{
+                                                        mt: 1.5,
+                                                        pt: 1,
+                                                        borderTop: `1px dashed ${theme.palette.divider}`,
+                                                    }}
+                                                >
+                                                    <Typography
+                                                        variant='caption'
+                                                        color='textSecondary'
+                                                        sx={{ fontSize: '0.75rem' }}
+                                                    >
+                                                        <FormattedMessage
+                                                            id='Apis.Discover.DiscoverAPIs.host'
+                                                            defaultMessage='Host: {host}'
+                                                            values={{ host: gw.vhosts[0].host }}
+                                                        />
+                                                    </Typography>
+                                                </Box>
+                                            )}
                                         </Paper>
                                     </Grid>
                                 );
@@ -250,7 +327,12 @@ const DiscoverAPIs = (props) => {
                         </Grid>
 
                         <div className='actions'>
-                            <Tooltip title='Discover and import APIs from your third party gateway.'>
+                            <Tooltip title={
+                                <FormattedMessage
+                                    id='Apis.Discover.DiscoverAPIs.tooltip'
+                                    defaultMessage='Discover and import APIs from your third party gateway.'
+                                />
+                            }>
                                 <span>
                                     <Button
                                         variant='contained'
@@ -258,9 +340,18 @@ const DiscoverAPIs = (props) => {
                                         disabled={!selectedGateway}
                                         onClick={handleDiscover}
                                     >
-                                        {selectedGateway
-                                            ? `Discover APIs from ${selectedGatewayObj?.displayName || selectedGateway}`
-                                            : 'Select a gateway to discover APIs'}
+                                        {selectedGateway ? (
+                                            <FormattedMessage
+                                                id='Apis.Discover.DiscoverAPIs.button.discover.from'
+                                                defaultMessage='Discover APIs from {gateway}'
+                                                values={{ gateway: selectedGatewayObj?.displayName || selectedGateway }}
+                                            />
+                                        ) : (
+                                            <FormattedMessage
+                                                id='Apis.Discover.DiscoverAPIs.button.select.gateway'
+                                                defaultMessage='Select a gateway to discover APIs'
+                                            />
+                                        )}
                                     </Button>
                                 </span>
                             </Tooltip>
@@ -268,9 +359,12 @@ const DiscoverAPIs = (props) => {
                                 variant='text'
                                 component={Link}
                                 to='/apis'
-                                sx={{ ml: 2, color: '#000000' }}
+                                sx={{ ml: 2 }}
                             >
-                                Cancel
+                                <FormattedMessage
+                                    id='Apis.Discover.DiscoverAPIs.cancel'
+                                    defaultMessage='Cancel'
+                                />
                             </Button>
                         </div>
                     </>
