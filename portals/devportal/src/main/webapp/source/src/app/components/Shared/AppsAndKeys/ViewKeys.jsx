@@ -625,7 +625,7 @@ class ViewKeys extends React.Component {
         }
 
         // Get the grant types for the generated keys
-        const { supportedGrantTypes: supportedGrantTypesUnchanged } = keys.get(selectedTab);
+        const { supportedGrantTypes: supportedGrantTypesUnchanged = [] } = keys.get(selectedTab);
         return consumerKey && (
             <Root className={classes.inputWrapper}>
                 <Grid container spacing={3}>
