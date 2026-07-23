@@ -15,6 +15,7 @@
  */
 
 import cloneDeep from 'lodash.clonedeep';
+import { ENDPOINT_TYPE_PROTOTYPED } from './endpointConstants';
 
 /**
  * Utility method to get the endpoint property name based on the given endpoint type and category.
@@ -140,7 +141,7 @@ function getEndpointConfigByImpl(implementationType) {
     const tmpEndpointConfig = {};
     if (implementationType === 'PROTOTYPED') {
         tmpEndpointConfig.endpoint_type = 'http';
-        tmpEndpointConfig.implementation_status = 'prototyped';
+        tmpEndpointConfig.implementation_status = ENDPOINT_TYPE_PROTOTYPED;
         tmpEndpointConfig.production_endpoints = { config: null, url: 'http://localhost' };
         tmpEndpointConfig.sandbox_endpoints = { config: null, url: 'http://localhost' };
     } else {
@@ -184,8 +185,8 @@ function createEndpointConfig(endpointType) {
             tmpEndpointConfig.endpoint_type = 'ws';
             tmpEndpointConfig.failOver = false;
             break;
-        case 'prototyped':
-            tmpEndpointConfig.implementation_status = 'prototyped';
+        case ENDPOINT_TYPE_PROTOTYPED:
+            tmpEndpointConfig.implementation_status = ENDPOINT_TYPE_PROTOTYPED;
             tmpEndpointConfig.endpoint_type = 'http';
             tmpEndpointConfig.production_endpoints = { config: null, url: 'http://localhost' };
             tmpEndpointConfig.sandbox_endpoints = { config: null, url: 'http://localhost' };

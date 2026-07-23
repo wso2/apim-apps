@@ -37,8 +37,15 @@ import MCPServerEndpoints from 'AppComponents/MCPServers/Details/Endpoints/Endpo
 import EndpointOverview from './EndpointOverview';
 import AIEndpoints from './AIEndpoints/AIEndpoints';
 import { createEndpointConfig, getEndpointTemplateByType } from './endpointUtils';
-import { API_SECURITY_KEY_TYPE_PRODUCTION, 
+import { API_SECURITY_KEY_TYPE_PRODUCTION,
     API_SECURITY_KEY_TYPE_SANDBOX } from '../Configuration/components/APISecurity/components/apiSecurityConstants';
+import {
+    ENDPOINT_TYPE_PROTOTYPED,
+    ENDPOINT_IMPLEMENTATION_TYPE_INLINE,
+    ENDPOINT_IMPLEMENTATION_TYPE_ENDPOINT,
+    ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS,
+    ENDPOINT_IMPLEMENTATION_METHOD_MOCK,
+} from './endpointConstants';
 
 const PREFIX = 'Endpoints';
 
@@ -172,16 +179,25 @@ function Endpoints(props) {
             }
             case 'endpointImplementationType': { // set implementation status
                 const { endpointType, implementationType } = value;
-                const config = createEndpointConfig(endpointType);
-                if (endpointType === 'prototyped') {
-                    if (implementationType === 'mock') {
+                if (endpointType === ENDPOINT_TYPE_PROTOTYPED || endpointType === ENDPOINT_IMPLEMENTATION_TYPE_INLINE) {
+                    const config = createEndpointConfig(ENDPOINT_TYPE_PROTOTYPED);
+                    if (implementationType === ENDPOINT_IMPLEMENTATION_METHOD_MOCK) {
                         api.generateMockScripts(api.id).then((res) => { // generates mock/sample payloads
                             setSwagger(res.obj);
                         });
-                        return { ...initState, endpointConfig: config, endpointImplementationType: 'INLINE' };
+                        return {
+                            ...initState,
+                            endpointConfig: config,
+                            endpointImplementationType: ENDPOINT_IMPLEMENTATION_TYPE_INLINE,
+                        };
                     }
-                    return { ...initState, endpointConfig: config, endpointImplementationType: 'ENDPOINT' };
+                    return {
+                        ...initState,
+                        endpointConfig: config,
+                        endpointImplementationType: ENDPOINT_IMPLEMENTATION_TYPE_ENDPOINT,
+                    };
                 }
+                const config = createEndpointConfig(endpointType);
                 return { ...initState, endpointConfig: config };
             }
             case 'endpointSecurity': { // set endpoint security
@@ -201,7 +217,7 @@ function Endpoints(props) {
             }
             case 'set_inline_or_mocked_oas': {
                 const { endpointImplementationType, endpointConfig } = value;
-                if (endpointImplementationType === 'INLINE') {
+                if (endpointImplementationType === ENDPOINT_IMPLEMENTATION_TYPE_INLINE) {
                     api.generateMockScripts(api.id).then((res) => { // generates mock/sample payloads
                         setSwagger(res.obj);
                     });
@@ -263,89 +279,109 @@ function Endpoints(props) {
      *
      * @param {boolean} isRedirect Used for dynamic endpoints to redirect to the runtime config page.
      */
-    const handleSave = (isRedirect) => {
+    /**
+     * Delete/ upload the production and sandbox sequence backends based on the current backend lists.
+     */
+    const deleteSequenceBackendOf = (keyType, deleteErrorMessage) => api
+        .deleteSequenceBackend(keyType, api.id)
+        .then(() => {
+            Alert.success(keyType === API_SECURITY_KEY_TYPE_PRODUCTION
+                ? 'Production Sequence backend deleted successfully'
+                : 'Sandbox Sequence backend deleted successfully');
+        })
+        .catch(() => {
+            Alert.error(deleteErrorMessage);
+        });
 
-        const { endpointConfig, endpointImplementationType, serviceInfo } = apiObject;
-        if (endpointConfig.endpoint_type === 'service') {
-            endpointConfig.endpoint_type = 'http';
-        }
-        setUpdating(true);
-        if (endpointConfig.endpoint_type === 'sequence_backend') {
-            if (productionBackendList?.length === 0 || (productionBackendList?.length > 0
-                && productionBackendList[0].content)) {
-                api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_PRODUCTION, api.id).then(() => {
-                    Alert.success('Production Sequence backend deleted successfully');
-                })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
-                            defaultMessage: 'Error Deleting Production Sequence Backend',
-                        }));
-                    });
-            }
+    const uploadSequenceBackendOf = (keyType, content, uploadErrorMessage) => api
+        .uploadCustomBackend(content, keyType, api.id)
+        .then(() => {
+            Alert.success('Custom backend uploaded successfully');
+        })
+        .catch((error) => {
+            const backendMessage = error?.response?.body?.description;
+            Alert.error(backendMessage || uploadErrorMessage);
+        });
 
-            if (sandBoxBackendList?.length === 0 || (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content)) {
-                api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_SANDBOX, api.id).then(() => {
-                    Alert.success('Sandbox Sequence backend deleted successfully');
-                })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
-                            defaultMessage: 'Error Deleting Sandbox Sequence Backend',
-                        }));
-                    });
+    /**
+     * Delete a sequence backend of the given type, then, only once that delete has settled, upload its
+     * replacement content if any was provided. Chaining the upload off the delete's promise (rather than
+     * firing both at once) keeps the two requests deterministic instead of racing against each other.
+     */
+    const updateSequenceBackendOf = (keyType, backendList, deleteErrorMessage, uploadErrorMessage) => {
+        const shouldDelete = backendList?.length === 0
+            || (backendList?.length > 0 && backendList[0].content);
+        const shouldUpload = backendList?.length > 0 && backendList[0].content;
+
+        const deletePromise = shouldDelete
+            ? deleteSequenceBackendOf(keyType, deleteErrorMessage)
+            : Promise.resolve();
+
+        return deletePromise.then(() => {
+            if (shouldUpload) {
+                return uploadSequenceBackendOf(keyType, backendList[0].content, uploadErrorMessage);
             }
-            if (productionBackendList?.length > 0 && productionBackendList[0].content) {
-                const productionBackend = productionBackendList[0];
-                api.uploadCustomBackend(productionBackend.content, API_SECURITY_KEY_TYPE_PRODUCTION, api.id)
-                    .then(() => {
-                        Alert.success('Custom backend uploaded successfully');
-                    })
-                    .catch((error) => {
-                        const backendMessage = error?.response?.body?.description;
-                        Alert.error(
-                            backendMessage || intl.formatMessage({
-                                id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
-                                defaultMessage: 'Error Uploading Production Sequence Backend',
-                            }),
-                        );
-                    });
-            }
-            if (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content) {
-                const sandBackend = sandBoxBackendList[0];
-                api.uploadCustomBackend(sandBackend.content, API_SECURITY_KEY_TYPE_SANDBOX, api.id)
-                    .then(() => {
-                        Alert.success('Custom backend uploaded successfully');
-                    })
-                    .catch((error) => {
-                        const backendMessage = error?.response?.body?.description;
-                        Alert.error(
-                            backendMessage || intl.formatMessage({
-                                id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
-                                defaultMessage: 'Error Uploading Sandbox Sequence Backend',
-                            }),
-                        );
-                    });
-            }
-        }
-        if (endpointImplementationType === 'INLINE' || endpointImplementationType === 'MOCKED_OAS') {
+            return Promise.resolve();
+        });
+    };
+
+    const updateSequenceBackends = () => Promise.all([
+        updateSequenceBackendOf(
+            API_SECURITY_KEY_TYPE_PRODUCTION,
+            productionBackendList,
+            intl.formatMessage({
+                id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
+                defaultMessage: 'Error Deleting Production Sequence Backend',
+            }),
+            intl.formatMessage({
+                id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
+                defaultMessage: 'Error Uploading Production Sequence Backend',
+            }),
+        ),
+        updateSequenceBackendOf(
+            API_SECURITY_KEY_TYPE_SANDBOX,
+            sandBoxBackendList,
+            intl.formatMessage({
+                id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
+                defaultMessage: 'Error Deleting Sandbox Sequence Backend',
+            }),
+            intl.formatMessage({
+                id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
+                defaultMessage: 'Error Uploading Sandbox Sequence Backend',
+            }),
+        ),
+    ]);
+
+    /**
+     * Update the swagger (for INLINE/ MOCKED_OAS implementations) or the API object, then invoke the completion
+     * callback. Shared by handleSave and handleSaveAndDeploy, which only differ in the update payload and what
+     * happens once the update settles.
+     *
+     * @param {string} endpointImplementationType The api implementation type (INLINE/ ENDPOINT/ MOCKED_OAS).
+     * @param {object} updatePayload The payload to send via updateAPI for INLINE/ MOCKED_OAS implementations.
+     * @param {Function} onComplete Callback invoked once the update settles.
+     */
+    const persistEndpointConfig = (endpointImplementationType, updatePayload, onComplete) => {
+        if (endpointImplementationType === ENDPOINT_IMPLEMENTATION_TYPE_INLINE
+            || endpointImplementationType === ENDPOINT_IMPLEMENTATION_TYPE_MOCKED_OAS) {
             api.updateSwagger(swagger).then((resp) => {
                 setSwagger(resp.obj);
-            }).then(() => {
-                updateAPI({ endpointConfig, endpointImplementationType, serviceInfo })
-                    .catch((error) => {
-                        if (error.response) {
-                            Alert.error(error.response.body.description);
-                        } else {
-                            Alert.error('Error occurred while updating endpoint configurations');
-                        }
-                    });
-            }).finally(() => {
-                setUpdating(false);
-                if (isRedirect) {
-                    history.push('/apis/' + api.id + '/policies');
-                }
-            });
+            }).then(() => updateAPI(updatePayload)
+                .catch((error) => {
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        Alert.error('Error occurred while updating endpoint configurations');
+                    }
+                }))
+                .catch((error) => {
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        Alert.error('Error occurred while updating endpoint configurations');
+                    }
+                })
+                .finally(onComplete);
         } else {
             const apiObjectCopy = cloneDeep(apiObject);
             if (apiObjectCopy.endpointConfig.endpoint_type === 'service') {
@@ -359,13 +395,36 @@ function Endpoints(props) {
                         Alert.error('Error occurred while updating endpoint configurations');
                     }
                 })
-                .finally(() => {
+                .finally(onComplete);
+        }
+    };
+
+    /**
+     * Method to update the api.
+     *
+     * @param {boolean} isRedirect Used for dynamic endpoints to redirect to the runtime config page.
+     */
+    const handleSave = (isRedirect) => {
+        const { endpointConfig, endpointImplementationType, serviceInfo } = apiObject;
+        if (endpointConfig.endpoint_type === 'service') {
+            endpointConfig.endpoint_type = 'http';
+        }
+        setUpdating(true);
+        const sequenceBackendsUpdated = endpointConfig.endpoint_type === 'sequence_backend'
+            ? updateSequenceBackends()
+            : Promise.resolve();
+        sequenceBackendsUpdated.then(() => {
+            persistEndpointConfig(
+                endpointImplementationType,
+                { endpointConfig, endpointImplementationType, serviceInfo },
+                () => {
                     setUpdating(false);
                     if (isRedirect) {
                         history.push('/apis/' + api.id + '/policies');
                     }
-                });
-        }
+                },
+            );
+        });
     };
 
     const handleSaveAndDeploy = () => {
@@ -374,103 +433,20 @@ function Endpoints(props) {
             endpointConfig.endpoint_type = 'http';
         }
         setUpdating(true);
-        if (endpointConfig.endpoint_type === 'sequence_backend') {
-            if (productionBackendList?.length === 0
-                || (productionBackendList?.length > 0 && productionBackendList[0].content)) {
-                api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_PRODUCTION, api.id)
-                    .then(() => {
-                        Alert.success('Production Sequence backend deleted successfully');
-                    })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
-                            defaultMessage: 'Error Deleting Production Sequence Backend',
-                        }));
-                    });
-            }
-
-            if (sandBoxBackendList?.length === 0
-                || (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content)) {
-                api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_SANDBOX, api.id)
-                    .then(() => {
-                        Alert.success('Sandbox Sequence backend deleted successfully');
-                    })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
-                            defaultMessage: 'Error Deleting Sandbox Sequence Backend',
-                        }));
-                    });
-            }
-            if (productionBackendList?.length > 0 && productionBackendList[0].content) {
-                const productionBackend = productionBackendList[0];
-                api.uploadCustomBackend(productionBackend.content, API_SECURITY_KEY_TYPE_PRODUCTION, api.id)
-                    .then(() => {
-                        Alert.success('Custom backend uploaded successfully');
-                    })
-                    .catch((error) => {
-                        const backendMessage = error?.response?.body?.description;
-                        Alert.error(
-                            backendMessage || intl.formatMessage({
-                                id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
-                                defaultMessage: 'Error Uploading Production Sequence Backend',
-                            }),
-                        );
-                    });
-            }
-            if (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content) {
-                const sandBackend = sandBoxBackendList[0];
-                api.uploadCustomBackend(sandBackend.content, API_SECURITY_KEY_TYPE_SANDBOX, api.id)
-                    .then(() => {
-                        Alert.success('Custom backend uploaded successfully');
-                    })
-                    .catch((error) => {
-                        const backendMessage = error?.response?.body?.description;
-                        Alert.error(
-                            backendMessage || intl.formatMessage({
-                                id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
-                                defaultMessage: 'Error Uploading Sandbox Sequence Backend',
-                            }),
-                        );
-                    });
-            }
-        }
-        if (endpointImplementationType === 'INLINE' || endpointImplementationType === 'MOCKED_OAS') {
-            api.updateSwagger(swagger).then((resp) => {
-                setSwagger(resp.obj);
-            }).then(() => {
-                updateAPI({ endpointConfig, endpointImplementationType, endpointSecurity, serviceInfo })
-                    .catch((error) => {
-                        if (error.response) {
-                            Alert.error(error.response.body.description);
-                        } else {
-                            Alert.error('Error occurred while updating endpoint configurations');
-                        }
-                    }); 
-            }).finally(() => history.push({
-                pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
-                    : `/apis/${api.id}/deployments`,
-                state: 'deploy',
-            }));
-        } else {
-            const apiObjectCopy = cloneDeep(apiObject);
-            if (apiObjectCopy.endpointConfig.endpoint_type === 'service') {
-                apiObjectCopy.endpointConfig.endpoint_type = 'http';
-            }
-            updateAPI(apiObjectCopy)
-                .catch((error) => {
-                    if (error.response) {
-                        Alert.error(error.response.body.description);
-                    } else {
-                        Alert.error('Error occurred while updating endpoint configurations');
-                    }
-                })
-                .finally(() => history.push({
+        const sequenceBackendsUpdated = endpointConfig.endpoint_type === 'sequence_backend'
+            ? updateSequenceBackends()
+            : Promise.resolve();
+        sequenceBackendsUpdated.then(() => {
+            persistEndpointConfig(
+                endpointImplementationType,
+                { endpointConfig, endpointImplementationType, endpointSecurity, serviceInfo },
+                () => history.push({
                     pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
                         : `/apis/${api.id}/deployments`,
                     state: 'deploy',
-                }));
-        }
+                }),
+            );
+        });
     };
 
     /**
@@ -677,8 +653,9 @@ function Endpoints(props) {
             }
         } else {
             let isValidEndpoint = false;
-            if (endpointConfig.implementation_status === 'prototyped' && api.lifeCycleStatus === 'PROTOTYPED') {
-                if (implementationType === 'ENDPOINT') {
+            if (endpointConfig.implementation_status === ENDPOINT_TYPE_PROTOTYPED
+                && api.lifeCycleStatus === 'PROTOTYPED') {
+                if (implementationType === ENDPOINT_IMPLEMENTATION_TYPE_ENDPOINT) {
                     if (endpointConfig.production_endpoints && endpointConfig.production_endpoints.url === '') {
                         return {
                             isValid: false,
