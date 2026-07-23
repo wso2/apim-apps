@@ -3869,6 +3869,84 @@ class API extends Resource {
         });
     }
 
+    /**
+     * Get federated API discovery task status
+     * @param {string} taskId Task ID of the discovery job
+     */
+    static getFederatedAPIDiscoveryStatus(taskId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            if (client.apis['Federated APIs']?.getFederatedAPIDiscoveryStatus) {
+                return client.apis['Federated APIs'].getFederatedAPIDiscoveryStatus({ taskId });
+            }
+            return client.execute({
+                pathName: '/federated-apis/status/{taskId}',
+                method: 'get',
+                parameters: { taskId },
+            });
+        });
+    }
+
+    /**
+     * Start federated API discovery task for an environment
+     * @param {string} environment Gateway environment name
+     */
+    static discoverFederatedAPIs(environment) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            if (client.apis['Federated APIs']?.discoverFederatedAPIs) {
+                return client.apis['Federated APIs'].discoverFederatedAPIs({ environment });
+            }
+            return client.execute({
+                pathName: '/federated-apis/discover',
+                method: 'post',
+                parameters: { environment },
+            });
+        });
+    }
+
+    /**
+     * Get cached federated discovery results for an environment
+     * @param {string} environment Gateway environment name
+     */
+    static getCachedFederatedAPIs(environment) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            if (client.apis['Federated APIs']?.getCachedFederatedAPIs) {
+                return client.apis['Federated APIs'].getCachedFederatedAPIs({ environment });
+            }
+            return client.execute({
+                pathName: '/federated-apis/cached',
+                method: 'get',
+                parameters: { environment },
+            });
+        });
+    }
+
+    /**
+     * Import or update federated APIs
+     * @param {string} action 'import' or 'update'
+     * @param {string} environment Gateway environment name
+     * @param {Array<string>} apiIds List of API IDs to import or update
+     */
+    static importFederatedAPIs(action, environment, apiIds) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            if (client.apis['Federated APIs']?.importFederatedAPIs) {
+                return client.apis['Federated APIs'].importFederatedAPIs(
+                    { action, environment },
+                    { requestBody: apiIds }
+                );
+            }
+            return client.execute({
+                pathName: `/federated-apis/${action}`,
+                method: 'post',
+                parameters: { environment },
+                requestBody: apiIds,
+            });
+        });
+    }
+
 }
 
 API.CONSTS = {

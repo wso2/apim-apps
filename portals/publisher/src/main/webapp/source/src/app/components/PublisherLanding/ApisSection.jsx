@@ -17,15 +17,17 @@
  */
 
 import React from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, Tooltip } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
+import ExploreIcon from '@mui/icons-material/Explore';
 import Configurations from 'Config';
 import { isRestricted } from 'AppData/AuthManager';
 import CONSTS from 'AppData/Constants';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import DataTable from './DataTable';
 
 const PREFIX = 'ApisSection';
@@ -105,6 +107,8 @@ const Root = styled('div')(({ theme }) => ({
 const ApisSection = ({ data, totalCount, onDelete }) => {
     const theme = useTheme();
     const { noDataIcon } = theme.custom.landingPage.icons;
+    const { data: settings } = usePublisherSettings();
+    const isFederatedAPIDiscoveryEnabled = settings?.isFederatedAPIDiscoveryEnabled;
     return (
         <Root>
             <div className={classes.root}>
@@ -114,16 +118,45 @@ const ApisSection = ({ data, totalCount, onDelete }) => {
                             <FormattedMessage id='Publisher.Landing.apis.section.title' defaultMessage='APIs' />
                         </Typography>
                     </div>
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        component={Link}
-                        disabled={isRestricted(['apim:api_create', 'apim:api_manage'])}
-                        to='/apis/create'
-                        startIcon={<AddIcon />}
-                    >
-                        <FormattedMessage id='Publisher.Landing.create.api.button' defaultMessage='Create API' />
-                    </Button>
+                    <Box display='flex' gap={2}>
+                        {isFederatedAPIDiscoveryEnabled && (
+                            <Tooltip
+                                title={
+                                    <FormattedMessage
+                                        id='Apis.Listing.components.TopMenu.discover.apis.tooltip'
+                                        defaultMessage={
+                                            'Discover and import APIs '
+                                            + 'from your third party gateways'
+                                        }
+                                    />
+                                }
+                            >
+                                <Button
+                                    variant='outlined'
+                                    color='primary'
+                                    component={Link}
+                                    disabled={isRestricted(['apim:api_create', 'apim:api_manage'])}
+                                    to='/apis/discover'
+                                    startIcon={<ExploreIcon />}
+                                >
+                                    <FormattedMessage
+                                        id='Publisher.Landing.discover.apis.button'
+                                        defaultMessage='Discover APIs'
+                                    />
+                                </Button>
+                            </Tooltip>
+                        )}
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            component={Link}
+                            disabled={isRestricted(['apim:api_create', 'apim:api_manage'])}
+                            to='/apis/create'
+                            startIcon={<AddIcon />}
+                        >
+                            <FormattedMessage id='Publisher.Landing.create.api.button' defaultMessage='Create API' />
+                        </Button>
+                    </Box>
                 </div>
                 {data.length === 0 ? (
                     <Box
