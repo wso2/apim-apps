@@ -179,11 +179,18 @@ function ViewCurl(props) {
                 {showClientCredentialsGrantCurl && (
                     <div>
                         <Typography>
-                            <FormattedMessage
-                                id='Shared.AppsAndKeys.ViewCurl.help.in.a.similar'
-                                defaultMessage={`In a similar manner, you can generate an access token using the
-                            Client Credentials grant type with the following cURL command.`}
-                            />
+                            {showPasswordGrantCurl ? (
+                                <FormattedMessage
+                                    id='Shared.AppsAndKeys.ViewCurl.help.in.a.similar'
+                                    defaultMessage={`In a similar manner, you can generate an access token using the
+                                Client Credentials grant type with the following cURL command.`}
+                                />
+                            ) : (
+                                <FormattedMessage
+                                    id='Shared.AppsAndKeys.ViewCurl.help.client.credentials'
+                                    defaultMessage='The following cURL command shows how to generate an access token using the Client Credentials Grant type.'
+                                />
+                            )}
                         </Typography>
 
                         <div className={classes.contentWrapper}>
