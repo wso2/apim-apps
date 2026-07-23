@@ -67,7 +67,7 @@ export default function CustomSplitButton(props) {
     };
 
     const handleClick = () => {
-        if (`${options[selectedIndex].key}` === 'Save') {
+        if (showOnlySaveButton || `${options[selectedIndex].key}` === 'Save') {
             handleSave();
         } else {
             handleSaveAndDeploy();
