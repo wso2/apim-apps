@@ -663,6 +663,7 @@ class ViewKeys extends React.Component {
                                             keyType={keyType}
                                             keyManagerConfig={keyManagerConfig}
                                             consumerSecretMasked={consumerSecretRequired}
+                                            supportedGrantTypes={supportedGrantTypesUnchanged}
                                         />
                                     </DialogContentText>
                                 )}
