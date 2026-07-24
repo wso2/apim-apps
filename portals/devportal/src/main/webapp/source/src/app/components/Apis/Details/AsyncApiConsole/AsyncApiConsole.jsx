@@ -64,7 +64,7 @@ const Root = styled('div')((
     },
 
     [`& .${classes.titleSub}`]: {
-        marginLeft: theme.spacing(2),
+        marginInlineStart: theme.spacing(2),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
     },
@@ -314,7 +314,7 @@ export default function AsyncApiConsole() {
                     />
                 </Grid>
             </Paper>
-            <Paper className={classes.paper}>
+            <Paper className={classes.paper} dir='ltr'>
                 <AsyncApiUI
                     authorizationHeader={authorizationHeader}
                     URLs={getURLs()}
