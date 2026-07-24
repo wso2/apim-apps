@@ -35,16 +35,20 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
+    MenuItem,
+    Collapse,
 } from '@mui/material';
 import CONSTS from 'AppData/Constants';
 import { Link, useHistory } from 'react-router-dom';
 import API from 'AppData/api';
+import Configurations from 'Config';
 import { green } from '@mui/material/colors';
 import Alert from 'AppComponents/Shared/Alert';
 import { isRestricted } from 'AppData/AuthManager';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import { getBasePath } from 'AppComponents/Shared/Utils';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
@@ -262,6 +266,13 @@ const AddEditAIEndpoint = ({
     const [accessKey, setAccessKey] = useState(null);
     const [secretKey, setSecretKey] = useState(null);
     const [region, setRegion] = useState(null);
+    const [assumeRole, setAssumeRole] = useState(false);
+    const [roleArn, setRoleArn] = useState(null);
+    const [roleRegion, setRoleRegion] = useState(null);
+    const [roleExternalId, setRoleExternalId] = useState(null);
+    // AWS credential source: 'stored' (access/secret keys) or 'environment'
+    // (resolved from the runtime - EC2 instance profile / EKS IRSA).
+    const [authType, setAuthType] = useState('stored');
     const [showApiKey, setShowApiKey] = useState(false);
     const [authKeyIdentifier, setAuthKeyIdentifier] = useState('');
     const [authKeyIdentifierType, setAuthKeyIdentifierType] = useState(null);
@@ -289,6 +300,35 @@ const AddEditAIEndpoint = ({
 
         return isDuplicate;
     };
+    // Populates form state from a stored endpoint-security config. Shared by both load paths
+    // (the dispatched apiObject config and the fetched endpoint) so the hydration isn't duplicated.
+    const hydrateEndpointSecurityState = (securityConfig) => {
+        if (securityConfig?.apiKeyValue === '') {
+            setApiKeyValue('********');
+        }
+        if (securityConfig?.apiKeyIdentifier) {
+            setAuthKeyIdentifier(securityConfig.apiKeyIdentifier);
+            setAuthKeyIdentifierType(securityConfig.apiKeyIdentifierType);
+        }
+        if (securityConfig?.accessKey) {
+            setAccessKey(securityConfig.accessKey);
+        }
+        if (securityConfig?.secretKey === '') {
+            setSecretKey('********');
+        }
+        if (securityConfig?.region) {
+            setRegion(securityConfig.region);
+        }
+        if (securityConfig?.roleArn) {
+            setAssumeRole(true);
+            setRoleArn(securityConfig.roleArn);
+            setRoleRegion(securityConfig.roleRegion);
+            setRoleExternalId(securityConfig.roleExternalId);
+        }
+        if (securityConfig?.authType) {
+            setAuthType(securityConfig.authType);
+        }
+    }
     useEffect(() => {
         if (endpointId) {
             setIsEditing(true);
@@ -322,26 +362,10 @@ const AddEditAIEndpoint = ({
                     setEndpointUrl(endpointConfig.sandbox_endpoints.url);
                 }
 
-                // Set API key value and identifier
+                // Set security-related state (API key + AWS values)
                 const envType = isProd ? 'production' : 'sandbox';
                 const securityConfig = endpointConfig.endpoint_security?.[envType];
-                if (securityConfig?.apiKeyValue === '') {
-                    setApiKeyValue('********');
-                }
-                if (securityConfig?.apiKeyIdentifier) {
-                    setAuthKeyIdentifier(securityConfig.apiKeyIdentifier);
-                    setAuthKeyIdentifierType(securityConfig.apiKeyIdentifierType);
-                }
-                // Set AWS related values
-                if (securityConfig?.accessKey) {
-                    setAccessKey(securityConfig?.accessKey);
-                }
-                if (securityConfig?.secretKey === '') {
-                    setSecretKey('********');
-                }
-                if (securityConfig?.region) {
-                    setRegion(securityConfig?.region);
-                }
+                hydrateEndpointSecurityState(securityConfig);
             } else {
                 // Load custom endpoint data from API
                 API.getApiEndpoint(apiObject.id, endpointId)
@@ -356,26 +380,10 @@ const AddEditAIEndpoint = ({
                             setEndpointUrl(body.endpointConfig.sandbox_endpoints.url);
                         }
 
-                        // Set API key value and identifier
+                        // Set security-related state (API key + AWS values)
                         const envType = body.deploymentStage === "PRODUCTION" ? 'production' : 'sandbox';
                         const securityConfig = body.endpointConfig.endpoint_security?.[envType];
-                        if (securityConfig?.apiKeyValue === '') {
-                            setApiKeyValue('********');
-                        }
-                        if (securityConfig?.apiKeyIdentifier) {
-                            setAuthKeyIdentifier(securityConfig.apiKeyIdentifier);
-                            setAuthKeyIdentifierType(securityConfig.apiKeyIdentifierType);
-                        }
-                        // Set AWS related values
-                        if (securityConfig?.accessKey) {
-                            setAccessKey(securityConfig?.accessKey);
-                        }
-                        if (securityConfig?.secretKey === '') {
-                            setSecretKey('********');
-                        }
-                        if (securityConfig?.region) {
-                            setRegion(securityConfig?.region);
-                        }
+                        hydrateEndpointSecurityState(securityConfig);
                     })
                     .catch((error) => {
                         console.error('Error loading endpoint:', error);
@@ -566,7 +574,8 @@ const AddEditAIEndpoint = ({
             case 'accessKey':
                 if (
                     llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled === true &&
-                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'aws'
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'aws' &&
+                    authType !== 'environment'
                 ) {
                     if (!fieldValue) {
                         return intl.formatMessage({
@@ -579,7 +588,8 @@ const AddEditAIEndpoint = ({
             case 'secretKey':
                 if (
                     llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled === true &&
-                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'aws'
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'aws' &&
+                    authType !== 'environment'
                 ) {
                     if (!fieldValue) {
                         return intl.formatMessage({
@@ -602,6 +612,34 @@ const AddEditAIEndpoint = ({
                     }
                 }
                 return false;
+            case 'roleArn':
+                if (
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled === true &&
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'aws' &&
+                    assumeRole
+                ) {
+                    if (!fieldValue) {
+                        return intl.formatMessage({
+                            id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.roleArn',
+                            defaultMessage: 'Role ARN cannot be empty',
+                        });
+                    }
+                }
+                return false;
+            case 'roleRegion':
+                if (
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled === true &&
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'aws' &&
+                    assumeRole
+                ) {
+                    if (!fieldValue) {
+                        return intl.formatMessage({
+                            id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.roleRegion',
+                            defaultMessage: 'Role Region cannot be empty',
+                        });
+                    }
+                }
+                return false;
             default:
                 return false;
         }
@@ -613,7 +651,9 @@ const AddEditAIEndpoint = ({
             hasErrors('apiKey', apiKeyValue, validateActive) ||
             hasErrors('secretKey', secretKey, validateActive) ||
             hasErrors('region', region, validateActive) ||
-            hasErrors('accessKey', accessKey, validateActive)) {
+            hasErrors('accessKey', accessKey, validateActive) ||
+            hasErrors('roleArn', roleArn, validateActive) ||
+            hasErrors('roleRegion', roleRegion, validateActive)) {
             return true;
         }
         return false;
@@ -721,24 +761,57 @@ const AddEditAIEndpoint = ({
             setSecretKey(seretKeyValue)
         } else if (field === "region") {
             setRegion(e.target.value)
+        } else if (field === "roleArn") {
+            setRoleArn(e.target.value)
+        } else if (field === "roleRegion") {
+            setRoleRegion(e.target.value)
+        } else if (field === "roleExternalId") {
+            setRoleExternalId(e.target.value)
         }
     }
-    const handleOnBlurOnAWSCredentials = () => {
+    // Builds and persists the AWS SigV4 endpoint-security config. Extracted so the AWS
+    // handlers below don't duplicate the payload. `effectiveAuthType` is the auth type to
+    // persist ('stored' | 'environment'); `includeRole` controls whether the assume-role
+    // fields are carried. In environment mode no static keys are stored (resolved at runtime),
+    // and the '********' placeholder is never sent as a real secret.
+    const persistAWSEndpointSecurity = (effectiveAuthType, includeRole) => {
         const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
-
-        // Skip if apiKeyValue is null, empty, or ********
-        if (!secretKey || secretKey === '********') {
-            return;
-        }
+        const isEnvironment = effectiveAuthType === 'environment';
+        const secretKeyToSave = secretKey === '********' ? '' : secretKey;
         saveEndpointSecurityConfig({
             ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
             type: llmProviderEndpointConfiguration.authenticationConfiguration.type,
             service: llmProviderEndpointConfiguration.authenticationConfiguration.parameters.awsServiceName,
-            accessKey,
-            secretKey,
+            authType: effectiveAuthType,
+            accessKey: isEnvironment ? null : accessKey,
+            secretKey: isEnvironment ? null : secretKeyToSave,
             region,
+            roleArn: includeRole ? roleArn : null,
+            roleRegion: includeRole ? roleRegion : null,
+            roleExternalId: includeRole ? roleExternalId : null,
             enabled: true,
         }, isProduction ? 'production' : 'sandbox');
+    }
+    const handleOnBlurOnAWSCredentials = () => {
+        persistAWSEndpointSecurity(authType, assumeRole);
+    }
+    const handleAssumeRoleToggle = (e) => {
+        const { checked } = e.target;
+        setAssumeRole(checked);
+        setRoleArn(null);
+        setRoleRegion(null);
+        setRoleExternalId(null);
+        if (checked) {
+            return;
+        }
+        // Assume role turned off: persist without the role fields.
+        persistAWSEndpointSecurity(authType, false);
+    }
+    const handleEnvironmentCredentialsToggle = (e) => {
+        const { checked } = e.target;
+        const newAuthType = checked ? 'environment' : 'stored';
+        setAuthType(newAuthType);
+        persistAWSEndpointSecurity(newAuthType, assumeRole);
     }
     const formSave = () => {
         setValidating(true);
@@ -881,6 +954,7 @@ const AddEditAIEndpoint = ({
     const IS_AWS_SIGV4_AUTH_ENABLED = (config) =>
         config?.authenticationConfiguration?.enabled === true &&
         config?.authenticationConfiguration?.type === 'aws';
+    const { regions } = Configurations.apis.endpoint.aws;
     return (
         <StyledGrid container justifyContent='center'>
             <Grid item sm={12} md={12} lg={8}>
@@ -1132,61 +1206,91 @@ const AddEditAIEndpoint = ({
                             {/* AWS SigV4 Auth Fields */}
                             {IS_AWS_SIGV4_AUTH_ENABLED(llmProviderEndpointConfiguration) && (
                                 <>
-                                    <Grid item xs={4}>
-                                        <TextField
-                                            disabled={isRestricted(
-                                                ['apim:api_create'],
-                                                apiObject
-                                            )}
-                                            label={
-                                                <FormattedMessage
-                                                    id='Apis.Details.Endpoints.AIEndpoints.Edit.acessKey'
-                                                    defaultMessage='AWS Access Key'
+                                    <Grid item xs={12}>
+                                        <FormControlLabel
+                                            control={(
+                                                <Checkbox
+                                                    color='primary'
+                                                    checked={authType === 'environment'}
+                                                    onChange={handleEnvironmentCredentialsToggle}
+                                                    disabled={isRestricted(
+                                                        ['apim:api_create'],
+                                                        apiObject
+                                                    )}
+                                                    name='useEnvironmentCredentials'
                                                 />
-                                            }
-                                            id='aws-access-key'
-                                            value={accessKey}
-                                            placeholder={intl.formatMessage({
-                                                id: 'Apis.Details.Endpoints.AIEndpoints.Edit.acessKey.placeholder',
-                                                defaultMessage: 'Enter AWS Access Key',
-                                            })}
-                                            fullWidth
-                                            onChange={(e) => handleAWSCredentials(e, 'accessKey')}
-                                            onBlur={handleOnBlurOnAWSCredentials}
-                                            required
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
+                                            )}
+                                            label={(
+                                                <FormattedMessage
+                                                    id={'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                        + '.useEnvironmentCredentials'}
+                                                    defaultMessage={'Use environment credentials '
+                                                        + '(EC2 instance profile / EKS IRSA)'}
+                                                />
+                                            )}
                                         />
                                     </Grid>
-                                    <Grid item xs={4}>
-                                        <TextField
-                                            disabled={isRestricted(
-                                                ['apim:api_create'],
-                                                apiObject
-                                            )}
-                                            label={
-                                                <FormattedMessage
-                                                    id='Apis.Details.Endpoints.AIEndpoints.Edit.secretKey'
-                                                    defaultMessage='AWS Secret Key'
+                                    {authType !== 'environment' && (
+                                        <>
+                                            <Grid item xs={4}>
+                                                <TextField
+                                                    disabled={isRestricted(
+                                                        ['apim:api_create'],
+                                                        apiObject
+                                                    )}
+                                                    label={
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Endpoints.AIEndpoints.Edit.acessKey'
+                                                            defaultMessage='AWS Access Key'
+                                                        />
+                                                    }
+                                                    id='aws-access-key'
+                                                    value={accessKey}
+                                                    placeholder={intl.formatMessage({
+                                                        id: 'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                            + '.acessKey.placeholder',
+                                                        defaultMessage: 'Enter AWS Access Key',
+                                                    })}
+                                                    fullWidth
+                                                    onChange={(e) => handleAWSCredentials(e, 'accessKey')}
+                                                    onBlur={handleOnBlurOnAWSCredentials}
+                                                    required
+                                                    InputLabelProps={{
+                                                        shrink: true,
+                                                    }}
                                                 />
-                                            }
-                                            id='aws-secret-key'
-                                            type='password'
-                                            value={secretKey}
-                                            placeholder={intl.formatMessage({
-                                                id: 'Apis.Details.Endpoints.AIEndpoints.Edit.secretKey.placeholder',
-                                                defaultMessage: 'Enter AWS Secret Key',
-                                            })}
-                                            fullWidth
-                                            onChange={(e) => handleAWSCredentials(e, 'secretKey')}
-                                            onBlur={handleOnBlurOnAWSCredentials}
-                                            required
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
-                                        />
-                                    </Grid>
+                                            </Grid>
+                                            <Grid item xs={4}>
+                                                <TextField
+                                                    disabled={isRestricted(
+                                                        ['apim:api_create'],
+                                                        apiObject
+                                                    )}
+                                                    label={
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Endpoints.AIEndpoints.Edit.secretKey'
+                                                            defaultMessage='AWS Secret Key'
+                                                        />
+                                                    }
+                                                    id='aws-secret-key'
+                                                    type='password'
+                                                    value={secretKey}
+                                                    placeholder={intl.formatMessage({
+                                                        id: 'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                            + '.secretKey.placeholder',
+                                                        defaultMessage: 'Enter AWS Secret Key',
+                                                    })}
+                                                    fullWidth
+                                                    onChange={(e) => handleAWSCredentials(e, 'secretKey')}
+                                                    onBlur={handleOnBlurOnAWSCredentials}
+                                                    required
+                                                    InputLabelProps={{
+                                                        shrink: true,
+                                                    }}
+                                                />
+                                            </Grid>
+                                        </>
+                                    )}
                                     <Grid item xs={4}>
                                         <TextField
                                             disabled={isRestricted(
@@ -1213,6 +1317,97 @@ const AddEditAIEndpoint = ({
                                                 shrink: true,
                                             }}
                                         />
+                                    </Grid>
+                                    <Grid item className={classes.extraPadding}>
+                                        <FormControlLabel
+                                            control={(
+                                                <Checkbox
+                                                    color='primary'
+                                                    checked={assumeRole}
+                                                    onChange={handleAssumeRoleToggle}
+                                                    disabled={isRestricted(
+                                                        ['apim:api_create'],
+                                                        apiObject
+                                                    )}
+                                                    name='enableSTSAssumeRole'
+                                                />
+                                            )}
+                                            label={(
+                                                <FormattedMessage
+                                                    id={'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                    + '.enableSTSAssumeRole'}
+                                                    defaultMessage='Enable STS AssumeRole'
+                                                />
+                                            )}
+                                        />
+                                        {assumeRole && (
+                                            <Collapse in={assumeRole}>
+                                                <TextField
+                                                    required
+                                                    disabled={isRestricted(
+                                                        ['apim:api_create'],
+                                                        apiObject
+                                                    )}
+                                                    label={(
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Endpoints.AIEndpoints.Edit.roleArn'
+                                                            defaultMessage='Role ARN'
+                                                        />
+                                                    )}
+                                                    margin='normal'
+                                                    variant='outlined'
+                                                    className={classes.textField}
+                                                    value={roleArn}
+                                                    onChange={(e) => handleAWSCredentials(e, 'roleArn')}
+                                                    onBlur={handleOnBlurOnAWSCredentials}
+                                                />
+                                                <TextField
+                                                    select
+                                                    required
+                                                    disabled={isRestricted(
+                                                        ['apim:api_create'],
+                                                        apiObject
+                                                    )}
+                                                    label={(
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Endpoints.AIEndpoints.Edit.roleRegion'
+                                                            defaultMessage='Role Region'
+                                                        />
+                                                    )}
+                                                    margin='normal'
+                                                    variant='outlined'
+                                                    className={classes.textField}
+                                                    value={roleRegion || ''}
+                                                    onChange={(e) => handleAWSCredentials(e, 'roleRegion')}
+                                                    onBlur={handleOnBlurOnAWSCredentials}
+                                                >
+                                                    {Object.entries(regions).map(([key, value]) => (
+                                                        <MenuItem key={key} value={key}>
+                                                            {value}
+                                                        </MenuItem>
+                                                    ))}
+                                                </TextField>
+                                                <TextField
+                                                    disabled={isRestricted(
+                                                        ['apim:api_create'],
+                                                        apiObject
+                                                    )}
+                                                    label={(
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                                + '.roleExternalId'}
+                                                            defaultMessage='External ID'
+                                                        />
+                                                    )}
+                                                    margin='normal'
+                                                    variant='outlined'
+                                                    className={classes.textField}
+                                                    value={roleExternalId}
+                                                    onChange={(e) => handleAWSCredentials(e, 'roleExternalId')}
+                                                    onBlur={handleOnBlurOnAWSCredentials}
+                                                />
+                                            </Collapse>
+                                        )}
                                     </Grid>
                                 </>
                             )}
