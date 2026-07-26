@@ -5,6 +5,7 @@ import SwaggerUILib from 'swagger-ui-react';
 import CustomPadLock from './CustomPadLock';
 import GenerateCurlExecute from './GenerateCurlExecute';
 import isPlatformGatewayApi from './platformGateway';
+import { applyTryOutAuthHeaders } from './applyTryOutAuthHeaders';
 
 const generateCurlTryoutPlugin = () => ({
     wrapComponents: {
@@ -62,36 +63,23 @@ const SwaggerUI = (props) => {
             const currentSecuritySchemeType = securitySchemeRef.current;
             const currentAuthHeader = authorizationHeaderRef.current;
             const rawToken = accessTokenProvider();
-            const token = (rawToken === undefined || rawToken === null) ? '' : String(rawToken).trim();
-            const hasToken = token !== '' && token.toLowerCase() !== 'undefined' && token.toLowerCase() !== 'null';
-            req.headers = req.headers || {};
             const patternToCheck = `${context}/*`;
-            if (currentSecuritySchemeType === 'API-KEY') {
-                if (currentAuthHeader && hasToken) {
-                    req.headers[currentAuthHeader] = token;
-                }
-            } else if (currentSecuritySchemeType === 'BASIC') {
-                if (currentAuthHeader && hasToken) {
-                    req.headers[currentAuthHeader] = `Basic ${token}`;
-                }
-            } else if (currentSecuritySchemeType === 'TEST') {
-                if (currentAuthHeader && hasToken) {
-                    req.headers[currentAuthHeader] = token;
-                }
-            } else if (api.advertiseInfo && api.advertiseInfo.advertised) {
-                if (currentAuthHeader && hasToken) {
-                    req.headers[currentAuthHeader] = token;
-                }
-            } else if (currentAuthHeader && hasToken) {
-                req.headers[currentAuthHeader] = `Bearer ${token}`;
-            }
+            let nextReq = applyTryOutAuthHeaders(req, {
+                securitySchemeType: currentSecuritySchemeType,
+                authorizationHeader: currentAuthHeader,
+                token: rawToken,
+                isAdvertised: Boolean(api.advertiseInfo && api.advertiseInfo.advertised),
+            });
             if (url.endsWith(patternToCheck)) {
-                req.url = url.substring(0, url.length - 2);
+                nextReq = { ...nextReq, url: url.substring(0, url.length - 2) };
             } else if (url.includes(patternToCheck + '?')) { // Check for query parameters.
                 const splitTokens = url.split('/*?');
-                req.url = splitTokens.length > 1 ? splitTokens[0] + '?' + splitTokens[1] : splitTokens[0];
+                nextReq = {
+                    ...nextReq,
+                    url: splitTokens.length > 1 ? splitTokens[0] + '?' + splitTokens[1] : splitTokens[0],
+                };
             }
-            return req;
+            return nextReq;
         },
         defaultModelExpandDepth: -1,
         plugins: [
