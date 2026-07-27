@@ -138,7 +138,8 @@ function TopMenu(props) {
         data, setListType, count, isAPIProduct, isMCPServer, listType, showToggle, query,
     } = props;
     const { data: settings } = usePublisherSettings();
-    const isFederatedAPIDiscoveryEnabled = settings?.isFederatedAPIDiscoveryEnabled;
+    // On-demand discovery is available whenever the background scheduler is not handling discovery.
+    const isOnDemandDiscoveryEnabled = settings ? !settings.isFederatedDiscoverySchedulerEnabled : false;
 
     const isAPIAccessRestricted = () => {
         return isRestricted(['apim:api_create', 'apim:api_manage']);
@@ -239,7 +240,7 @@ function TopMenu(props) {
                     )}
                     {!query && !isAPIProduct && !isMCPServer && (
                         <>
-                            {isFederatedAPIDiscoveryEnabled && (
+                            {isOnDemandDiscoveryEnabled && (
                                 <Tooltip
                                     title={
                                         <FormattedMessage

@@ -108,7 +108,8 @@ const ApisSection = ({ data, totalCount, onDelete }) => {
     const theme = useTheme();
     const { noDataIcon } = theme.custom.landingPage.icons;
     const { data: settings } = usePublisherSettings();
-    const isFederatedAPIDiscoveryEnabled = settings?.isFederatedAPIDiscoveryEnabled;
+    // On-demand discovery is available whenever the background scheduler is not handling discovery.
+    const isOnDemandDiscoveryEnabled = settings ? !settings.isFederatedDiscoverySchedulerEnabled : false;
     return (
         <Root>
             <div className={classes.root}>
@@ -119,7 +120,7 @@ const ApisSection = ({ data, totalCount, onDelete }) => {
                         </Typography>
                     </div>
                     <Box display='flex' gap={2}>
-                        {isFederatedAPIDiscoveryEnabled && (
+                        {isOnDemandDiscoveryEnabled && (
                             <Tooltip
                                 title={
                                     <FormattedMessage

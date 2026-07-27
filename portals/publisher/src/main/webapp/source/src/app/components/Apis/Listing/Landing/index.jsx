@@ -50,7 +50,8 @@ const APILanding = () => {
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
     const { data: settings } = usePublisherSettings();
-    const isFederatedAPIDiscoveryEnabled = settings?.isFederatedAPIDiscoveryEnabled;
+    // On-demand discovery is available whenever the background scheduler is not handling discovery.
+    const isOnDemandDiscoveryEnabled = settings ? !settings.isFederatedDiscoverySchedulerEnabled : false;
     const [gateway, setGatewayType] = useState(true);
     const [pageMode, setPageMode] = useState('default');
     const location = useLocation();
@@ -205,7 +206,7 @@ const APILanding = () => {
                                     }
                                     <AIAPIMenu icon={aiApiIcon} />
                                 </Grid>
-                                {(settings.designAssistantEnabled || isFederatedAPIDiscoveryEnabled) && (
+                                {(settings.designAssistantEnabled || isOnDemandDiscoveryEnabled) && (
                                     <Grid
                                         item
                                         sx={{
@@ -221,7 +222,7 @@ const APILanding = () => {
                                         {settings.designAssistantEnabled && (
                                             <DesignAssistantMenu />
                                         )}
-                                        {isFederatedAPIDiscoveryEnabled && pageMode !== 'create' && (
+                                        {isOnDemandDiscoveryEnabled && pageMode !== 'create' && (
                                             <DiscoverAPIsCard />
                                         )}
                                     </Grid>

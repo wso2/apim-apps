@@ -3923,22 +3923,24 @@ class API extends Resource {
      * Import or update federated APIs
      * @param {string} action 'import' or 'update'
      * @param {string} environment Gateway environment name
-     * @param {Array<string>} apiIds List of API IDs to import or update
+     * @param {Array<{id: string, displayName?: string, description?: string}>} apis
+     *      List of APIs to import or update. Each entry carries the federated gateway ID and
+     *      optionally a display name / description to use instead of the discovered ones.
      */
-    static importFederatedAPIs(action, environment, apiIds) {
+    static importFederatedAPIs(action, environment, apis) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
             if (client.apis['Federated APIs']?.importFederatedAPIs) {
                 return client.apis['Federated APIs'].importFederatedAPIs(
                     { action, environment },
-                    { requestBody: apiIds }
+                    { requestBody: apis }
                 );
             }
             return client.execute({
                 pathName: `/federated-apis/${action}`,
                 method: 'post',
                 parameters: { environment },
-                requestBody: apiIds,
+                requestBody: apis,
             });
         });
     }

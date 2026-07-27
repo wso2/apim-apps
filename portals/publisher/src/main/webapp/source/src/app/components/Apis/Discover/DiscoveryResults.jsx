@@ -190,7 +190,7 @@ const importSingleApi = async (item, gwName, setImportingStates, setSelectedApis
     const actionLabel = isUpdate ? 'update' : 'import';
     setImportingStates((prev) => ({ ...prev, [apiId]: 'importing' }));
     try {
-        const response = await API.importFederatedAPIs(actionLabel, gwName, [apiId]);
+        const response = await API.importFederatedAPIs(actionLabel, gwName, [{ id: apiId }]);
         if (!response.ok && response.status !== 200 && response.status !== 201) {
             const errorData = response.body || {};
             const backendMsg = errorData.message || `Failed to ${actionLabel} API`;

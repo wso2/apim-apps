@@ -37,9 +37,10 @@ const FederatedAPIDiscoveryRouteGuard = ({ children }) => {
         return <Progress per={80} message='Loading app settings ...' />;
     }
     
-    const isFederatedAPIDiscoveryEnabled = settings?.isFederatedAPIDiscoveryEnabled;
+    // On-demand discovery is available whenever the background scheduler is not handling discovery.
+    const isOnDemandDiscoveryEnabled = settings ? !settings.isFederatedDiscoverySchedulerEnabled : false;
 
-    if (!isFederatedAPIDiscoveryEnabled) {
+    if (!isOnDemandDiscoveryEnabled) {
         const resourceNotFoundMessage = {
             title: 'Federated API Discovery Disabled',
             body: 'Federated API Discovery is not enabled in this environment.',
