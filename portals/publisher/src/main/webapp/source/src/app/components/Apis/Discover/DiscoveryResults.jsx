@@ -115,70 +115,51 @@ const pollTaskStatus = (taskId, isMounted, startTime = Date.now()) => {
         });
 };
 
+const GENERIC_DISCOVERY_ERROR = 'Discovery failed due to a server error or invalid gateway response. '
+    + 'Please inspect the gateway logs.';
+
+// Maps groups of error keywords to the explanation shown to the user. Evaluated in order,
+// so the earlier (more specific) categories take precedence over the later ones.
+const DISCOVERY_ERROR_CATEGORIES = [
+    {
+        keywords: ['aadsts', 'unauthorized', '401', 'invalid_client', 'invalid client',
+            'invalid_grant', 'invalid grant', 'forbidden', '403', 'invalid key',
+            'credentials', 'api key', 'service account'],
+        message: 'Authentication failed. Please verify the credentials, API keys, '
+            + 'or certificates configured for this gateway in the Admin portal.',
+    },
+    {
+        keywords: ['tenant', 'project_id', 'project', 'not found', '404', 'resource not found',
+            'environment', 'workspace', 'organization'],
+        message: 'Resource not found or configuration is invalid. Please verify the project ID, '
+            + 'tenant, organization, or environment/workspace settings configured '
+            + 'for this gateway in the Admin portal.',
+    },
+    {
+        keywords: ['timeout', 'timed out', 'connect', 'connection refused', 'dns',
+            'resolve', 'unreachable', 'host', 'network'],
+        message: 'Network connection issue. The third-party gateway is unreachable. '
+            + 'Please verify network connectivity, firewall rules, and the host URL config.',
+    },
+    {
+        keywords: ['429', 'too many requests', 'rate limit', 'quota'],
+        message: 'Rate limit exceeded. The third-party gateway rejected the requests '
+            + 'because the quota or rate limit has been reached. Please try again later.',
+    },
+];
+
 /**
  * Map rawError to a friendly explanation
  */
 const getFriendlyErrorMessage = (rawError) => {
     if (!rawError) {
-        return 'Discovery failed due to a server error or invalid gateway response. '
-            + 'Please inspect the gateway logs.';
+        return GENERIC_DISCOVERY_ERROR;
     }
     const errLower = rawError.toLowerCase();
-    if (
-        errLower.includes('aadsts')
-        || errLower.includes('unauthorized')
-        || errLower.includes('401')
-        || errLower.includes('invalid_client')
-        || errLower.includes('invalid client')
-        || errLower.includes('invalid_grant')
-        || errLower.includes('invalid grant')
-        || errLower.includes('forbidden')
-        || errLower.includes('403')
-        || errLower.includes('invalid key')
-        || errLower.includes('credentials')
-        || errLower.includes('api key')
-        || errLower.includes('service account')
-    ) {
-        return 'Authentication failed. Please verify the credentials, API keys, '
-            + 'or certificates configured for this gateway in the Admin portal.';
-    } else if (
-        errLower.includes('tenant')
-        || errLower.includes('project_id')
-        || errLower.includes('project')
-        || errLower.includes('not found')
-        || errLower.includes('404')
-        || errLower.includes('resource not found')
-        || errLower.includes('environment')
-        || errLower.includes('workspace')
-        || errLower.includes('organization')
-    ) {
-        return 'Resource not found or configuration is invalid. Please verify the project ID, '
-            + 'tenant, organization, or environment/workspace settings configured '
-            + 'for this gateway in the Admin portal.';
-    } else if (
-        errLower.includes('timeout')
-        || errLower.includes('timed out')
-        || errLower.includes('connect')
-        || errLower.includes('connection refused')
-        || errLower.includes('dns')
-        || errLower.includes('resolve')
-        || errLower.includes('unreachable')
-        || errLower.includes('host')
-        || errLower.includes('network')
-    ) {
-        return 'Network connection issue. The third-party gateway is unreachable. '
-            + 'Please verify network connectivity, firewall rules, and the host URL config.';
-    } else if (
-        errLower.includes('429')
-        || errLower.includes('too many requests')
-        || errLower.includes('rate limit')
-        || errLower.includes('quota')
-    ) {
-        return 'Rate limit exceeded. The third-party gateway rejected the requests '
-            + 'because the quota or rate limit has been reached. Please try again later.';
-    }
-    return 'Discovery failed due to a server error or invalid gateway response. '
-        + 'Please inspect the gateway logs.';
+    const category = DISCOVERY_ERROR_CATEGORIES.find(
+        ({ keywords }) => keywords.some((keyword) => errLower.includes(keyword))
+    );
+    return category ? category.message : GENERIC_DISCOVERY_ERROR;
 };
 
 /**
@@ -301,6 +282,30 @@ const DiscoveryResults = (props) => {
         return apiList;
     };
 
+    // Discovers a single gateway and reflects the pending/success/error outcome in state.
+    // Shared by the initial bulk discovery and the per-gateway retry.
+    const runGatewayDiscovery = async (gw) => {
+        try {
+            if (!isMounted.current) return;
+            setDiscoveryResults((prev) => ({
+                ...prev,
+                [gw]: { status: 'pending', statusText: 'Discovering...', apis: [] },
+            }));
+            const apiList = await discoverGateway(gw);
+            if (!isMounted.current) return;
+            setDiscoveryResults((prev) => ({
+                ...prev,
+                [gw]: { status: 'success', apis: apiList },
+            }));
+        } catch (err) {
+            if (err.message === 'COMPONENT_UNMOUNTED' || !isMounted.current) return;
+            setDiscoveryResults((prev) => ({
+                ...prev,
+                [gw]: { status: 'error', error: err.message, apis: [] },
+            }));
+        }
+    };
+
     const handleDiscover = async () => {
         setDiscovering(true);
         setError(null);
@@ -324,30 +329,7 @@ const DiscoveryResults = (props) => {
 
         try {
             await Promise.all(
-                selectedGateways.map(async (gw) => {
-                    try {
-                        if (!isMounted.current) return;
-                        setDiscoveryResults((prev) => ({
-                            ...prev,
-                            [gw]: {
-                                ...prev[gw],
-                                statusText: 'Discovering...',
-                            },
-                        }));
-                        const apiList = await discoverGateway(gw);
-                        if (!isMounted.current) return;
-                        setDiscoveryResults((prev) => ({
-                            ...prev,
-                            [gw]: { status: 'success', apis: apiList },
-                        }));
-                    } catch (err) {
-                        if (err.message === 'COMPONENT_UNMOUNTED' || !isMounted.current) return;
-                        setDiscoveryResults((prev) => ({
-                            ...prev,
-                            [gw]: { status: 'error', error: err.message, apis: [] },
-                        }));
-                    }
-                })
+                selectedGateways.map((gw) => runGatewayDiscovery(gw))
             );
         } catch (err) {
             if (err.message !== 'COMPONENT_UNMOUNTED' && isMounted.current) {
@@ -375,28 +357,6 @@ const DiscoveryResults = (props) => {
         };
         initDiscovery();
     }, [selectedGateways]);
-
-    const handleRetryGateway = async (gw) => {
-        try {
-            if (!isMounted.current) return;
-            setDiscoveryResults((prev) => ({
-                ...prev,
-                [gw]: { status: 'pending', statusText: 'Discovering...', apis: [] },
-            }));
-            const apiList = await discoverGateway(gw);
-            if (!isMounted.current) return;
-            setDiscoveryResults((prev) => ({
-                ...prev,
-                [gw]: { status: 'success', apis: apiList },
-            }));
-        } catch (err) {
-            if (err.message === 'COMPONENT_UNMOUNTED' || !isMounted.current) return;
-            setDiscoveryResults((prev) => ({
-                ...prev,
-                [gw]: { status: 'error', error: err.message, apis: [] },
-            }));
-        }
-    };
 
     const handleAction = async (item) => {
         await importSingleApi(item, item.gatewayName, setImportingStates, setSelectedApis, setImportErrors);
@@ -501,7 +461,7 @@ const DiscoveryResults = (props) => {
                         size='small'
                         color='error'
                         startIcon={<RefreshIcon />}
-                        onClick={() => handleRetryGateway(gwName)}
+                        onClick={() => runGatewayDiscovery(gwName)}
                     >
                         Retry Discovery
                     </Button>

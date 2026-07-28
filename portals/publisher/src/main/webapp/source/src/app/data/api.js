@@ -3929,10 +3929,13 @@ class API extends Resource {
      */
     static importFederatedAPIs(action, environment, apis) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        // Import and update are distinct operations in the publisher API, each with its own path,
+        // so the action has to select the operation rather than being sent as a parameter.
+        const operationId = action === 'update' ? 'updateFederatedAPIs' : 'importFederatedAPIs';
         return restApiClient.then(client => {
-            if (client.apis['Federated APIs']?.importFederatedAPIs) {
-                return client.apis['Federated APIs'].importFederatedAPIs(
-                    { action, environment },
+            if (client.apis['Federated APIs']?.[operationId]) {
+                return client.apis['Federated APIs'][operationId](
+                    { environment },
                     { requestBody: apis }
                 );
             }
