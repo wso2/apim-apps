@@ -97,6 +97,7 @@ const StyledContentBase = styled(ContentBase)({
 });
 
 const residentKeyManagerName = 'Resident Key Manager';
+const tokenExchangeKeyManagerType = 'tokenExchange';
 
 /**
  * Reducer
@@ -285,7 +286,7 @@ function AddEditKeyManager(props) {
             });
     };
     const updateKeyManagerConnectorConfiguration = (keyManagerType, shouldResetTokenMode = false) => {
-        if (keyManagerType === 'tokenExchange') {
+        if (keyManagerType === tokenExchangeKeyManagerType) {
             setEnableDirectToken(false);
             setEnableExchangeToken(true);
         } else if (shouldResetTokenMode) {
@@ -465,7 +466,7 @@ function AddEditKeyManager(props) {
             }
         } else {
             if (e.target.name === 'type') {
-                updateKeyManagerConnectorConfiguration(e.target.value, type === 'tokenExchange');
+                updateKeyManagerConnectorConfiguration(e.target.value, type === tokenExchangeKeyManagerType);
             }
             if (e.target.name === 'enableSelfValidationJWT') {
                 dispatch({ field: e.target.name, value: e.target.value === 'selfValidate' });
@@ -976,11 +977,11 @@ function AddEditKeyManager(props) {
                                                     </MenuItem>
                                                 ))}
                                             <MenuItem
-                                                key='tokenExchange'
-                                                value='tokenExchange'
+                                                key={tokenExchangeKeyManagerType}
+                                                value={tokenExchangeKeyManagerType}
                                                 id='Admin.KeyManager.form.type.menu'
                                             >
-                                                {'Token Exchange' || 'tokenExchange'}
+                                                {'Token Exchange' || tokenExchangeKeyManagerType}
                                             </MenuItem>
                                         </Select>
                                         <FormHelperText>
@@ -1025,7 +1026,7 @@ function AddEditKeyManager(props) {
                                                                 name='enableDirectToken'
                                                                 color='primary'
                                                                 required={!isTokenTypeSelected}
-                                                                disabled={type === 'tokenExchange'}
+                                                                disabled={type === tokenExchangeKeyManagerType}
                                                             />
                                                         )}
                                                         label={(
