@@ -34,12 +34,13 @@ const StyledBox = styled(Box)((
     }
 ) => ({
     [`& .${classes.tagClass}`]: {
-        maxWidth: 1000,
+        minWidth: 0,
+        maxWidth: 550,
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
         [theme.breakpoints.down('lg')]: {
-            maxWidth: 800,
+            maxWidth: 400,
         },
     }
 }));
