@@ -775,9 +775,10 @@ export default function Environments() {
     };
 
     const externalEnvWithEndpoints = [];
-    useEffect(() => {
-        if (!isMCPServer) {
-            const promise = restApi.getAsyncAPIDefinition(api.id);
+useEffect(() => {
+    const isAPIProduct = api.apiType === API.CONSTS.APIProduct;
+    if (!isMCPServer && !isAPIProduct) {
+        const promise = restApi.getAsyncAPIDefinition(api.id);
             promise.then(async (response) => {
                 if (response.data && (typeof response.data === "string" || typeof response.data === "object")) {
                     let doc;
@@ -825,7 +826,7 @@ export default function Environments() {
                 }
             })
         }
-    }, [api.id]);
+    }, [api.id, api.apiType, isMCPServer, allExternalGateways]);
 
     const toggleOpenConfirmDelete = (revisionName, revisionId) => {
         setRevisionToDelete([revisionName, revisionId]);
