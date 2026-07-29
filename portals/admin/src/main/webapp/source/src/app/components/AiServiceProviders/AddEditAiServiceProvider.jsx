@@ -126,7 +126,7 @@ export default function AddEditAiServiceProvider(props) {
         type: 'none',
         parameters: {},
     });
-    const authSources = ['none', 'apikey', 'aws'];
+    const authSources = ['none', 'apikey', 'aws', 'umi'];
     const [validating, setValidating] = useState(false);
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(!!vendorId); // Set to true if editing (vendorId exists)
@@ -1105,6 +1105,23 @@ export default function AddEditAiServiceProvider(props) {
                                                 }))}
                                                 required
                                             />
+                                        )}
+                                        {(authConfig.type === 'umi') && (
+                                            <Box mt={2}>
+                                                <Typography variant='body2' color='textSecondary'>
+                                                    <FormattedMessage
+                                                        id='Admin.AiVendor.form.llm.auth.umi.info'
+                                                        defaultMessage={
+                                                            'Azure User Managed Identity (UMI) authentication will '
+                                                            + 'be used. The gateway must have the Azure Workload '
+                                                            + 'Identity webhook configured with the appropriate '
+                                                            + 'AZURE_TENANT_ID, AZURE_CLIENT_ID, and '
+                                                            + 'AZURE_FEDERATED_TOKEN_FILE environment variables. '
+                                                            + 'No credentials need to be stored.'
+                                                        }
+                                                    />
+                                                </Typography>
+                                            </Box>
                                         )}
                                     </FormControl>
                                 </Box>
