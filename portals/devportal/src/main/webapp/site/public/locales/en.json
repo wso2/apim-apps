@@ -1008,6 +1008,7 @@
   "Shared.AppsAndKeys.ViewCurl.copy.to.clipboard": "Copy to clipboard",
   "Shared.AppsAndKeys.ViewCurl.error": "Please generate the Consumer Key and Secret for Residence Key Manager with selecting the urn:ietf:params:oauth:grant-type:token-exchange grant type in order to use the token Exchange Approach.",
   "Shared.AppsAndKeys.ViewCurl.help": "The following cURL command shows how to generate an access token using the Password Grant type.",
+  "Shared.AppsAndKeys.ViewCurl.help.client.credentials": "The following cURL command shows how to generate an access token using the Client Credentials Grant type.",
   "Shared.AppsAndKeys.ViewCurl.help.in.a.similar": "In a similar manner, you can generate an access token using the Client Credentials grant type with the following cURL command.",
   "Shared.AppsAndKeys.ViewKeys.client.enable.client.credentials": "Enable Client Credentials grant type to generate test access tokens",
   "Shared.AppsAndKeys.ViewKeys.consumer.close.btn": "Close",
