@@ -177,6 +177,14 @@ const importSingleApi = async (item, gwName, setImportingStates, setSelectedApis
             const backendMsg = errorData.message || `Failed to ${actionLabel} API`;
             throw new Error(backendMsg);
         }
+        // The backend reports per-API failures in the response body rather than the HTTP status,
+        // so a 200 alone does not mean this API was imported. Only one API is sent per request,
+        // so any reported failure refers to this one.
+        const data = response.body || response.obj || {};
+        const failedIds = Array.isArray(data.failedIds) ? data.failedIds : [];
+        if (failedIds.length > 0) {
+            throw new Error(data.status || `Failed to ${actionLabel} API`);
+        }
         setImportingStates((prev) => ({ ...prev, [apiId]: 'success' }));
         setSelectedApis((prev) => {
             const next = { ...prev };
