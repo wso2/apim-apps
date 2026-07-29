@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import validateConstraint, { VALIDATOR_TYPES, getConstraintHint } from 'AppComponents/Shared/AppsAndKeys/constraintValidator';
+import validateConstraint, { VALIDATOR_TYPES, getConstraintHint, isValidPermittedIPList, isValidPermittedRefererList } from 'AppComponents/Shared/AppsAndKeys/constraintValidator';
 
 const mockIntl = {
     formatMessage: (msg, values) => {
@@ -218,6 +218,72 @@ describe('constraintValidator', () => {
         it('should return empty string for unknown type', () => {
             const constraint = { type: 'UNKNOWN', value: { some: 'val' } };
             expect(getConstraintHint(constraint, mockIntl, mockMessages)).toBe('');
+        });
+    });
+});
+
+describe('API key restriction validators', () => {
+    describe('isValidPermittedIPList', () => {
+        it.each([
+            ['192.168.1.100'],
+            ['0.0.0.0'],
+            ['255.255.255.255'],
+            ['10.0.0.0/24'],
+            ['192.168.1.0/32'],
+            ['2001:db8::1'],
+            ['::1'],
+            ['fe80::1%eth0'],
+            ['2001:db8::/64'],
+            ['::ffff:192.168.1.1'],
+            ['192.168.1.100, 10.0.0.0/24'],
+            ['192.168.1.100,2001:db8::1, 172.16.0.0/12'],
+            ['  192.168.1.100  '],
+        ])('should accept %s', (value) => {
+            expect(isValidPermittedIPList(value)).toBe(true);
+        });
+
+        it.each([
+            [''],
+            ['   '],
+            ['randomstring'],
+            ['999.1.1.1'],
+            ['192.168.1'],
+            ['192.168.1.100.5'],
+            ['192.168.1.100/33'],
+            ['2001:db8::/129'],
+            ['192.168.1.100/'],
+            ['192.168.1.100, notanip'],
+            ['192.168.1.100,,10.0.0.1'],
+            ['192.168.1.100 10.0.0.1'],
+            ['2001:zz8::1'],
+        ])('should reject %s', (value) => {
+            expect(isValidPermittedIPList(value)).toBe(false);
+        });
+    });
+
+    describe('isValidPermittedRefererList', () => {
+        it.each([
+            ['https://example.com'],
+            ['https://example.com/*'],
+            ['www.example.com/path'],
+            ['*.example.com'],
+            ['example.com'],
+            ['localhost:3000/*'],
+            ['https://a.com, https://b.com/*'],
+            ['  https://example.com  '],
+        ])('should accept %s', (value) => {
+            expect(isValidPermittedRefererList(value)).toBe(true);
+        });
+
+        it.each([
+            [''],
+            ['   '],
+            ['randomstring'],
+            ['https://example.com, randomstring'],
+            ['https://exa mple.com'],
+            ['https://a.com,,https://b.com'],
+        ])('should reject %s', (value) => {
+            expect(isValidPermittedRefererList(value)).toBe(false);
         });
     });
 });
