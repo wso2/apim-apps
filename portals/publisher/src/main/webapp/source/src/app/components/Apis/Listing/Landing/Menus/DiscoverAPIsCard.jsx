@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2026, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -27,18 +26,30 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import ExploreIcon from '@mui/icons-material/Explore';
 
 const DiscoverAPIsCard = () => {
-    const theme = useTheme();    
+    const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
     const isMediumScreen = useMediaQuery(theme.breakpoints.between('md', 'lg'));
+
+    let cardSize = 390;
+    if (isSmallScreen) {
+        cardSize = 250;
+    } else if (isMediumScreen) {
+        cardSize = 400;
+    }
+
+    let cardHeight = 140;
+    if (isMediumScreen) {
+        cardHeight = 150;
+    }
 
     return (
         <Paper
             square={false}
             elevation={4}
             sx={{
-                width: isSmallScreen ? 250 : isMediumScreen ? 400 : 390,
-                maxWidth: isSmallScreen ? 250 : isMediumScreen ? 400 : 390,
-                height: isSmallScreen ? 140 : isMediumScreen ? 150 : 140, 
+                width: cardSize,
+                maxWidth: cardSize,
+                height: cardHeight,
                 display: 'flex',
                 justifyContent: 'center', alignItems: 'center',
                 transition: 'all 0.3s ease-in-out',
@@ -55,7 +66,12 @@ const DiscoverAPIsCard = () => {
                 />
                 <Box p={2} border={0} borderRadius={2}
                     sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <Typography variant='h6' sx={{ color: '#1a3c73', textAlign: 'center', mt: 2, maxWidth: 220, lineHeight: 1.2 }}>
+                    <Typography
+                        variant='h6'
+                        sx={{
+                            color: '#1a3c73', textAlign: 'center', mt: 2, maxWidth: 220, lineHeight: 1.2,
+                        }}
+                    >
                         <FormattedMessage
                             id='Apis.Listing.components.TopMenu.discover.apis.tooltip'
                             defaultMessage='Discover and import APIs from your third party gateways'

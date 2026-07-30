@@ -3872,8 +3872,8 @@ class API extends Resource {
     static getFederatedAPIDiscoveryStatus(taskId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
-            if (client.apis['Federated APIs']?.getFederatedAPIDiscoveryStatus) {
-                return client.apis['Federated APIs'].getFederatedAPIDiscoveryStatus({ taskId });
+            if (client.apis['Federated APIs']?.getDiscoveryTaskStatus) {
+                return client.apis['Federated APIs'].getDiscoveryTaskStatus({ taskId });
             }
             return client.execute({
                 pathName: '/federated-apis/status/{taskId}',
@@ -3908,8 +3908,8 @@ class API extends Resource {
     static getCachedFederatedAPIs(environment) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
-            if (client.apis['Federated APIs']?.getCachedFederatedAPIs) {
-                return client.apis['Federated APIs'].getCachedFederatedAPIs({ environment });
+            if (client.apis['Federated APIs']?.getCachedDiscoveryResults) {
+                return client.apis['Federated APIs'].getCachedDiscoveryResults({ environment });
             }
             return client.execute({
                 pathName: '/federated-apis/cached',
