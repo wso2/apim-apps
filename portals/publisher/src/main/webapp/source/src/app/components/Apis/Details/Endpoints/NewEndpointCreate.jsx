@@ -101,7 +101,7 @@ function NewEndpointCreate(props) {
         componentValidator,
     } = props;
     const intl = useIntl();
-    const [endpointImplType, setImplType] = useState(ENDPOINT_IMPLEMENTATION_METHOD_MOCK);
+    const [endpointImplType, setEndpointImplType] = useState(ENDPOINT_IMPLEMENTATION_METHOD_MOCK);
     const endpointTypes = [
         {
             type: 'http',
@@ -244,7 +244,9 @@ function NewEndpointCreate(props) {
                                                         name='endpointType'
                                                         className={classes.radioGroup}
                                                         value={endpointImplType}
-                                                        onChange={(event) => { setImplType(event.target.value); }}
+                                                        onChange={(event) => {
+                                                            setEndpointImplType(event.target.value);
+                                                        }}
                                                     >
                                                         {type.options.filter((types) => !types.disabled
                                                             .includes(apiType)).map(((option) => {
