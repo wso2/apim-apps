@@ -308,21 +308,17 @@ function Endpoints(props) {
      * replacement content if any was provided. Chaining the upload off the delete's promise (rather than
      * firing both at once) keeps the two requests deterministic instead of racing against each other.
      */
-    const updateSequenceBackendOf = (keyType, backendList, deleteErrorMessage, uploadErrorMessage) => {
+    const updateSequenceBackendOf = async (keyType, backendList, deleteErrorMessage, uploadErrorMessage) => {
         const shouldDelete = backendList?.length === 0
             || (backendList?.length > 0 && backendList[0].content);
         const shouldUpload = backendList?.length > 0 && backendList[0].content;
 
-        const deletePromise = shouldDelete
-            ? deleteSequenceBackendOf(keyType, deleteErrorMessage)
-            : Promise.resolve();
-
-        return deletePromise.then(() => {
-            if (shouldUpload) {
-                return uploadSequenceBackendOf(keyType, backendList[0].content, uploadErrorMessage);
-            }
-            return Promise.resolve();
-        });
+        if (shouldDelete) {
+            await deleteSequenceBackendOf(keyType, deleteErrorMessage);
+        }
+        if (shouldUpload) {
+            await uploadSequenceBackendOf(keyType, backendList[0].content, uploadErrorMessage);
+        }
     };
 
     const updateSequenceBackends = () => Promise.all([
