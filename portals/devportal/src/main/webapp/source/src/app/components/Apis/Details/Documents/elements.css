@@ -1,6 +1,6 @@
 #apim_elements {
     margin: 32px;
-    padding-right: 100px;
+    padding-inline-end: 100px;
 }
 
 #apim_elements blockquote,
@@ -12755,7 +12755,7 @@
 
 .sl-elements {
     font-size: 13px;
-    padding-right: 65px;
+    padding-inline-end: 65px;
 }
 
 .sl-elements .svg-inline--fa {
@@ -12827,4 +12827,13 @@
 
 .sl-flex.sl-flex-col.sl-w-full.sl-p-4 {
     width: inherit;
+}
+
+/* Stoplight Elements has no RTL support. The two immediate child divs of
+   .sl-elements-api are the navigation bar and the details pane. In RTL page layout
+   the navigation bar should be on the right side and the details pane on the left.
+   To maintain their internal content in LTR mode, we set direction:ltr on them,
+   keeping all internal content (code, paths, params) in LTR mode as required */
+[dir="rtl"] .sl-elements-api > div {
+    direction: ltr;
 }

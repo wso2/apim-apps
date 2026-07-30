@@ -131,6 +131,13 @@ export default function KeyManagerConfiguration(props) {
             } else {
                 finalValue = [];
             }
+            // Coerce to an array in case the value was seeded/stored as a comma-separated string.
+            if (!Array.isArray(finalValue)) {
+                finalValue = (typeof finalValue === 'string' && finalValue !== '')
+                    ? finalValue.split(',').map((item) => item.trim()) : [];
+            } else {
+                finalValue = [...finalValue];
+            }
             if (e.target.checked) {
                 finalValue.push(value);
             } else {
@@ -238,7 +245,15 @@ export default function KeyManagerConfiguration(props) {
             const defaultVal = keymanagerConnectorConfiguration.default
                 || keymanagerConnectorConfiguration.defaultValue;
             if (typeof defaultVal === 'string'
-                && ['input', 'select', 'options', 'dropdown'].includes(keymanagerConnectorConfiguration.type)
+                && keymanagerConnectorConfiguration.type === 'select'
+            ) {
+                // 'select' renders a checkbox group, so its value must be an array.
+                setAdditionalProperties(
+                    keymanagerConnectorConfiguration.name,
+                    defaultVal.split(',').map((item) => item.trim()),
+                );
+            } else if (typeof defaultVal === 'string'
+                && ['input', 'options', 'dropdown'].includes(keymanagerConnectorConfiguration.type)
             ) {
                 onChange({
                     target: {
@@ -314,7 +329,13 @@ export default function KeyManagerConfiguration(props) {
             );
         } else if (keymanagerConnectorConfiguration.type === 'select') {
             return (
-                <FormControl variant='standard' component='fieldset' disabled={disabled}>
+                <FormControl
+                    variant='standard'
+                    component='fieldset'
+                    disabled={disabled}
+                    error={keymanagerConnectorConfiguration.required
+                        && Boolean(hasErrors('keyconfig', value, validating))}
+                >
                     <FormLabel component='legend'>
                         <span>
                             {keymanagerConnectorConfiguration.label}
@@ -338,6 +359,11 @@ export default function KeyManagerConfiguration(props) {
                             />
                         ))}
                     </FormGroup>
+                    <FormHelperText>
+                        {(keymanagerConnectorConfiguration.required
+                            && hasErrors('keyconfig', value, validating))
+                            || keymanagerConnectorConfiguration.tooltip}
+                    </FormHelperText>
                 </FormControl>
             );
         } else if (keymanagerConnectorConfiguration.type === 'checkbox') {
@@ -370,7 +396,13 @@ export default function KeyManagerConfiguration(props) {
             );
         } else if (keymanagerConnectorConfiguration.type === 'options') {
             return (
-                <FormControl variant='standard' component='fieldset' disabled={disabled}>
+                <FormControl
+                    variant='standard'
+                    component='fieldset'
+                    disabled={disabled}
+                    error={keymanagerConnectorConfiguration.required
+                        && Boolean(hasErrors('keyconfig', value, validating))}
+                >
                     <FormLabel component='legend'>
                         <span>
                             {keymanagerConnectorConfiguration.label}
@@ -398,6 +430,11 @@ export default function KeyManagerConfiguration(props) {
                             );
                         })}
                     </RadioGroup>
+                    <FormHelperText>
+                        {(keymanagerConnectorConfiguration.required
+                            && hasErrors('keyconfig', value, validating))
+                            || keymanagerConnectorConfiguration.tooltip}
+                    </FormHelperText>
                 </FormControl>
             );
         } else if (keymanagerConnectorConfiguration.type === 'dropdown') {

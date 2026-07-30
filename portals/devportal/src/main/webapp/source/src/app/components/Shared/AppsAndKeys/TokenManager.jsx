@@ -334,7 +334,12 @@ class TokenManager extends React.Component {
         const additionalProperties = {};
 
         applicationConfiguration.forEach((confItem) => {
-            additionalProperties[confItem.name] = confItem.default || '';
+            if (confItem.type === 'select' && confItem.multiple) {
+                additionalProperties[confItem.name] = (confItem.default
+                    && confItem.default.split(',').map((item) => item.trim())) || [];
+            } else {
+                additionalProperties[confItem.name] = confItem.default || '';
+            }
         });
         return additionalProperties;
     }
@@ -838,9 +843,10 @@ class TokenManager extends React.Component {
                         <Box mb={1}>
                             <Typography variant='h5' className={classes.keyTitle}>
                                 {this.toTitleCase(keyType)}
+                                {' '}
                                 <FormattedMessage
-                                    id='Shared.AppsAndKeyhandleCloses.TokenManager.oauth2.keys.main.title'
-                                    defaultMessage=' OAuth2 Keys'
+                                    id='Shared.AppsAndKeys.TokenManager.oauth2.keys.main.title'
+                                    defaultMessage='OAuth2 Keys'
                                 />
                             </Typography>
                         </Box>
@@ -973,9 +979,10 @@ class TokenManager extends React.Component {
                     <Box mb={1}>
                         <Typography variant='h5' className={classes.keyTitle}>
                             {this.toTitleCase(keyType)}
+                            {' '}
                             <FormattedMessage
                                 id='Shared.AppsAndKeys.TokenManager.oauth2.keys.main.title'
-                                defaultMessage=' OAuth2 Keys'
+                                defaultMessage='OAuth2 Keys'
                             />
                         </Typography>
                     </Box>

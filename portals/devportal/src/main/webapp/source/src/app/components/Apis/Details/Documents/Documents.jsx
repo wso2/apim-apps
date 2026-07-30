@@ -142,7 +142,7 @@ function Documents(props) {
                     variant='h4'
                     component='h2'
                     sx={(theme) => ({
-                        marginLeft: theme.spacing(3),
+                        marginInlineStart: theme.spacing(3),
                         paddingTop: theme.spacing(2),
                         paddingBottom: theme.spacing(2),
                         color: theme.palette.getContrastText(theme.palette.background.default),
@@ -164,7 +164,7 @@ function Documents(props) {
                     variant='h4'
                     component='h2'
                     sx={(theme) => ({
-                        marginLeft: theme.spacing(3),
+                        marginInlineStart: theme.spacing(3),
                         paddingTop: theme.spacing(2),
                         paddingBottom: theme.spacing(2),
                         color: theme.palette.getContrastText(theme.palette.background.default),

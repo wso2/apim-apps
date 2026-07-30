@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 import Api from 'AppData/api';
 import { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
 import {
-    Container, Box,
+    Container, Box, useTheme,
 } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import { ResizableBox } from 'react-resizable';
@@ -44,6 +44,8 @@ function ChatWindow(props) {
     const [apiLimitExceeded, setApiLimitExceeded] = useState(false);
     const [apisCount, setApisCount] = useState(null);
     const [limit, setLimit] = useState(null);
+    const theme = useTheme();
+    const isRtl = theme.direction === 'rtl';
 
     const { settings: { marketplaceAssistantEnabled, aiAuthTokenProvided } } = useSettingsContext();
 
@@ -126,14 +128,15 @@ function ChatWindow(props) {
             height={window.innerHeight - 64}
             minConstraints={[500, window.innerHeight]}
             maxConstraints={[window.innerWidth, window.innerHeight - 64]}
-            resizeHandles={['w']}
+            resizeHandles={isRtl ? ['e'] : ['w']}
             style={{
                 position: 'fixed',
                 bottom: 1,
-                right: 0,
+                right: isRtl ? 'auto' : 0,
+                left: isRtl ? 0 : 'auto',
                 display: 'flex',
                 justifyContent: 'flex-start',
-                flexDirection: 'row-reverse',
+                flexDirection: isRtl ? 'row' : 'row-reverse',
                 zIndex: 1200,
             }}
             handle={(
@@ -154,7 +157,7 @@ function ChatWindow(props) {
                     border: '0px solid #808e96',
                     boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
                     borderRadius: '4px',
-                    margin: '4px 4px 4px 0',
+                    margin: isRtl ? '4px 0 4px 4px' : '4px 4px 4px 0',
                 }}
             >
                 <Box

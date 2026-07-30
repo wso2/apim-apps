@@ -107,8 +107,8 @@ const StyledCard = styled(Card)(({ theme }) => ({
         borderRadius: 4,
         overflow: 'hidden',
         '& svg': {
-            marginLeft: '5px',
-            marginRight: '-4px',
+            marginInlineStart: '5px',
+            marginInlineEnd: '-4px',
         },
     },
 
@@ -128,10 +128,10 @@ const StyledCard = styled(Card)(({ theme }) => ({
         textTransform: 'uppercase',
         position: 'absolute',
         top: 0,
-        right: 0,
+        insetInlineEnd: 0,
         zIndex: 3,
-        borderTopRightRadius: theme.spacing(0.5),
-        borderBottomLeftRadius: theme.spacing(0.5),
+        borderStartEndRadius: theme.spacing(0.5),
+        borderEndStartRadius: theme.spacing(0.5),
         fontSize: '10px',
         padding: '3px 5px',
     },
@@ -288,6 +288,15 @@ class ApiThumbClassicLegacy extends React.Component {
         this.setState({ technicalAnchorEl: null, technicalOpenPopover: false });
     };
 
+    getPopoverOrigins() {
+        const { theme } = this.props;
+        const isRtl = theme.direction === 'rtl';
+        return {
+            anchorOrigin: { vertical: 'top', horizontal: isRtl ? 'left' : 'right' },
+            transformOrigin: { vertical: 'bottom', horizontal: isRtl ? 'right' : 'left' },
+        };
+    }
+
     isSearchRoute = window.location.pathname.includes('/search');
 
     /**
@@ -362,6 +371,7 @@ class ApiThumbClassicLegacy extends React.Component {
         const {
             name, version, context, displayName,
         } = api;
+        const popoverOrigins = this.getPopoverOrigins();
 
         let { provider } = api;
         if (
@@ -518,7 +528,7 @@ class ApiThumbClassicLegacy extends React.Component {
                                         }}
                                     >
                                         <Tooltip title={version} arrow>
-                                            <Typography variant='body1'>{version}</Typography>
+                                            <Typography variant='body1' dir='ltr'>{version}</Typography>
                                         </Tooltip>
                                         <Typography variant='caption' component='p' lineHeight={1}>
                                             <FormattedMessage
@@ -537,7 +547,7 @@ class ApiThumbClassicLegacy extends React.Component {
                                         }}
                                     >
                                         <Tooltip title={context} arrow>
-                                            <Typography variant='body1' noWrap>
+                                            <Typography variant='body1' noWrap dir='ltr'>
                                                 {context}
                                             </Typography>
                                         </Tooltip>
@@ -582,7 +592,7 @@ class ApiThumbClassicLegacy extends React.Component {
 
                     {(tileDisplayInfo.showBusinessDetails || tileDisplayInfo.showTechnicalDetails) && (
                         <>
-                            <Divider sx={{ marginLeft: 1.5, marginRight: 1.5 }} />
+                            <Divider sx={{ marginInlineStart: 1.5, marginInlineEnd: 1.5 }} />
                             <CardContent
                                 classes={{ root: classNames(classes.apiDetails, 'image-thumb-card-content') }}
                                 style={{ display: 'flex', flex: 1, padding: '12px' }}
@@ -627,14 +637,8 @@ class ApiThumbClassicLegacy extends React.Component {
                                                     }}
                                                     open={this.state.buniessOpenPopover}
                                                     anchorEl={this.state.businessAnchorEl}
-                                                    anchorOrigin={{
-                                                        vertical: 'top',
-                                                        horizontal: 'right',
-                                                    }}
-                                                    transformOrigin={{
-                                                        vertical: 'bottom',
-                                                        horizontal: 'left',
-                                                    }}
+                                                    anchorOrigin={popoverOrigins.anchorOrigin}
+                                                    transformOrigin={popoverOrigins.transformOrigin}
                                                     onClose={this.handleBusinessPopoverClose}
                                                     disableAutoFocus
                                                     disableEnforceFocus
@@ -650,7 +654,7 @@ class ApiThumbClassicLegacy extends React.Component {
                                                     >
                                                         <div style={{ display: 'flex', padding: '4px' }}>
                                                             <EmailIcon fontSize='small' />
-                                                            <Typography variant='body2' style={{ marginLeft: '8px' }}>
+                                                            <Typography variant='body2' style={{ marginInlineStart: '8px' }}>
                                                                 {api.businessInformation.businessOwnerEmail}
                                                             </Typography>
                                                         </div>
@@ -695,14 +699,8 @@ class ApiThumbClassicLegacy extends React.Component {
                                                     }}
                                                     open={this.state.technicalOpenPopover}
                                                     anchorEl={this.state.technicalAnchorEl}
-                                                    anchorOrigin={{
-                                                        vertical: 'top',
-                                                        horizontal: 'right',
-                                                    }}
-                                                    transformOrigin={{
-                                                        vertical: 'bottom',
-                                                        horizontal: 'left',
-                                                    }}
+                                                    anchorOrigin={popoverOrigins.anchorOrigin}
+                                                    transformOrigin={popoverOrigins.transformOrigin}
                                                     onClose={this.handleTechnicalPopoverClose}
                                                     disableAutoFocus
                                                     disableEnforceFocus
@@ -718,7 +716,7 @@ class ApiThumbClassicLegacy extends React.Component {
                                                     >
                                                         <div style={{ display: 'flex', padding: '4px' }}>
                                                             <EmailIcon fontSize='small' />
-                                                            <Typography variant='body2' style={{ marginLeft: '8px' }}>
+                                                            <Typography variant='body2' style={{ marginInlineStart: '8px' }}>
                                                                 {api.businessInformation.technicalOwnerEmail}
                                                             </Typography>
                                                         </div>
@@ -734,7 +732,7 @@ class ApiThumbClassicLegacy extends React.Component {
 
                     {(showRating || (isMonetizationEnabled && api.monetizationLabel)) && (
                         <>
-                            <Divider sx={{ marginLeft: 1.5, marginRight: 1.5 }} />
+                            <Divider sx={{ marginInlineStart: 1.5, marginInlineEnd: 1.5 }} />
                             <CardActions
                                 data-testid={'card-action-' + api.name + api.version}
                                 sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
@@ -761,7 +759,7 @@ class ApiThumbClassicLegacy extends React.Component {
                                     <Typography
                                         variant='caption'
                                         sx={{
-                                            marginLeft: 'auto',
+                                            marginInlineStart: 'auto',
                                             fontWeight: 'medium',
                                             padding: '0px 2px',
                                         }}
@@ -784,7 +782,7 @@ ApiThumbClassicLegacy.defaultProps = {
 };
 ApiThumbClassicLegacy.propTypes = {
     classes: PropTypes.shape({}).isRequired,
-    theme: PropTypes.shape({}).isRequired,
+    theme: PropTypes.shape({ direction: PropTypes.string }).isRequired,
     customWidth: PropTypes.number,
     customHeight: PropTypes.number,
     showInfo: PropTypes.bool,

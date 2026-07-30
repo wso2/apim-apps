@@ -19,18 +19,20 @@
 import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
 
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import CircularProgress from '@mui/material/CircularProgress';
+import {
+    Box,
+    Button,
+    ButtonGroup,
+    TextField,
+    Typography,
+    Card,
+    CardContent,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    CircularProgress,
+} from '@mui/material';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import DescriptionIcon from '@mui/icons-material/Description';
 import Alert from 'AppComponents/Shared/Alert';
@@ -159,13 +161,18 @@ export default function ExportConsumptionData() {
                     defaultMessage: 'Export started — your download should begin shortly.',
                 }));
             })
-            .catch((err) => {
-                Alert.error(
-                    err.message || intl.formatMessage({
+            .catch((error) => {
+                const { response, message } = error;
+                if (response && response.body && response.body.description) {
+                    Alert.error(response.body.description);
+                } else if (message) {
+                    Alert.error(message);
+                } else {
+                    Alert.error(intl.formatMessage({
                         id: 'ExportConsumptionData.error.export',
                         defaultMessage: 'Failed to export consumption data.',
-                    }),
-                );
+                    }));
+                }
             })
             .finally(() => setLoading(false));
     };
@@ -213,7 +220,7 @@ export default function ExportConsumptionData() {
             pageStyle='small'
             help={helpContent}
         >
-            {/* ── Card ──────────────────────────────────────────── */}
+            {/* Card */}
             <Card>
                 <CardContent>
                     <Typography gutterBottom variant='h5' component='h2'>
@@ -231,39 +238,21 @@ export default function ExportConsumptionData() {
                     </Typography>
 
                     {/* Range selector row */}
-                    <Box mt={3}>
+                    <Box sx={{ marginTop: 3 }}>
                         <ButtonGroup variant='outlined' color='primary' size='small'>
                             {QUICK_RANGES.map(({ label, months }) => (
                                 <Button
                                     key={months}
-                                    sx={activeQuickRange === months ? {
-                                        backgroundColor: 'primary.main',
-                                        color: 'primary.contrastText',
-                                        padding: '8.5px 10px',
-                                        '&:hover': {
-                                            backgroundColor: 'primary.dark',
-                                        },
-                                    } : {
-                                        textTransform: 'none',
-                                        padding: '8.5px 10px',
-                                    }}
+                                    variant={activeQuickRange === months ? 'contained' : 'outlined'}
+                                    sx={{ textTransform: 'none', padding: '8.5px 10px' }}
                                     onClick={() => handleQuickRange(months)}
                                 >
                                     {label}
                                 </Button>
                             ))}
                             <Button
-                                sx={activeQuickRange === 'custom' ? {
-                                    backgroundColor: 'primary.main',
-                                    color: 'primary.contrastText',
-                                    padding: '8.5px 10px',
-                                    '&:hover': {
-                                        backgroundColor: 'primary.dark',
-                                    },
-                                } : {
-                                    textTransform: 'none',
-                                    padding: '8.5px 10px',
-                                }}
+                                variant={activeQuickRange === 'custom' ? 'contained' : 'outlined'}
+                                sx={{ textTransform: 'none', padding: '8.5px 10px' }}
                                 onClick={handleCustomRange}
                             >
                                 {intl.formatMessage({
@@ -275,8 +264,8 @@ export default function ExportConsumptionData() {
                     </Box>
 
                     {activeQuickRange === 'custom' && (
-                        <Box mt={2}>
-                            <Box display='flex' alignItems='center' style={{ gap: 16 }}>
+                        <Box sx={{ marginTop: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <TextField
                                     id='consumption-from-date'
                                     label={intl.formatMessage({
@@ -309,7 +298,7 @@ export default function ExportConsumptionData() {
                                 />
                             </Box>
                             {fromDate && toDate && fromDate > toDate && (
-                                <Typography variant='caption' color='error' style={{ display: 'block', marginTop: 4 }}>
+                                <Typography variant='caption' color='error' sx={{ display: 'block', marginTop: 0.5 }}>
                                     {intl.formatMessage({
                                         id: 'ExportConsumptionData.error.dateRange',
                                         defaultMessage: 'From date must be before To date.',
@@ -325,9 +314,8 @@ export default function ExportConsumptionData() {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     padding: 2,
-                    borderTop: '1px solid',
-                    borderTopColor: 'divider',
-                    backgroundColor: 'action.hover',
+                    borderTop: '1px solid #e0e0e0',
+                    backgroundColor: '#f5f5f5',
                 }}
                 >
                     <Typography variant='body2' color='textSecondary'>
@@ -344,7 +332,7 @@ export default function ExportConsumptionData() {
                             )
                         ) : '—'}
                     </Typography>
-                    <Box display='flex' alignItems='center' style={{ gap: 8 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         {loading && <CircularProgress size={20} />}
                         <Button
                             variant='contained'

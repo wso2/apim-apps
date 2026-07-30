@@ -13,7 +13,7 @@
     "delete:reportFolderReport": "rm -rf cypress/reports/mochawesome-bundle.json",
     "delete:reportSummary": "rm -rf cypress/reports/summary.txt",
     "pre-test": "npm run delete:reportFolderHTML && npm run delete:reportFolderJUnit && npm run delete:reportFolderReport && npm run delete:reportSummary",
-    "report:merge": "mochawesome-merge ./cypress/reports/html/.jsons/*.json > ./cypress/reports/mochawesome-bundle.json",
+    "report:merge": "mochawesome-merge \"./cypress/reports/html/.jsons/*.json\" > ./cypress/reports/mochawesome-bundle.json",
     "report:generate": "marge --inline --saveHtml --charts ./cypress/reports/mochawesome-bundle.json -o ./cypress/reports/html",
     "merge-junit-reports": "jrm ./cypress/reports/junit/combined.xml \"./cypress/reports/junit/*.xml\"",
     "test:admin": "cypress run --e2e --spec \"cypress/e2e/admin/**/*.cy.js\"",

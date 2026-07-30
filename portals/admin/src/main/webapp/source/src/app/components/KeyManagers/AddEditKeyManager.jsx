@@ -169,6 +169,7 @@ function AddEditKeyManager(props) {
     const isSuperAdmin = isSuperTenant && _scopes.includes('apim:admin_settings');
     const [validOrgs, setValidOrgs] = useState([]);
     const [orgSelectionType, setOrgSelectionType] = useState(null);
+    const [enableProvisionedAppValidation, setEnableProvisionedAppValidation] = useState(true);
 
     const defaultKMType = (settings.keyManagerConfiguration
         && settings.keyManagerConfiguration.length > 0)
@@ -367,6 +368,9 @@ function AddEditKeyManager(props) {
                     ? result.body.permissions.roles
                     : []);
                 dispatch({ field: 'all', value: editState });
+                setEnableProvisionedAppValidation(
+                    result.body.enableProvisionedAppValidation !== false,
+                );
                 updateKeyManagerConnectorConfiguration(editState.type);
             });
         } else {
@@ -396,6 +400,13 @@ function AddEditKeyManager(props) {
                 }
                 break;
             case 'keyconfig':
+                if (fieldValue === '' || (Array.isArray(fieldValue) && !fieldValue.length)) {
+                    error = intl.formatMessage({
+                        id: 'KeyManagers.AddEditKeyManager.is.empty.error.key.config',
+                        defaultMessage: 'Required field is empty.',
+                    });
+                }
+                break;
             case 'displayName':
             case 'issuer':
             case 'clientRegistrationEndpoint':
@@ -468,7 +479,9 @@ function AddEditKeyManager(props) {
         const checkConfigErrors = (configurations) => {
             for (const config of configurations) {
                 if (config.required && (!additionalProperties[config.name]
-                    || additionalProperties[config.name] === '')) {
+                    || additionalProperties[config.name] === ''
+                    || (Array.isArray(additionalProperties[config.name])
+                    && !additionalProperties[config.name].length))) {
                     return true;
                 }
 
@@ -547,6 +560,7 @@ function AddEditKeyManager(props) {
 
         const keymanager = {
             ...state,
+            enableProvisionedAppValidation,
             additionalProperties: {
                 ...state.additionalProperties,
                 constraints: !isEmpty(constraints) ? constraints : undefined,
@@ -611,6 +625,10 @@ function AddEditKeyManager(props) {
             clonedAdditionalProperties[key] = value;
         }
         dispatch({ field: 'additionalProperties', value: clonedAdditionalProperties });
+    };
+
+    const handleEnableProvisionedAppValidationChange = (e) => {
+        setEnableProvisionedAppValidation(e.target.checked);
     };
 
     const getConstraintsData = () => {
@@ -2260,6 +2278,26 @@ function AddEditKeyManager(props) {
                                                 <FormattedMessage
                                                     id='Admin.KeyManager.label.Enable.EnableOAithAppCreation'
                                                     defaultMessage='Oauth App Creation'
+                                                />
+                                            )}
+                                            labelPlacement='end'
+                                        />
+                                    </Grid>
+                                    <Grid item xs={6} md={4} lg={4}>
+                                        <FormControlLabel
+                                            value='enableProvisionedAppValidation'
+                                            control={(
+                                                <Checkbox
+                                                    checked={enableProvisionedAppValidation}
+                                                    onChange={handleEnableProvisionedAppValidationChange}
+                                                    name='enableProvisionedAppValidation'
+                                                    color='primary'
+                                                />
+                                            )}
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Admin.KeyManager.label.Enable.ProvisionedAppValidation'
+                                                    defaultMessage='Provisioned App Validation'
                                                 />
                                             )}
                                             labelPlacement='end'

@@ -112,7 +112,7 @@ function AdvanceEndpointConfig(props) {
             config.optimize = 'leave-as-is';
         }
         if (api?.type !== 'WS') {
-            config.actionDuration = '30000';
+            config.actionDuration = '';
             config.actionSelect = 'fault';
             config.retryDelay = '';
             config.retryErroCode = [];
@@ -552,6 +552,7 @@ function AdvanceEndpointConfig(props) {
                                 className={classes.textField}
                                 id='duration-input'
                                 value={advanceConfigObj.actionDuration}
+                                placeholder='30000'
                                 onKeyDown={(event) => validateNumber(event)}
                                 onChange= {(event) => handleConfigFieldChange(event, 'actionDuration')}
                                 label={(

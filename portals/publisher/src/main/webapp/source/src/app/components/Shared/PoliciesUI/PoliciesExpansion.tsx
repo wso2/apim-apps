@@ -81,6 +81,7 @@ interface PolicySectionConfig {
     >;
     droppablePolicyList: string[];
     currentFlow: string;
+    showEndArrow?: boolean;
 }
 
 const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
@@ -114,6 +115,7 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
         setCurrentPolicyList,
         droppablePolicyList,
         currentFlow,
+        showEndArrow,
     }: PolicySectionConfig) => (
         <Box
             className={classes.flowSpecificPolicyAttachGrid}
@@ -138,7 +140,9 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
                 }
                 isApiRevision={isApiRevision}
             />
-            <FlowArrow arrowDirection={arrowDirection === 'left' ? 'right' : 'left'} />
+            {showEndArrow && (
+                <FlowArrow arrowDirection={arrowDirection === 'left' ? 'right' : 'left'} />
+            )}
         </Box>
     );
 
@@ -158,6 +162,7 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
                 setCurrentPolicyList: setRequestFlowPolicyList,
                 droppablePolicyList: requestFlowDroppablePolicyList,
                 currentFlow: 'hub',
+                showEndArrow: true,
             });
         }
 

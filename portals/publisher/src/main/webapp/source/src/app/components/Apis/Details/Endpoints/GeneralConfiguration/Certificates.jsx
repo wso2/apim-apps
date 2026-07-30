@@ -266,7 +266,7 @@ function Certificates(props) {
 
     const getWarningMessage = () => {
         return certificateToDelete.alias + ' is used by ' +
-            certificateUsageDetails.count + ' other APIs. ';
+            certificateUsageDetails.count + ' APIs. ';
     }
 
 

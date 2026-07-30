@@ -38,9 +38,19 @@ describe("publisher-015-02 : Verify Gateway Environments", () => {
             cy.wait(5000);
             // Wait for the revisions call to finish
             cy.get('#undeploy-btn').should('not.have.class', 'Mui-disabled').should('exist');
-            // Verify environments
-            cy.contains('http://localhost:8280').should('exist');
-            cy.contains('https://localhost:8243').should('exist');
+            // Distributed topology exposes the gateway on its own ingress hostname
+            // (Cypress.env('gatewayUrl')) on standard ports; all-in-one uses :8280/:8243.
+            const gatewayUrl = Cypress.env('gatewayUrl');
+            if (gatewayUrl) {
+                const gatewayHost = new URL(gatewayUrl).hostname;
+                cy.contains(`http://${gatewayHost}`).should('exist');
+                cy.contains(`https://${gatewayHost}`).should('exist');
+            } else {
+                // Derive host from baseUrl: the server may be bound to localhost or a LAN IP.
+                const gatewayHost = new URL(Cypress.config('baseUrl')).hostname;
+                cy.contains(`http://${gatewayHost}:8280`).should('exist');
+                cy.contains(`https://${gatewayHost}:8243`).should('exist');
+            }
 
             // Delete API
             Utils.deleteAPI(apiId);

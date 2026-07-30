@@ -22,6 +22,8 @@ import Fab from '@mui/material/Fab';
 import ChatIcon from '@mui/icons-material/Chat';
 import CloseIcon from '@mui/icons-material/Close';
 import Tooltip from '@mui/material/Tooltip';
+import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
 
 /**
@@ -33,6 +35,8 @@ function ChatBotIcon(props) {
     const { toggleChatbot, handleDisableChatbot, chatbotDisabled } = props;
     const [showCloseButton, setShowCloseButton] = useState(false);
     const intl = useIntl();
+    const theme = useTheme();
+    const isRtl = theme.direction === 'rtl';
 
     const handleMouseEnter = () => {
         setShowCloseButton(true);
@@ -49,8 +53,8 @@ function ChatBotIcon(props) {
 
     return (
         <>
-            <div
-                style={{ position: 'fixed', bottom: 20, right: 30 }}
+            <Box
+                sx={{ position: 'fixed', bottom: 20, insetInlineEnd: 30 }}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
             >
@@ -60,9 +64,14 @@ function ChatBotIcon(props) {
                             id: 'Apis.Chat.ChatIcon.tooltip.label',
                             defaultMessage: 'Open Chat',
                         })}
-                        placement='left'
+                        placement={isRtl ? 'right' : 'left'}
                     >
-                        <Fab color='primary' aria-label='chat' onClick={toggleChatbot} style={{ boxShadow: 'none' }}>
+                        <Fab
+                            color='primary'
+                            aria-label='chat'
+                            onClick={toggleChatbot}
+                            sx={{ boxShadow: 'none', '&:hover': { boxShadow: 'none' } }}
+                        >
                             <ChatIcon />
                         </Fab>
                     </Tooltip>
@@ -73,28 +82,32 @@ function ChatBotIcon(props) {
                             id: 'Apis.Chat.ChatIcon.disable.chat.label',
                             defaultMessage: 'Disable chat',
                         })}
-                        placement='left'
+                        placement={isRtl ? 'right' : 'left'}
                     >
                         <Fab
                             color='secondary'
                             variant='round'
                             aria-label='close'
                             onClick={handleCloseIconClick}
-                            style={{
+                            sx={{
                                 position: 'absolute',
                                 top: -18,
-                                right: -18,
+                                insetInlineEnd: -18,
                                 width: 34,
                                 height: 16,
                                 backgroundColor: 'transparent',
                                 boxShadow: 'none',
+                                '&:hover': {
+                                    boxShadow: 'none',
+                                    backgroundColor: 'transparent',
+                                },
                             }}
                         >
                             <CloseIcon fontSize='medium' style={{ fill: '#000', stroke: '#000' }} />
                         </Fab>
                     </Tooltip>
                 )}
-            </div>
+            </Box>
         </>
     );
 }

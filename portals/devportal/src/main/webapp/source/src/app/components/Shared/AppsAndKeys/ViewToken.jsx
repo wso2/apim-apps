@@ -198,7 +198,7 @@ class ViewToken extends React.Component {
                         />
                     </Typography>
                 </InlineMessage>
-                <div className={classes.epWrapper}>
+                <div className={classes.epWrapper} dir='ltr'>
                     <label for='access-token' className={classes.prodLabel}>
                         {(token.isOauth) && (
                             <FormattedMessage

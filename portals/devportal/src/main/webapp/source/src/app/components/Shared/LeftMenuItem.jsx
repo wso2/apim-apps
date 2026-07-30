@@ -63,14 +63,14 @@ const StyledBootstrapTooltip = styled(BootstrapTooltip)((
         color: theme.palette.getContrastText(theme.custom.leftMenu.background),
         textTransform: 'capitalize',
         width: '100%',
-        textAlign: 'left',
+        textAlign: 'start',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
     },
 
     [`& .${classes.leftLInkText_IconLeft}`]: {
-        paddingLeft: 10,
+        paddingInlineStart: 10,
     },
 
     [`& .${classes.LeftMenu}`]: {
@@ -80,15 +80,15 @@ const StyledBootstrapTooltip = styled(BootstrapTooltip)((
         fontFamily: theme.typography.fontFamily,
         position: 'absolute',
         bottom: 0,
-        left: 0,
+        insetInlineStart: 0,
         top: 0,
     },
 
     [`& .${classes.leftLInk}`]: {
         paddingTop: theme.spacing(0.6),
         paddingBottom: theme.spacing(0.6),
-        paddingLeft: theme.spacing(1),
-        paddingRight: theme.spacing(1),
+        paddingInlineStart: theme.spacing(1),
+        paddingInlineEnd: theme.spacing(1),
         fontSize: theme.typography.caption.fontSize,
         cursor: 'pointer',
         textDecoration: 'none',
@@ -122,9 +122,9 @@ const StyledBootstrapTooltip = styled(BootstrapTooltip)((
     },
 
     [`& .${classes.submenu}`]: {
-        paddingLeft: 12,
+        paddingInlineStart: 12,
         [theme.breakpoints.down('md')]: {
-            paddingLeft: 0,
+            paddingInlineStart: 0,
             color: theme.palette.grey[500],
         }
     }
@@ -175,7 +175,7 @@ function LeftMenuItem(props) {
         activeBackground = leftMenu.leftMenuActiveSubmenu;
     }
     return (
-        <StyledBootstrapTooltip title={props.text} placement='right'>
+        <StyledBootstrapTooltip title={props.text} placement={theme.direction === 'rtl' ? 'left' : 'right'}>
             <div>
                 <Link
                     className={classNames(

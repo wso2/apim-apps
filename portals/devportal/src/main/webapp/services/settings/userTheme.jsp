@@ -26,7 +26,7 @@
 
 <%
     Map theme = Util.readJsonFile("site/public/theme/userTheme.json", request.getServletContext());
-    response.setContentType("application/javascript");
+    response.setContentType("application/javascript; charset=UTF-8");
 
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     String content = "const Configurations = " + gson.toJson(theme) + ";";

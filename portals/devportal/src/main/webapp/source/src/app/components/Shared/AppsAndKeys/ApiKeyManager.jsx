@@ -73,7 +73,7 @@ const StyledGrid = styled(Grid)((
   },
 
   [`& .${classes.margin}`]: {
-    marginRight: theme.spacing(2),
+    marginInlineEnd: theme.spacing(2),
   },
 
   [`& .${classes.keyConfigWrapper}`]: {
@@ -90,7 +90,7 @@ const StyledGrid = styled(Grid)((
     display: 'flex',
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
-    marginLeft: theme.spacing(10),
+    marginInlineStart: theme.spacing(10),
   },
 
   [`& .${classes.dialogTitle}`]: {

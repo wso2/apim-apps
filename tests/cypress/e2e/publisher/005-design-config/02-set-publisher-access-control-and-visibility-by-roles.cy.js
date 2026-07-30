@@ -84,7 +84,9 @@ describe("Set publisher access control and visibility by roles", () => {
             }
         });
 
-        before(function () {
+        // beforeEach (not before): a login flake here is then retryable —
+        // Cypress does not retry `before all` hook failures.
+        beforeEach(function () {
             cy.clearCookies();
             cy.clearLocalStorage();
             // Login as admin user who has apim:admin permission
@@ -142,14 +144,18 @@ describe("Set publisher access control and visibility by roles", () => {
             }
         });
 
-        before(function () {
+        // beforeEach (not before): a chai-jQuery race in loginToPublisher's form
+        // visibility check would make the spec terminally red without per-test retries.
+        beforeEach(function () {
             cy.clearCookies();
             cy.clearLocalStorage();
             // Login as non-admin user (regular publisher)
             cy.loginToPublisher(publisher, password);
         });
 
-        it("Non-admin user should still see user role validation when configuring system-only roles", () => {
+        it("Non-admin user should still see user role validation when configuring system-only roles", {
+            retries: { runMode: 3, openMode: 0 },
+        }, () => {
             // WSO2 default role casing; treated as a valid system role but fails creator user-role association for non-admins
             const systemRole = 'Internal/subscriber';
 

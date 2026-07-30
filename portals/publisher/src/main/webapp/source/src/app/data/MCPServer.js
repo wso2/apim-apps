@@ -302,7 +302,8 @@ class MCPServer extends Resource {
      * @param {string} [securityInfo.value] - The security header value.
      * @returns {Promise} A promise that resolves to the validation result.
      */
-    static validateThirdPartyMCPServerUrl(url, securityInfo = null) {
+    static validateThirdPartyMCPServerUrl(url, securityInfo = null,
+        mcpServerId = null, endpointType = null) {
         const apiClient = new APIClientFactory()
             .getAPIClient(
                 Utils.getCurrentEnvironment(),
@@ -312,16 +313,16 @@ class MCPServer extends Resource {
             const payload = {
                 'Content-Type': 'multipart/form-data',
             }
-            const requestBody = {
-                requestBody: {
-                    url,
-                    securityInfo: securityInfo || {
-                        isSecure: false,
-                        header: '',
-                        value: ''
-                    }
-                }
-            };
+            const body = { url };
+            if (securityInfo) {
+                body.securityInfo = securityInfo;
+            } else if (mcpServerId && endpointType) {
+                body.mcpServerId = mcpServerId;
+                body.endpointType = endpointType;
+            } else {
+                body.securityInfo = { isSecure: false, header: '', value: '' };
+            }
+            const requestBody = { requestBody: body };
             return client.apis.Validation.validateThirdPartyMCPServer(
                 payload,
                 requestBody,

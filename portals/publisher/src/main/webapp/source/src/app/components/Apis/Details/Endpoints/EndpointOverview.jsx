@@ -696,6 +696,8 @@ function EndpointOverview(props) {
             === secretPlaceholder ? '' : newEndpointSecurityObj.clientSecret;
         newEndpointSecurityObj.password = newEndpointSecurityObj.password 
             === secretPlaceholder ? '' : newEndpointSecurityObj.password;
+        newEndpointSecurityObj.apiKeyValue = newEndpointSecurityObj.apiKeyValue
+            === secretPlaceholder ? '' : newEndpointSecurityObj.apiKeyValue;
         if (type === 'NONE') {
             newEndpointSecurityObj = { ...CONSTS.DEFAULT_ENDPOINT_SECURITY, type };
         } else {

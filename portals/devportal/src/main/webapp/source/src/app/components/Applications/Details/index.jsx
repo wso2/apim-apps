@@ -255,9 +255,10 @@ class Details extends Component {
                         <div className={classes.titleWrapper} style={{ paddingBottom: 2, paddingTop: 2 }}>
                             <Typography variant='h5' className={classes.keyTitle}>
                                 {this.toTitleCase(keyType)}
+                                {' '}
                                 <FormattedMessage
                                     id='Applications.Details.api.keys.title'
-                                    defaultMessage=' API Keys'
+                                    defaultMessage='API Keys'
                                 />
                             </Typography>
                         </div>

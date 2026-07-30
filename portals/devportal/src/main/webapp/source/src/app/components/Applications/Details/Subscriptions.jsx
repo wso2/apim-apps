@@ -36,11 +36,52 @@ import APIList from 'AppComponents/Apis/Listing/APICardView';
 import CONSTANTS from 'AppData/Constants';
 import Subscription from 'AppData/Subscription';
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import { app } from 'Settings';
 import { useAreApisAccessible, useAreMcpServersAccessible } from 'AppUtils/PortalModeUtils';
 import SubscriptionSection from './SubscriptionSection';
 
 const PREFIX = 'Subscriptions';
+
+const SUBSCRIPTIONS_PER_PAGE = 10;
+// Backend page size used while walking the subscriptions list in the background. Bigger than
+// SUBSCRIPTIONS_PER_PAGE to reduce round-trips, far smaller than a bulk "fetch everything" call.
+const FETCH_CHUNK_SIZE = 25;
+
+/**
+ * Parse a swagger-client response body, handling both string and pre-parsed payloads.
+ * @param {*} response swagger-client response
+ * @returns {*} parsed response data
+ */
+function parseResponseData(response) {
+    if (response && response.data) {
+        return typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+    }
+    if (response && response.body) {
+        return typeof response.body === 'string' ? JSON.parse(response.body) : response.body;
+    }
+    return null;
+}
+
+/**
+ * A subscription is "pseudo" when it was auto-created under the default subscriptionless plan.
+ * @param {*} subscription subscription object
+ * @returns {boolean} true if the subscription is a pseudo subscription
+ */
+function isPseudoSubscription(subscription) {
+    const throttlingPolicies = subscription.apiInfo && subscription.apiInfo.throttlingPolicies;
+    return Boolean(throttlingPolicies
+        && throttlingPolicies.length === 1
+        && throttlingPolicies[0].includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN));
+}
+
+function isApiSubscription(subscription) {
+    return Boolean(subscription.apiInfo) && subscription.apiInfo.type !== 'MCP';
+}
+
+function isMcpSubscription(subscription) {
+    return Boolean(subscription.apiInfo) && subscription.apiInfo.type === 'MCP';
+}
 
 const classes = {
     searchRoot: `${PREFIX}-searchRoot`,
@@ -213,9 +254,13 @@ class SubscriptionsBase extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            subscriptions: null,
-            apiSubscriptions: null,
-            mcpSubscriptions: null,
+            subscriptionsLoaded: false,
+            apiSubscriptions: [],
+            mcpSubscriptions: [],
+            apiCount: -1,
+            mcpCount: -1,
+            apiPage: 0,
+            mcpPage: 0,
             apisNotFound: false,
             subscriptionsNotFound: false,
             isAuthorize: true,
@@ -224,11 +269,14 @@ class SubscriptionsBase extends React.Component {
             searchText: '',
             pseudoSubscriptions: false,
             pseudoMcpSubscriptions: false,
+            dialogSubscriptions: null,
+            dialogMcpSubscriptions: null,
         };
         this.checkSubValidationDisabled = this.checkSubValidationDisabled.bind(this);
+        this.checkMcpSubValidationDisabled = this.checkMcpSubValidationDisabled.bind(this);
+        this.checkTypeValidationDisabled = this.checkTypeValidationDisabled.bind(this);
         this.handleSubscriptionDelete = this.handleSubscriptionDelete.bind(this);
         this.handleSubscriptionUpdate = this.handleSubscriptionUpdate.bind(this);
-        this.updateSubscriptions = this.updateSubscriptions.bind(this);
         this.handleSubscribe = this.handleSubscribe.bind(this);
         this.handleOpenDialog = this.handleOpenDialog.bind(this);
         this.handleOpenMcpDialog = this.handleOpenMcpDialog.bind(this);
@@ -236,7 +284,28 @@ class SubscriptionsBase extends React.Component {
         this.handleSearchTextTmpChange = this.handleSearchTextTmpChange.bind(this);
         this.handleClearSearch = this.handleClearSearch.bind(this);
         this.handleEnterPress = this.handleEnterPress.bind(this);
+        this.handleApiPageChange = this.handleApiPageChange.bind(this);
+        this.handleMcpPageChange = this.handleMcpPageChange.bind(this);
+        this.updateDialogSubscriptions = this.updateDialogSubscriptions.bind(this);
+        this.getAPIById = this.getAPIById.bind(this);
+        this.getMCPServerById = this.getMCPServerById.bind(this);
+        this.getSubscriptionPolicyByName = this.getSubscriptionPolicyByName.bind(this);
+        this.resetAPIDetailsCache = this.resetAPIDetailsCache.bind(this);
+        this.resetAccumulation = this.resetAccumulation.bind(this);
+        this.ensureLoaded = this.ensureLoaded.bind(this);
+        this.refreshDerivedState = this.refreshDerivedState.bind(this);
+        this.refetchAfterMutation = this.refetchAfterMutation.bind(this);
+
+        this.apiDetailsById = {};
+        this.mcpDetailsById = {};
+        this.subscriptionPoliciesByName = {};
         this.searchTextTmp = '';
+        this.mounted = false;
+        this.subscriptionsRequestId = 0;
+        this.dialogLoadRequestId = 0;
+        this.mcpDialogLoadRequestId = 0;
+
+        this.resetAccumulation();
     }
 
     /**
@@ -245,94 +314,305 @@ class SubscriptionsBase extends React.Component {
      * @memberof Subscriptions
      */
     componentDidMount() {
-        const { applicationId } = this.props.application;
-        this.updateSubscriptions(applicationId);
+        this.mounted = true;
+        const { apisAccessible, mcpServersAccessible } = this.props;
+        this.ensureLoaded(
+            apisAccessible ? SUBSCRIPTIONS_PER_PAGE : 0,
+            mcpServersAccessible ? SUBSCRIPTIONS_PER_PAGE : 0,
+        ).then(() => this.refreshDerivedState());
+    }
+
+    componentWillUnmount() {
+        this.mounted = false;
+        this.subscriptionsRequestId += 1;
+        this.dialogLoadRequestId += 1;
+        this.mcpDialogLoadRequestId += 1;
     }
 
     handleOpenDialog() {
-        this.setState((prevState) => ({ openDialog: !prevState.openDialog, searchText: '' }));
+        this.searchTextTmp = '';
+        this.setState((prevState) => ({
+            openDialog: !prevState.openDialog,
+            searchText: '',
+            dialogSubscriptions: null,
+        }), () => {
+            if (this.state.openDialog) {
+                this.updateDialogSubscriptions(false);
+            }
+        });
     }
 
     handleOpenMcpDialog() {
-        this.setState((prevState) => ({ openMcpDialog: !prevState.openMcpDialog, searchText: '' }));
+        this.searchTextTmp = '';
+        this.setState((prevState) => ({
+            openMcpDialog: !prevState.openMcpDialog,
+            searchText: '',
+            dialogMcpSubscriptions: null,
+        }), () => {
+            if (this.state.openMcpDialog) {
+                this.updateDialogSubscriptions(true);
+            }
+        });
     }
 
     /**
-     *
-     * Check if the subscription validation is disabled
-     * @param {*} subList Subscriptions list reponse object
-     * @returns
+     * Cache API/MCP Server and subscription-policy detail fetches so re-rendering a page
+     * of subscriptions doesn't refetch data for entities already looked up this session.
      */
-    checkSubValidationDisabled(subList) {
-        if (subList !== null && subList.length > 0) {
-            const pseudoList = subList.filter((sub) => (sub.apiInfo.throttlingPolicies
-                && sub.apiInfo.throttlingPolicies.length === 1
-                && sub.apiInfo.throttlingPolicies[0].includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)));
-            if (pseudoList.length === subList.length) {
-                this.setState({ pseudoSubscriptions: true });
-            } else {
-                this.setState({ pseudoSubscriptions: false });
+    resetAPIDetailsCache() {
+        this.apiDetailsById = {};
+        this.mcpDetailsById = {};
+        this.subscriptionPoliciesByName = {};
+    }
+
+    getAPIById(apiUUID) {
+        if (!this.apiDetailsById[apiUUID]) {
+            const apiClient = new Api();
+            this.apiDetailsById[apiUUID] = apiClient.getAPIById(apiUUID).then(parseResponseData)
+                .catch((error) => {
+                    delete this.apiDetailsById[apiUUID];
+                    throw error;
+                });
+        }
+        return this.apiDetailsById[apiUUID];
+    }
+
+    getMCPServerById(apiUUID) {
+        if (!this.mcpDetailsById[apiUUID]) {
+            const mcpClient = new MCPServer();
+            this.mcpDetailsById[apiUUID] = mcpClient.getMCPServerById(apiUUID).then(parseResponseData)
+                .catch((error) => {
+                    delete this.mcpDetailsById[apiUUID];
+                    throw error;
+                });
+        }
+        return this.mcpDetailsById[apiUUID];
+    }
+
+    getSubscriptionPolicyByName(policyName) {
+        if (!this.subscriptionPoliciesByName[policyName]) {
+            const apiClient = new Api();
+            this.subscriptionPoliciesByName[policyName] = apiClient
+                .getTierByName(policyName, 'subscription')
+                .then(parseResponseData)
+                .catch((error) => {
+                    delete this.subscriptionPoliciesByName[policyName];
+                    throw error;
+                });
+        }
+        return this.subscriptionPoliciesByName[policyName];
+    }
+
+    /**
+     * Reset the background subscription accumulator. Called on mount and after any mutation
+     * (delete/update/subscribe), since those can shift backend offsets in ways that are not
+     * safe to patch incrementally.
+     */
+    resetAccumulation() {
+        this.combinedSubscriptions = [];
+        this.backendOffset = 0;
+        this.combinedTotal = null;
+        this.fullyLoaded = false;
+        this.loadChain = null;
+        this.resetAPIDetailsCache();
+    }
+
+    /**
+     * Walk the subscriptions list in the background (small chunks, not a bulk fetch) until
+     * at least `requiredApiCount` API-type and `requiredMcpCount` MCP-type subscriptions have
+     * been accumulated, or the full list has been exhausted. Pass Infinity for either count to
+     * force a complete walk (needed for the "all pseudo" check and the subscribe dialogs, which
+     * both need the definitive full per-type list).
+     * @param {number} requiredApiCount minimum accumulated API-type subscriptions needed
+     * @param {number} requiredMcpCount minimum accumulated MCP-type subscriptions needed
+     * @returns {Promise<void>}
+     */
+    ensureLoaded(requiredApiCount, requiredMcpCount) {
+        const { applicationId } = this.props.application;
+        const requestId = this.subscriptionsRequestId;
+
+        const step = () => {
+            if (!this.mounted || requestId !== this.subscriptionsRequestId) {
+                return Promise.resolve();
             }
+            const apiSoFar = this.combinedSubscriptions.filter(isApiSubscription).length;
+            const mcpSoFar = this.combinedSubscriptions.filter(isMcpSubscription).length;
+            if (this.fullyLoaded || (apiSoFar >= requiredApiCount && mcpSoFar >= requiredMcpCount)) {
+                return Promise.resolve();
+            }
+            const client = new Subscription();
+            return client.getSubscriptions(null, applicationId, FETCH_CHUNK_SIZE, this.backendOffset)
+                .then((response) => {
+                    if (!this.mounted || requestId !== this.subscriptionsRequestId) {
+                        return undefined;
+                    }
+                    const { body } = response;
+                    const pagination = body.pagination || {};
+                    const list = body.list || [];
+                    this.combinedSubscriptions = this.combinedSubscriptions.concat(list);
+                    this.combinedTotal = pagination.total ?? this.combinedTotal ?? this.combinedSubscriptions.length;
+                    this.backendOffset = (pagination.offset ?? this.backendOffset) + (pagination.limit ?? list.length);
+                    if (list.length === 0 || this.combinedSubscriptions.length >= this.combinedTotal) {
+                        this.fullyLoaded = true;
+                    }
+                    return step();
+                })
+                .catch((error) => {
+                    if (!this.mounted || requestId !== this.subscriptionsRequestId) {
+                        return;
+                    }
+                    const { status } = error;
+                    if (status === 404) {
+                        // The application itself wasn't found — a genuinely terminal state.
+                        this.fullyLoaded = true;
+                        this.setState({ subscriptionsNotFound: true, subscriptionsLoaded: true });
+                        return;
+                    }
+                    if (status === 401) {
+                        this.fullyLoaded = true;
+                        this.setState({ isAuthorize: false });
+                        return;
+                    }
+                    // Transient failure (5xx/network) — do not mark the walk complete, so a later
+                    // ensureLoaded call (e.g. the user retrying pagination) resumes from this same
+                    // backendOffset instead of being permanently short-circuited.
+                    this.loadChain = null;
+                    this.setState({ subscriptionsLoaded: true });
+                    Alert.error(this.props.intl.formatMessage({
+                        id: 'Applications.Details.Subscriptions.error.loading.subscriptions',
+                        defaultMessage: 'Error occurred while loading subscriptions',
+                    }));
+                });
+        };
+
+        this.loadChain = (this.loadChain || Promise.resolve()).then(step);
+        return this.loadChain;
+    }
+
+    /**
+     * Recompute the visible page slices, per-type counts and pseudo-subscription flags from the
+     * background accumulator, then re-render. Called after every ensureLoaded resolution.
+     */
+    refreshDerivedState() {
+        if (!this.mounted) {
             return;
         }
-        this.setState({ pseudoSubscriptions: false });
+        const apiAccum = this.combinedSubscriptions.filter(isApiSubscription);
+        const mcpAccum = this.combinedSubscriptions.filter(isMcpSubscription);
+
+        this.setState((prevState) => {
+            let { apiPage, mcpPage } = prevState;
+            if (this.fullyLoaded) {
+                const maxApiPage = Math.max(0, Math.ceil(apiAccum.length / SUBSCRIPTIONS_PER_PAGE) - 1);
+                const maxMcpPage = Math.max(0, Math.ceil(mcpAccum.length / SUBSCRIPTIONS_PER_PAGE) - 1);
+                apiPage = Math.min(apiPage, maxApiPage);
+                mcpPage = Math.min(mcpPage, maxMcpPage);
+            }
+            const apiStart = apiPage * SUBSCRIPTIONS_PER_PAGE;
+            const mcpStart = mcpPage * SUBSCRIPTIONS_PER_PAGE;
+            return {
+                apiPage,
+                mcpPage,
+                apiSubscriptions: apiAccum.slice(apiStart, apiStart + SUBSCRIPTIONS_PER_PAGE),
+                mcpSubscriptions: mcpAccum.slice(mcpStart, mcpStart + SUBSCRIPTIONS_PER_PAGE),
+                apiCount: this.fullyLoaded ? apiAccum.length : -1,
+                mcpCount: this.fullyLoaded ? mcpAccum.length : -1,
+                subscriptionsLoaded: true,
+            };
+        }, () => {
+            this.checkSubValidationDisabled();
+            this.checkMcpSubValidationDisabled();
+        });
     }
 
     /**
-     *
-     * Check if the MCP subscription validation is disabled
-     * @param {*} subList MCP Subscriptions list response object
-     * @returns
+     * Shared implementation backing checkSubValidationDisabled / checkMcpSubValidationDisabled.
+     * Accumulated-so-far data may not represent every subscription of a type, so when what has
+     * been seen looks fully pseudo but the walk isn't complete, force a full walk to confirm.
+     * @param {Function} filterFn predicate selecting subscriptions of one type
+     * @param {string} stateKey state field to update
      */
-    checkMcpSubValidationDisabled(subList) {
-        if (subList !== null && subList.length > 0) {
-            const pseudoList = subList.filter((sub) => (sub.apiInfo.throttlingPolicies
-                && sub.apiInfo.throttlingPolicies.length === 1
-                && sub.apiInfo.throttlingPolicies[0].includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)));
-            if (pseudoList.length === subList.length) {
-                this.setState({ pseudoMcpSubscriptions: true });
-            } else {
-                this.setState({ pseudoMcpSubscriptions: false });
-            }
+    checkTypeValidationDisabled(filterFn, stateKey) {
+        const typeAccum = this.combinedSubscriptions.filter(filterFn);
+        if (typeAccum.length === 0 || !typeAccum.every(isPseudoSubscription)) {
+            this.setState({ [stateKey]: false });
             return;
         }
-        this.setState({ pseudoMcpSubscriptions: false });
+        if (this.fullyLoaded) {
+            this.setState({ [stateKey]: true });
+            return;
+        }
+        const requestId = this.subscriptionsRequestId;
+        this.ensureLoaded(Infinity, Infinity).then(() => {
+            if (!this.mounted || requestId !== this.subscriptionsRequestId) {
+                return;
+            }
+            this.refreshDerivedState();
+        });
+    }
+
+    checkSubValidationDisabled() {
+        this.checkTypeValidationDisabled(isApiSubscription, 'pseudoSubscriptions');
+    }
+
+    checkMcpSubValidationDisabled() {
+        this.checkTypeValidationDisabled(isMcpSubscription, 'pseudoMcpSubscriptions');
     }
 
     /**
-     *
-     * Update subscriptions list of Application
-     * @param {*} applicationId application id
+     * Update the full, unpaginated list backing a subscribe dialog (API or MCP).
+     * @param {boolean} isMcp whether this is refreshing the MCP Server dialog
+     * @returns {Promise<void>}
      * @memberof Subscriptions
      */
-    updateSubscriptions(applicationId) {
-        const client = new Subscription();
-        const subscriptionLimit = app.subscriptionLimit || 1000;
-        const promisedSubscriptions = client.getSubscriptions(null, applicationId, subscriptionLimit);
-        promisedSubscriptions
-            .then((response) => {
-                const allSubscriptions = response.body.list;
-                // Separate API and MCP subscriptions based on some criteria
-                // For now, assuming all are API subscriptions - you may need to modify this logic
-                const apiSubscriptions = allSubscriptions.filter((sub) => sub.apiInfo && sub.apiInfo.type !== 'MCP');
-                const mcpSubscriptions = allSubscriptions.filter((sub) => sub.apiInfo && sub.apiInfo.type === 'MCP');
+    updateDialogSubscriptions(isMcp) {
+        const requestId = isMcp ? ++this.mcpDialogLoadRequestId : ++this.dialogLoadRequestId;
+        return this.ensureLoaded(Infinity, Infinity).then(() => {
+            const currentRequestId = isMcp ? this.mcpDialogLoadRequestId : this.dialogLoadRequestId;
+            const dialogOpen = isMcp ? this.state.openMcpDialog : this.state.openDialog;
+            if (!this.mounted || requestId !== currentRequestId || !dialogOpen) {
+                return;
+            }
+            const filtered = this.combinedSubscriptions.filter(isMcp ? isMcpSubscription : isApiSubscription);
+            this.setState(isMcp ? { dialogMcpSubscriptions: filtered } : { dialogSubscriptions: filtered });
+            this.refreshDerivedState();
+        });
+    }
 
-                this.setState({
-                    subscriptions: allSubscriptions,
-                    apiSubscriptions,
-                    mcpSubscriptions,
-                });
-                this.checkSubValidationDisabled(apiSubscriptions);
-                this.checkMcpSubValidationDisabled(mcpSubscriptions);
-            })
-            .catch((error) => {
-                const { status } = error;
-                if (status === 404) {
-                    this.setState({ subscriptionsNotFound: true });
-                } else if (status === 401) {
-                    this.setState({ isAuthorize: false });
-                }
-            });
+    /**
+     * Re-walk the subscriptions list from scratch after a mutation (delete/update/subscribe),
+     * refilling only up to whichever pages are currently visible in each section.
+     */
+    refetchAfterMutation() {
+        this.subscriptionsRequestId += 1;
+        this.resetAccumulation();
+        const { apiPage, mcpPage } = this.state;
+        const { apisAccessible, mcpServersAccessible } = this.props;
+        const requiredApi = apisAccessible ? (apiPage + 1) * SUBSCRIPTIONS_PER_PAGE : 0;
+        const requiredMcp = mcpServersAccessible ? (mcpPage + 1) * SUBSCRIPTIONS_PER_PAGE : 0;
+        this.ensureLoaded(requiredApi, requiredMcp).then(() => this.refreshDerivedState());
+    }
+
+    /**
+     * Handle a page change on the API subscriptions pagination control.
+     * @param {*} event unused MUI event
+     * @param {number} page requested page
+     */
+    handleApiPageChange(event, page) {
+        const required = (page + 1) * SUBSCRIPTIONS_PER_PAGE;
+        this.setState({ apiPage: page });
+        this.ensureLoaded(required, 0).then(() => this.refreshDerivedState());
+    }
+
+    /**
+     * Handle a page change on the MCP Server subscriptions pagination control.
+     * @param {*} event unused MUI event
+     * @param {number} page requested page
+     */
+    handleMcpPageChange(event, page) {
+        const required = (page + 1) * SUBSCRIPTIONS_PER_PAGE;
+        this.setState({ mcpPage: page });
+        this.ensureLoaded(0, required).then(() => this.refreshDerivedState());
     }
 
     /**
@@ -360,8 +640,7 @@ class SubscriptionsBase extends React.Component {
                         defaultMessage: 'Subscription Deletion Request Created!',
                         id: 'Applications.Details.Subscriptions.request.created',
                     }));
-                    const { applicationId } = this.props.application;
-                    this.updateSubscriptions(applicationId);
+                    this.refetchAfterMutation();
                     return;
                 }
                 if (response.status !== 200 && response.status !== 201) {
@@ -372,27 +651,7 @@ class SubscriptionsBase extends React.Component {
                     }));
                     return;
                 }
-                const { subscriptions, apiSubscriptions, mcpSubscriptions } = this.state;
-
-                // Remove from main subscriptions array
-                const updatedSubscriptions = subscriptions.filter((sub) => sub.subscriptionId !== subscriptionId);
-
-                // Remove from API subscriptions array
-                const updatedApiSubscriptions = apiSubscriptions
-                    ? apiSubscriptions.filter((sub) => sub.subscriptionId !== subscriptionId) : [];
-
-                // Remove from MCP subscriptions array
-                const updatedMcpSubscriptions = mcpSubscriptions
-                    ? mcpSubscriptions.filter((sub) => sub.subscriptionId !== subscriptionId) : [];
-
-                this.setState({
-                    subscriptions: updatedSubscriptions,
-                    apiSubscriptions: updatedApiSubscriptions,
-                    mcpSubscriptions: updatedMcpSubscriptions,
-                });
-
-                this.checkSubValidationDisabled(updatedApiSubscriptions);
-                this.checkMcpSubValidationDisabled(updatedMcpSubscriptions);
+                this.refetchAfterMutation();
                 this.props.getApplication();
             })
             .catch((error) => {
@@ -452,7 +711,7 @@ class SubscriptionsBase extends React.Component {
                         id: 'Applications.Details.Subscriptions.business.plan.updated',
                     }));
                 }
-                this.updateSubscriptions(applicationId);
+                this.refetchAfterMutation();
                 this.props.getApplication();
             })
             .catch((error) => {
@@ -512,7 +771,14 @@ class SubscriptionsBase extends React.Component {
                             defaultMessage: 'Subscription successful',
                         }));
                     }
-                    this.updateSubscriptions(applicationId);
+                    const { openDialog, openMcpDialog } = this.state;
+                    this.refetchAfterMutation();
+                    if (openDialog) {
+                        this.updateDialogSubscriptions(false);
+                    }
+                    if (openMcpDialog) {
+                        this.updateDialogSubscriptions(true);
+                    }
                     this.props.getApplication();
                 }
             })
@@ -562,13 +828,19 @@ class SubscriptionsBase extends React.Component {
             openDialog,
             openMcpDialog,
             searchText,
-            subscriptions,
+            subscriptionsLoaded,
             apiSubscriptions,
             mcpSubscriptions,
+            apiCount,
+            mcpCount,
+            apiPage,
+            mcpPage,
             apisNotFound,
             subscriptionsNotFound,
             pseudoSubscriptions,
             pseudoMcpSubscriptions,
+            dialogSubscriptions,
+            dialogMcpSubscriptions,
         } = this.state;
 
         if (!isAuthorize) {
@@ -580,7 +852,7 @@ class SubscriptionsBase extends React.Component {
         } = this.props;
         const { applicationId } = application;
 
-        if (subscriptions) {
+        if (subscriptionsLoaded) {
             return (
                 <Root>
                     <Box className={classes.root}>
@@ -617,6 +889,13 @@ class SubscriptionsBase extends React.Component {
                                 onAddClick={this.handleOpenDialog}
                                 handleSubscriptionDelete={this.handleSubscriptionDelete}
                                 handleSubscriptionUpdate={this.handleSubscriptionUpdate}
+                                getAPIById={this.getAPIById}
+                                getMCPServerById={this.getMCPServerById}
+                                getSubscriptionPolicyByName={this.getSubscriptionPolicyByName}
+                                paginationCount={apiCount}
+                                paginationPage={apiPage}
+                                rowsPerPage={SUBSCRIPTIONS_PER_PAGE}
+                                onPaginationPageChange={this.handleApiPageChange}
                                 noSubscriptionsMessage={(
                                     <FormattedMessage
                                         id='Applications.Details.Subscriptions.no.api.subscriptions'
@@ -659,6 +938,13 @@ class SubscriptionsBase extends React.Component {
                                 onAddClick={this.handleOpenMcpDialog}
                                 handleSubscriptionDelete={this.handleSubscriptionDelete}
                                 handleSubscriptionUpdate={this.handleSubscriptionUpdate}
+                                getAPIById={this.getAPIById}
+                                getMCPServerById={this.getMCPServerById}
+                                getSubscriptionPolicyByName={this.getSubscriptionPolicyByName}
+                                paginationCount={mcpCount}
+                                paginationPage={mcpPage}
+                                rowsPerPage={SUBSCRIPTIONS_PER_PAGE}
+                                onPaginationPageChange={this.handleMcpPageChange}
                                 noSubscriptionsMessage={(
                                     <FormattedMessage
                                         id='Applications.Details.Subscriptions.no.mcp.subscriptions'
@@ -765,14 +1051,18 @@ class SubscriptionsBase extends React.Component {
                                     </IconButton>
                                 </Box>
                                 <Box padding={2}>
-                                    <APIList
-                                        apisNotFound={apisNotFound}
-                                        subscriptions={apiSubscriptions || []}
-                                        applicationId={applicationId}
-                                        handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
-                                        searchText={searchText}
-                                        entityType='API'
-                                    />
+                                    {dialogSubscriptions ? (
+                                        <APIList
+                                            apisNotFound={apisNotFound}
+                                            subscriptions={dialogSubscriptions}
+                                            applicationId={applicationId}
+                                            handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
+                                            searchText={searchText}
+                                            entityType='API'
+                                        />
+                                    ) : (
+                                        <Progress />
+                                    )}
                                 </Box>
                             </StyledDialog>
                         )}
@@ -861,14 +1151,18 @@ class SubscriptionsBase extends React.Component {
                                     </IconButton>
                                 </Box>
                                 <Box padding={2}>
-                                    <APIList
-                                        apisNotFound={apisNotFound}
-                                        subscriptions={mcpSubscriptions || []}
-                                        applicationId={applicationId}
-                                        handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
-                                        searchText={searchText}
-                                        entityType='MCP'
-                                    />
+                                    {dialogMcpSubscriptions ? (
+                                        <APIList
+                                            apisNotFound={apisNotFound}
+                                            subscriptions={dialogMcpSubscriptions}
+                                            applicationId={applicationId}
+                                            handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
+                                            searchText={searchText}
+                                            entityType='MCP'
+                                        />
+                                    ) : (
+                                        <Progress />
+                                    )}
                                 </Box>
                             </StyledDialog>
                         )}

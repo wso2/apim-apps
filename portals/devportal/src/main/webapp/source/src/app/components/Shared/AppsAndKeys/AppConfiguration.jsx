@@ -197,6 +197,22 @@ const AppConfiguration = (props) => {
     });
     
     /**
+     * Checks whether a required field is empty.
+     * @param {*} fieldValue the current value of the field.
+     * @returns {string|boolean} the error message when empty, otherwise false.
+     */
+    const hasMandatoryError = (fieldValue) => {
+        let error = false;
+        if (fieldValue === '' || (Array.isArray(fieldValue) && !fieldValue.length)) {
+            error = props.intl.formatMessage({
+                defaultMessage: 'Required field is empty',
+                id: 'Shared.AppsAndKeys.KeyConfCiguration.required.empty.error',
+            });
+        }
+        return error;
+    };
+
+    /**
      * This method is used to handle the updating of key generation
      * request object.
      * @param {*} event event fired
@@ -211,7 +227,8 @@ const AppConfiguration = (props) => {
         const result = validateConstraint(newValue, constraint, props.intl, constraintMessages);
         setConstraintError(result.valid ? '' : result.message);
         if (onValidationError) {
-            onValidationError(config.name, !result.valid);
+            const mandatoryInvalid = config.required && Boolean(hasMandatoryError(newValue));
+            onValidationError(config.name, !result.valid || mandatoryInvalid);
         }
 
         handleChange('additionalProperties', event);
@@ -244,7 +261,11 @@ const AppConfiguration = (props) => {
         setIsOrgWideAppUpdateEnabled(orgWideAppUpdateEnabled);
         // Validate the values against constraint on load
         if (onValidationError) {
-            onValidationError(config.name, !validateConstraint(String(previousValue ?? ''), config.constraint, null, null).valid);
+            const constraintInvalid = !validateConstraint(
+                String(previousValue ?? ''), config.constraint, null, null,
+            ).valid;
+            const mandatoryInvalid = config.required && Boolean(hasMandatoryError(previousValue));
+            onValidationError(config.name, constraintInvalid || mandatoryInvalid);
         }
     }, [previousValue, settingsContext]);
 
@@ -274,7 +295,10 @@ const AppConfiguration = (props) => {
                                 value={selectedValue}
                                 name={config.name}
                                 onChange={e => handleAppRequestChange(e)}
-                                helperText={getAppConfigToolTip()}
+                                required={config.required}
+                                error={config.required && Boolean(hasMandatoryError(selectedValue))}
+                                helperText={(config.required && hasMandatoryError(selectedValue))
+                                    || getAppConfigToolTip()}
                                 margin='dense'
                                 variant='outlined'
                                 size='small'
@@ -336,7 +360,14 @@ const AppConfiguration = (props) => {
                             </>
                         ) : (
                             <>
-                                <FormControl variant="outlined" className={classes.formControl} fullWidth error={!!constraintError}>
+                                <FormControl
+                                    variant="outlined"
+                                    className={classes.formControl}
+                                    fullWidth
+                                    required={config.required}
+                                    error={!!constraintError
+                                        || (config.required && Boolean(hasMandatoryError(selectedValue)))}
+                                >
                                     <InputLabel id="multi-select-label">{config.label}</InputLabel>
                                     <Select
                                         variant="standard"
@@ -372,7 +403,11 @@ const AppConfiguration = (props) => {
                                                 </MenuItem>
                                             ))}
                                     </Select>
-                                    <FormHelperText>{getAppConfigToolTip()}</FormHelperText>
+                                    <FormHelperText>
+                                        {constraintError
+                                            || (config.required && hasMandatoryError(selectedValue))
+                                            || getAppConfigToolTip()}
+                                    </FormHelperText>
                                 </FormControl>
                             </>
                         ) : (config.type === 'input' && config.multiple === true) ? (
@@ -421,8 +456,12 @@ const AppConfiguration = (props) => {
                                 value={selectedValue}
                                 name={config.name}
                                 onChange={e => handleAppRequestChange(e)}
-                                error={!!constraintError}
-                                helperText={constraintError || getAppConfigToolTip()}
+                                required={config.required}
+                                error={!!constraintError
+                                    || (config.required && Boolean(hasMandatoryError(selectedValue)))}
+                                helperText={constraintError
+                                    || (config.required && hasMandatoryError(selectedValue))
+                                    || getAppConfigToolTip()}
                                 FormHelperTextProps={constraintError ? { error: true } : {}}
                                 margin='dense'
                                 size='small'

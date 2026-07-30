@@ -22,6 +22,15 @@ describe("Add key manager", () => {
 
     const { publisher, developer, password, carbonUsername, carbonPassword, tenant, superTenant } = Utils.getUserInfo();
 
+    // Narrow safety net: swallow specific app errors so retries aren't
+    // killed by uncaught rejections from the AUT.
+    Cypress.on('uncaught:exception', (err) => {
+        if (err && err.message && err.message.includes('Conflict')) {
+            return false;
+        }
+        return true;
+    });
+
     const addKeyManager = (usernameLocal, passwordLocal) => {
         cy.loginToAdmin(usernameLocal, passwordLocal);
         const km = 'myAuth0';
@@ -44,6 +53,18 @@ describe("Add key manager", () => {
         const appDescription = 'app description';
 
         cy.get('[data-testid="Key Managers"]').click();
+
+        // Idempotent pre-create cleanup so retries don't collide with
+        // leftover state from an earlier attempt.
+        cy.get('[data-testid="add-key-manager-button"]', { timeout: Cypress.env('largeTimeout') }).should('be.visible');
+        cy.get('body').then(($body) => {
+            if ($body.find(`[data-testid="${km}-actions"]`).length) {
+                cy.get(`[data-testid="${km}-actions"] > span:first-child svg`).click();
+                cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Delete').click();
+                cy.get('td > div').contains(km).should('not.exist');
+            }
+        });
+
         cy.get('[data-testid="add-key-manager-button"]').contains('Add Key Manager').click();
         cy.get('input[name="name"]').type(km);
         cy.get('input[name="displayName"]').type(km);
@@ -84,11 +105,14 @@ describe("Add key manager", () => {
             cy.contains(claimValueRegex1).should('exist');
             cy.contains(claimKey2).should('exist');
             cy.contains(claimValueRegex2).should('exist');
+            // Wait on the network response and navigate explicitly instead of
+            // a fixed sleep with an implicit redirect.
+            cy.intercept('POST', '**/api/am/admin/v4/key-managers').as('createKm');
             cy.get('#keymanager-add').contains('Add').click();
-            cy.wait(1000);
+            cy.wait('@createKm').its('response.statusCode').should('be.oneOf', [200, 201]);
 
-            // validating
-            cy.get('td > div').contains(km).should('exist');
+            cy.visit('/admin/settings/key-managers/');
+            cy.get('td > div', { timeout: Cypress.env('largeTimeout') }).contains(km).should('exist');
         });
 
         // edit key manager

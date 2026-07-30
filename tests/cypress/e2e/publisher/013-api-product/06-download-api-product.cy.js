@@ -23,21 +23,23 @@ describe("Download API Product", () => {
         return false;
       });
     const { publisher, password, } = Utils.getUserInfo();
-    const apiName = Utils.generateName();
-    const productName = Utils.generateName();
     const productVersion = '1.0.0';
+    // Per-attempt unique names so a leaked API/Product doesn't poison every retry.
+    let apiName;
+    let productName;
     let testApiID;
 
     beforeEach(function () {
+        // Stable apipstest/prodpstest prefixes so purgePetstoreArtifacts can
+        // find leftovers regardless of the random suffix.
+        apiName = `apipstest${Utils.generateRandomNumber()}`;
+        productName = `prodpstest${Utils.generateRandomNumber()}`;
         cy.loginToPublisher(publisher, password);
+        // Free the petstore scopes before import; beforeEach so it re-runs per retry.
+        Utils.purgePetstoreArtifacts();
     })
 
-    it("Download API Product", {
-        retries: {
-            runMode: 1,
-            openMode: 0,
-        },
-    }, () => {
+    it("Download API Product", () => {
         // create a new API
         cy.visit(`/publisher/apis/create/openapi`, { timeout: Cypress.env('largeTimeout') }).wait(5000);
         cy.get('#open-api-file-select-radio').click();
@@ -55,7 +57,21 @@ describe("Download API Product", () => {
             cy.get('#itest-id-apicontext-input').clear().type(apiName);
             cy.get('body').click(0,0);
             const version = doc.querySelector('#itest-id-apiversion-input').value;
-            cy.get('#open-api-create-btn').should('not.have.class', 'Mui-disabled').click({ force: true });
+            // Assert on the network response so a server error fails fast
+            // instead of timing out on URL polling.
+            cy.get('#itest-id-apiname-input').should('have.value', apiName);
+            cy.get('#itest-id-apicontext-input').should('have.value', apiName);
+            cy.intercept('POST', '**/apis/import-openapi').as('importOpenApi');
+            cy.get('#open-api-create-btn').should('not.have.class', 'Mui-disabled').should('be.enabled').click();
+            cy.wait('@importOpenApi', { timeout: Cypress.env('largeTimeout') }).then((interception) => {
+                const sc = interception && interception.response && interception.response.statusCode;
+                if (sc !== 201) {
+                    // The 400 has no server-side ERROR log; the response body is
+                    // the only place the real reason appears.
+                    cy.task('log', `[import-openapi] status=${sc} body=${JSON.stringify(interception && interception.response && interception.response.body)}`);
+                }
+                expect(sc, 'import-openapi response status').to.eq(201);
+            });
 
             cy.url().should('contains', 'overview').then(url => {
                 testApiID = /apis\/(.*?)\/overview/.exec(url)[1];
@@ -111,7 +127,7 @@ describe("Download API Product", () => {
         });
     });
     afterEach(() => {
-        Utils.deleteAPI(testApiID);
+        Utils.cleanupProductAndApi(productName, apiName);
         cy.wait(5000);
     })
 })
