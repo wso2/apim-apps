@@ -981,7 +981,10 @@ function AddEditKeyManager(props) {
                                                 value={tokenExchangeKeyManagerType}
                                                 id='Admin.KeyManager.form.type.menu'
                                             >
-                                                Token Exchange
+                                                <FormattedMessage
+                                                    id='Admin.KeyManager.form.type.menu.tokenExchange'
+                                                    defaultMessage='Token Exchange'
+                                                />
                                             </MenuItem>
                                         </Select>
                                         <FormHelperText>
