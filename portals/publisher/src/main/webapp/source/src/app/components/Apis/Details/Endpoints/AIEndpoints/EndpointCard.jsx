@@ -169,6 +169,30 @@ const EndpointCard = ({
                     </Tooltip>
                 );
             }
+
+            // GCP service-account (Vertex AI) warning
+            if (
+                !endpointSecurity &&
+                llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'gcp'
+            ) {
+                return (
+                    <Tooltip title='Configure GCP service account security for this endpoint'>
+                        <Chip
+                            icon={<WarningIcon />}
+                            label='GCP Credentials Required'
+                            size='small'
+                            variant='outlined'
+                            className={classes.warningChip}
+                            onClick={() => {
+                                history.push(
+                                    urlPrefix + apiObject.id + '/endpoints/' + endpoint.id,
+                                );
+                            }}
+                            sx={{ my: '4px' }}
+                        />
+                    </Tooltip>
+                );
+            }
         }
         return null;
     };
