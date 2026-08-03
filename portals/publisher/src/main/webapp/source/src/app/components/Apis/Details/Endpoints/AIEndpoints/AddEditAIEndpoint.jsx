@@ -815,12 +815,26 @@ const AddEditAIEndpoint = ({
         reader.onload = (event) => {
             const content = event.target.result;
             // Validate the uploaded file is a well-formed JSON service-account key before accepting it.
+            let parsedKey;
             try {
-                JSON.parse(content);
+                parsedKey = JSON.parse(content);
             } catch (err) {
                 Alert.error(intl.formatMessage({
                     id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp.serviceAccountKey.invalid',
                     defaultMessage: 'The selected file is not a valid JSON service account key.',
+                }));
+                return;
+            }
+            // A well-formed JSON object is not enough (e.g. {} parses successfully). Require the standard
+            // GCP service-account fields so an incomplete file cannot be persisted as the service account key.
+            const requiredFields = ['type', 'project_id', 'private_key', 'client_email'];
+            const isValidServiceAccountKey = parsedKey && typeof parsedKey === 'object'
+                && requiredFields.every((field) => Boolean(parsedKey[field]));
+            if (!isValidServiceAccountKey) {
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp.serviceAccountKey.incomplete',
+                    defaultMessage: 'The selected file is not a valid GCP service account key. It must '
+                        + 'include type, project_id, private_key and client_email.',
                 }));
                 return;
             }

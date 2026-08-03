@@ -170,9 +170,17 @@ const EndpointCard = ({
                 );
             }
 
-            // GCP service-account (Vertex AI) warning
+            // GCP service-account (Vertex AI) warning.
+            // Warn unless this endpoint has a GCP security object with a configured service account key.
+            // A leftover API-key/AWS security object (e.g. after an admin switches the provider to gcp once
+            // endpoints already exist) or an incomplete GCP object must still warn. An empty-string
+            // serviceAccountKey means a stored key is masked on read-back, so treat it as configured.
+            // typeof === 'string' treats a masked stored key ('') as configured while null/undefined is not.
+            const isGcpKeyConfigured =
+                endpointSecurity?.type === 'gcp' &&
+                typeof endpointSecurity?.serviceAccountKey === 'string';
             if (
-                !endpointSecurity &&
+                !isGcpKeyConfigured &&
                 llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'gcp'
             ) {
                 return (
