@@ -271,6 +271,8 @@ class SubscriptionsBase extends React.Component {
             pseudoMcpSubscriptions: false,
             dialogSubscriptions: null,
             dialogMcpSubscriptions: null,
+            dialogRefreshKey: 0,
+            dialogMcpRefreshKey: 0,
         };
         this.checkSubValidationDisabled = this.checkSubValidationDisabled.bind(this);
         this.checkMcpSubValidationDisabled = this.checkMcpSubValidationDisabled.bind(this);
@@ -302,8 +304,6 @@ class SubscriptionsBase extends React.Component {
         this.searchTextTmp = '';
         this.mounted = false;
         this.subscriptionsRequestId = 0;
-        this.dialogLoadRequestId = 0;
-        this.mcpDialogLoadRequestId = 0;
 
         this.resetAccumulation();
     }
@@ -325,8 +325,6 @@ class SubscriptionsBase extends React.Component {
     componentWillUnmount() {
         this.mounted = false;
         this.subscriptionsRequestId += 1;
-        this.dialogLoadRequestId += 1;
-        this.mcpDialogLoadRequestId += 1;
     }
 
     handleOpenDialog() {
@@ -560,23 +558,23 @@ class SubscriptionsBase extends React.Component {
     }
 
     /**
-     * Update the full, unpaginated list backing a subscribe dialog (API or MCP).
+     * Refresh the contents of a subscribe dialog (API or MCP).
      * @param {boolean} isMcp whether this is refreshing the MCP Server dialog
      * @returns {Promise<void>}
      * @memberof Subscriptions
      */
     updateDialogSubscriptions(isMcp) {
-        const requestId = isMcp ? ++this.mcpDialogLoadRequestId : ++this.dialogLoadRequestId;
-        return this.ensureLoaded(Infinity, Infinity).then(() => {
-            const currentRequestId = isMcp ? this.mcpDialogLoadRequestId : this.dialogLoadRequestId;
-            const dialogOpen = isMcp ? this.state.openMcpDialog : this.state.openDialog;
-            if (!this.mounted || requestId !== currentRequestId || !dialogOpen) {
-                return;
-            }
-            const filtered = this.combinedSubscriptions.filter(isMcp ? isMcpSubscription : isApiSubscription);
-            this.setState(isMcp ? { dialogMcpSubscriptions: filtered } : { dialogSubscriptions: filtered });
-            this.refreshDerivedState();
-        });
+        // APICardView resolves subscription status per page, so the full list is not needed here.
+        // The empty array makes the dialog render the card view rather than the spinner, and the
+        // refresh key triggers a reload in APICardView.
+        const dialogOpen = isMcp ? this.state.openMcpDialog : this.state.openDialog;
+        if (!this.mounted || !dialogOpen) {
+            return Promise.resolve();
+        }
+        this.setState((prevState) => (isMcp
+            ? { dialogMcpSubscriptions: [], dialogMcpRefreshKey: prevState.dialogMcpRefreshKey + 1 }
+            : { dialogSubscriptions: [], dialogRefreshKey: prevState.dialogRefreshKey + 1 }));
+        return Promise.resolve();
     }
 
     /**
@@ -841,6 +839,8 @@ class SubscriptionsBase extends React.Component {
             pseudoMcpSubscriptions,
             dialogSubscriptions,
             dialogMcpSubscriptions,
+            dialogRefreshKey,
+            dialogMcpRefreshKey,
         } = this.state;
 
         if (!isAuthorize) {
@@ -1054,8 +1054,8 @@ class SubscriptionsBase extends React.Component {
                                     {dialogSubscriptions ? (
                                         <APIList
                                             apisNotFound={apisNotFound}
-                                            subscriptions={dialogSubscriptions}
                                             applicationId={applicationId}
+                                            refreshKey={dialogRefreshKey}
                                             handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
                                             searchText={searchText}
                                             entityType='API'
@@ -1154,8 +1154,8 @@ class SubscriptionsBase extends React.Component {
                                     {dialogMcpSubscriptions ? (
                                         <APIList
                                             apisNotFound={apisNotFound}
-                                            subscriptions={dialogMcpSubscriptions}
                                             applicationId={applicationId}
+                                            refreshKey={dialogMcpRefreshKey}
                                             handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
                                             searchText={searchText}
                                             entityType='MCP'
