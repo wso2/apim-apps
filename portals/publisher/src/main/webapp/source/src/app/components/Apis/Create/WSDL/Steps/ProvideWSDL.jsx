@@ -107,6 +107,8 @@ export default function ProvideWSDL(props) {
     useEffect(() => {
         reset();
     }, [apiInputs.inputType]);
+    // Invalidate any in-flight validation on unmount so a late callback doesn't dispatch stale state.
+    useEffect(() => () => { validationRequestId.current += 1; }, []);
     /**
      * Handles WSDL validation response and returns the state.
      *
@@ -184,6 +186,9 @@ export default function ProvideWSDL(props) {
     function validateUrl(state) {
         if (state === null) {
             setIsValidating(true);
+            setValidationErrors([]); // clear stale validation state before starting a new request
+            setValidity();
+            validationRequestId.current += 1; // unique token so concurrent requests don't share an id
             const requestId = validationRequestId.current;
             Wsdl.validateUrl(apiInputs.inputValue).then((response) => {
                 if (requestId !== validationRequestId.current) return;
@@ -207,6 +212,9 @@ export default function ProvideWSDL(props) {
     function validateFileOrArchive(file, state = null) {
         if (state === null) {
             setIsValidating(true);
+            setValidationErrors([]); // clear stale validation state before starting a new request
+            setValidity();
+            validationRequestId.current += 1; // unique token so concurrent requests don't share an id
             const requestId = validationRequestId.current;
             Wsdl.validateFileOrArchive(file).then((response) => {
                 if (requestId !== validationRequestId.current) return;
