@@ -29,6 +29,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Paper from '@mui/material/Paper';
 import TablePagination from '@mui/material/TablePagination';
 import API from 'AppData/api';
+import Alert from 'AppComponents/Shared/Alert';
 import MCPServer from 'AppData/MCPServer';
 import { isRestricted } from 'AppData/AuthManager';
 import Configurations from 'Config';
@@ -91,7 +92,7 @@ export class SubscriptionPoliciesManage extends Component {
             page: 0,
             rowsPerPage,
             totalPolicies: 0,
-            allAsyncPolicyNames: null,
+            allAsyncPolicyNames: [],
         };
         this.handleChange = this.handleChange.bind(this);
         this.fetchPolicies = this.fetchPolicies.bind(this);
@@ -174,17 +175,22 @@ export class SubscriptionPoliciesManage extends Component {
     }
 
     fetchAllAsyncPoliciesForMigrationCheck() {
-        API.asyncAPIPolicies(undefined, undefined)
+        const limit = Configurations.app.subscriptionPolicyLimit || 80;
+        API.asyncAPIPolicies(limit)
             .then((res) => {
                 const policies = res.body.list || [];
                 this.setState({
-                    allAsyncPolicyNames: new Set(policies.map((p) => p.displayName)),
+                    allAsyncPolicyNames: policies.map((p) => p.displayName),
                 });
             })
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
                     console.error(error);
                 }
+                Alert.error(this.props.intl.formatMessage({
+                    id: 'Apis.Details.Subscriptions.SubscriptionPoliciesManage.fetch.all.policies.error',
+                    defaultMessage: 'Error while fetching subscription policies.',
+                }));
             });
     }
 
@@ -262,8 +268,8 @@ export class SubscriptionPoliciesManage extends Component {
         */
         let migratedCase = false;
         let preMigrationPolicies;
-        if (isAsyncAPI && allAsyncPolicyNames !== null && api.policies && api.policies.length > 0) {
-            preMigrationPolicies = api.policies.filter((apiPolicy) => !allAsyncPolicyNames.has(apiPolicy));
+        if (isAsyncAPI && allAsyncPolicyNames.length > 0 && api.policies && api.policies.length > 0) {
+            preMigrationPolicies = api.policies.filter((apiPolicy) => !allAsyncPolicyNames.includes(apiPolicy));
             migratedCase = preMigrationPolicies.length > 0;
         }
 
