@@ -471,7 +471,7 @@ class Operations extends React.Component {
                                                 handleUpdateList={this.handleUpdateList}
                                                 scopes={api.scopes}
                                                 sharedScopes={sharedScopes}
-                                                isOperationRateLimiting={!apiThrottlingPolicy}
+                                                isOperationRateLimiting={apiThrottlingPolicy === null}
                                                 apiPolicies={apiPolicies}
                                                 componentValidator={componentValidator}
                                             />
