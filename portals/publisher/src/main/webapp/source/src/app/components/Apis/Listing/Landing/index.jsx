@@ -31,6 +31,7 @@ import SoapAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/SoapAPIMenu';
 import GraphqlAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/GraphqlAPIMenu';
 import StreamingAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/StreamingAPIMenu';
 import DesignAssistantMenu from './Menus/DesignAssistantMenu';
+import DiscoverAPIsCard from './Menus/DiscoverAPIsCard';
 import AIAPIMenu from './Menus/AIAPIMenu';
 
 const PREFIX = 'APILanding';
@@ -49,6 +50,8 @@ const APILanding = () => {
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
     const { data: settings } = usePublisherSettings();
+    // On-demand discovery is available whenever the background scheduler is not handling discovery.
+    const isOnDemandDiscoveryEnabled = settings ? !settings.isFederatedDiscoverySchedulerEnabled : false;
     const [gateway, setGatewayType] = useState(true);
     const [pageMode, setPageMode] = useState('default');
     const location = useLocation();
@@ -203,17 +206,25 @@ const APILanding = () => {
                                     }
                                     <AIAPIMenu icon={aiApiIcon} />
                                 </Grid>
-                                {settings.designAssistantEnabled && (
+                                {(settings.designAssistantEnabled || isOnDemandDiscoveryEnabled) && (
                                     <Grid
                                         item
                                         sx={{
                                             display: 'flex',
+                                            flexDirection: { xs: 'column', md: 'row' },
                                             justifyContent: 'center',
+                                            alignItems: 'center',
+                                            gap: 3,
                                             width: '100%',
                                             mt: '15px',
                                         }}
                                     >
-                                        <DesignAssistantMenu />
+                                        {settings.designAssistantEnabled && (
+                                            <DesignAssistantMenu />
+                                        )}
+                                        {isOnDemandDiscoveryEnabled && pageMode !== 'create' && (
+                                            <DiscoverAPIsCard />
+                                        )}
                                     </Grid>
                                 )}
                             </Grid>

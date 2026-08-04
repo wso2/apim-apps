@@ -31,6 +31,9 @@ import { FormattedMessage } from 'react-intl';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { isRestricted } from 'AppData/AuthManager';
+import ExploreIcon from '@mui/icons-material/Explore';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import Tooltip from '@mui/material/Tooltip';
 
 const PREFIX = 'TopMenu';
 
@@ -134,6 +137,9 @@ function TopMenu(props) {
     const {
         data, setListType, count, isAPIProduct, isMCPServer, listType, showToggle, query,
     } = props;
+    const { data: settings } = usePublisherSettings();
+    // On-demand discovery is available whenever the background scheduler is not handling discovery.
+    const isOnDemandDiscoveryEnabled = settings ? !settings.isFederatedDiscoverySchedulerEnabled : false;
 
     const isAPIAccessRestricted = () => {
         return isRestricted(['apim:api_create', 'apim:api_manage']);
@@ -233,20 +239,51 @@ function TopMenu(props) {
                         </Button>
                     )}
                     {!query && !isAPIProduct && !isMCPServer && (
-                        <Button
-                            variant='contained'
-                            color='primary'
-                            component={Link}
-                            disabled={isAPIAccessRestricted()}
-                            to='/apis/create'
-                            data-testid='itest-create-api-button'
-                            startIcon={<AddIcon />}
-                        >
-                            <FormattedMessage
-                                id='Apis.Listing.components.TopMenu.create.api'
-                                defaultMessage='Create API'
-                            />
-                        </Button>
+                        <>
+                            {isOnDemandDiscoveryEnabled && (
+                                <Tooltip
+                                    title={
+                                        <FormattedMessage
+                                            id='Apis.Listing.components.TopMenu.discover.apis.tooltip'
+                                            defaultMessage={
+                                                'Discover and import APIs '
+                                                + 'from your third party gateways'
+                                            }
+                                        />
+                                    }
+                                >
+                                    <Button
+                                        variant='outlined'
+                                        color='primary'
+                                        component={Link}
+                                        disabled={isAPIAccessRestricted()}
+                                        to='/apis/discover'
+                                        data-testid='itest-discover-api-button'
+                                        startIcon={<ExploreIcon />}
+                                        sx={{ mr: 2 }}
+                                    >
+                                        <FormattedMessage
+                                            id='Publisher.Landing.discover.apis.button'
+                                            defaultMessage='Discover APIs'
+                                        />
+                                    </Button>
+                                </Tooltip>
+                            )}
+                            <Button
+                                variant='contained'
+                                color='primary'
+                                component={Link}
+                                disabled={isAPIAccessRestricted()}
+                                to='/apis/create'
+                                data-testid='itest-create-api-button'
+                                startIcon={<AddIcon />}
+                            >
+                                <FormattedMessage
+                                    id='Apis.Listing.components.TopMenu.create.api'
+                                    defaultMessage='Create API'
+                                />
+                            </Button>
+                        </>
                     )}
                 </div>
                 {showToggle && (

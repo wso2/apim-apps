@@ -21,9 +21,12 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import Progress from 'AppComponents/Shared/Progress';
 import AuthManager from 'AppData/AuthManager';
 import MCPRouteGuard from 'AppComponents/Shared/MCPRouteGuard';
+import FederatedAPIDiscoveryRouteGuard from 'AppComponents/Shared/FederatedAPIDiscoveryRouteGuard';
 
 import Listing from './Listing/Listing';
 import APICreateWithAI from './Create/CreateAPIWithAI/APICreateWithAI';
+import DiscoverAPIs from './Discover/DiscoverAPIs';
+import DiscoveryResults from './Discover/DiscoveryResults';
 
 /* if needs to pre fetch use 'webpackPrefetch: true' */
 
@@ -85,6 +88,27 @@ const Apis = () => {
                 key={Date.now()}
                 render={(props) => <Listing {...props} isAPIProduct={false} />}
             />
+            <Route
+                exact
+                path='/apis/discover'
+                key='apis-discover'
+                render={(props) => (
+                    <FederatedAPIDiscoveryRouteGuard>
+                        <DiscoverAPIs {...props} />
+                    </FederatedAPIDiscoveryRouteGuard>
+                )}
+            />
+            <Route
+                exact
+                path='/apis/discover/apis'
+                key='apis-discover-apis'
+                render={(props) => (
+                    <FederatedAPIDiscoveryRouteGuard>
+                        <DiscoveryResults {...props} />
+                    </FederatedAPIDiscoveryRouteGuard>
+                )}
+            />
+
             <Route path='/apis/create' component={DeferredAPICreateRoutes} />
             <Route path='/apis/design-assistant' component={DefferedAIApiCreateRoutes} />
             <Route
@@ -97,8 +121,8 @@ const Apis = () => {
                     }
                 }}
             />
-            <Route 
-                path='/mcp-servers/create' 
+            <Route
+                path='/mcp-servers/create'
                 render={(props) => (
                     <MCPRouteGuard>
                         <DeferredAPICreateRoutes {...props} />
