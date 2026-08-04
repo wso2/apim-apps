@@ -130,6 +130,7 @@ export default function ProvideOpenAPI(props) {
 
     const validateURLDebounced = useCallback(
         debounce((newURL) => { // Example: https://codesandbox.io/s/debounce-example-l7fq3?file=/src/App.js
+            setLinterResults([]); // clear stale linter results; a successful validation repopulates them
             const handleValidationError = (error) => {
                 const errorMessage = error.response?.body?.description
                     || error.response?.body?.message
@@ -225,6 +226,7 @@ export default function ProvideOpenAPI(props) {
      */
     function onDrop(files) {
         setIsValidating(true);
+        setLinterResults([]); // clear stale linter results; a successful validation repopulates them
 
         // Why `files.pop()` below is , We only handle one OpenAPI file at a time,
         // So if use provide multiple, We would only

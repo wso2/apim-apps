@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Radio from '@mui/material/Radio';
@@ -80,6 +80,8 @@ export default function ProvideWSDL(props) {
     const [isValidating, setIsValidating] = useState(false);
     const [validationErrors, setValidationErrors] = useState([]);
     const isCreateMode = apiInputs.mode === 'create';
+    // Latest validation request id; a reset bumps it so a stale in-flight response is ignored.
+    const validationRequestId = useRef(0);
 
     const intl = useIntl();
 
@@ -92,6 +94,8 @@ export default function ProvideWSDL(props) {
      * Clear the validation state and the selected file/URL, bringing back the drop zone.
      */
     function reset() {
+        validationRequestId.current += 1; // invalidate any in-flight validation
+        setIsValidating(false); // stale response is skipped, so clear the spinner here
         setValidationErrors([]);
         setValidity();
         inputsDispatcher({ action: 'inputValue', value: null });
@@ -180,9 +184,12 @@ export default function ProvideWSDL(props) {
     function validateUrl(state) {
         if (state === null) {
             setIsValidating(true);
+            const requestId = validationRequestId.current;
             Wsdl.validateUrl(apiInputs.inputValue).then((response) => {
+                if (requestId !== validationRequestId.current) return;
                 handleWSDLValidationResponse(response, 'url');
             }).catch((error) => {
+                if (requestId !== validationRequestId.current) return;
                 handleWSDLValidationErrorResponse(error, 'url');
             });
         } else {
@@ -200,11 +207,16 @@ export default function ProvideWSDL(props) {
     function validateFileOrArchive(file, state = null) {
         if (state === null) {
             setIsValidating(true);
+            const requestId = validationRequestId.current;
             Wsdl.validateFileOrArchive(file).then((response) => {
+                if (requestId !== validationRequestId.current) return;
                 handleWSDLValidationResponse(response, 'file');
             }).catch((error) => {
+                if (requestId !== validationRequestId.current) return;
                 handleWSDLValidationErrorResponse(error, 'file');
             }).finally(() => {
+                // Ignore a stale request whose input type was switched mid-validation.
+                if (requestId !== validationRequestId.current) return;
                 // Set the file as input value even when invalid so the uploaded-file row replaces the drop zone.
                 inputsDispatcher({ action: 'inputValue', value: file });
             });
@@ -286,11 +298,12 @@ export default function ProvideWSDL(props) {
             >
                 {isValidating ? (<CircularProgress />)
                     : (
-                        (<Root>
+                        (<Root sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             { dropBoxControlLabel }
                             <Button
                                 color='primary'
                                 variant='contained'
+                                sx={{ mt: 1 }}
                             >
                                 <FormattedMessage
                                     id='Apis.Create.WSDL.Steps.ProvideWSDL.Input.file.upload'
