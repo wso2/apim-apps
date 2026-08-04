@@ -18,10 +18,11 @@
 
 /*
  * Verifies the AWS Bedrock endpoint auth UI in AddEditAIEndpoint.jsx:
- *   - "Use environment credentials (EC2/EKS)" toggle hides the Access/Secret Key fields.
+ *   - The "Select Credential Source" radio group switches between stored and environment
+ *     credentials; the environment option hides the Access/Secret Key fields.
  *   - Region stays required/visible in both modes.
  *   - "Enable STS AssumeRole" toggle reveals the Role ARN / Role Region / External ID fields.
- *   - The two toggles are independent (environment + assume role can both be on).
+ *   - Credential source and assume role are independent (environment + assume role can both be on).
  * No real AWS credentials are needed - this exercises client-side form behaviour only.
  */
 
@@ -40,7 +41,8 @@ const NEXT_BUTTON_SELECTOR = "#ai-api-create-next-btn";
 const CREATE_BUTTON_SELECTOR = "#ai-api-create-btn";
 
 // Selectors from AddEditAIEndpoint.jsx (AWS SigV4 auth section)
-const ENV_CREDS_CHECKBOX = 'input[name="useEnvironmentCredentials"]';
+const STORED_CREDS_RADIO = 'input[name="credential-source"][value="stored"]';
+const ENV_CREDS_RADIO = 'input[name="credential-source"][value="environment"]';
 const ASSUME_ROLE_CHECKBOX = 'input[name="enableSTSAssumeRole"]';
 const ACCESS_KEY_FIELD = "#aws-access-key";
 const SECRET_KEY_FIELD = "#aws-secret-key";
@@ -57,13 +59,6 @@ const getVisibleOptions = () =>
         return Cypress._.uniq(optionTexts);
     });
 
-const selectAutocompleteOption = (inputSelector, optionRegExp) => {
-    cy.get(inputSelector, { timeout: Cypress.env("largeTimeout") }).click({ force: true });
-    cy.contains(VISIBLE_OPTION_SELECTOR, optionRegExp, {
-        timeout: Cypress.env("largeTimeout"),
-    }).click({ force: true });
-};
-
 const selectFirstAvailableVersion = () => {
     cy.get(MODEL_INPUT_SELECTOR, { timeout: Cypress.env("largeTimeout") }).click({ force: true });
     getVisibleOptions().then((versionOptions) => {
@@ -78,31 +73,48 @@ const selectFirstAvailableVersion = () => {
 };
 
 /**
- * Creates an AWS Bedrock AI API and yields its id. Skips the whole spec if no
- * Bedrock provider is registered in the environment under test.
+ * Creates an AWS Bedrock AI API and yields its id. When no Bedrock provider is registered in the
+ * environment under test, calls `skipSpec` and yields null instead.
+ *
+ * @param {Function} skipSpec invoked when there is no Bedrock provider to test against.
  */
-const createBedrockAPI = () => {
+const createBedrockAPI = (skipSpec) => {
     cy.visit(`${Utils.getAppOrigin()}${AI_API_CREATE_PATH}`, {
         timeout: Cypress.env("largeTimeout"),
     });
     publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
 
-    // Pick the AWS Bedrock provider (match by name, tolerant of exact wording).
-    selectAutocompleteOption(PROVIDER_INPUT_SELECTOR, /bedrock/i);
-    selectFirstAvailableVersion();
+    // Read the registered providers before choosing one. Clicking an option that does not exist would
+    // time out as a hard failure, so environments without Bedrock are skipped rather than failed.
+    cy.get(PROVIDER_INPUT_SELECTOR, { timeout: Cypress.env("largeTimeout") }).click({ force: true });
+    return getVisibleOptions().then((providerOptions) => {
+        // Match by name, tolerant of exact wording.
+        const bedrockProvider = providerOptions.find((option) => /bedrock/i.test(option));
+        if (!bedrockProvider) {
+            cy.log("No AWS Bedrock provider is registered in this environment - skipping the spec.");
+            skipSpec();
+            return null;
+        }
+        cy.contains(
+            VISIBLE_OPTION_SELECTOR,
+            new RegExp(`^${escapeRegExp(bedrockProvider)}$`),
+            { timeout: Cypress.env("largeTimeout") },
+        ).click({ force: true });
+        selectFirstAvailableVersion();
 
-    cy.get(NEXT_BUTTON_SELECTOR, { timeout: Cypress.env("largeTimeout") })
-        .should("not.be.disabled")
-        .click({ force: true });
-    cy.get(CREATE_BUTTON_SELECTOR, { timeout: Cypress.env("largeTimeout") })
-        .should("not.be.disabled")
-        .click({ force: true });
+        cy.get(NEXT_BUTTON_SELECTOR, { timeout: Cypress.env("largeTimeout") })
+            .should("not.be.disabled")
+            .click({ force: true });
+        cy.get(CREATE_BUTTON_SELECTOR, { timeout: Cypress.env("largeTimeout") })
+            .should("not.be.disabled")
+            .click({ force: true });
 
-    cy.url({ timeout: Cypress.env("largeTimeout") }).should("contain", "/overview");
-    return cy.url().then((url) => {
-        const apiIdMatch = /apis\/(.*?)\/overview/.exec(url);
-        expect(apiIdMatch, "created AWS Bedrock AI API id").to.not.be.null;
-        return apiIdMatch[1];
+        cy.url({ timeout: Cypress.env("largeTimeout") }).should("contain", "/overview");
+        return cy.url().then((url) => {
+            const apiIdMatch = /apis\/(.*?)\/overview/.exec(url);
+            expect(apiIdMatch, "created AWS Bedrock AI API id").to.not.be.null;
+            return apiIdMatch[1];
+        });
     });
 };
 
@@ -111,41 +123,45 @@ const openEndpointCreateForm = (apiId) => {
         timeout: Cypress.env("largeTimeout"),
     });
     publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
-    // AWS SigV4 section is rendered for Bedrock APIs; wait for its toggle.
-    cy.get(ENV_CREDS_CHECKBOX, { timeout: Cypress.env("largeTimeout") }).should("exist");
+    // AWS SigV4 section is rendered for Bedrock APIs; wait for its credential-source radios.
+    cy.get(ENV_CREDS_RADIO, { timeout: Cypress.env("largeTimeout") }).should("exist");
 };
 
 describe("AWS Bedrock endpoint - environment credentials & assume role UI", () => {
     const { publisher, password } = Utils.getUserInfo();
     let apiId;
 
-    before(() => {
+    // A regular function (not an arrow) so Mocha's context - and therefore this.skip() - is available.
+    before(function () {
         cy.loginToPublisher(publisher, password);
-        createBedrockAPI().then((id) => {
+        createBedrockAPI(() => this.skip()).then((id) => {
             apiId = id;
         });
     });
 
     // Single test: Cypress clears the session between tests (default testIsolation),
     // so we log in once (before) and run every assertion within one loaded form.
-    it("toggles stored keys / environment credentials / assume role correctly", () => {
+    it("switches stored keys / environment credentials and toggles assume role correctly", () => {
         openEndpointCreateForm(apiId);
 
-        // 1. Stored mode is the default: keys + region visible, toggles off.
-        cy.get(ENV_CREDS_CHECKBOX).should("not.be.checked");
+        // 1. Stored is the default credential source: keys + region visible, assume role off.
+        cy.get(STORED_CREDS_RADIO).should("be.checked");
+        cy.get(ENV_CREDS_RADIO).should("not.be.checked");
         cy.get(ASSUME_ROLE_CHECKBOX).should("not.be.checked");
         cy.get(ACCESS_KEY_FIELD).should("be.visible");
         cy.get(SECRET_KEY_FIELD).should("be.visible");
         cy.get(REGION_FIELD).should("be.visible");
 
-        // 2. Environment credentials ON -> key fields removed from DOM, region stays.
-        cy.get(ENV_CREDS_CHECKBOX).check({ force: true }).should("be.checked");
+        // 2. Environment selected -> key fields removed from DOM, region stays.
+        cy.get(ENV_CREDS_RADIO).check({ force: true }).should("be.checked");
+        cy.get(STORED_CREDS_RADIO).should("not.be.checked");
         cy.get(ACCESS_KEY_FIELD).should("not.exist");
         cy.get(SECRET_KEY_FIELD).should("not.exist");
         cy.get(REGION_FIELD).should("be.visible");
 
-        // 3. Environment credentials OFF again -> key fields restored.
-        cy.get(ENV_CREDS_CHECKBOX).uncheck({ force: true }).should("not.be.checked");
+        // 3. Back to stored -> key fields restored.
+        cy.get(STORED_CREDS_RADIO).check({ force: true }).should("be.checked");
+        cy.get(ENV_CREDS_RADIO).should("not.be.checked");
         cy.get(ACCESS_KEY_FIELD).should("be.visible");
         cy.get(SECRET_KEY_FIELD).should("be.visible");
 
@@ -157,7 +173,7 @@ describe("AWS Bedrock endpoint - environment credentials & assume role UI", () =
         cy.contains("label", "External ID").should("be.visible");
 
         // 5. Environment credentials + Assume Role together: no stored keys, role fields present.
-        cy.get(ENV_CREDS_CHECKBOX).check({ force: true }).should("be.checked");
+        cy.get(ENV_CREDS_RADIO).check({ force: true }).should("be.checked");
         cy.get(ACCESS_KEY_FIELD).should("not.exist");
         cy.get(SECRET_KEY_FIELD).should("not.exist");
         cy.contains("label", "Role ARN").should("be.visible");

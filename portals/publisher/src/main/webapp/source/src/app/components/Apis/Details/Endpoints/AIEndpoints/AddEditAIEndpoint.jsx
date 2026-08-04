@@ -51,6 +51,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import { getBasePath } from 'AppComponents/Shared/Utils';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -77,6 +78,9 @@ const classes = {
     endpointErrorChip: `${PREFIX}-endpointErrorChip`,
     deploymentStageSelect: `${PREFIX}-deploymentStageSelect`,
     deploymentTypeText: `${PREFIX}-deploymentTypeText`,
+    credentialSourceSelect: `${PREFIX}-credentialSourceSelect`,
+    helpButton: `${PREFIX}-helpButton`,
+    helpIcon: `${PREFIX}-helpIcon`,
 }
 
 const StyledGrid = styled(Grid)((
@@ -110,7 +114,7 @@ const StyledGrid = styled(Grid)((
     },
 
     [`& .${classes.extraPadding}`]: {
-        paddingLeft: theme.spacing(2),
+        paddingLeft: theme.spacing(4),
     },
 
     [`& .${classes.actionButtonSection}`]: {
@@ -156,6 +160,19 @@ const StyledGrid = styled(Grid)((
     [`& .${classes.deploymentTypeText}`]: {
         marginBottom: theme.spacing(1),
         color: theme.palette.text.secondary,
+    },
+
+    [`& .${classes.credentialSourceSelect}`]: {
+        marginBottom: theme.spacing(1),
+    },
+
+    [`& .${classes.helpButton}`]: {
+        padding: 0,
+        minWidth: 20,
+    },
+
+    [`& .${classes.helpIcon}`]: {
+        fontSize: 20,
     },
 }));
 
@@ -274,6 +291,7 @@ const AddEditAIEndpoint = ({
     // (resolved from the runtime - EC2 instance profile / EKS IRSA).
     const [authType, setAuthType] = useState('stored');
     const [showApiKey, setShowApiKey] = useState(false);
+    const [showSecretKey, setShowSecretKey] = useState(false);
     const [authKeyIdentifier, setAuthKeyIdentifier] = useState('');
     const [authKeyIdentifierType, setAuthKeyIdentifierType] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -303,6 +321,23 @@ const AddEditAIEndpoint = ({
     // Populates form state from a stored endpoint-security config. Shared by both load paths
     // (the dispatched apiObject config and the fetched endpoint) so the hydration isn't duplicated.
     const hydrateEndpointSecurityState = (securityConfig) => {
+        // Reset to the initial defaults first. The security fields live in component state keyed only
+        // by the [endpointId] effect, so moving between two endpoints without a remount would otherwise
+        // leave any field the new config omits holding the previous endpoint's value - and the save
+        // handlers persist whatever is in state, which could write one endpoint's role config onto
+        // another.
+        setApiKeyValue(null);
+        setAuthKeyIdentifier('');
+        setAuthKeyIdentifierType(null);
+        setAccessKey(null);
+        setSecretKey(null);
+        setRegion(null);
+        setAssumeRole(false);
+        setRoleArn(null);
+        setRoleRegion(null);
+        setRoleExternalId(null);
+        setAuthType('stored');
+
         if (securityConfig?.apiKeyValue === '') {
             setApiKeyValue('********');
         }
@@ -469,6 +504,14 @@ const AddEditAIEndpoint = ({
         }
     };
 
+    // Nothing to reveal while the stored secret is showing as the masked placeholder - the real value
+    // is never sent to the browser, so only a newly typed secret can be shown.
+    const handleToggleSecretKeyVisibility = () => {
+        if (secretKey !== '********') {
+            setShowSecretKey((prev) => !prev);
+        }
+    };
+
     const url = getBasePath(apiObject.apiType) + apiObject.id + '/endpoints';
 
     const IS_APIKEY_AUTH_ENABLED = (config) =>
@@ -530,16 +573,28 @@ const AddEditAIEndpoint = ({
     function testEndpoint(endpointURL, apiID) {
         setUpdating(true);
         const restApi = new API();
+        // AWS Bedrock endpoints require SigV4-signed requests, so an unsigned reachability probe is
+        // rejected with 403 (Forbidden). For these endpoints a 403 still confirms the endpoint is
+        // reachable and must not be reported as invalid.
+        const isAwsSigV4 = IS_AWS_SIGV4_AUTH_ENABLED(llmProviderEndpointConfiguration);
         restApi.testEndpoint(endpointURL, apiID)
             .then((result) => {
-                if (result.body.error !== null) {
+                const responseStatus = result.body.statusCode;
+                const awsReachable = isAwsSigV4 && responseStatus === 403;
+                if (awsReachable) {
+                    setStatusCode(intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.test.endpoint.reachable',
+                        defaultMessage: 'Reachable',
+                    }));
+                    setIsErrorCode(false);
+                } else if (result.body.error !== null) {
                     setStatusCode(result.body.error);
                     setIsErrorCode(true);
                 } else {
-                    setStatusCode(result.body.statusCode + ' ' + result.body.statusMessage);
+                    setStatusCode(responseStatus + ' ' + result.body.statusMessage);
                     setIsErrorCode(false);
                 }
-                if (result.body.statusCode >= 200 && result.body.statusCode < 300) {
+                if ((responseStatus >= 200 && responseStatus < 300) || awsReachable) {
                     setIsEndpointValid(true);
                     setIsErrorCode(false);
                 } else {
@@ -844,9 +899,11 @@ const AddEditAIEndpoint = ({
         // Assume role turned off: persist without the role fields.
         persistAWSEndpointSecurity(authType, false);
     }
-    const handleEnvironmentCredentialsToggle = (e) => {
-        const { checked } = e.target;
-        const newAuthType = checked ? 'environment' : 'stored';
+    const handleCredentialSourceChange = (e) => {
+        const newAuthType = e.target.value;
+        if (newAuthType === authType) {
+            return;
+        }
         setAuthType(newAuthType);
         persistAWSEndpointSecurity(newAuthType, assumeRole);
     }
@@ -1237,31 +1294,66 @@ const AddEditAIEndpoint = ({
                             {IS_AWS_SIGV4_AUTH_ENABLED(llmProviderEndpointConfiguration) && (
                                 <>
                                     <Grid item xs={12}>
-                                        <FormControlLabel
-                                            control={(
-                                                <Checkbox
-                                                    color='primary'
-                                                    checked={authType === 'environment'}
-                                                    onChange={handleEnvironmentCredentialsToggle}
-                                                    disabled={isRestricted(
-                                                        ['apim:api_create'],
-                                                        apiObject
-                                                    )}
-                                                    name='useEnvironmentCredentials'
-                                                />
-                                            )}
-                                            label={(
+                                        <FormControl
+                                            component='fieldset'
+                                            className={classes.credentialSourceSelect}
+                                        >
+                                            <Typography className={classes.deploymentTypeText}>
                                                 <FormattedMessage
                                                     id={'Apis.Details.Endpoints.AIEndpoints.Edit'
-                                                        + '.useEnvironmentCredentials'}
-                                                    defaultMessage='Use environment credentials'
+                                                        + '.select.credential.source'}
+                                                    defaultMessage='Select Credential Source'
                                                 />
-                                            )}
-                                        />
+                                            </Typography>
+                                            <RadioGroup
+                                                row
+                                                aria-label='credential-source'
+                                                name='credential-source'
+                                                value={authType}
+                                                onChange={handleCredentialSourceChange}
+                                            >
+                                                <FormControlLabel
+                                                    value='stored'
+                                                    control={(
+                                                        <Radio
+                                                            disabled={isRestricted(
+                                                                ['apim:api_create'],
+                                                                apiObject
+                                                            )}
+                                                        />
+                                                    )}
+                                                    label={(
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                                + '.storedCredentials'}
+                                                            defaultMessage='Stored credentials'
+                                                        />
+                                                    )}
+                                                />
+                                                <FormControlLabel
+                                                    value='environment'
+                                                    control={(
+                                                        <Radio
+                                                            disabled={isRestricted(
+                                                                ['apim:api_create'],
+                                                                apiObject
+                                                            )}
+                                                        />
+                                                    )}
+                                                    label={(
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                                + '.environmentCredentials'}
+                                                            defaultMessage='Environment credentials'
+                                                        />
+                                                    )}
+                                                />
+                                            </RadioGroup>
+                                        </FormControl>
                                     </Grid>
                                     {authType !== 'environment' && (
                                         <>
-                                            <Grid item xs={4}>
+                                            <Grid item xs={4} className={classes.extraPadding}>
                                                 <TextField
                                                     disabled={isRestricted(
                                                         ['apim:api_create'],
@@ -1274,22 +1366,18 @@ const AddEditAIEndpoint = ({
                                                         />
                                                     }
                                                     id='aws-access-key'
-                                                    value={accessKey}
-                                                    placeholder={intl.formatMessage({
-                                                        id: 'Apis.Details.Endpoints.AIEndpoints.Edit'
-                                                            + '.acessKey.placeholder',
-                                                        defaultMessage: 'Enter AWS Access Key',
-                                                    })}
                                                     fullWidth
+                                                    className={classes.textField}
+                                                    // Always a string: a null value makes the input
+                                                    // uncontrolled, and the later switch to a real value
+                                                    // leaves the floating label stuck down.
+                                                    value={accessKey || ''}
                                                     onChange={(e) => handleAWSCredentials(e, 'accessKey')}
                                                     onBlur={handleOnBlurOnAWSCredentials}
                                                     required
-                                                    InputLabelProps={{
-                                                        shrink: true,
-                                                    }}
                                                 />
                                             </Grid>
-                                            <Grid item xs={4}>
+                                            <Grid item xs={4} className={classes.extraPadding}>
                                                 <TextField
                                                     disabled={isRestricted(
                                                         ['apim:api_create'],
@@ -1302,25 +1390,36 @@ const AddEditAIEndpoint = ({
                                                         />
                                                     }
                                                     id='aws-secret-key'
-                                                    type='password'
-                                                    value={secretKey}
-                                                    placeholder={intl.formatMessage({
-                                                        id: 'Apis.Details.Endpoints.AIEndpoints.Edit'
-                                                            + '.secretKey.placeholder',
-                                                        defaultMessage: 'Enter AWS Secret Key',
-                                                    })}
+                                                    type={showSecretKey ? 'text' : 'password'}
                                                     fullWidth
+                                                    className={classes.textField}
+                                                    value={secretKey || ''}
                                                     onChange={(e) => handleAWSCredentials(e, 'secretKey')}
                                                     onBlur={handleOnBlurOnAWSCredentials}
                                                     required
-                                                    InputLabelProps={{
-                                                        shrink: true,
+                                                    InputProps={{
+                                                        // Hidden while the stored secret shows as the
+                                                        // masked placeholder: the real value never
+                                                        // reaches the browser, so there is nothing to
+                                                        // reveal until a new secret is typed.
+                                                        endAdornment: secretKey !== '********' ? (
+                                                            <InputAdornment position='end'>
+                                                                <IconButton
+                                                                    onClick={handleToggleSecretKeyVisibility}
+                                                                    edge='end'
+                                                                >
+                                                                    {showSecretKey
+                                                                        ? <VisibilityIcon />
+                                                                        : <VisibilityOffIcon />}
+                                                                </IconButton>
+                                                            </InputAdornment>
+                                                        ) : null,
                                                     }}
                                                 />
                                             </Grid>
                                         </>
                                     )}
-                                    <Grid item xs={4}>
+                                    <Grid item xs={4} className={classes.extraPadding}>
                                         <TextField
                                             disabled={isRestricted(
                                                 ['apim:api_create'],
@@ -1333,21 +1432,15 @@ const AddEditAIEndpoint = ({
                                                 />
                                             }
                                             id='aws-region'
-                                            value={region}
-                                            placeholder={intl.formatMessage({
-                                                id: 'Apis.Details.Endpoints.AIEndpoints.Edit.aws.region.placeholder',
-                                                defaultMessage: 'Enter AWS Region',
-                                            })}
                                             fullWidth
+                                            className={classes.textField}
+                                            value={region || ''}
                                             onChange={(e) => handleAWSCredentials(e, 'region')}
                                             onBlur={handleOnBlurOnAWSCredentials}
                                             required
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
                                         />
                                     </Grid>
-                                    <Grid item className={classes.extraPadding}>
+                                    <Grid item xs={12} className={classes.extraPadding}>
                                         <FormControlLabel
                                             control={(
                                                 <Checkbox
@@ -1369,6 +1462,21 @@ const AddEditAIEndpoint = ({
                                                 />
                                             )}
                                         />
+                                        <Tooltip
+                                            placement='right'
+                                            title={(
+                                                <FormattedMessage
+                                                    id={'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                    + '.enableSTSAssumeRole.tooltip'}
+                                                    defaultMessage={'Sign requests with temporary credentials '
+                                                        + 'from this IAM role.'}
+                                                />
+                                            )}
+                                        >
+                                            <Button className={classes.helpButton}>
+                                                <HelpOutline className={classes.helpIcon} />
+                                            </Button>
+                                        </Tooltip>
                                         {assumeRole && (
                                             <Collapse in={assumeRole}>
                                                 <TextField
@@ -1389,6 +1497,8 @@ const AddEditAIEndpoint = ({
                                                     value={roleArn}
                                                     onChange={(e) => handleAWSCredentials(e, 'roleArn')}
                                                     onBlur={handleOnBlurOnAWSCredentials}
+                                                    error={!!hasErrors('roleArn', roleArn, validating)}
+                                                    helperText={hasErrors('roleArn', roleArn, validating)}
                                                 />
                                                 <TextField
                                                     select
@@ -1409,6 +1519,8 @@ const AddEditAIEndpoint = ({
                                                     value={roleRegion || ''}
                                                     onChange={(e) => handleAWSCredentials(e, 'roleRegion')}
                                                     onBlur={handleOnBlurOnAWSCredentials}
+                                                    error={!!hasErrors('roleRegion', roleRegion, validating)}
+                                                    helperText={hasErrors('roleRegion', roleRegion, validating)}
                                                 >
                                                     {Object.entries(regions).map(([key, value]) => (
                                                         <MenuItem key={key} value={key}>
@@ -1469,7 +1581,10 @@ const AddEditAIEndpoint = ({
                                 onClick={formSave}
                                 disabled={
                                     isRestricted(['apim:api_create'], apiObject)
-                                    || formHasErrors(validating || isEditing)
+                                    // Validate unconditionally so the button reflects the real state of
+                                    // the form: while a mandatory field is empty it stays disabled,
+                                    // rather than only reacting once a save has been attempted.
+                                    || formHasErrors(true)
                                     || apiObject.isRevision
                                 }
                                 className={classes.saveButton}
