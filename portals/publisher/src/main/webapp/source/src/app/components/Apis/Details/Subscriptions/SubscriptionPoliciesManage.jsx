@@ -29,6 +29,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Paper from '@mui/material/Paper';
 import TablePagination from '@mui/material/TablePagination';
 import API from 'AppData/api';
+import Alert from 'AppComponents/Shared/Alert';
 import MCPServer from 'AppData/MCPServer';
 import { isRestricted } from 'AppData/AuthManager';
 import Configurations from 'Config';
@@ -91,11 +92,13 @@ export class SubscriptionPoliciesManage extends Component {
             page: 0,
             rowsPerPage,
             totalPolicies: 0,
+            allAsyncPolicyNames: [],
         };
         this.handleChange = this.handleChange.bind(this);
         this.fetchPolicies = this.fetchPolicies.bind(this);
         this.handleChangePage = this.handleChangePage.bind(this);
         this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
+        this.fetchAllAsyncPoliciesForMigrationCheck = this.fetchAllAsyncPoliciesForMigrationCheck.bind(this);
     }
 
     componentDidMount() {
@@ -108,7 +111,12 @@ export class SubscriptionPoliciesManage extends Component {
         this.setState({
             isAsyncAPI,
             isMutualSslOnly,
-        }, () => this.fetchPolicies(0, this.state.rowsPerPage, isAsyncAPI));
+        }, () => {
+            this.fetchPolicies(0, this.state.rowsPerPage, isAsyncAPI);
+            if (isAsyncAPI && api.policies && api.policies.length > 0) {
+                this.fetchAllAsyncPoliciesForMigrationCheck();
+            }
+        });
     }
 
     fetchPolicies(page, rowsPerPage, isAsyncAPIOverride = this.state.isAsyncAPI) {
@@ -164,6 +172,26 @@ export class SubscriptionPoliciesManage extends Component {
     handleChangeRowsPerPage(event) {
         const rowsPerPage = parseInt(event.target.value, 10);
         this.fetchPolicies(0, rowsPerPage);
+    }
+
+    fetchAllAsyncPoliciesForMigrationCheck() {
+        const limit = Configurations.app.subscriptionPolicyLimit || 80;
+        API.asyncAPIPolicies(limit)
+            .then((res) => {
+                const policies = res.body.list || [];
+                this.setState({
+                    allAsyncPolicyNames: policies.map((p) => p.displayName),
+                });
+            })
+            .catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    console.error(error);
+                }
+                Alert.error(this.props.intl.formatMessage({
+                    id: 'Apis.Details.Subscriptions.SubscriptionPoliciesManage.fetch.all.policies.error',
+                    defaultMessage: 'Error while fetching subscription policies.',
+                }));
+            });
     }
 
     /**
@@ -225,7 +253,7 @@ export class SubscriptionPoliciesManage extends Component {
     render() {
         const {  api, policies } = this.props;
         const {
-            subscriptionPolicies, isAsyncAPI, page, rowsPerPage, totalPolicies,
+            subscriptionPolicies, isAsyncAPI, page, rowsPerPage, totalPolicies, allAsyncPolicyNames,
         } = this.state;
 
         /*
@@ -235,14 +263,13 @@ export class SubscriptionPoliciesManage extends Component {
         But throttling-policies/streaming/subscription does not have this "Unlimited" policy after 4.0
         So logic in UI shows no policy is attached to the API.
         Following logic identifies that special case.
+        We compare against the full async policy set (allAsyncPolicyNames) rather than the current page
+        (subscriptionPolicies) to avoid false positives when a selected policy happens to be on a different page.
         */
         let migratedCase = false;
         let preMigrationPolicies;
-        if (isAsyncAPI && subscriptionPolicies.length !== 0 && api.policies && api.policies.length > 0) {
-            preMigrationPolicies = api.policies.filter((apiPolicy) => {
-                const samePolicies = subscriptionPolicies.filter((subPolicy) => apiPolicy === subPolicy.displayName);
-                return samePolicies.length === 0;
-            });
+        if (isAsyncAPI && allAsyncPolicyNames.length > 0 && api.policies && api.policies.length > 0) {
+            preMigrationPolicies = api.policies.filter((apiPolicy) => !allAsyncPolicyNames.includes(apiPolicy));
             migratedCase = preMigrationPolicies.length > 0;
         }
 
