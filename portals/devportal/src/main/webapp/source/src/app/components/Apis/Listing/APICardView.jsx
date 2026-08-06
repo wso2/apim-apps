@@ -147,8 +147,7 @@ class APICardView extends React.Component {
                 if (subList.length > 0) {
                     subscribedIds.add(entity.id);
                 }
-            })
-            .catch(() => {})))
+            })))
             .then(() => subscribedIds);
     };
 
