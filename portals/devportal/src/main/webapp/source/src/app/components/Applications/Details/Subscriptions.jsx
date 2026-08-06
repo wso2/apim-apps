@@ -564,9 +564,7 @@ class SubscriptionsBase extends React.Component {
      * @memberof Subscriptions
      */
     updateDialogSubscriptions(isMcp) {
-        // APICardView resolves subscription status per page, so the full list is not needed here.
-        // The empty array makes the dialog render the card view rather than the spinner, and the
-        // refresh key triggers a reload in APICardView.
+        // The empty array renders the card view instead of the spinner; the refresh key reloads it.
         const dialogOpen = isMcp ? this.state.openMcpDialog : this.state.openDialog;
         if (!this.mounted || !dialogOpen) {
             return Promise.resolve();

@@ -70,6 +70,8 @@ class APICardView extends React.Component {
         this.count = 100;
         this.rowsPerPage = 10;
         this.pageType = null;
+        // Incremented per load so a slower earlier request cannot overwrite a newer one.
+        this.apiLoadRequestId = 0;
     }
 
     /**
@@ -96,17 +98,27 @@ class APICardView extends React.Component {
     getData = () => {
         const { intl, entityType } = this.props;
         const isMCPServersRoute = entityType === 'MCP';
+        const requestId = ++this.apiLoadRequestId;
         this.xhrRequest()
             .then((data) => {
+                if (requestId !== this.apiLoadRequestId) {
+                    return undefined;
+                }
                 const { body } = data;
                 const { list, pagination } = body;
                 const { total } = pagination;
                 this.count = total;
                 return this.resolveSubscribedIds(list).then((subscribedIds) => {
+                    if (requestId !== this.apiLoadRequestId) {
+                        return;
+                    }
                     this.setState({ data: this.updateUnsubscribedAPIsList(list, subscribedIds) });
                 });
             })
             .catch((error) => {
+                if (requestId !== this.apiLoadRequestId) {
+                    return;
+                }
                 const { response } = error;
                 const { setTenantDomain } = this.props;
                 if (response && response.body.code === 901300) {
@@ -123,7 +135,9 @@ class APICardView extends React.Component {
                 }
             })
             .finally(() => {
-                this.setState({ loading: false });
+                if (requestId === this.apiLoadRequestId) {
+                    this.setState({ loading: false });
+                }
             });
     };
 
@@ -156,24 +170,36 @@ class APICardView extends React.Component {
         const isMCPServersRoute = entityType === 'MCP';
         this.page = page;
         this.setState({ loading: true });
+        const requestId = ++this.apiLoadRequestId;
         this.xhrRequest()
             .then((data) => {
+                if (requestId !== this.apiLoadRequestId) {
+                    return undefined;
+                }
                 const { body } = data;
                 const { list } = body;
                 return this.resolveSubscribedIds(list).then((subscribedIds) => {
+                    if (requestId !== this.apiLoadRequestId) {
+                        return;
+                    }
                     this.setState({
                         data: this.updateUnsubscribedAPIsList(list, subscribedIds),
                     });
                 });
             })
             .catch(() => {
+                if (requestId !== this.apiLoadRequestId) {
+                    return;
+                }
                 Alert.error(intl.formatMessage({
                     defaultMessage: isMCPServersRoute ? 'Error While Loading MCP Servers' : 'Error While Loading APIs',
                     id: isMCPServersRoute ? 'Apis.Listing.MCPServerCardView.error.loading' : 'Apis.Listing.ApiTableView.error.loading',
                 }));
             })
             .finally(() => {
-                this.setState({ loading: false });
+                if (requestId === this.apiLoadRequestId) {
+                    this.setState({ loading: false });
+                }
             });
     };
 
