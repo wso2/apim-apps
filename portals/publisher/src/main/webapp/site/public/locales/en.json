@@ -1861,6 +1861,7 @@
   "Apis.Details.Subscriptions.SubscriptionAvailability.sub.heading": "Make subscriptions available to tenants",
   "Apis.Details.Subscriptions.SubscriptionAvailability.subscription.availability": "Subscription Availability",
   "Apis.Details.Subscriptions.SubscriptionPoliciesManage.business.plans": "Business Plans",
+  "Apis.Details.Subscriptions.SubscriptionPoliciesManage.fetch.all.policies.error": "Error while fetching subscription policies.",
   "Apis.Details.Subscriptions.SubscriptionPoliciesManage.sub.heading": "Attach business plans to {type}",
   "Apis.Details.Subscriptions.SubscriptionPoliciesManage.sub.migrated": "Following policies are migrated from an old version of APIM. You can uncheck and select a different policy. Note that this is an irreversible operation.",
   "Apis.Details.Subscriptions.Subscriptions.cancel": "Cancel",
