@@ -261,6 +261,8 @@ const AddEditAIEndpoint = ({
     const [apiKeyValue, setApiKeyValue] = useState(null);
     const [accessKey, setAccessKey] = useState(null);
     const [secretKey, setSecretKey] = useState(null);
+    const [serviceAccountKey, setServiceAccountKey] = useState(null);
+    const [gcpKeyFileName, setGcpKeyFileName] = useState('');
     const [region, setRegion] = useState(null);
     const [showApiKey, setShowApiKey] = useState(false);
     const [authKeyIdentifier, setAuthKeyIdentifier] = useState('');
@@ -342,6 +344,10 @@ const AddEditAIEndpoint = ({
                 if (securityConfig?.region) {
                     setRegion(securityConfig?.region);
                 }
+                // Set GCP (Vertex AI) related values
+                if (securityConfig?.serviceAccountKey === '') {
+                    setServiceAccountKey('********');
+                }
             } else {
                 // Load custom endpoint data from API
                 API.getApiEndpoint(apiObject.id, endpointId)
@@ -375,6 +381,10 @@ const AddEditAIEndpoint = ({
                         }
                         if (securityConfig?.region) {
                             setRegion(securityConfig?.region);
+                        }
+                        // Set GCP (Vertex AI) related values
+                        if (securityConfig?.serviceAccountKey === '') {
+                            setServiceAccountKey('********');
                         }
                     })
                     .catch((error) => {
@@ -472,6 +482,9 @@ const AddEditAIEndpoint = ({
     const IS_UMI_AUTH_ENABLED = (config) =>
         config?.authenticationConfiguration?.enabled === true &&
         config?.authenticationConfiguration?.type === 'umi';
+    const IS_GCP_AUTH_ENABLED = (config) =>
+        config?.authenticationConfiguration?.enabled === true &&
+        config?.authenticationConfiguration?.type === 'gcp';
 
     useEffect(() => {
         try {
@@ -639,6 +652,19 @@ const AddEditAIEndpoint = ({
                     }
                 }
                 return false;
+            case 'serviceAccountKey':
+                if (
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled === true &&
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'gcp'
+                ) {
+                    if (!fieldValue) {
+                        return intl.formatMessage({
+                            id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.serviceAccountKey',
+                            defaultMessage: 'GCP service account key cannot be empty',
+                        });
+                    }
+                }
+                return false;
             default:
                 return false;
         }
@@ -650,7 +676,8 @@ const AddEditAIEndpoint = ({
             hasErrors('apiKey', apiKeyValue, validateActive) ||
             hasErrors('secretKey', secretKey, validateActive) ||
             hasErrors('region', region, validateActive) ||
-            hasErrors('accessKey', accessKey, validateActive)) {
+            hasErrors('accessKey', accessKey, validateActive) ||
+            hasErrors('serviceAccountKey', serviceAccountKey, validateActive)) {
             return true;
         }
         return false;
@@ -776,6 +803,58 @@ const AddEditAIEndpoint = ({
             region,
             enabled: true,
         }, isProduction ? 'production' : 'sandbox');
+    }
+    const handleGCPKeyFileUpload = (e) => {
+        const file = e.target.files && e.target.files[0];
+        // Reset the input so re-selecting the same file still fires onChange.
+        e.target.value = '';
+        if (!file) {
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const content = event.target.result;
+            // Validate the uploaded file is a well-formed JSON service-account key before accepting it.
+            let parsedKey;
+            try {
+                parsedKey = JSON.parse(content);
+            } catch (err) {
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp.serviceAccountKey.invalid',
+                    defaultMessage: 'The selected file is not a valid JSON service account key.',
+                }));
+                return;
+            }
+            // A well-formed JSON object is not enough (e.g. {} parses successfully). Require the standard
+            // GCP service-account fields so an incomplete file cannot be persisted as the service account key.
+            const requiredFields = ['type', 'project_id', 'private_key', 'client_email'];
+            const isValidServiceAccountKey = parsedKey && typeof parsedKey === 'object'
+                && requiredFields.every((field) => Boolean(parsedKey[field]));
+            if (!isValidServiceAccountKey) {
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp.serviceAccountKey.incomplete',
+                    defaultMessage: 'The selected file is not a valid GCP service account key. It must '
+                        + 'include type, project_id, private_key and client_email.',
+                }));
+                return;
+            }
+            setServiceAccountKey(content);
+            setGcpKeyFileName(file.name);
+            const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
+            saveEndpointSecurityConfig({
+                ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
+                type: llmProviderEndpointConfiguration.authenticationConfiguration.type,
+                serviceAccountKey: content,
+                enabled: true,
+            }, isProduction ? 'production' : 'sandbox');
+        };
+        reader.onerror = () => {
+            Alert.error(intl.formatMessage({
+                id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp.serviceAccountKey.readError',
+                defaultMessage: 'Failed to read the selected file.',
+            }));
+        };
+        reader.readAsText(file);
     }
     const formSave = () => {
         setValidating(true);
@@ -1246,6 +1325,71 @@ const AddEditAIEndpoint = ({
                                         />
                                     </Grid>
                                 </>
+                            )}
+
+                            {/* GCP service-account (Vertex AI) Auth */}
+                            {IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration) && (
+                                <Grid item xs={12}>
+                                    <Typography variant='subtitle2' gutterBottom>
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.AIEndpoints.Edit.gcp.serviceAccountKey'
+                                            defaultMessage='GCP Service Account Key'
+                                        />
+                                        {' '}
+                                        <span style={{ color: '#d32f2f' }}>*</span>
+                                    </Typography>
+                                    <Button
+                                        variant='outlined'
+                                        component='label'
+                                        disabled={isRestricted(['apim:api_create'], apiObject)}
+                                        id='gcp-service-account-key-upload'
+                                    >
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.AIEndpoints.Edit.gcp.serviceAccountKey.upload'
+                                            defaultMessage='Upload Service Account Key'
+                                        />
+                                        <input
+                                            type='file'
+                                            accept='application/json,.json'
+                                            hidden
+                                            onChange={handleGCPKeyFileUpload}
+                                        />
+                                    </Button>
+                                    <Typography
+                                        variant='caption'
+                                        display='block'
+                                        color='textSecondary'
+                                        style={{ marginTop: 4 }}
+                                    >
+                                        {(() => {
+                                            if (gcpKeyFileName) {
+                                                return intl.formatMessage({
+                                                    id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp'
+                                                        + '.serviceAccountKey.uploaded',
+                                                    defaultMessage: 'Uploaded: {fileName}',
+                                                }, { fileName: gcpKeyFileName });
+                                            }
+                                            if (serviceAccountKey === '********') {
+                                                return intl.formatMessage({
+                                                    id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp'
+                                                        + '.serviceAccountKey.existing',
+                                                    defaultMessage: 'A service account key is already '
+                                                        + 'configured. Upload a new file to replace it.',
+                                                });
+                                            }
+                                            return intl.formatMessage({
+                                                id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp'
+                                                    + '.serviceAccountKey.hint',
+                                                defaultMessage: 'Upload the GCP service account key JSON file.',
+                                            });
+                                        })()}
+                                    </Typography>
+                                    {hasErrors('serviceAccountKey', serviceAccountKey, validating) && (
+                                        <Typography variant='caption' display='block' color='error'>
+                                            {hasErrors('serviceAccountKey', serviceAccountKey, validating)}
+                                        </Typography>
+                                    )}
+                                </Grid>
                             )}
 
                             {/* User Managed Identity (UMI) Auth Info */}
