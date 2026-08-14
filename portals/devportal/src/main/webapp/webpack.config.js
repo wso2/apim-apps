@@ -150,6 +150,9 @@ module.exports = function (env, argv) {
                                 onlyCompileBundledFiles: true,
                             },
                         },
+                        {
+                            loader: path.resolve('loader.js'),
+                        },
                     ],
                 },
                 {

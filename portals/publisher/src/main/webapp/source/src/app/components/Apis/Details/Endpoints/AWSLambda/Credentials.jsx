@@ -170,8 +170,9 @@ export default function Credentials(props) {
                                     <FormattedMessage
                                         id={'Apis.Details.Endpoints.EndpointOverview.awslambda'
                                         + '.endpoint.tooltip'}
-                                        defaultMessage={'You can and should use an IAM role to manage temporary '
-                                        + 'credentials for applications that run on an AWS instance'}
+                                        defaultMessage={'It is recommended to use an IAM role to securely '
+                                            + 'manage temporary '
+                                            + 'credentials for applications running on AWS compute resources.'}
                                     />
                                 )
                             }

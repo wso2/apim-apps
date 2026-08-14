@@ -179,6 +179,9 @@ module.exports = (env, argv) => {
                                 onlyCompileBundledFiles: true,
                             },
                         },
+                        {
+                            loader: path.resolve('loader.js'),
+                        },
                     ],
                 },
                 {
