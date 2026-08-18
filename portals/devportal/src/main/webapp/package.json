@@ -91,7 +91,7 @@
         "stylis": "4.4.0",
         "stylis-plugin-rtl": "2.1.1",
         "swagger-client": "3.37.1",
-        "swagger-ui-react": "5.32.1",
+        "swagger-ui-react": "5.32.11",
         "url": "0.11.3",
         "xml-formatter": "3.6.6"
     },
