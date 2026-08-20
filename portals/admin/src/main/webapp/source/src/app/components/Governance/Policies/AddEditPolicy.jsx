@@ -46,8 +46,14 @@ import {
     ListItemIcon,
     Link,
     ListItemText,
+    Checkbox,
+    FormControl,
+    FormGroup,
+    FormHelperText,
+    FormLabel,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { styled } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -128,6 +134,7 @@ function reducer(state, { field, value }) {
             return value;
         case 'name':
         case 'description':
+        case 'complianceAffectingSeverities':
             nextState[field] = value;
             return nextState;
         case 'labels':
@@ -169,6 +176,11 @@ function AddEditPolicy(props) {
     const [availableLabels, setAvailableLabels] = useState([]);
     const [labelMode, setLabelMode] = useState('all');
     const [originalLabels, setOriginalLabels] = useState([]);
+    // Per policy severity filtering is a deployment wide capability, so it is read from the admin settings. They
+    // are loaded once for the whole portal and are available before a policy exists, so the create form can offer
+    // the control too.
+    const { settings } = useAppContext();
+    const severityFilteringEnabled = Boolean(settings && settings.perPolicySeverityFilteringEnabled);
     const intl = useIntl();
     const { match: { params: { id: policyId } }, history } = props;
 
@@ -194,6 +206,8 @@ function AddEditPolicy(props) {
             },
         ],
         rulesets: [], // Store only IDs
+        // Empty means every severity affects compliance, which is the default for a new policy
+        complianceAffectingSeverities: '',
     };
     const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -203,6 +217,7 @@ function AddEditPolicy(props) {
         labels,
         actions,
         rulesets,
+        complianceAffectingSeverities,
     } = state;
 
     const [dialogConfig, setDialogConfig] = useState({
@@ -423,6 +438,47 @@ function AddEditPolicy(props) {
         return false;
     };
 
+    const severityOrder = CONSTS.SEVERITY_LEVELS.map((level) => level.value);
+
+    const storedSeverities = (complianceAffectingSeverities || '')
+        .split(',')
+        .map((severity) => severity.trim().toUpperCase())
+        .filter(Boolean);
+
+    const configuredSeverities = severityOrder.filter((severity) => storedSeverities.includes(severity));
+
+    // An empty stored value, and a value holding nothing recognisable, both resolve to every severity on the
+    // server. The boxes follow that so they never claim a configuration which is not in effect. Severities are
+    // kept in their declared order whatever order they were stored in.
+    const selectedSeverities = configuredSeverities.length === 0 ? severityOrder : configuredSeverities;
+
+    const advisorySeverities = severityOrder.filter((severity) => !selectedSeverities.includes(severity));
+
+    // Every severity selected is the unconfigured state, so it is sent as an empty value rather than as an
+    // explicit list of all of them. Creating a policy writes the severities in a second step, and an empty value
+    // makes the backend skip that write altogether.
+    const severitiesForPayload = (severities) => (
+        severities.length === severityOrder.length ? '' : severities.join(',')
+    );
+
+    const toggleSeverity = (severity) => {
+        const next = selectedSeverities.includes(severity)
+            ? selectedSeverities.filter((item) => item !== severity)
+            : severityOrder.filter((item) => selectedSeverities.includes(item) || item === severity);
+        dispatch({ field: 'complianceAffectingSeverities', value: severitiesForPayload(next) });
+    };
+
+    /**
+     * Look up the label of a severity so the helper text reads the way the boxes are labelled
+     *
+     * @param {string} severity Severity value
+     * @returns {string} Label of the severity
+     */
+    const severityLabel = (severity) => {
+        const level = CONSTS.SEVERITY_LEVELS.find((item) => item.value === severity);
+        return level ? level.label : severity;
+    };
+
     const formSave = () => {
         setValidating(true);
         if (formHasErrors(true)) {
@@ -438,6 +494,12 @@ function AddEditPolicy(props) {
             ...state,
             governableStates: [...new Set(actions.map((action) => action.state))],
         };
+        if (severityFilteringEnabled) {
+            body.complianceAffectingSeverities = severitiesForPayload(selectedSeverities);
+        } else {
+            // The backend rejects the field when the deployment has not opted in
+            delete body.complianceAffectingSeverities;
+        }
 
         // Do the API call
         const restApi = new GovernanceAPI();
@@ -683,6 +745,62 @@ function AddEditPolicy(props) {
                                     style: { padding: 0 },
                                 }}
                             />
+                            {severityFilteringEnabled && (
+                                <FormControl component='fieldset' sx={{ mt: 2 }}>
+                                    <FormLabel component='legend'>
+                                        <FormattedMessage
+                                            id={'Governance.Policies.AddEdit.form.compliance.'
+                                                + 'affecting.severities'}
+                                            defaultMessage='Severities that affect compliance'
+                                        />
+                                    </FormLabel>
+                                    <FormGroup row>
+                                        {CONSTS.SEVERITY_LEVELS.map((level) => (
+                                            <FormControlLabel
+                                                key={level.value}
+                                                label={level.label}
+                                                control={(
+                                                    <Checkbox
+                                                        checked={selectedSeverities.includes(level.value)}
+                                                        onChange={() => toggleSeverity(level.value)}
+                                                        // Clearing every severity would resolve back to all of
+                                                        // them, so the last one is held rather than misleading
+                                                        disabled={selectedSeverities.length === 1
+                                                            && selectedSeverities.includes(level.value)}
+                                                        name={`severity-${level.value}`}
+                                                    />
+                                                )}
+                                            />
+                                        ))}
+                                    </FormGroup>
+                                    <FormHelperText component='div'>
+                                        <FormattedMessage
+                                            id={'Governance.Policies.AddEdit.form.compliance.'
+                                                + 'affecting.severities.fails'}
+                                            defaultMessage='Violates the policy on: {failing}.'
+                                            values={{
+                                                failing: (
+                                                    <b>{selectedSeverities.map(severityLabel).join(', ')}</b>
+                                                ),
+                                            }}
+                                        />
+                                        {advisorySeverities.length > 0 && (
+                                            <>
+                                                {' '}
+                                                <FormattedMessage
+                                                    id={'Governance.Policies.AddEdit.form.compliance.'
+                                                        + 'affecting.severities.advisory'}
+                                                    defaultMessage={'{advisory} violations are still reported '
+                                                        + 'but do not violate it.'}
+                                                    values={{
+                                                        advisory: advisorySeverities.map(severityLabel).join(', '),
+                                                    }}
+                                                />
+                                            </>
+                                        )}
+                                    </FormHelperText>
+                                </FormControl>
+                            )}
                         </Box>
                     </Grid>
 
