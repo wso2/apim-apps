@@ -17,10 +17,11 @@
  */
 
 import React, { useState, useEffect, useReducer, useContext } from 'react';
-import { styled } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
+    Box,
     Grid,
     Paper,
     Typography,
@@ -37,7 +38,18 @@ import {
     DialogContent,
     MenuItem,
     Collapse,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    Avatar,
+    List,
+    ListItem,
+    ListItemAvatar,
+    ListItemText,
+    ListItemSecondaryAction,
 } from '@mui/material';
+import Dropzone from 'react-dropzone';
+import DeleteIcon from '@mui/icons-material/Delete';
 import CONSTS from 'AppData/Constants';
 import { Link, useHistory } from 'react-router-dom';
 import API from 'AppData/api';
@@ -54,12 +66,28 @@ import { getBasePath } from 'AppComponents/Shared/Utils';
 import HelpOutline from '@mui/icons-material/HelpOutline';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import SettingsIcon from '@mui/icons-material/Settings';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import AdvanceEndpointConfig from '../AdvancedConfig/AdvanceEndpointConfig';
 
 const PREFIX = 'AddEditAIEndpoint';
+
+// Compact dashed dropzone, matching the certificate/policy upload dropzones.
+const gcpKeyDropzoneStyles = {
+    border: '1px dashed #c4c4c4',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    minHeight: 75,
+    padding: '16px 0px',
+    position: 'relative',
+    textAlign: 'center',
+    width: '100%',
+    margin: '10px 0',
+};
 
 const classes = {
     root: `${PREFIX}-root`,
@@ -275,6 +303,9 @@ const AddEditAIEndpoint = ({
     const [isEndpointSaving, setEndpointSaving] = useState(false);
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
     const intl = useIntl();
+    const theme = useTheme();
+    // GCP key dropzone with a primary-colored (blue) dashed border, matching the policy/cert upload dropzones.
+    const gcpDropzoneStyle = { ...gcpKeyDropzoneStyles, border: `1px dashed ${theme.palette.primary.main}` };
     const [validating, setValidating] = useState(false);
 
     const { updateAPI } = useContext(APIContext);
@@ -282,6 +313,14 @@ const AddEditAIEndpoint = ({
     const [apiKeyValue, setApiKeyValue] = useState(null);
     const [accessKey, setAccessKey] = useState(null);
     const [secretKey, setSecretKey] = useState(null);
+    const [serviceAccountKey, setServiceAccountKey] = useState(null);
+    const [gcpKeyFileName, setGcpKeyFileName] = useState('');
+    // The service-account key is optional (keyless/on-GCP endpoints need nothing), so the section starts
+    // collapsed. It auto-expands when a key is already configured or has just been uploaded, so the
+    // off-GCP / edit cases surface the current key without an extra click.
+    const [gcpKeyExpanded, setGcpKeyExpanded] = useState(false);
+    // Inline validation message for a rejected service-account key file (e.g. not valid JSON / unreadable).
+    const [gcpKeyError, setGcpKeyError] = useState(null);
     const [region, setRegion] = useState(null);
     const [assumeRole, setAssumeRole] = useState(false);
     const [roleArn, setRoleArn] = useState(null);
@@ -337,6 +376,9 @@ const AddEditAIEndpoint = ({
         setRoleRegion(null);
         setRoleExternalId(null);
         setAuthType('stored');
+        setServiceAccountKey(null);
+        setGcpKeyFileName('');
+        setGcpKeyError(null);
 
         if (securityConfig?.apiKeyValue === '') {
             setApiKeyValue('********');
@@ -362,6 +404,10 @@ const AddEditAIEndpoint = ({
         }
         if (securityConfig?.authType) {
             setAuthType(securityConfig.authType);
+        }
+        // GCP (Vertex AI): the stored key is redacted to '' on read, so surface it as the ******** sentinel.
+        if (securityConfig?.serviceAccountKey === '') {
+            setServiceAccountKey('********');
         }
     }
     useEffect(() => {
@@ -523,6 +569,16 @@ const AddEditAIEndpoint = ({
     const IS_UMI_AUTH_ENABLED = (config) =>
         config?.authenticationConfiguration?.enabled === true &&
         config?.authenticationConfiguration?.type === 'umi';
+    const IS_GCP_AUTH_ENABLED = (config) =>
+        config?.authenticationConfiguration?.enabled === true &&
+        config?.authenticationConfiguration?.type === 'gcp';
+
+    // Auto-expand the (otherwise collapsed) key section when a key is already stored or freshly uploaded.
+    useEffect(() => {
+        if (serviceAccountKey === '********' || gcpKeyFileName) {
+            setGcpKeyExpanded(true);
+        }
+    }, [serviceAccountKey, gcpKeyFileName]);
 
     useEffect(() => {
         try {
@@ -554,6 +610,29 @@ const AddEditAIEndpoint = ({
             saveEndpointSecurityConfig({
                 ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
                 type: 'umi',
+                enabled: true,
+            }, currentEnvType);
+        }
+    }, [
+        llmProviderEndpointConfiguration?.authenticationConfiguration?.type,
+        llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled,
+        currentEnvType,
+        currentSecurityType,
+        isCurrentSecurityEnabled,
+    ]);
+
+    // Auto-configure endpoint security for GCP. Establishes the GCP auth block so a GCP endpoint is valid
+    // even without an uploaded service-account key (keyless: the gateway uses its attached GCP identity /
+    // Workload Identity). Uploading a key sets type=gcp + enabled + serviceAccountKey via
+    // readGCPKeyFile, after which this effect no longer runs and the key is preserved.
+    useEffect(() => {
+        if (
+            IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)
+            && (currentSecurityType !== 'gcp' || !isCurrentSecurityEnabled)
+        ) {
+            saveEndpointSecurityConfig({
+                ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
+                type: 'gcp',
                 enabled: true,
             }, currentEnvType);
         }
@@ -732,6 +811,11 @@ const AddEditAIEndpoint = ({
                     }
                 }
                 return false;
+            case 'serviceAccountKey':
+                // The service-account key is optional for GCP: when omitted, the gateway falls back to its
+                // attached GCP identity (Application Default Credentials / Workload Identity). Uploaded files
+                // are still validated for well-formedness in readGCPKeyFile.
+                return false;
             default:
                 return false;
         }
@@ -907,6 +991,56 @@ const AddEditAIEndpoint = ({
         setAuthType(newAuthType);
         persistAWSEndpointSecurity(newAuthType, assumeRole);
     }
+    const readGCPKeyFile = (file) => {
+        if (!file) {
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const content = event.target.result;
+            // Ensure the uploaded file is valid JSON before accepting it.
+            try {
+                JSON.parse(content);
+            } catch (err) {
+                setGcpKeyError(intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp.serviceAccountKey.invalid',
+                    defaultMessage: 'The selected file is not a valid JSON service account key.',
+                }));
+                return;
+            }
+            setGcpKeyError(null);
+            setServiceAccountKey(content);
+            setGcpKeyFileName(file.name);
+            const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
+            saveEndpointSecurityConfig({
+                ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
+                type: llmProviderEndpointConfiguration.authenticationConfiguration.type,
+                serviceAccountKey: content,
+                enabled: true,
+            }, isProduction ? 'production' : 'sandbox');
+        };
+        reader.onerror = () => {
+            setGcpKeyError(intl.formatMessage({
+                id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp.serviceAccountKey.readError',
+                defaultMessage: 'Failed to read the selected file.',
+            }));
+        };
+        reader.readAsText(file);
+    }
+    // Explicitly clear a previously stored GCP service-account key so the endpoint switches to keyless
+    // (ADC / Workload Identity). Sends the transient clearServiceAccountKey flag for the current stage.
+    const handleClearGCPKey = () => {
+        const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
+        saveEndpointSecurityConfig({
+            ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
+            type: llmProviderEndpointConfiguration.authenticationConfiguration.type,
+            enabled: true,
+            clearServiceAccountKey: true,
+        }, isProduction ? 'production' : 'sandbox');
+        setServiceAccountKey('');
+        setGcpKeyFileName('');
+        setGcpKeyError(null);
+    };
     const formSave = () => {
         setValidating(true);
         if (formHasErrors(true)) {
@@ -1114,7 +1248,7 @@ const AddEditAIEndpoint = ({
 
                         {/* Main Form Grid */}
                         <Grid container spacing={2}>
-                            <Grid item xs={6}>
+                            <Grid item xs={IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration) ? 12 : 6}>
                                 <FormControl fullWidth>
                                     <TextField
                                         disabled={isEditing || isRestricted(['apim:api_create'], apiObject)}
@@ -1129,19 +1263,37 @@ const AddEditAIEndpoint = ({
                                     />
                                 </FormControl>
                             </Grid>
-                            <Grid item xs={6}>
+                            <Grid item xs={IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration) ? 12 : 6}>
                                 <FormControl fullWidth>
                                     <TextField
                                         disabled={isRestricted(['apim:api_create'], apiObject)}
                                         label='Endpoint URL'
                                         id='url'
                                         fullWidth
+                                        multiline={IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)}
+                                        maxRows={4}
                                         className={classes.textField}
                                         value={endpointUrl}
                                         onChange={(e) => setEndpointUrl(e.target.value)}
                                         onBlur={handleEndpointBlur}
                                         error={hasErrors('url', endpointUrl, validating)}
-                                        helperText={hasErrors('url', endpointUrl, validating)}
+                                        FormHelperTextProps={IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)
+                                            ? { sx: { ml: 0 } } : undefined}
+                                        helperText={hasErrors('url', endpointUrl, validating)
+                                            || (IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)
+                                                && (endpointId === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION
+                                                    || endpointId === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX)
+                                                ? intl.formatMessage({
+                                                    id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint'
+                                                        + '.gcp.url.hint',
+                                                    defaultMessage: 'Replace the {projectToken} and '
+                                                        + '{regionToken} placeholders in the endpoint URL '
+                                                        + 'with your values.',
+                                                }, {
+                                                    projectToken: <b>{'{project_id}'}</b>,
+                                                    regionToken: <b>{'{region}'}</b>,
+                                                })
+                                                : '')}
                                         required
                                         InputProps={{
                                             endAdornment: (
@@ -1553,6 +1705,171 @@ const AddEditAIEndpoint = ({
                                 </>
                             )}
 
+                            {/* GCP service-account (Vertex AI) Auth: collapsed by default. On-GCP deployments
+                                need nothing; off-GCP users expand this to upload a service-account key. */}
+                            {IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration) && (
+                                <Grid item xs={12}>
+                                    <Accordion
+                                        variant='outlined'
+                                        expanded={gcpKeyExpanded}
+                                        onChange={(e, isExpanded) => setGcpKeyExpanded(isExpanded)}
+                                    >
+                                        <AccordionSummary
+                                            expandIcon={<ExpandMoreIcon />}
+                                            aria-controls='gcp-service-account-key-content'
+                                            id='gcp-service-account-key-header'
+                                            sx={{
+                                                '& .MuiAccordionSummary-content': {
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    pr: 1,
+                                                },
+                                            }}
+                                        >
+                                            <Box>
+                                                <Typography variant='body2'>
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Endpoints.AIEndpoints.Edit.gcp'
+                                                            + '.serviceAccountKey'}
+                                                        defaultMessage='GCP Service Account Key'
+                                                    />
+                                                </Typography>
+                                                <Typography variant='caption' color='textSecondary'>
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Endpoints.AIEndpoints.Edit.gcp'
+                                                            + '.serviceAccountKey.accordion.subtitle'}
+                                                        defaultMessage={'Only required if the gateway runs '
+                                                            + 'outside GCP. On GCP, leave this empty to use the '
+                                                            + 'attached identity (Workload Identity / ADC).'}
+                                                    />
+                                                </Typography>
+                                            </Box>
+                                            {(gcpKeyFileName || serviceAccountKey === '********') ? (
+                                                <Chip
+                                                    size='small'
+                                                    color='success'
+                                                    variant='outlined'
+                                                    icon={<CheckCircleIcon />}
+                                                    label={intl.formatMessage({
+                                                        id: 'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                            + '.gcp.serviceAccountKey.status.configured',
+                                                        defaultMessage: 'Configured',
+                                                    })}
+                                                />
+                                            ) : (
+                                                <Chip
+                                                    size='small'
+                                                    variant='outlined'
+                                                    label={intl.formatMessage({
+                                                        id: 'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                            + '.gcp.serviceAccountKey.status.keyless',
+                                                        defaultMessage: 'Keyless',
+                                                    })}
+                                                />
+                                            )}
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            {(gcpKeyFileName || serviceAccountKey === '********') ? (
+                                                <List disablePadding>
+                                                    <ListItem disableGutters>
+                                                        <ListItemAvatar>
+                                                            <Avatar>
+                                                                <InsertDriveFileIcon />
+                                                            </Avatar>
+                                                        </ListItemAvatar>
+                                                        <ListItemText
+                                                            primary={intl.formatMessage({
+                                                                id: 'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                                    + '.gcp.serviceAccountKey.configured',
+                                                                defaultMessage: 'Service account key',
+                                                            })}
+                                                            secondary={intl.formatMessage({
+                                                                id: 'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                                    + '.gcp.serviceAccountKey.configured'
+                                                                    + '.helper',
+                                                                defaultMessage: 'A credential is configured. '
+                                                                    + 'Delete it to use keyless authentication '
+                                                                    + '(Workload Identity / ADC).',
+                                                            })}
+                                                        />
+                                                        <ListItemSecondaryAction>
+                                                            <IconButton
+                                                                edge='end'
+                                                                aria-label='delete-gcp-service-account-key'
+                                                                onClick={handleClearGCPKey}
+                                                                disabled={isRestricted(['apim:api_create'],
+                                                                    apiObject)}
+                                                                size='large'
+                                                            >
+                                                                <DeleteIcon />
+                                                            </IconButton>
+                                                        </ListItemSecondaryAction>
+                                                    </ListItem>
+                                                </List>
+                                            ) : (
+                                                <Dropzone
+                                                    multiple={false}
+                                                    accept='application/json,.json'
+                                                    onDrop={(acceptedFiles) => readGCPKeyFile(acceptedFiles[0])}
+                                                    disabled={isRestricted(['apim:api_create'], apiObject)}
+                                                >
+                                                    {({ getRootProps, getInputProps, isDragActive }) => (
+                                                        <div
+                                                            {...getRootProps({
+                                                                style: {
+                                                                    ...gcpDropzoneStyle,
+                                                                    ...(gcpKeyError && {
+                                                                        borderColor: theme.palette.error.main,
+                                                                    }),
+                                                                    ...(isDragActive && {
+                                                                        borderColor: theme.palette.primary.dark,
+                                                                        backgroundColor:
+                                                                            theme.palette.action.hover,
+                                                                    }),
+                                                                },
+                                                            })}
+                                                        >
+                                                            <input
+                                                                {...getInputProps()}
+                                                                data-testid='gcp-key-upload-input'
+                                                                aria-label='Upload GCP service account key JSON file'
+                                                            />
+                                                            <Box sx={{
+                                                                display: 'flex',
+                                                                flexDirection: 'column',
+                                                                alignItems: 'center',
+                                                                gap: 0.5,
+                                                            }}
+                                                            >
+                                                                <CloudUploadIcon
+                                                                    color='primary'
+                                                                    fontSize='large'
+                                                                />
+                                                                <Typography variant='body2'>
+                                                                    <FormattedMessage
+                                                                        id={'Apis.Details.Endpoints'
+                                                                            + '.AIEndpoints.Edit.gcp'
+                                                                            + '.serviceAccountKey.upload'}
+                                                                        defaultMessage={'Click or drag the '
+                                                                            + 'service account key JSON file '
+                                                                            + 'to upload.'}
+                                                                    />
+                                                                </Typography>
+                                                                {gcpKeyError && (
+                                                                    <Typography variant='caption' color='error'>
+                                                                        {gcpKeyError}
+                                                                    </Typography>
+                                                                )}
+                                                            </Box>
+                                                        </div>
+                                                    )}
+                                                </Dropzone>
+                                            )}
+                                        </AccordionDetails>
+                                    </Accordion>
+                                </Grid>
+                            )}
+
                             {/* User Managed Identity (UMI) Auth Info */}
                             {IS_UMI_AUTH_ENABLED(llmProviderEndpointConfiguration) && (
                                 <Grid item xs={12}>
@@ -1573,46 +1890,59 @@ const AddEditAIEndpoint = ({
 
                         {/* Action Buttons */}
                         <div className={classes.actionButtonSection}>
-                            <Button
-                                id='endpoint-save-btn'
-                                variant='contained'
-                                color='primary'
-                                type='submit'
-                                onClick={formSave}
-                                disabled={
-                                    isRestricted(['apim:api_create'], apiObject)
-                                    // Validate unconditionally so the button reflects the real state of
-                                    // the form: while a mandatory field is empty it stays disabled,
-                                    // rather than only reacting once a save has been attempted.
-                                    || formHasErrors(true)
-                                    || apiObject.isRevision
-                                }
-                                className={classes.saveButton}
+                            <Tooltip
+                                title={formHasErrors(validating || isEditing)
+                                    && !isRestricted(['apim:api_create'], apiObject)
+                                    && !apiObject.isRevision
+                                    ? intl.formatMessage({
+                                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.save.disabled.hint',
+                                        defaultMessage: 'Complete the required endpoint fields '
+                                            + '(e.g. a valid endpoint URL) to enable.',
+                                    })
+                                    : ''}
                             >
-                                {isEndpointSaving ? (
-                                    <>
-                                        <FormattedMessage
-                                            id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.saving'
-                                            defaultMessage='Saving'
-                                        />
-                                        <CircularProgress size={16} classes={{ root: classes.progress }} />
-                                    </>
-                                ) : (
-                                    <>
-                                        {isEditing ? (
-                                            <FormattedMessage
-                                                id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.update.btn'
-                                                defaultMessage='Update'
-                                            />
+                                <span>
+                                    <Button
+                                        id='endpoint-save-btn'
+                                        variant='contained'
+                                        color='primary'
+                                        type='submit'
+                                        onClick={formSave}
+                                        disabled={
+                                            isRestricted(['apim:api_create'], apiObject)
+                                            || formHasErrors(validating || isEditing)
+                                            || apiObject.isRevision
+                                        }
+                                        className={classes.saveButton}
+                                    >
+                                        {isEndpointSaving ? (
+                                            <>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.saving'
+                                                    defaultMessage='Saving'
+                                                />
+                                                <CircularProgress size={16} classes={{ root: classes.progress }} />
+                                            </>
                                         ) : (
-                                            <FormattedMessage
-                                                id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.create.btn'
-                                                defaultMessage='Create'
-                                            />
+                                            <>
+                                                {isEditing ? (
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Endpoints.AIEndpoints.'
+                                                            + 'AddEditAIEndpoint.update.btn'}
+                                                        defaultMessage='Update'
+                                                    />
+                                                ) : (
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Endpoints.AIEndpoints.'
+                                                            + 'AddEditAIEndpoint.create.btn'}
+                                                        defaultMessage='Create'
+                                                    />
+                                                )}
+                                            </>
                                         )}
-                                    </>
-                                )}
-                            </Button>
+                                    </Button>
+                                </span>
+                            </Tooltip>
                             <Button
                                 component={Link}
                                 to={url}
