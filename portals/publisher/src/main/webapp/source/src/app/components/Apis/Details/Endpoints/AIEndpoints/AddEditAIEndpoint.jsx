@@ -1744,28 +1744,8 @@ const AddEditAIEndpoint = ({
                                                     />
                                                 </Typography>
                                             </Box>
-                                            {(gcpKeyFileName || serviceAccountKey === '********') ? (
-                                                <Chip
-                                                    size='small'
-                                                    color='success'
-                                                    variant='outlined'
-                                                    icon={<CheckCircleIcon />}
-                                                    label={intl.formatMessage({
-                                                        id: 'Apis.Details.Endpoints.AIEndpoints.Edit'
-                                                            + '.gcp.serviceAccountKey.status.configured',
-                                                        defaultMessage: 'Configured',
-                                                    })}
-                                                />
-                                            ) : (
-                                                <Chip
-                                                    size='small'
-                                                    variant='outlined'
-                                                    label={intl.formatMessage({
-                                                        id: 'Apis.Details.Endpoints.AIEndpoints.Edit'
-                                                            + '.gcp.serviceAccountKey.status.keyless',
-                                                        defaultMessage: 'Keyless',
-                                                    })}
-                                                />
+                                            {(gcpKeyFileName || serviceAccountKey === '********') && (
+                                                <CheckCircleIcon color='success' fontSize='small' />
                                             )}
                                         </AccordionSummary>
                                         <AccordionDetails>
@@ -1782,14 +1762,6 @@ const AddEditAIEndpoint = ({
                                                                 id: 'Apis.Details.Endpoints.AIEndpoints.Edit'
                                                                     + '.gcp.serviceAccountKey.configured',
                                                                 defaultMessage: 'Service account key',
-                                                            })}
-                                                            secondary={intl.formatMessage({
-                                                                id: 'Apis.Details.Endpoints.AIEndpoints.Edit'
-                                                                    + '.gcp.serviceAccountKey.configured'
-                                                                    + '.helper',
-                                                                defaultMessage: 'A credential is configured. '
-                                                                    + 'Delete it to use keyless authentication '
-                                                                    + '(Workload Identity / ADC).',
                                                             })}
                                                         />
                                                         <ListItemSecondaryAction>
