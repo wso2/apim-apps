@@ -66,6 +66,7 @@ const StyledApiOperationContextProvider = styled(ApiOperationContextProvider)(
 
         [`& .${classes.paper}`]: {
             padding: '2px',
+            minHeight: '400px',
         },
 
         [`& .${classes.ccTypography}`]: {
