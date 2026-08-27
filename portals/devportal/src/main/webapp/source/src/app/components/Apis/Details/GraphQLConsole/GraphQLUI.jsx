@@ -44,6 +44,10 @@ const Root = styled('div')(() => ({
     '& .graphiql-container .graphiql-plugin': {
         overflowY: 'unset',
     },
+    '& .graphiql-toolbar-button': {
+        display: 'flex',
+        alignItems: 'center',
+    },
 }));
 
 /**
