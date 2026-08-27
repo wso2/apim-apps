@@ -32,6 +32,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
 import { green } from '@mui/material/colors';
+import { ENDPOINT_TYPE_PROTOTYPED } from './endpointConstants';
 
 const PREFIX = 'GenericEndpoint';
 
@@ -237,7 +238,7 @@ function GenericEndpoint(props) {
                                         )}
                                 </IconButton>
                             )}
-                            {type === 'prototyped'
+                            {type === ENDPOINT_TYPE_PROTOTYPED
                                 ? <div />
                                 : (
                                     <>
