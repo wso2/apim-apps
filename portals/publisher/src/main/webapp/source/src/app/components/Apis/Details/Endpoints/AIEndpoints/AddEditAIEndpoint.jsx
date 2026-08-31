@@ -722,6 +722,14 @@ const AddEditAIEndpoint = ({
                         id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.url',
                         defaultMessage: 'Endpoint URL cannot be empty',
                     });
+                } else if (IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)
+                    && /\{[^}]+\}/.test(fieldValue)) {
+                    // Block saving a GCP endpoint whose URL still carries the seeded {project_id}/{region}
+                    // (or any other) template placeholders.
+                    return intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.url.placeholder',
+                        defaultMessage: 'Replace the {projectId} and {region} placeholders in the endpoint URL',
+                    }, { projectId: '{project_id}', region: '{region}' });
                 } else if (!isValidUrl(fieldValue)) {
                     return intl.formatMessage({
                         id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.invalid.url',
