@@ -1729,8 +1729,6 @@ const AddEditAIEndpoint = ({
                                             sx={{
                                                 '& .MuiAccordionSummary-content': {
                                                     alignItems: 'center',
-                                                    justifyContent: 'space-between',
-                                                    pr: 1,
                                                 },
                                             }}
                                         >
@@ -1752,9 +1750,6 @@ const AddEditAIEndpoint = ({
                                                     />
                                                 </Typography>
                                             </Box>
-                                            {(gcpKeyFileName || serviceAccountKey === '********') && (
-                                                <CheckCircleIcon color='success' fontSize='small' />
-                                            )}
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             {(gcpKeyFileName || serviceAccountKey === '********') ? (
