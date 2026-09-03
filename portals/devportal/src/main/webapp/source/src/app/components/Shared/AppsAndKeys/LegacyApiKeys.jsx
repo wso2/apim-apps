@@ -50,7 +50,31 @@ import {
 import MUIDataTable from 'mui-datatables';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
+import { validateRestrictionValue } from 'AppComponents/Shared/AppsAndKeys/constraintValidator';
 
+// Message descriptors for the Security Restriction validation errors, shared with the per-API key generation dialog (ApiKeyGenerate).
+export const restrictionMessages = defineMessages({
+    invalidIPRestriction: {
+        id: 'Shared.AppsAndKeys.LegacyApiKeys.alert.invalidIPRestriction',
+        defaultMessage: 'Invalid IP address. Enter a valid IPv4/IPv6 address or CIDR range,'
+            + ' separating multiple values with commas.',
+    },
+    invalidRefererRestriction: {
+        id: 'Shared.AppsAndKeys.LegacyApiKeys.alert.invalidRefererRestriction',
+        defaultMessage: 'Invalid referrer. Enter a URL or a pattern with * wildcards'
+            + ' (e.g. https://example.com/*), separating multiple values with commas.',
+    },
+});
+
+export const validateRestrictionOrAlert = (restrictionType, restrictionValue, intl, setRestrictionError) => {
+    const message = validateRestrictionValue(restrictionType, restrictionValue, intl, restrictionMessages);
+    setRestrictionError(message);
+    if (message) {
+        Alert.error(message);
+        return false;
+    }
+    return true;
+};
 /**
  * LegacyApiKeys component for managing legacy API keys
  * @param {object} props - Component props
@@ -89,6 +113,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
     const [customValidityDays, setCustomValidityDays] = React.useState('');
     const [restrictionType, setRestrictionType] = React.useState('none');
     const [restrictionValue, setRestrictionValue] = React.useState('');
+    const [restrictionError, setRestrictionError] = React.useState('');
 
     /**
      * Gets all the legacy API keys for a particular application
@@ -164,6 +189,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
         setCustomValidityDays('');
         setRestrictionType('none');
         setRestrictionValue('');
+        setRestrictionError('');
     };
 
     const handleCloseGeneratedKeyModal = () => {
@@ -192,6 +218,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
             ));
             return;
         }
+        if (!validateRestrictionOrAlert(restrictionType, restrictionValue, intl, setRestrictionError)) return;
         if (validityPeriod === 'custom' && !customValidityDays) {
             const customDays = Number(customValidityDays);
             if (!Number.isInteger(customDays) || customDays <= 0) {
@@ -619,6 +646,7 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                                         onChange={(e) => {
                                             setRestrictionType(e.target.value);
                                             setRestrictionValue('');
+                                            setRestrictionError('');
                                         }}
                                     >
                                         {restrictionOptions.map((option) => (
@@ -638,10 +666,15 @@ export default function LegacyApiKeys({ keyType, selectedApp }) {
                                             ? intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.field.ipAddress.label', defaultMessage: 'IP Address' })
                                             : intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.field.referrerUrl.label', defaultMessage: 'Referrer URL' })}
                                         value={restrictionValue}
-                                        onChange={(e) => setRestrictionValue(e.target.value)}
+                                        onChange={(e) => {
+                                            setRestrictionValue(e.target.value);
+                                            setRestrictionError('');
+                                        }}
                                         placeholder={restrictionType === 'ip'
-                                            ? intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.field.ipAddress.placeholder', defaultMessage: 'e.g. 192.168.1.100' })
-                                            : intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.field.referrerUrl.placeholder', defaultMessage: 'e.g. https://example.com' })}
+                                            ? intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.field.ipAddress.placeholder', defaultMessage: 'e.g. 192.168.1.100, 10.0.0.0/24' })
+                                            : intl.formatMessage({ id: 'Shared.AppsAndKeys.LegacyApiKeys.field.referrerUrl.placeholder', defaultMessage: 'e.g. https://example.com/*' })}
+                                        error={Boolean(restrictionError)}
+                                        helperText={restrictionError}
                                     />
                                 </Grid>
                             )}

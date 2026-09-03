@@ -215,6 +215,8 @@ export default function ApiKeyListing() {
         setRestrictionType,
         restrictionValue,
         setRestrictionValue,
+        restrictionError,
+        setRestrictionError,
         generationModalOpen,
         isGenerating,
         apikey,
@@ -743,6 +745,7 @@ export default function ApiKeyListing() {
                                             onChange={(e) => {
                                                 setRestrictionType(e.target.value);
                                                 setRestrictionValue('');
+                                                setRestrictionError('');
                                             }}
                                         >
                                             {restrictionOptions.map((option) => (
@@ -768,16 +771,21 @@ export default function ApiKeyListing() {
                                                     defaultMessage: 'Referrer URL',
                                                 })}
                                             value={restrictionValue}
-                                            onChange={(e) => setRestrictionValue(e.target.value)}
+                                            onChange={(e) => {
+                                                setRestrictionValue(e.target.value);
+                                                setRestrictionError('');
+                                            }}
                                             placeholder={restrictionType === 'ip'
                                                 ? intl.formatMessage({
                                                     id: 'Apis.Details.APIKeys.ApiKeyListing.input.ipAddress.placeholder',
-                                                    defaultMessage: 'e.g. 192.168.1.100',
+                                                    defaultMessage: 'e.g. 192.168.1.100, 10.0.0.0/24',
                                                 })
                                                 : intl.formatMessage({
                                                     id: 'Apis.Details.APIKeys.ApiKeyListing.input.referrerUrl.placeholder',
-                                                    defaultMessage: 'e.g. https://example.com',
+                                                    defaultMessage: 'e.g. https://example.com/*',
                                                 })}
+                                            error={Boolean(restrictionError)}
+                                            helperText={restrictionError}
                                             sx={{ minWidth: 200 }}
                                         />
                                     </Grid>
