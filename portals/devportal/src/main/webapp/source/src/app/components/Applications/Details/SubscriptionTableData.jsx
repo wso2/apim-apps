@@ -235,7 +235,13 @@ class SubscriptionTableData extends React.Component {
      * Check if the API is a webhook API
      */
     checkIfWebhookAPI() {
-        this.setState({ isWebhookAPI: this.props.subscription.apiInfo.type === CONSTANTS.API_TYPES.WEBSUB });
+        const { subscription } = this.props;
+        // Webhook details are fetched by API id. A subscription to an API owned by another organization carries no
+        // apiId, so treat it as a non webhook subscription rather than offering a link that cannot resolve.
+        this.setState({
+            isWebhookAPI: Boolean(subscription.apiId)
+                && subscription.apiInfo.type === CONSTANTS.API_TYPES.WEBSUB,
+        });
     }
 
     /**

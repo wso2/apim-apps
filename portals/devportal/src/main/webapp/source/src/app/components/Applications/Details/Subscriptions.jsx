@@ -270,7 +270,6 @@ class SubscriptionsBase extends React.Component {
             searchText: '',
             pseudoSubscriptions: false,
             pseudoMcpSubscriptions: false,
-            showProviderTenant: false,
             dialogSubscriptions: null,
             dialogMcpSubscriptions: null,
             dialogRefreshKey: 0,
@@ -317,14 +316,6 @@ class SubscriptionsBase extends React.Component {
      */
     componentDidMount() {
         this.mounted = true;
-        // DEPRECATED cross tenant subscription visibility. The settings flag is present only when the server has
-        // opted in, in which case the backend also returns the application's subscriptions to other tenants' APIs
-        // and the owning organization is shown alongside each row.
-        const settingsContext = this.context;
-        this.setState({
-            showProviderTenant: Boolean(settingsContext && settingsContext.settings
-                && settingsContext.settings.crossTenantSubscriptionEnabled),
-        });
         const { apisAccessible, mcpServersAccessible } = this.props;
         this.ensureLoaded(
             apisAccessible ? SUBSCRIPTIONS_PER_PAGE : 0,
@@ -845,12 +836,18 @@ class SubscriptionsBase extends React.Component {
             subscriptionsNotFound,
             pseudoSubscriptions,
             pseudoMcpSubscriptions,
-            showProviderTenant,
             dialogSubscriptions,
             dialogMcpSubscriptions,
             dialogRefreshKey,
             dialogMcpRefreshKey,
         } = this.state;
+
+        // DEPRECATED cross tenant subscription visibility. Read from the live context rather than caching at mount:
+        // the settings are replaced asynchronously once the user is authenticated, so a value captured in
+        // componentDidMount can be stale.
+        const settingsContext = this.context;
+        const showProviderTenant = Boolean(settingsContext && settingsContext.settings
+            && settingsContext.settings.crossTenantSubscriptionEnabled);
 
         if (!isAuthorize) {
             window.location = app.context + '/services/configs';
