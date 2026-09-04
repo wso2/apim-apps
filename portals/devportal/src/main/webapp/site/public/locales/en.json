@@ -577,6 +577,7 @@
   "Applications.Details.Subscriptions.api.webhooks": "Webhooks",
   "Applications.Details.Subscriptions.api.webhooks.delivery.time.unavailable": "Delivery data unavailable",
   "Applications.Details.Subscriptions.api.webhooks.subscriptions.unavailable": "No Webhook subscriptions available at this time.",
+  "Applications.Details.Subscriptions.apiProviderTenantDomain": "Provider Organization",
   "Applications.Details.Subscriptions.apis.add.subscription.button": "Subscribe",
   "Applications.Details.Subscriptions.business.plan": "Business Plan",
   "Applications.Details.Subscriptions.business.plan.updated": "Business Plan updated successfully!",

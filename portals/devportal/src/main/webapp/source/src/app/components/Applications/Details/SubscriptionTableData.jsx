@@ -101,6 +101,13 @@ class SubscriptionTableData extends React.Component {
         const { subscription } = this.props;
         this.mounted = true;
         this.checkIfWebhookAPI();
+        // A subscription to an API owned by another organization (deprecated cross tenant visibility) cannot be
+        // resolved in the current organization, so the backend returns no apiId for it. Skip the per API lookup:
+        // getAPIById(undefined) would leave the path parameter unsubstituted, producing '/apis/{apiId}' which fails
+        // URI normalization, and the API is not retrievable here in any case.
+        if (!subscription.apiId) {
+            return;
+        }
         this.populateAPIData(subscription.apiId);
         this.checkIfDynamicUsagePolicy(subscription.throttlingPolicy);
     }
@@ -254,8 +261,10 @@ class SubscriptionTableData extends React.Component {
     */
     render() {
         const {
+            showProviderTenant,
             subscription: {
                 apiInfo, status, throttlingPolicy, subscriptionId, apiId, requestedThrottlingPolicy,
+                apiProviderTenantDomain,
             },
         } = this.props;
         const {
@@ -315,6 +324,7 @@ class SubscriptionTableData extends React.Component {
                             </>
                         )}
                     </TableCell>
+                    {showProviderTenant && <TableCell>{apiProviderTenantDomain}</TableCell>}
                     <TableCell>{apiInfo.lifeCycleStatus}</TableCell>
                     {throttlingPolicy.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN) ? (
                         <TableCell>
@@ -586,11 +596,16 @@ SubscriptionTableData.propTypes = {
         applicationId: PropTypes.string.isRequired,
         status: PropTypes.string.isRequired,
         requestedThrottlingPolicy: PropTypes.string.isRequired,
+        apiProviderTenantDomain: PropTypes.string,
     }).isRequired,
+    showProviderTenant: PropTypes.bool,
     handleSubscriptionDelete: PropTypes.func.isRequired,
     handleSubscriptionUpdate: PropTypes.func.isRequired,
     getAPIById: PropTypes.func.isRequired,
     getMCPServerById: PropTypes.func.isRequired,
     getSubscriptionPolicyByName: PropTypes.func.isRequired,
+};
+SubscriptionTableData.defaultProps = {
+    showProviderTenant: false,
 };
 export default SubscriptionTableData;

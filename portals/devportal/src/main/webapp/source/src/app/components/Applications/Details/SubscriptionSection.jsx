@@ -44,6 +44,7 @@ const classes = {
     titleWrapper: `${PREFIX}-titleWrapper`,
     genericMessageWrapper: `${PREFIX}-genericMessageWrapper`,
     subsTable: `${PREFIX}-subsTable`,
+    subsTableCrossTenant: `${PREFIX}-subsTableCrossTenant`,
     sectionContainer: `${PREFIX}-sectionContainer`,
     pagination: `${PREFIX}-pagination`,
 };
@@ -154,6 +155,25 @@ const Root = styled('div')((
         width: '100%',
     },
 
+    // DEPRECATED cross tenant subscription visibility only. With the optional "Provider Organization" column the
+    // table has six columns instead of five, so redistribute the widths by percentage and clear the pixel minWidths
+    // set above, keeping the fixed layout scaled to the card instead of overflowing it. Applied alongside subsTable
+    // and, being declared later at equal specificity, it wins.
+    [`& .${classes.subsTableCrossTenant}`]: {
+        '& th:nth-of-type(1)': { width: '22%', minWidth: 0 }, // Entity Name
+        '& th:nth-of-type(2)': { width: '14%', minWidth: 0 }, // Provider Organization
+        '& th:nth-of-type(3)': { width: '15%', minWidth: 0 }, // Lifecycle State
+        '& th:nth-of-type(4)': { width: '16%', minWidth: 0 }, // Business Plan
+        '& th:nth-of-type(5)': { width: '18%', minWidth: 0 }, // Subscription Status
+        '& th:nth-of-type(6)': { width: '15%', minWidth: 0 }, // Action
+        '& td:nth-of-type(1)': { width: '22%', minWidth: 0 },
+        '& td:nth-of-type(2)': { width: '14%', minWidth: 0 },
+        '& td:nth-of-type(3)': { width: '15%', minWidth: 0 },
+        '& td:nth-of-type(4)': { width: '16%', minWidth: 0 },
+        '& td:nth-of-type(5)': { width: '18%', minWidth: 0 },
+        '& td:nth-of-type(6)': { width: '15%', minWidth: 0 },
+    },
+
     [`& .${classes.pagination}`]: {
         display: 'flex',
         justifyContent: 'flex-end',
@@ -179,6 +199,7 @@ const SubscriptionSection = ({
     subscriptions,
     subscriptionsNotFound,
     pseudoSubscriptions,
+    showProviderTenant,
     onAddClick,
     handleSubscriptionDelete,
     handleSubscriptionUpdate,
@@ -243,12 +264,25 @@ const SubscriptionSection = ({
                                         <ResourceNotFound />
                                     ) : (
                                         <>
-                                            <Table className={classes.subsTable}>
+                                            <Table
+                                                className={showProviderTenant
+                                                    ? `${classes.subsTable} ${classes.subsTableCrossTenant}`
+                                                    : classes.subsTable}
+                                            >
                                                 <TableHead>
                                                     <TableRow>
                                                         <TableCell className={classes.firstCell}>
                                                             {entityNameColumn}
                                                         </TableCell>
+                                                        {showProviderTenant && (
+                                                            <TableCell>
+                                                                <FormattedMessage
+                                                                    id={'Applications.Details.Subscriptions'
+                                                                        + '.apiProviderTenantDomain'}
+                                                                    defaultMessage='Provider Organization'
+                                                                />
+                                                            </TableCell>
+                                                        )}
                                                         <TableCell>
                                                             <FormattedMessage
                                                                 id='Applications.Details.Subscriptions.subscription.state'
@@ -282,6 +316,7 @@ const SubscriptionSection = ({
                                                                 <SubscriptionTableData
                                                                     key={subscription.subscriptionId}
                                                                     subscription={subscription}
+                                                                    showProviderTenant={showProviderTenant}
                                                                     handleSubscriptionDelete={handleSubscriptionDelete}
                                                                     handleSubscriptionUpdate={handleSubscriptionUpdate}
                                                                     getAPIById={getAPIById}
@@ -318,6 +353,7 @@ SubscriptionSection.propTypes = {
     subscriptions: PropTypes.arrayOf(PropTypes.shape({})),
     subscriptionsNotFound: PropTypes.bool,
     pseudoSubscriptions: PropTypes.bool,
+    showProviderTenant: PropTypes.bool,
     onAddClick: PropTypes.func.isRequired,
     handleSubscriptionDelete: PropTypes.func.isRequired,
     handleSubscriptionUpdate: PropTypes.func.isRequired,
@@ -337,6 +373,7 @@ SubscriptionSection.defaultProps = {
     subscriptions: [],
     subscriptionsNotFound: false,
     pseudoSubscriptions: false,
+    showProviderTenant: false,
 };
 
 export default SubscriptionSection;
