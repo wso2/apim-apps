@@ -1676,7 +1676,6 @@
   "Apis.Details.Resources.components.AddOperation.operation.target.topic.name.label": "Topic Name",
   "Apis.Details.Resources.components.AddOperation.operation.target.uri.pattern": "Enter URI pattern",
   "Apis.Details.Resources.components.AddOperation.operation.target.uri.pattern.label": "URI Pattern",
-  "Apis.Details.Resources.components.AddOperation.operation.topic.cannot.have.path.params.warning": "WebSub topic can't have path parameters",
   "Apis.Details.Resources.components.AddOperation.option": "OPTIONS",
   "Apis.Details.Resources.components.AddOperation.option.title": "Select the OPTIONS method to send OPTIONS calls to the backend. If the OPTIONS method is not selected, OPTIONS calls will be returned from the Gateway with allowed methods.",
   "Apis.Details.Resources.components.AddParameter.clear.inputs.tooltip": "Clear inputs",
