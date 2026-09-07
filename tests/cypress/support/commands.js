@@ -694,7 +694,8 @@ Cypress.Commands.add('createAPIWithoutEndpoint', (name = null, version = null, t
 Cypress.Commands.add('createApp', (appName, appDescription) => {
     cy.visit(`/devportal/applications/create?tenant=carbon.super`);
     cy.intercept('**/application-attributes').as('attrGet');
-    cy.wait('@attrGet', { timeout: 300000 }).then(() => {
+    cy.intercept('**/throttling-policies/**').as('tiersGet');
+    cy.wait(['@attrGet', '@tiersGet'], { timeout: 300000 }).then(() => {
         // Filling the form
         cy.get('#application-name').click();
         cy.get('#application-name').type(appName);
