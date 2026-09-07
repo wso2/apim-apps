@@ -73,8 +73,13 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import AdvanceEndpointConfig from '../AdvancedConfig/AdvanceEndpointConfig';
+import GCPEndpointUrlBuilder from './GCPEndpointUrlBuilder';
 
 const PREFIX = 'AddEditAIEndpoint';
+
+// Upper bound for an uploaded GCP service-account key file. A real key is ~2-3 KB; 64 KB is generous headroom
+// while rejecting an obviously-wrong (huge) file before it is read into memory.
+const MAX_GCP_KEY_FILE_BYTES = 64 * 1024;
 
 // Compact dashed dropzone, matching the certificate/policy upload dropzones.
 const gcpKeyDropzoneStyles = {
@@ -730,6 +735,26 @@ const AddEditAIEndpoint = ({
                         id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.url.placeholder',
                         defaultMessage: 'Replace the {projectId} and {region} placeholders in the endpoint URL',
                     }, { projectId: '{project_id}', region: '{region}' });
+                } else if (IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)) {
+                    // A regional Vertex URL carries the region twice (host prefix + locations path); a hand-edit
+                    // that leaves them different is an invalid URL Vertex would reject at request time, so block
+                    // it at save with a clear message.
+                    const regionalMatch = fieldValue.match(
+                        /^https:\/\/([^.]+)-aiplatform\.googleapis\.com\/v1\/projects\/[^/]+\/locations\/([^/]+)\//,
+                    );
+                    if (regionalMatch && regionalMatch[1] !== regionalMatch[2]) {
+                        return intl.formatMessage({
+                            id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.url.region.mismatch',
+                            defaultMessage: 'The region must match in the host ({host}) and the locations path '
+                                + '({loc}) of the endpoint URL.',
+                        }, { host: regionalMatch[1], loc: regionalMatch[2] });
+                    }
+                    if (!isValidUrl(fieldValue)) {
+                        return intl.formatMessage({
+                            id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.invalid.url',
+                            defaultMessage: 'Please enter a valid endpoint URL',
+                        });
+                    }
                 } else if (!isValidUrl(fieldValue)) {
                     return intl.formatMessage({
                         id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.invalid.url',
@@ -1003,6 +1028,14 @@ const AddEditAIEndpoint = ({
         if (!file) {
             return;
         }
+        // Reject an oversized file up front (using the synchronous File.size) so it is never read into memory.
+        if (file.size > MAX_GCP_KEY_FILE_BYTES) {
+            setGcpKeyError(intl.formatMessage({
+                id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp.serviceAccountKey.tooLarge',
+                defaultMessage: 'The selected file is too large to be a service account key (max {maxKb} KB).',
+            }, { maxKb: MAX_GCP_KEY_FILE_BYTES / 1024 }));
+            return;
+        }
         const reader = new FileReader();
         reader.onload = (event) => {
             const content = event.target.result;
@@ -1184,6 +1217,77 @@ const AddEditAIEndpoint = ({
         }, envType);
     };
     const { regions } = Configurations.apis.endpoint.aws;
+    // Shared endpoint-URL adornment (status chip + test + advanced-config buttons), reused by the plain URL
+    // field and, in raw mode, by the GCP structured URL builder.
+    const urlEndAdornment = (
+        <InputAdornment position='end'>
+            {statusCode && (
+                <Chip
+                    id={state.id + '-endpoint-test-status'}
+                    label={statusCode}
+                    className={
+                        isEndpointValid ?
+                            classes.endpointValidChip : iff(
+                                isErrorCode,
+                                classes.endpointErrorChip,
+                                classes.endpointInvalidChip,
+                            )}
+                    variant='outlined'
+                />
+            )}
+            <IconButton
+                className={
+                    isEndpointValid ?
+                        classes.iconButtonValid : classes.iconButton
+                }
+                aria-label='TestEndpoint'
+                onClick={() => testEndpoint(endpointUrl, apiObject.id)}
+                disabled={
+                    (isRestricted(['apim:api_create'], apiObject)) || isUpdating
+                }
+                id='endpoint-test-icon-btn'
+                size='large'>
+                {isUpdating
+                    ? <CircularProgress size={20} />
+                    : (
+                        <Tooltip
+                            placement='top-start'
+                            interactive
+                            title={(
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.AIEndpoints.' +
+                                        'AddEditAIEndpoint.test.endpoint'}
+                                    defaultMessage='Check endpoint status'
+                                />
+                            )}
+                        >
+                            <CheckCircleIcon />
+                        </Tooltip>
+                    )}
+            </IconButton>
+            <IconButton
+                className={classes.iconButton}
+                aria-label='Settings'
+                onClick={handleAdvancedConfigOpen}
+                disabled={(isRestricted(['apim:api_create'], apiObject))}
+                id='endpoint-configuration-icon-btn'
+                size='large'>
+                <Tooltip
+                    placement='top-start'
+                    interactive
+                    title={(
+                        <FormattedMessage
+                            id={'Apis.Details.Endpoints.AIEndpoints.' +
+                                'AddEditAIEndpoint.endpoint.configuration'}
+                            defaultMessage='Endpoint configurations'
+                        />
+                    )}
+                >
+                    <SettingsIcon />
+                </Tooltip>
+            </IconButton>
+        </InputAdornment>
+    );
     return (
         <StyledGrid container justifyContent='center'>
             <Grid item sm={12} md={12} lg={8}>
@@ -1272,111 +1376,34 @@ const AddEditAIEndpoint = ({
                                 </FormControl>
                             </Grid>
                             <Grid item xs={IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration) ? 12 : 6}>
-                                <FormControl fullWidth>
-                                    <TextField
-                                        disabled={isRestricted(['apim:api_create'], apiObject)}
-                                        label='Endpoint URL'
-                                        id='url'
-                                        fullWidth
-                                        multiline={IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)}
-                                        maxRows={4}
-                                        className={classes.textField}
-                                        value={endpointUrl}
-                                        onChange={(e) => setEndpointUrl(e.target.value)}
+                                {IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration) ? (
+                                    <GCPEndpointUrlBuilder
+                                        url={endpointUrl}
+                                        onChange={setEndpointUrl}
                                         onBlur={handleEndpointBlur}
-                                        error={hasErrors('url', endpointUrl, validating)}
-                                        FormHelperTextProps={IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)
-                                            ? { sx: { ml: 0 } } : undefined}
-                                        helperText={hasErrors('url', endpointUrl, validating)
-                                            || (IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)
-                                                && (endpointId === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION
-                                                    || endpointId === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX)
-                                                ? intl.formatMessage({
-                                                    id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint'
-                                                        + '.gcp.url.hint',
-                                                    defaultMessage: 'Replace the {projectToken} and '
-                                                        + '{regionToken} placeholders in the endpoint URL '
-                                                        + 'with your values.',
-                                                }, {
-                                                    projectToken: <b>{'{project_id}'}</b>,
-                                                    regionToken: <b>{'{region}'}</b>,
-                                                })
-                                                : '')}
-                                        required
-                                        InputProps={{
-                                            endAdornment: (
-                                                <InputAdornment position='end'>
-                                                    {statusCode && (
-                                                        <Chip
-                                                            id={state.id + '-endpoint-test-status'}
-                                                            label={statusCode}
-                                                            className={
-                                                                isEndpointValid ?
-                                                                    classes.endpointValidChip : iff(
-                                                                        isErrorCode,
-                                                                        classes.endpointErrorChip,
-                                                                        classes.endpointInvalidChip,
-                                                                    )}
-                                                            variant='outlined'
-                                                        />
-                                                    )}
-                                                    <IconButton
-                                                        className={
-                                                            isEndpointValid ?
-                                                                classes.iconButtonValid : classes.iconButton
-                                                        }
-                                                        aria-label='TestEndpoint'
-                                                        onClick={() => testEndpoint(endpointUrl, apiObject.id)}
-                                                        disabled={
-                                                            (isRestricted(['apim:api_create'], apiObject)) || isUpdating
-                                                        }
-                                                        id='endpoint-test-icon-btn'
-                                                        size='large'>
-                                                        {isUpdating
-                                                            ? <CircularProgress size={20} />
-                                                            : (
-                                                                <Tooltip
-                                                                    placement='top-start'
-                                                                    interactive
-                                                                    title={(
-                                                                        <FormattedMessage
-                                                                            id={'Apis.Details.Endpoints.AIEndpoints.' +
-                                                                                'AddEditAIEndpoint.test.endpoint'}
-                                                                            defaultMessage='Check endpoint status'
-                                                                        />
-                                                                    )}
-                                                                >
-                                                                    <CheckCircleIcon />
-                                                                </Tooltip>
-
-                                                            )}
-                                                    </IconButton>
-                                                    <IconButton
-                                                        className={classes.iconButton}
-                                                        aria-label='Settings'
-                                                        onClick={handleAdvancedConfigOpen}
-                                                        disabled={(isRestricted(['apim:api_create'], apiObject))}
-                                                        id='endpoint-configuration-icon-btn'
-                                                        size='large'>
-                                                        <Tooltip
-                                                            placement='top-start'
-                                                            interactive
-                                                            title={(
-                                                                <FormattedMessage
-                                                                    id={'Apis.Details.Endpoints.AIEndpoints.' +
-                                                                        'AddEditAIEndpoint.endpoint.configuration'}
-                                                                    defaultMessage='Endpoint configurations'
-                                                                />
-                                                            )}
-                                                        >
-                                                            <SettingsIcon />
-                                                        </Tooltip>
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            ),
-                                        }}
+                                        disabled={isRestricted(['apim:api_create'], apiObject)}
+                                        error={Boolean(hasErrors('url', endpointUrl, validating))}
+                                        helperText={hasErrors('url', endpointUrl, validating)}
+                                        rawAdornment={urlEndAdornment}
                                     />
-                                </FormControl>
+                                ) : (
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            disabled={isRestricted(['apim:api_create'], apiObject)}
+                                            label='Endpoint URL'
+                                            id='url'
+                                            fullWidth
+                                            className={classes.textField}
+                                            value={endpointUrl}
+                                            onChange={(e) => setEndpointUrl(e.target.value)}
+                                            onBlur={handleEndpointBlur}
+                                            error={hasErrors('url', endpointUrl, validating)}
+                                            helperText={hasErrors('url', endpointUrl, validating)}
+                                            required
+                                            InputProps={{ endAdornment: urlEndAdornment }}
+                                        />
+                                    </FormControl>
+                                )}
                             </Grid>
                             {/* AI Endpoint Auth Fields */}
                             {IS_APIKEY_AUTH_ENABLED(llmProviderEndpointConfiguration) && (
@@ -1791,6 +1818,7 @@ const AddEditAIEndpoint = ({
                                                     {({ getRootProps, getInputProps, isDragActive }) => (
                                                         <div
                                                             {...getRootProps({
+                                                                id: 'gcp-service-account-key-upload',
                                                                 style: {
                                                                     ...gcpDropzoneStyle,
                                                                     ...(gcpKeyError && {
