@@ -35,6 +35,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import APIList from 'AppComponents/Apis/Listing/APICardView';
 import CONSTANTS from 'AppData/Constants';
 import Subscription from 'AppData/Subscription';
+import SettingsContext from 'AppComponents/Shared/SettingsContext';
 import Api from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
 import { app } from 'Settings';
@@ -841,6 +842,13 @@ class SubscriptionsBase extends React.Component {
             dialogMcpRefreshKey,
         } = this.state;
 
+        // DEPRECATED cross tenant subscription visibility. Read from the live context rather than caching at mount:
+        // the settings are replaced asynchronously once the user is authenticated, so a value captured in
+        // componentDidMount can be stale.
+        const settingsContext = this.context;
+        const showProviderTenant = Boolean(settingsContext && settingsContext.settings
+            && settingsContext.settings.crossTenantSubscriptionEnabled);
+
         if (!isAuthorize) {
             window.location = app.context + '/services/configs';
         }
@@ -884,6 +892,7 @@ class SubscriptionsBase extends React.Component {
                                 subscriptions={apiSubscriptions}
                                 subscriptionsNotFound={subscriptionsNotFound}
                                 pseudoSubscriptions={pseudoSubscriptions}
+                                showProviderTenant={showProviderTenant}
                                 onAddClick={this.handleOpenDialog}
                                 handleSubscriptionDelete={this.handleSubscriptionDelete}
                                 handleSubscriptionUpdate={this.handleSubscriptionUpdate}
@@ -933,6 +942,7 @@ class SubscriptionsBase extends React.Component {
                                 subscriptions={mcpSubscriptions}
                                 subscriptionsNotFound={subscriptionsNotFound}
                                 pseudoSubscriptions={pseudoMcpSubscriptions}
+                                showProviderTenant={showProviderTenant}
                                 onAddClick={this.handleOpenMcpDialog}
                                 handleSubscriptionDelete={this.handleSubscriptionDelete}
                                 handleSubscriptionUpdate={this.handleSubscriptionUpdate}
@@ -1172,6 +1182,8 @@ class SubscriptionsBase extends React.Component {
         }
     }
 }
+
+SubscriptionsBase.contextType = SettingsContext;
 
 SubscriptionsBase.propTypes = {
     application: PropTypes.shape({
