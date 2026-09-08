@@ -714,8 +714,8 @@ const AddEditAIEndpoint = ({
     // Persist the endpoint URL into the endpoint config for the current stage. formSave reads the URL from
     // there, so every change to the URL - including the structured GCP builder's region/project/type changes,
     // which never fire a blur - must go through here, not just setEndpointUrl.
-    const persistEndpointUrl = (url) => {
-        const trimmedUrl = url?.trim() || '';
+    const persistEndpointUrl = (endpointUrlValue) => {
+        const trimmedUrl = endpointUrlValue?.trim() || '';
         if (state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production) {
             dispatch({ field: 'updateProductionEndpointUrl', value: trimmedUrl });
         } else {
@@ -727,9 +727,9 @@ const AddEditAIEndpoint = ({
     };
     // Used by the GCP structured URL builder: update the field state and persist the emitted URL on every
     // change (a region edit or Regional/Global toggle does not trigger a blur).
-    const handleEndpointUrlChange = (url) => {
-        setEndpointUrl(url);
-        persistEndpointUrl(url);
+    const handleEndpointUrlChange = (endpointUrlValue) => {
+        setEndpointUrl(endpointUrlValue);
+        persistEndpointUrl(endpointUrlValue);
     };
 
     /**
