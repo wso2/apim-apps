@@ -115,6 +115,38 @@ const EndpointCard = ({
         return endpoint.name || 'No Name Configured';
     }
 
+    // GCP (Vertex AI): the service-account key is optional (keyless endpoints use the gateway's attached GCP
+    // identity / Workload Identity), so there is no "credentials required" state. What needs attention is the
+    // endpoint URL: a freshly seeded endpoint carries {project_id}/{region} placeholders, and an imported /
+    // programmatically created endpoint may have no URL at all. Nudge the user while it is empty or has
+    // placeholders.
+    const renderGcpEndpointUrlWarning = () => {
+        const gcpEndpointUrl = endpoint.deploymentStage === 'PRODUCTION'
+            ? endpoint.endpointConfig?.production_endpoints?.url
+            : endpoint.endpointConfig?.sandbox_endpoints?.url;
+        // A resolved Vertex URL contains no '{'; a leftover {project_id}/{region} placeholder does.
+        if (gcpEndpointUrl?.trim() && !gcpEndpointUrl.includes('{')) {
+            return null;
+        }
+        return (
+            <Tooltip title='Set the endpoint URL and replace any {project_id} and {region} placeholders'>
+                <Chip
+                    icon={<WarningIcon />}
+                    label='Configure Endpoint URL'
+                    size='small'
+                    variant='outlined'
+                    className={classes.warningChip}
+                    onClick={() => {
+                        history.push(
+                            urlPrefix + apiObject.id + '/endpoints/' + endpoint.id,
+                        );
+                    }}
+                    sx={{ my: '4px' }}
+                />
+            </Tooltip>
+        );
+    };
+
     const renderEndpointSecurityWarning = () => {
         if (llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled) {
             const endpointSecurity =
@@ -170,34 +202,10 @@ const EndpointCard = ({
                 );
             }
 
-            // GCP (Vertex AI): the service-account key is optional (keyless endpoints use the gateway's
-            // attached GCP identity / Workload Identity), so there is no "credentials required" state. What
-            // needs attention is the endpoint URL: a freshly seeded endpoint carries {project_id}/{region}
-            // placeholders, and an imported / programmatically created endpoint may have no URL at all. Nudge the
-            // user to configure it while it is empty or still contains those placeholders.
+            // GCP (Vertex AI): warn while the endpoint URL is empty or still carries {project_id}/{region}
+            // placeholders (see renderGcpEndpointUrlWarning).
             if (llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'gcp') {
-                const gcpEndpointUrl = endpoint.deploymentStage === 'PRODUCTION'
-                    ? endpoint.endpointConfig?.production_endpoints?.url
-                    : endpoint.endpointConfig?.sandbox_endpoints?.url;
-                if (!gcpEndpointUrl?.trim() || /\{[^}]+\}/.test(gcpEndpointUrl)) {
-                    return (
-                        <Tooltip title='Set the endpoint URL and replace any {project_id} and {region} placeholders'>
-                            <Chip
-                                icon={<WarningIcon />}
-                                label='Configure Endpoint URL'
-                                size='small'
-                                variant='outlined'
-                                className={classes.warningChip}
-                                onClick={() => {
-                                    history.push(
-                                        urlPrefix + apiObject.id + '/endpoints/' + endpoint.id,
-                                    );
-                                }}
-                                sx={{ my: '4px' }}
-                            />
-                        </Tooltip>
-                    );
-                }
+                return renderGcpEndpointUrlWarning();
             }
         }
         return null;

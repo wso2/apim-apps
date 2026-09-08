@@ -210,10 +210,9 @@ const GCPEndpointUrlBuilder = ({ url, onChange, onBlur, disabled, error, helperT
         emit({ type: value, region, projectId });
     };
 
-    const handleRegion = (value) => {
-        const next = value || '';
-        setRegion(next);
-        emit({ type, region: next, projectId });
+    const handleRegion = (value = '') => {
+        setRegion(value);
+        emit({ type, region: value, projectId });
     };
 
     const handleProject = (value) => {
@@ -266,7 +265,7 @@ const GCPEndpointUrlBuilder = ({ url, onChange, onBlur, disabled, error, helperT
                         disabled={fieldsDisabled || isGlobal}
                         options={COMMON_REGIONS}
                         value={isGlobal ? '' : region}
-                        onChange={(_e, value) => handleRegion(value)}
+                        onChange={(_e, value) => handleRegion(value ?? '')}
                         onInputChange={(_e, value, reason) => {
                             if (reason === 'input') { handleRegion(value); }
                         }}

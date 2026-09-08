@@ -339,6 +339,10 @@ const AddEditAIEndpoint = ({
     const [authKeyIdentifier, setAuthKeyIdentifier] = useState('');
     const [authKeyIdentifierType, setAuthKeyIdentifierType] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
+    // True once the endpoint's stored config has been loaded into state (or immediately for a new endpoint).
+    // The auth auto-configuration effects wait for this so they don't overwrite a stored security config
+    // (e.g. an existing GCP service-account key) while it is still being hydrated.
+    const [hydrated, setHydrated] = useState(false);
 
     const history = useHistory();
 
@@ -452,6 +456,7 @@ const AddEditAIEndpoint = ({
                 const envType = isProd ? 'production' : 'sandbox';
                 const securityConfig = endpointConfig.endpoint_security?.[envType];
                 hydrateEndpointSecurityState(securityConfig);
+                setHydrated(true);
             } else {
                 // Load custom endpoint data from API
                 API.getApiEndpoint(apiObject.id, endpointId)
@@ -470,6 +475,7 @@ const AddEditAIEndpoint = ({
                         const envType = body.deploymentStage === "PRODUCTION" ? 'production' : 'sandbox';
                         const securityConfig = body.endpointConfig.endpoint_security?.[envType];
                         hydrateEndpointSecurityState(securityConfig);
+                        setHydrated(true);
                     })
                     .catch((error) => {
                         console.error('Error loading endpoint:', error);
@@ -477,8 +483,14 @@ const AddEditAIEndpoint = ({
                             id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.loading',
                             defaultMessage: 'Error loading endpoint',
                         }));
+                        // Let the auth auto-configuration effects proceed; the load failed, so there is no
+                        // stored security config left to preserve.
+                        setHydrated(true);
                     });
             }
+        } else {
+            // New endpoint: nothing to load, so it is "hydrated" immediately.
+            setHydrated(true);
         }
     }, [endpointId]);
 
@@ -631,17 +643,27 @@ const AddEditAIEndpoint = ({
     // Workload Identity). Uploading a key sets type=gcp + enabled + serviceAccountKey via
     // readGCPKeyFile, after which this effect no longer runs and the key is preserved.
     useEffect(() => {
+        // Wait for hydration: on an existing endpoint the stored security config is dispatched by the
+        // [endpointId] effect, but this effect's derived currentSecurity* values are still the initial empty
+        // state on that first pass. Running now would dispatch a keyless GCP block that replaces the stored
+        // one - dropping an existing service-account key. Spread the existing security fields as well, so
+        // enabling GCP preserves the redacted serviceAccountKey (and any other stored fields).
+        if (!hydrated) {
+            return;
+        }
         if (
             IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)
             && (currentSecurityType !== 'gcp' || !isCurrentSecurityEnabled)
         ) {
             saveEndpointSecurityConfig({
                 ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
+                ...currentSecurity,
                 type: 'gcp',
                 enabled: true,
             }, currentEnvType);
         }
     }, [
+        hydrated,
         llmProviderEndpointConfiguration?.authenticationConfiguration?.type,
         llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled,
         currentEnvType,
@@ -689,13 +711,25 @@ const AddEditAIEndpoint = ({
             });
     }
 
-    const handleEndpointBlur = () => {
-        const trimmedUrl = endpointUrl?.trim() || '';
+    // Persist the endpoint URL into the endpoint config for the current stage. formSave reads the URL from
+    // there, so every change to the URL - including the structured GCP builder's region/project/type changes,
+    // which never fire a blur - must go through here, not just setEndpointUrl.
+    const persistEndpointUrl = (url) => {
+        const trimmedUrl = url?.trim() || '';
         if (state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production) {
             dispatch({ field: 'updateProductionEndpointUrl', value: trimmedUrl });
         } else {
             dispatch({ field: 'updateSandboxEndpointUrl', value: trimmedUrl });
         }
+    };
+    const handleEndpointBlur = () => {
+        persistEndpointUrl(endpointUrl);
+    };
+    // Used by the GCP structured URL builder: update the field state and persist the emitted URL on every
+    // change (a region edit or Regional/Global toggle does not trigger a blur).
+    const handleEndpointUrlChange = (url) => {
+        setEndpointUrl(url);
+        persistEndpointUrl(url);
     };
 
     /**
@@ -728,9 +762,9 @@ const AddEditAIEndpoint = ({
                         defaultMessage: 'Endpoint URL cannot be empty',
                     });
                 } else if (IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)
-                    && /\{[^}]+\}/.test(fieldValue)) {
+                    && fieldValue.includes('{')) {
                     // Block saving a GCP endpoint whose URL still carries the seeded {project_id}/{region}
-                    // (or any other) template placeholders.
+                    // (or any other) template placeholders. A resolved Vertex URL contains no '{'.
                     return intl.formatMessage({
                         id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.url.placeholder',
                         defaultMessage: 'Replace the {projectId} and {region} placeholders in the endpoint URL',
@@ -1379,7 +1413,7 @@ const AddEditAIEndpoint = ({
                                 {IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration) ? (
                                     <GCPEndpointUrlBuilder
                                         url={endpointUrl}
-                                        onChange={setEndpointUrl}
+                                        onChange={handleEndpointUrlChange}
                                         onBlur={handleEndpointBlur}
                                         disabled={isRestricted(['apim:api_create'], apiObject)}
                                         error={Boolean(hasErrors('url', endpointUrl, validating))}
