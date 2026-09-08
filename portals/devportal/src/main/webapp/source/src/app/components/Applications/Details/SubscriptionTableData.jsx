@@ -100,14 +100,14 @@ class SubscriptionTableData extends React.Component {
     componentDidMount() {
         const { subscription } = this.props;
         this.mounted = true;
-        this.checkIfWebhookAPI();
         // A subscription to an API owned by another organization (deprecated cross tenant visibility) cannot be
-        // resolved in the current organization, so the backend returns no apiId for it. Skip the per API lookup:
-        // getAPIById(undefined) would leave the path parameter unsubstituted, producing '/apis/{apiId}' which fails
-        // URI normalization, and the API is not retrievable here in any case.
+        // resolved in the current organization, so the backend returns no apiId for it. Nothing below can run
+        // without one: getAPIById(undefined) would leave the path parameter unsubstituted, producing
+        // '/apis/{apiId}' which fails URI normalization, and the webhook callback URLs are looked up by API id too.
         if (!subscription.apiId) {
             return;
         }
+        this.checkIfWebhookAPI();
         this.populateAPIData(subscription.apiId);
         this.checkIfDynamicUsagePolicy(subscription.throttlingPolicy);
     }
@@ -235,13 +235,7 @@ class SubscriptionTableData extends React.Component {
      * Check if the API is a webhook API
      */
     checkIfWebhookAPI() {
-        const { subscription } = this.props;
-        // Webhook details are fetched by API id. A subscription to an API owned by another organization carries no
-        // apiId, so treat it as a non webhook subscription rather than offering a link that cannot resolve.
-        this.setState({
-            isWebhookAPI: Boolean(subscription.apiId)
-                && subscription.apiInfo.type === CONSTANTS.API_TYPES.WEBSUB,
-        });
+        this.setState({ isWebhookAPI: this.props.subscription.apiInfo.type === CONSTANTS.API_TYPES.WEBSUB });
     }
 
     /**
