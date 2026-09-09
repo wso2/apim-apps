@@ -508,8 +508,11 @@ const AddEditAIEndpoint = ({
         }
     }, [apiObject.id, isEditing]);
 
-    const saveEndpointSecurityConfig = (endpointSecurityObj, enType) => {
-        const newEndpointSecurityObj = endpointSecurityObj;
+    // Updates the endpoint-security block for a stage in local form state only (via the reducer). It does NOT
+    // persist to the backend - that happens on Save/Update in formSave - so cancelling the form discards it.
+    const updateEndpointSecurityState = (endpointSecurityObj, enType) => {
+        // Copy so the caller's object (and any state it references) is never mutated in place.
+        const newEndpointSecurityObj = { ...endpointSecurityObj };
         const secretPlaceholder = '******';
         newEndpointSecurityObj.clientSecret = newEndpointSecurityObj.clientSecret
             === secretPlaceholder ? '' : newEndpointSecurityObj.clientSecret;
@@ -551,7 +554,7 @@ const AddEditAIEndpoint = ({
         const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
         // Use the state values for apiKeyIdentifier and apiKeyIdentifierType
         // These are either loaded from backend (edit mode) or set from config (add mode)
-        saveEndpointSecurityConfig({
+        updateEndpointSecurityState({
             ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
             type: llmProviderEndpointConfiguration.authenticationConfiguration.type,
             apiKeyIdentifier: authKeyIdentifier,
@@ -624,7 +627,7 @@ const AddEditAIEndpoint = ({
             IS_UMI_AUTH_ENABLED(llmProviderEndpointConfiguration)
             && (currentSecurityType !== 'umi' || !isCurrentSecurityEnabled)
         ) {
-            saveEndpointSecurityConfig({
+            updateEndpointSecurityState({
                 ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
                 type: 'umi',
                 enabled: true,
@@ -655,7 +658,7 @@ const AddEditAIEndpoint = ({
             IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)
             && (currentSecurityType !== 'gcp' || !isCurrentSecurityEnabled)
         ) {
-            saveEndpointSecurityConfig({
+            updateEndpointSecurityState({
                 ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
                 ...currentSecurity,
                 type: 'gcp',
@@ -1021,7 +1024,7 @@ const AddEditAIEndpoint = ({
         const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
         const isEnvironment = effectiveAuthType === 'environment';
         const secretKeyToSave = secretKey === '********' ? '' : secretKey;
-        saveEndpointSecurityConfig({
+        updateEndpointSecurityState({
             ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
             type: llmProviderEndpointConfiguration.authenticationConfiguration.type,
             service: llmProviderEndpointConfiguration.authenticationConfiguration.parameters.awsServiceName,
@@ -1087,7 +1090,7 @@ const AddEditAIEndpoint = ({
             setServiceAccountKey(content);
             setGcpKeyFileName(file.name);
             const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
-            saveEndpointSecurityConfig({
+            updateEndpointSecurityState({
                 ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
                 type: llmProviderEndpointConfiguration.authenticationConfiguration.type,
                 serviceAccountKey: content,
@@ -1106,7 +1109,7 @@ const AddEditAIEndpoint = ({
     // (ADC / Workload Identity). Sends the transient clearServiceAccountKey flag for the current stage.
     const handleClearGCPKey = () => {
         const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
-        saveEndpointSecurityConfig({
+        updateEndpointSecurityState({
             ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
             type: llmProviderEndpointConfiguration.authenticationConfiguration.type,
             enabled: true,
@@ -1244,7 +1247,7 @@ const AddEditAIEndpoint = ({
         const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
         const envType = isProduction ? 'production' : 'sandbox';
         const existingSecurity = state.endpointConfig?.endpoint_security?.[envType] || {};
-        saveEndpointSecurityConfig({
+        updateEndpointSecurityState({
             ...existingSecurity,
             apiKeyIdentifier: newValue,
             apiKeyIdentifierType: authKeyIdentifierType,
