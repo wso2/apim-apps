@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -10,9 +10,15 @@ import RadioGroup from '@mui/material/RadioGroup';
 import { FormattedMessage } from 'react-intl';
 import InputLabel from '@mui/material/InputLabel';
 import FormHelperText from '@mui/material/FormHelperText';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CustomGatewayInputField from 'AppComponents/GatewayEnvironments/CustomGatewayInputField';
+import GatewayPlanMapping from './GatewayPlanMapping';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
+const PLAN_MAPPING_CONFIG_TYPE = 'plan_mapping';
 
 // Styled wrapper to mimic TextField's outlined style
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
@@ -42,8 +48,14 @@ const StyledFormControl = styled(FormControl)(({ theme }) => ({
 export default function GatewayConfiguration(props) {
     const {
         gatewayConfigurations, additionalProperties = {}, setAdditionalProperties = () => {}, gatewayId,
-        hasErrors, validating,
+        hasErrors, validating, planMappingErrors = {}, supportedApiTypes = [],
     } = props;
+
+    const mappingConfigurationNames = useMemo(() => {
+        return gatewayConfigurations
+            .filter((config) => config.type === PLAN_MAPPING_CONFIG_TYPE)
+            .map((config) => config.name);
+    }, [gatewayConfigurations]);
 
     const getAllNestedGatewayConfigPropertyNames = (connectorConfigurations, parentKey = '') => {
         const gatewayConfigPropertyNames = [];
@@ -167,7 +179,13 @@ export default function GatewayConfiguration(props) {
 
         // Clear any properties in additionalProperties that are not in the current valid set
         Object.keys(additionalProperties).forEach((propName) => {
-            if (!currentValidProperties.includes(propName)) {
+            const isMappingProperty = mappingConfigurationNames.some((configName) => (
+                propName.startsWith(`${configName}.`)
+            ));
+            if (
+                !currentValidProperties.includes(propName)
+                && !isMappingProperty
+            ) {
                 setAdditionalProperties(propName, undefined);
             }
         });
@@ -207,7 +225,17 @@ export default function GatewayConfiguration(props) {
                 });
             }
         }
-        if (gatewayConfiguration.type === 'input') {
+        if (gatewayConfiguration.type === PLAN_MAPPING_CONFIG_TYPE) {
+            return (
+                <GatewayPlanMapping
+                    gatewayConfiguration={gatewayConfiguration}
+                    supportedApiTypes={supportedApiTypes}
+                    additionalProperties={additionalProperties}
+                    setAdditionalProperties={setAdditionalProperties}
+                    planMappingErrors={planMappingErrors}
+                />
+            );
+        } else if (gatewayConfiguration.type === 'input') {
             if (gatewayConfiguration.mask) {
                 return (
                     <FormControl variant='outlined' fullWidth disabled={disabled}>
@@ -333,9 +361,29 @@ export default function GatewayConfiguration(props) {
         });
     };
 
+    const regularConfigurations = gatewayConfigurations.filter(
+        (config) => config.type !== PLAN_MAPPING_CONFIG_TYPE,
+    );
+    const mappingConfigurations = gatewayConfigurations.filter(
+        (config) => config.type === PLAN_MAPPING_CONFIG_TYPE,
+    );
+
     return (
         <div>
-            {renderConnectorConfigurations(gatewayConfigurations)}
+            {renderConnectorConfigurations(regularConfigurations)}
+            {mappingConfigurations.length > 0 && (
+                <Accordion sx={{ mt: 2 }}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <FormattedMessage
+                            id='GatewayEnvironments.GatewayConfiguration.advancedSettings'
+                            defaultMessage='Advanced Settings'
+                        />
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        {renderConnectorConfigurations(mappingConfigurations)}
+                    </AccordionDetails>
+                </Accordion>
+            )}
         </div>
     );
 }
@@ -350,4 +398,6 @@ GatewayConfiguration.defaultProps = {
     />,
     hasErrors: () => {},
     validating: false,
+    planMappingErrors: {},
+    supportedApiTypes: [],
 };
