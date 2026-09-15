@@ -102,21 +102,11 @@ const buildUrl = ({ type, region, projectId, suffix }) => {
         + `/locations/${regionValue}/${path}`;
 };
 
-const isPlaceholderToken = (text) => text === REGION_PLACEHOLDER || text === PROJECT_PLACEHOLDER;
-
-// A dynamic (field-driven) segment of the read-only URL: bold + highlighted so the user sees which parts map to
-// the region / project ID fields. An unresolved placeholder ({region} / {project_id}) is called out in a warning
-// colour so it reads as "still needs a value".
+// A dynamic (field-driven) segment of the read-only URL: bold so the user can see which parts map to the
+// region / project ID fields. Unresolved placeholders ({region} / {project_id}) are already flagged by the
+// parent's save-validation (red border + helper text), so no extra colour or background is needed here.
 const dynamicSegment = (text, key) => (
-    <Box
-        component='span'
-        key={key}
-        sx={isPlaceholderToken(text) ? {
-            fontWeight: 700, px: 0.25, borderRadius: 0.5, color: 'warning.dark', backgroundColor: 'warning.light',
-        } : {
-            fontWeight: 700, px: 0.25, borderRadius: 0.5, backgroundColor: 'action.selected',
-        }}
-    >
+    <Box component='span' key={key} sx={{ fontWeight: 700 }}>
         {text}
     </Box>
 );
@@ -332,7 +322,9 @@ const GCPEndpointUrlBuilder = ({ url, onChange, onBlur, disabled, error, helperT
                     and the frame returns to read-only on blur. */}
                 <Box
                     sx={{
-                        display: 'flex', alignItems: 'flex-start', mt: 0.5,
+                        // Centre the pencil against the single-line read-only text; only top-align while the
+                        // inline field is being edited (it can grow to multiple rows).
+                        display: 'flex', alignItems: urlEditable ? 'flex-start' : 'center', mt: 0.5,
                         border: 1, borderColor: error ? 'error.main' : 'divider', borderRadius: 1,
                         px: 1.5, py: 1, backgroundColor: urlEditable ? 'background.paper' : 'action.hover',
                     }}
@@ -349,15 +341,20 @@ const GCPEndpointUrlBuilder = ({ url, onChange, onBlur, disabled, error, helperT
                             value={url}
                             onChange={(e) => onChange(e.target.value)}
                             onBlur={() => { setUrlEditable(false); onBlur(); }}
-                            sx={{ flex: 1, p: 0, fontSize: '0.875rem', lineHeight: 1.6, wordBreak: 'break-all' }}
+                            // Same typography as the read-only view below, so switching to edit does not shift
+                            // the font or line height.
+                            sx={(theme) => ({
+                                flex: 1, p: 0, fontFamily: theme.typography.fontFamily,
+                                fontSize: '0.875rem', lineHeight: 1.6, wordBreak: 'break-all',
+                            })}
                         />
                     ) : (
                         <Box
                             data-testid='gcp-url-preview'
-                            sx={{
-                                flex: 1, fontSize: '0.875rem', lineHeight: 1.6, wordBreak: 'break-all',
-                                minHeight: '1.4em',
-                            }}
+                            sx={(theme) => ({
+                                flex: 1, minHeight: '1.4em', fontFamily: theme.typography.fontFamily,
+                                fontSize: '0.875rem', lineHeight: 1.6, wordBreak: 'break-all',
+                            })}
                         >
                             {renderHighlightedUrl(url)}
                         </Box>
