@@ -155,6 +155,18 @@ const GCPEndpointUrlBuilder = ({ url, onChange, onBlur, disabled, error, helperT
     const parsed = parseUrl(url);
     // A non-empty URL that does not match the Vertex template - the structured fields cannot represent it.
     const isCustom = Boolean(url) && parsed === null;
+    // A regional URL whose host-prefix and locations-path regions are two different real values - only reachable
+    // by editing the URL directly. Surfaced below as a non-blocking hint (Vertex would reject it); the save is
+    // intentionally not hard-blocked on this rare, self-evident case.
+    const regionMismatch = (() => {
+        const match = url ? url.match(REGIONAL_URL) : null;
+        if (!match) {
+            return false;
+        }
+        const host = unplaceholder(match[1], REGION_PLACEHOLDER);
+        const location = unplaceholder(match[3], REGION_PLACEHOLDER);
+        return Boolean(host) && Boolean(location) && host !== location;
+    })();
 
     const [type, setType] = useState(parsed?.type || 'regional');
     const [region, setRegion] = useState(parsed?.region || '');
@@ -306,6 +318,15 @@ const GCPEndpointUrlBuilder = ({ url, onChange, onBlur, disabled, error, helperT
                         id='Apis.Details.Endpoints.AIEndpoints.GCPEndpointUrlBuilder.custom.hint'
                         defaultMessage={'The endpoint URL does not match the Vertex template, so the fields '
                             + 'above are disabled. Edit the URL directly below.'}
+                    />
+                </Typography>
+            )}
+            {regionMismatch && (
+                <Typography variant='caption' color='warning.main' sx={{ display: 'block', mt: 1 }}>
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.AIEndpoints.GCPEndpointUrlBuilder.region.mismatch'
+                        defaultMessage={'The region differs between the host and the locations path of the URL. '
+                            + 'Vertex may reject this endpoint.'}
                     />
                 </Typography>
             )}

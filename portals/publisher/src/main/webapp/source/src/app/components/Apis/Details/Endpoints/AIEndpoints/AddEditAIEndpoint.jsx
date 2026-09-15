@@ -772,26 +772,6 @@ const AddEditAIEndpoint = ({
                         id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.url.placeholder',
                         defaultMessage: 'Replace the {projectId} and {region} placeholders in the endpoint URL',
                     }, { projectId: '{project_id}', region: '{region}' });
-                } else if (IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)) {
-                    // A regional Vertex URL carries the region twice (host prefix + locations path); a hand-edit
-                    // that leaves them different is an invalid URL Vertex would reject at request time, so block
-                    // it at save with a clear message.
-                    const regionalMatch = fieldValue.match(
-                        /^https:\/\/([^.]+)-aiplatform\.googleapis\.com\/v1\/projects\/[^/]+\/locations\/([^/]+)\//,
-                    );
-                    if (regionalMatch && regionalMatch[1] !== regionalMatch[2]) {
-                        return intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.url.region.mismatch',
-                            defaultMessage: 'The region must match in the host ({host}) and the locations path '
-                                + '({loc}) of the endpoint URL.',
-                        }, { host: regionalMatch[1], loc: regionalMatch[2] });
-                    }
-                    if (!isValidUrl(fieldValue)) {
-                        return intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.invalid.url',
-                            defaultMessage: 'Please enter a valid endpoint URL',
-                        });
-                    }
                 } else if (!isValidUrl(fieldValue)) {
                     return intl.formatMessage({
                         id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.invalid.url',
