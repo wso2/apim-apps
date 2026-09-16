@@ -735,6 +735,27 @@ const AddEditAIEndpoint = ({
         persistEndpointUrl(endpointUrlValue);
     };
 
+    // New GCP endpoint only: seed the URL from the API definition's server template - the canonical,
+    // placeholder template that carries the correct provider publisher (e.g. publishers/anthropic/models),
+    // taken from the definition (servers[0].url) rather than copied from a sibling endpoint. This lets the
+    // structured builder open on the right template instead of a blank field. Other providers, and endpoints
+    // being edited, keep the plain empty/stored URL field.
+    useEffect(() => {
+        if (!endpointId && IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)) {
+            new API().getSwagger(apiObject.id)
+                .then((response) => {
+                    const serverUrl = response?.obj?.servers?.[0]?.url;
+                    if (serverUrl) {
+                        setEndpointUrl(serverUrl);
+                        persistEndpointUrl(serverUrl);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error loading the API definition for the endpoint URL template:', error);
+                });
+        }
+    }, [endpointId]);
+
     /**
      * Method to check whether the endpoint has errors.
      * @param {boolean} validateActive Whether validation is active

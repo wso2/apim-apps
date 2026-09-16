@@ -39,8 +39,11 @@ import { FormattedMessage, useIntl } from 'react-intl';
 const PROJECT_PLACEHOLDER = '{project_id}';
 const REGION_PLACEHOLDER = '{region}';
 const GLOBAL_LOCATION = 'global';
-// Suffix used only when a URL cannot be parsed and the user starts structured from scratch.
-const DEFAULT_SUFFIX = 'publishers/google/models';
+// Fallback suffix used only when a URL cannot be parsed and the user starts structured from scratch
+// (e.g. the swagger seed failed). The publisher is deliberately left as an unresolved {publisher}
+// placeholder rather than guessing a provider: it keeps the parent's placeholder save-validation firing
+// so the user is forced to supply the real publisher instead of silently shipping a wrong one.
+const DEFAULT_SUFFIX = 'publishers/{publisher}/models';
 
 // Common Vertex AI regions - suggestions only; the field is free-text (freeSolo) so new regions still work.
 const COMMON_REGIONS = [
