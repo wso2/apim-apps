@@ -129,7 +129,7 @@ const EndpointCard = ({
             return null;
         }
         return (
-            <Tooltip title='Set the endpoint URL and replace any {project_id} and {region} placeholders'>
+            <Tooltip title='The endpoint URL is incomplete. Click to finish configuring it.'>
                 <Chip
                     icon={<WarningIcon />}
                     label='Configure Endpoint URL'

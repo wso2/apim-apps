@@ -787,12 +787,14 @@ const AddEditAIEndpoint = ({
                     });
                 } else if (IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)
                     && fieldValue.includes('{')) {
-                    // Block saving a GCP endpoint whose URL still carries the seeded {project_id}/{region}
-                    // (or any other) template placeholders. A resolved Vertex URL contains no '{'.
+                    // Block saving a GCP endpoint whose URL still carries an unfilled template field: a
+                    // resolved Vertex URL contains no '{' (an empty Region / Project ID field renders as a
+                    // {region} / {project_id} token in the URL).
                     return intl.formatMessage({
                         id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.url.placeholder',
-                        defaultMessage: 'Replace the {projectId} and {region} placeholders in the endpoint URL',
-                    }, { projectId: '{project_id}', region: '{region}' });
+                        defaultMessage: 'Complete the endpoint URL by filling in the required fields '
+                            + '(e.g. Region, Project ID)',
+                    });
                 } else if (!isValidUrl(fieldValue)) {
                     return intl.formatMessage({
                         id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.invalid.url',

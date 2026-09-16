@@ -819,7 +819,7 @@
   "Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.invalid.url": "Please enter a valid endpoint URL",
   "Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.loading": "Error loading endpoint",
   "Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.saving": "Error occurred while saving the endpoint. Please try again.",
-  "Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.url.placeholder": "Replace the {projectId} and {region} placeholders in the endpoint URL",
+  "Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.url.placeholder": "Complete the endpoint URL by filling in the required fields (e.g. Region, Project ID)",
   "Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.form.has.errors": "One or more fields contain errors",
   "Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.heading": "Endpoints",
   "Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.production": "Production",
