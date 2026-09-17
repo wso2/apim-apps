@@ -162,6 +162,12 @@ describe("GCP (Vertex AI) endpoint UI", () => {
                     .click({ force: true });
                 publisherComonPage.waitUntillPublisherLoadingSpinnerExit();
 
+                // The new endpoint's URL is seeded asynchronously from the API definition; wait for the
+                // anthropic template to land before interacting. Otherwise the builder still shows the
+                // {publisher} fallback suffix and the assembled URL would be rejected at save.
+                cy.contains("publishers/anthropic/models", { timeout: Cypress.env("largeTimeout") })
+                    .should("exist");
+
                 // Switch the new endpoint to the Sandbox deployment stage.
                 cy.get("input[name=\"deployment-stage\"][value=\"SANDBOX\"]").check({ force: true });
 
