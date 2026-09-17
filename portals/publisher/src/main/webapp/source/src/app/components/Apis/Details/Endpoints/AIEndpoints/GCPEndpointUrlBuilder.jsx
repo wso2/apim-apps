@@ -91,6 +91,22 @@ const parseUrl = (url) => {
 };
 
 /**
+ * True only for a canonical regional Vertex URL whose host-prefix region and locations-path region are two
+ * different concrete values (only reachable by hand-editing the URL). Custom URLs (no template match) and
+ * still-templated URLs (a {region} placeholder counts as empty) return false. Shared by the builder's inline
+ * hint and the endpoint card so both surfaces flag the same unusable state consistently.
+ */
+export const isMismatchedVertexRegionalUrl = (url) => {
+    const match = url ? url.match(REGIONAL_URL) : null;
+    if (!match) {
+        return false;
+    }
+    const host = unplaceholder(match[1], REGION_PLACEHOLDER);
+    const location = unplaceholder(match[3], REGION_PLACEHOLDER);
+    return Boolean(host) && Boolean(location) && host !== location;
+};
+
+/**
  * Rebuilds the Vertex endpoint URL from the structured parts. Empty fields fall back to their placeholder
  * token so the preview reads naturally and the parent's "unresolved placeholder" save-validation still fires.
  */
@@ -159,17 +175,9 @@ const GCPEndpointUrlBuilder = ({ url, onChange, onBlur, disabled, error, helperT
     // A non-empty URL that does not match the Vertex template - the structured fields cannot represent it.
     const isCustom = Boolean(url) && parsed === null;
     // A regional URL whose host-prefix and locations-path regions are two different real values - only reachable
-    // by editing the URL directly. Surfaced below as a non-blocking hint (Vertex would reject it); the save is
-    // intentionally not hard-blocked on this rare, self-evident case.
-    const regionMismatch = (() => {
-        const match = url ? url.match(REGIONAL_URL) : null;
-        if (!match) {
-            return false;
-        }
-        const host = unplaceholder(match[1], REGION_PLACEHOLDER);
-        const location = unplaceholder(match[3], REGION_PLACEHOLDER);
-        return Boolean(host) && Boolean(location) && host !== location;
-    })();
+    // by editing the URL directly. Surfaced below as a non-blocking hint (Vertex would reject it) and, via the
+    // same shared check, on the endpoint card. The save is intentionally not hard-blocked on this rare case.
+    const regionMismatch = isMismatchedVertexRegionalUrl(url);
 
     const [type, setType] = useState(parsed?.type || 'regional');
     const [region, setRegion] = useState(parsed?.region || '');
