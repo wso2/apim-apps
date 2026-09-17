@@ -1080,9 +1080,22 @@ const AddEditAIEndpoint = ({
         reader.onload = (event) => {
             const content = event.target.result;
             // Ensure the uploaded file is valid JSON before accepting it.
+            let parsedKey;
             try {
-                JSON.parse(content);
+                parsedKey = JSON.parse(content);
             } catch (err) {
+                setGcpKeyError(intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp.serviceAccountKey.invalid',
+                    defaultMessage: 'The selected file is not a valid JSON service account key.',
+                }));
+                return;
+            }
+            // Accept only a non-empty JSON object. This rejects null, arrays, primitives and {} - the
+            // values JSON.parse would otherwise pass straight through - while deliberately NOT asserting
+            // specific key fields (project_id, client_email, private_key, ...): those names are owned by
+            // Google and may change, and the gateway/backend is the authority on credential validity.
+            if (parsedKey === null || typeof parsedKey !== 'object' || Array.isArray(parsedKey)
+                    || Object.keys(parsedKey).length === 0) {
                 setGcpKeyError(intl.formatMessage({
                     id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp.serviceAccountKey.invalid',
                     defaultMessage: 'The selected file is not a valid JSON service account key.',
