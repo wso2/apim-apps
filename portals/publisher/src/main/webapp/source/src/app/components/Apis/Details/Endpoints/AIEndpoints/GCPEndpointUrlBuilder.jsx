@@ -283,6 +283,7 @@ const GCPEndpointUrlBuilder = ({ url, onChange, onBlur, disabled, error, helperT
                 <Grid item xs={6} sx={{ opacity: (isGlobal && !isCustom) ? 0.55 : 1 }}>
                     <Autocomplete
                         freeSolo
+                        id='gcp-region-input'
                         disabled={fieldsDisabled || isGlobal}
                         options={COMMON_REGIONS}
                         value={isGlobal ? '' : region}
@@ -293,7 +294,6 @@ const GCPEndpointUrlBuilder = ({ url, onChange, onBlur, disabled, error, helperT
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                id='gcp-region-input'
                                 label={<FormattedMessage
                                     id='Apis.Details.Endpoints.AIEndpoints.GCPEndpointUrlBuilder.region'
                                     defaultMessage='Region'
