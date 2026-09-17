@@ -197,7 +197,10 @@ const GCPEndpointUrlBuilder = ({ url, onChange, onBlur, disabled, error, helperT
     }, [urlEditable]);
 
     // Keep the fields in sync when the URL changes from outside the fields: a different endpoint is loaded, or
-    // the user edits the URL inline. A URL that no longer parses leaves the last field values in place.
+    // the user edits the URL inline. A non-empty URL that no longer parses is a custom URL - the fields are
+    // disabled, so leaving the last values in place is harmless. An empty URL, however, means "start over", so
+    // reset the structured state to defaults; otherwise a later field edit would rebuild a URL from the stale
+    // region / project / suffix the user thought they had cleared, and the parent would persist it.
     useEffect(() => {
         if (selfUpdate.current) {
             selfUpdate.current = false;
@@ -209,6 +212,11 @@ const GCPEndpointUrlBuilder = ({ url, onChange, onBlur, disabled, error, helperT
             setRegion(next.region);
             setProjectId(next.projectId);
             suffixRef.current = next.suffix;
+        } else if (!url) {
+            setType('regional');
+            setRegion('');
+            setProjectId('');
+            suffixRef.current = DEFAULT_SUFFIX;
         }
     }, [url]);
 
