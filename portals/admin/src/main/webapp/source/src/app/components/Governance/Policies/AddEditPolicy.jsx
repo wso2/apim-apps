@@ -53,7 +53,6 @@ import {
     FormLabel,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { styled } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -176,11 +175,6 @@ function AddEditPolicy(props) {
     const [availableLabels, setAvailableLabels] = useState([]);
     const [labelMode, setLabelMode] = useState('all');
     const [originalLabels, setOriginalLabels] = useState([]);
-    // Per policy severity filtering is a deployment wide capability, so it is read from the admin settings. They
-    // are loaded once for the whole portal and are available before a policy exists, so the create form can offer
-    // the control too.
-    const { settings } = useAppContext();
-    const severityFilteringEnabled = Boolean(settings && settings.perPolicySeverityFilteringEnabled);
     const intl = useIntl();
     const { match: { params: { id: policyId } }, history } = props;
 
@@ -494,12 +488,7 @@ function AddEditPolicy(props) {
             ...state,
             governableStates: [...new Set(actions.map((action) => action.state))],
         };
-        if (severityFilteringEnabled) {
-            body.complianceAffectingSeverities = severitiesForPayload(selectedSeverities);
-        } else {
-            // The backend rejects the field when the deployment has not opted in
-            delete body.complianceAffectingSeverities;
-        }
+        body.complianceAffectingSeverities = severitiesForPayload(selectedSeverities);
 
         // Do the API call
         const restApi = new GovernanceAPI();
@@ -745,62 +734,60 @@ function AddEditPolicy(props) {
                                     style: { padding: 0 },
                                 }}
                             />
-                            {severityFilteringEnabled && (
-                                <FormControl component='fieldset' sx={{ mt: 2 }}>
-                                    <FormLabel component='legend'>
-                                        <FormattedMessage
-                                            id={'Governance.Policies.AddEdit.form.compliance.'
-                                                + 'affecting.severities'}
-                                            defaultMessage='Severities that affect compliance'
-                                        />
-                                    </FormLabel>
-                                    <FormGroup row>
-                                        {CONSTS.SEVERITY_LEVELS.map((level) => (
-                                            <FormControlLabel
-                                                key={level.value}
-                                                label={level.label}
-                                                control={(
-                                                    <Checkbox
-                                                        checked={selectedSeverities.includes(level.value)}
-                                                        onChange={() => toggleSeverity(level.value)}
-                                                        // Clearing every severity would resolve back to all of
-                                                        // them, so the last one is held rather than misleading
-                                                        disabled={selectedSeverities.length === 1
-                                                            && selectedSeverities.includes(level.value)}
-                                                        name={`severity-${level.value}`}
-                                                    />
-                                                )}
-                                            />
-                                        ))}
-                                    </FormGroup>
-                                    <FormHelperText component='div'>
-                                        <FormattedMessage
-                                            id={'Governance.Policies.AddEdit.form.compliance.'
-                                                + 'affecting.severities.fails'}
-                                            defaultMessage='Violates the policy on: {failing}.'
-                                            values={{
-                                                failing: (
-                                                    <b>{selectedSeverities.map(severityLabel).join(', ')}</b>
-                                                ),
-                                            }}
-                                        />
-                                        {advisorySeverities.length > 0 && (
-                                            <>
-                                                {' '}
-                                                <FormattedMessage
-                                                    id={'Governance.Policies.AddEdit.form.compliance.'
-                                                        + 'affecting.severities.advisory'}
-                                                    defaultMessage={'{advisory} violations are still reported '
-                                                        + 'but do not violate it.'}
-                                                    values={{
-                                                        advisory: advisorySeverities.map(severityLabel).join(', '),
-                                                    }}
+                            <FormControl component='fieldset' sx={{ mt: 2 }}>
+                                <FormLabel component='legend'>
+                                    <FormattedMessage
+                                        id={'Governance.Policies.AddEdit.form.compliance.'
+                                            + 'affecting.severities'}
+                                        defaultMessage='Severities that affect compliance'
+                                    />
+                                </FormLabel>
+                                <FormGroup row>
+                                    {CONSTS.SEVERITY_LEVELS.map((level) => (
+                                        <FormControlLabel
+                                            key={level.value}
+                                            label={level.label}
+                                            control={(
+                                                <Checkbox
+                                                    checked={selectedSeverities.includes(level.value)}
+                                                    onChange={() => toggleSeverity(level.value)}
+                                                    // Clearing every severity would resolve back to all of
+                                                    // them, so the last one is held rather than misleading
+                                                    disabled={selectedSeverities.length === 1
+                                                        && selectedSeverities.includes(level.value)}
+                                                    name={`severity-${level.value}`}
                                                 />
-                                            </>
-                                        )}
-                                    </FormHelperText>
-                                </FormControl>
-                            )}
+                                            )}
+                                        />
+                                    ))}
+                                </FormGroup>
+                                <FormHelperText component='div'>
+                                    <FormattedMessage
+                                        id={'Governance.Policies.AddEdit.form.compliance.'
+                                            + 'affecting.severities.fails'}
+                                        defaultMessage='Violates the policy on: {failing}.'
+                                        values={{
+                                            failing: (
+                                                <b>{selectedSeverities.map(severityLabel).join(', ')}</b>
+                                            ),
+                                        }}
+                                    />
+                                    {advisorySeverities.length > 0 && (
+                                        <>
+                                            {' '}
+                                            <FormattedMessage
+                                                id={'Governance.Policies.AddEdit.form.compliance.'
+                                                    + 'affecting.severities.advisory'}
+                                                defaultMessage={'{advisory} violations are still reported '
+                                                    + 'but do not violate it.'}
+                                                values={{
+                                                    advisory: advisorySeverities.map(severityLabel).join(', '),
+                                                }}
+                                            />
+                                        </>
+                                    )}
+                                </FormHelperText>
+                            </FormControl>
                         </Box>
                     </Grid>
 
