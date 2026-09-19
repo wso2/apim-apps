@@ -513,12 +513,14 @@ export default function Resources(props) {
     }
 
     useEffect(() => {
-        API.getAmznResourceNames(api.id)
-            .then((response) => {
-                if (response.body && response.body.list) {
-                    setArns(response.body.list);
-                }
-            });
+        if (!api.isAPIProduct()) {
+            API.getAmznResourceNames(api.id)
+                .then((response) => {
+                    if (response.body && response.body.list) {
+                        setArns(response.body.list);
+                    }
+                });
+        }
     }, []);
 
     useEffect(() => {
