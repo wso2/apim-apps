@@ -29,6 +29,7 @@ import isEqual from 'lodash/isEqual';
 import Alert from 'AppComponents/Shared/Alert';
 import Banner from 'AppComponents/Shared/Banner';
 import API from 'AppData/api';
+import Configurations from 'Config';
 import CircularProgress from '@mui/material/CircularProgress';
 import PropTypes from 'prop-types';
 import { isRestricted } from 'AppData/AuthManager';
@@ -752,7 +753,8 @@ export default function Topics(props) {
 
     useEffect(() => {
         if (api.apitype !== 'APIProduct') {
-            API.getAllScopes()
+            const maxScopeLimit = Configurations.apis.maxScopeCount;
+            API.getAllScopes(0, maxScopeLimit)
                 .then((response) => {
                     if (response.body && response.body.list) {
                         const sharedScopesList = [];
