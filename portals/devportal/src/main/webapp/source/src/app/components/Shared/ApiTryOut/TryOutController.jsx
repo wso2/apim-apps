@@ -54,6 +54,17 @@ import isPlatformGatewayApi from '../../Apis/Details/ApiConsole/platformGateway'
 
 const PREFIX = 'TryOutController';
 
+/**
+ * Resolves the HTML input type for the basic-auth password field.
+ * Passwords must be masked by default (product-apim#8988).
+ *
+ * @param {boolean} showPassword Whether the visibility toggle is enabled
+ * @returns {'password'|'text'} Input type for the password field
+ */
+export function getBasicAuthPasswordInputType(showPassword) {
+    return showPassword ? 'text' : 'password';
+}
+
 const classes = {
     centerItems: `${PREFIX}-centerItems`,
     tokenType: `${PREFIX}-tokenType`,
@@ -934,10 +945,10 @@ function TryOutController(props) {
                                             <TextField
                                                 margin='normal'
                                                 variant='outlined'
-                                                id='username'
+                                                id='basic-auth-username-input'
                                                 label={(
                                                     <FormattedMessage
-                                                        id='username'
+                                                        id='Apis.Details.ApiConsole.basic.auth.username'
                                                         defaultMessage='Username'
                                                     />
                                                 )}
@@ -945,24 +956,27 @@ function TryOutController(props) {
                                                 onChange={handleChanges}
                                                 value={username || ''}
                                                 fullWidth
+                                                inputProps={{
+                                                    'data-testid': 'basic-auth-username-input',
+                                                    autoComplete: 'username',
+                                                }}
                                             />
                                             <TextField
                                                 margin='normal'
                                                 variant='outlined'
-                                                id='input-password'
+                                                id='basic-auth-password-input'
                                                 label={(
                                                     <FormattedMessage
-                                                        id='password'
+                                                        id='Apis.Details.ApiConsole.basic.auth.password'
                                                         defaultMessage='Password'
                                                     />
                                                 )}
                                                 name='password'
                                                 onChange={handleChanges}
-                                                type={showPassword ? 'text' : 'password'}
+                                                type={getBasicAuthPasswordInputType(showPassword)}
                                                 value={password || ''}
                                                 fullWidth
                                                 InputProps={{
-                                                    autoComplete: 'new-password',
                                                     endAdornment: (
                                                         <InputAdornment position='end'>
                                                             <IconButton
@@ -975,6 +989,10 @@ function TryOutController(props) {
                                                             </IconButton>
                                                         </InputAdornment>
                                                     ),
+                                                }}
+                                                inputProps={{
+                                                    'data-testid': 'basic-auth-password-input',
+                                                    autoComplete: 'current-password',
                                                 }}
                                             />
                                         </Grid>
