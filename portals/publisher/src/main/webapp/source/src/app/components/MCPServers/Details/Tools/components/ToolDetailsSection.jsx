@@ -32,6 +32,50 @@ import OperationSelector from './OperationSelector';
 // load Monaco from node_modules instead of CDN
 loader.config({ monaco });
 
+const TOOL_PARAMETER_PREFIXES = ['query_', 'header_', 'path_', 'cookie_', 'formData_'];
+
+/**
+ * Remove internal parameter-location prefixes from schema property names for display.
+ * @param {string} propertyName - The schema property name
+ * @returns {string} - The display name
+ */
+const getDisplayPropertyName = (propertyName) => {
+    const prefix = TOOL_PARAMETER_PREFIXES.find((knownPrefix) => propertyName.startsWith(knownPrefix));
+    return prefix ? propertyName.slice(prefix.length) : propertyName;
+};
+
+/**
+ * Create a display-only schema copy with internal parameter-location prefixes removed.
+ * @param {object|Array|string} schema - The schema to transform
+ * @returns {object|Array|string} - A transformed copy for rendering
+ */
+const getDisplaySchema = (schema) => {
+    if (Array.isArray(schema)) {
+        return schema.map(getDisplaySchema);
+    }
+    if (!schema || typeof schema !== 'object') {
+        return schema;
+    }
+
+    return Object.entries(schema).reduce((displaySchema, [key, value]) => {
+        let displayValue;
+        if (key === 'properties' && value && typeof value === 'object' && !Array.isArray(value)) {
+            displayValue = Object.entries(value).reduce((properties, [propertyName, propertySchema]) => ({
+                ...properties,
+                [getDisplayPropertyName(propertyName)]: getDisplaySchema(propertySchema),
+            }), {});
+        } else if (key === 'required' && Array.isArray(value)) {
+            displayValue = value.map(getDisplayPropertyName);
+        } else {
+            displayValue = getDisplaySchema(value);
+        }
+        return {
+            ...displaySchema,
+            [key]: displayValue,
+        };
+    }, {});
+};
+
 /**
  * Tool Details Component (Name, Description, Schema, Resource Mapping)
  * @param {object} props - Component props
@@ -60,11 +104,11 @@ function ToolDetailsSection({
             // If it's already a string, try to parse and format it
             if (typeof schemaDefinition === 'string') {
                 const parsed = JSON.parse(schemaDefinition);
-                return JSON.stringify(parsed, null, 2);
+                return JSON.stringify(getDisplaySchema(parsed), null, 2);
             }
             // If it's already an object, stringify it with formatting
             if (typeof schemaDefinition === 'object') {
-                return JSON.stringify(schemaDefinition, null, 2);
+                return JSON.stringify(getDisplaySchema(schemaDefinition), null, 2);
             }
             // Fallback to string representation
             return String(schemaDefinition);
