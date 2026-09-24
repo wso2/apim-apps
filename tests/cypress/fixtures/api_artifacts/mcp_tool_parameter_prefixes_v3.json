@@ -22,6 +22,13 @@
             "schema": { "type": "string" }
           },
           {
+            "name": "header_filter",
+            "in": "query",
+            "required": true,
+            "description": "Query parameter with a second known prefix in its name.",
+            "schema": { "type": "string" }
+          },
+          {
             "name": "traceId",
             "in": "header",
             "required": true,
@@ -49,9 +56,16 @@
             "application/x-www-form-urlencoded": {
               "schema": {
                 "type": "object",
-                "required": ["label"],
+                "required": ["label", "metadata"],
                 "properties": {
-                  "label": { "type": "string" }
+                  "label": { "type": "string" },
+                  "metadata": {
+                    "type": "object",
+                    "required": ["query_customField"],
+                    "properties": {
+                      "query_customField": { "type": "string" }
+                    }
+                  }
                 }
               }
             }

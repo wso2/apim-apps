@@ -28,17 +28,13 @@ export default class Utils {
         )
     }
     static getApiToken() {
-        return new Cypress.Promise((resolve, reject) => {
-            cy.getCookie('WSO2_AM_TOKEN_1_Default').then((cookieP1) => {
-                cy.getCookie('AM_ACC_TOKEN_DEFAULT_P2').then((cookieP2) => {
-                    if (!cookieP1?.value || !cookieP2?.value) {
-                        reject('Error while extracting token: required auth cookies are missing.');
-                        return;
-                    }
-                    resolve(`${cookieP1.value}${cookieP2.value}`);
-                });
-            });
-        })
+        return cy.getCookie('WSO2_AM_TOKEN_1_Default').then((cookieP1) => cy.getCookie('AM_ACC_TOKEN_DEFAULT_P2')
+            .then((cookieP2) => {
+                if (!cookieP1?.value || !cookieP2?.value) {
+                    throw new Error('Error while extracting token: required auth cookies are missing.');
+                }
+                return `${cookieP1.value}${cookieP2.value}`;
+            }));
     }
 
     // Poll GET /apis/<id> until 200 — create can return an id before the API is

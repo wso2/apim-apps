@@ -24,6 +24,13 @@
             "description": "Query parameter for MCP schema prefix coverage."
           },
           {
+            "name": "filter",
+            "in": "header",
+            "type": "string",
+            "required": true,
+            "description": "Header parameter colliding with a query parameter for display prefix coverage."
+          },
+          {
             "name": "traceId",
             "in": "header",
             "type": "string",

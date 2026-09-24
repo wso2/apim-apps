@@ -26,16 +26,23 @@ const OPENAPI_CASES = [
         fixture: 'mcp_tool_parameter_prefixes_v2.json',
         suffix: 'v2',
         operationTarget: '/items/{itemId}',
-        displayedProperties: ['filter', 'traceId', 'itemId', 'label'],
-        internalProperties: ['query_filter', 'header_traceId', 'path_itemId', 'formData_label'],
+        displayedProperties: ['query_filter', 'header_filter', 'traceId', 'itemId', 'label'],
+        hiddenInternalProperties: ['header_traceId', 'path_itemId', 'formData_label'],
+        internalProperties: ['query_filter', 'header_filter', 'header_traceId', 'path_itemId', 'formData_label'],
     },
     {
         title: 'OpenAPI 3.0 query, header, path, and cookie parameters',
         fixture: 'mcp_tool_parameter_prefixes_v3.json',
         suffix: 'v3',
         operationTarget: '/records/{recordId}',
-        displayedProperties: ['filter', 'traceId', 'recordId', 'sessionId'],
-        internalProperties: ['query_filter', 'header_traceId', 'path_recordId', 'cookie_sessionId'],
+        displayedProperties: ['filter', 'header_filter', 'traceId', 'recordId', 'sessionId'],
+        hiddenInternalProperties: [
+            'query_filter', 'header_traceId', 'path_recordId', 'cookie_sessionId', 'query_header_filter',
+        ],
+        nestedProperties: ['query_customField'],
+        internalProperties: [
+            'query_filter', 'query_header_filter', 'header_traceId', 'path_recordId', 'cookie_sessionId',
+        ],
     },
 ];
 
@@ -56,92 +63,89 @@ function createMCPFromOpenAPIFixture(openAPICase) {
     const fixturePath = `${Cypress.config('projectRoot')}/cypress/fixtures/api_artifacts/${openAPICase.fixture}`;
     const endpointUrl = 'http://localhost:18181';
 
-    return new Cypress.Promise((resolve, reject) => {
-        // Follow the existing Utils.getApiToken() pattern used by the Publisher Cypress specs.
-        Utils.getApiToken().then((token) => {
-            const additionalProperties = {
-                name: apiName,
-                displayName: apiName,
-                version: '1.0.0',
-                context: apiContext,
-                description: 'Cypress fixture API for MCP tool parameter prefix display coverage.',
-                endpointConfig: {
-                    endpoint_type: 'http',
-                    production_endpoints: { url: endpointUrl },
-                    sandbox_endpoints: { url: endpointUrl },
-                },
-                policies: ['Unlimited'],
-            };
-            const importAPICommand = [
-                'curl -k -sS -f -X POST',
-                `-F ${shellQuote(`file=@${fixturePath};type=application/json`)}`,
-                `-F ${shellQuote(`additionalProperties=${JSON.stringify(additionalProperties)}`)}`,
-                `-H ${shellQuote(`Authorization: Bearer ${token}`)}`,
-                shellQuote(`${Cypress.config('baseUrl')}/api/am/publisher/v4/apis/import-openapi`),
-            ].join(' ');
+    return Utils.getApiToken().then((token) => {
+        const additionalProperties = {
+            name: apiName,
+            displayName: apiName,
+            version: '1.0.0',
+            context: apiContext,
+            description: 'Cypress fixture API for MCP tool parameter prefix display coverage.',
+            endpointConfig: {
+                endpoint_type: 'http',
+                production_endpoints: { url: endpointUrl },
+                sandbox_endpoints: { url: endpointUrl },
+            },
+            policies: ['Unlimited'],
+        };
+        const importAPICommand = [
+            'curl -k -sS -f -X POST',
+            `-F ${shellQuote(`file=@${fixturePath};type=application/json`)}`,
+            `-F ${shellQuote(`additionalProperties=${JSON.stringify(additionalProperties)}`)}`,
+            `-H ${shellQuote(`Authorization: Bearer ${token}`)}`,
+            shellQuote(`${Cypress.config('baseUrl')}/api/am/publisher/v4/apis/import-openapi`),
+        ].join(' ');
 
-            cy.exec(importAPICommand).then(({ stdout }) => {
-                const api = JSON.parse(stdout);
-                expect(api.id, 'Imported source API id').to.be.a('string');
-                expect(api.operations, 'Imported source API operations').to.have.length.greaterThan(0);
+        return cy.exec(importAPICommand).then(({ stdout }) => {
+            const api = JSON.parse(stdout);
+            expect(api.id, 'Imported source API id').to.be.a('string');
+            expect(api.operations, 'Imported source API operations').to.have.length.greaterThan(0);
 
-                Utils.waitForApiRetrievable(token, api.id).then(() => {
-                    const sourceOperation = api.operations.find((operation) => (
-                        operation.target === openAPICase.operationTarget
-                    ));
-                    expect(sourceOperation, 'Source operation from OpenAPI fixture').to.exist;
+            return Utils.waitForApiRetrievable(token, api.id).then(() => {
+                const sourceOperation = api.operations.find((operation) => (
+                    operation.target === openAPICase.operationTarget
+                ));
+                expect(sourceOperation, 'Source operation from OpenAPI fixture').to.exist;
 
-                    const mcpPayload = {
-                        name: mcpName,
-                        displayName: mcpName,
-                        context: mcpContext,
-                        version: '1.0.0',
-                        policies: ['Unlimited'],
-                        transport: ['http', 'https'],
-                        operations: [{
-                            feature: 'TOOL',
-                            authType: 'Any',
-                            apiOperationMapping: {
-                                apiId: api.id,
-                                apiName: api.name,
-                                apiVersion: api.version,
-                                apiContext: api.context,
-                                backendOperation: {
-                                    target: sourceOperation.target,
-                                    verb: sourceOperation.verb,
-                                },
-                            },
-                        }],
-                    };
-                    const createMCPCommand = [
-                        'curl -k -sS -f -X POST',
-                        `-H ${shellQuote('Content-Type: application/json')}`,
-                        `-H ${shellQuote(`Authorization: Bearer ${token}`)}`,
-                        `--data-binary ${shellQuote(JSON.stringify(mcpPayload))}`,
-                        shellQuote(`${Cypress.config('baseUrl')}/api/am/publisher/v4/mcp-servers/generate-from-api`),
-                    ].join(' ');
-
-                    cy.exec(createMCPCommand).then(({ stdout: mcpResponse }) => {
-                        const mcp = JSON.parse(mcpResponse);
-                        expect(mcp.id, 'Created MCP server id').to.be.a('string');
-                        const tool = mcp.operations.find((operation) => operation.apiOperationMapping?.apiId === api.id);
-                        expect(tool, 'Generated MCP tool').to.exist;
-
-                        const schema = JSON.parse(tool.schemaDefinition);
-                        expect(Object.keys(schema.properties), 'Internal schema property names')
-                            .to.include.members(openAPICase.internalProperties);
-
-                        resolve({
+                const mcpPayload = {
+                    name: mcpName,
+                    displayName: mcpName,
+                    context: mcpContext,
+                    version: '1.0.0',
+                    policies: ['Unlimited'],
+                    transport: ['http', 'https'],
+                    operations: [{
+                        feature: 'TOOL',
+                        authType: 'Any',
+                        apiOperationMapping: {
                             apiId: api.id,
-                            mcpId: mcp.id,
-                            toolName: tool.target,
-                            internalProperties: openAPICase.internalProperties,
-                            displayedProperties: openAPICase.displayedProperties,
-                        });
-                    });
+                            apiName: api.name,
+                            apiVersion: api.version,
+                            apiContext: api.context,
+                            backendOperation: {
+                                target: sourceOperation.target,
+                                verb: sourceOperation.verb,
+                            },
+                        },
+                    }],
+                };
+                const createMCPCommand = [
+                    'curl -k -sS -f -X POST',
+                    `-H ${shellQuote('Content-Type: application/json')}`,
+                    `-H ${shellQuote(`Authorization: Bearer ${token}`)}`,
+                    `--data-binary ${shellQuote(JSON.stringify(mcpPayload))}`,
+                    shellQuote(`${Cypress.config('baseUrl')}/api/am/publisher/v4/mcp-servers/generate-from-api`),
+                ].join(' ');
+
+                return cy.exec(createMCPCommand).then(({ stdout: mcpResponse }) => {
+                    const mcp = JSON.parse(mcpResponse);
+                    expect(mcp.id, 'Created MCP server id').to.be.a('string');
+                    const tool = mcp.operations.find((operation) => operation.apiOperationMapping?.apiId === api.id);
+                    expect(tool, 'Generated MCP tool').to.exist;
+
+                    const schema = JSON.parse(tool.schemaDefinition);
+                    expect(Object.keys(schema.properties), 'Internal schema property names')
+                        .to.include.members(openAPICase.internalProperties);
+
+                    return {
+                        apiId: api.id,
+                        mcpId: mcp.id,
+                        toolName: tool.target,
+                        internalProperties: openAPICase.internalProperties,
+                        displayedProperties: openAPICase.displayedProperties,
+                    };
                 });
             });
-        }).catch(reject);
+        });
     });
 }
 
@@ -163,17 +167,18 @@ function openFirstTool(mcpId) {
 /**
  * Search the whole Monaco model because `.view-lines` only contains the visible editor viewport.
  * @param {string} propertyName - The property name to search for
- * @param {boolean} shouldExist - Whether the property name should be present in the rendered schema
+ * @param {number} expectedMatches - Expected number of matches; zero asserts the internal name is hidden
  */
-function assertSchemaProperty(propertyName, shouldExist) {
+function assertSchemaProperty(propertyName, expectedMatches) {
     const findShortcut = Cypress.platform === 'darwin' ? '{cmd}f' : '{ctrl}f';
     cy.get('.monaco-editor textarea').first().type(findShortcut, { force: true });
     cy.get('.monaco-editor .find-widget .find-part .input')
         .clear({ force: true })
         .type(`"${propertyName}"`, { force: true });
     cy.get('.monaco-editor .find-widget .matchesCount').should(($count) => {
-        if (shouldExist) {
-            expect($count.text(), `visible schema property ${propertyName}`).to.match(/\d+ of \d+/);
+        if (expectedMatches > 0) {
+            expect($count.text(), `schema property and required entry ${propertyName}`)
+                .to.equal(`1 of ${expectedMatches}`);
         } else {
             expect($count.text(), `hidden internal property ${propertyName}`).to.equal('No results');
         }
@@ -189,15 +194,21 @@ describe('MCP tool schema parameter prefix display', { retries: 0 }, () => {
 
     OPENAPI_CASES.forEach((openAPICase) => {
         it(`displays unprefixed names for ${openAPICase.title}`, () => {
-            createMCPFromOpenAPIFixture(openAPICase).then(({ mcpId, displayedProperties, internalProperties }) => {
+            return createMCPFromOpenAPIFixture(openAPICase).then(({
+                mcpId,
+                displayedProperties,
+                hiddenInternalProperties,
+                nestedProperties,
+            }) => {
                 // These generated APIM resources are intentionally retained so the failing UI
                 // can be inspected manually after Cypress reports the pre-fix behavior.
                 cy.logoutFromPublisher();
                 cy.loginToPublisher(publisher, password);
                 openFirstTool(mcpId);
 
-                displayedProperties.forEach((propertyName) => assertSchemaProperty(propertyName, true));
-                internalProperties.forEach((propertyName) => assertSchemaProperty(propertyName, false));
+                displayedProperties.forEach((propertyName) => assertSchemaProperty(propertyName, 2));
+                (hiddenInternalProperties || []).forEach((propertyName) => assertSchemaProperty(propertyName, 0));
+                (nestedProperties || []).forEach((propertyName) => assertSchemaProperty(propertyName, 2));
                 cy.get('.monaco-editor textarea').first().type('{esc}', { force: true });
             });
         });
@@ -205,14 +216,15 @@ describe('MCP tool schema parameter prefix display', { retries: 0 }, () => {
 
     it('keeps the internally prefixed schema in the MCP PUT payload', () => {
         const openAPICase = OPENAPI_CASES[0];
-        createMCPFromOpenAPIFixture(openAPICase).then(({ mcpId, internalProperties }) => {
+        return createMCPFromOpenAPIFixture(openAPICase).then(({ mcpId, internalProperties }) => {
             cy.logoutFromPublisher();
             cy.loginToPublisher(publisher, password);
             openFirstTool(mcpId);
 
             cy.get('.ToolDetails-accordionContainer').first()
-                .find('textarea')
-                .first()
+                .contains('label', 'Description')
+                .closest('.MuiFormControl-root')
+                .find('textarea:not([aria-hidden="true"])')
                 .clear({ force: true })
                 .type('Description edited by the parameter prefix regression test', { force: true });
 
@@ -222,6 +234,8 @@ describe('MCP tool schema parameter prefix display', { retries: 0 }, () => {
                 expect(response.statusCode).to.equal(200);
                 const tool = request.body.operations.find((operation) => operation.target === 'createPrefixCoverageItemV2');
                 expect(tool, 'saved MCP tool').to.exist;
+                expect(tool.description, 'saved Description TextField value')
+                    .to.equal('Description edited by the parameter prefix regression test');
 
                 const sentSchema = JSON.parse(tool.schemaDefinition);
                 expect(Object.keys(sentSchema.properties), 'unchanged internal schema properties')

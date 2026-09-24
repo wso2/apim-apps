@@ -47,27 +47,45 @@ const getDisplayPropertyName = (propertyName) => {
 /**
  * Create a display-only schema copy with internal parameter-location prefixes removed.
  * @param {object|Array|string} schema - The schema to transform
+ * @param {boolean} isRoot - Whether the schema is the root tool schema
  * @returns {object|Array|string} - A transformed copy for rendering
  */
-const getDisplaySchema = (schema) => {
+const getDisplaySchema = (schema, isRoot = true) => {
     if (Array.isArray(schema)) {
-        return schema.map(getDisplaySchema);
+        return schema.map((item) => getDisplaySchema(item, false));
     }
     if (!schema || typeof schema !== 'object') {
         return schema;
     }
 
+    const schemaProperties = isRoot && schema.properties && typeof schema.properties === 'object'
+        && !Array.isArray(schema.properties)
+        ? schema.properties
+        : {};
+    const propertyNames = Object.keys(schemaProperties);
+    const displayPropertyNames = propertyNames.map(getDisplayPropertyName);
+    const collidingDisplayNames = new Set(displayPropertyNames.filter((displayName, index) => (
+        displayPropertyNames.indexOf(displayName) !== index
+    )));
+    const propertyNameMap = new Map(propertyNames.map((propertyName, index) => [
+        propertyName,
+        collidingDisplayNames.has(displayPropertyNames[index]) ? propertyName : displayPropertyNames[index],
+    ]));
+    const getMappedPropertyName = (propertyName) => (propertyNameMap.has(propertyName)
+        ? propertyNameMap.get(propertyName)
+        : getDisplayPropertyName(propertyName));
+
     return Object.entries(schema).reduce((displaySchema, [key, value]) => {
         let displayValue;
-        if (key === 'properties' && value && typeof value === 'object' && !Array.isArray(value)) {
-            displayValue = Object.entries(value).reduce((properties, [propertyName, propertySchema]) => ({
-                ...properties,
-                [getDisplayPropertyName(propertyName)]: getDisplaySchema(propertySchema),
+        if (isRoot && key === 'properties' && value && typeof value === 'object' && !Array.isArray(value)) {
+            displayValue = Object.entries(value).reduce((displayProperties, [propertyName, propertySchema]) => ({
+                ...displayProperties,
+                [propertyNameMap.get(propertyName)]: getDisplaySchema(propertySchema, false),
             }), {});
-        } else if (key === 'required' && Array.isArray(value)) {
-            displayValue = value.map(getDisplayPropertyName);
+        } else if (isRoot && key === 'required' && Array.isArray(value)) {
+            displayValue = value.map(getMappedPropertyName);
         } else {
-            displayValue = getDisplaySchema(value);
+            displayValue = getDisplaySchema(value, false);
         }
         return {
             ...displaySchema,
