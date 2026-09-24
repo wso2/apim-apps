@@ -27,9 +27,15 @@ import InfoIcon from '@mui/icons-material/Info';
 import { useIntl } from 'react-intl';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import Utils from 'AppData/Utils';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 
 export default function RulesetAdherenceSummaryTable({ complianceData }) {
     const intl = useIntl();
+    const { settings } = useAppContext();
+    // With per policy severity filtering on, a ruleset's raw PASSED/FAILED status no longer determines the
+    // policy verdict by itself, so showing it here would repeat the exact confusion this feature exists to
+    // remove. The per severity violation counts to the right of it remain the accurate picture.
+    const severityFilteringEnabled = Boolean(settings && settings.perPolicySeverityFilteringEnabled);
 
     const renderComplianceIcons = (violations) => {
         const { error, warn, info } = violations;
@@ -99,7 +105,7 @@ export default function RulesetAdherenceSummaryTable({ complianceData }) {
                 }),
             },
         },
-        {
+        ...(severityFilteringEnabled ? [] : [{
             name: 'status',
             label: intl.formatMessage({
                 id: 'Governance.ComplianceDashboard.APICompliance.RulesetAdherence.column.status',
@@ -136,7 +142,7 @@ export default function RulesetAdherenceSummaryTable({ complianceData }) {
                     },
                 }),
             },
-        },
+        }]),
         {
             name: 'violatedRules',
             options: { display: false },
@@ -153,8 +159,12 @@ export default function RulesetAdherenceSummaryTable({ complianceData }) {
             }),
             options: {
                 customBodyRender: (value, tableMeta) => {
-                    // Count the number of errors, warnings, and info messages in the violations
-                    const violations = tableMeta.rowData[3];
+                    // rowData tracks the row actually displayed, including after a sort, unlike indexing
+                    // complianceData.rulesets by rowIndex, which stays in the original, unsorted order. The
+                    // column's position is looked up rather than hardcoded, since the status column ahead of
+                    // it is only present some of the time.
+                    const violatedRulesIndex = RulesetColumProps.findIndex((col) => col.name === 'violatedRules');
+                    const violations = tableMeta.rowData[violatedRulesIndex];
                     const counts = violations.reduce((acc, { severity }) => {
                         acc[severity.toLowerCase()] += 1;
                         return acc;

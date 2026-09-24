@@ -455,8 +455,8 @@ function AddEditPolicy(props) {
     const advisorySeverities = severityOrder.filter((severity) => !selectedSeverities.includes(severity));
 
     // Every severity selected is the unconfigured state, so it is sent as an empty value rather than as an
-    // explicit list of all of them. Creating a policy writes the severities in a second step, and an empty value
-    // makes the backend skip that write altogether.
+    // explicit list of all of them. That way it round-trips as the same unconfigured policy instead of one that
+    // happens to name every severity.
     const severitiesForPayload = (severities) => (
         severities.length === severityOrder.length ? '' : severities.join(',')
     );
