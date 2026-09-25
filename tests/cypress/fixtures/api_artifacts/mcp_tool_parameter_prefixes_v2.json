@@ -1,0 +1,69 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "MCP Tool Parameter Prefixes V2",
+    "version": "1.0.0",
+    "description": "OpenAPI 2.0 fixture for MCP query, header, path, and formData parameter prefix coverage."
+  },
+  "schemes": ["http"],
+  "host": "localhost:18181",
+  "basePath": "/mcp-prefix-v2",
+  "consumes": ["application/x-www-form-urlencoded"],
+  "produces": ["application/json"],
+  "paths": {
+    "/items/{itemId}": {
+      "post": {
+        "operationId": "createPrefixCoverageItemV2",
+        "summary": "Create an item using query, header, path, and formData parameters",
+        "parameters": [
+          {
+            "name": "filter",
+            "in": "query",
+            "type": "string",
+            "required": true,
+            "description": "Query parameter for MCP schema prefix coverage."
+          },
+          {
+            "name": "filter",
+            "in": "header",
+            "type": "string",
+            "required": true,
+            "description": "Header parameter colliding with a query parameter for display prefix coverage."
+          },
+          {
+            "name": "traceId",
+            "in": "header",
+            "type": "string",
+            "required": true,
+            "description": "Header parameter for MCP schema prefix coverage."
+          },
+          {
+            "name": "itemId",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "Path parameter for MCP schema prefix coverage."
+          },
+          {
+            "name": "label",
+            "in": "formData",
+            "type": "string",
+            "required": true,
+            "description": "Form field for MCP schema prefix coverage."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request accepted",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

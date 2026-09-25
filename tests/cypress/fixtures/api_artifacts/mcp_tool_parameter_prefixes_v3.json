@@ -1,0 +1,92 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "MCP Tool Parameter Prefixes V3",
+    "version": "1.0.0",
+    "description": "OpenAPI 3.0 fixture for MCP query, header, path, and cookie parameter prefix coverage."
+  },
+  "servers": [
+    { "url": "http://localhost:18181/mcp-prefix-v3" }
+  ],
+  "paths": {
+    "/records/{recordId}": {
+      "post": {
+        "operationId": "createPrefixCoverageRecordV3",
+        "summary": "Create a record using query, header, path, and cookie parameters",
+        "parameters": [
+          {
+            "name": "filter",
+            "in": "query",
+            "required": true,
+            "description": "Query parameter for MCP schema prefix coverage.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "header_filter",
+            "in": "query",
+            "required": true,
+            "description": "Query parameter with a second known prefix in its name.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "traceId",
+            "in": "header",
+            "required": true,
+            "description": "Header parameter for MCP schema prefix coverage.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "recordId",
+            "in": "path",
+            "required": true,
+            "description": "Path parameter for MCP schema prefix coverage.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "sessionId",
+            "in": "cookie",
+            "required": true,
+            "description": "Cookie parameter for MCP schema prefix coverage.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "required": ["label", "metadata"],
+                "properties": {
+                  "label": { "type": "string" },
+                  "metadata": {
+                    "type": "object",
+                    "required": ["query_customField"],
+                    "properties": {
+                      "query_customField": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Request accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
