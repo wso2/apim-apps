@@ -42,6 +42,27 @@ export const VALIDATOR_TYPES = {
     REGEX: 'REGEX',
 };
 
+/*
+ * Validators for API key security restrictions.
+ * IP validation supports IPv4, IPv6, and CIDR ranges.
+ * Referer values are validated separately and support '*' wildcards.
+ * The IPv4/IPv6 patterns are reused from the Admin Portal blacklist form (Throttling/Blacklist/AddEdit.jsx) so both portals accept the same formats.
+ */
+const IPV4_PATTERN = String.raw`(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}`
+    + '([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])';
+const IPV6_PATTERN = '(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:)'
+    + '{1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}'
+    + '(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}'
+    + '(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)'
+    + '|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,'
+    + String.raw`1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:(`
+    + String.raw`(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))`;
+
+const IPV4_REGEX = new RegExp(`^${IPV4_PATTERN}$`);
+const IPV6_REGEX = new RegExp(`^${IPV6_PATTERN}$`);
+const IPV4_CIDR_REGEX = new RegExp(`^${IPV4_PATTERN}/([0-9]|[12][0-9]|3[0-2])$`);
+const IPV6_CIDR_REGEX = new RegExp(`^${IPV6_PATTERN}/([0-9]|[1-9][0-9]|1[01][0-9]|12[0-8])$`);
+
 /**
  * Returns a localized hint string for a constraint.
  * @param {object|null|undefined} constraint - The constraint object from config.
@@ -148,6 +169,64 @@ const validateConstraint = (inputValue, constraint, intl, messages) => {
         default:
             return { valid: true, message: '' };
     }
+};
+
+/**
+ * Checks an IP based restriction value: a single IPv4/IPv6 address or CIDR range, or a comma separated list of them.
+ *
+ * @param {string} value - The raw user input.
+ * @returns {boolean} true if every entry is a valid IP address or CIDR range.
+ */
+export const isValidPermittedIPList = (value) => {
+    if (!value?.trim()) {
+        return false;
+    }
+    return value.split(',').every((entry) => {
+        const ip = entry.trim();
+        return ip !== ''
+            && (IPV4_REGEX.test(ip)
+                || IPV6_REGEX.test(ip)
+                || IPV4_CIDR_REGEX.test(ip)
+                || IPV6_CIDR_REGEX.test(ip));
+    });
+};
+
+/**
+ * Validates a permitted referrer value.
+ * Supports single or comma-separated entries with '*' wildcards.
+ *
+ * @param {string} value - The raw user input.
+ * @returns {boolean} true if every entry is a plausible referrer pattern.
+ */
+export const isValidPermittedRefererList = (value) => {
+    if (!value?.trim()) {
+        return false;
+    }
+    return value.split(',').every((entry) => {
+        const referer = entry.trim();
+        return referer !== ''
+            && !/\s/.test(referer)
+            && /[.:/*]/.test(referer);
+    });
+};
+
+/** 
+ * Validates an API key security restriction value and returns the corresponding localized validation message.
+ *
+ * @param {string} restrictionType - The selected restriction type ('none', 'ip' or 'referrer').
+ * @param {string} restrictionValue - The raw user input.
+ * @param {object} intl - The intl object for formatMessage.
+ * @param {object} messages - defineMessages result with invalidIPRestriction and invalidRefererRestriction.
+ * @returns {string} Localized error message, or '' if valid.
+ */
+export const validateRestrictionValue = (restrictionType, restrictionValue, intl, messages) => {
+    if (restrictionType === 'ip' && !isValidPermittedIPList(restrictionValue)) {
+        return intl.formatMessage(messages.invalidIPRestriction);
+    }
+    if (restrictionType === 'referrer' && !isValidPermittedRefererList(restrictionValue)) {
+        return intl.formatMessage(messages.invalidRefererRestriction);
+    }
+    return '';
 };
 
 export default validateConstraint;
