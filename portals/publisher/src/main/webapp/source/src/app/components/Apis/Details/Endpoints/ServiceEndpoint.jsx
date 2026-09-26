@@ -80,7 +80,8 @@ function ServiceEndpoint(props) {
         name,
         editEndpoint,
         endpointURL,
-        editService
+        editService,
+        endpointSecurityTypes
     } = props;
     const intl = useIntl();
 
@@ -156,28 +157,30 @@ function ServiceEndpoint(props) {
                                                         </Icon>
                                                     </Tooltip>
                                                 </IconButton>
-                                                <IconButton
-                                                    className={classes.iconButton}
-                                                    aria-label='Security'
-                                                    onClick={() => setESConfigOpen(type, esCategory)}
-                                                    disabled={(isRestricted(['apim:api_create'], api))}
-                                                    size='large'>
-                                                    <Tooltip
-                                                        placement='top-start'
-                                                        interactive
-                                                        title={(
-                                                            <FormattedMessage
-                                                                id='Apis.Details.Endpoints.
-                                                                GenericEndpoint.security.endpoint'
-                                                                defaultMessage='Endpoint security'
-                                                            />
-                                                        )}
-                                                    >
-                                                        <Icon>
-                                                            security
-                                                        </Icon>
-                                                    </Tooltip>
-                                                </IconButton>
+                                                {endpointSecurityTypes && endpointSecurityTypes.length > 0 && (
+                                                    <IconButton
+                                                        className={classes.iconButton}
+                                                        aria-label='Security'
+                                                        onClick={() => setESConfigOpen(type, esCategory)}
+                                                        disabled={(isRestricted(['apim:api_create'], api))}
+                                                        size='large'>
+                                                        <Tooltip
+                                                            placement='top-start'
+                                                            interactive
+                                                            title={(
+                                                                <FormattedMessage
+                                                                    id='Apis.Details.Endpoints.
+                                                                    GenericEndpoint.security.endpoint'
+                                                                    defaultMessage='Endpoint security'
+                                                                />
+                                                            )}
+                                                        >
+                                                            <Icon>
+                                                                security
+                                                            </Icon>
+                                                        </Tooltip>
+                                                    </IconButton>
+                                                )}
                                             </>
                                         </InputAdornment>
                                     ),
@@ -210,6 +213,7 @@ ServiceEndpoint.propTypes = {
     editEndpoint: PropTypes.func.isRequired,
     editService: PropTypes.func.isRequired,
     endpointURL: PropTypes.string.isRequired,
+    endpointSecurityTypes: PropTypes.array,
     intl: PropTypes.shape({
         formatMessage: PropTypes.func,
     }).isRequired,
