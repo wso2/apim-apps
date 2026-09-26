@@ -21,6 +21,7 @@ import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 
 import { isRestricted } from 'AppData/AuthManager';
+import CONSTS from 'AppData/Constants';
 import LifeCycleIcon from '@mui/icons-material/Autorenew';
 import StoreIcon from '@mui/icons-material/Store';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -1015,9 +1016,12 @@ class Details extends Component {
                             {!isRestricted(this.getCreatePublishAllowedScopes(api.apiType), api)
                                 && (isAPIProduct || (!isAPIProduct && !api.isWebSocket()
                                 && !api.isGraphql() && !isAsyncAPI)) &&
-                            (settings && settings.gatewayFeatureCatalog
-                                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
-                                .tryout.includes('tryout')) && (
+                            (settings && (
+                                settings.gatewayFeatureCatalog
+                                    .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
+                                    .tryout.includes('tryout')
+                                || api.gatewayType === CONSTS.API_PLATFORM_GATEWAY
+                            )) && (
                                 <div>
                                     <Divider />
                                     <Typography className={classes.headingText}>
