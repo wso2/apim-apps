@@ -26,9 +26,15 @@ const OPENAPI_CASES = [
         fixture: 'mcp_tool_parameter_prefixes_v2.json',
         suffix: 'v2',
         operationTarget: '/items/{itemId}',
-        displayedProperties: ['query_filter', 'header_filter', 'traceId', 'itemId', 'label'],
+        displayedProperties: [
+            'query_filter', 'header_filter', 'query_foo', 'header_foo', 'query_query_foo',
+            'traceId', 'itemId', 'label',
+        ],
         hiddenInternalProperties: ['header_traceId', 'path_itemId', 'formData_label'],
-        internalProperties: ['query_filter', 'header_filter', 'header_traceId', 'path_itemId', 'formData_label'],
+        internalProperties: [
+            'query_filter', 'header_filter', 'query_foo', 'header_foo', 'query_query_foo',
+            'header_traceId', 'path_itemId', 'formData_label',
+        ],
     },
     {
         title: 'OpenAPI 3.0 query, header, path, and cookie parameters',
@@ -142,6 +148,8 @@ function createMCPFromOpenAPIFixture(openAPICase) {
                         toolName: tool.target,
                         internalProperties: openAPICase.internalProperties,
                         displayedProperties: openAPICase.displayedProperties,
+                        hiddenInternalProperties: openAPICase.hiddenInternalProperties,
+                        nestedProperties: openAPICase.nestedProperties,
                     };
                 });
             });
@@ -211,6 +219,35 @@ describe('MCP tool schema parameter prefix display', { retries: 0 }, () => {
                 (nestedProperties || []).forEach((propertyName) => assertSchemaProperty(propertyName, 2));
                 cy.get('.monaco-editor textarea').first().type('{esc}', { force: true });
             });
+        });
+    });
+
+    it('keeps unmatched required names separate from colliding property names', () => {
+        const openAPICase = OPENAPI_CASES[0];
+        return createMCPFromOpenAPIFixture(openAPICase).then(({ mcpId, toolName }) => {
+            cy.logoutFromPublisher();
+            cy.loginToPublisher(publisher, password);
+            cy.intercept('GET', `**/mcp-servers/${mcpId}`, (request) => {
+                request.continue((response) => {
+                    const tool = response.body.operations.find((operation) => operation.target === toolName);
+                    expect(Boolean(tool), 'MCP tool in intercepted response').to.equal(true);
+                    tool.schemaDefinition = JSON.stringify({
+                        properties: {
+                            query_foo: {},
+                            header_foo: {},
+                        },
+                        required: ['header_foo', 'query__foo'],
+                    });
+                });
+            }).as('getMCPWithUnmatchedRequiredName');
+
+            openFirstTool(mcpId);
+            cy.wait('@getMCPWithUnmatchedRequiredName').its('response.statusCode').should('equal', 200);
+            assertSchemaProperty('query_foo', 1);
+            assertSchemaProperty('header_foo', 2);
+            assertSchemaProperty('_foo', 1);
+            assertSchemaProperty('query__foo', 0);
+            cy.get('.monaco-editor textarea').first().type('{esc}', { force: true });
         });
     });
 

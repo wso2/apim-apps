@@ -31,6 +31,27 @@
             "description": "Header parameter colliding with a query parameter for display prefix coverage."
           },
           {
+            "name": "foo",
+            "in": "query",
+            "type": "string",
+            "required": true,
+            "description": "Query parameter for chained display name collision coverage."
+          },
+          {
+            "name": "foo",
+            "in": "header",
+            "type": "string",
+            "required": true,
+            "description": "Header parameter for chained display name collision coverage."
+          },
+          {
+            "name": "query_foo",
+            "in": "query",
+            "type": "string",
+            "required": true,
+            "description": "Query parameter that creates the chained display name collision."
+          },
+          {
             "name": "traceId",
             "in": "header",
             "type": "string",

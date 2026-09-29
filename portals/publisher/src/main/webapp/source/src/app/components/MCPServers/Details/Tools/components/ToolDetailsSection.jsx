@@ -63,14 +63,23 @@ const getDisplaySchema = (schema, isRoot = true) => {
         ? schema.properties
         : {};
     const propertyNames = Object.keys(schemaProperties);
-    const displayPropertyNames = propertyNames.map(getDisplayPropertyName);
-    const collidingDisplayNames = new Set(displayPropertyNames.filter((displayName, index) => (
-        displayPropertyNames.indexOf(displayName) !== index
-    )));
-    const propertyNameMap = new Map(propertyNames.map((propertyName, index) => [
+    const propertyNameMap = new Map(propertyNames.map((propertyName) => [
         propertyName,
-        collidingDisplayNames.has(displayPropertyNames[index]) ? propertyName : displayPropertyNames[index],
+        getDisplayPropertyName(propertyName),
     ]));
+    let hasNameCollisions = true;
+    while (hasNameCollisions) {
+        const displayNames = propertyNames.map((propertyName) => propertyNameMap.get(propertyName));
+        const collidingDisplayNames = new Set(displayNames.filter((displayName, index) => (
+            displayNames.indexOf(displayName) !== index
+        )));
+        const conflictingPropertyNames = propertyNames.filter((propertyName) => (
+            propertyNameMap.get(propertyName) !== propertyName
+            && collidingDisplayNames.has(propertyNameMap.get(propertyName))
+        ));
+        hasNameCollisions = conflictingPropertyNames.length > 0;
+        conflictingPropertyNames.forEach((propertyName) => propertyNameMap.set(propertyName, propertyName));
+    }
     const getMappedPropertyName = (propertyName) => (propertyNameMap.has(propertyName)
         ? propertyNameMap.get(propertyName)
         : getDisplayPropertyName(propertyName));
