@@ -179,7 +179,7 @@ const KeyConfiguration = (props) => {
     const intl = useIntl();
     const {
         notFound, isUserOwner, keyManagerConfig, updateKeyRequest, keyRequest, updateHasError, callbackError, mode,
-        selectedApp, keyValue,
+        selectedApp, keyValue, showValidationErrors,
     } = props;
     const {
         selectedGrantTypes, callbackUrl,
@@ -589,6 +589,7 @@ const KeyConfiguration = (props) => {
                                             handleChange={handleChange}
                                             subscriptionScopes={subscriptionScopes}
                                             onValidationError={handleConfigValidationError}
+                                            showValidationErrors={showValidationErrors}
                                         />
                                     ))}
                                 </>

@@ -108,6 +108,7 @@ const AppConfiguration = (props) => {
 
     const {
         config, isUserOwner, previousValue, handleChange, subscriptionScopes, onValidationError,
+        showValidationErrors,
     } = props;
 
     const [selectedValue, setSelectedValue] = useState(previousValue);
@@ -194,7 +195,20 @@ const AppConfiguration = (props) => {
             id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.regexInvalid',
             defaultMessage: 'Value must match the required pattern: {pattern}',
         },
+        requiredWithConstraint: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.required',
+            defaultMessage: 'This field is required. {hint}',
+        },
     });
+
+    const hasConstraint = !!(config.constraint && config.constraint.type);
+    const isRequiredByConstraint = hasConstraint && config.type === 'input' && !config.multiple;
+    const isRequired = !!config.required || isRequiredByConstraint;
+    const isBlankValue = selectedValue === undefined || selectedValue === null
+        || String(selectedValue).trim() === '' || selectedValue === 'N/A';
+    // The backend returns "N/A" when no value is set. Show it as empty only when the field is mandatory
+    // due to a constraint; otherwise keep showing "N/A" (the server default applies).
+    const displayValue = (isRequiredByConstraint && isBlankValue) ? '' : selectedValue;
     
     /**
      * Checks whether a required field is empty.
@@ -251,6 +265,24 @@ const AppConfiguration = (props) => {
         }
         return tooltip;
     }
+
+    const showRequiredError = !!showValidationErrors && isRequiredByConstraint && isBlankValue;
+
+    const getInputHelperText = () => {
+        if (constraintError) {
+            return constraintError;
+        }
+        if (config.required && hasMandatoryError(selectedValue)) {
+            return hasMandatoryError(selectedValue);
+        }
+        if (isRequiredByConstraint && isBlankValue) {
+            const hint = getConstraintHint(config.constraint, props.intl, constraintMessages);
+            if (hint) {
+                return props.intl.formatMessage(constraintMessages.requiredWithConstraint, { hint });
+            }
+        }
+        return getAppConfigToolTip();
+    };
 
     /**
      * Update the state when new props are available
@@ -453,16 +485,17 @@ const AppConfiguration = (props) => {
                                 fullWidth
                                 id={config.name}
                                 label={getAppConfigLabel()}
-                                value={selectedValue}
+                                value={displayValue}
                                 name={config.name}
                                 onChange={e => handleAppRequestChange(e)}
-                                required={config.required}
-                                error={!!constraintError
+                                required={isRequired}
+                                sx={isRequiredByConstraint
+                                    ? { '& .MuiFormLabel-root .MuiFormLabel-asterisk': { color: '#d32f2f !important' } }
+                                    : undefined}
+                                error={!!constraintError || showRequiredError
                                     || (config.required && Boolean(hasMandatoryError(selectedValue)))}
-                                helperText={constraintError
-                                    || (config.required && hasMandatoryError(selectedValue))
-                                    || getAppConfigToolTip()}
-                                FormHelperTextProps={constraintError ? { error: true } : {}}
+                                helperText={getInputHelperText()}
+                                FormHelperTextProps={(constraintError || showRequiredError) ? { error: true } : {}}
                                 margin='dense'
                                 size='small'
                                 variant='outlined'
@@ -496,12 +529,16 @@ const AppConfiguration = (props) => {
                                 fullWidth
                                 id={config.name}
                                 label={getAppConfigLabel()}
-                                value={selectedValue}
+                                value={displayValue}
+                                required={isRequiredByConstraint}
+                                sx={isRequiredByConstraint
+                                    ? { '& .MuiFormLabel-root .MuiFormLabel-asterisk': { color: '#d32f2f !important' } }
+                                    : undefined}
                                 name={config.name}
                                 onChange={e => handleAppRequestChange(e)}
-                                error={!!constraintError}
-                                helperText={constraintError || getAppConfigToolTip()}
-                                FormHelperTextProps={constraintError ? { error: true } : {}}
+                                error={!!constraintError || showRequiredError}
+                                helperText={getInputHelperText()}
+                                FormHelperTextProps={(constraintError || showRequiredError) ? { error: true } : {}}
                                 margin='dense'
                                 variant='outlined'
                                 disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
@@ -529,6 +566,7 @@ AppConfiguration.propTypes = {
     config: PropTypes.any.isRequired,
     subscriptionScopes: PropTypes.arrayOf(PropTypes.string),
     onValidationError: PropTypes.func,
+    showValidationErrors: PropTypes.bool,
     notFound: PropTypes.bool,
     intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
 };
