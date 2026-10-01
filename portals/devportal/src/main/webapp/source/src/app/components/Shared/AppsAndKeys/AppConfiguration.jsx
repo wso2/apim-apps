@@ -53,6 +53,17 @@ const classes = {
     removeHelperPadding: `${PREFIX}-removeHelperPadding`
 };
 
+// Highlights the required asterisk of fields made mandatory by an admin defined constraint
+const requiredAsteriskSx = { '& .MuiFormLabel-root .MuiFormLabel-asterisk': { color: 'error.main' } };
+
+/**
+ * Checks whether a config value should be treated as not set. The backend returns "N/A" when no value is set.
+ * @param {*} value the config value.
+ * @returns {boolean} true if the value is blank.
+ */
+const isBlank = (value) => value === undefined || value === null
+    || String(value).trim() === '' || value === 'N/A';
+
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
 const Root = styled('div')(
     ({ theme }) => ({
@@ -204,10 +215,9 @@ const AppConfiguration = (props) => {
     const hasConstraint = !!(config.constraint && config.constraint.type);
     const isRequiredByConstraint = hasConstraint && config.type === 'input' && !config.multiple;
     const isRequired = !!config.required || isRequiredByConstraint;
-    const isBlankValue = selectedValue === undefined || selectedValue === null
-        || String(selectedValue).trim() === '' || selectedValue === 'N/A';
-    // The backend returns "N/A" when no value is set. Show it as empty only when the field is mandatory
-    // due to a constraint; otherwise keep showing "N/A" (the server default applies).
+    const isBlankValue = isBlank(selectedValue);
+    // Show a blank value as empty only when the field is mandatory due to a constraint;
+    // otherwise keep showing "N/A" (the server default applies).
     const displayValue = (isRequiredByConstraint && isBlankValue) ? '' : selectedValue;
     
     /**
@@ -241,7 +251,8 @@ const AppConfiguration = (props) => {
         const result = validateConstraint(newValue, constraint, props.intl, constraintMessages);
         setConstraintError(result.valid ? '' : result.message);
         if (onValidationError) {
-            const mandatoryInvalid = config.required && Boolean(hasMandatoryError(newValue));
+            const mandatoryInvalid = (config.required && Boolean(hasMandatoryError(newValue)))
+                || (isRequiredByConstraint && isBlank(newValue));
             onValidationError(config.name, !result.valid || mandatoryInvalid);
         }
 
@@ -296,7 +307,8 @@ const AppConfiguration = (props) => {
             const constraintInvalid = !validateConstraint(
                 String(previousValue ?? ''), config.constraint, null, null,
             ).valid;
-            const mandatoryInvalid = config.required && Boolean(hasMandatoryError(previousValue));
+            const mandatoryInvalid = (config.required && Boolean(hasMandatoryError(previousValue)))
+                || (isRequiredByConstraint && isBlank(previousValue));
             onValidationError(config.name, constraintInvalid || mandatoryInvalid);
         }
     }, [previousValue, settingsContext]);
@@ -489,9 +501,7 @@ const AppConfiguration = (props) => {
                                 name={config.name}
                                 onChange={e => handleAppRequestChange(e)}
                                 required={isRequired}
-                                sx={isRequiredByConstraint
-                                    ? { '& .MuiFormLabel-root .MuiFormLabel-asterisk': { color: '#d32f2f !important' } }
-                                    : undefined}
+                                sx={isRequiredByConstraint ? requiredAsteriskSx : undefined}
                                 error={!!constraintError || showRequiredError
                                     || (config.required && Boolean(hasMandatoryError(selectedValue)))}
                                 helperText={getInputHelperText()}
@@ -531,9 +541,7 @@ const AppConfiguration = (props) => {
                                 label={getAppConfigLabel()}
                                 value={displayValue}
                                 required={isRequiredByConstraint}
-                                sx={isRequiredByConstraint
-                                    ? { '& .MuiFormLabel-root .MuiFormLabel-asterisk': { color: '#d32f2f !important' } }
-                                    : undefined}
+                                sx={isRequiredByConstraint ? requiredAsteriskSx : undefined}
                                 name={config.name}
                                 onChange={e => handleAppRequestChange(e)}
                                 error={!!constraintError || showRequiredError}

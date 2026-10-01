@@ -601,7 +601,7 @@ class TokenManager extends React.Component {
             this.setState({ showValidationErrors: true });
             Alert.error(this.props.intl.formatMessage({
                 id: 'Shared.AppsAndKeys.TokenManager.key.generate.validation.error',
-                defaultMessage: 'Please fill in all required fields correctly before generating keys.',
+                defaultMessage: 'Please fix the highlighted errors before generating or updating keys.',
             }));
             return;
         }
@@ -660,7 +660,7 @@ class TokenManager extends React.Component {
             this.setState({ showValidationErrors: true });
             Alert.error(this.props.intl.formatMessage({
                 id: 'Shared.AppsAndKeys.TokenManager.key.generate.validation.error',
-                defaultMessage: 'Please fill in all required fields correctly before generating keys.',
+                defaultMessage: 'Please fix the highlighted errors before generating or updating keys.',
             }));
             return;
         }
