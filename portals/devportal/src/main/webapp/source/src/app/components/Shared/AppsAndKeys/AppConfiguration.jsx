@@ -50,11 +50,9 @@ const classes = {
     checkboxWrapper: `${PREFIX}-checkboxWrapper`,
     checkboxWrapperColumn: `${PREFIX}-checkboxWrapperColumn`,
     group: `${PREFIX}-group`,
-    removeHelperPadding: `${PREFIX}-removeHelperPadding`
+    removeHelperPadding: `${PREFIX}-removeHelperPadding`,
+    requiredAsterisk: `${PREFIX}-requiredAsterisk`,
 };
-
-// Highlights the required asterisk of fields made mandatory by an admin defined constraint
-const requiredAsteriskSx = { '& .MuiFormLabel-root .MuiFormLabel-asterisk': { color: 'error.main' } };
 
 /**
  * Checks whether a config value should be treated as not set. The backend returns "N/A" when no value is set.
@@ -105,7 +103,12 @@ const Root = styled('div')(
             '& p': {
                 margin: '8px 0px',
             },
-        }
+        },
+
+        // Highlights the asterisk of fields made mandatory by an admin defined constraint
+        [`& .${classes.requiredAsterisk} .MuiFormLabel-asterisk`]: {
+            color: theme.palette.error.main,
+        },
     })
 );
 
@@ -501,7 +504,7 @@ const AppConfiguration = (props) => {
                                 name={config.name}
                                 onChange={e => handleAppRequestChange(e)}
                                 required={isRequired}
-                                sx={isRequiredByConstraint ? requiredAsteriskSx : undefined}
+                                className={isRequiredByConstraint ? classes.requiredAsterisk : undefined}
                                 error={!!constraintError || showRequiredError
                                     || (config.required && Boolean(hasMandatoryError(selectedValue)))}
                                 helperText={getInputHelperText()}
@@ -541,7 +544,7 @@ const AppConfiguration = (props) => {
                                 label={getAppConfigLabel()}
                                 value={displayValue}
                                 required={isRequiredByConstraint}
-                                sx={isRequiredByConstraint ? requiredAsteriskSx : undefined}
+                                className={isRequiredByConstraint ? classes.requiredAsterisk : undefined}
                                 name={config.name}
                                 onChange={e => handleAppRequestChange(e)}
                                 error={!!constraintError || showRequiredError}
