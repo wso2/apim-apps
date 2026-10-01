@@ -212,7 +212,7 @@ const AppConfiguration = (props) => {
         },
     });
 
-    const hasConstraint = !!(config.constraint && config.constraint.type);
+    const hasConstraint = !!config.constraint?.type;
     const isRequiredByConstraint = hasConstraint && config.type === 'input' && !config.multiple;
     const isRequired = !!config.required || isRequiredByConstraint;
     const isBlankValue = isBlank(selectedValue);
