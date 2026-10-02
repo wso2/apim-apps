@@ -24,6 +24,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
 import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
 import RuleViolationSummary from './RuleViolationSummary';
@@ -47,6 +48,10 @@ export default function Compliance() {
     const theme = useTheme();
     const [api] = useAPI();
     const artifactId = api.id;
+    const { data: settings } = usePublisherSettings();
+    // Hidden when severity filtering is on - a ruleset's status no longer determines the policy verdict by
+    // itself. Violation counts moved to the Policy Adherence Summary table instead.
+    const severityFilteringEnabled = Boolean(settings && settings.perPolicySeverityFilteringEnabled);
     const [statusCounts, setStatusCounts] = useState({ passed: 0, failed: 0, unapplied: 0 });
     const [policyAdherence, setPolicyAdherence] = useState({
         followedPolicies: 0,
@@ -361,54 +366,58 @@ export default function Compliance() {
                                 </CardContent>
                             </Card>
                         </Grid>
-                        <Grid item xs={12} md={6} lg={4}>
-                            <Card elevation={3}>
-                                <CardContent>
-                                    <Typography
-                                        variant='body1'
-                                        sx={{ fontWeight: 'bold', mb: 2 }}
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Details.Compliance.ruleset.adherence'
-                                            defaultMessage='Ruleset Adherence'
+                        {/* Ruleset Adherence chart - hidden when per policy severity filtering is on,
+                            since a ruleset's raw status is no longer the accurate picture in that mode */}
+                        {!severityFilteringEnabled && (
+                            <Grid item xs={12} md={6} lg={4}>
+                                <Card elevation={3}>
+                                    <CardContent>
+                                        <Typography
+                                            variant='body1'
+                                            sx={{ fontWeight: 'bold', mb: 2 }}
+                                        >
+                                            <FormattedMessage
+                                                id='Apis.Details.Compliance.ruleset.adherence'
+                                                defaultMessage='Ruleset Adherence'
+                                            />
+                                        </Typography>
+                                        <DonutChart
+                                            colors={[
+                                                theme.palette.charts.success,
+                                                theme.palette.charts.error,
+                                                'grey',
+                                            ]}
+                                            data={[
+                                                {
+                                                    id: 0,
+                                                    value: statusCounts.passed,
+                                                    label: `${intl.formatMessage({
+                                                        id: 'Apis.Details.Compliance.passed',
+                                                        defaultMessage: 'Passed'
+                                                    })} (${statusCounts.passed})`
+                                                },
+                                                {
+                                                    id: 1,
+                                                    value: statusCounts.failed,
+                                                    label: `${intl.formatMessage({
+                                                        id: 'Apis.Details.Compliance.failed',
+                                                        defaultMessage: 'Failed'
+                                                    })} (${statusCounts.failed})`
+                                                },
+                                                {
+                                                    id: 2,
+                                                    value: statusCounts.unapplied,
+                                                    label: `${intl.formatMessage({
+                                                        id: 'Apis.Details.Compliance.unapplied',
+                                                        defaultMessage: 'Unapplied'
+                                                    })} (${statusCounts.unapplied})`
+                                                },
+                                            ]}
                                         />
-                                    </Typography>
-                                    <DonutChart
-                                        colors={[
-                                            theme.palette.charts.success,
-                                            theme.palette.charts.error,
-                                            'grey',
-                                        ]}
-                                        data={[
-                                            {
-                                                id: 0,
-                                                value: statusCounts.passed,
-                                                label: `${intl.formatMessage({
-                                                    id: 'Apis.Details.Compliance.passed',
-                                                    defaultMessage: 'Passed'
-                                                })} (${statusCounts.passed})`
-                                            },
-                                            {
-                                                id: 1,
-                                                value: statusCounts.failed,
-                                                label: `${intl.formatMessage({
-                                                    id: 'Apis.Details.Compliance.failed',
-                                                    defaultMessage: 'Failed'
-                                                })} (${statusCounts.failed})`
-                                            },
-                                            {
-                                                id: 2,
-                                                value: statusCounts.unapplied,
-                                                label: `${intl.formatMessage({
-                                                    id: 'Apis.Details.Compliance.unapplied',
-                                                    defaultMessage: 'Unapplied'
-                                                })} (${statusCounts.unapplied})`
-                                            },
-                                        ]}
-                                    />
-                                </CardContent>
-                            </Card>
-                        </Grid>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        )}
                         <Grid item xs={12} md={6} lg={4}>
                             <Card elevation={3}>
                                 <CardContent>
@@ -479,30 +488,33 @@ export default function Compliance() {
                             </Card>
                         </Grid>
 
-                        {/* Ruleset Adherence Summary section */}
-                        <Grid item xs={12} md={12}>
-                            <Card elevation={3} sx={{
-                                '& .MuiTableCell-footer': {
-                                    border: 0
-                                },
-                            }}>
-                                <CardContent>
-                                    <Typography
-                                        variant='body1'
-                                        sx={{ fontWeight: 'bold', mb: 2 }}
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Details.Compliance.ruleset.adherence.summary'
-                                            defaultMessage='Ruleset Adherence Summary'
+                        {/* Ruleset Adherence Summary section - hidden when per policy severity filtering is on,
+                            since a ruleset's raw status is no longer the accurate picture in that mode */}
+                        {!severityFilteringEnabled && (
+                            <Grid item xs={12} md={12}>
+                                <Card elevation={3} sx={{
+                                    '& .MuiTableCell-footer': {
+                                        border: 0
+                                    },
+                                }}>
+                                    <CardContent>
+                                        <Typography
+                                            variant='body1'
+                                            sx={{ fontWeight: 'bold', mb: 2 }}
+                                        >
+                                            <FormattedMessage
+                                                id='Apis.Details.Compliance.ruleset.adherence.summary'
+                                                defaultMessage='Ruleset Adherence Summary'
+                                            />
+                                        </Typography>
+                                        <RulesetAdherenceSummaryTable
+                                            artifactId={artifactId}
+                                            complianceData={complianceData}
                                         />
-                                    </Typography>
-                                    <RulesetAdherenceSummaryTable
-                                        artifactId={artifactId}
-                                        complianceData={complianceData}
-                                    />
-                                </CardContent>
-                            </Card>
-                        </Grid>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        )}
                     </>
                 )}
 
