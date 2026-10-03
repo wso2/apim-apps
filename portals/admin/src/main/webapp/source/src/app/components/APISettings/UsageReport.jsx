@@ -236,25 +236,27 @@ export default function UsageReport() {
     const [selectedEndDate, setSelectedEndDate] = useState(endDate);
 
     const fetchTransactionData = () => {
+        if (!selectedStartDate || !selectedEndDate) {
+            return;
+        }
+
         setLoading(true);
 
-        if (selectedStartDate && selectedEndDate) {
-            const api = new API();
-            api.getTransactionCount({
-                startTime: selectedStartDate.unix().toString(),
-                endTime: selectedEndDate.unix().toString(),
+        const api = new API();
+        api.getTransactionCount({
+            startTime: selectedStartDate.valueOf().toString(),
+            endTime: selectedEndDate.valueOf().toString(),
+        })
+            .then((result) => {
+                setTransactionCount(result.body.count);
             })
-                .then((result) => {
-                    setTransactionCount(result.body.count);
-                })
-                .catch((error) => {
-                    console.error('Error fetching transaction count:', error);
-                    throw error;
-                })
-                .finally(() => {
-                    setLoading(false);
-                });
-        }
+            .catch((error) => {
+                console.error('Error fetching transaction count:', error);
+                throw error;
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     };
 
     useEffect(() => {
