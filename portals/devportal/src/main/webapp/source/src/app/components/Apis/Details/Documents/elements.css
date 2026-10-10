@@ -27,8 +27,7 @@
     outline: none
 }
 
-#apim_elements fieldset,
-#apim_elements l {
+#apim_elements fieldset{
     margin: 0;
     padding: 0;
 }
