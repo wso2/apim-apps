@@ -14,9 +14,8 @@
 #apim_elements h5,
 #apim_elements h6,
 #apim_elements hr,
-#apim_elements p,
 #apim_elements pre {
-    margin: 0
+    margin: 0;
 }
 
 #apim_elements button {
@@ -29,15 +28,13 @@
 }
 
 #apim_elements fieldset,
-#apim_elements l,
-#apim_elements ul {
+#apim_elements l {
     margin: 0;
-    padding: 0
+    padding: 0;
 }
-
-#apim_elements tol,
-#apim_elements tul {
-    list-style: none
+#apim_elements ol,
+#apim_elements ul {
+    list-style: none;
 }
 
 #apim_elements thtml {
