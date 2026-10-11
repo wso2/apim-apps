@@ -53,6 +53,7 @@ const generateAccessTokenStep = (props) => {
     const [keyType, setKeyType] = useState('PRODUCTION');
     const [selectedTab, setSelectedTab] = useState('Resident Key Manager');
     const [subscriptionScopes, setSubscriptionScopes] = useState([]);
+    const [consumerSecret, setConsumerSecret] = useState('');
 
     const [accessTokenRequest, setAccessTokenRequest] = useState({
         timeout: 3600,
@@ -61,7 +62,9 @@ const generateAccessTokenStep = (props) => {
     });
     const {
         currentStep, createdApp, setCreatedToken, incrementStep, createdKeyType, createdSelectedTab,
+        generatedConsumerSecret, consumerSecretRequired,
     } = props;
+    const requiresManualConsumerSecret = consumerSecretRequired && !generatedConsumerSecret;
 
     useEffect(() => {
         const newRequest = { ...accessTokenRequest, keyType: createdKeyType };
@@ -69,6 +72,12 @@ const generateAccessTokenStep = (props) => {
         setSelectedTab(createdSelectedTab);
         setAccessTokenRequest(newRequest);
     }, [createdKeyType, createdSelectedTab]);
+
+    useEffect(() => {
+        if (generatedConsumerSecret) {
+            setConsumerSecret(generatedConsumerSecret);
+        }
+    }, [generatedConsumerSecret]);
 
     useEffect(() => {
         Application.get(createdApp.value)
@@ -101,6 +110,9 @@ const generateAccessTokenStep = (props) => {
                     accessTokenRequest.keyType,
                     accessTokenRequest.timeout,
                     accessTokenRequest.scopesSelected,
+                    false,
+                    null,
+                    generatedConsumerSecret || consumerSecret || null,
                 );
             })
             .then((response) => {
@@ -139,11 +151,14 @@ const generateAccessTokenStep = (props) => {
                     updateAccessTokenRequest={setAccessTokenRequest}
                     accessTokenRequest={accessTokenRequest}
                     subscriptionScopes={subscriptionScopes}
+                    consumerSecretRequired={requiresManualConsumerSecret}
+                    onConsumerSecretChange={setConsumerSecret}
                 />
                 <ButtonPanel
                     classes={classes}
                     currentStep={currentStep}
                     handleCurrentStep={generateAccessToken}
+                    nextActive={!requiresManualConsumerSecret || !!consumerSecret}
                 />
             </div>
         </Root>

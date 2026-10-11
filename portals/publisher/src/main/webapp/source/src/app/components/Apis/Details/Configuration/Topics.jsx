@@ -25,9 +25,11 @@ import Paper from '@mui/material/Paper';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import cloneDeep from 'lodash.clonedeep';
 import isEmpty from 'lodash/isEmpty';
+import isEqual from 'lodash/isEqual';
 import Alert from 'AppComponents/Shared/Alert';
 import Banner from 'AppComponents/Shared/Banner';
 import API from 'AppData/api';
+import Configurations from 'Config';
 import CircularProgress from '@mui/material/CircularProgress';
 import PropTypes from 'prop-types';
 import { isRestricted } from 'AppData/AuthManager';
@@ -37,6 +39,7 @@ import AddOperation from '../Resources/components/AddOperation';
 import SubscriptionConfig from '../Resources/components/operationComponents/asyncapi/SubscriptionConfig';
 import { extractAsyncAPIPathParameters } from '../Resources/operationUtils';
 import SaveOperations from '../Resources/components/SaveOperations';
+import TopicsOperationsSelector from '../Resources/components/TopicsOperationsSelector';
 
 const verbMap = {
     sub: 'subscribe',
@@ -65,6 +68,7 @@ export default function Topics(props) {
     const [securityDefScopes, setSecurityDefScopes] = useState({});
     const isAsyncAPI = api.type === 'WEBSUB' || api.type === 'WS' || api.type === 'SSE';
     const [markedOperations, setSelectedOperation] = useState({});
+    const [isAsyncV3, setIsAsyncV3] = useState(false);
 
     const intl = useIntl();
     /**
@@ -80,6 +84,159 @@ export default function Topics(props) {
             target = target[arr[j]];
         }
         return target;
+    }
+
+    /**
+     * Builds a UI-friendly channel map from an AsyncAPI v3 spec.
+     */
+    function buildChannelMap(spec) {
+        const channelMap = {};
+        const channelIndex = {};
+    
+        if (spec.channels) {
+            Object.entries(spec.channels).forEach(([key, channelObj]) => {
+                const address = channelObj.address || `/${key}`;
+                channelIndex[`#/channels/${key}`] = address;
+                channelIndex[`#/channels/${key.replace(/\//g, '~1')}`] = address;
+                channelMap[address] = channelMap[address] || {
+                    parameters: channelObj.parameters || {},
+                    ...(channelObj.description && { description: channelObj.description }),
+                    ...(channelObj['x-auth-type'] && { 'x-auth-type': channelObj['x-auth-type'] }),
+                };
+            });
+        }
+        if (spec.operations) {
+            Object.entries(spec.operations).forEach(([opName, opObj]) => {
+                const { action } = opObj;
+                const channelRef = opObj.channel?.$ref;
+                const channelAddress = channelRef ? channelIndex[channelRef] || channelRef : null;
+    
+                if (!channelAddress) return;
+    
+                if (!channelMap[channelAddress]) {
+                    channelMap[channelAddress] = { parameters: [] };
+                }
+                if (!channelMap[channelAddress][action]) {
+                    channelMap[channelAddress][action] = { 'x-operations': [] };
+                }
+    
+                channelMap[channelAddress][action]['x-operations'].push(opName);
+                if (opObj['x-uri-mapping']) channelMap[channelAddress][action]['x-uri-mapping'] =
+                    opObj['x-uri-mapping'];
+                if (opObj['x-scopes']) channelMap[channelAddress][action]['x-scopes'] = opObj['x-scopes'];
+            });
+        }
+        return channelMap;
+    }
+
+    function createOperationEntry(opName, action, channelName, verbInfo, originalSpec) {
+        const { messages: originalMessages, ...restOfOriginal } = originalSpec.operations?.[opName] || {};
+        return {
+            ...restOfOriginal,
+            action,
+            channel: { $ref: `#/channels/${channelName}` },
+            ...(verbInfo['x-uri-mapping'] && { 'x-uri-mapping': verbInfo['x-uri-mapping'] }),
+            ...(verbInfo['x-scopes'] && { 'x-scopes': verbInfo['x-scopes'] }),
+            ...(originalMessages && { messages: originalMessages }),
+        };
+    }
+
+    function resolveChannel(channelAddress, channelObj, originalSpec, newChannels, addressToName) {
+        const existingChannelName = addressToName[channelAddress];
+    
+        if (existingChannelName) {
+            return {
+                channelName: existingChannelName,
+                newChannels: {
+                    ...newChannels,
+                    [existingChannelName]: {
+                        ...newChannels[existingChannelName],
+                        ...(channelObj.parameters !== undefined && { parameters: channelObj.parameters }),
+                        ...(channelObj.description && { description: channelObj.description }),
+                    },
+                },
+            };
+        }
+    
+        const baseChannel = channelAddress.split('/').find(s => s.length > 0) || 'channel';
+        const randomId = crypto.randomUUID().split('-')[0];
+        const channelName = `${baseChannel}_${randomId}`;
+        const parametersArray = channelObj.parameters || [];
+    
+        return {
+            channelName,
+            newChannels: {
+                ...newChannels,
+                [channelName]: {
+                    address: channelAddress,
+                    ...(Object.keys(parametersArray).length > 0 && { parameters: parametersArray }),
+                },
+            },
+        };
+    }
+    
+    /**
+     * Helper to process specific verb actions (send/receive) for a channel.
+     * This flattens the nesting from rebuildOperations.
+     */
+    function processVerbActions(context) {
+        const {
+            verbInfo, action, channelName,
+            originalSpec, newOperations,
+        } = context;
+        const opList = verbInfo['x-operations'] || [];
+        opList.forEach((opName) => {
+            newOperations[opName] = createOperationEntry(opName, action, channelName, verbInfo, originalSpec);
+        });
+        return { updatedComponents: {}, updatedChannels: {} };
+    }
+
+    function rebuildOperations(channelMap, originalSpec) {
+        const newOperations = {};
+        let newChannels = { ...originalSpec.channels };
+
+        const addressToName = {};
+        if (originalSpec.channels) {
+            Object.entries(originalSpec.channels).forEach(([channelName, channelObj]) => {
+                addressToName[channelObj.address] = channelName;
+            });
+        }
+
+        Object.entries(channelMap).forEach(([channelAddress, channelObj]) => {
+            const resolved = resolveChannel(
+                channelAddress,
+                channelObj,
+                originalSpec,
+                newChannels,
+                addressToName,
+            );
+
+            const { channelName } = resolved;
+            newChannels = resolved.newChannels;
+            if (channelObj['x-auth-type']) {
+                newChannels = {
+                    ...newChannels,
+                    [channelName]: {
+                        ...newChannels[channelName],
+                        'x-auth-type': channelObj['x-auth-type'],
+                    },
+                };
+            }
+
+            ['send', 'receive'].forEach((action) => {
+                const verbInfo = channelObj[action];
+                if (!verbInfo) return;
+                processVerbActions({
+                    verbInfo,
+                    action,
+                    channelName,
+                    originalSpec,
+                    newOperations,
+                    channelObj,
+                });
+            });
+        });
+        return { newOperations, newChannels, newComponents: {} };
     }
 
     /**
@@ -159,7 +316,16 @@ export default function Topics(props) {
         switch (action) {
             case 'init':
                 setSelectedOperation({});
-                return data || asyncAPISpec.channels;
+                return data || (isAsyncV3 ? {} : asyncAPISpec.channels);
+            case 'toggleSecurityStatus':
+                setSelectedOperation({});
+                return Object.entries(currentOperations).reduce((channelAcc, [channelKey, channelObj]) => {
+                    const newChannel = { ...channelObj };
+                    newChannel['x-auth-type'] = data.disable ? 'None' : 'Any';
+                    const newChannelAcc = { ...channelAcc };
+                    newChannelAcc[channelKey] = newChannel;
+                    return newChannelAcc;
+                }, {});
             case 'description':
                 updatedOperation[action] = value;
                 return {
@@ -184,28 +350,78 @@ export default function Topics(props) {
                     [target]: { ...currentOperations[target], 'x-auth-type': updatedOperation['x-auth-type'] },
                 };
             case 'add':
-                // If target is not there add an empty object
+                // If target is not there, add an empty object
                 if (!addedOperations[data.target]) {
                     addedOperations[data.target] = {};
                 }
-                addedOperations[data.target].parameters = extractAsyncAPIPathParameters(data.target);
+                if (isAsyncV3) {
+                    if (!addedOperations[data.target].parameters) {
+                        addedOperations[data.target].parameters = extractAsyncAPIPathParameters(data.target);
+                        Object.keys(addedOperations[data.target].parameters).forEach((param) => {
+                            delete addedOperations[data.target].parameters[param].schema;
+                        });
+                    }
+                } else {
+                    addedOperations[data.target].parameters = extractAsyncAPIPathParameters(data.target);
+                }
                 // eslint-disable-next-line no-case-declarations
                 let alreadyExistCount = 0;
                 for (let currentVerb of data.verbs) {
-                    currentVerb = verbMap[currentVerb];
-                    if (addedOperations[data.target][currentVerb]) {
-                        const message = intl.formatMessage(
-                            {
-                                id: 'Apis.Details.Configuration.Topic.already.opreation.verb.exist.error',
-                                defaultMessage: 'Operation already exist with {data_target} and {current_Verb}',
-                            },
-                            { data_target: data.target, current_Verb: currentVerb },
-                        );
-                        Alert.warning(message);
-                        console.warn(message);
-                        alreadyExistCount++;
+                    if (isAsyncV3) {
+                        const ACTION_ALIASES = { pub: 'send', sub: 'receive' };
+                        const normalizedVerb = ACTION_ALIASES[currentVerb.toLowerCase()]
+                        || currentVerb.toLowerCase();
+                        const opName = data.operationName;
+
+                        // operation name cannot be duplicated as in spec
+                        const allExistingOpNames = new Set();
+                        Object.values(addedOperations).forEach((channelObj) => {
+                            ['send', 'receive'].forEach((v) => {
+                                (channelObj?.[v]?.['x-operations'] || []).forEach((n) => allExistingOpNames.add(n));
+                            });
+                        });
+                        Object.keys(asyncAPISpec.operations || {}).forEach((n) => allExistingOpNames.add(n));
+                        if (opName && allExistingOpNames.has(opName)) {
+                            Alert.warning(intl.formatMessage(
+                                {
+                                    id: 'Apis.Details.Configuration.Topic.already.operation.exist.error',
+                                    defaultMessage: 'Operation "{opName}" already exists on {channel}',
+                                },
+                                { opName, channel: data.target },
+                            ));
+                            alreadyExistCount++;
+                        } else if (opName) {
+                            if (!addedOperations[data.target][normalizedVerb]) {
+                                addedOperations[data.target][normalizedVerb] = {
+                                    'x-operations': [],
+                                };
+                            }
+                            addedOperations[data.target][normalizedVerb]['x-operations'].push(opName);
+                        }
+                        if (alreadyExistCount === data.verbs.length) {
+                            Alert.error(intl.formatMessage({
+                                id: 'Apis.Details.Configuration.Topic.already.exist.error',
+                                defaultMessage: 'Operation(s) already exist!',
+                            }));
+                            return currentOperations;
+                        }
+                        return addedOperations;
                     } else {
-                        addedOperations[data.target][currentVerb] = { };
+                        currentVerb = verbMap[currentVerb];
+                        if (addedOperations[data.target][currentVerb]) {
+                            const message = intl.formatMessage(
+                                {
+                                    id: 'Apis.Details.Configuration.Topic.already.opreation.verb.exist.error',
+                                    defaultMessage: 'Operation already exist with {data_target} and {current_Verb}',
+                                },
+                                { data_target: data.target, current_Verb: currentVerb },
+                            );
+                            Alert.warning(message);
+                            console.warn(message);
+                            alreadyExistCount++;
+                        } else {
+                            addedOperations[data.target][currentVerb] = { };
+                        }
                     }
                 }
                 if (alreadyExistCount === data.verbs.length) {
@@ -224,20 +440,59 @@ export default function Topics(props) {
                     ...currentOperations,
                     [target]: { ...currentOperations[target], parameters: updatedOperation.parameters },
                 };
-            case 'addPayloadProperty':
+            case 'deleteNamedOperation': {
+                const channelCopy = cloneDeep(currentOperations[target]);
+                if (channelCopy && channelCopy[verb] && channelCopy[verb]['x-operations']) {
+                    channelCopy[verb]['x-operations'] = channelCopy[verb]['x-operations'].filter((n) => n !== value);
+                }
+                return { ...currentOperations, [target]: channelCopy };
+            }
+            case 'addPayloadProperty': {
+                if (isAsyncV3) {
+                    return currentOperations;
+                }
                 updatedOperation[verb].message = updatedOperation[verb].message || { };
                 updatedOperation[verb].message.payload = updatedOperation[verb].message.payload || { };
                 updatedOperation[verb].message.payload.type = 'object';
                 updatedOperation[verb].message.payload.properties = updatedOperation[verb].message.payload.properties
                     || { };
-                updatedOperation[verb].message.payload.properties[value.name] = {
+                const propKey = isAsyncV3
+                    ? `${value.message}__${value.name}`
+                    : value.name;   
+                updatedOperation[verb].message.payload.properties[propKey] = {
                     description: value.description,
                     type: value.type,
+                    ...(isAsyncV3 && {
+                        'x-operation': value.operation,
+                        'x-message': value.message,
+                        'x-prop-name': value.name,
+                    }),
                 };
                 break;
-            case 'deletePayloadProperty':
-                delete updatedOperation[verb].message.payload.properties[value];
-                break;
+            }
+            case 'deletePayloadProperty': {
+                if (isAsyncV3) {
+                    return currentOperations;
+                }
+                const existingProps = updatedOperation[verb]?.message?.payload?.properties || {};
+                const { [value]: _removed, ...remainingProps } = existingProps;
+                return {
+                    ...currentOperations,
+                    [target]: {
+                        ...currentOperations[target],
+                        [verb]: {
+                            ...currentOperations[target][verb],
+                            message: {
+                                ...currentOperations[target][verb]?.message,
+                                payload: {
+                                    ...currentOperations[target][verb]?.message?.payload,
+                                    properties: remainingProps,
+                                },
+                            },
+                        },
+                    },
+                };
+            }
             case 'payloadProperty':
                 updatedOperation[verb].message.payload.properties[value.name] = value;
                 break;
@@ -275,6 +530,20 @@ export default function Topics(props) {
     const [operations, operationsDispatcher] = useReducer(operationsReducer, {});
 
     /**
+     * Enable security for all topics/operations
+     */
+    const enableSecurity = () => {
+        operationsDispatcher({ action: 'toggleSecurityStatus', data: { disable: false } });
+    };
+
+    /**
+     * Disable security for all topics/operations
+     */
+    const disableSecurity = () => {
+        operationsDispatcher({ action: 'toggleSecurityStatus', data: { disable: true } });
+    };
+
+    /**
      *
      *
      * @param {*} operation
@@ -304,7 +573,7 @@ export default function Topics(props) {
      *
      * @param {*} spec
      */
-    function verifySecurityScheme(spec) {
+    function verifySecurityScheme(spec, asyncv3=isAsyncV3) {
         /* eslint-disable no-param-reassign */
         spec.components = spec.components || {};
         spec.components.securitySchemes = spec.components.securitySchemes || {};
@@ -312,8 +581,16 @@ export default function Topics(props) {
         spec.components.securitySchemes.oauth2.flows = spec.components.securitySchemes.oauth2.flows || {};
         spec.components.securitySchemes.oauth2.flows.implicit = spec.components.securitySchemes.oauth2.flows.implicit
             || {};
-        spec.components.securitySchemes.oauth2.flows.implicit.scopes = spec.components.securitySchemes.oauth2.flows
-            .implicit.scopes || {};
+        if (asyncv3) {
+            // v3 — use availableScopes
+            spec.components.securitySchemes.oauth2.flows.implicit.authorizationUrl =
+            spec.components.securitySchemes.oauth2.flows.implicit.authorizationUrl || "http://localhost:9999";
+            spec.components.securitySchemes.oauth2.flows.implicit.availableScopes = 
+                spec.components.securitySchemes.oauth2.flows.implicit.availableScopes || {};
+        } else {
+            spec.components.securitySchemes.oauth2.flows.implicit.scopes = 
+                spec.components.securitySchemes.oauth2.flows.implicit.scopes || {};
+        }
         /* eslint-enable no-param-reassign */
     }
 
@@ -321,9 +598,11 @@ export default function Topics(props) {
      * This method sets the securityDefinitionScopes from the spec
      * @param {Object} spec The original swagger content.
      */
-    function setSecurityDefScopesFromSpec(spec) {
-        verifySecurityScheme(spec);
-        setSecurityDefScopes(cloneDeep(spec.components.securitySchemes.oauth2.flows.implicit.scopes));
+    function setSecurityDefScopesFromSpec(spec, asyncv3) {
+        verifySecurityScheme(spec, asyncv3);
+        const implicitFlow = spec.components.securitySchemes.oauth2.flows.implicit;
+        const scopeSource = asyncv3 ? implicitFlow.availableScopes : implicitFlow.scopes;
+        setSecurityDefScopes(cloneDeep(scopeSource));
     }
 
     /**
@@ -331,7 +610,12 @@ export default function Topics(props) {
      */
     function setSpecScopesFromSecurityDefScopes() {
         verifySecurityScheme(asyncAPISpec);
-        asyncAPISpec.components.securitySchemes.oauth2.flows.implicit.scopes = securityDefScopes;
+        if (isAsyncV3) {
+            // v3 uses availableScopes, not scopes
+            asyncAPISpec.components.securitySchemes.oauth2.flows.implicit.availableScopes = securityDefScopes;
+        } else {
+            asyncAPISpec.components.securitySchemes.oauth2.flows.implicit.scopes = securityDefScopes;
+        }
     }
 
     /**
@@ -340,11 +624,19 @@ export default function Topics(props) {
      * @returns {null}
      */
     function resolveAndUpdateSpec(rawSpec) {
-        const resolvedChannels = resolveSpec(rawSpec, rawSpec);
-        const resolvedSpec = { ...rawSpec, channels: resolvedChannels.channels };
-        operationsDispatcher({ action: 'init', data: resolvedSpec.channels });
-        setAsyncAPISpec(resolvedSpec);
-        setSecurityDefScopesFromSpec(rawSpec);
+        const asyncSpecVersion = rawSpec?.asyncapi || '2.0.0';
+        const asyncv3 = Number.parseInt(asyncSpecVersion.split('.')[0], 10) >= 3;
+        if (asyncv3) {
+            const channelData = buildChannelMap(rawSpec);
+            operationsDispatcher({ action: 'init', data: channelData });
+            setAsyncAPISpec(rawSpec);
+        } else {
+            const resolvedChannels = resolveSpec(rawSpec, rawSpec);
+            const resolvedSpec = { ...rawSpec, channels: resolvedChannels.channels };
+            operationsDispatcher({ action: 'init', data: resolvedSpec.channels });
+            setAsyncAPISpec(resolvedSpec);
+        }
+        setSecurityDefScopesFromSpec(rawSpec, asyncv3);
     }
 
     /**
@@ -420,7 +712,10 @@ export default function Topics(props) {
         for (const [target, verbs] of Object.entries(markedOperations)) {
             for (const verb of Object.keys(verbs)) {
                 delete copyOfOperations[target][verb];
-                if (!copyOfOperations[target].publish && !copyOfOperations[target].subscribe) {
+                const channelEmpty = isAsyncV3
+                    ? !copyOfOperations[target].send && !copyOfOperations[target].receive
+                    : !copyOfOperations[target].publish && !copyOfOperations[target].subscribe;
+                if (channelEmpty) {
                     delete copyOfOperations[target];
                 }
             }
@@ -428,7 +723,20 @@ export default function Topics(props) {
 
         updateSecurityDefinition(copyOfOperations);
         setSpecScopesFromSecurityDefScopes();
-        if (websubSubscriptionConfiguration !== api.websubSubscriptionConfiguration) {
+        
+        let specToSave;
+        if (isAsyncV3) {
+            const { newOperations, newChannels } = rebuildOperations(copyOfOperations, asyncAPISpec);
+            specToSave = {
+                ...asyncAPISpec,
+                channels: newChannels,
+                operations: newOperations,
+            };
+        } else {
+            specToSave = { ...asyncAPISpec, channels: copyOfOperations };
+        }
+        // should be a deep equality check instead a reference equality check
+        if (!isEqual(websubSubscriptionConfiguration, api.websubSubscriptionConfiguration)) {
             return updateAPI({ websubSubscriptionConfiguration })
                 .catch((error) => {
                     console.error(error);
@@ -437,15 +745,16 @@ export default function Topics(props) {
                         defaultMessage: 'Error while updating the API',
                     }));
                 })
-                .then(() => updateAsyncAPIDefinition({ ...asyncAPISpec, channels: copyOfOperations }));
-        } else {
-            return updateAsyncAPIDefinition({ ...asyncAPISpec, channels: copyOfOperations });
+                .then(() => updateAsyncAPIDefinition(specToSave));
         }
+        return updateAsyncAPIDefinition(specToSave);
+
     }
 
     useEffect(() => {
         if (api.apitype !== 'APIProduct') {
-            API.getAllScopes()
+            const maxScopeLimit = Configurations.apis.maxScopeCount;
+            API.getAllScopes(0, maxScopeLimit)
                 .then((response) => {
                     if (response.body && response.body.list) {
                         const sharedScopesList = [];
@@ -466,9 +775,10 @@ export default function Topics(props) {
     }, []);
 
     useEffect(() => {
-        // Update the Swagger spec object when API object gets changed
         api.getAsyncAPIDefinition()
             .then((response) => {
+                const asyncSpecVersion = response.body?.asyncapi || '2.0.0';
+                setIsAsyncV3(Number.parseInt(asyncSpecVersion.split('.')[0], 10) >= 3);
                 resolveAndUpdateSpec(response.body);
             })
             .catch((error) => {
@@ -512,11 +822,20 @@ export default function Topics(props) {
             {!isRestricted(['apim:api_create'], api) && !disableAddOperation
             && (api.gatewayVendor === 'wso2') && (
                 <Grid item md={12} xs={12}>
-                    <AddOperation operationsDispatcher={operationsDispatcher} isAsyncAPI={isAsyncAPI} api={api} />
+                    <AddOperation operationsDispatcher={operationsDispatcher}
+                        isAsyncAPI={isAsyncAPI} api={api} isAsyncV3={isAsyncV3}
+                        existingChannels={Object.keys(operations)}/>
                 </Grid>
             )}
             <Grid item md={12}>
                 <Paper>
+                    {(api.gatewayVendor === 'wso2') && (api.type === 'WS') && (
+                        <TopicsOperationsSelector
+                            operations={operations}
+                            enableSecurity={enableSecurity}
+                            disableSecurity={disableSecurity}
+                        />
+                    )}
                     {
                         operations && Object.entries(operations).map(([target, operation]) => (
                             <GroupOfOperations tag={target} operation={operation}>
@@ -527,44 +846,29 @@ export default function Topics(props) {
                                     spacing={1}
                                     alignItems='stretch'
                                 >
-                                    {operation.subscribe && (
-                                        <Grid key={target + '_subscribe'} item md={12}>
-                                            <AsyncOperation
-                                                target={target}
-                                                verb='subscribe'
-                                                highlight
-                                                operation={operation}
-                                                spec={asyncAPISpec}
-                                                api={api}
-                                                operationsDispatcher={operationsDispatcher}
-                                                sharedScopes={sharedScopes}
-                                                markAsDelete={Boolean(markedOperations[target]
-                                                        && markedOperations[target].subscribe)}
-                                                onMarkAsDelete={onMarkAsDelete}
-                                                disableDelete={api.gatewayType === 'solace'}
-                                                componentValidator={componentValidator}
-                                            />
-                                        </Grid>
-                                    )}
-                                    {operation.publish && (
-                                        <Grid key={target + '_publish'} item md={12}>
-                                            <AsyncOperation
-                                                target={target}
-                                                verb='publish'
-                                                highlight
-                                                operation={operation}
-                                                spec={asyncAPISpec}
-                                                api={api}
-                                                operationsDispatcher={operationsDispatcher}
-                                                sharedScopes={sharedScopes}
-                                                markAsDelete={Boolean(markedOperations[target]
-                                                        && markedOperations[target].publish)}
-                                                onMarkAsDelete={onMarkAsDelete}
-                                                disableDelete={api.gatewayType === 'solace'}
-                                                componentValidator={componentValidator}
-                                            />
-                                        </Grid>
-                                    )}
+                                    {(isAsyncV3 ? ['send', 'receive'] : ['subscribe', 'publish']).map((verb) => (
+                                        operation[verb] && (
+                                            <Grid key={`${target}_${verb}`} item md={12}>
+                                                <AsyncOperation
+                                                    target={target}
+                                                    verb={verb}
+                                                    highlight
+                                                    operation={operation}
+                                                    spec={asyncAPISpec}
+                                                    api={api}
+                                                    operationsDispatcher={operationsDispatcher}
+                                                    sharedScopes={sharedScopes}
+                                                    markAsDelete={Boolean(
+                                                        markedOperations[target]?.[verb]
+                                                    )}
+                                                    onMarkAsDelete={onMarkAsDelete}
+                                                    disableDelete={api.gatewayType === 'solace'}
+                                                    componentValidator={componentValidator}
+                                                    isAsyncV3={isAsyncV3}
+                                                />
+                                            </Grid>
+                                        )
+                                    ))}
                                 </Grid>
                             </GroupOfOperations>
                         ))

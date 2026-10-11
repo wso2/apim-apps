@@ -293,7 +293,7 @@ function Overview(props) {
                     setServiceDefinition(beautify(data));
                     setFormat('xml');
                 } else if (service.definitionType !== 'GRAPHQL_SDL') {
-                    setServiceDefinition(YAML.safeDump(YAML.safeLoad(JSON.stringify(data))));
+                    setServiceDefinition(YAML.dump(YAML.load(JSON.stringify(data))));
                     setFormat('yaml');
                 } else {
                     setServiceDefinition(data.obj.schemaDefinition);

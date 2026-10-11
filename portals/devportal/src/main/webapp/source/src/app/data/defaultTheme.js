@@ -96,6 +96,11 @@ const DefaultConfigurations = {
             tableBodyOddBackgrund: '#efefef',
             tableBodyEvenBackgrund: '#fff',
         },
+        apiLeftMenu: {
+            // Open the Tags / API Categories left pane by default on page load.
+            // Overridable via site/public/theme/userTheme.json.
+            showByDefault: false,
+        },
         overview: {
             titleIconColor: '#89b4ff',
             titleIconSize: 16,
@@ -114,6 +119,8 @@ const DefaultConfigurations = {
             head: '#785446',
             sub: '#38a169',
             pub: '#4299e1',
+            receive: '#38a169',
+            send: '#4299e1',
         },
         operationChipColor: {
             query: '#b3e6fe',
@@ -339,7 +346,7 @@ const DefaultConfigurations = {
         },
         title: {
             prefix: '[Devportal]',
-            sufix: '- WSO2 APIM',
+            sufix: ' WSO2 APIM',
         },
         languageSwitch: {
             active: false,

@@ -19,6 +19,7 @@ import React from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Toolbar from '@mui/material/Toolbar';
+import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -43,7 +44,7 @@ const Root = styled('div')({
  */
 function ContentBase(props) {
     const {
-        title, pageDescription, children, help, width, pageStyle, PaperProps, paperLess,
+        title, pageDescription, children, help, width, pageStyle, PaperProps, paperLess, warning,
     } = props;
     let size = 8;// default half/medium
     if ([width, pageStyle].includes('small')) {
@@ -82,6 +83,17 @@ function ContentBase(props) {
                         </Grid>
                     </Toolbar>
                 </Grid>
+                {warning && (
+                    <Grid item xs={11} sm={size}>
+                        <Box sx={{ mt: 4 }}>
+                            <Alert severity='warning' sx={{ textAlign: 'center' }}>
+                                <Typography variant='subtitle2'>
+                                    {warning}
+                                </Typography>
+                            </Alert>
+                        </Box>
+                    </Grid>
+                )}
                 <Grid item xs={11} sm={size}>
                     <Box py={6} position='relative'>
                         {pageStyle === 'paperLess' || paperLess ? children : (
@@ -102,11 +114,13 @@ ContentBase.defaultProps = {
     pageStyle: 'half',
     paperLess: false,
     pageDescription: null,
+    warning: null,
 };
 ContentBase.propTypes = {
     help: PropTypes.element.isRequired,
     title: PropTypes.string.isRequired,
     pageDescription: PropTypes.string,
+    warning: PropTypes.node,
     children: PropTypes.element.isRequired,
     width: PropTypes.oneOf(['medium', 'full', 'small']),
     pageStyle: PropTypes.oneOf(['half', 'full', 'small']), // @deprecated

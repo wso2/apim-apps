@@ -26,6 +26,7 @@ import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Api from 'AppData/api';
+import Configurations from 'Config';
 import { Progress } from 'AppComponents/Shared';
 import Table from '@mui/material/Table';
 import TableCell from '@mui/material/TableCell';
@@ -239,7 +240,8 @@ class Operations extends React.Component {
      * @memberof Operations
      */
     getAllSharedScopes() {
-        Api.getAllScopes()
+        const maxScopeLimit = Configurations.apis.maxScopeCount;
+        Api.getAllScopes(0, maxScopeLimit)
             .then((response) => {
                 if (response.body && response.body.list) {
                     const sharedScopesList = [];

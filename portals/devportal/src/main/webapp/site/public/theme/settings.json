@@ -9,6 +9,7 @@
             "host": "localhost"
         },
         "subscriptionLimit": 1000,
+        "documentCount": 100,
         "subscribeApplicationLimit": 5000,
         "isPassive": true,
         "singleLogout": {
@@ -24,13 +25,10 @@
             },
             "syntaxHighlighterDarkTheme": false
         },
-        "sanitizeHtml": {
-            "allowedTags": false,
-            "allowedAttributes": false
-        },
-        "reactHTMLParser": {
-            "decodeEntries": true,
-            "tagsNotAllowed": []
+        "sanitizeHtmlDocs": {
+          "enabled": true,
+          "additionalAllowedTags": [],
+          "additionalAllowedAttributes": []
         }
     },
     "grantTypes": {
@@ -59,5 +57,10 @@
             "showBusinessDetails": false,
             "showTechnicalDetails": false
         }
+    },
+    "sessionTimeout": {
+        "enable": true,
+        "idleWarningTimeout": 1740,
+        "idleTimeout": 1800
     }
 }

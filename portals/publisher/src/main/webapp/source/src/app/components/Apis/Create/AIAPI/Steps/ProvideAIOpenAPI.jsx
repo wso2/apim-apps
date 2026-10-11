@@ -26,7 +26,7 @@ import FormLabel from '@mui/material/FormLabel';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 
-import { Autocomplete, Typography } from '@mui/material';
+import { Autocomplete, Typography, Box, Chip } from '@mui/material';
 
 const PREFIX = 'ProvideAIOpenAPI';
 
@@ -210,9 +210,9 @@ export default function ProvideAIOpenAPI(props) {
                                                 } else {
                                                     Alert.error(intl.formatMessage({
                                                         id: 'Apis.Create.AIAPI.Steps.ProvideAIOpenAPI' +
-                                                        '.LLMProvider.API.Definition.fetch.error',
+                                                            '.LLMProvider.API.Definition.fetch.error',
                                                         defaultMessage: 'Something went wrong while ' +
-                                                        'fetching LLM Provider API Definition',
+                                                            'fetching LLM Provider API Definition',
                                                     }));
                                                 }
                                             });
@@ -222,7 +222,17 @@ export default function ProvideAIOpenAPI(props) {
                                 }}
                                 renderOption={(options, option) => (
                                     <li {...options}>
-                                        {option.apiVersion}
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            <Typography variant='body2'>{option.apiVersion}</Typography>
+                                            {option.deprecated && (
+                                                <Chip
+                                                    label='Deprecated'
+                                                    color='warning'
+                                                    variant='outlined'
+                                                    size='small'
+                                                />
+                                            )}
+                                        </Box>
                                     </li>
                                 )}
                                 renderInput={(params) => (

@@ -50,9 +50,13 @@ function NavigatorChildren(props) {
         let filteredNavChildren = [...navChildren]; // Start with the original array
         if (isSuperTenant) {
             filteredNavChildren = filteredNavChildren.filter((menu) => menu.id !== 'Tenant Theme');
+            if (!settings || !settings.consumptionExportEnabled) {
+                filteredNavChildren = filteredNavChildren.filter((menu) => menu.id !== 'Consumption Data');
+            }
         }
         if (!isSuperTenant) {
-            filteredNavChildren = filteredNavChildren.filter((menu) => menu.id !== 'Custom Policies');
+            filteredNavChildren = filteredNavChildren.filter((menu) => menu.id !== 'Custom Policies'
+                && menu.id !== 'Consumption Data');
         }
         if (!isSuperAdmin || !istransactionCounterEnabled) {
             filteredNavChildren = filteredNavChildren.filter((menu) => menu.id !== 'Usage Report');

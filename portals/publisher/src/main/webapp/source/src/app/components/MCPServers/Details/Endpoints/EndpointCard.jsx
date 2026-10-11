@@ -16,18 +16,22 @@
  * under the License.
  */
 
-import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import React, { useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Typography,
     IconButton,
     Card,
     CardContent,
     CardActions,
+    Button,
+    CircularProgress,
+    Alert as MuiAlert,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CodeIcon from '@mui/icons-material/Code';
+import SyncIcon from '@mui/icons-material/Sync';
 import Drawer from '@mui/material/Drawer';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
@@ -37,6 +41,8 @@ import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
 import { styled } from '@mui/material/styles';
 import { isRestricted } from 'AppData/AuthManager';
 import { useHistory } from 'react-router-dom';
+import MCPServer from 'AppData/MCPServer';
+import Alert from 'AppComponents/Shared/Alert';
 
 const PREFIX = 'EndpointCard';
 
@@ -102,13 +108,74 @@ const EndpointCard = ({
     isDeleting,
     onDelete,
     endpointType,
+    onDefinitionUpdate,
 }) => {
     const history = useHistory();
-    const [open, setOpen] = React.useState(false);
+    const intl = useIntl();
+    const [open, setOpen] = useState(false);
+    const [editedDefinition, setEditedDefinition] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
+    const [resyncAlert, setResyncAlert] = useState(false);
 
     const toggleDefinitionViewDrawer = (state) => () => {
+        if (state) {
+            setEditedDefinition(null);
+            setResyncAlert(false);
+        }
         setOpen(state);
     }
+
+    const handleDefinitionSave = () => {
+        const trimmed = (editedDefinition ?? '').trim();
+        if (!trimmed) {
+            Alert.error(intl.formatMessage({
+                id: 'MCPServers.Details.Endpoints.EndpointCard.definition.empty',
+                defaultMessage: 'API definition cannot be empty',
+            }));
+            return;
+        }
+        try {
+            JSON.parse(trimmed);
+        } catch (e) {
+            Alert.error(intl.formatMessage({
+                id: 'MCPServers.Details.Endpoints.EndpointCard.definition.invalid.json',
+                defaultMessage: 'API definition is not valid JSON',
+            }));
+            return;
+        }
+        setIsSaving(true);
+        const payload = {
+            ...endpoint,
+            endpointConfig: typeof endpoint.endpointConfig === 'string'
+                ? endpoint.endpointConfig
+                : JSON.stringify(endpoint.endpointConfig),
+            definition: trimmed,
+        };
+        MCPServer.updateMCPServerBackend(apiObject.id, endpoint.id, payload)
+            .then(() => {
+                Alert.success(intl.formatMessage({
+                    id: 'MCPServers.Details.Endpoints.EndpointCard.definition.save.success',
+                    defaultMessage: 'Backend API definition updated successfully.'
+                        + ' Visit the Tools page to review and update the tools accordingly.',
+                }));
+                setEditedDefinition(null);
+                setResyncAlert(false);
+                if (onDefinitionUpdate) {
+                    onDefinitionUpdate();
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                Alert.error(intl.formatMessage({
+                    id: 'MCPServers.Details.Endpoints.EndpointCard.definition.save.error',
+                    defaultMessage: 'Error updating backend API definition',
+                }));
+            })
+            .finally(() => {
+                setIsSaving(false);
+            });
+    };
 
     const getEndpointUrl = () => {
         let endpointConfig;
@@ -140,6 +207,42 @@ const EndpointCard = ({
         return JSON.stringify(apiDef, null, 2);
     }
 
+    const handleResync = () => {
+        const url = getEndpointUrl();
+        if (!url || url === 'No URL configured') {
+            Alert.error(intl.formatMessage({
+                id: 'MCPServers.Details.Endpoints.EndpointCard.resync.nourl',
+                defaultMessage: 'No endpoint URL configured.',
+            }));
+            return;
+        }
+        setIsSyncing(true);
+        MCPServer.validateThirdPartyMCPServerUrl(url, null, apiObject.id, endpointType)
+            .then((response) => {
+                const { body } = response;
+                const freshContent = body.content;
+                if (!freshContent) {
+                    throw new Error('Empty response from backend');
+                }
+                let prettyContent = freshContent;
+                try {
+                    prettyContent = JSON.stringify(JSON.parse(freshContent), null, 2);
+                } catch (_) { /* leave as-is if not valid JSON */ }
+
+                setEditedDefinition(prettyContent);
+                setResyncAlert(true);
+            })
+            .catch((error) => {
+                // eslint-disable-next-line no-console
+                console.error(error);
+                Alert.error(intl.formatMessage({
+                    id: 'MCPServers.Details.Endpoints.EndpointCard.resync.error',
+                    defaultMessage: 'Could not re-sync backend definition.',
+                }));
+            })
+            .finally(() => setIsSyncing(false));
+    };
+
     /**
      * Check if delete button should be disabled based on endpoint configuration
      * @returns {boolean} True if delete should be disabled (only one endpoint section exists)
@@ -166,7 +269,12 @@ const EndpointCard = ({
 
     const editorOptions = {
         selectOnLineNumbers: true,
-        readOnly: true,
+        readOnly: isRestricted([
+            'apim:mcp_server_create',
+            'apim:mcp_server_manage',
+            'apim:mcp_server_publish',
+            'apim:mcp_server_import_export',
+        ], apiObject) || apiObject.isRevision,
         minimap: {
             enabled: false,
         },
@@ -191,6 +299,7 @@ const EndpointCard = ({
                         <Tooltip title='View Backend Definition'  >
                             <IconButton
                                 size='small'
+                                data-testid='endpoint-definition-view-btn'
                                 onClick={toggleDefinitionViewDrawer(true)}
                             >
                                 <CodeIcon fontSize='small' />
@@ -218,12 +327,89 @@ const EndpointCard = ({
                             <Box
                                 role='presentation'
                                 sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-                                <Typography variant='h6' sx={{ p: 2, flexShrink: 0 }}>
-                                    <FormattedMessage
-                                        id='Apis.Details.Endpoints.AIEndpoints.EndpointCard.backend.api.definition'
-                                        defaultMessage='Backend API Definition'
-                                    />
-                                </Typography>
+                                <Box sx={{
+                                    p: 2,
+                                    flexShrink: 0,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                }}>
+                                    <Typography variant='h6'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.AIEndpoints.EndpointCard.backend.api.definition'
+                                            defaultMessage='Backend API Definition'
+                                        />
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                        {apiObject.subtypeConfiguration?.subtype === 'SERVER_PROXY' && (
+                                            <Button
+                                                variant='outlined'
+                                                size='small'
+                                                data-testid='endpoint-definition-resync-btn'
+                                                startIcon={isSyncing
+                                                    ? <CircularProgress size={16} />
+                                                    : <SyncIcon fontSize='small' />}
+                                                onClick={handleResync}
+                                                disabled={
+                                                    isSyncing
+                                                    || isRestricted([
+                                                        'apim:mcp_server_create',
+                                                        'apim:mcp_server_manage',
+                                                        'apim:mcp_server_publish',
+                                                        'apim:mcp_server_import_export',
+                                                    ], apiObject)
+                                                    || apiObject.isRevision
+                                                }
+                                            >
+                                                <FormattedMessage
+                                                    id='MCPServers.Details.Endpoints.EndpointCard.resync.label'
+                                                    defaultMessage='Re-sync'
+                                                />
+                                            </Button>
+                                        )}
+                                        <Button
+                                            variant='contained'
+                                            color='primary'
+                                            size='small'
+                                            data-testid='endpoint-definition-update-btn'
+                                            onClick={handleDefinitionSave}
+                                            disabled={
+                                                editedDefinition === null
+                                                || isSaving
+                                                || isRestricted([
+                                                    'apim:mcp_server_create',
+                                                    'apim:mcp_server_manage',
+                                                    'apim:mcp_server_publish',
+                                                    'apim:mcp_server_import_export',
+                                                ], apiObject)
+                                                || apiObject.isRevision
+                                            }
+                                        >
+                                            {isSaving ? (
+                                                <CircularProgress size={16} sx={{ mr: 1 }} />
+                                            ) : null}
+                                            <FormattedMessage
+                                                id='MCPServers.Details.Endpoints.EndpointCard.definition.update'
+                                                defaultMessage='Update'
+                                            />
+                                        </Button>
+                                    </Box>
+                                </Box>
+                                {resyncAlert && (
+                                    <Box px={2} pb={1} sx={{ flexShrink: 0 }}>
+                                        <MuiAlert
+                                            severity='info'
+                                            variant='outlined'
+                                            sx={{ py: 0.5 }}
+                                        >
+                                            <FormattedMessage
+                                                id='MCPServers.Details.Endpoints.EndpointCard.resync.pending'
+                                                defaultMessage={'Definition fetched from backend'
+                                                    + ' — review the changes and click Update to save.'}
+                                            />
+                                        </MuiAlert>
+                                    </Box>
+                                )}
                                 <Box
                                     sx={{
                                         flex: 1,
@@ -237,9 +423,10 @@ const EndpointCard = ({
                                         language='json'
                                         width='100%'
                                         height='100%'
-                                        value={getApiDefinition()}
+                                        value={editedDefinition !== null ? editedDefinition : getApiDefinition()}
                                         options={editorOptions}
                                         theme='vs-dark'
+                                        onChange={(value) => setEditedDefinition(value)}
                                     />
                                 </Box>
                             </Box>
@@ -315,8 +502,14 @@ EndpointCard.propTypes = {
     isDeleting: PropTypes.bool.isRequired,
     apiObject: PropTypes.shape({
         id: PropTypes.string,
+        isRevision: PropTypes.bool,
     }).isRequired,
     endpointType: PropTypes.oneOf(['PRODUCTION', 'SANDBOX']).isRequired,
+    onDefinitionUpdate: PropTypes.func,
+};
+
+EndpointCard.defaultProps = {
+    onDefinitionUpdate: null,
 };
 
 export default EndpointCard;

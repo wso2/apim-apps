@@ -23,13 +23,19 @@ import {
     ThemeProvider,
     StyledEngineProvider,
     adaptV4Theme,
+    useTheme,
 } from '@mui/material/styles';
+import { CacheProvider } from '@emotion/react';
+import createCache from '@emotion/cache';
+import { prefixer } from 'stylis';
+import rtlPlugin from 'stylis-plugin-rtl';
 import { Link } from 'react-router-dom';
 import MUIDataTable from 'mui-datatables';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
 import queryString from 'query-string';
+import PropTypes from 'prop-types';
 import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
 import Typography from '@mui/material/Typography';
@@ -41,7 +47,6 @@ import Alert from 'AppComponents/Shared/Alert';
 import Icon from '@mui/material/Icon';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import DefaultConfigurations from 'AppData/defaultTheme';
-import { useTheme } from '@mui/material';
 import { getBasePath } from 'AppUtils/utils';
 import ImageGenerator from './APICards/ImageGenerator';
 import ApiThumb from './ApiThumb';
@@ -49,6 +54,17 @@ import DocThumb from './APICards/DocThumb';
 import DefinitionThumb from './APICards/DefThumb';
 import { ApiContext } from '../Details/ApiContext';
 import NoApi from './NoApi';
+
+const cacheRtl = createCache({
+    key: 'mui-datatables-rtl',
+    prepend: true,
+    stylisPlugins: [prefixer, rtlPlugin],
+});
+
+const cacheLtr = createCache({
+    key: 'mui-datatables-ltr',
+    prepend: true,
+});
 
 const PREFIX = 'ApiTableViewLegacy';
 
@@ -65,7 +81,7 @@ const StyledStyledEngineProvider = styled(StyledEngineProvider)((
         display: 'flex',
         alignItems: 'center',
         '& span': {
-            marginLeft: theme.spacing(1),
+            marginInlineStart: theme.spacing(1),
         },
         color: theme.palette.getContrastText(theme.custom.listView.tableBodyEvenBackgrund),
         '& .material-icons': {
@@ -135,9 +151,12 @@ class ApiTableViewLegacy extends React.Component {
                 MUIDataTable: {
                     root: {
                         backgroundColor: 'transparent',
-                        marginLeft: 40,
+                        marginInlineStart: 40,
                         marginBottom: 20,
-                        width: '100%',
+                        width: 'auto',
+                    },
+                    responsiveStacked: {
+                        overflowX: 'hidden',
                     },
                     paper: {
                         boxShadow: 'none',
@@ -151,7 +170,7 @@ class ApiTableViewLegacy extends React.Component {
                             alignItems: 'center',
                         },
                         '& a > div': {
-                            paddingRight: 10,
+                            paddingInlineEnd: 10,
                         },
                         '& td': {
                             whiteSpace: 'nowrap',
@@ -187,6 +206,10 @@ class ApiTableViewLegacy extends React.Component {
                     },
                 },
                 MUIDataTableToolbar: {
+                    actions: {
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                    },
                     root: {
                         '& svg': {
                             color: theme.palette.getContrastText(theme.palette.background.default),
@@ -205,14 +228,14 @@ class ApiTableViewLegacy extends React.Component {
                             '& tbody': {
                                 display: 'flex',
                                 flexWrap: 'wrap',
-                                marginLeft: 0,
+                                marginInlineStart: 0,
                             },
                             '& thead': {
                                 display: 'none',
                             },
                             '& tr:nth-child(odd),& tr:nth-child(even)': {
                                 display: 'block',
-                                marginRight: 5,
+                                marginInlineEnd: 5,
                                 marginBottom: 5,
                                 backgroundColor: 'transparent',
                             },
@@ -235,7 +258,10 @@ class ApiTableViewLegacy extends React.Component {
                 },
             };
         }
-        const systemTheme = merge({}, DefaultConfigurations, Configurations, { custom: cloneDeep(theme.custom) });
+        const systemTheme = merge({}, DefaultConfigurations, Configurations, {
+            direction: theme.direction,
+            custom: cloneDeep(theme.custom),
+        });
         const dataTableTheme = merge({}, muiTheme, systemTheme, themeAdditions);
         return createTheme(adaptV4Theme(dataTableTheme));
     };
@@ -382,7 +408,7 @@ class ApiTableViewLegacy extends React.Component {
                                         >
                                             <Icon>library_books</Icon>
 
-                                            <span>
+                                            <span style={{ paddingInlineStart: theme.spacing(1) }}>
                                                 {' '}
                                                 <FormattedMessage
                                                     id='Apis.Listing.TableView.TableView.doc.flag'
@@ -401,7 +427,7 @@ class ApiTableViewLegacy extends React.Component {
                                         >
                                             <Icon>code</Icon>
 
-                                            <span>
+                                            <span style={{ paddingInlineStart: theme.spacing(1) }}>
                                                 {' '}
                                                 <FormattedMessage
                                                     id='Apis.Listing.TableView.TableView.def.flag'
@@ -425,7 +451,7 @@ class ApiTableViewLegacy extends React.Component {
                                             icon={apiType === 'MCP' ? 'mcp-server' : 'api'}
                                             strokeColor={strokeColor}
                                         />
-                                        <span style={{ marginLeft: 8 }}>
+                                        <span style={{ paddingInlineStart: theme.spacing(1) }}>
                                             {displayName || apiName}
                                         </span>
                                     </Link>
@@ -568,6 +594,7 @@ class ApiTableViewLegacy extends React.Component {
             responsive: 'stacked',
             serverSide: true,
             search: false,
+            elevation: 0,
             count,
             page,
             onTableChange: (action, tableState) => {
@@ -659,14 +686,24 @@ class ApiTableViewLegacy extends React.Component {
             return <NoApi isMCPServersRoute={isMCPServersRoute} />;
         }
         return (
-            <StyledStyledEngineProvider injectFirst>
-                <ThemeProvider theme={this.getMuiTheme()}>
-                    <MUIDataTable title='' data={data} columns={columns} options={options} />
-                </ThemeProvider>
-            </StyledStyledEngineProvider>
+            <CacheProvider value={theme.direction === 'rtl' ? cacheRtl : cacheLtr}>
+                <StyledStyledEngineProvider injectFirst>
+                    <ThemeProvider theme={this.getMuiTheme()}>
+                        <MUIDataTable title='' data={data} columns={columns} options={options} />
+                    </ThemeProvider>
+                </StyledStyledEngineProvider>
+            </CacheProvider>
         );
     }
 }
+
+ApiTableViewLegacy.propTypes = {
+    theme: PropTypes.shape({
+        direction: PropTypes.string,
+        custom: PropTypes.shape({}),
+        spacing: PropTypes.func,
+    }).isRequired,
+};
 
 ApiTableViewLegacy.contextType = ApiContext;
 

@@ -24,7 +24,7 @@ class AddNewUserStep1Page {
         cy.visit(this.getUrl());
     }
     static getUsernameTextBox(){
-        return cy.get('input[name="username"]', {timeout: Cypress.config().largeTimeout});
+        return cy.get('input[name="username"]', {timeout: Cypress.env('largeTimeout')});
     }
     static getPasswordTextBox(){
         return cy.get('#password');

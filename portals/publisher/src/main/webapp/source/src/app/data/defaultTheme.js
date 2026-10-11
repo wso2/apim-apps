@@ -156,6 +156,8 @@ export default {
             sub: '#38a169',
             pub: '#4299e1',
             tool: '#f2d4a7',
+            receive: '#38a169',
+            send: '#4299e1',
         },
         operationChipColor: {
             query: '#b3e6fe',
@@ -287,7 +289,7 @@ export default {
         },
         title: {
             prefix: '[Publisher]',
-            suffix: '- WSO2 APIM',
+            suffix: ' WSO2 APIM',
         },
         apis: {
             topMenu: {
@@ -323,6 +325,7 @@ export default {
         gatewayGradients: {
             azure: 'linear-gradient(135deg, #0078d4 0%, #005a9f 100%)',
             aws: 'linear-gradient(135deg, #ff9a00 0%, #ff6600 100%)',
+            platform: 'linear-gradient(135deg, #0f9b8e 0%, #006d5b 100%)',
             kong: 'linear-gradient(135deg, #003459 0%, #007acc 100%)',
             kubernetes: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             envoy: 'linear-gradient(135deg, #9333EA 0%, #4F46E5 100%)',

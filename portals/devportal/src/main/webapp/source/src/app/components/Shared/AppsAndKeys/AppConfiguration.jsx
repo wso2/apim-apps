@@ -20,6 +20,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import Chip from '@mui/material/Chip';
@@ -36,6 +37,7 @@ import Box from '@mui/material/Box';
 import ChipInput from 'AppComponents/Shared/ChipInput';
 import Autocomplete from '@mui/material/Autocomplete';
 import Settings from 'AppComponents/Shared/SettingsContext';
+import validateConstraint, { getConstraintHint } from './constraintValidator';
 
 
 const PREFIX = 'AppConfiguration';
@@ -48,8 +50,17 @@ const classes = {
     checkboxWrapper: `${PREFIX}-checkboxWrapper`,
     checkboxWrapperColumn: `${PREFIX}-checkboxWrapperColumn`,
     group: `${PREFIX}-group`,
-    removeHelperPadding: `${PREFIX}-removeHelperPadding`
+    removeHelperPadding: `${PREFIX}-removeHelperPadding`,
+    requiredAsterisk: `${PREFIX}-requiredAsterisk`,
 };
+
+/**
+ * Checks whether a config value should be treated as not set. The backend returns "N/A" when no value is set.
+ * @param {*} value the config value.
+ * @returns {boolean} true if the value is blank.
+ */
+const isBlank = (value) => value === undefined || value === null
+    || String(value).trim() === '' || value === 'N/A';
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
 const Root = styled('div')(
@@ -92,7 +103,12 @@ const Root = styled('div')(
             '& p': {
                 margin: '8px 0px',
             },
-        }
+        },
+
+        // Highlights the asterisk of fields made mandatory by an admin defined constraint
+        [`& .${classes.requiredAsterisk} .MuiFormLabel-asterisk`]: {
+            color: theme.palette.error.main,
+        },
     })
 );
 
@@ -105,24 +121,14 @@ const Root = styled('div')(
 const AppConfiguration = (props) => {
 
     const {
-        config, isUserOwner, previousValue, handleChange, subscriptionScopes,
+        config, isUserOwner, previousValue, handleChange, subscriptionScopes, onValidationError,
+        showValidationErrors,
     } = props;
 
     const [selectedValue, setSelectedValue] = useState(previousValue);
+    const [constraintError, setConstraintError] = useState('');
     const [isOrgWideAppUpdateEnabled, setIsOrgWideAppUpdateEnabled] = useState(false);
     const settingsContext = useContext(Settings);
-
-    /**
-     * This method is used to handle the updating of key generation
-     * request object.
-     * @param {*} field field that should be updated in key request
-     * @param {*} event event fired
-     */
-    const handleAppRequestChange = (event) => {
-        const { target: currentTarget } = event;
-        setSelectedValue(currentTarget.value);
-        handleChange('additionalProperties', event);
-    }
 
     const AppConfigLabels = defineMessages({
         application_access_token_expiry_time: {
@@ -186,17 +192,111 @@ const AppConfiguration = (props) => {
         }
     });
 
+    const constraintMessages = defineMessages({
+        rangeMin: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.range.min',
+            defaultMessage: 'Value must be at least {min}',
+        },
+        rangeMax: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.range.max',
+            defaultMessage: 'Value must be at most {max}',
+        },
+        rangeInvalid: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.range.invalid',
+            defaultMessage: 'Value must be a number between {min} and {max}',
+        },
+        regexInvalid: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.error.regexInvalid',
+            defaultMessage: 'Value must match the required pattern: {pattern}',
+        },
+        requiredWithConstraint: {
+            id: 'Shared.AppsAndKeys.AppConfiguration.constraint.required',
+            defaultMessage: 'This field is required. {hint}',
+        },
+    });
+
+    const hasConstraint = !!config.constraint?.type;
+    const isRequiredByConstraint = hasConstraint && config.type === 'input' && !config.multiple;
+    const isRequired = !!config.required || isRequiredByConstraint;
+    const isBlankValue = isBlank(selectedValue);
+    // Show a blank value as empty only when the field is mandatory due to a constraint;
+    // otherwise keep showing "N/A" (the server default applies).
+    const displayValue = (isRequiredByConstraint && isBlankValue) ? '' : selectedValue;
+    
+    /**
+     * Checks whether a required field is empty.
+     * @param {*} fieldValue the current value of the field.
+     * @returns {string|boolean} the error message when empty, otherwise false.
+     */
+    const hasMandatoryError = (fieldValue) => {
+        let error = false;
+        if (fieldValue === '' || (Array.isArray(fieldValue) && !fieldValue.length)) {
+            error = props.intl.formatMessage({
+                defaultMessage: 'Required field is empty',
+                id: 'Shared.AppsAndKeys.KeyConfCiguration.required.empty.error',
+            });
+        }
+        return error;
+    };
+
+    /**
+     * This method is used to handle the updating of key generation
+     * request object.
+     * @param {*} event event fired
+     */
+    const handleAppRequestChange = (event) => {
+        const { target: currentTarget } = event;
+        const newValue = currentTarget.type === 'checkbox' ? currentTarget.checked : currentTarget.value;
+        setSelectedValue(newValue);
+
+        // Validate against constraint if present
+        const { constraint } = config;
+        const result = validateConstraint(newValue, constraint, props.intl, constraintMessages);
+        setConstraintError(result.valid ? '' : result.message);
+        if (onValidationError) {
+            const mandatoryInvalid = (config.required && Boolean(hasMandatoryError(newValue)))
+                || (isRequiredByConstraint && isBlank(newValue));
+            onValidationError(config.name, !result.valid || mandatoryInvalid);
+        }
+
+        handleChange('additionalProperties', event);
+    }
+
     const getAppConfigLabel = () => {
         return AppConfigLabels[config.name]
             ? props.intl.formatMessage(AppConfigLabels[config.name])
             : config.label
     }
-
     const getAppConfigToolTip = () => {
-        return AppConfigToolTips[config.name]
+        let tooltip = AppConfigToolTips[config.name]
             ? props.intl.formatMessage(AppConfigToolTips[config.name])
-            : config.tooltip
+            : config.tooltip;
+
+        const { constraint } = config;
+        const constraintText = getConstraintHint(constraint, props.intl, constraintMessages);
+        if (constraintText) {
+            tooltip = tooltip ? `${tooltip} (${constraintText})` : constraintText;
+        }
+        return tooltip;
     }
+
+    const showRequiredError = !!showValidationErrors && isRequiredByConstraint && isBlankValue;
+
+    const getInputHelperText = () => {
+        if (constraintError) {
+            return constraintError;
+        }
+        if (config.required && hasMandatoryError(selectedValue)) {
+            return hasMandatoryError(selectedValue);
+        }
+        if (isRequiredByConstraint && isBlankValue) {
+            const hint = getConstraintHint(config.constraint, props.intl, constraintMessages);
+            if (hint) {
+                return props.intl.formatMessage(constraintMessages.requiredWithConstraint, { hint });
+            }
+        }
+        return getAppConfigToolTip();
+    };
 
     /**
      * Update the state when new props are available
@@ -205,6 +305,15 @@ const AppConfiguration = (props) => {
         setSelectedValue(previousValue);
         const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
         setIsOrgWideAppUpdateEnabled(orgWideAppUpdateEnabled);
+        // Validate the values against constraint on load
+        if (onValidationError) {
+            const constraintInvalid = !validateConstraint(
+                String(previousValue ?? ''), config.constraint, null, null,
+            ).valid;
+            const mandatoryInvalid = (config.required && Boolean(hasMandatoryError(previousValue)))
+                || (isRequiredByConstraint && isBlank(previousValue));
+            onValidationError(config.name, constraintInvalid || mandatoryInvalid);
+        }
     }, [previousValue, settingsContext]);
 
     const setCheckboxValue = () => {
@@ -233,17 +342,23 @@ const AppConfiguration = (props) => {
                                 value={selectedValue}
                                 name={config.name}
                                 onChange={e => handleAppRequestChange(e)}
-                                helperText={
-                                    <Typography variant='caption'>
-                                        {getAppConfigToolTip()}
-                                    </Typography>
-                                }
+                                required={config.required}
+                                error={config.required && Boolean(hasMandatoryError(selectedValue))}
+                                helperText={(config.required && hasMandatoryError(selectedValue))
+                                    || getAppConfigToolTip()}
                                 margin='dense'
                                 variant='outlined'
                                 size='small'
                                 disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
                             >
-                                {config.values.map(key => (
+                                {
+                                (config.constraint && config.constraint.value && config.constraint.value.allowed)
+                                ? config.constraint.value.allowed.map(key => (
+                                    <MenuItem key={key} value={key}>
+                                        {key}
+                                    </MenuItem>
+                                ))
+                                : config.values.map(key => (
                                     <MenuItem key={key} value={key}>
                                         {key}
                                     </MenuItem>
@@ -292,7 +407,14 @@ const AppConfiguration = (props) => {
                             </>
                         ) : (
                             <>
-                                <FormControl variant="outlined" className={classes.formControl} fullWidth>
+                                <FormControl
+                                    variant="outlined"
+                                    className={classes.formControl}
+                                    fullWidth
+                                    required={config.required}
+                                    error={!!constraintError
+                                        || (config.required && Boolean(hasMandatoryError(selectedValue)))}
+                                >
                                     <InputLabel id="multi-select-label">{config.label}</InputLabel>
                                     <Select
                                         variant="standard"
@@ -312,24 +434,27 @@ const AppConfiguration = (props) => {
                                                 ))}
                                             </div>
                                         )}
-                                        helperText={
-                                            <Typography variant='caption'>
-                                                {getAppConfigToolTip()}
-                                            </Typography>
-                                        }
                                         label={getAppConfigLabel()}
                                     >
-                                        {config.values.map(key => (
-                                            <MenuItem key={key} value={key}>
-                                                <Checkbox checked={selectedValue.indexOf(key) > -1}/>
-                                                <ListItemText primary={key}/>
-                                            </MenuItem>
-                                        ))}
+                                        {(config.constraint && config.constraint.value && config.constraint.value.allowed)
+                                            ? config.constraint.value.allowed.map(key => (
+                                                <MenuItem key={key} value={key}>
+                                                    <Checkbox checked={selectedValue.indexOf(key) > -1}/>
+                                                    <ListItemText primary={key}/>
+                                                </MenuItem>
+                                            ))
+                                            : config.values.map(key => (
+                                                <MenuItem key={key} value={key}>
+                                                    <Checkbox checked={selectedValue.indexOf(key) > -1}/>
+                                                    <ListItemText primary={key}/>
+                                                </MenuItem>
+                                            ))}
                                     </Select>
-
-                                    <Typography variant='caption'>
-                                        {getAppConfigToolTip()}
-                                    </Typography>
+                                    <FormHelperText>
+                                        {constraintError
+                                            || (config.required && hasMandatoryError(selectedValue))
+                                            || getAppConfigToolTip()}
+                                    </FormHelperText>
                                 </FormControl>
                             </>
                         ) : (config.type === 'input' && config.multiple === true) ? (
@@ -375,14 +500,15 @@ const AppConfiguration = (props) => {
                                 fullWidth
                                 id={config.name}
                                 label={getAppConfigLabel()}
-                                value={selectedValue}
+                                value={displayValue}
                                 name={config.name}
                                 onChange={e => handleAppRequestChange(e)}
-                                helperText={
-                                    <Typography variant='caption'>
-                                        {getAppConfigToolTip()}
-                                    </Typography>
-                                }
+                                required={isRequired}
+                                className={isRequiredByConstraint ? classes.requiredAsterisk : undefined}
+                                error={!!constraintError || showRequiredError
+                                    || (config.required && Boolean(hasMandatoryError(selectedValue)))}
+                                helperText={getInputHelperText()}
+                                FormHelperTextProps={(constraintError || showRequiredError) ? { error: true } : {}}
                                 margin='dense'
                                 size='small'
                                 variant='outlined'
@@ -416,14 +542,14 @@ const AppConfiguration = (props) => {
                                 fullWidth
                                 id={config.name}
                                 label={getAppConfigLabel()}
-                                value={selectedValue}
+                                value={displayValue}
+                                required={isRequiredByConstraint}
+                                className={isRequiredByConstraint ? classes.requiredAsterisk : undefined}
                                 name={config.name}
                                 onChange={e => handleAppRequestChange(e)}
-                                helperText={
-                                    <Typography variant='caption'>
-                                        {getAppConfigToolTip()}
-                                    </Typography>
-                                }
+                                error={!!constraintError || showRequiredError}
+                                helperText={getInputHelperText()}
+                                FormHelperTextProps={(constraintError || showRequiredError) ? { error: true } : {}}
                                 margin='dense'
                                 variant='outlined'
                                 disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
@@ -450,6 +576,8 @@ AppConfiguration.propTypes = {
     handleChange: PropTypes.func.isRequired,
     config: PropTypes.any.isRequired,
     subscriptionScopes: PropTypes.arrayOf(PropTypes.string),
+    onValidationError: PropTypes.func,
+    showValidationErrors: PropTypes.bool,
     notFound: PropTypes.bool,
     intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
 };

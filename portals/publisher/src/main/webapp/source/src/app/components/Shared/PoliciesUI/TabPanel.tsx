@@ -1,22 +1,27 @@
 /*
-* Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
-* 
-* WSO2 LLC. licenses this file to you under the Apache License,
-* Version 2.0 (the "License"); you may not use this file except
-* in compliance with the License.
-* You may obtain a copy of the License at
-* 
-* http://www.apache.org/licenses/LICENSE-2.0
-* 
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
-import { Box, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import {
+    Box,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+} from '@mui/material';
 import React, { FC } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Typography from '@mui/material/Typography';
@@ -30,10 +35,11 @@ interface TabPanelSharedProps {
     selectedTab: number;
     fetchPolicies: () => void;
     DraggablePolicyCard: any;
-    policyList?: Policy[];  
-    commonPolicyList?: Policy[]; 
+    policyList?: Policy[];
+    commonPolicyList?: Policy[];
     apiPolicyList?: Policy[];
     isReadOnly?: boolean;
+    hideViewButton?: boolean;
 }
 
 const TabPanelShared: FC<TabPanelSharedProps> = ({
@@ -46,121 +52,94 @@ const TabPanelShared: FC<TabPanelSharedProps> = ({
     fetchPolicies,
     DraggablePolicyCard,
     isReadOnly = false,
+    hideViewButton = false,
 }) => {
-    if (policyList != undefined) {
+    const renderPolicyCards = (policies?: Policy[]) => {
+        if (!policies || policies.length === 0) {
+            return (
+                <Typography variant="body2" color="textSecondary" align="left">
+                    No Policies Found
+                </Typography>
+            );
+        }
+
+        return policies.map((singlePolicy: Policy) => (
+            <DraggablePolicyCard
+                key={singlePolicy.id}
+                policyObj={singlePolicy}
+                showCopyIcon
+                isLocalToAPI={singlePolicy.isAPISpecific}
+                fetchPolicies={fetchPolicies}
+                isReadOnly={isReadOnly}
+                hideViewButton={hideViewButton}
+            />
+        ));
+    };
+
+    const renderAccordionContent = (policies?: Policy[]) => (
+        <Box
+            py={1}
+            px={3}
+            sx={{
+                maxWidth: '90%',
+                margin: '0 auto',
+            }}
+            alignItems="center"
+        >
+            {selectedTab === index && renderPolicyCards(policies)}
+        </Box>
+    );
+
+    if (policyList !== undefined) {
         return (
             <div
-                role='tabpanel'
+                role="tabpanel"
                 hidden={selectedTab !== index}
                 id={`${currentFlow}-tabpanel`}
                 aria-labelledby={`${currentFlow}-tab`}
             >
                 <Box py={1} px={3}>
-                {selectedTab === index &&
-                    policyList?.map((singlePolicy: Policy) => {
-                        return (
-                            <DraggablePolicyCard
-                                key={singlePolicy.id}
-                                policyObj={singlePolicy}
-                                showCopyIcon
-                                isLocalToAPI={singlePolicy.isAPISpecific}
-                                fetchPolicies={fetchPolicies}
-                                isReadOnly={isReadOnly}
-                            />
-                        );
-                    })}
+                    {selectedTab === index && renderPolicyCards(policyList)}
                 </Box>
             </div>
         );
-    } else {
-        return (
-            <div
-                role='tabpanel'
-                hidden={selectedTab !== index}
-                id={`${currentFlow}-tabpanel`}
-                aria-labelledby={`${currentFlow}-tab`}
-            >
-                <Accordion id='tabPanel-common-policies'>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        <Typography variant='subtitle1'>
-                            <FormattedMessage
-                                id='Apis.Details.Policies.Components.TabPanel.Components.Common.Policy.List'
-                                defaultMessage='Common Policies'
-                            />
-                        </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <Box py={1} px={3} sx={{
-                                                maxWidth: "90%", // Set a maximum width for the accordion
-                                                margin: "0 auto",  // Center the accordion horizontally
-                                            }} alignItems='center'>
-                            {selectedTab === index && (
-                                <>
-                                    {(commonPolicyList && commonPolicyList.length > 0) ? (
-                                        commonPolicyList.map((singlePolicy: Policy) => {
-                                            return (
-                                                <DraggablePolicyCard
-                                                    key={singlePolicy.id}
-                                                    policyObj={singlePolicy}
-                                                    showCopyIcon
-                                                    isLocalToAPI={singlePolicy.isAPISpecific}
-                                                    fetchPolicies={fetchPolicies}
-                                                    isReadOnly={isReadOnly}
-                                                />
-                                            );
-                                        })
-                                    ) : (
-                                        <Typography variant='body2' color='textSecondary' align='left'>
-                                            No Policies Found
-                                        </Typography>
-                                    )}
-                                </>
-                            )}
-                        </Box>
-                    </AccordionDetails>
-                </Accordion>
-                <Accordion id='tabPanel-api-policies'>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        <Typography variant='subtitle1'>
-                            <FormattedMessage
-                                id='Apis.Details.Policies.Components.TabPanel.Components.API.Policy.List'
-                                defaultMessage='API Policies'
-                            />
-                        </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <Box py={1} px={3} sx={{
-                                                maxWidth: "90%", // Set a maximum width for the accordion
-                                                margin: "0 auto",  // Center the accordion horizontally
-                                            }} alignItems='center'>
-                            {selectedTab === index && (
-                                <>                                               
-                                    {(apiPolicyList && apiPolicyList.length > 0) ? (
-                                        apiPolicyList.map((singlePolicy: Policy) => {
-                                            return (
-                                                <DraggablePolicyCard
-                                                    key={singlePolicy.id}
-                                                    policyObj={singlePolicy}
-                                                    showCopyIcon
-                                                    isLocalToAPI={singlePolicy.isAPISpecific}
-                                                    fetchPolicies={fetchPolicies}
-                                                    isReadOnly={isReadOnly}
-                                                />
-                                            );
-                                        })
-                                    ): (
-                                        <Typography variant='body2' color='textSecondary' align='left'>
-                                            No Policies Found
-                                        </Typography>
-                                    )}
-                                </>
-                            )}
-                        </Box>
-                    </AccordionDetails>
-                </Accordion>
-            </div>
-        );
     }
-}
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={selectedTab !== index}
+            id={`${currentFlow}-tabpanel`}
+            aria-labelledby={`${currentFlow}-tab`}
+        >
+            <Accordion id="tabPanel-common-policies">
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="subtitle1">
+                        <FormattedMessage
+                            id="Apis.Details.Policies.Components.TabPanel.Components.Common.Policy.List"
+                            defaultMessage="Common Policies"
+                        />
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {renderAccordionContent(commonPolicyList)}
+                </AccordionDetails>
+            </Accordion>
+            <Accordion id="tabPanel-api-policies">
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="subtitle1">
+                        <FormattedMessage
+                            id="Apis.Details.Policies.Components.TabPanel.Components.API.Policy.List"
+                            defaultMessage="API Policies"
+                        />
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {renderAccordionContent(apiPolicyList)}
+                </AccordionDetails>
+            </Accordion>
+        </div>
+    );
+};
 
 export default TabPanelShared;

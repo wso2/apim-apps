@@ -50,7 +50,7 @@ const Root = styled('div')((
     },
 ) => ({
     [`& .${classes.buttonIcon}`]: {
-        marginRight: 10,
+        marginInlineEnd: 10,
     },
 
     [`& .${classes.paper}`]: {
@@ -61,7 +61,7 @@ const Root = styled('div')((
     [`& .${classes.grid}`]: {
         marginTop: theme.spacing(4),
         marginBottom: theme.spacing(4),
-        paddingRight: theme.spacing(2),
+        paddingInlineEnd: theme.spacing(2),
         justifyContent: 'center',
     },
 
@@ -70,7 +70,7 @@ const Root = styled('div')((
     },
 
     [`& .${classes.titleSub}`]: {
-        marginLeft: theme.spacing(2),
+        marginInlineStart: theme.spacing(2),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
     },
@@ -321,7 +321,7 @@ export default function GraphQLConsole() {
                     </Grid>
                 </Grid>
             </Paper>
-            <Paper className={classes.paper}>
+            <Paper className={classes.paper} dir='ltr'>
                 <GraphQLUI
                     authorizationHeader={authorizationHeader}
                     URLs={getURLs()}

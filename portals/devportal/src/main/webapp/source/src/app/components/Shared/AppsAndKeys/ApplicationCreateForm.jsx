@@ -20,20 +20,24 @@ import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
-import Switch from '@mui/material/Switch'; // Import Switch component
+import Switch from '@mui/material/Switch';
+import Chip from '@mui/material/Chip';
+import InputAdornment from '@mui/material/InputAdornment';
+import ErrorIcon from '@mui/icons-material/Error';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: DON'T USE THIS COMPONENT or even COPY
-import { Typography, Grid, Box } from '@mui/material';
+import { Typography, Box } from '@mui/material';
+import { red } from '@mui/material/colors/';
 
 const PREFIX = 'ApplicationCreateForm';
-
 const classes = {
     FormControl: `${PREFIX}-FormControl`,
     FormControlOdd: `${PREFIX}-FormControlOdd`,
     quotaHelp: `${PREFIX}-quotaHelp`,
     mandatoryStarText: `${PREFIX}-mandatoryStarText`,
-    applicationForm: `${PREFIX}-applicationForm`
+    applicationForm: `${PREFIX}-applicationForm`,
+    applicationGroupInput: `${PREFIX}-applicationGroupInput`
 };
 
 const Root = styled('form')((
@@ -66,6 +70,11 @@ const Root = styled('form')((
         '& span, & div, & p, & input': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         }
+    },
+
+    [`& .${classes.applicationGroupInput} .MuiFormLabel-root.Mui-error,
+    & .${classes.applicationGroupInput} .MuiFormHelperText-root.Mui-error`]: {
+        color: theme.palette.error.main,
     }
 }));
 
@@ -139,6 +148,28 @@ const ApplicationCreate = (props) => {
         handleDeleteChip,
     } = props;
     const description = applicationRequest.description || '';
+    const hasGroupWhitespace = (group) => group !== group.trim();
+    const applicationGroups = applicationRequest.groups || [];
+    const orderedApplicationGroups = applicationGroups
+        .filter((group) => !hasGroupWhitespace(group))
+        .concat(applicationGroups.filter(hasGroupWhitespace));
+    const hasInvalidApplicationGroup = applicationGroups.some(hasGroupWhitespace);
+    const renderGroupChip = ({ text, isDisabled, isReadOnly, handleClick, handleDelete, className }, key) => {
+        const isInvalid = hasGroupWhitespace(text);
+        return (
+            <Chip
+                key={key}
+                className={className}
+                onClick={handleClick}
+                onDelete={handleDelete}
+                label={text}
+                style={{
+                    backgroundColor: isInvalid ? red[300] : undefined,
+                    pointerEvents: isDisabled || isReadOnly ? 'none' : undefined,
+                }}
+            />
+        );
+    };
     const showDescError = () => {
         const descLength = description.length;
         const remaining = 512 - descLength;
@@ -314,16 +345,31 @@ const ApplicationCreate = (props) => {
                             id='Shared.AppsAndKeys.ApplicationCreateForm.add.groups.label'
                         />
                     )}
-                    helperText={intl.formatMessage({
-                        defaultMessage: 'Type a group and enter',
-                        id: 'Shared.AppsAndKeys.ApplicationCreateForm.type.a.group.and.enter',
-                    })}
+                    helperText={hasInvalidApplicationGroup
+                        ? intl.formatMessage({
+                            id: 'Shared.AppsAndKeys.ApplicationCreateForm.invalid.application.group',
+                            defaultMessage: 'Application groups must not contain leading or trailing whitespace.'
+                        })
+                        : intl.formatMessage({
+                            id: 'Shared.AppsAndKeys.ApplicationCreateForm.type.a.group.and.enter',
+                            defaultMessage: 'Type a group and enter'
+                        })}
+                    error={hasInvalidApplicationGroup}
                     id='application-group-id'
+                    className={classes.applicationGroupInput}
                     margin='normal'
                     variant='outlined'
                     fullWidth
                     {...applicationRequest}
-                    value={applicationRequest.groups || []}
+                    value={orderedApplicationGroups}
+                    chipRenderer={renderGroupChip}
+                    InputProps={{
+                        endAdornment: hasInvalidApplicationGroup && (
+                            <InputAdornment position='end'>
+                                <ErrorIcon color='error' style={{ paddingBottom: 8 }} />
+                            </InputAdornment>
+                        ),
+                    }}
                     onAdd={(chip) => handleAddChip(chip, applicationRequest.groups)}
                     onDelete={(chip, index) => handleDeleteChip(
                         chip,

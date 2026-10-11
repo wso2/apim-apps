@@ -26,6 +26,8 @@ export type Policy = {
     supportedApiTypes: string[] | Map<string, string>[];
     isAPISpecific: boolean;
     supportedGateways: string[];
+    category?: string;
+    categories?: string[];
 };
 
 export type AttachedPolicy = {
@@ -37,6 +39,7 @@ export type AttachedPolicy = {
     uniqueKey: string;
     attributes?: any;
     isAPISpecific?: boolean;
+    supportedGateways?: string[];
 };
 
 export type PolicySpecAttribute = {
@@ -62,6 +65,7 @@ export type PolicySpec = {
     supportedGateways: string[];
     supportedApiTypes: string[] | ApiTypeObject[];
     policyAttributes: PolicySpecAttribute[];
+    parametersSchema?: any;
     isAPISpecific?: boolean;
     md5?: string;
 };

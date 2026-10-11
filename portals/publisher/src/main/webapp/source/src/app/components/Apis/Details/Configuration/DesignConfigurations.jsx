@@ -578,14 +578,15 @@ export default function DesignConfigurations() {
                     }));
                 }
             });
-        if (!isMCPServer) {
-            API.labels().then((response) => setLabels(response.body));
-            restApi.getAPILabels(api.id).then((response) => {
-                setUpdatedLabels(response.body.list.map((label) => label.name));
-            }).finally(() => {
-                setLoading(false);
-            });
-        }
+        API.labels().then((response) => setLabels(response.body));
+        const attachedLabelsPromise = isMCPServer
+            ? MCPServer.getMCPServerLabels(api.id)
+            : restApi.getAPILabels(api.id);
+        attachedLabelsPromise.then((response) => {
+            setUpdatedLabels(response.body.list.map((label) => label.name));
+        }).finally(() => {
+            setLoading(false);
+        });
     }, []);
 
     useEffect(() => {
@@ -594,21 +595,23 @@ export default function DesignConfigurations() {
     }, [labels, updatedLabels]);
 
     const attachLabel = (name) => {
-        const apiClient = new API();
-        apiClient.attachLabels(api.id,
-            labels.list?.filter(label => [name].includes(label.name)))
-            .then((response) => {
-                setUpdatedLabels(response.body.list.map((label) => label.name))
-            });
+        const targetLabels = labels.list?.filter((label) => [name].includes(label.name));
+        const attachLabelPromise = isMCPServer
+            ? MCPServer.attachMCPServerLabels(api.id, targetLabels)
+            : new API().attachLabels(api.id, targetLabels);
+        attachLabelPromise?.then((response) => {
+            setUpdatedLabels(response.body.list.map((label) => label.name))
+        });
     }
 
     const detachLabel = (name) => {
-        const apiClient = new API();
-        apiClient.detachLabels(api.id,
-            labels.list?.filter(label => [name].includes(label.name)))
-            .then((response) => {
-                setUpdatedLabels(response.body.list.map((label) => label.name))
-            });
+        const targetLabels = labels.list?.filter((label) => [name].includes(label.name));
+        const detachLabelPromise = isMCPServer
+            ? MCPServer.detachMCPServerLabels(api.id, targetLabels)
+            : new API().detachLabels(api.id, targetLabels);
+        detachLabelPromise?.then((response) => {
+            setUpdatedLabels(response.body.list.map((label) => label.name))
+        });
     }
 
     /**
@@ -1038,57 +1041,55 @@ export default function DesignConfigurations() {
                         </Paper>
                     </Grid>
                 </Grid>
-                {!isMCPServer && (
-                    <Grid item xs={12} md={3}>
-                        <Paper elevation={0}>
-                            <Box p={2}>
-                                <Grid item xs={12} container direction='row'
-                                    justifyContent='space-between' >
-                                    <Grid item md={6}>
-                                        <Typography
-                                            id='itest-label-head' variant='h5' component='h5'>
-                                            <FormattedMessage
-                                                id='Apis.Details.Configuration.Configuration.Design.topic.label'
-                                                defaultMessage='Labels'
-                                            />
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item md={6} align='right'>
-                                        {!api.isRevision && (
-                                            <Tooltip title='Attach Labels'>
-                                                <IconButton onClick={handleOpenList} disabled={isAccessRestricted()}>
-                                                    <AddIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                        )}
-                                    </Grid>
+                <Grid item xs={12} md={3}>
+                    <Paper elevation={0}>
+                        <Box p={2}>
+                            <Grid item xs={12} container direction='row'
+                                justifyContent='space-between' >
+                                <Grid item md={6}>
+                                    <Typography
+                                        id='itest-label-head' variant='h5' component='h5'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Configuration.Configuration.Design.topic.label'
+                                            defaultMessage='Labels'
+                                        />
+                                    </Typography>
                                 </Grid>
-                                <Box>
-                                    {loading ? (
-                                        <CircularProgress size='30px'/>
-                                    ) : (
-                                        <Stack direction='row' spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
-                                            {updatedLabels.length !== 0 ? (
-                                                updatedLabels.map((label) => (
-                                                    <Chip key={label} label={label}
-                                                        onDelete={!api.isRevision
-                                                            ? () => detachLabel(label) : undefined}/>
-                                                ))
-                                            ) : (
-                                                <Typography variant='body2' color='textSecondary'>
-                                                    <FormattedMessage
-                                                        id='Apis.Details.Configuration.Configuration.Design.no.labels'
-                                                        defaultMessage='No Labels Attached'
-                                                    />
-                                                </Typography>
-                                            )}
-                                        </Stack>
+                                <Grid item md={6} align='right'>
+                                    {!api.isRevision && (
+                                        <Tooltip title='Attach Labels'>
+                                            <IconButton onClick={handleOpenList} disabled={isAccessRestricted()}>
+                                                <AddIcon />
+                                            </IconButton>
+                                        </Tooltip>
                                     )}
-                                </Box>
+                                </Grid>
+                            </Grid>
+                            <Box>
+                                {loading ? (
+                                    <CircularProgress size='30px'/>
+                                ) : (
+                                    <Stack direction='row' spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
+                                        {updatedLabels.length !== 0 ? (
+                                            updatedLabels.map((label) => (
+                                                <Chip key={label} label={label}
+                                                    onDelete={!api.isRevision
+                                                        ? () => detachLabel(label) : undefined}/>
+                                            ))
+                                        ) : (
+                                            <Typography variant='body2' color='textSecondary'>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Configuration.Configuration.Design.no.labels'
+                                                    defaultMessage='No Labels Attached'
+                                                />
+                                            </Typography>
+                                        )}
+                                    </Stack>
+                                )}
                             </Box>
-                        </Paper>
-                    </Grid>
-                )}
+                        </Box>
+                    </Paper>
+                </Grid>
             </Grid>
             <UpdateWithoutDetails
                 classes={classes}

@@ -17,13 +17,20 @@
  */
 
 import React from 'react';
+import PropTypes from 'prop-types';
+import merge from 'lodash.merge';
 import {
     styled,
     createTheme,
     ThemeProvider,
     StyledEngineProvider,
     adaptV4Theme,
+    useTheme,
 } from '@mui/material/styles';
+import { CacheProvider } from '@emotion/react';
+import createCache from '@emotion/cache';
+import { prefixer } from 'stylis';
+import rtlPlugin from 'stylis-plugin-rtl';
 import { Link } from 'react-router-dom';
 import MUIDataTable from 'mui-datatables';
 import { injectIntl } from 'react-intl';
@@ -34,10 +41,20 @@ import withSettings from 'AppComponents/Shared/withSettingsContext';
 import Loading from 'AppComponents/Base/Loading/Loading';
 import Alert from 'AppComponents/Shared/Alert';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
-import { useTheme } from '@mui/material';
 import ImageGenerator from './APICards/ImageGenerator';
 import RecommendedApiThumb from './RecommendedApiThumb';
 import { ApiContext } from '../Details/ApiContext';
+
+const cacheRtl = createCache({
+    key: 'mui-recommendations-rtl',
+    prepend: true,
+    stylisPlugins: [prefixer, rtlPlugin],
+});
+
+const cacheLtr = createCache({
+    key: 'mui-recommendations-ltr',
+    prepend: true,
+});
 
 const PREFIX = 'RecommendationsLegacy';
 
@@ -63,7 +80,7 @@ const StyledStyledEngineProvider = styled(StyledEngineProvider)((
         display: 'flex',
         alignItems: 'center',
         '& span': {
-            marginLeft: theme.spacing(1),
+            marginInlineStart: theme.spacing(1),
         },
         color: theme.palette.getContrastText(theme.custom.listView.tableBodyEvenBackgrund),
     },
@@ -113,14 +130,18 @@ class RecommendationsLegacy extends React.Component {
     getMuiTheme = () => {
         const { gridView, theme } = this.props;
         let themeAdditions = {};
-        let muiTheme = {
+        const muiTheme = {
+            direction: theme.direction,
             overrides: {
                 MUIDataTable: {
                     root: {
                         backgroundColor: 'transparent',
-                        marginLeft: 40,
+                        marginInlineStart: 40,
                         marginBottom: 20,
-                        width: '100%',
+                        width: 'auto',
+                    },
+                    responsiveStacked: {
+                        overflowX: 'hidden',
                     },
                     paper: {
                         boxShadow: 'none',
@@ -134,7 +155,7 @@ class RecommendationsLegacy extends React.Component {
                             alignItems: 'center',
                         },
                         '& a > div': {
-                            paddingRight: 10,
+                            paddingInlineEnd: 10,
                         },
                         '& td': {
                             whiteSpace: 'nowrap',
@@ -163,6 +184,12 @@ class RecommendationsLegacy extends React.Component {
                         width: '100%',
                     },
                 },
+                MUIDataTableToolbar: {
+                    actions: {
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                    },
+                },
             },
         };
         if (gridView) {
@@ -174,7 +201,7 @@ class RecommendationsLegacy extends React.Component {
                             '& tbody': {
                                 display: 'flex',
                                 flexWrap: 'wrap',
-                                marginLeft: 0,
+                                marginInlineStart: 0,
                             },
                             '& thead': {
                                 display: 'none',
@@ -188,8 +215,8 @@ class RecommendationsLegacy extends React.Component {
                 },
             };
         }
-        muiTheme = Object.assign(muiTheme, themeAdditions, Configurations);
-        return createTheme(adaptV4Theme(muiTheme));
+        const systemTheme = merge({}, Configurations, muiTheme, themeAdditions);
+        return createTheme(adaptV4Theme(systemTheme));
     };
 
     // get data
@@ -339,6 +366,7 @@ class RecommendationsLegacy extends React.Component {
             responsive: 'stacked',
             serverSide: true,
             search: false,
+            elevation: 0,
         };
         if (gridView) {
             // eslint-disable-next-line no-shadow
@@ -360,6 +388,7 @@ class RecommendationsLegacy extends React.Component {
         } else {
             options.filter = false;
         }
+        const { theme } = this.props;
         if (loading) {
             return <Loading />;
         }
@@ -368,13 +397,37 @@ class RecommendationsLegacy extends React.Component {
         }
         return (
             <StyledStyledEngineProvider injectFirst>
-                <ThemeProvider theme={this.getMuiTheme()}>
-                    <MUIDataTable title='Recommended APIs for you' data={data} columns={columns} options={options} />
-                </ThemeProvider>
+                <CacheProvider value={theme.direction === 'rtl' ? cacheRtl : cacheLtr}>
+                    <ThemeProvider theme={this.getMuiTheme()}>
+                        <MUIDataTable
+                            title={intl.formatMessage({
+                                defaultMessage: 'Recommended APIs for you',
+                                id: 'Apis.Listing.Recommendations.title',
+                            })}
+                            data={data}
+                            columns={columns}
+                            options={options}
+                        />
+                    </ThemeProvider>
+                </CacheProvider>
             </StyledStyledEngineProvider>
         );
     }
 }
+
+RecommendationsLegacy.propTypes = {
+    theme: PropTypes.shape({ direction: PropTypes.string }).isRequired,
+    gridView: PropTypes.bool.isRequired,
+    intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
+    query: PropTypes.string,
+    selectedTag: PropTypes.string,
+    setTenantDomain: PropTypes.func,
+};
+RecommendationsLegacy.defaultProps = {
+    query: null,
+    selectedTag: null,
+    setTenantDomain: null,
+};
 
 RecommendationsLegacy.contextType = ApiContext;
 

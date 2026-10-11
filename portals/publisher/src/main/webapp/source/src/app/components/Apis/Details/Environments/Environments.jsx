@@ -68,12 +68,20 @@ import LinearProgress from '@mui/material/LinearProgress';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import API from 'AppData/api';
+import CONSTS from 'AppData/Constants';
 import MCPServer from 'AppData/MCPServer';
 import { ConfirmDialog } from 'AppComponents/Shared/index';
 import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import Utils from 'AppData/Utils';
 import { Parser } from '@asyncapi/parser';
 import GovernanceViolations from 'AppComponents/Shared/Governance/GovernanceViolations';
+import {
+    wsDisabled,
+    wssDisabled,
+    hasValidWebSocketPorts,
+    hasValidHosts,
+    getHostValue
+} from 'AppComponents/Shared/Environments/Vhosts';
 import DisplayDevportal from './DisplayDevportal';
 import DeploymentOnbording from './DeploymentOnbording';
 import Permission from './Permission';
@@ -584,7 +592,7 @@ export default function Environments() {
                     if (e.vhosts && e.vhosts.length > 0) {
                         return {
                             env: e.name,
-                            vhost: api.isWebSocket() ? e.vhosts[0].wsHost : e.vhosts[0].host
+                            vhost: getHostValue(e.vhosts[0], api.isWebSocket())
                         };
                     } else {
                         return undefined;
@@ -607,7 +615,7 @@ export default function Environments() {
                         if (e.vhosts && e.vhosts.length > 0) {
                             return {
                                 env: e.name,
-                                vhost: api.isWebSocket() ? e.vhosts[0].wsHost : e.vhosts[0].host
+                                vhost: getHostValue(e.vhosts[0], api.isWebSocket())
                             };
                         } else {
                             return undefined;
@@ -655,6 +663,116 @@ export default function Environments() {
 
     const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
         || api.workflowStatus === 'CREATED' || api.initiatedFromGateway);
+    const governanceViolationDownloadLinkSx = {
+        color: 'inherit',
+        fontWeight: 600,
+        textDecoration: 'none',
+        transition: 'all 0.3s',
+        '&:hover': {
+            transform: 'translateY(-2px)',
+            textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+        },
+    };
+
+    const alertRevisionCreateError = (error) => {
+        if (error.response) {
+            Alert.error(error.response.body.description);
+        } else {
+            Alert.error(intl.formatMessage({
+                id: 'Apis.Details.Environments.Environments.revision.create.error',
+                defaultMessage: 'Something went wrong while creating the revision',
+            }));
+        }
+        console.error(error);
+    };
+
+    const alertRevisionDeployError = (error) => {
+        if (error.response) {
+            Alert.error(error.response.body.description);
+        } else {
+            Alert.error(intl.formatMessage({
+                id: 'Apis.Details.Environments.Environments.revision.deploy.error',
+                defaultMessage: 'Something went wrong while deploying the revision',
+            }));
+        }
+        console.error(error);
+    };
+
+    const showCreateGovernanceCreationFailureAlert = (violations) => {
+        setGovernanceError(violations);
+        setIsGovernanceViolation(true);
+        Alert.error(
+            <Box sx={{ width: '100%' }}>
+                <Typography>
+                    <FormattedMessage
+                        id='Apis.Details.Environments.Environments.revision.create.error.governance'
+                        defaultMessage='Revision Creation failed. Governance policy violations found'
+                    />
+                </Typography>
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    mt: 1,
+                }}>
+                    <Link
+                        component='button'
+                        onClick={Utils.downloadAsJSON.bind(null, violations, 'governance-violations')}
+                        sx={governanceViolationDownloadLinkSx}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Environments.Environments.revision.create.error.governance.download'
+                            defaultMessage='Download Violations'
+                        />
+                    </Link>
+                </Box>
+            </Box>
+        );
+    };
+
+    const showDeployGovernanceDeploymentFailureAlert = (violations) => {
+        setGovernanceError(violations);
+        setIsGovernanceViolation(true);
+        Alert.error(
+            <Box sx={{ width: '100%' }}>
+                <Typography>
+                    <FormattedMessage
+                        id='Apis.Details.Environments.Environments.revision.deploy.error.governance'
+                        defaultMessage='Revision Deployment failed. Governance policy violations found'
+                    />
+                </Typography>
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                    mt: 1,
+                }}>
+                    <Link
+                        component='button'
+                        onClick={Utils.downloadAsJSON.bind(null, violations, 'governance-violations')}
+                        sx={governanceViolationDownloadLinkSx}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Environments.Environments.revision.deploy.error.governance.download'
+                            defaultMessage='Download Violations'
+                        />
+                    </Link>
+                </Box>
+            </Box>
+        );
+    };
+
+    const handleGovernanceViolationError = (error, showGovernanceAlert, onGovernanceViolation) => {
+        if (error?.response?.body?.code !== complianceErrorCode) {
+            return false;
+        }
+
+        const violations = JSON.parse(error.response.body.description).blockingViolations;
+        showGovernanceAlert(violations);
+        if (onGovernanceViolation) {
+            onGovernanceViolation();
+        }
+
+        return true;
+    };
 
     const externalEnvWithEndpoints = [];
     useEffect(() => {
@@ -768,6 +886,12 @@ export default function Environments() {
     };
 
     const handleChange = (event) => {
+        // Check if the environment has valid hosts before allowing selection
+        const environment = settings.environment.find((env) => env.name === event.target.value);
+        if (event.target.checked && environment && !hasValidHosts(environment, api.isWebSocket())) {
+            return; // Prevent selection if no valid hosts
+        }
+
         if (event.target.checked) {
             setSelectedEnvironment([...SelectedEnvironment, event.target.value]);
         } else {
@@ -854,15 +978,14 @@ export default function Environments() {
                     }));
                 })
                 .catch((error) => {
-                    if (error.response) {
-                        Alert.error(error.response.body.description);
-                    } else {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Environments.Environments.revision.create.error',
-                            defaultMessage: 'Something went wrong while creating the revision',
-                        }));
+                    if (handleGovernanceViolationError(
+                        error,
+                        showCreateGovernanceCreationFailureAlert,
+                    )) {
+                        return;
                     }
-                    console.error(error);
+
+                    alertRevisionCreateError(error);
                 }).finally(() => {
                     getRevision();
                 });
@@ -876,62 +999,14 @@ export default function Environments() {
                     getRevision();
                 })
                 .catch((error) => {
-                    if (error.response) {
-                        if (error.response.body.code === complianceErrorCode) {
-                            const violations = JSON.parse(error.response.body.description).blockingViolations;
-                            setGovernanceError(violations);
-                            setIsGovernanceViolation(true);
-                            Alert.error(
-                                <Box sx={{ width: '100%' }}>
-                                    <Typography>
-                                        <FormattedMessage
-                                            id={'Apis.Details.Environments.Environments.'
-                                                + 'revision.create.error.governance'}
-                                            defaultMessage={'Revision Creation failed. '
-                                                + 'Governance policy violations found'}
-                                        />
-                                    </Typography>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        justifyContent: 'flex-end',
-                                        mt: 1
-                                    }}>
-                                        <Link
-                                            component='button'
-                                            onClick={() =>
-                                                Utils.downloadAsJSON(violations, 'governance-violations')
-                                            }
-                                            sx={{
-                                                color: 'inherit',
-                                                fontWeight: 600,
-                                                textDecoration: 'none',
-                                                transition: 'all 0.3s',
-                                                '&:hover': {
-                                                    transform: 'translateY(-2px)',
-                                                    textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
-                                                },
-                                            }}
-                                        >
-                                            <FormattedMessage
-                                                id={'Apis.Details.Environments.Environments.revision.'
-                                                    + 'create.error.governance.download'}
-                                                defaultMessage='Download Violations'
-                                            />
-                                        </Link>
-                                    </Box>
-                                </Box>
-                            );
-                            return;
-                        } else {
-                            Alert.error(error.response.body.description);
-                        }
-                    } else {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Environments.Environments.revision.create.error',
-                            defaultMessage: 'Something went wrong while creating the revision',
-                        }));
+                    if (handleGovernanceViolationError(
+                        error,
+                        showCreateGovernanceCreationFailureAlert,
+                    )) {
+                        return;
                     }
-                    console.error(error);
+
+                    alertRevisionCreateError(error);
                     getRevision();
                 });
         }
@@ -1186,6 +1261,7 @@ export default function Environments() {
         }];
         let isBlockedByGovernanceViolation = false;
         if (isMCPServer) {
+            setIsDeploying(true);
             MCPServer.deployRevision(api.id, revisionId, body)
                 .then(() => {
                     Alert.info(intl.formatMessage({
@@ -1194,18 +1270,23 @@ export default function Environments() {
                     }));
                 })
                 .catch((error) => {
-                    if (error.response) {
-                        Alert.error(error.response.body.description);
-                    } else {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Environments.Environments.revision.deploy.error',
-                            defaultMessage: 'Something went wrong while deploying the revision',
-                        }));
+                    if (handleGovernanceViolationError(
+                        error,
+                        showDeployGovernanceDeploymentFailureAlert,
+                        () => {
+                            isBlockedByGovernanceViolation = true;
+                        },
+                    )) {
+                        return;
                     }
-                    console.error(error);
+
+                    alertRevisionDeployError(error);
                 }).finally(() => {
-                    getRevision();
-                    getDeployedEnv();
+                    if (!isBlockedByGovernanceViolation) {
+                        getRevision();
+                        getDeployedEnv();
+                    }
+                    setIsDeploying(false);
                 });
         } else if (api.apiType !== API.CONSTS.APIProduct) {
             setIsDeploying(true);
@@ -1224,59 +1305,17 @@ export default function Environments() {
                     }
                 }
             }).catch((error) => {
-                if (error.response) {
-                    if (error.response.body.code === complianceErrorCode) {
+                if (handleGovernanceViolationError(
+                    error,
+                    showDeployGovernanceDeploymentFailureAlert,
+                    () => {
                         isBlockedByGovernanceViolation = true;
-                        const violations = JSON.parse(error.response.body.description).blockingViolations;
-                        setGovernanceError(violations);
-                        setIsGovernanceViolation(true);
-                        Alert.error(
-                            <Box sx={{ width: '100%' }}>
-                                <Typography>
-                                    <FormattedMessage
-                                        id='Apis.Details.Environments.Environments.revision.deploy.error.governance'
-                                        defaultMessage='Revision Deployment failed. Governance policy violations found'
-                                    />
-                                </Typography>
-                                <Box sx={{
-                                    display: 'flex',
-                                    justifyContent: 'flex-end',
-                                    mt: 1
-                                }}>
-                                    <Link
-                                        component='button'
-                                        onClick={() => Utils.downloadAsJSON(violations, 'governance-violations')}
-                                        sx={{
-                                            color: 'inherit',
-                                            fontWeight: 600,
-                                            textDecoration: 'none',
-                                            transition: 'all 0.3s',
-                                            '&:hover': {
-                                                transform: 'translateY(-2px)',
-                                                textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
-                                            },
-                                        }}
-                                    >
-                                        <FormattedMessage
-                                            id={'Apis.Details.Environments.Environments.revision.'
-                                                + 'deploy.error.governance.download'}
-                                            defaultMessage='Download Violations'
-                                        />
-                                    </Link>
-                                </Box>
-                            </Box>
-                        );
-                        return;
-                    } else {
-                        Alert.error(error.response.body.description);
-                    }
-                } else {
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.Environments.Environments.revision.deploy.error',
-                        defaultMessage: 'Something went wrong while deploying the revision',
-                    }));
+                    },
+                )) {
+                    return;
                 }
-                console.error(error);
+
+                alertRevisionDeployError(error);
             }).finally(() => {
                 // Only refresh the page if there's no governance violation
                 if (!isBlockedByGovernanceViolation) {
@@ -1344,15 +1383,14 @@ export default function Environments() {
                             }));
                         })
                         .catch((error) => {
-                            if (error.response) {
-                                Alert.error(error.response.body.description);
-                            } else {
-                                Alert.error(intl.formatMessage({
-                                    id: 'Apis.Details.Environments.Environments.revision.deploy.error',
-                                    defaultMessage: 'Something went wrong while deploying the revision',
-                                }));
+                            if (handleGovernanceViolationError(
+                                error,
+                                showDeployGovernanceDeploymentFailureAlert,
+                            )) {
+                                return;
                             }
-                            console.error(error);
+
+                            alertRevisionDeployError(error);
                         }).finally(() => {
                             history.replace();
                             getRevision();
@@ -1362,15 +1400,17 @@ export default function Environments() {
                         });
                 })
                 .catch((error) => {
-                    if (error.response) {
-                        Alert.error(error.response.body.description);
-                    } else {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Environments.Environments.revision.create.error',
-                            defaultMessage: 'Something went wrong while creating the revision',
-                        }));
+                    if (handleGovernanceViolationError(
+                        error,
+                        showCreateGovernanceCreationFailureAlert,
+                        () => {
+                            setOpenDeployPopup(false);
+                        },
+                    )) {
+                        return;
                     }
-                    console.error(error);
+
+                    alertRevisionCreateError(error);
                 });
         } else if (api.apiType !== API.CONSTS.APIProduct) {
             restApi.createRevision(api.id, body)
@@ -1396,62 +1436,14 @@ export default function Environments() {
                             }));
                         })
                         .catch((error) => {
-                            if (error.response) {
-                                if (error.response.body.code === complianceErrorCode) {
-                                    const violations = JSON.parse(error.response.body.description).blockingViolations;
-                                    setGovernanceError(violations);
-                                    setIsGovernanceViolation(true);
-                                    Alert.error(
-                                        <Box sx={{ width: '100%' }}>
-                                            <Typography>
-                                                <FormattedMessage
-                                                    id={'Apis.Details.Environments.Environments.'
-                                                        + 'revision.create.error.governance'}
-                                                    defaultMessage={'Revision Deployment failed. '
-                                                        + 'Governance policy violations found'}
-                                                />
-                                            </Typography>
-                                            <Box sx={{
-                                                display: 'flex',
-                                                justifyContent: 'flex-end',
-                                                mt: 1
-                                            }}>
-                                                <Link
-                                                    component='button'
-                                                    onClick={() =>
-                                                        Utils.downloadAsJSON(violations, 'governance-violations')
-                                                    }
-                                                    sx={{
-                                                        color: 'inherit',
-                                                        fontWeight: 600,
-                                                        textDecoration: 'none',
-                                                        transition: 'all 0.3s',
-                                                        '&:hover': {
-                                                            transform: 'translateY(-2px)',
-                                                            textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
-                                                        },
-                                                    }}
-                                                >
-                                                    <FormattedMessage
-                                                        id={'Apis.Details.Environments.Environments.revision.'
-                                                            + 'create.error.governance.download'}
-                                                        defaultMessage='Download Violations'
-                                                    />
-                                                </Link>
-                                            </Box>
-                                        </Box>
-                                    );
-                                    return;
-                                } else {
-                                    Alert.error(error.response.body.description);
-                                }
-                            } else {
-                                Alert.error(intl.formatMessage({
-                                    id: 'Apis.Details.Environments.Environments.revision.deploy.error',
-                                    defaultMessage: 'Something went wrong while deploying the revision',
-                                }));
+                            if (handleGovernanceViolationError(
+                                error,
+                                showDeployGovernanceDeploymentFailureAlert,
+                            )) {
+                                return;
                             }
-                            console.error(error);
+
+                            alertRevisionDeployError(error);
                         }).finally(() => {
                             history.replace();
                             getRevision();
@@ -1461,61 +1453,17 @@ export default function Environments() {
                         });
                 })
                 .catch((error) => {
-                    if (error.response) {
-                        if (error.response.body.code === complianceErrorCode) {
-                            const violations = JSON.parse(error.response.body.description).blockingViolations;
-                            setGovernanceError(violations);
-                            setIsGovernanceViolation(true);
-                            Alert.error(
-                                <Box sx={{ width: '100%' }}>
-                                    <Typography>
-                                        <FormattedMessage
-                                            id={'Apis.Details.Environments.Environments.revision.'
-                                                + 'create.error.governance'}
-                                            defaultMessage={'Revision Creation failed. '
-                                                + 'Governance policy violations found'}
-                                        />
-                                    </Typography>
-                                    <Box sx={{
-                                        display: 'flex',
-                                        justifyContent: 'flex-end',
-                                        mt: 1
-                                    }}>
-                                        <Link
-                                            component='button'
-                                            onClick={() => Utils.downloadAsJSON(violations, 'governance-violations')}
-                                            sx={{
-                                                color: 'inherit',
-                                                fontWeight: 600,
-                                                textDecoration: 'none',
-                                                transition: 'all 0.3s',
-                                                '&:hover': {
-                                                    transform: 'translateY(-2px)',
-                                                    textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
-                                                },
-                                            }}
-                                        >
-                                            <FormattedMessage
-                                                id={'Apis.Details.Environments.Environments.revision.'
-                                                    + 'create.error.governance.download'}
-                                                defaultMessage='Download Violations'
-                                            />
-                                        </Link>
-                                    </Box>
-                                </Box>
-                            );
+                    if (handleGovernanceViolationError(
+                        error,
+                        showCreateGovernanceCreationFailureAlert,
+                        () => {
                             setOpenDeployPopup(false);
-                            return;
-                        } else {
-                            Alert.error(error.response.body.description);
-                        }
-                    } else {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Environments.Environments.revision.create.error',
-                            defaultMessage: 'Something went wrong while creating the revision',
-                        }));
+                        },
+                    )) {
+                        return;
                     }
-                    console.error(error);
+
+                    alertRevisionCreateError(error);
                 });
         } else {
             restProductApi.createProductRevision(api.id, body)
@@ -2107,8 +2055,13 @@ export default function Environments() {
         }
 
         if (type === 'WS') {
-            endpoints.primary = 'ws://' + vhost.wsHost + ':' + vhost.wsPort;
-            endpoints.secondary = 'wss://' + vhost.wssHost + ':' + vhost.wssPort;
+            if (!wsDisabled(vhost)) {
+                endpoints.primary = 'ws://' + vhost.wsHost + ':' + vhost.wsPort;
+            }
+            if (!wssDisabled(vhost)) {
+                endpoints.secondary =
+                    'wss://' + vhost.wssHost + ':' + vhost.wssPort;
+            }
             endpoints.combined = endpoints.secondary + ' ' + endpoints.primary;
             return endpoints;
         }
@@ -2165,7 +2118,8 @@ export default function Environments() {
                         style={{ width: '50%' }}
                         disabled={api.isRevision || isCreateOrPublishRestricted() ||
                             (settings && settings.portalConfigurationOnlyModeEnabled) ||
-                            !allRevisions || allRevisions.length === 0}
+                            !allRevisions || allRevisions.length === 0
+                            || !hasValidHosts(row, api.isWebSocket())}
                     >
                         {allRevisions && allRevisions.length !== 0 && allRevisions.map((number) => (
                             <MenuItem value={number.id}>{number.displayName}</MenuItem>
@@ -2278,7 +2232,8 @@ export default function Environments() {
                     style={{ width: '50%' }}
                     disabled={api.isRevision || isCreateOrPublishRestricted() ||
                         (settings && settings.portalConfigurationOnlyModeEnabled) ||
-                        !filteredRevisions || filteredRevisions.length === 0}
+                        !filteredRevisions || filteredRevisions.length === 0
+                        || !hasValidHosts(row, api.isWebSocket())}
                 >
                     {filteredRevisions && filteredRevisions.length !== 0 && filteredRevisions.map((number) => (
                         <MenuItem value={number.id}>{number.displayName}</MenuItem>
@@ -2318,7 +2273,9 @@ export default function Environments() {
      * for a given environment row using data from allEnvDeployments.
      * 
      * - If deployment data is available, shows status with success/fail counts and progress bar.
-     * - If no deployment data exists, shows "No Active Gateways" message.
+     * - Universal/API Platform may have liveGatewayCount 0 while deployment is pending (notify not yet SUCCESS);
+     *   then deploymentStatus is "Deployment Pending" and we still show the chip (not "No Active Gateways").
+     * - If no deployment data exists, shows "No Active Gateways" when not in that pending state.
      */
     function envDeploymentStatusComponent(row, allEnvDeployments) {
         const envDetails = allEnvDeployments[row.name]?.envDetails;
@@ -2328,7 +2285,8 @@ export default function Environments() {
             const deployed = envDetails.deployedGatewayCount;
             const total = envDetails.liveGatewayCount;
             const failed = envDetails.failedGatewayCount;
-            if (total) {
+            const showGatewayProgress = total > 0 || status === 'Deployment Pending';
+            if (showGatewayProgress) {
                 return (
                     <StyledTooltip
                         title={
@@ -2373,13 +2331,13 @@ export default function Environments() {
                                     <span>{total ?? '-'}</span>
                                 </Box>
                                 <LinearProgress
-                                    variant='determinate'
-                                    value={total ? (deployed / total) * 100 : 0}
+                                    variant={total > 0 ? 'determinate' : 'indeterminate'}
+                                    value={total > 0 ? (deployed / total) * 100 : 0}
                                     color={failed > 0 ? 'error' : 'primary'}
                                     sx={{ height: 6, borderRadius: 2, mb: 0.5 }}
                                 />
                                 <Typography fontWeight='light' variant='caption' display='block' textAlign='right'>
-                                    {total ? ((deployed / total) * 100).toFixed(0) : '0'}%
+                                    {total > 0 ? ((deployed / total) * 100).toFixed(0) : '—'}%
                                     &nbsp;
                                     <FormattedMessage
                                         id='Apis.Details.Environments.Environments.gateway.deployment.percent.deployed'
@@ -2444,7 +2402,7 @@ export default function Environments() {
         });
         const gatewayRevisions = deployingGateway?.revisions;
 
-        if (!gatewayRevisions.length) {
+        if (!gatewayRevisions || gatewayRevisions.length === 0) {
             // Content to display when there is no revision
             return (
                 <FormattedMessage
@@ -2510,8 +2468,11 @@ export default function Environments() {
             const gateways = internalGateways.length > 0 ? internalGateways: externalGateways;
             if (api.isWebSocket() ) {
                 vhost = gateways.find((e) => e.name === env).vhosts.find(
-                    (v) => v.wsHost === selected.vhost,
+                    (v) => v.wsHost === selected.vhost || v.wssHost === selected.vhost,
                 );
+                if (!hasValidWebSocketPorts(vhost)) {
+                    return 'No valid hosts available for this environment';
+                }
             } else {
                 vhost = gateways.find((e) => e.name === env).vhosts.find(
                     (v) => v.host === selected.vhost,
@@ -2526,8 +2487,10 @@ export default function Environments() {
             }
             const gatewayUrls = getGatewayAccessUrl(vhost, api.isWebSocket() ? 'WS' : 'HTTP');
             if (shorten) {
-                const helperText = getGatewayAccessUrl(vhost, api.isWebSocket() ? 'WS' : 'HTTP').secondary;
-                return helperText.length > maxtLen ? helperText.substring(0, maxtLen) + '...' : helperText;
+                const wsOrHttp = api.isWebSocket() ? 'WS' : 'HTTP';
+                const endpoints = getGatewayAccessUrl(vhost, wsOrHttp);
+                const preferred = endpoints.secondary || endpoints.primary; // prefer wss/https; fallback to ws/http
+                return preferred.length > maxtLen ? preferred.substring(0, maxtLen) + '...' : preferred;
             }
             return gatewayUrls.combined;
         }
@@ -2539,31 +2502,56 @@ export default function Environments() {
      */
     const hasPendingDeployment = () => {
         if (!allEnvRevision) return false;
-    
+
         const now = Date.now();
-    
-        return allEnvRevision.some(revision =>
-            revision.deploymentInfo?.some(env =>
-                env.status !== 'CREATED' &&
-                env.failedGatewayCount === 0 &&
-                env.deployedGatewayCount < env.liveGatewayCount &&
-                (
-                    env.deployedTime == null || // allow null or undefined
-                    now - env.deployedTime <= MAX_POLLING_DURATION_MS
-                )
-            )
-        );
+        const anchoredStartTime = pollingStartTimeRef.current ?? now;
+
+        const hasPending = allEnvRevision.some((revision) => revision.deploymentInfo?.some((env) => {
+            const failed = env.failedGatewayCount ?? 0;
+            const deployed = env.deployedGatewayCount ?? 0;
+            const live = env.liveGatewayCount ?? 0;
+            const inTimeWindow = env.deployedTime == null
+                ? (now - anchoredStartTime <= MAX_POLLING_DURATION_MS)
+                : (now - env.deployedTime <= MAX_POLLING_DURATION_MS);
+
+            const synapseStylePending = env.status !== 'CREATED'
+                && failed === 0
+                && deployed < live
+                && inTimeWindow;
+
+            // Universal / API Platform: live and deployed stay 0 until notify; use 0/0 + APPROVED + no success time
+            const universalStylePending = api.gatewayType === CONSTS.API_PLATFORM_GATEWAY
+                && env.status === 'APPROVED'
+                && failed === 0
+                && deployed === 0
+                && live === 0
+                && !env.successDeployedTime
+                && inTimeWindow;
+
+            return synapseStylePending || universalStylePending;
+        }));
+
+        if (hasPending && pollingStartTimeRef.current == null) {
+            pollingStartTimeRef.current = now;
+        } else if (!hasPending) {
+            pollingStartTimeRef.current = null;
+        }
+
+        return hasPending;
     };
     
     useEffect(() => {
         if (settings && settings.isGatewayNotificationEnabled === true) {
             if (hasPendingDeployment()) {
                 if (!pollingRef.current) {
-                    pollingStartTimeRef.current = Date.now();
+                    if (pollingStartTimeRef.current == null) {
+                        pollingStartTimeRef.current = Date.now();
+                    }
                     pollingRef.current = setInterval(() => {
                         if (Date.now() - pollingStartTimeRef.current > MAX_POLLING_DURATION_MS) {
                             clearInterval(pollingRef.current);
                             pollingRef.current = null;
+                            pollingStartTimeRef.current = null;
                             return;
                         }
                         getDeployedEnv(); // Updates allEnvRevision
@@ -2572,18 +2560,20 @@ export default function Environments() {
             } else if (pollingRef.current) {
                 clearInterval(pollingRef.current);
                 pollingRef.current = null;
+                pollingStartTimeRef.current = null;
             }
             return () => {
                 if (pollingRef.current) {
                     clearInterval(pollingRef.current);
                     pollingRef.current = null;
                 }
+                pollingStartTimeRef.current = null;
             };
         }
         return undefined;
     }, [allEnvRevision, settings]);
 
-    if (!noEnv && (isLoading || selectedVhosts === null)) {
+    if (!noEnv && (isLoading || selectedVhosts === null || !allEnvRevision)) {
         return <Progress per={80} message='Loading app settings ...' />;
     }
 
@@ -2605,7 +2595,7 @@ export default function Environments() {
     // allEnvDeployments represents all deployments of the API with mapping
     // environment -> {revision deployed to env, vhost deployed to env with revision}
     const allEnvDeployments = allEnvRevision ?
-        Utils.getAllEnvironmentDeployments(settings.environment, allEnvRevision) : null;
+        Utils.getAllEnvironmentDeployments(settings.environment, allEnvRevision, api.gatewayType) : null;
     const allEnvRevisionMapping = allEnvRevision ?
         Utils.getAllEnvironmentRevisions(settings.environment, allEnvRevision) : null;
 
@@ -2866,6 +2856,8 @@ export default function Environments() {
                                                                             checked={
                                                                                 SelectedEnvironment.includes(row.name)}
                                                                             onChange={handleChange}
+                                                                            disabled={!hasValidHosts(
+                                                                                row, api.isWebSocket())}
                                                                             color='primary'
                                                                             icon={<RadioButtonUncheckedIcon />}
                                                                             checkedIcon={<
@@ -2942,6 +2934,8 @@ export default function Environments() {
                                                                         value={selectedVhostDeploy.find(
                                                                             (v) => v.env === row.name,
                                                                         ).vhost}
+                                                                        disabled={!hasValidHosts(
+                                                                            row, api.isWebSocket())}
                                                                         onChange={handleVhostDeploySelect}
                                                                         margin='dense'
                                                                         variant='outlined'
@@ -2949,15 +2943,20 @@ export default function Environments() {
                                                                         helperText={getVhostHelperText(row.name,
                                                                             selectedVhostDeploy, true)}
                                                                     >
-                                                                        {row.vhosts.map(
-                                                                            (vhost) => (
-                                                                                <MenuItem value={api.isWebSocket()
-                                                                                    ? vhost.wsHost : vhost.host}>
-                                                                                    {api.isWebSocket()
-                                                                                        ? vhost.wsHost : vhost.host}
-                                                                                </MenuItem>
-                                                                            ),
-                                                                        )}
+                                                                        {row.vhosts
+                                                                            .filter((vhost) => !api.isWebSocket()
+                                                                                    || hasValidWebSocketPorts(vhost))
+                                                                            .map((vhost) => {
+                                                                                const hostValue = getHostValue(vhost,
+                                                                                    api.isWebSocket());
+                                                                                return (
+                                                                                    <MenuItem
+                                                                                        key={hostValue}
+                                                                                        value={hostValue}>
+                                                                                        {hostValue}
+                                                                                    </MenuItem>
+                                                                                );
+                                                                            })}
                                                                     </TextField>
                                                                 </Tooltip>
                                                             </Grid>
@@ -3124,12 +3123,18 @@ export default function Environments() {
                                                                         helperText={getVhostHelperText(row.name,
                                                                             selectedVhostDeploy, true)}
                                                                     >
-                                                                        {row.vhosts?.map(
+                                                                        {row.vhosts?.filter(
+                                                                            (v) => !api.isWebSocket()
+                                                                                || hasValidWebSocketPorts(v),
+                                                                        ).map(
                                                                             (vhost) => (
-                                                                                <MenuItem value={api.isWebSocket()
-                                                                                    ? vhost.wsHost : vhost.host}>
-                                                                                    {api.isWebSocket()
-                                                                                        ? vhost.wsHost : vhost.host}
+                                                                                <MenuItem
+                                                                                    key={getHostValue(vhost,
+                                                                                        api.isWebSocket())}
+                                                                                    value={getHostValue(
+                                                                                        vhost,api.isWebSocket())}>
+                                                                                    {getHostValue(
+                                                                                        vhost,api.isWebSocket())}
                                                                                 </MenuItem>
                                                                             ),
                                                                         )}
@@ -3183,7 +3188,7 @@ export default function Environments() {
                     </DialogActions>
                 </StyledDialog>
             </Grid>
-            {allRevisions && allRevisions.length !== 0 
+            {allRevisions && allRevisions.length !== 0
             && !api.isRevision && (settings && !settings.portalConfigurationOnlyModeEnabled) && (
                 <>
                     <Grid
@@ -3434,7 +3439,8 @@ export default function Environments() {
                                             </IconButton>
                                         </Tooltip>
                                     </TableCell>
-                                    {settings.isGatewayNotificationEnabled && (
+                                    {settings.isGatewayNotificationEnabled
+                                        && !api.initiatedFromGateway && (
                                         <TableCell align='justify'>
                                             <FormattedMessage
                                                 id='Apis.Details.Environments.Environments.gateway.deployment.status'
@@ -3511,14 +3517,15 @@ export default function Environments() {
                                             <>
                                                 <TableCell align='left' className={classes.tableCellVhostSelect}>
                                                     <Tooltip
-                                                        title={(
-                                                            <>
-                                                                <Typography color='inherit'>
-                                                                    {getVhostHelperText(row.name,
-                                                                        selectedVhosts)}
-                                                                </Typography>
-                                                            </>
-                                                        )}
+                                                        title={hasValidHosts(row, api.isWebSocket())
+                                                            ? (
+                                                                <>
+                                                                    <Typography color='inherit'>
+                                                                        {getVhostHelperText(row.name,
+                                                                            selectedVhosts)}
+                                                                    </Typography>
+                                                                </>
+                                                            ) : 'No valid hosts available for this environment'}
                                                         placement='bottom'
                                                     >
                                                         <TextField
@@ -3527,7 +3534,7 @@ export default function Environments() {
                                                             label={(
                                                                 <FormattedMessage
                                                                     id='Apis.Details.Environments.Environments
-                                                                    .select.vhost'
+                                                                            .select.vhost'
                                                                     defaultMessage='Select Access URL'
                                                                 />
                                                             )}
@@ -3545,19 +3552,25 @@ export default function Environments() {
                                                             fullWidth
                                                             disabled={
                                                                 api.isRevision
-                                                                || (settings
-                                                                    && settings.portalConfigurationOnlyModeEnabled)
-                                                                || !allRevisions || allRevisions.length === 0
+                                                                        || (settings
+                                                                        // eslint-disable-next-line max-len
+                                                                            && settings.portalConfigurationOnlyModeEnabled)
+                                                                        || !allRevisions || allRevisions.length === 0
+                                                                        || !hasValidHosts(row, api.isWebSocket())
                                                             }
                                                             helperText={getVhostHelperText(row.name, selectedVhosts,
                                                                 true, 100)}
                                                         >
-                                                            {row.vhosts.map(
+                                                            {row.vhosts.filter(
+                                                                (v) => !api.isWebSocket()
+                                                                    || hasValidWebSocketPorts(v),
+                                                            ).map(
                                                                 (vhost) => (
-                                                                    <MenuItem value={api.isWebSocket()
-                                                                        ? vhost.wsHost : vhost.host}>
-                                                                        {api.isWebSocket()
-                                                                            ? vhost.wsHost : vhost.host}
+                                                                    <MenuItem 
+                                                                        key={getHostValue(vhost, api.isWebSocket())}
+                                                                        value={getHostValue(
+                                                                            vhost, api.isWebSocket())}>
+                                                                        {getHostValue(vhost, api.isWebSocket())}
                                                                     </MenuItem>
                                                                 ),
                                                             )}
@@ -3579,7 +3592,8 @@ export default function Environments() {
                                                 EnvDeployments={allEnvDeployments[row.name]}
                                             />
                                         </TableCell>
-                                        {settings.isGatewayNotificationEnabled && (
+                                        {settings.isGatewayNotificationEnabled
+                                            && !api.initiatedFromGateway && (
                                             <TableCell align='justify'>
                                                 {envDeploymentStatusComponent(row, allEnvDeployments)}
                                             </TableCell>
@@ -3735,14 +3749,15 @@ export default function Environments() {
                                             <>
                                                 <TableCell align='left' className={classes.tableCellVhostSelect}>
                                                     <Tooltip
-                                                        title={(
-                                                            <>
-                                                                <Typography color='inherit'>
-                                                                    {getVhostHelperText(row.name,
-                                                                        selectedVhosts)}
-                                                                </Typography>
-                                                            </>
-                                                        )}
+                                                        title={hasValidHosts(row, api.isWebSocket())
+                                                            ? (
+                                                                <>
+                                                                    <Typography color='inherit'>
+                                                                        {getVhostHelperText(row.name,
+                                                                            selectedVhosts)}
+                                                                    </Typography>
+                                                                </>
+                                                            ) : 'No valid hosts available for this environment'}
                                                         placement='bottom'
                                                     >
                                                         <TextField
@@ -3769,16 +3784,21 @@ export default function Environments() {
                                                             fullWidth
                                                             disabled={api.isRevision
                                                             || (settings && settings.portalConfigurationOnlyModeEnabled)
-                                                            || !allRevisions || allRevisions.length === 0}
+                                                            || !allRevisions || allRevisions.length === 0
+                                                            || !hasValidHosts(row, api.isWebSocket())}
                                                             helperText={getVhostHelperText(row.name, selectedVhosts,
                                                                 true, 100)}
                                                         >
-                                                            {row.vhosts.map(
+                                                            {row.vhosts.filter(
+                                                                (v) => !api.isWebSocket()
+                                                                    || hasValidWebSocketPorts(v),
+                                                            ).map(
                                                                 (vhost) => (
-                                                                    <MenuItem value={api.isWebSocket()
-                                                                        ? vhost.wsHost : vhost.host}>
-                                                                        {api.isWebSocket()
-                                                                            ? vhost.wsHost : vhost.host}
+                                                                    <MenuItem
+                                                                        key={getHostValue(vhost, api.isWebSocket())}
+                                                                        value={getHostValue(
+                                                                            vhost, api.isWebSocket())}>
+                                                                        {getHostValue(vhost, api.isWebSocket())}
                                                                     </MenuItem>
                                                                 ),
                                                             )}

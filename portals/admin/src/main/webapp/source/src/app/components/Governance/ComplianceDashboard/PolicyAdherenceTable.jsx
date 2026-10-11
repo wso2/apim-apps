@@ -72,9 +72,36 @@ function apiCall(params) {
         });
 }
 
-export default function PolicyAdherenceTable() {
+function filterPolicies(policies, filters) {
+    return policies.filter((policy) => {
+        return !filters.status?.length || filters.status.includes(policy.status);
+    });
+}
+
+async function getFilteredPolicyPage(params, filters) {
+    const initialResponse = await apiCall({ ...params, offset: 0 });
+    const total = initialResponse.pagination?.total || 0;
+    const fullResponse = total > (initialResponse.list || []).length
+        ? await apiCall({ ...params, limit: total, offset: 0 })
+        : initialResponse;
+    const filteredPolicies = filterPolicies(fullResponse.list || [], filters);
+    const offset = params.offset || 0;
+    const limit = params.limit || filteredPolicies.length;
+
+    return {
+        ...fullResponse,
+        list: filteredPolicies.slice(offset, offset + limit),
+        pagination: {
+            ...fullResponse.pagination,
+            total: filteredPolicies.length,
+        },
+    };
+}
+
+export default function PolicyAdherenceTable({ filters }) {
     const intl = useIntl();
     const theme = useTheme();
+    const hasActiveFilters = filters.status.length > 0;
 
     // TODO: reuse this function in other components
     const renderProgress = (followed, total, status) => {
@@ -279,28 +306,47 @@ export default function PolicyAdherenceTable() {
                 gutterBottom
                 sx={{ fontWeight: 'medium' }}
             >
-                {intl.formatMessage({
-                    id: 'Governance.ComplianceDashboard.PolicyAdherence.empty.content',
-                    defaultMessage: 'No Governance Policies Available',
-                })}
+                {hasActiveFilters
+                    ? intl.formatMessage({
+                        id: 'Governance.ComplianceDashboard.PolicyAdherence.filtered.empty.content',
+                        defaultMessage: 'No Matching Policies',
+                    })
+                    : intl.formatMessage({
+                        id: 'Governance.ComplianceDashboard.PolicyAdherence.empty.content',
+                        defaultMessage: 'No Governance Policies Available',
+                    })}
             </Typography>
             <Typography
                 variant="body2"
                 color="text.secondary"
                 align="center"
             >
-                {intl.formatMessage({
-                    id: 'Governance.ComplianceDashboard.PolicyAdherence.empty.helper',
-                    defaultMessage: 'Create a new governance policy to start governing the APIs.',
-                })}
+                {hasActiveFilters
+                    ? intl.formatMessage({
+                        id: 'Governance.ComplianceDashboard.PolicyAdherence.filtered.empty.helper',
+                        defaultMessage: 'Adjust or clear the selected filters to see more policies.',
+                    })
+                    : intl.formatMessage({
+                        id: 'Governance.ComplianceDashboard.PolicyAdherence.empty.helper',
+                        defaultMessage: 'Create a new governance policy to start governing the APIs.',
+                    })}
             </Typography>
         </Box>
     );
 
+    const filteredApiCall = (params) => {
+        if (!hasActiveFilters) {
+            return apiCall(params);
+        }
+
+        return getFilteredPolicyPage(params, filters);
+    };
+
     return (
         <ListBaseWithPagination
+            key={JSON.stringify(filters)}
             columProps={policyColumProps}
-            apiCall={apiCall}
+            apiCall={filteredApiCall}
             searchProps={false}
             emptyBoxProps={{
                 content: emptyStateContent

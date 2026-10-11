@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Radio from '@mui/material/Radio';
@@ -43,8 +43,9 @@ import CheckIcon from '@mui/icons-material/Check';
 
 import APIValidation from 'AppData/APIValidation';
 import Wsdl from 'AppData/Wsdl';
-import Banner from 'AppComponents/Shared/Banner';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
+import getValidationErrorsFromError from 'AppComponents/Apis/Create/Components/validationErrorUtils';
+import ValidationResults from 'AppComponents/Apis/Create/Components/ValidationResults';
 
 const PREFIX = 'ProvideWSDL';
 
@@ -77,9 +78,37 @@ export default function ProvideWSDL(props) {
 
     const [isError, setValidity] = useState(); // If valid value is `null` else an error object will be there
     const [isValidating, setIsValidating] = useState(false);
+    const [validationErrors, setValidationErrors] = useState([]);
     const isCreateMode = apiInputs.mode === 'create';
+    // Latest validation request id; a reset bumps it so a stale in-flight response is ignored.
+    const validationRequestId = useRef(0);
 
     const intl = useIntl();
+
+    const wsdlValidationErrorTitle = intl.formatMessage({
+        id: 'Apis.Create.WSDL.validation.error.title',
+        defaultMessage: 'Error while validating the WSDL definition',
+    });
+
+    /**
+     * Clear the validation state and the selected file/URL, bringing back the drop zone.
+     */
+    function reset() {
+        validationRequestId.current += 1; // invalidate any in-flight validation
+        setIsValidating(false); // stale response is skipped, so clear the spinner here
+        setValidationErrors([]);
+        setValidity();
+        inputsDispatcher({ action: 'inputValue', value: null });
+        inputsDispatcher({ action: 'isFormValid', value: false });
+        onValidate(false);
+    }
+
+    // Clear validation state when the input type changes so a stale error does not linger.
+    useEffect(() => {
+        reset();
+    }, [apiInputs.inputType]);
+    // Invalidate any in-flight validation on unmount so a late callback doesn't dispatch stale state.
+    useEffect(() => () => { validationRequestId.current += 1; }, []);
     /**
      * Handles WSDL validation response and returns the state.
      *
@@ -91,30 +120,34 @@ export default function ProvideWSDL(props) {
         const isWSDLValid = response.body.isValid;
         let success = false;
         if (isWSDLValid) {
+            setValidationErrors([]);
             if (type === 'file') {
                 setValidity({ ...isError, file: null });
             } else {
                 setValidity({ ...isError, url: null });
             }
             success = true;
-        } else if (type === 'file') {
-            setValidity({
-                ...isError, file: {
-                    message: intl.formatMessage({
-                        id: 'Apis.Create.WSDL.content.validation.file.failed',
-                        defaultMessage: 'WSDL content validation failed!',
-                    }),
-                }
-            });
         } else {
-            setValidity({
-                ...isError, url: {
-                    message: intl.formatMessage({
-                        id: 'Apis.Create.WSDL.content.validation.url.failed',
-                        defaultMessage: 'Invalid WSDL URL!',
-                    }),
-                }
-            });
+            setValidationErrors(response.body.errors || []);
+            if (type === 'file') {
+                setValidity({
+                    ...isError, file: {
+                        message: intl.formatMessage({
+                            id: 'Apis.Create.WSDL.content.validation.file.failed',
+                            defaultMessage: 'WSDL content validation failed!',
+                        }),
+                    }
+                });
+            } else {
+                setValidity({
+                    ...isError, url: {
+                        message: intl.formatMessage({
+                            id: 'Apis.Create.WSDL.content.validation.url.failed',
+                            defaultMessage: 'Invalid WSDL URL!',
+                        }),
+                    }
+                });
+            }
         }
         onValidate(isWSDLValid);
         setIsValidating(false);
@@ -132,14 +165,16 @@ export default function ProvideWSDL(props) {
             id: 'Apis.Create.WSDL.validation.error.response',
             defaultMessage: 'Error occurred during validation',
         });
-        if (error.response && error.response.body.description) {
+        if (error.response?.body?.description) {
             message = error.response.body.description;
         }
+        setValidationErrors(getValidationErrorsFromError(error, wsdlValidationErrorTitle));
         if (type === 'file') {
             setValidity({ ...isError, file: { message } });
         } else {
             setValidity({ ...isError, url: { message } });
         }
+        onValidate(false);
         setIsValidating(false);
     }
 
@@ -151,9 +186,15 @@ export default function ProvideWSDL(props) {
     function validateUrl(state) {
         if (state === null) {
             setIsValidating(true);
+            setValidationErrors([]); // clear stale validation state before starting a new request
+            setValidity();
+            validationRequestId.current += 1; // unique token so concurrent requests don't share an id
+            const requestId = validationRequestId.current;
             Wsdl.validateUrl(apiInputs.inputValue).then((response) => {
+                if (requestId !== validationRequestId.current) return;
                 handleWSDLValidationResponse(response, 'url');
             }).catch((error) => {
+                if (requestId !== validationRequestId.current) return;
                 handleWSDLValidationErrorResponse(error, 'url');
             });
         } else {
@@ -171,12 +212,21 @@ export default function ProvideWSDL(props) {
     function validateFileOrArchive(file, state = null) {
         if (state === null) {
             setIsValidating(true);
+            setValidationErrors([]); // clear stale validation state before starting a new request
+            setValidity();
+            validationRequestId.current += 1; // unique token so concurrent requests don't share an id
+            const requestId = validationRequestId.current;
             Wsdl.validateFileOrArchive(file).then((response) => {
-                if (handleWSDLValidationResponse(response, 'file')) {
-                    inputsDispatcher({ action: 'inputValue', value: file });
-                }
+                if (requestId !== validationRequestId.current) return;
+                handleWSDLValidationResponse(response, 'file');
             }).catch((error) => {
+                if (requestId !== validationRequestId.current) return;
                 handleWSDLValidationErrorResponse(error, 'file');
+            }).finally(() => {
+                // Ignore a stale request whose input type was switched mid-validation.
+                if (requestId !== validationRequestId.current) return;
+                // Set the file as input value even when invalid so the uploaded-file row replaces the drop zone.
+                inputsDispatcher({ action: 'inputValue', value: file });
             });
         } else {
             setValidity({ ...isError, file: state });
@@ -214,10 +264,7 @@ export default function ProvideWSDL(props) {
                         <IconButton
                             edge='end'
                             aria-label='delete'
-                            onClick={() => {
-                                inputsDispatcher({ action: 'inputValue', value: null });
-                                inputsDispatcher({ action: 'isFormValid', value: false });
-                            }}
+                            onClick={reset}
                             size='large'>
                             <DeleteIcon />
                         </IconButton>
@@ -259,11 +306,12 @@ export default function ProvideWSDL(props) {
             >
                 {isValidating ? (<CircularProgress />)
                     : (
-                        (<Root>
+                        (<Root sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             { dropBoxControlLabel }
                             <Button
                                 color='primary'
                                 variant='contained'
+                                sx={{ mt: 1 }}
                             >
                                 <FormattedMessage
                                     id='Apis.Create.WSDL.Steps.ProvideWSDL.Input.file.upload'
@@ -299,10 +347,10 @@ export default function ProvideWSDL(props) {
 
     return (
         <>
-            <Grid container spacing={5}>
+            <Grid container>
                 {isCreateMode
                 && (
-                    <Grid item md={12}>
+                    <Grid item md={12} sx={{ mb: 2 }}>
                         <FormControl component='fieldset'>
                             <FormLabel component='legend'>
                                 <>
@@ -320,9 +368,9 @@ export default function ProvideWSDL(props) {
                                 onChange={
                                     (event) => {
                                         inputsDispatcher({ action: 'type', value: event.target.value });
-                                        inputsDispatcher({ action: 'isFormValid', value: false });
-                                        inputsDispatcher({ action: 'inputValue', value: null });
                                         inputsDispatcher({ action: 'inputType', value: 'url' });
+                                        // Clear validation state so a stale error does not linger on type change.
+                                        reset();
                                     }
                                 }
                             >
@@ -350,7 +398,7 @@ export default function ProvideWSDL(props) {
                         </FormControl>
                     </Grid>
                 )}
-                <Grid item md={12}>
+                <Grid item md={12} sx={{ mb: 2 }}>
                     <FormControl component='fieldset'>
                         <FormLabel component='legend'>
                             <>
@@ -390,20 +438,7 @@ export default function ProvideWSDL(props) {
                         </RadioGroup>
                     </FormControl>
                 </Grid>
-                {isError && isError.file
-                    && (
-                        <Grid item md={11}>
-                            <Banner
-                                onClose={() => setValidity({ file: null })}
-                                disableActions
-                                dense
-                                paperProps={{ elevation: 1 }}
-                                type='error'
-                                message={isError.file.message}
-                            />
-                        </Grid>
-                    )}
-                <Grid item md={11}>
+                <Grid item xs={12}>
                     {isFileInput ? renderFileUpload()
                         : (
                             <TextField
@@ -444,6 +479,14 @@ export default function ProvideWSDL(props) {
                         )}
 
                 </Grid>
+                <ValidationResults
+                    inputValue={apiInputs.inputValue}
+                    isValidating={isValidating}
+                    isLinting={false}
+                    validationErrors={validationErrors}
+                    linterResults={[]}
+                    onLinterLineSelect={() => {}}
+                />
             </Grid>
         </>
     );

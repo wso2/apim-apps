@@ -156,11 +156,14 @@ export default function ProvideGraphQL(props) {
                     inputsDispatcher({ action: 'graphQLInfo', value: graphQLInfo });
                     setValidity({ isValidURL, file: null });
                 } else {
-                    let errorMessage;
-                    if (inputType === ProvideGraphQL.INPUT_TYPES.ENDPOINT) {
-                        errorMessage = 'Error occurred while generating GraphQL schema from endpoint';
-                    } else if (inputType === ProvideGraphQL.INPUT_TYPES.URL) {
-                        errorMessage = 'Error occurred while retrieving GraphQL schema from url';
+                    let errorMessage = response.body?.description
+                        || response.body?.message || response.body?.errorMessage;
+                    if (!errorMessage) {
+                        if (inputType === ProvideGraphQL.INPUT_TYPES.ENDPOINT) {
+                            errorMessage = 'Error occurred while generating GraphQL schema from endpoint';
+                        } else if (inputType === ProvideGraphQL.INPUT_TYPES.URL) {
+                            errorMessage = 'Error occurred while retrieving GraphQL schema from url';
+                        }
                     }
                     setValidity({
                         isValidURL,
@@ -172,7 +175,10 @@ export default function ProvideGraphQL(props) {
             };
 
             const handleError = (error) => {
-                setValidity({ url: { message: error.message } });
+                setValidity({ url: { message: error.response?.body?.description
+                    || error.response?.body?.message
+                    || error.message,
+                }});
                 onValidate(false);
                 setIsValidating(false);
                 console.error(error);

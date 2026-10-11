@@ -232,15 +232,15 @@ class APIDefinition extends React.Component {
                     });
                 } else if (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE' || api.type === 'ASYNC') {
                     this.setState({
-                        asyncAPI: YAML.safeDump(YAML.safeLoad(response.data)),
-                        asyncAPIModified: YAML.safeDump(YAML.safeLoad(response.data)),
+                        asyncAPI: YAML.dump(YAML.load(response.data)),
+                        asyncAPIModified: YAML.dump(YAML.load(response.data)),
                         format: 'yaml',
                         convertTo: this.getConvertToFormat('yaml'),
                     });
                 } else {
                     this.setState({
-                        swagger: YAML.safeDump(YAML.safeLoad(response.data)),
-                        swaggerModified: YAML.safeDump(YAML.safeLoad(response.data)),
+                        swagger: YAML.dump(YAML.load(response.data)),
+                        swaggerModified: YAML.dump(YAML.load(response.data)),
                         format: 'yaml',
                         convertTo: this.getConvertToFormat('yaml'),
                     });
@@ -295,7 +295,7 @@ class APIDefinition extends React.Component {
             if (convertTo === 'json') {
                 formattedString = JSON.stringify(YAML.load(swagger), null, 1);
             } else {
-                formattedString = YAML.safeDump(YAML.safeLoad(swagger));
+                formattedString = YAML.dump(YAML.load(swagger));
             }
             this.setState({
                 swagger: formattedString,
@@ -307,7 +307,7 @@ class APIDefinition extends React.Component {
             if (convertTo === 'json') {
                 formattedString = JSON.stringify(YAML.load(asyncAPI), null, 1);
             } else {
-                formattedString = YAML.safeDump(YAML.safeLoad(asyncAPI));
+                formattedString = YAML.dump(YAML.load(asyncAPI));
             }
             this.setState({
                 asyncAPI: formattedString,
@@ -600,10 +600,15 @@ class APIDefinition extends React.Component {
                         })
                         .catch((err) => {
                             console.log(err);
-                            Alert.error(intl.formatMessage({
-                                id: 'Apis.Details.APIDefinition.APIDefinition.error.while.updating.api.definition',
-                                defaultMessage: 'Error occurred while updating the API Definition',
-                            }));
+                            const backendErrorDescription = err?.response?.body?.description;
+                            if (backendErrorDescription) {
+                                Alert.error(backendErrorDescription);
+                            } else {
+                                Alert.error(intl.formatMessage({
+                                    id: 'Apis.Details.APIDefinition.APIDefinition.error.while.updating.api.definition',
+                                    defaultMessage: 'Error occurred while updating the API Definition',
+                                }));
+                            }
                             this.setState({ isUpdating: false });
                         });
                 }
@@ -822,7 +827,7 @@ class APIDefinition extends React.Component {
                             size='small'
                             className={classes.button}
                             onClick={this.openEditor}
-                            disabled={isRestricted(['apim:api_create'], api) || api.initiatedFromGateway}
+                            disabled={isRestricted(['apim:api_create'], api)}
                         >
                             <EditRounded className={classes.buttonIcon} />
                             <FormattedMessage
@@ -837,8 +842,7 @@ class APIDefinition extends React.Component {
                                 className={classes.button}
                                 onClick={this.openEditor}
                                 disabled={isRestricted(['apim:api_create'], api) || api.isRevision
-                                || (settings && settings.portalConfigurationOnlyModeEnabled) 
-                                || api.initiatedFromGateway}
+                                || (settings && settings.portalConfigurationOnlyModeEnabled)}
                                 id='edit-definition-btn'
                             >
                                 <EditRounded className={classes.buttonIcon} />
@@ -967,34 +971,51 @@ class APIDefinition extends React.Component {
                                     this.setState({ isSwaggerUI: value === "swagger" })
                                 }}
                             >
-                                <ToggleButton
-                                    className={classes.activeButton}
-                                    value='swagger'
-                                    aria-label='swagger'
-                                    selected={this.state.isSwaggerUI}
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.swagger'
-                                        defaultMessage='Swagger'
-                                    />
-                                </ToggleButton>
-                                <ToggleButton
-                                    className={classes.activeButton}
-                                    value='linter'
-                                    aria-label='linter'
-                                    selected={!this.state.isSwaggerUI}
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.linter'
-                                        defaultMessage='Linter'
-                                    />
-                                </ToggleButton>
-                                <APILintingSummary 
-                                    linterResults={linterResults}
-                                    handleChange = { (event, value)=> {
-                                        this.setState({linterSelectedSeverity: value});
-                                        this.setState({ isSwaggerUI: false }) }}
-                                />
+                                {asyncAPI ? (
+                                    <Button
+                                        className={classes.activeButton}
+                                        value='asyncapi'
+                                        aria-label='asyncapi'
+                                    >
+                                        <FormattedMessage
+                                            id='Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.async'
+                                            defaultMessage='AsyncAPI'
+                                        />
+                                    </Button>
+                                ) : (
+                                    <>
+                                        <ToggleButton
+                                            className={classes.activeButton}
+                                            value='swagger'
+                                            aria-label='swagger'
+                                            selected={this.state.isSwaggerUI}
+                                        >
+                                            <FormattedMessage
+                                                id={'Apis.Details.APIDefinition.APIDefinition.editor.drawer.' 
+                                                    + 'toggle.swagger'}
+                                                defaultMessage='Swagger'
+                                            />
+                                        </ToggleButton>
+                                        <ToggleButton
+                                            className={classes.activeButton}
+                                            value='linter'
+                                            aria-label='linter'
+                                            selected={!this.state.isSwaggerUI}
+                                        >
+                                            <FormattedMessage
+                                                id={'Apis.Details.APIDefinition.APIDefinition.editor.drawer.'
+                                                    + 'toggle.linter'}
+                                                defaultMessage='Linter'
+                                            />
+                                        </ToggleButton>
+                                        <APILintingSummary 
+                                            linterResults={linterResults}
+                                            handleChange = { (event, value)=> {
+                                                this.setState({linterSelectedSeverity: value});
+                                                this.setState({ isSwaggerUI: false }) }}
+                                        />
+                                    </>
+                                )}
                             </ToggleButtonGroup>
                             
                         </Box>
@@ -1045,13 +1066,25 @@ class APIDefinition extends React.Component {
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id='alert-dialog-description'>
-                        <FormattedMessage
-                            id='Apis.Details.APIDefinition.APIDefinition.api.definition.save.confirmation'
-                            defaultMessage={
-                                'Are you sure you want to save the API Definition? This might affect the'
-                                + ' existing resources.'
-                            }
-                        />
+                        {api.initiatedFromGateway ? (
+                            <FormattedMessage
+                                id={'Apis.Details.APIDefinition.APIDefinition.api.definition.save'
+                                    + '.confirmation.gateway'}
+                                defaultMessage={
+                                    'Are you sure you want to save the API Definition? This will only'
+                                    + ' affect the developer portal content and will not change the'
+                                    + ' existing deployment.'
+                                }
+                            />
+                        ) : (
+                            <FormattedMessage
+                                id='Apis.Details.APIDefinition.APIDefinition.api.definition.save.confirmation'
+                                defaultMessage={
+                                    'Are you sure you want to save the API Definition? This might affect the'
+                                    + ' existing resources.'
+                                }
+                            />
+                        )}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -1076,6 +1109,7 @@ class APIDefinition extends React.Component {
                                 handleSave={this.handleSave}
                                 handleSaveAndDeploy={this.handleSaveAndDeploy}
                                 isUpdating={isUpdating}
+                                showOnlySaveButton={api.initiatedFromGateway}
                             />
                         </Grid>
                     </Grid>

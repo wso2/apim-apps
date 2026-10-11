@@ -32,6 +32,7 @@ const StyledTableCell = styled(TableCell)(() => ({
     paddingLeft: '0',
     paddingTop: '0',
     textAlign: 'left',
+    verticalAlign: 'top',
 }));
 
 const StyledScopeCell = styled(TableCell)(() => ({
@@ -40,8 +41,15 @@ const StyledScopeCell = styled(TableCell)(() => ({
     textAlign: 'left',
     borderBottom: 'none',
     overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    wordBreak: 'break-word',
+    whiteSpace: 'normal',
+}));
+
+const ScrollContainer = styled('div')(() => ({
+    maxHeight: '150px',
+    overflowY: 'scroll',
+    display: 'block',
+    width: '100%',
 }));
 
 /**
@@ -136,16 +144,23 @@ function CustomPadLock(props) {
                                                     defaultMessage='Scopes'
                                                 />
                                             </StyledTableCell>
-                                            <StyledTableCell style={{ maxWidth: 100, paddingRight: 0 }}>
+                                            <StyledTableCell style={{ maxWidth: 250, paddingRight: 0 }}>
                                                 {scopes.length > 0 && (
-                                                    scopes.map((scope, index) => (
-                                                    // eslint-disable-next-line react/no-array-index-key
-                                                        <TableRow key={index}>
-                                                            <StyledScopeCell style={{ maxWidth: 100 }}>
-                                                                {scope}
-                                                            </StyledScopeCell>
-                                                        </TableRow>
-                                                    ))
+                                                    <ScrollContainer
+                                                        style={scopes.length <= 5 ? { overflowY: 'visible', maxHeight: 'none' } : {}}
+                                                    >
+                                                        <Table>
+                                                            <TableBody>
+                                                                {scopes.map((scope) => (
+                                                                    <TableRow key={scope}>
+                                                                        <StyledScopeCell style={{ maxWidth: 240 }}>
+                                                                            {scope}
+                                                                        </StyledScopeCell>
+                                                                    </TableRow>
+                                                                ))}
+                                                            </TableBody>
+                                                        </Table>
+                                                    </ScrollContainer>
                                                 )}
                                             </StyledTableCell>
                                         </TableRow>

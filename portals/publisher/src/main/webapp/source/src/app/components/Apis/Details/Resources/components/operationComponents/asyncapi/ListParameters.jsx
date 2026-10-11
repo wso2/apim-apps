@@ -112,7 +112,7 @@ export default function ListParameters(props) {
                             return (
                                 <TableRow key={k}>
                                     <TableCell align='left'>{k}</TableCell>
-                                    <TableCell align='left'>{v.schema.type}</TableCell>
+                                    <TableCell align='left'>{v.schema?.type || v.type || 'string'}</TableCell>
                                     <TableCell align='left'>{v.description}</TableCell>
                                     <TableCell align='left'>
                                         <Tooltip title={(

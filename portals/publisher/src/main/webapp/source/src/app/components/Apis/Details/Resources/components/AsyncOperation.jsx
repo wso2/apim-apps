@@ -31,11 +31,14 @@ import Utils from 'AppData/Utils';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import DescriptionAndSummary from './operationComponents/asyncapi/DescriptionAndSummary';
 import OperationGovernance from './operationComponents/asyncapi/OperationGovernance';
+import ListAsyncV3Operations from './operationComponents/asyncapi/ListAsyncV3Operations';
 import Parameters from './operationComponents/asyncapi/Parameters';
 import PayloadProperties from './operationComponents/asyncapi/PayloadProperties';
 import Runtime from './operationComponents/asyncapi/Runtime';
@@ -73,6 +76,83 @@ const Root = styled('div')(({ theme }) => {
     };
 });
 
+const HeaderContent = ({ isAsyncV3, ...props }) => {
+    const {
+        verb, trimmedVerb, target, backgroundColor, 
+        isUsedInAPIProduct, disableDelete, markAsDelete, 
+        disableUpdate, toggleDelete, operation, namedOperations 
+    } = props;
+
+    const deleteButton = !(disableDelete || markAsDelete) && (
+        <Tooltip title={isUsedInAPIProduct ? 'Cannot delete' : 'Delete'}>
+            <div>
+                <IconButton
+                    disabled={Boolean(isUsedInAPIProduct) || disableUpdate ||
+                        isRestricted(['apim:api_publish', 'apim:api_create'])}
+                    onClick={toggleDelete}
+                    size='large'>
+                    <DeleteIcon fontSize='small' />
+                </IconButton>
+            </div>
+        </Tooltip>
+    );
+
+    const isSecure = operation['x-auth-type']?.toLowerCase() !== 'none';
+    const securityIcon = (
+        <Tooltip title={isSecure ? 'Security enabled' : 'No security'}>
+            <IconButton aria-label='Security'>
+                {isSecure ? <LockIcon fontSize='small' /> : <LockOpenIcon fontSize='small' />}
+            </IconButton>
+        </Tooltip>
+    );
+
+    if (isAsyncV3) {
+        return (
+            <Box display='flex' alignItems='center' justifyContent='space-between' width='100%'>
+                <Box display='flex' alignItems='center' gap={2} sx={{ flex: 4 }}>
+                    <Badge invisible='false' color='error' variant='dot'>
+                        <Button variant='outlined' size='small' className={classes.customButton}
+                            sx={{ borderColor: backgroundColor, color: backgroundColor }}>
+                            {verb.toUpperCase()}
+                        </Button>
+                    </Badge>
+                    <Typography display='inline' style={{ margin: '0px 30px' }} variant='h6'>{target}</Typography>
+                </Box>
+                <Box display='flex' alignItems='center' gap={1} sx={{ flex: 1, justifyContent: 'center' }}>
+                    <Typography variant='body2'>
+                        <FormattedMessage 
+                            id='Apis.Details.Resources.components.AsyncOperation.operations.count'
+                            defaultMessage='<b>Operations</b> ({count})'
+                            values={{ count: namedOperations.length, b: (c) => <strong>{c}</strong> }} />
+                    </Typography>
+                </Box>
+                <Box display='flex' alignItems='center' sx={{ flex: 1, justifyContent: 'flex-end' }}>
+                    {deleteButton}
+                    {securityIcon}
+                </Box>
+            </Box>
+        );
+    }
+
+    return (
+        <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
+            <Grid item md={11}>
+                <Badge invisible='false' color='error' variant='dot'>
+                    <Button variant='outlined' size='small' className={classes.customButton}
+                        sx={{ borderColor: backgroundColor, color: backgroundColor }}>
+                        {trimmedVerb.toUpperCase()}
+                    </Button>
+                </Badge>
+                <Typography display='inline' style={{ margin: '0px 30px' }} variant='h6'>{target}</Typography>
+            </Grid>
+            <Grid item md={1} justifyContent='flex-end' container>
+                {deleteButton}
+                {securityIcon}
+            </Grid>
+        </Grid>
+    );
+};
+
 /**
  *
  * Handle the operation UI
@@ -94,15 +174,30 @@ function AsyncOperation(props) {
         target,
         verb,
         sharedScopes,
-        componentValidator
+        componentValidator,
+        isAsyncV3,
     } = props;
 
-    const trimmedVerb = verb === 'publish' || verb === 'subscribe' ? verb.substr(0, 3) : verb;
+    const trimmedVerb = (!isAsyncV3 && (verb === 'publish' || verb === 'subscribe'))
+        ? verb.substr(0, 3)
+        : verb;
+
     const theme = useTheme();
-    const backgroundColor = theme.custom.resourceChipColors[trimmedVerb];
+    const backgroundColor = theme.custom.resourceChipColors[trimmedVerb] || theme.palette.primary.main;
 
     const [isExpanded, setIsExpanded] = useState(false);
-    const isUsedInAPIProduct = false;
+
+    // v3 only
+    const namedOperations = isAsyncV3
+        ? (operation[verb]?.['x-operations'] || [])
+        : [];
+
+    function handleDeleteNamedOperation(opName) {
+        operationsDispatcher({
+            action: 'deleteNamedOperation',
+            data: { target, verb, value: opName },
+        });
+    }
 
     /**
      *
@@ -156,68 +251,25 @@ function AsyncOperation(props) {
                     classes={{ content: classes.contentNoMargin }}
                     sx={highlight ? { backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1) } : { }}
                 >
-                    <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
-                        <Grid item md={11}>
-                            <Badge invisible='false' color='error' variant='dot'>
-                                <Button
-                                    disableFocusRipple
-                                    variant='outlined'
-                                    size='small'
-                                    className={classes.customButton}
-                                    sx={{ borderColor: backgroundColor, color: backgroundColor }}
-                                >
-                                    {trimmedVerb.toUpperCase()}
-                                </Button>
-                            </Badge>
-                            <Typography display='inline' style={{ margin: '0px 30px' }} variant='h6' gutterBottom>
-                                {target}
-                            </Typography>
-                        </Grid>
-                        {!(disableDelete || markAsDelete) && (
-                            <Grid item md={1} justifyContent='flex-end' container>
-                                <Tooltip
-                                    title={
-                                        isUsedInAPIProduct
-                                            ? (
-                                                <FormattedMessage
-                                                    id={'Apis.Details.Resources.components.Operation.cannot.delete'
-                                                    + '.when.used.in.api.products'}
-                                                    defaultMessage='Cannot delete operation when used in an API product'
-                                                />
-                                            )
-                                            : (
-                                                <FormattedMessage
-                                                    id='Apis.Details.Resources.components.Operation.Delete'
-                                                    defaultMessage='Delete'
-                                                />
-                                            )
-                                    }
-                                    aria-label={(
-                                        <FormattedMessage
-                                            id='Apis.Details.Resources.components.Operation.delete.operation'
-                                            defaultMessage='Delete operation'
-                                        />
-                                    )}
-                                >
-                                    <div>
-                                        <IconButton
-                                            disabled={Boolean(isUsedInAPIProduct)
-                                                || disableUpdate
-                                                || isRestricted(['apim:api_publish', 'apim:api_create'])}
-                                            onClick={toggleDelete}
-                                            aria-label='delete'
-                                            size='large'>
-                                            <DeleteIcon fontSize='small' />
-                                        </IconButton>
-                                    </div>
-                                </Tooltip>
-                            </Grid>
-                        )}
-                    </Grid>
+                    <HeaderContent 
+                        {...props} 
+                        trimmedVerb={trimmedVerb} 
+                        backgroundColor={backgroundColor} 
+                        toggleDelete={toggleDelete} 
+                        namedOperations={namedOperations}
+                    />
                 </AccordionSummary>
                 <Divider sx={{ backgroundColor }} />
                 <AccordionDetails>
                     <Grid spacing={2} container direction='row' justifyContent='flex-start' alignItems='flex-start'>
+                        {isAsyncV3 && (
+                            <ListAsyncV3Operations
+                                operations={namedOperations}
+                                onDeleteOperation={handleDeleteNamedOperation}
+                                disableDelete={disableDelete || disableUpdate}
+                                spec={spec}
+                            />
+                        )}
                         <DescriptionAndSummary
                             operation={operation}
                             operationsDispatcher={operationsDispatcher}
@@ -236,13 +288,15 @@ function AsyncOperation(props) {
                                 verb={verb}
                             />
                         )}
-                        <PayloadProperties
-                            operation={operation}
-                            operationsDispatcher={operationsDispatcher}
-                            disableUpdate={disableUpdate}
-                            target={target}
-                            verb={verb}
-                        />
+                        {!isAsyncV3 &&
+                            <PayloadProperties
+                                operation={operation}
+                                operationsDispatcher={operationsDispatcher}
+                                disableUpdate={disableUpdate}
+                                target={target}
+                                verb={verb}
+                            />
+                        }
                         {(api.gatewayVendor === 'wso2') && (
                             <>
                                 <OperationGovernance
@@ -255,6 +309,7 @@ function AsyncOperation(props) {
                                     verb={verb}
                                     sharedScopes={sharedScopes}
                                     componentValidator={componentValidator}
+                                    isAsyncV3={isAsyncV3}
                                 />
                                 {(api.type === 'WS' || api.type === 'WEBSUB') && (
                                     <Runtime
@@ -280,6 +335,7 @@ AsyncOperation.defaultProps = {
     disableDelete: false,
     onMarkAsDelete: () => {},
     markAsDelete: false,
+    isAsyncV3: false,
 };
 AsyncOperation.propTypes = {
     api: PropTypes.shape({ scopes: PropTypes.arrayOf(PropTypes.shape({})), resourcePolicies: PropTypes.shape({}) })
@@ -292,6 +348,7 @@ AsyncOperation.propTypes = {
     operation: PropTypes.shape({
         'x-wso2-new': PropTypes.bool,
         summary: PropTypes.string,
+        'x-auth-type': PropTypes.string,
     }).isRequired,
     target: PropTypes.string.isRequired,
     verb: PropTypes.string.isRequired,
@@ -300,6 +357,7 @@ AsyncOperation.propTypes = {
     sharedScopes: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
     highlight: PropTypes.bool,
     disableUpdate: PropTypes.bool,
+    isAsyncV3: PropTypes.bool,
 };
 
 export default React.memo(AsyncOperation);

@@ -21,6 +21,8 @@
 <%@page import="org.wso2.carbon.apimgt.impl.IDPConfiguration"%>
 <%@page import="org.wso2.carbon.apimgt.impl.utils.APIUtil"%>
 <%@page import="org.wso2.carbon.apimgt.ui.publisher.Util"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
 <%@include file="../constants.jsp" %>
 
@@ -61,7 +63,40 @@
     String serverUrl = "";
     String forwarded_for = request.getHeader((String) Util.readJsonObj(settings, "app.customUrl.forwardedHeader"));
     boolean customUrlEnabled = (boolean) Util.readJsonObj(settings, "app.customUrl.enabled");
-    if (customUrlEnabled && !forwarded_for.isEmpty()) {
+    // Host validation against app.customUrl.allowedHosts
+    boolean isHostValid = true;
+    if (customUrlEnabled && forwarded_for != null && !forwarded_for.isEmpty()) {
+        // Check if allowedHosts is configured
+        List<String> allowedHosts = (List<String>) Util.readJsonObj(settings, "app.customUrl.allowedHosts");
+
+        if (allowedHosts != null && !allowedHosts.isEmpty()) {
+            // Extract hostname from forwarded_for (remove port if present)
+            String forwardedHost = forwarded_for;
+            if (forwardedHost.contains(":")) {
+                forwardedHost = forwardedHost.substring(0, forwardedHost.indexOf(":"));
+            }
+
+            isHostValid = false;
+            for (String allowedHost : allowedHosts) {
+                if (allowedHost != null && allowedHost.equalsIgnoreCase(forwardedHost)) {
+                    isHostValid = true;
+                    break;
+                }
+            }
+
+            if (!isHostValid) {
+                log.warn("Blocked request with untrusted host header: " + forwarded_for.replaceAll("[\r\n]", ""));
+                response.setStatus(400);
+                response.setContentType("text/html");
+                out.println("<html><head></head><body><h2>Error 400 : Bad Request</h2><br/><p>"+
+                    "<h4>Host validation failed for the request</h4></body></html>");
+                return;
+            }
+        }
+    }
+
+    // Only use custom URL if host validation passes
+    if (customUrlEnabled && forwarded_for != null && !forwarded_for.isEmpty() && isHostValid) {
         serverUrl = "https://" + forwarded_for;
     } else {
         serverUrl = APIUtil.getServerURL();

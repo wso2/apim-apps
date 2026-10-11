@@ -41,7 +41,7 @@ const StyledFormControl = styled(FormControl)(({ theme }) => ({
  */
 export default function GatewayConfiguration(props) {
     const {
-        gatewayConfigurations, additionalProperties, setAdditionalProperties, gatewayId,
+        gatewayConfigurations, additionalProperties = {}, setAdditionalProperties = () => {}, gatewayId,
         hasErrors, validating,
     } = props;
 
@@ -341,6 +341,8 @@ export default function GatewayConfiguration(props) {
 }
 GatewayConfiguration.defaultProps = {
     gatewayConfigurations: [],
+    additionalProperties: {},
+    setAdditionalProperties: () => {},
     required: false,
     helperText: <FormattedMessage
         id='Gateway.Configuration.Helper.text'

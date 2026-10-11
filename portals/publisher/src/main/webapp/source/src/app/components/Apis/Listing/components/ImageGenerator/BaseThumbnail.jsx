@@ -167,7 +167,7 @@ const BaseThumbnail = (props) => {
         } else {
             setImageLoaded(true);
         }
-    }, [imageUpdate]);
+    }, [id, imageUpdate]);
 
     useEffect(() => {
         setThumbnail(thumbnailPop);

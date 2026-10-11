@@ -90,7 +90,7 @@ const Root = styled('div')((
     },
 
     [`& .${classes.displayURLLink}`]: {
-        paddingLeft: theme.spacing(2),
+        paddingInlineStart: theme.spacing(2),
     },
 
     [`& .${classes.docSummary}`]: {
@@ -100,7 +100,7 @@ const Root = styled('div')((
 
     [`& .${classes.fileAvailability}`]: {
         marginTop: theme.spacing(1),
-        marginLeft: theme.spacing(0.8),
+        marginInlineStart: theme.spacing(0.8),
     },
 }));
 
@@ -261,7 +261,7 @@ function View(props) {
             )}
             {doc.sourceType === 'INLINE' && <HTMLRender html={code} />}
             {doc.sourceType === 'URL' && (
-                <a className={classes.displayURL} href={doc.sourceUrl} target='_blank' rel='noreferrer'>
+                <a className={classes.displayURL} href={doc.sourceUrl} target='_blank' rel='noopener noreferrer'>
                     {doc.sourceUrl}
                     <Icon className={classes.displayURLLink}>open_in_new</Icon>
                 </a>

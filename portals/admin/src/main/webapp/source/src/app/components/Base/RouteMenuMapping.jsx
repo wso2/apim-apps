@@ -24,6 +24,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
 import PhonelinkSetupIcon from '@mui/icons-material/PhonelinkSetup';
 import HomeIcon from '@mui/icons-material/Home';
+import DescriptionIcon from '@mui/icons-material/Description';
 import Dashboard from 'AppComponents/AdminPages/Dashboard/Dashboard';
 import ApplicationThrottlingPolicies from 'AppComponents/Throttling/Application/List';
 import SubscriptionThrottlingPolicies from 'AppComponents/Throttling/Subscription/index';
@@ -36,6 +37,7 @@ import CustomThrottlingPolicies from 'AppComponents/Throttling/Custom';
 import TenantTheme from 'AppComponents/TenantTheme/UploadTheme';
 import KeyManagers from 'AppComponents/KeyManagers';
 import AiServiceProviders from 'AppComponents/AiServiceProviders';
+import ListApiKeys from 'AppComponents/APIKeys/ListApiKeys';
 import ListRoles from 'AppComponents//RolePermissions/ListRoles.jsx';
 import TenantConfSave from 'AppComponents/AdvancedSettings/TenantConfSave';
 import Policies from 'AppComponents/Governance/Policies';
@@ -67,10 +69,12 @@ import AssistantIcon from '@mui/icons-material/Assistant';
 import TouchAppIcon from '@mui/icons-material/TouchApp';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import ListApis from '../APISettings/ListApis';
 import UsageReport from '../APISettings/UsageReport';
 import ListLabels from '../Labels/ListLabels';
 import ComplianceDashboard from '../Governance/ComplianceDashboard';
+import ExportConsumptionData from '../ConsumptionData/ExportConsumptionData';
 
 const RouteMenuMapping = (intl) => [
     {
@@ -223,6 +227,14 @@ const RouteMenuMapping = (intl) => [
                 }),
                 path: '/settings/gateways/(.*?)$',
             },
+            {
+                id: 'API Platform Gateway',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.gateways.items.APIPlatformGateway',
+                    defaultMessage: 'API Platform Gateway',
+                }),
+                path: '/settings/environments/platform-gateways/(.*?)$',
+            },
         ],
     },
     {
@@ -300,6 +312,16 @@ const RouteMenuMapping = (intl) => [
                 path: '/settings/ai-service-providers/(.*?)$',
             },
         ],
+    },
+    {
+        id: 'API Keys',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.apiKeys',
+            defaultMessage: 'API Keys',
+        }),
+        path: '/settings/api-keys',
+        component: ListApiKeys,
+        icon: <VpnKeyIcon />,
     },
     {
         id: 'Labels',
@@ -477,10 +499,10 @@ const RouteMenuMapping = (intl) => [
         }),
         children: [
             {
-                id: 'Change Application Owner',
+                id: 'Change Application Settings',
                 displayText: intl.formatMessage({
                     id: 'Base.RouteMenuMapping.applications',
-                    defaultMessage: 'Change Application Owner',
+                    defaultMessage: 'Change Application Settings',
                 }),
                 path: '/settings/applications',
                 component: ListApplications,
@@ -535,6 +557,26 @@ const RouteMenuMapping = (intl) => [
                 path: '/settings/usage-report',
                 component: UsageReport,
                 icon: <AssignmentIcon />,
+            },
+        ],
+    },
+    {
+        id: 'Reports',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.reports',
+            defaultMessage: 'Reports',
+        }),
+        icon: <DescriptionIcon />,
+        children: [
+            {
+                id: 'Export Consumption Data',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.export.consumption.data',
+                    defaultMessage: 'Consumption Data',
+                }),
+                path: '/settings/consumption-data',
+                component: ExportConsumptionData,
+                icon: <BarChartIcon />,
             },
         ],
     },

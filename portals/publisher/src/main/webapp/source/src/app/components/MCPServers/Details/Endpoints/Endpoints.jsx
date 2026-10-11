@@ -282,6 +282,7 @@ const Endpoints = ({
                                 isDeleting={isDeleting}
                                 onDelete={() => handleDelete('PRODUCTION', endpoint)}
                                 endpointType='PRODUCTION'
+                                onDefinitionUpdate={fetchEndpoints}
                             />
                         ))
                     ) : (
@@ -332,6 +333,7 @@ const Endpoints = ({
                                 isDeleting={isDeleting}
                                 onDelete={() => handleDelete('SANDBOX', endpoint)}
                                 endpointType='SANDBOX'
+                                onDefinitionUpdate={fetchEndpoints}
                             />
                         ))
                     ) : (

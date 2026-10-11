@@ -90,6 +90,7 @@
                     .uri(URI.create(tokenEndpoint))
                     .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(tokenRequestData)))
                     .header("Authorization", "Basic " + base64encoded)
+                    .header("Content-Type", "application/json")
                     .build();
             HttpResponse<String> result = client.send(post, HttpResponse.BodyHandlers.ofString());
             if (result.statusCode() == 200) {

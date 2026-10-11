@@ -26,11 +26,14 @@ import Paper from '@mui/material/Paper';
 import { Link, useHistory } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import PolicyIcon from '@mui/icons-material/SyncAlt';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Api from 'AppData/api';
+import CONSTS from 'AppData/Constants';
 import MCPServer from 'AppData/MCPServer';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import { useAppContext, usePublisherSettings } from 'AppComponents/Shared/AppContext';
@@ -648,6 +651,69 @@ export default function RuntimeConfiguration() {
 
     if (isLoading || loadingEndpointConfig) {
         return <Progress per={80} message='Loading app settings ...' />;
+    }
+
+    if (api.gatewayType === CONSTS.API_PLATFORM_GATEWAY) {
+        const policiesPath = `${getBasePath(api.apiType)}${api.id}/policies`;
+        return (
+            <Root>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minHeight: 400,
+                        px: 2,
+                    }}
+                >
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 5,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            textAlign: 'center',
+                            gap: 2,
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            borderRadius: 2,
+                            maxWidth: 520,
+                            width: '100%',
+                        }}
+                    >
+                        <InfoOutlinedIcon color='info' sx={{ fontSize: 48 }} />
+                        <Typography variant='h6' sx={{ fontWeight: 600 }}>
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.RuntimeConfiguration.platform.gateway.title'
+                                defaultMessage='Runtime is managed through Policies'
+                            />
+                        </Typography>
+                        <Typography variant='body1' color='text.secondary'>
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.RuntimeConfiguration.platform.gateway.description'
+                                defaultMessage='For APIs deployed on the API Platform Gateway, runtime configurations
+                                    such as authentication and security are applied via policies.
+                                    Head over to the Policies section to view and manage them.'
+                            />
+                        </Typography>
+                        <Button
+                            variant='contained'
+                            startIcon={<PolicyIcon />}
+                            component={Link}
+                            to={policiesPath}
+                            sx={{ mt: 1 }}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.RuntimeConfiguration.platform.gateway.go.policies'
+                                defaultMessage='Go to Policies'
+                            />
+                        </Button>
+                    </Paper>
+                </Box>
+            </Root>
+        );
     }
 
     return (

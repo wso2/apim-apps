@@ -38,6 +38,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
 import Configurations from 'Config';
 import AssignmentLateIcon from '@mui/icons-material/AssignmentLate';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 import RuleViolationSummary from './RuleViolationSummary';
 import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
 import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
@@ -73,6 +74,8 @@ function ComplianceHelp() {
 export default function Compliance(props) {
     const intl = useIntl();
     const theme = useTheme();
+    const { settings } = useAppContext();
+    const severityFilteringEnabled = Boolean(settings && settings.perPolicySeverityFilteringEnabled);
     const { match: { params: { id: artifactId } } } = props;
     const [statusCounts, setStatusCounts] = useState({ passed: 0, failed: 0, unapplied: 0 });
     const [artifactName, setArtifactName] = useState('');
@@ -92,6 +95,7 @@ export default function Compliance(props) {
         info: 0,
         passed: 0,
     });
+    const hasArtifactOwner = Boolean(artifactOwner?.trim());
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -238,13 +242,15 @@ export default function Compliance(props) {
                             defaultMessage='Back to Compliance Dashboard'
                         />
                     </RouterLink>
-                    <Typography variant='body2'>
-                        <FormattedMessage
-                            id='Governance.ComplianceDashboard.Compliance.api.owner'
-                            defaultMessage='API Owner: {owner}'
-                            values={{ owner: artifactOwner }}
-                        />
-                    </Typography>
+                    {hasArtifactOwner && (
+                        <Typography variant='body2'>
+                            <FormattedMessage
+                                id='Governance.ComplianceDashboard.Compliance.api.owner'
+                                defaultMessage='API Owner: {owner}'
+                                values={{ owner: artifactOwner }}
+                            />
+                        </Typography>
+                    )}
                 </Box>
                 <Card
                     elevation={3}
@@ -323,13 +329,15 @@ export default function Compliance(props) {
                             defaultMessage='Back to Compliance Dashboard'
                         />
                     </RouterLink>
-                    <Typography variant='body2'>
-                        <FormattedMessage
-                            id='Governance.ComplianceDashboard.Compliance.api.owner'
-                            defaultMessage='API Owner: {owner}'
-                            values={{ owner: artifactOwner }}
-                        />
-                    </Typography>
+                    {hasArtifactOwner && (
+                        <Typography variant='body2'>
+                            <FormattedMessage
+                                id='Governance.ComplianceDashboard.Compliance.api.owner'
+                                defaultMessage='API Owner: {owner}'
+                                values={{ owner: artifactOwner }}
+                            />
+                        </Typography>
+                    )}
                 </Box>
                 <Card
                     elevation={3}
@@ -406,13 +414,15 @@ export default function Compliance(props) {
                         defaultMessage='Back to Compliance Dashboard'
                     />
                 </RouterLink>
-                <Typography variant='body2'>
-                    <FormattedMessage
-                        id='Governance.ComplianceDashboard.Compliance.api.owner'
-                        defaultMessage='API Owner: {owner}'
-                        values={{ owner: artifactOwner }}
-                    />
-                </Typography>
+                {hasArtifactOwner && (
+                    <Typography variant='body2'>
+                        <FormattedMessage
+                            id='Governance.ComplianceDashboard.Compliance.api.owner'
+                            defaultMessage='API Owner: {owner}'
+                            values={{ owner: artifactOwner }}
+                        />
+                    </Typography>
+                )}
             </Box>
 
             <Grid container spacing={4}>
@@ -476,54 +486,58 @@ export default function Compliance(props) {
                                 </CardContent>
                             </Card>
                         </Grid>
-                        <Grid item xs={12} md={6} lg={4}>
-                            <Card elevation={3}>
-                                <CardContent>
-                                    <Typography
-                                        variant='body1'
-                                        sx={{ fontWeight: 'bold', mb: 2 }}
-                                    >
-                                        <FormattedMessage
-                                            id='Governance.ComplianceDashboard.Compliance.ruleset.adherence'
-                                            defaultMessage='Ruleset Adherence'
+                        {/* Ruleset Adherence chart - hidden when per policy severity filtering is on,
+                            since a ruleset's raw status is no longer the accurate picture in that mode */}
+                        {!severityFilteringEnabled && (
+                            <Grid item xs={12} md={6} lg={4}>
+                                <Card elevation={3}>
+                                    <CardContent>
+                                        <Typography
+                                            variant='body1'
+                                            sx={{ fontWeight: 'bold', mb: 2 }}
+                                        >
+                                            <FormattedMessage
+                                                id='Governance.ComplianceDashboard.Compliance.ruleset.adherence'
+                                                defaultMessage='Ruleset Adherence'
+                                            />
+                                        </Typography>
+                                        <DonutChart
+                                            colors={[
+                                                theme.palette.charts.success,
+                                                theme.palette.charts.error,
+                                                'grey',
+                                            ]}
+                                            data={[
+                                                {
+                                                    id: 0,
+                                                    value: statusCounts.passed,
+                                                    label: `${intl.formatMessage({
+                                                        id: 'Governance.ComplianceDashboard.Compliance.passed',
+                                                        defaultMessage: 'Passed',
+                                                    })} (${statusCounts.passed})`,
+                                                },
+                                                {
+                                                    id: 1,
+                                                    value: statusCounts.failed,
+                                                    label: `${intl.formatMessage({
+                                                        id: 'Governance.ComplianceDashboard.Compliance.failed',
+                                                        defaultMessage: 'Failed',
+                                                    })} (${statusCounts.failed})`,
+                                                },
+                                                {
+                                                    id: 2,
+                                                    value: statusCounts.unapplied,
+                                                    label: `${intl.formatMessage({
+                                                        id: 'Governance.ComplianceDashboard.Compliance.unapplied',
+                                                        defaultMessage: 'Unapplied',
+                                                    })} (${statusCounts.unapplied})`,
+                                                },
+                                            ]}
                                         />
-                                    </Typography>
-                                    <DonutChart
-                                        colors={[
-                                            theme.palette.charts.success,
-                                            theme.palette.charts.error,
-                                            'grey',
-                                        ]}
-                                        data={[
-                                            {
-                                                id: 0,
-                                                value: statusCounts.passed,
-                                                label: `${intl.formatMessage({
-                                                    id: 'Governance.ComplianceDashboard.Compliance.passed',
-                                                    defaultMessage: 'Passed',
-                                                })} (${statusCounts.passed})`,
-                                            },
-                                            {
-                                                id: 1,
-                                                value: statusCounts.failed,
-                                                label: `${intl.formatMessage({
-                                                    id: 'Governance.ComplianceDashboard.Compliance.failed',
-                                                    defaultMessage: 'Failed',
-                                                })} (${statusCounts.failed})`,
-                                            },
-                                            {
-                                                id: 2,
-                                                value: statusCounts.unapplied,
-                                                label: `${intl.formatMessage({
-                                                    id: 'Governance.ComplianceDashboard.Compliance.unapplied',
-                                                    defaultMessage: 'Unapplied',
-                                                })} (${statusCounts.unapplied})`,
-                                            },
-                                        ]}
-                                    />
-                                </CardContent>
-                            </Card>
-                        </Grid>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        )}
                         <Grid item xs={12} md={6} lg={4}>
                             <Card elevation={3}>
                                 <CardContent>
@@ -614,33 +628,36 @@ export default function Compliance(props) {
 
                 {!allPoliciesPending && (
                     <>
-                        {/* Ruleset Adherence Summary section */}
-                        <Grid item xs={12} md={12}>
-                            <Card
-                                elevation={3}
-                                sx={{
-                                    '& .MuiTableCell-footer': {
-                                        border: 0,
-                                    },
-                                }}
-                            >
-                                <CardContent>
-                                    <Typography
-                                        variant='body1'
-                                        sx={{ fontWeight: 'bold', mb: 2 }}
-                                    >
-                                        <FormattedMessage
-                                            id='Governance.ComplianceDashboard.Compliance.ruleset.adherence.summary'
-                                            defaultMessage='Ruleset Adherence Summary'
+                        {/* Ruleset Adherence Summary section - hidden when per policy severity filtering is on,
+                            since a ruleset's raw status is no longer the accurate picture in that mode */}
+                        {!severityFilteringEnabled && (
+                            <Grid item xs={12} md={12}>
+                                <Card
+                                    elevation={3}
+                                    sx={{
+                                        '& .MuiTableCell-footer': {
+                                            border: 0,
+                                        },
+                                    }}
+                                >
+                                    <CardContent>
+                                        <Typography
+                                            variant='body1'
+                                            sx={{ fontWeight: 'bold', mb: 2 }}
+                                        >
+                                            <FormattedMessage
+                                                id='Governance.ComplianceDashboard.Compliance.ruleset.adherence.summary'
+                                                defaultMessage='Ruleset Adherence Summary'
+                                            />
+                                        </Typography>
+                                        <RulesetAdherenceSummaryTable
+                                            artifactId={artifactId}
+                                            complianceData={complianceData}
                                         />
-                                    </Typography>
-                                    <RulesetAdherenceSummaryTable
-                                        artifactId={artifactId}
-                                        complianceData={complianceData}
-                                    />
-                                </CardContent>
-                            </Card>
-                        </Grid>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        )}
 
                         {/* Rule Violation Summary section */}
                         <Grid item xs={12}>

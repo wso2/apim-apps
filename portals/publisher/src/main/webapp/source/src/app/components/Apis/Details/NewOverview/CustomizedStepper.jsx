@@ -303,10 +303,19 @@ export default function CustomizedStepper() {
                         .filter(property => property.Required)
                         .map(property => property.Name);
                     if (requiredPropertyNames.length > 0) {
-                        setIsMandatoryPropertiesAvailable(requiredPropertyNames.every(propertyName => {
-                            const property = api.additionalProperties.find(prop => prop.name === propertyName);
-                            return property && property.value !== '';
-                        }));
+                        if (Array.isArray(api.additionalProperties))  {
+                            setIsMandatoryPropertiesAvailable(requiredPropertyNames.every(propertyName => {
+                                const property = api.additionalProperties.find(
+                                    prop => prop.name === propertyName);
+                                return !!(property && property.value !== '');
+                            }));
+                        } else {
+                            const addPropsMap = api.additionalPropertiesMap || {};
+                            setIsMandatoryPropertiesAvailable(requiredPropertyNames.every(propertyName => {
+                                const property = addPropsMap[propertyName];
+                                return !!(property && property.value !== '');
+                            }));
+                        }
                     } else {
                         setIsMandatoryPropertiesAvailable(true);
                     }
@@ -392,7 +401,7 @@ export default function CustomizedStepper() {
             })
             .finally(() => setUpdating(false))
             .catch((errorResponse) => {
-                if (errorResponse.response?.body?.code === 903300 && !isMCPServer) {
+                if (errorResponse.response?.body?.code === 903300) {
                     Alert.error(
                         <Box sx={{ width: '100%' }}>
                             <Typography>
@@ -409,7 +418,7 @@ export default function CustomizedStepper() {
                             }}>
                                 <Link
                                     component={RouterLink}
-                                    to={`/apis/${api.id}/lifecycle`}
+                                    to={getBasePath(api.apiType) + api.id + '/lifecycle'}
                                     sx={{
                                         color: 'inherit',
                                         fontWeight: 600,

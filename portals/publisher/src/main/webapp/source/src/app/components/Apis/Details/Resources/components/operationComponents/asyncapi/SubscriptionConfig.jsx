@@ -77,13 +77,12 @@ function SubscriptionConfig(props) {
      *
      */
     function generateSecret() {
-        return 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/[x]/g, (c) => {
-            // eslint-disable-next-line no-bitwise
-            const r = Math.random() * 16 | 0;
-            // eslint-disable-next-line no-bitwise, no-mixed-operators
-            const v = c === 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });
+        // Generate 32 bytes (256 bits)
+        const array = new Uint8Array(32);
+        crypto.getRandomValues(array);
+
+        // Convert to hex
+        return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
     }
 
     /**

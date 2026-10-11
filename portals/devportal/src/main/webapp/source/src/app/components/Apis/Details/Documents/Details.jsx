@@ -44,13 +44,13 @@ const Root = styled('div')((
     [`& .${classes.fullView}`]: {
         cursor: 'pointer',
         position: 'absolute',
-        right: 5,
+        insetInlineEnd: 5,
         top: 5,
     },
 
     [`& .${classes.paper}`]: {
         padding: theme.spacing(2),
-        paddingLeft: theme.spacing(4),
+        paddingInlineStart: theme.spacing(4),
         minHeight: 400,
         position: 'relative',
     },
@@ -108,7 +108,7 @@ export default function Details(props) {
                     </IconButton>
                     {selectedDoc.name}
                 </Box>
-                <Box sx={classes.viewWrapper} paddingLeft={(theme) => (theme.spacing(3))}>
+                <Box className={classes.viewWrapper} sx={{ paddingInlineStart: (theme) => theme.spacing(3) }}>
                     <View doc={selectedDoc} apiId={apiId} fullScreen={open} />
                 </Box>
             </Dialog>

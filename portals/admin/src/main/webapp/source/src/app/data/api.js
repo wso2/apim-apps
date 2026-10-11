@@ -518,6 +518,22 @@ class API extends Resource {
         });
     }
 
+    /**
+     * Update application
+     */
+    updateApplicationSettings(id, body) {
+        return this.client.then((client) => {
+            const payload = {
+                applicationId: id,
+            };
+            return client.apis['Application'].updateApplicationSettings(
+                payload,
+                { requestBody: body },
+                this._requestMetaData(),
+            );
+        });
+    }
+
      /**
      * Update an application's owner
      */
@@ -1183,6 +1199,78 @@ class API extends Resource {
     }
 
     /**
+     * Get registered platform gateways.
+     */
+    getPlatformGatewayList() {
+        return this.client.then((client) => {
+            return client.apis['Platform Gateways'].getPlatformGateways(
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Register a platform gateway.
+     */
+    createPlatformGateway(body) {
+        return this.client.then((client) => {
+            const payload = {
+                'Content-Type': 'application/json',
+            };
+            return client.apis['Platform Gateways'].createPlatformGateway(
+                payload,
+                { requestBody: body },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update a platform gateway by ID.
+     * @param {string} gatewayId - The ID of the gateway to update.
+     * @param {object} body - Updated gateway payload.
+     */
+    updatePlatformGateway(gatewayId, body) {
+        return this.client.then((client) => {
+            const payload = {
+                gatewayId,
+                'Content-Type': 'application/json',
+            };
+            return client.apis['Platform Gateways'].updatePlatformGateway(
+                payload,
+                { requestBody: body },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete a platform gateway by ID.
+     * @param {string} gatewayId - The ID of the gateway to delete.
+     */
+    deletePlatformGateway(gatewayId) {
+        return this.client.then((client) => {
+            return client.apis['Platform Gateways'].deletePlatformGateway(
+                { gatewayId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Regenerate a platform gateway registration token.
+     * @param {string} gatewayId - The ID of the gateway.
+     */
+    regeneratePlatformGatewayToken(gatewayId) {
+        return this.client.then((client) => {
+            return client.apis['Platform Gateways'].regeneratePlatformGatewayToken(
+                { gatewayId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * Get AI Service Provider Configuration by id
      * @param aiServiceProviderId AI Service Provider id
      * @returns {*}
@@ -1351,6 +1439,53 @@ class API extends Resource {
     getEnvironmentGateways(environmentId) {
         return this.client.then((client) => {
             return client.apis['Environments'].get_environments__environmentId__gateways({ environmentId }, this._requestMetaData(),);
+        });
+    }
+
+    /**
+     * Get all API keys
+     * @returns {promise} Promise resolving to the API keys
+     */
+    getAllAPIKeys() {
+        const promiseGetAllKeys = this.client.then((client) => {
+            return client.apis.APIKeys.getAllAPIKeys(this._requestMetaData());
+        });
+        return promiseGetAllKeys;
+    }
+
+    /**
+     * Revoke a given API key
+     * @param keyUUID UUID of the key to be revoked
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    revokeAPIKeyFromAdmin(keyUUID) {
+        if (!keyUUID) {
+            return Promise.reject(new Error('keyUUID is required'));
+        }
+        const promiseRevokeKeys = this.client.then((client) => {
+            return client.apis.APIKeys.revokeAPIKeyFromAdmin(
+                { 'Content-Type': 'application/json' },
+                { requestBody: { keyUUID } },
+                this._requestMetaData(),
+            );
+        });
+        return promiseRevokeKeys;
+    }
+
+    /**
+     * Export consumption data for a given date range as a zip file.
+     * Calls GET /export-consumption?fromDate=...&toDate=... on the Admin REST API.
+     *
+     * @param {string} fromDate - Start date in YYYY-MM-DD format.
+     * @param {string} toDate   - End date in YYYY-MM-DD format.
+     * @returns {Promise} Raw swagger-client response; response.data is a Blob of the zip bytes.
+     */
+    exportConsumptionData(fromDate, toDate) {
+        return this.client.then((client) => {
+            return client.apis['Consumption'].exportConsumptionData(
+                { fromDate: fromDate, toDate: toDate },
+                this._requestMetaData({ 'accept': 'application/zip' }),
+            );
         });
     }
 }

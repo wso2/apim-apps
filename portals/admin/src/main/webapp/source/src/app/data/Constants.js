@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/** Carbon APIConstants.WSO2_API_PLATFORM_GATEWAY wire value. */
+const API_PLATFORM_GATEWAY = 'APIPlatform';
+
 const CONSTS = {
     API: 'API',
     APIProduct: 'APIProduct',
@@ -25,43 +28,77 @@ const CONSTS = {
         NO_TOKEN_FOUND: '901401: No partial token found!',
     },
     TENANT_STATE_ACTIVE: 'ACTIVE',
-    DEFAULT_MIN_SCOPES_TO_LOGIN: ['apim:api_workflow_view', 'apim:api_workflow_approve', 'apim:tenantInfo',
-        'apim:admin_settings', 'apim:tier_view', 'apim:policies_import_export', 'apim:tier_manage', 'apim:bl_manage',
+    DEFAULT_MIN_SCOPES_TO_LOGIN: [
+        'apim:api_workflow_view',
+        'apim:api_workflow_approve',
+        'apim:tenantInfo',
+        'apim:admin_settings',
+        'apim:tier_view',
+        'apim:policies_import_export',
+        'apim:tier_manage',
+        'apim:bl_manage',
     ],
     Roles: {
-        WORKFLOW_MANAGER: ['apim:api_workflow_view', 'apim:api_workflow_approve', 'apim:tenantInfo', 'openid',
+        WORKFLOW_MANAGER: [
+            'apim:api_workflow_view',
+            'apim:api_workflow_approve',
+            'apim:tenantInfo',
+            'openid',
             'apim:admin_settings',
         ],
-        POLICY_MANAGER: ['apim:admin_tier_view', 'apim:admin_tier_manage', 'apim:tenantInfo',
-            'apim:bl_view', 'apim:bl_manage', 'openid', 'apim:admin_settings',
+        POLICY_MANAGER: [
+            'apim:admin_tier_view',
+            'apim:admin_tier_manage',
+            'apim:tenantInfo',
+            'apim:bl_view',
+            'apim:bl_manage',
+            'openid',
+            'apim:admin_settings',
         ],
         CATEGORY_MANAGER: ['apim:api_category', 'openid', 'apim:tenantInfo', 'apim:admin_settings'],
         KEY_MANAGER: ['apim:keymanagers_manage', 'openid', 'apim:tenantInfo', 'apim:admin_settings'],
         GATEWAY_MANAGER: ['apim:environment_manage', 'openid', 'apim:admin_settings', 'apim:environment_read'],
-        GOVERNANCE_MANAGER: ['apim:gov_policy_read', 'apim:gov_policy_manage', 'apim:gov_result_read',
-            'apim:gov_rule_read', 'apim:gov_rule_manage'],
-        SETTINGS_MANAGER: ['apim:app_owner_change', 'apim:admin_application_view',
-            'apim:scope_manage', 'openid', 'apim:admin_settings', 'apim:tenantInfo', 'apim:api_provider_change',
+        GOVERNANCE_MANAGER: [
+            'apim:gov_policy_read',
+            'apim:gov_policy_manage',
+            'apim:gov_result_read',
+            'apim:gov_rule_read',
+            'apim:gov_rule_manage',
         ],
-        ORGANIZATION_MANAGER: ['apim:organization_manage', 'apim:organization_read', 'openid',
-            'apim:tenantInfo', 'apim:admin_settings'],
+        SETTINGS_MANAGER: [
+            'apim:app_owner_change',
+            'apim:admin_application_view',
+            'apim:scope_manage',
+            'openid',
+            'apim:admin_settings',
+            'apim:tenantInfo',
+            'apim:api_provider_change',
+        ],
+        ORGANIZATION_MANAGER: [
+            'apim:organization_manage',
+            'apim:organization_read',
+            'openid',
+            'apim:tenantInfo',
+            'apim:admin_settings',
+        ],
     },
     DEFAULT_SUBSCRIPTIONLESS_PLAN: 'DefaultSubscriptionless',
     DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN: 'AsyncDefaultSubscriptionless',
     GOVERNABLE_STATES: [
-        { value: 'API_CREATE', label: 'API Create' },
-        { value: 'API_UPDATE', label: 'API Update' },
-        { value: 'API_DEPLOY', label: 'API Deploy' },
-        { value: 'API_PUBLISH', label: 'API Publish' },
+        { value: 'API_CREATE', label: 'Create' },
+        { value: 'API_UPDATE', label: 'Update' },
+        { value: 'API_DEPLOY', label: 'Deploy' },
+        { value: 'API_PUBLISH', label: 'Publish' },
     ],
     RULESET_TYPES: [
-        { value: 'API_DEFINITION', label: 'API Definition' },
-        { value: 'API_METADATA', label: 'API Metadata' },
+        { value: 'API_DEFINITION', label: 'Definition' },
+        { value: 'API_METADATA', label: 'Metadata' },
         { value: 'API_DOCUMENTATION', label: 'Documentation' },
     ],
     ARTIFACT_TYPES: [
         { value: 'REST_API', label: 'REST API' },
         { value: 'ASYNC_API', label: 'Async API' },
+        { value: 'MCP', label: 'MCP' },
     ],
     SEVERITY_LEVELS: [
         { value: 'ERROR', label: 'Error' },
@@ -88,6 +125,12 @@ const CONSTS = {
     GOVERNANCE_ACTIONS: {
         BLOCK: 'BLOCK',
         NOTIFY: 'NOTIFY',
+    },
+    API_PLATFORM_GATEWAY,
+    GATEWAY_TYPE: {
+        regular: 'Regular',
+        apk: 'APK',
+        apiPlatform: API_PLATFORM_GATEWAY,
     },
 };
 

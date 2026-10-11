@@ -30,6 +30,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
+import ApiOperationContext from './ApiOperationContext';
 
 interface DeletePolicyProps {
     policyId: string;
@@ -48,8 +49,11 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
     fetchPolicies,
 }) => {
     const { api } = useContext<any>(ApiContext);
+    const { isPolicyAttachedToAnyFlow, removePolicyFromAllFlows } =
+        useContext<any>(ApiOperationContext);
     const [open, setOpen] = useState(false);
     const setOpenLocal = setOpen; // Need to copy this to access inside the promise.then
+    const isUsedInFlow = isPolicyAttachedToAnyFlow(policyId);
     const toggleOpen = () => {
         setOpen(!open);
     };
@@ -63,6 +67,7 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
             .then(() => {
                 Alert.info(`${policyName} policy deleted successfully!`);
                 setOpenLocal(!open);
+                removePolicyFromAllFlows(policyId);
                 fetchPolicies();
             })
             .catch((error) => {
@@ -105,6 +110,16 @@ const DeletePolicy: FC<DeletePolicyProps> = ({
                 />
             </DialogTitle>
             <DialogContent>
+                {isUsedInFlow && (
+                    <DialogContentText>
+                        <FormattedMessage
+                            id='Apis.Details.Policies.DeletePolicy.delete.confirm.usedInFlow'
+                            defaultMessage={'{policy} is currently attached to one or more flows. '
+                                + 'Deleting it will also remove it from those flows.'}
+                            values={{ policy: policyName }}
+                        />
+                    </DialogContentText>
+                )}
                 <DialogContentText>
                     <FormattedMessage
                         id='Apis.Details.Policies.DeletePolicy.delete.confirm.content'

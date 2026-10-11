@@ -32,15 +32,17 @@ class UsersAndRoles {
 
         // search created username 
         UsersManagementPage.getEnterUsernameTextBox().clear().type(name)
-        UsersManagementPage.getSearchUsershButton().click
+        UsersManagementPage.getSearchUsershButton().click()
         UsersManagementPage.getNameColumnOfFirstRow().contains(name)
         UsersManagementPage.getAssignRolesButtonOfUser(name).click()
 
         // Search roles and update
         roles.forEach(role => {
-            EditUserRolesPage.getEnterRoleNamePattern().clear().type(role)
+            // Wait for the role assignment page to be fully loaded
+            EditUserRolesPage.getEnterRoleNamePattern().should('be.visible').clear().type(role)
             EditUserRolesPage.getSearchRolesButton().click()
-            EditUserRolesPage.getRoleCheckbox(role).check()
+            // Wait for page reload after search and find the role checkbox
+            EditUserRolesPage.getRoleCheckbox(role).should('exist').check()
             EditUserRolesPage.getUpdateButton().click()
             EditUserRolesPage.getMessageBoxOkButton(2).click()
             EditUserRolesPage.getMessageBoxOkButton(1).click()

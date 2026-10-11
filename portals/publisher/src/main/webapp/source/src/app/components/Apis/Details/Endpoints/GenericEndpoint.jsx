@@ -24,7 +24,7 @@ import {
     InputAdornment,
     TextField,
 } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
 import Chip from '@mui/material/Chip';
@@ -126,6 +126,7 @@ function GenericEndpoint(props) {
     const [isUpdating, setUpdating] = useState(false);
     const [isErrorCode, setIsErrorCode] = useState(false);
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
+    const intl = useIntl();
 
     useEffect(() => {
         setServiceUrl(endpointURL);
@@ -149,6 +150,18 @@ function GenericEndpoint(props) {
                 } else {
                     setIsEndpointValid(false);
                 }
+            }).catch((error) => {
+                const message = error.response?.body?.description
+                    || error.response?.body?.message
+                    || error.message
+                    || intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.GenericEndpoint.endpoint.validation.error',
+                        defaultMessage: 'Error while validating endpoint URL',
+                    });
+                setStatusCode(message);
+                setIsErrorCode(true);
+                setIsEndpointValid(false);
+                console.error(error);
             }).finally(() => {
                 setUpdating(false);
             });

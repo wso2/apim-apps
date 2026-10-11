@@ -17,33 +17,28 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 import API from 'AppData/api';
-import { useIntl, FormattedMessage } from 'react-intl';
-import EditApplication from 'AppComponents/ApplicationSettings/EditApplication';
-import AppsTableContent from 'AppComponents/ApplicationSettings/AppsTableContent';
-import ApplicationTableHead from 'AppComponents/ApplicationSettings/ApplicationTableHead';
-import EditIcon from '@mui/icons-material/Edit';
-import Table from '@mui/material/Table';
-import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import TableFooter from '@mui/material/TableFooter';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
-import Tooltip from '@mui/material/Tooltip';
-import TextField from '@mui/material/TextField';
-import SearchIcon from '@mui/icons-material/Search';
-import Alert from '@mui/material/Alert';
-import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
+import TabbedContentBase from 'AppComponents/AdminPages/Addons/TabbedContentBase';
+import ChangeAppOwner from 'AppComponents/ApplicationSettings/ChangeAppOwner';
+import UpgradeTokenType from 'AppComponents/ApplicationSettings/UpgradeTokenType';
+import Configurations from 'Config';
 
+/**
+ * Renders the application management view with support for:
+ * - Displaying a paginated and searchable list of applications.
+ * - Filtering applications by name or owner.
+ * - Changing the application owner.
+ * - Upgrading legacy applications from opaque tokens to JWT-based tokens.
+ *
+ * @returns {JSX.Element} The rendered component with tabs for changing owner and upgrading tokens.
+ */
 export default function ListApplications() {
     const intl = useIntl();
-
     const [loading, setLoading] = useState(false);
     const [applicationList, setApplicationList] = useState(null);
     const [totalApps, setTotalApps] = useState(0);
@@ -52,9 +47,13 @@ export default function ListApplications() {
     const [searchQuery, setSearchQuery] = useState('');
 
     /**
-    * API call to get application list
-    * @returns {Promise}.
-    */
+     * Fetches a paginated list of applications from the API.
+     *
+     * @param {number} pageNo - The current page number (0-indexed).
+     * @param {string} [user=searchQuery] - Optional filter by application owner.
+     * @param {string} [name=searchQuery] - Optional filter by application name.
+     * @returns {Promise<Array>} A promise resolving to the list of applications.
+     */
     function apiCall(pageNo, user = searchQuery, name = searchQuery) {
         setLoading(true);
         const restApi = new API();
@@ -88,6 +87,12 @@ export default function ListApplications() {
         });
     }, [rowsPerPage]);
 
+    /**
+     * Handles page change in the paginated table.
+     *
+     * @param {React.MouseEvent} event - The page change event.
+     * @param {number} pageNo - The new page number.
+     */
     function handleChangePage(event, pageNo) {
         setPage(pageNo);
         apiCall(pageNo).then((result) => {
@@ -95,6 +100,11 @@ export default function ListApplications() {
         });
     }
 
+    /**
+     * Handles change in rows per page for the paginated table.
+     *
+     * @param {React.ChangeEvent<HTMLInputElement>} event - The change event.
+     */
     function handleChangeRowsPerPage(event) {
         const nextRowsPerPage = event.target.value;
         const rowsPerPageRatio = rowsPerPage / nextRowsPerPage;
@@ -106,6 +116,9 @@ export default function ListApplications() {
         });
     }
 
+    /**
+     * Clears the search input and reloads the full application list.
+     */
     function clearSearch() {
         setPage(0);
         setSearchQuery('');
@@ -114,6 +127,12 @@ export default function ListApplications() {
         });
     }
 
+    /**
+     * Handles search input change.
+     * Clears search if input is empty, otherwise updates search query state.
+     *
+     * @param {React.ChangeEvent<HTMLInputElement>} event - The change event from the search input.
+     */
     function setQuery(event) {
         const newQuery = event.target.value;
         if (newQuery === '') {
@@ -123,6 +142,11 @@ export default function ListApplications() {
         }
     }
 
+    /**
+     * Filters applications based on the current search query.
+     *
+     * @param {React.FormEvent<HTMLFormElement>} e - Form submission event.
+     */
     function filterApps(e) {
         e.preventDefault();
         setPage(0);
@@ -130,165 +154,103 @@ export default function ListApplications() {
             setApplicationList(result);
         });
     }
+    const childProps = {
+        loading,
+        applicationList,
+        totalApps,
+        page,
+        rowsPerPage,
+        searchQuery,
+        apiCall,
+        handleChangePage,
+        handleChangeRowsPerPage,
+        clearSearch,
+        setQuery,
+        filterApps,
+    };
+
+    const ALLOWED_KEY_MANAGERS = ['default', 'WSO2-IS'];
+
+    const upgradableApps = applicationList?.filter((app) => {
+        // Skip apps that already use JWT
+        if (app.tokenType === 'JWT') {
+            return false;
+        }
+
+        const keyManagers = Array.isArray(app.keyManagers) ? app.keyManagers : [];
+
+        // Case 1: Has key managers matching the specific name and allowed type
+        const hasAllowedKM = keyManagers.some((km) => km.name === 'Resident Key Manager'
+            && ALLOWED_KEY_MANAGERS.includes(km.type));
+
+        // Case 2: No key managers
+        const noKeyManagers = keyManagers.length === 0;
+
+        return hasAllowedKM || noKeyManagers;
+    });
+    const warning = (
+        <>
+            {intl.formatMessage({
+                defaultMessage: 'You have one or more legacy applications that are using opaque access tokens.'
+                + ' Support for opaque tokens has been deprecated. Please upgrade these '
+                + ' applications to use JWT-based access tokens.',
+                id: 'ApplicationSettings.ListApplications.opaque.token.warning',
+            })}
+            {' '}
+            <Link
+                href={`${Configurations.app.docUrl}api-security/key-management/tokens/jwt-tokens/`}
+                target='_blank'
+                rel='noopener noreferrer'
+            >
+                {intl.formatMessage({
+                    defaultMessage: 'Learn More…',
+                    id: 'ApplicationSettings.ListApplications.learn.more.link',
+                })}
+            </Link>
+        </>
+    );
+
+    const tabs = [
+        {
+            label: intl.formatMessage({
+                defaultMessage: 'Owner',
+                id: 'ApplicationSettings.ListApplications.change.app.owner.tab.title',
+            }),
+            content: <ChangeAppOwner {...childProps} />,
+        },
+        {
+            label: (
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <WarningAmberIcon sx={{ fontSize: 18, mr: 1, color: 'warning.main' }} />
+                    {intl.formatMessage({
+                        defaultMessage: 'Legacy Applications',
+                        id: 'ApplicationSettings.ListApplications.upgrade.legacy.app.tab.title',
+                    })}
+                </Box>
+            ),
+            content: <UpgradeTokenType {...childProps} />,
+        },
+    ];
 
     return (
-        <ContentBase
-            title={intl.formatMessage({
-                defaultMessage: 'Change Application Owner',
-                id: 'Applications.Listing.Listing.title',
-            })}
-        >
-            <AppBar
-                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
-                position='static'
-                color='default'
-                elevation={0}
+        upgradableApps?.length ? (
+            <TabbedContentBase
+                title={intl.formatMessage({
+                    defaultMessage: 'Change Application Settings',
+                    id: 'ApplicationSettings.ListApplications.change.app.settings.title',
+                })}
+                tabs={tabs}
+                warning={warning}
+            />
+        ) : (
+            <ContentBase
+                title={intl.formatMessage({
+                    defaultMessage: 'Change Application Owner',
+                    id: 'ApplicationSettings.ListApplications.change.app.owner.title',
+                })}
             >
-                <Toolbar>
-                    <form onSubmit={filterApps} style={{ width: '100%' }} disabled={loading}>
-                        <Grid container spacing={2} alignItems='center'>
-                            <Grid item>
-                                <SearchIcon sx={{ display: 'block' }} color='inherit' />
-                            </Grid>
-                            <Grid item xs sx={{ display: 'flex', alignItems: 'center' }}>
-                                <TextField
-                                    hiddenLabel
-                                    variant='standard'
-                                    fullWidth
-                                    id='search-label'
-                                    placeholder={intl.formatMessage({
-                                        defaultMessage: 'Search Application by Name/Owner',
-                                        id: 'Applications.Listing.Listing.search.placeholder',
-                                    })}
-                                    sx={(theme) => ({
-                                        '& .search-input': {
-                                            fontSize: theme.typography.fontSize,
-                                        },
-                                    })}
-                                    InputProps={{
-                                        disableUnderline: true,
-                                        className: 'search-input',
-                                    }}
-                                    value={searchQuery}
-                                    onChange={setQuery}
-                                />
-                                { searchQuery.length > 0
-                                && (
-                                    <Tooltip
-                                        title={
-                                            intl.formatMessage({
-                                                defaultMessage: 'Clear Search',
-                                                id: 'Applications.Listing.Listing.clear.search',
-                                            })
-                                        }
-                                    >
-                                        <IconButton
-                                            aria-label='delete'
-                                            onClick={clearSearch}
-                                            size='large'
-                                        >
-                                            <HighlightOffRoundedIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                )}
-                            </Grid>
-                            <Grid item>
-                                <Button
-                                    variant='contained'
-                                    sx={{ mr: 1 }}
-                                    type='submit'
-                                    disabled={loading}
-                                >
-                                    {loading ? (
-                                        <FormattedMessage
-                                            id='Applications.Listing.Listing.applications.searching'
-                                            defaultMessage='Searching'
-                                        />
-                                    ) : (
-                                        <FormattedMessage
-                                            id='Applications.Listing.Listing.applications.search'
-                                            defaultMessage='Search'
-                                        />
-                                    )}
-
-                                </Button>
-                            </Grid>
-                        </Grid>
-                    </form>
-                </Toolbar>
-            </AppBar>
-            {applicationList && applicationList.length > 0
-                && (
-                    <Table id='itest-application-list-table'>
-                        <ApplicationTableHead />
-                        <AppsTableContent
-                            apps={applicationList}
-                            page={page}
-                            rowsPerPage={rowsPerPage}
-                            editComponentProps={{
-                                icon: <EditIcon aria-label='edit-application-settings' />,
-                                title: intl.formatMessage({
-                                    id: 'Applications.Listing.Listing.applications.list.title',
-                                    defaultMessage: 'Change Application Owner',
-                                }),
-                                applicationList,
-                            }}
-                            EditComponent={EditApplication}
-                            apiCall={apiCall}
-                        />
-                        <TableFooter>
-                            <TableRow>
-                                <TablePagination
-                                    component='td'
-                                    count={totalApps}
-                                    rowsPerPage={rowsPerPage}
-                                    rowsPerPageOptions={[5, 10, 15]}
-                                    labelDisplayedRows={({ from, to, count }) => {
-                                        if (count !== -1) {
-                                            return intl.formatMessage({
-                                                id: 'Applications.Listing.Listing.applications.list.rows.range.label',
-                                                defaultMessage: '{from}-{to} of {count}',
-                                            },
-                                            {
-                                                from, to, count,
-                                            });
-                                        }
-                                        return intl.formatMessage({
-                                            id: 'Applications.Listing.Listing.applications.list.rows.more.than.label',
-                                            defaultMessage: 'more than {to}',
-                                        },
-                                        { to });
-                                    }}
-                                    labelRowsPerPage={intl.formatMessage({
-                                        id: 'Applications.Listing.Listing.applications.list.rows.show.label',
-                                        defaultMessage: 'Show',
-                                    })}
-                                    page={page}
-                                    backIconButtonProps={{
-                                        'aria-label': 'Previous Page',
-                                    }}
-                                    nextIconButtonProps={{
-                                        'aria-label': 'Next Page',
-                                    }}
-                                    onPageChange={handleChangePage}
-                                    onRowsPerPageChange={handleChangeRowsPerPage}
-                                />
-                            </TableRow>
-                        </TableFooter>
-                    </Table>
-                )}
-            {applicationList && applicationList.length === 0 && !loading && (
-                <Box>
-                    <Alert severity='info'>
-                        <Typography variant='subtitle2'>
-                            <FormattedMessage
-                                id='Applications.Listing.Listing.empty.message'
-                                defaultMessage='No Data to Display'
-                            />
-                        </Typography>
-                    </Alert>
-                </Box>
-            )}
-        </ContentBase>
+                <ChangeAppOwner {...childProps} />
+            </ContentBase>
+        )
     );
 }

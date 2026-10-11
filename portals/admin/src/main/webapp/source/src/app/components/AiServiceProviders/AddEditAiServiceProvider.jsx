@@ -25,6 +25,7 @@ import { Link as RouterLink, useLocation } from 'react-router-dom';
 import {
     MenuItem,
     Typography,
+    Alert as MuiAlert,
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -125,7 +126,7 @@ export default function AddEditAiServiceProvider(props) {
         type: 'none',
         parameters: {},
     });
-    const authSources = ['none', 'apikey', 'aws'];
+    const authSources = ['none', 'apikey', 'aws', 'gcp', 'umi'];
     const [validating, setValidating] = useState(false);
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(!!vendorId); // Set to true if editing (vendorId exists)
@@ -135,6 +136,7 @@ export default function AddEditAiServiceProvider(props) {
         name: '',
         apiVersion: '',
         description: '',
+        deprecated: false,
         configurations: {
             metadata: [
                 {
@@ -246,6 +248,7 @@ export default function AddEditAiServiceProvider(props) {
                             name: aiVendorBody.name || '',
                             apiVersion: aiVendorBody.apiVersion || '',
                             description: aiVendorBody.description || '',
+                            deprecated: aiVendorBody.deprecated || false,
                             configurations: JSON.parse(aiVendorBody.configurations),
                             apiDefinition: aiVendorBody.apiDefinition || '',
                             modelList,
@@ -425,8 +428,17 @@ export default function AddEditAiServiceProvider(props) {
             setSaving(false);
             history.push('/settings/ai-service-providers/');
         } catch (e) {
-            if (e.message) {
-                Alert.error(e.message);
+            const { response, message } = e;
+            const backendDescription = response?.body?.description;
+            if (backendDescription) {
+                Alert.error(backendDescription);
+            } else if (message) {
+                Alert.error(message);
+            } else {
+                Alert.error(intl.formatMessage({
+                    id: 'AiServiceProviders.AddEditAiServiceProvider.save.error.generic',
+                    defaultMessage: 'An error occurred while saving the AI Service Provider.',
+                }));
             }
             setSaving(false);
         }
@@ -546,6 +558,19 @@ export default function AddEditAiServiceProvider(props) {
         >
             <Box component='div' m={2} sx={(theme) => ({ mb: theme.spacing(10) })}>
                 <Grid container spacing={2}>
+                    {state.deprecated && (
+                        <Grid item xs={12}>
+                            <MuiAlert severity='warning' sx={{ mb: 2 }}>
+                                <Typography variant='body1'>
+                                    <FormattedMessage
+                                        id='AiServiceProviders.AddEditAiServiceProvider.warning.deprecated'
+                                        defaultMessage='{name} {version} is deprecated'
+                                        values={{ name: state.name, version: state.apiVersion }}
+                                    />
+                                </Typography>
+                            </MuiAlert>
+                        </Grid>
+                    )}
                     <Grid item xs={12} md={12} lg={3}>
                         <Typography
                             color='inherit'
@@ -1080,6 +1105,39 @@ export default function AddEditAiServiceProvider(props) {
                                                 }))}
                                                 required
                                             />
+                                        )}
+                                        {(authConfig.type === 'umi') && (
+                                            <Box mt={2}>
+                                                <Typography variant='body2' color='textSecondary'>
+                                                    <FormattedMessage
+                                                        id='Admin.AiVendor.form.llm.auth.umi.info'
+                                                        defaultMessage={
+                                                            'Azure User Managed Identity (UMI) authentication will '
+                                                            + 'be used. The gateway must have the Azure Workload '
+                                                            + 'Identity webhook configured with the appropriate '
+                                                            + 'AZURE_TENANT_ID, AZURE_CLIENT_ID, and '
+                                                            + 'AZURE_FEDERATED_TOKEN_FILE environment variables. '
+                                                            + 'No credentials need to be stored.'
+                                                        }
+                                                    />
+                                                </Typography>
+                                            </Box>
+                                        )}
+                                        {(authConfig.type === 'gcp') && (
+                                            <Box mt={2}>
+                                                <Typography variant='body2' color='textSecondary'>
+                                                    <FormattedMessage
+                                                        id='Admin.AiVendor.form.llm.auth.gcp.info'
+                                                        defaultMessage={
+                                                            'Google Cloud service-account OAuth2 (JWT bearer) '
+                                                            + 'authentication will be used for Vertex AI backends. '
+                                                            + 'The service-account key is provided per-API as '
+                                                            + 'endpoint security when creating the API - no '
+                                                            + 'credentials are stored at the provider level.'
+                                                        }
+                                                    />
+                                                </Typography>
+                                            </Box>
                                         )}
                                     </FormControl>
                                 </Box>

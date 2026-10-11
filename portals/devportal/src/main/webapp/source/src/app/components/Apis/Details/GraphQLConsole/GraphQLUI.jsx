@@ -17,12 +17,11 @@
  */
 
 import React, {
-    useState, useEffect, useRef, useContext,
+    useState, useEffect, useContext,
 } from 'react';
 import { styled } from '@mui/material';
-import GraphiQL from 'graphiql';
-import 'graphiql/graphiql.css';
-import '@graphiql/plugin-explorer/dist/style.css';
+import { GraphiQL, HISTORY_PLUGIN } from 'graphiql';
+import './graphiql.css'; // Styles for GraphiQL
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import { createGraphiQLFetcher } from '@graphiql/toolkit';
@@ -61,8 +60,6 @@ export default function GraphQLUI(props) {
     } = props;
     const { api } = useContext(ApiContext);
     const [schema, setSchema] = useState(null);
-    const [query, setQuery] = useState('');
-    const graphiqlEl = useRef(null);
 
     useEffect(() => {
         const apiID = api.id;
@@ -126,12 +123,10 @@ export default function GraphQLUI(props) {
                         <Box display='flex' width={1}>
                             <Box display='flex' height='800px' flexGrow={1}>
                                 <GraphiQL
-                                    ref={graphiqlEl}
                                     fetcher={(queryFetcher(URLs && URLs.wss))}
                                     schema={schema}
-                                    query={query}
-                                    onEditQuery={setQuery}
-                                    plugins={[explorer, queryComplexityAnalyzer]}
+                                    initialQuery=''
+                                    plugins={[HISTORY_PLUGIN, explorer, queryComplexityAnalyzer]}
                                 />
                             </Box>
                         </Box>

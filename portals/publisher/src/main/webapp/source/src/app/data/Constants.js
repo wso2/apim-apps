@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/** Carbon APIConstants.WSO2_API_PLATFORM_GATEWAY wire value. */
+const API_PLATFORM_GATEWAY = 'APIPlatform';
+
 const CONSTS = {
     API: 'API',
     APIProduct: 'APIProduct',
@@ -82,10 +85,43 @@ const CONSTS = {
         PRODUCTION: 'default_production_endpoint',
         SANDBOX: 'default_sandbox_endpoint',
     },
+    API_PLATFORM_GATEWAY,
     GATEWAY_TYPE: {
         synapse: 'Synapse',
         choreoConnect: 'ChoreoConnect',
-        AWS: 'AWS',
+        apiPlatform: API_PLATFORM_GATEWAY,
+    },
+    CREATE_API_GATEWAYS: {
+        'wso2/synapse': {
+            value: 'wso2/synapse',
+            name: 'Universal Gateway',
+            description: 'Enterprise-grade self-hosted Synapse gateway.',
+            isNew: false,
+        },
+        'wso2/apk': {
+            value: 'wso2/apk',
+            name: 'Kubernetes Gateway v1.3',
+            description: 'Kubernetes-native gateway runtime.',
+            isNew: false,
+        },
+        AWS: {
+            value: 'AWS',
+            name: 'AWS Gateway',
+            description: 'API gateway offered by AWS cloud.',
+            isNew: false,
+        },
+        Azure: {
+            value: 'Azure',
+            name: 'Azure Gateway',
+            description: 'API gateway offered by Azure cloud.',
+            isNew: false,
+        },
+        APIPlatform: {
+            value: API_PLATFORM_GATEWAY,
+            name: 'API Platform Gateway',
+            description: 'New lightweight, self-hosted API Platform gateway.',
+            isNew: true,
+        }
     },
     PATH_TEMPLATES: {
         COMMON_POLICIES: '/policies',
@@ -112,7 +148,7 @@ const CONSTS = {
     ENTITY_TYPES: {
         APIS: 'apis',
         API_PRODUCTS: 'api-products',
-        MCP_SERVERS: 'mcp-servers'
+        MCP_SERVERS: 'mcp-servers',
     },
     API_TYPES: {
         HTTP: 'REST',

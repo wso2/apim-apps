@@ -25,7 +25,7 @@ class DevPortalApisPage extends DevportalComonPage{
         cy.visit(`${Utils.getAppOrigin()}` + this.getUrl())
     }
     getApiLinkOfAPI(apiName){
-        return cy.get(`a[area-label="Go to ${apiName}"]`)
+        return cy.get(`a[area-label="Go to ${apiName}"], a[aria-label="Go to ${apiName}"]`)
     }
 }
 

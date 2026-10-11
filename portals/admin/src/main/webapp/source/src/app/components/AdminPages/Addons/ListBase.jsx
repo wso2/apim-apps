@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 /*
  * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -22,9 +21,11 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
@@ -46,24 +47,25 @@ import Alert from '@mui/material/Alert';
  */
 function ListBase(props) {
     const {
-        EditComponent, editComponentProps, DeleteComponent, showActionColumn,
-        columProps, pageProps, addButtonProps, addButtonOverride,
-        searchProps: { active: searchActive, searchPlaceholder }, apiCall, initialData,
-        emptyBoxProps: {
-            title: emptyBoxTitle,
-            content: emptyBoxContent,
-        },
-        noDataMessage,
-        addedActions,
-        enableCollapsable,
-        renderExpandableRow,
-        useContentBase,
+        EditComponent, editComponentProps, DeleteComponent, showActionColumn, columProps,
+        pageProps, addButtonProps, addButtonOverride,
+        searchProps: { active: searchActive, searchPlaceholder },
+        apiCall, initialData, toolbarContent, toolbarContentSx, showReload, panelSx, toolbarSx,
+        tableSx, searchTextFieldProps, searchIconInside, preserveToolbarOnEmpty,
+        emptyBoxProps: { title: emptyBoxTitle, content: emptyBoxContent }, noDataMessage,
+        addedActions, enableCollapsable, renderExpandableRow, useContentBase,
     } = props;
 
     const [searchText, setSearchText] = useState('');
     const [data, setData] = useState(initialData || null);
     const [error, setError] = useState(null);
     const intl = useIntl();
+    const {
+        sx: searchTextFieldSx,
+        InputProps: searchInputProps,
+        inputProps: searchNativeInputProps,
+        ...restSearchTextFieldProps
+    } = searchTextFieldProps || {};
 
     const filterData = (event) => {
         setSearchText(event.target.value);
@@ -78,13 +80,12 @@ function ListBase(props) {
                 return x[field];
             };
 
-        // eslint-disable-next-line no-param-reassign
-        reverse = !reverse ? 1 : -1;
+        const sortOrder = !reverse ? 1 : -1;
 
         return (a, b) => {
             const aValue = key(a);
             const bValue = key(b);
-            return reverse * ((aValue > bValue) - (bValue > aValue));
+            return sortOrder * ((aValue > bValue) - (bValue > aValue));
         };
     };
     const onColumnSortChange = (changedColumn, direction) => {
@@ -101,17 +102,20 @@ function ListBase(props) {
         setData(null);
         if (apiCall) {
             const promiseAPICall = apiCall();
-            promiseAPICall.then((LocalData) => {
-                if (LocalData) {
-                    setData(LocalData);
-                    setError(null);
-                } else {
-                    setError(intl.formatMessage({
-                        id: 'AdminPages.Addons.ListBase.noDataError',
-                        defaultMessage: 'Error while retrieving data.',
-                    }));
-                }
-            })
+            promiseAPICall
+                .then((LocalData) => {
+                    if (LocalData) {
+                        setData(LocalData);
+                        setError(null);
+                    } else {
+                        setError(
+                            intl.formatMessage({
+                                id: 'AdminPages.Addons.ListBase.noDataError',
+                                defaultMessage: 'Error while retrieving data.',
+                            }),
+                        );
+                    }
+                })
                 .catch((e) => {
                     setError(e.message);
                 });
@@ -143,103 +147,75 @@ function ListBase(props) {
 
     let columns = [];
     if (columProps) {
-        columns = [
-            ...columProps,
-        ];
+        columns = [...columProps];
     }
     if (showActionColumn) {
-        columns.push(
-            {
-                name: '',
-                label: <FormattedMessage
-                    id='Throttling.Advanced.AddEdit.form.actions.label'
-                    defaultMessage='Actions'
-                />,
-                options: {
-                    filter: false,
-                    sort: false,
-                    customBodyRender: (value, tableMeta) => {
-                        const dataRow = data[tableMeta.rowIndex];
-                        const itemName = (typeof tableMeta.rowData === 'object') ? tableMeta.rowData[0] : '';
-                        if (editComponentProps && editComponentProps.routeTo) {
-                            if (typeof tableMeta.rowData === 'object') {
-                                const artifactId = tableMeta.rowData[tableMeta.rowData.length - 2];
-                                const isAI = tableMeta.rowData[1] === 'AI API Quota';
-                                return (
-                                    <div style={{ display: 'flex', gap: '4px' }} data-testid={`${itemName}-actions`}>
-                                        <RouterLink
-                                            to={{
-                                                pathname: editComponentProps.routeTo + artifactId,
-                                                state: { isAI },
-                                            }}
-                                        >
-
-                                            {(dataRow.isReadOnly)
-                                                ? (
-                                                    <IconButton
-                                                        color='primary'
-                                                        component='span'
-                                                        size='large'
-                                                        disabled
-                                                    >
-                                                        <EditIcon aria-label={`edit-policies+${artifactId}`} />
-                                                    </IconButton>
-                                                ) : (
-                                                    <IconButton
-                                                        color='primary'
-                                                        component='span'
-                                                        size='large'
-                                                    >
-                                                        <EditIcon aria-label={`edit-policies+${artifactId}`} />
-                                                    </IconButton>
-                                                )}
-                                        </RouterLink>
-                                        {DeleteComponent && (
-                                            <DeleteComponent
-                                                dataRow={dataRow}
-                                                updateList={fetchData}
-                                            />
+        columns.push({
+            name: '',
+            label: <FormattedMessage id='Throttling.Advanced.AddEdit.form.actions.label' defaultMessage='Actions' />,
+            options: {
+                filter: false,
+                sort: false,
+                customBodyRender: (value, tableMeta) => {
+                    const dataRow = data[tableMeta.rowIndex];
+                    const itemName = typeof tableMeta.rowData === 'object' ? tableMeta.rowData[0] : '';
+                    if (editComponentProps && editComponentProps.routeTo) {
+                        if (typeof tableMeta.rowData === 'object') {
+                            const artifactId = tableMeta.rowData[tableMeta.rowData.length - 2];
+                            const isAI = tableMeta.rowData[1] === 'AI API Quota';
+                            return (
+                                <div style={{ display: 'flex', gap: '4px' }} data-testid={`${itemName}-actions`}>
+                                    <RouterLink
+                                        to={{
+                                            pathname: editComponentProps.routeTo + artifactId,
+                                            state: { isAI },
+                                        }}
+                                    >
+                                        {dataRow.isReadOnly ? (
+                                            <IconButton color='primary' component='span' size='large' disabled>
+                                                <EditIcon aria-label={`edit-policies+${artifactId}`} />
+                                            </IconButton>
+                                        ) : (
+                                            <IconButton color='primary' component='span' size='large'>
+                                                <EditIcon aria-label={`edit-policies+${artifactId}`} />
+                                            </IconButton>
                                         )}
-                                        {addedActions && addedActions.map((action) => {
+                                    </RouterLink>
+                                    {DeleteComponent && <DeleteComponent dataRow={dataRow} updateList={fetchData} />}
+                                    {addedActions
+                                        && addedActions.map((action) => {
                                             const AddedComponent = action;
                                             return (
                                                 <AddedComponent rowData={tableMeta.rowData} updateList={fetchData} />
                                             );
                                         })}
-                                    </div>
-                                );
-                            } else {
-                                return (<div />);
-                            }
+                                </div>
+                            );
+                        } else {
+                            return <div />;
                         }
-                        return (
-                            <div style={{ display: 'flex', gap: '4px' }} data-testid={`${itemName}-actions`}>
-                                {EditComponent && (
-                                    <EditComponent
-                                        dataRow={dataRow}
-                                        updateList={fetchData}
-                                        {...editComponentProps}
-                                    />
-                                )}
-                                {DeleteComponent && (<DeleteComponent dataRow={dataRow} updateList={fetchData} />)}
-                                {addedActions && addedActions.map((action) => {
+                    }
+                    return (
+                        <div style={{ display: 'flex', gap: '4px' }} data-testid={`${itemName}-actions`}>
+                            {EditComponent && (
+                                <EditComponent dataRow={dataRow} updateList={fetchData} {...editComponentProps} />
+                            )}
+                            {DeleteComponent && <DeleteComponent dataRow={dataRow} updateList={fetchData} />}
+                            {addedActions
+                                && addedActions.map((action) => {
                                     const AddedComponent = action;
-                                    return (
-                                        <AddedComponent rowData={tableMeta.rowData} updateList={fetchData} />
-                                    );
+                                    return <AddedComponent rowData={tableMeta.rowData} updateList={fetchData} />;
                                 })}
-                            </div>
-
-                        );
-                    },
-                    setCellProps: () => {
-                        return {
-                            style: { width: 150 },
-                        };
-                    },
+                        </div>
+                    );
+                },
+                setCellProps: () => {
+                    return {
+                        style: { width: 150 },
+                    };
                 },
             },
-        );
+        });
     }
     const options = {
         filterType: 'checkbox',
@@ -277,11 +253,11 @@ function ListBase(props) {
         ...props.options,
     };
 
-    // Show empty state if:
-    // No apiCall and initialData is undefined OR
-    // No apiCall and initialData is empty array OR
-    // Data exists and it's an empty array
-    if ((!apiCall && (initialData === undefined || initialData?.length === 0)) || (data && data.length === 0)) {
+    const hasNoInitialData = !apiCall && (initialData === undefined || initialData?.length === 0);
+    const hasNoLocalData = !apiCall && Array.isArray(data) && data.length === 0;
+    const hasNoApiData = apiCall && Array.isArray(data) && data.length === 0 && !preserveToolbarOnEmpty;
+
+    if (hasNoInitialData || hasNoLocalData || hasNoApiData) {
         const content = (
             <Card>
                 <CardContent>
@@ -289,16 +265,19 @@ function ListBase(props) {
                     {emptyBoxContent}
                 </CardContent>
                 <CardActions>
-                    {addButtonOverride || (
-                        EditComponent && (<EditComponent updateList={fetchData} {...addButtonProps} />)
-                    )}
+                    {addButtonOverride
+                        || (EditComponent && <EditComponent updateList={fetchData} {...addButtonProps} />)}
                 </CardActions>
             </Card>
         );
 
         return useContentBase ? (
-            <ContentBase {...pageProps} pageStyle='small'>{content}</ContentBase>
-        ) : content;
+            <ContentBase {...pageProps} pageStyle='small'>
+                {content}
+            </ContentBase>
+        ) : (
+            content
+        );
     }
 
     // If apiCall is provided and data is not retrieved yet OR
@@ -306,96 +285,127 @@ function ListBase(props) {
     // display progress component
     if ((!error && apiCall && !data) || (!apiCall && initialData === null)) {
         const content = <InlineProgress />;
-        return useContentBase ? (
-            <ContentBase pageStyle='paperLess'>{content}</ContentBase>
-        ) : content;
+        return useContentBase ? <ContentBase pageStyle='paperLess'>{content}</ContentBase> : content;
     }
 
     if (error) {
         const content = <Alert severity='error'>{error}</Alert>;
-        return useContentBase ? (
-            <ContentBase {...pageProps}>{content}</ContentBase>
-        ) : content;
+        return useContentBase ? <ContentBase {...pageProps}>{content}</ContentBase> : content;
     }
 
     const mainContent = (
-        <>
+        <Box sx={panelSx}>
+            {toolbarContent && (
+                <Box
+                    sx={{
+                        border: '1px solid rgba(0, 0, 0, 0.12)',
+                        borderBottom: 'none',
+                        borderRadius: '4px 4px 0 0',
+                        backgroundColor: 'background.paper',
+                        px: 2,
+                        pt: 1,
+                        ...toolbarContentSx,
+                    }}
+                >
+                    {toolbarContent}
+                </Box>
+            )}
             {(searchActive || addButtonProps) && (
                 <AppBar
-                    sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
+                    sx={{
+                        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+                        ...(toolbarContent
+                            ? {
+                                borderLeft: '1px solid rgba(0, 0, 0, 0.12)',
+                                borderRight: '1px solid rgba(0, 0, 0, 0.12)',
+                                borderRadius: 0,
+                            }
+                            : {}),
+                        ...toolbarSx,
+                    }}
                     position='static'
                     color='default'
                     elevation={0}
                 >
                     <Toolbar>
                         <Grid container spacing={2} alignItems='center'>
-
-                            <Grid item>
-                                {searchActive && (<SearchIcon sx={{ display: 'block' }} color='inherit' />)}
-                            </Grid>
-                            <Grid item xs>
-                                {searchActive && (
-                                    <TextField
-                                        variant='standard'
-                                        fullWidth
-                                        placeholder={searchPlaceholder}
-                                        sx={(theme) => ({
-                                            '& .search-input': {
-                                                fontSize: theme.typography.fontSize,
-                                            },
-                                        })}
-                                        InputProps={{
-                                            disableUnderline: true,
-                                            className: 'search-input',
-                                        }}
-                                        // eslint-disable-next-line react/jsx-no-duplicate-props
-                                        inputProps={{
-                                            'aria-label': 'search-by-policy',
-                                        }}
-                                        onChange={filterData}
-                                        value={searchText}
-                                    />
-                                )}
-                            </Grid>
-                            <Grid item>
-                                {addButtonOverride || (
-                                    EditComponent && (
-                                        <EditComponent
-                                            updateList={fetchData}
-                                            {...addButtonProps}
+                            {searchActive && (
+                                <>
+                                    {!searchIconInside && (
+                                        <Grid item>
+                                            <SearchIcon sx={{ display: 'block' }} color='inherit' />
+                                        </Grid>
+                                    )}
+                                    <Grid item xs>
+                                        <TextField
+                                            variant={restSearchTextFieldProps?.variant || 'standard'}
+                                            fullWidth
+                                            placeholder={searchPlaceholder}
+                                            sx={(theme) => ({
+                                                '& .search-input': {
+                                                    fontSize: theme.typography.fontSize,
+                                                },
+                                                ...(searchTextFieldSx || {}),
+                                            })}
+                                            slotProps={{
+                                                input: {
+                                                    ...(searchInputProps || {}),
+                                                    disableUnderline:
+                                                        !(restSearchTextFieldProps?.variant === 'outlined'),
+                                                    className: 'search-input',
+                                                    ...(searchIconInside
+                                                        ? {
+                                                            startAdornment: (
+                                                                <InputAdornment position='start'>
+                                                                    <SearchIcon color='action' />
+                                                                </InputAdornment>
+                                                            ),
+                                                        }
+                                                        : {}),
+                                                },
+                                                htmlInput: {
+                                                    'aria-label': 'search-by-policy',
+                                                    ...(searchNativeInputProps || {}),
+                                                },
+                                            }}
+                                            onChange={filterData}
+                                            value={searchText}
                                         />
-                                    )
+                                    </Grid>
+                                </>
+                            )}
+                            {!searchActive && <Grid item xs />}
+                            <Grid item sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                {addButtonOverride
+                                    || (EditComponent && <EditComponent updateList={fetchData} {...addButtonProps} />)}
+                                {showReload && (
+                                    <Tooltip
+                                        title={(
+                                            <FormattedMessage
+                                                id='AdminPages.Addons.ListBase.reload'
+                                                defaultMessage='Reload'
+                                            />
+                                        )}
+                                    >
+                                        <IconButton onClick={fetchData} size='large'>
+                                            <RefreshIcon
+                                                aria-label='refresh-advanced-policies'
+                                                sx={{ display: 'block' }}
+                                                color='inherit'
+                                            />
+                                        </IconButton>
+                                    </Tooltip>
                                 )}
-                                <Tooltip title={(
-                                    <FormattedMessage
-                                        id='AdminPages.Addons.ListBase.reload'
-                                        defaultMessage='Reload'
-                                    />
-                                )}
-                                >
-                                    <IconButton onClick={fetchData} size='large'>
-                                        <RefreshIcon
-                                            aria-label='refresh-advanced-policies'
-                                            sx={{ display: 'block' }}
-                                            color='inherit'
-                                        />
-                                    </IconButton>
-                                </Tooltip>
                             </Grid>
                         </Grid>
                     </Toolbar>
                 </AppBar>
             )}
-            <div>
+            <Box sx={tableSx}>
                 {data && data.length > 0 && (
-                    <MUIDataTable
-                        title={null}
-                        data={data}
-                        columns={columns}
-                        options={options}
-                    />
+                    <MUIDataTable title={null} data={data} columns={columns} options={options} />
                 )}
-            </div>
+            </Box>
             {data && data.length === 0 && (
                 <div>
                     <Typography color='textSecondary' align='center'>
@@ -403,12 +413,10 @@ function ListBase(props) {
                     </Typography>
                 </div>
             )}
-        </>
+        </Box>
     );
 
-    return useContentBase ? (
-        <ContentBase {...pageProps}>{mainContent}</ContentBase>
-    ) : mainContent;
+    return useContentBase ? <ContentBase {...pageProps}>{mainContent}</ContentBase> : mainContent;
 }
 
 ListBase.defaultProps = {
@@ -424,12 +432,7 @@ ListBase.defaultProps = {
         deleteIconShow: true,
     },
     addedActions: null,
-    noDataMessage: (
-        <FormattedMessage
-            id='AdminPages.Addons.ListBase.nodata.message'
-            defaultMessage='No items yet'
-        />
-    ),
+    noDataMessage: <FormattedMessage id='AdminPages.Addons.ListBase.nodata.message' defaultMessage='No items yet' />,
     showActionColumn: true,
     apiCall: null,
     initialData: null,
@@ -441,6 +444,15 @@ ListBase.defaultProps = {
     renderExpandableRow: null,
     useContentBase: true,
     options: {},
+    toolbarContent: null,
+    toolbarContentSx: {},
+    showReload: true,
+    panelSx: {},
+    toolbarSx: {},
+    tableSx: {},
+    searchTextFieldProps: {},
+    searchIconInside: false,
+    preserveToolbarOnEmpty: false,
 };
 
 ListBase.propTypes = {
@@ -473,5 +485,14 @@ ListBase.propTypes = {
     renderExpandableRow: PropTypes.func,
     useContentBase: PropTypes.bool,
     options: PropTypes.shape({}),
+    toolbarContent: PropTypes.element,
+    toolbarContentSx: PropTypes.shape({}),
+    showReload: PropTypes.bool,
+    panelSx: PropTypes.shape({}),
+    toolbarSx: PropTypes.shape({}),
+    tableSx: PropTypes.shape({}),
+    searchTextFieldProps: PropTypes.shape({}),
+    searchIconInside: PropTypes.bool,
+    preserveToolbarOnEmpty: PropTypes.bool,
 };
 export default ListBase;

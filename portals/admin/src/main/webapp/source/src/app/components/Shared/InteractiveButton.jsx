@@ -22,7 +22,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { green } from '@mui/material/colors';
 import { Button } from '@mui/material';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 
 const PREFIX = 'InteractiveButton';
 
@@ -85,9 +84,7 @@ const InteractiveButton = (props) => {
         size,
         variant,
     };
-    const buttonClassName = classNames({
-        [classes.buttonSuccess]: success,
-    });
+    const buttonClassName = success ? classes.buttonSuccess : '';
     return (
         <Root className={classes.wrapper}>
             <Button {...buttonProps} className={buttonClassName} disabled={loading}>

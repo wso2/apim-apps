@@ -30,26 +30,34 @@ import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
  * @returns {JSX} Loading animation.
  */
 function Delete({ updateList, dataRow }) {
-    const { id } = dataRow;
+    const { id, isPlatformGateway, platformGatewayId } = dataRow;
     const intl = useIntl();
 
     const formSaveCallback = () => {
         const restApi = new API();
-        return restApi
-            .deleteGatewayEnvironment(id)
+        const isPlatformGw = Boolean(isPlatformGateway && platformGatewayId);
+        const promise = isPlatformGw
+            ? restApi.deletePlatformGateway(platformGatewayId)
+            : restApi.deleteGatewayEnvironment(id);
+
+        return promise
             .then(() => {
-                return (
-                    intl.formatMessage({
-                        id: 'AdminPages.Gateways.Delete.form.delete.successful',
-                        defaultMessage: 'Gateway Environment deleted successfully',
-                    })
-                );
+                const msg = intl.formatMessage({
+                    id: 'AdminPages.Gateways.Delete.form.delete.successful',
+                    defaultMessage: 'Gateway Environment deleted successfully',
+                });
+                setTimeout(() => updateList(), 150);
+                return msg;
             })
             .catch((error) => {
-                throw (error.response.body.description);
-            })
-            .finally(() => {
-                updateList();
+                const body = error.response && error.response.body;
+                const message = (body && (body.description || body.message))
+                    || error.message
+                    || intl.formatMessage({
+                        id: 'AdminPages.Gateways.Delete.form.delete.error.generic',
+                        defaultMessage: 'Failed to delete gateway.',
+                    });
+                throw message;
             });
     };
 
@@ -77,9 +85,12 @@ function Delete({ updateList, dataRow }) {
     );
 }
 Delete.propTypes = {
-    updateList: PropTypes.number.isRequired,
+    updateList: PropTypes.func.isRequired,
     dataRow: PropTypes.shape({
-        id: PropTypes.number.isRequired,
+        id: PropTypes.string.isRequired,
+        isReadOnly: PropTypes.bool,
+        isPlatformGateway: PropTypes.bool,
+        platformGatewayId: PropTypes.string,
     }).isRequired,
 };
 export default Delete;

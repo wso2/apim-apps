@@ -22,6 +22,10 @@ import { Route, Switch } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { adaptV4Theme } from '@mui/material/styles';
 import { IntlProvider } from 'react-intl';
+import { CacheProvider } from '@emotion/react';
+import createCache from '@emotion/cache';
+import { prefixer } from 'stylis';
+import rtlPlugin from 'stylis-plugin-rtl';
 import Configurations from 'Config';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
@@ -40,6 +44,17 @@ import API from './app/data/api';
 import BrowserRouter from './app/components/Base/CustomRouter/BrowserRouter';
 import AuthManager from './app/data/AuthManager';
 import CONSTS from './app/data/Constants';
+
+const cacheRtl = createCache({
+    key: 'muirtl',
+    prepend: true,
+    stylisPlugins: [prefixer, rtlPlugin],
+});
+
+const cacheLtr = createCache({
+    key: 'muiltr',
+    prepend: true,
+});
 
 const protectedApp = lazy(() => import('./app/ProtectedApp' /* webpackChunkName: "ProtectedApp" */));
 
@@ -181,7 +196,7 @@ class DevPortal extends React.Component {
                     // Merging with the system theme.
                     const tenantMergedTheme = merge(cloneDeep(DefaultConfigurations), Configurations, data);
                     this.updateLocale(tenantMergedTheme);
-                    this.setState({ theme: tenantMergedTheme });
+                    this.setState({ theme: { ...tenantMergedTheme, direction: this.systemTheme.direction } });
                 })
                 .catch(() => {
                     console.log('Error loading teant theme. Loading the default theme.');
@@ -334,19 +349,21 @@ class DevPortal extends React.Component {
                         <title>{this.getTitle(theme)}</title>
                     </Helmet>
                     <StyledEngineProvider injectFirst>
-                        <ThemeProvider theme={createTheme(adaptV4Theme(theme))}>
-                            {this.loadCustomCSS(theme)}
-                            <BrowserRouter basename={context}>
-                                <Suspense fallback={<Progress />}>
-                                    <IntlProvider locale={language} messages={messages}>
-                                        <Switch>
-                                            <Route path='/logout' render={() => (<Logout theme={theme} />)} />
-                                            <Route component={protectedApp} />
-                                        </Switch>
-                                    </IntlProvider>
-                                </Suspense>
-                            </BrowserRouter>
-                        </ThemeProvider>
+                        <CacheProvider value={theme.direction === 'rtl' ? cacheRtl : cacheLtr}>
+                            <ThemeProvider theme={createTheme(adaptV4Theme(theme))}>
+                                {this.loadCustomCSS(theme)}
+                                <BrowserRouter basename={context}>
+                                    <Suspense fallback={<Progress />}>
+                                        <IntlProvider locale={language} messages={messages}>
+                                            <Switch>
+                                                <Route path='/logout' render={() => (<Logout theme={theme} />)} />
+                                                <Route component={protectedApp} />
+                                            </Switch>
+                                        </IntlProvider>
+                                    </Suspense>
+                                </BrowserRouter>
+                            </ThemeProvider>
+                        </CacheProvider>
                     </StyledEngineProvider>
                 </SettingsProvider>
             );

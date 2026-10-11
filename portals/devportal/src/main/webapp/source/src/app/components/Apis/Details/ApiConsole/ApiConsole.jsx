@@ -368,16 +368,18 @@ class ApiConsole extends React.Component {
      */
     setServersSpec(spec, serverUrl) {
         let schemes;
-        const [protocol, host] = serverUrl.split('://');
-        if (protocol === 'http') {
+        const parsed = new URL(serverUrl);
+        if (parsed.protocol === 'http:') {
             schemes = ['http'];
-        } else if (protocol === 'https') {
+        } else if (parsed.protocol === 'https:') {
             schemes = ['https'];
         }
+        const basePath = parsed.pathname !== '/' ? parsed.pathname : (spec.basePath || '/');
         return {
             ...spec,
             schemes,
-            host,
+            host: parsed.host,
+            basePath,
         };
     }
 
@@ -404,6 +406,9 @@ class ApiConsole extends React.Component {
      * @memberof TryOutController
      */
     updateAccessToken(selectedApplication) {
+        if (selectedApplication == null || selectedApplication === '') {
+            return;
+        }
         const {
             selectedKeyType, selectedKeyManager, keys,
         } = this.state;
@@ -431,6 +436,12 @@ class ApiConsole extends React.Component {
                         this.setSandboxAccessToken(accessToken);
                     }
                     this.setKeys(appKeys);
+                })
+                .catch((err) => {
+                    if (process.env.NODE_ENV !== 'production') {
+                        // eslint-disable-next-line no-console
+                        console.warn('ApiConsole: could not load application keys', err);
+                    }
                 });
         }
     }
@@ -672,8 +683,9 @@ class ApiConsole extends React.Component {
                         </Grid>
                     )}
                 </Paper>
-                <Paper className={classes.swaggerUIPaper}>
+                <Paper className={classes.swaggerUIPaper} dir='ltr'>
                     <SwaggerUI
+                        key={selectedEnvironment}
                         api={this.state.api}
                         accessTokenProvider={this.accessTokenProvider}
                         spec={swaggerSpec}

@@ -168,10 +168,15 @@ export default function ImportDefinition(props) {
             })
             .catch((error) => {
                 console.error(error);
-                Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.APIDefinition.APIDefinition.error.while.updating.import.api.definition',
-                    defaultMessage: 'Error while updating the API Definition',
-                }));
+                const backendErrorDescription = error?.response?.body?.description;
+                if (backendErrorDescription) {
+                    Alert.error(backendErrorDescription);
+                } else {
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.APIDefinition.APIDefinition.error.while.updating.import.api.definition',
+                        defaultMessage: 'Error while updating the API Definition',
+                    }));
+                }
             }).finally(() => setIsImporting(false));
     }
 

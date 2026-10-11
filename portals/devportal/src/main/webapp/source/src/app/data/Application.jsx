@@ -43,6 +43,12 @@ export default class Application extends Resource {
                 this[key] = kwargs[key];
             }
         }
+        if (this.applicationId == null && this.id != null) {
+            this.applicationId = this.id;
+        }
+        if (this.id == null && this.applicationId != null) {
+            this.id = this.applicationId;
+        }
     }
 
     /** *
@@ -81,8 +87,12 @@ export default class Application extends Resource {
      * @returns {promise} Set the fetched CS/CK into current instance and return keys array as Promise object
      */
     getKeys(keyType) {
+        const applicationId = this.applicationId != null ? this.applicationId : this.id;
+        if (applicationId == null || applicationId === '') {
+            return Promise.reject(new Error('Application ID is not available'));
+        }
         return this.client.then((client) => client.apis['Application Keys']
-            .get_applications__applicationId__oauth_keys({ applicationId: this.applicationId }))
+            .get_applications__applicationId__oauth_keys({ applicationId }))
             .then((keysResponse) => {
                 const keys = keysResponse.obj.list;
                 this._setKeys(keys);
@@ -103,11 +113,12 @@ export default class Application extends Resource {
      * @param {string} selectedScopes token scopes
      * @param {boolean} isTokenExchange is token exchange flow
      * @param {string} externalToken token from external identity provider
+     * @param {string} consumerSecret consumer secret of the application
      * @returns {promise} Set the generated token into current
      * instance and return tokenObject received as Promise object
      */
     generateToken(selectedTab, type, validityPeriod, selectedScopes, isTokenExchange,
-        externalToken) {
+        externalToken, consumerSecret = null) {
         if (isTokenExchange) {
             const defaultKMTab = 'Resident Key Manager';
             const promiseToken = this.getKeys()
@@ -128,7 +139,7 @@ export default class Application extends Resource {
                         accessToken = this.sandboxTokens.get(defaultKMTab);
                     }
                     const requestContent = {
-                        consumerSecret: keys.consumerSecret,
+                        consumerSecret: consumerSecret || keys.consumerSecret,
                         validityPeriod,
                         revokeToken: accessToken.accessToken,
                         scopes: selectedScopes,
@@ -166,13 +177,23 @@ export default class Application extends Resource {
                     } else {
                         accessToken = this.sandboxTokens.get(selectedTab);
                     }
-                    const requestContent = {
-                        consumerSecret: keys.consumerSecret,
-                        validityPeriod,
-                        revokeToken: accessToken.accessToken,
-                        scopes: selectedScopes,
-                        additionalProperties: keys.additionalProperties,
-                    };
+                    let requestContent;
+                    if (consumerSecret) {
+                        requestContent = {
+                            consumerSecret: consumerSecret,
+                            validityPeriod,
+                            scopes: selectedScopes,
+                            additionalProperties: keys.additionalProperties,
+                        };
+                    } else {
+                        requestContent = {
+                            consumerSecret: keys.consumerSecret,
+                            validityPeriod,
+                            revokeToken: accessToken.accessToken,
+                            scopes: selectedScopes,
+                            additionalProperties: keys.additionalProperties,
+                        };
+                    }
                     const payload = { applicationId: this.id, keyMappingId };
                     const body = { requestBody: requestContent };
                     return client.apis['Application Tokens']
@@ -345,6 +366,43 @@ export default class Application extends Resource {
         });
     }
 
+    generateSecret(keyMappingId, additionalProperties) {
+        const promisedSecret = this.client.then((client) => {
+            const requestContent = {
+                additionalProperties,
+            };
+            const payload = { applicationId: this.id, keyMappingId };
+            const body = { requestBody: requestContent };
+            return client.apis['Application Secrets'].generateConsumerSecret(payload, body);
+        });
+        return promisedSecret.then((secretResponse) => {
+            const secret = secretResponse.obj;
+            return secret;
+        });
+    }
+
+    getSecrets(keyMappingId) {
+        return this.client.then((client) => client.apis['Application Secrets']
+            .getConsumerSecrets({ applicationId: this.id, keyMappingId }))
+            .then((secretsResponse) => {
+                const secrets = secretsResponse.obj.list;
+                return secrets;
+            });
+    }
+
+    deleteSecret(keyMappingId, secretId, additionalProperties) {
+        const promisedDelete = this.client.then((client) => {
+            const requestContent = {
+                secretId,
+                additionalProperties,
+            };
+            const payload = { applicationId: this.id, keyMappingId };
+            const body = { requestBody: requestContent };
+            return client.apis['Application Secrets'].revokeConsumerSecret(payload, body);
+        });
+        return promisedDelete.then((response) => response.status);
+    }
+
     /**
      * Provide Consumer Key and Secret of Existing OAuth Apps
      *
@@ -375,6 +433,9 @@ export default class Application extends Resource {
     }
 
     static get(id) {
+        if (id == null || id === '') {
+            return Promise.reject(new Error('Application ID is not available'));
+        }
         const apiClient = new APIClientFactory().getAPIClient(Utils.getEnvironment());
         const promisedGet = apiClient.client.then((client) => {
             return client.apis.Applications.get_applications__applicationId_(

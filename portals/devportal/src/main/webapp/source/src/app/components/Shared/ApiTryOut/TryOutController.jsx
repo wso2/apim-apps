@@ -27,6 +27,7 @@ import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import {
     Radio, RadioGroup, FormControlLabel, FormControl, CircularProgress, Tooltip,
+    Dialog, DialogTitle, DialogContent, DialogActions,
 } from '@mui/material';
 import HelpOutline from '@mui/icons-material/HelpOutline';
 import IconButton from '@mui/material/IconButton';
@@ -47,6 +48,9 @@ import Api from '../../../data/api';
 import Application from '../../../data/Application';
 import CONSTANTS from '../../../data/Constants';
 import SelectAppPanel from './SelectAppPanel';
+import { isMultipleClientSecretsEnabled } from 'AppComponents/Shared/AppsAndKeys/Secrets/util';
+import Alert from 'AppComponents/Shared/Alert';
+import isPlatformGatewayApi from '../../Apis/Details/ApiConsole/platformGateway';
 
 const PREFIX = 'TryOutController';
 
@@ -185,9 +189,13 @@ function TryOutController(props) {
     const [ksGenerated, setKSGenerated] = useState(false);
     const [showMoreGWUrls, setShowMoreGWUrls] = useState(false);
     const [tokenValue, setTokenValue] = useState('');
+    const [consumerSecret, setConsumerSecret] = useState('');
+    const [showSecret, setShowSecret] = useState(false);
+    const [secretDialogOpen, setSecretDialogOpen] = useState(false);
     const apiID = api.id;
     const restApi = new Api();
     const user = AuthManager.getUser();
+    const isPlatformGateway = isPlatformGatewayApi(api);
     const isSubValidationDisabled = api.tiers && api.tiers.length === 1
             && api.tiers[0].tierName.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
 
@@ -347,7 +355,8 @@ function TryOutController(props) {
     /**
      * Generate access token
      * */
-    function generateAccessToken() {
+    function generateAccessToken(secretOverride) {
+        const secret = (typeof secretOverride === 'string') ? secretOverride : consumerSecret;
         if (api.lifeCycleStatus) {
             setIsUpdating(true);
             const applicationPromise = Application.get(selectedApplication);
@@ -357,6 +366,9 @@ function TryOutController(props) {
                     selectedKeyType,
                     3600,
                     scopes,
+                    undefined,
+                    undefined,
+                    secret
                 ))
                 .then((response) => {
                     console.log('token generated successfully ' + response);
@@ -376,6 +388,10 @@ function TryOutController(props) {
                         setNotFound(true);
                     }
                     setIsUpdating(false);
+                    const { response } = error;
+                    if (response && response.body && response.body.message && response.body.description) {
+                        Alert.error(`${response.body.message}: ${response.body.description}`);
+                    }
                 });
         }
     }
@@ -425,6 +441,9 @@ function TryOutController(props) {
      */
     function updateApplication() {
         if (api.lifeCycleStatus) {
+            if (selectedApplication == null || String(selectedApplication).trim() === '') {
+                return;
+            }
             let accessToken;
             let keyType;
             if (isSubValidationDisabled) {
@@ -468,6 +487,21 @@ function TryOutController(props) {
                         setKSGenerated(false);
                     }
                     setKeys(appKeys);
+                })
+                .catch((err) => {
+                    if (process.env.NODE_ENV !== 'production') {
+                        // eslint-disable-next-line no-console
+                        console.warn('TryOutController: could not load application keys', err);
+                    }
+                    setKeys([]);
+                    setProductionAccessToken('');
+                    setSandboxAccessToken('');
+                    setProductionApiKey('');
+                    setSandboxApiKey('');
+                    setKSGenerated(false);
+                    setConsumerSecret('');
+                    setShowToken(false);
+                    handleAccessTokenChange({ newAccessToken: '' });
                 });
         }
     }
@@ -513,9 +547,11 @@ function TryOutController(props) {
                 setProductionApiKey('');
                 setSandboxApiKey('');
                 setSelectedApplication(value);
+                setConsumerSecret('');
                 break;
             case 'selectedKeyManager':
                 setSelectedKeyManager(value, true, selectedApplication);
+                setConsumerSecret('');
                 break;
             case 'selectedKeyType':
                 if (!productionAccessToken || !sandboxAccessToken) {
@@ -554,6 +590,9 @@ function TryOutController(props) {
             case 'selectedEndpoint':
                 setSelectedEndpoint(value);
                 break;
+            case 'consumerSecret':
+                setConsumerSecret(value);
+                break;
             default:
         }
     }
@@ -571,10 +610,23 @@ function TryOutController(props) {
     let authorizationHeader = api.authorizationHeader ? api.authorizationHeader : 'Authorization';
     let prefix = 'Bearer';
     if (api && api.securityScheme) {
-        isApiKeyEnabled = api.securityScheme.includes('api_key');
-        isBasicAuthEnabled = api.securityScheme.includes('basic_auth');
-        isOAuthEnabled = api.securityScheme.includes('oauth2');
-        isTestKeyEnabled = api.securityScheme.includes('test_auth');
+        const securitySchemeValues = Array.isArray(api.securityScheme)
+            ? api.securityScheme
+            : (typeof api.securityScheme === 'string'
+                ? api.securityScheme.split(',')
+                : [api.securityScheme]);
+        const securitySchemes = new Set(
+            securitySchemeValues.map((s) => String(s).trim().toLowerCase()).filter(Boolean),
+        );
+        isApiKeyEnabled = securitySchemes.has('api_key');
+        isBasicAuthEnabled = securitySchemes.has('basic_auth');
+        isOAuthEnabled = securitySchemes.has('oauth2');
+        isTestKeyEnabled = securitySchemes.has('test_auth');
+        if (isPlatformGateway) {
+            // For Platform APIs, only show OAuth/API Key when mapped headers are available from hub policies.
+            isApiKeyEnabled = isApiKeyEnabled && !!api.apiKeyHeader;
+            isOAuthEnabled = isOAuthEnabled && !!api.authorizationHeader;
+        }
         if (isApiKeyEnabled && securitySchemeType === 'API-KEY') {
             authorizationHeader = api.apiKeyHeader ? api.apiKeyHeader : 'ApiKey';
             prefix = '';
@@ -584,11 +636,28 @@ function TryOutController(props) {
             prefix = '';
         }
     }
-    const isPrototypedAPI = api.lifeCycleStatus && api.lifeCycleStatus.toLowerCase() === 'prototyped';
-    const isPublished = api.lifeCycleStatus.toLowerCase() === 'published';
+    const lifeCycleStatus = (api.lifeCycleStatus || '').toLowerCase();
+    const isPrototypedAPI = lifeCycleStatus === 'prototyped';
+    const isPublished = lifeCycleStatus === 'published';
     const showSecurityType = isPublished || isPrototypedAPI;
+    let selectedSchemeEnabled = false;
+    if (securitySchemeType === 'API-KEY') {
+        selectedSchemeEnabled = isApiKeyEnabled;
+    } else if (securitySchemeType === 'BASIC') {
+        selectedSchemeEnabled = isBasicAuthEnabled;
+    } else if (securitySchemeType === 'TEST') {
+        selectedSchemeEnabled = isTestKeyEnabled;
+    } else {
+        selectedSchemeEnabled = isOAuthEnabled;
+    }
 
     const authHeader = `${authorizationHeader}: ${prefix}`;
+
+    const isMultipleClientSecretsAllowed = isMultipleClientSecretsEnabled(selectedKMObject?.additionalProperties);
+
+    const isConsumerSecretRequired = selectedKMObject && (isMultipleClientSecretsAllowed || selectedKMObject.enableTokenHashing) 
+        && securitySchemeType === 'OAUTH';
+    // Consumer secret is now collected via dialog, so GET TEST KEY is always enabled.
 
     useEffect(() => {
         if (securitySchemeType === 'API-KEY') {
@@ -730,7 +799,8 @@ function TryOutController(props) {
                         )}
                     {subscriptions && subscriptions.length === 0 && securitySchemeType !== 'TEST'
                     && securitySchemeType !== 'BASIC' && (api.gatewayVendor === 'wso2' || !api.gatewayVendor)
-                        && (!api.advertiseInfo || !api.advertiseInfo.advertised) && !isSubValidationDisabled ? (
+                        && (!api.advertiseInfo || !api.advertiseInfo.advertised)
+                        && !isSubValidationDisabled && !isPlatformGateway ? (
                             <Grid x={8} md={6} className={classes.tokenType} item>
                                 <Box mb={1} alignItems='center'>
                                     <Typography variant='body1'>
@@ -748,7 +818,8 @@ function TryOutController(props) {
                             </Grid>
                         ) : (
                             (!ksGenerated && securitySchemeType === 'OAUTH') && (!api.advertiseInfo
-                                || !api.advertiseInfo.advertised) && (api.gatewayVendor === 'wso2' || !api.gatewayVendor) && (
+                                || !api.advertiseInfo.advertised) && (api.gatewayVendor === 'wso2' || !api.gatewayVendor)
+                                && !isPlatformGateway && (
                                 <Grid x={8} md={6} className={classes.tokenType} item>
                                     <Box mb={1} alignItems='center'>
                                         <Typography variant='body1'>
@@ -768,6 +839,91 @@ function TryOutController(props) {
                                 </Grid>
                             )
                         )}
+                    {/* Consumer Secret Dialog - Opens when GET TEST KEY is clicked (multiple secrets mode) */}
+                    {isConsumerSecretRequired && (
+                        <Dialog
+                            open={secretDialogOpen}
+                            onClose={() => { setSecretDialogOpen(false); setConsumerSecret(''); setShowSecret(false); }}
+                            fullWidth
+                            maxWidth='sm'
+                        >
+                            <DialogTitle>
+                                <FormattedMessage
+                                    id='Apis.Details.ApiConsole.generate.test.key.dialog.title'
+                                    defaultMessage='Generate test key'
+                                />
+                            </DialogTitle>
+                            <DialogContent>
+                                <TextField
+                                    autoFocus
+                                    fullWidth
+                                    margin='normal'
+                                    variant='outlined'
+                                    label={(
+                                        <FormattedMessage
+                                            id='Apis.Details.ApiConsole.consumer.secret.text.field'
+                                            defaultMessage='Consumer secret'
+                                        />
+                                    )}
+                                    name='consumerSecret'
+                                    onChange={handleChanges}
+                                    type={showSecret ? 'text' : 'password'}
+                                    value={consumerSecret || ''}
+                                    id='consumerSecretInput'
+                                    helperText={(
+                                        <FormattedMessage
+                                            id='Apis.Details.TryOutConsole.consumerSecret.required.helper'
+                                            defaultMessage='Enter the consumer secret for the selected application to generate a test key.'
+                                        />
+                                    )}
+                                    InputProps={{
+                                        autoComplete: 'new-password',
+                                        endAdornment: (
+                                            <InputAdornment position='end'>
+                                                <IconButton
+                                                    edge='end'
+                                                    aria-label='toggle consumer secret visibility'
+                                                    onClick={() => setShowSecret(!showSecret)}
+                                                    size='large'
+                                                >
+                                                    {showSecret ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={() => {
+                                    setSecretDialogOpen(false);
+                                    setConsumerSecret('');
+                                    setShowSecret(false);
+                                }}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.ApiConsole.generate.test.key.dialog.cancel'
+                                        defaultMessage='Cancel'
+                                    />
+                                </Button>
+                                <Button
+                                    variant='contained'
+                                    onClick={() => {
+                                        const secretValue = consumerSecret;
+                                        setSecretDialogOpen(false);
+                                        setConsumerSecret('');
+                                        setShowSecret(false);
+                                        generateAccessToken(secretValue);
+                                    }}
+                                    disabled={!consumerSecret?.trim() || isUpdating}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.ApiConsole.generate.test.key.dialog.generate'
+                                        defaultMessage='Generate'
+                                    />
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                    )}
                     {((!api.advertiseInfo || !api.advertiseInfo.advertised) 
                         && (api.gatewayVendor === 'wso2' || !api.gatewayVendor)) ? (
                         <Box display='block' justifyContent='center'>
@@ -824,8 +980,8 @@ function TryOutController(props) {
                                         </Grid>
                                     </>
                                 )}
-
-                                {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST' && (
+                                {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
+                                    && selectedSchemeEnabled && (
                                     <TextField
                                         fullWidth
                                         margin='normal'
@@ -876,17 +1032,20 @@ function TryOutController(props) {
                                     />
                                 )}
                                 {securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
-                                && selectedKMObject && !selectedKMObject.enableTokenHashing && (
+                                && securitySchemeType !== 'API-KEY'
+                                && selectedKMObject && selectedSchemeEnabled && (
                                     <>
                                         <Button
                                             onClick={securitySchemeType === 'API-KEY' ? generateApiKey
-                                                : generateAccessToken}
+                                                : (isConsumerSecretRequired
+                                                    ? () => setSecretDialogOpen(true) : generateAccessToken)}
                                             variant='contained'
                                             color='grey'
                                             className={classes.genKeyButton}
                                             disabled={!user
                                                 || (subscriptions && subscriptions.length === 0 && !isSubValidationDisabled)
-                                                || (!ksGenerated && securitySchemeType === 'OAUTH')}
+                                                || (!ksGenerated && securitySchemeType === 'OAUTH')
+                                                || isUpdating}
                                             id='gen-test-key'
                                         >
                                             {isUpdating && (
@@ -901,18 +1060,25 @@ function TryOutController(props) {
                                             placement='right'
                                             interactive
                                             title={(
-                                                <FormattedMessage
-                                                    id='Apis.Details.TryOutConsole.access.token.tooltip'
-                                                    defaultMessage={
-                                                        'You can use your existing Access Token or '
-                                                                + 'you can generate a new Test Key.'
-                                                    }
-                                                />
+                                                <>
+                                                    <FormattedMessage
+                                                        id='Apis.Details.TryOutConsole.access.token.tooltip'
+                                                        defaultMessage='You can use your existing access token or generate a new test key.'
+                                                    />
+                                                    {isConsumerSecretRequired && (
+                                                        <div style={{ marginTop: 4, fontWeight: 500 }}>
+                                                            <FormattedMessage
+                                                                id='Apis.Details.TryOutConsole.consumer.secret.dialog.hint'
+                                                                defaultMessage='You will be prompted for the consumer secret.'
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </>
                                             )}
                                         >
                                             <Box m={1} mt={2}>
                                                 <IconButton
-                                                    aria-label='Use existing Access Token or generate a new Test Key'
+                                                    aria-label='Use existing access token or generate a new test key'
                                                     size='large'
                                                 >
                                                     <HelpOutline />
