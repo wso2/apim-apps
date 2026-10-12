@@ -41,6 +41,9 @@ const classes = {
     heading: `${PREFIX}-heading`,
     column: `${PREFIX}-column`,
     row: `${PREFIX}-row`,
+    totalComplexity: `${PREFIX}-totalComplexity`,
+    totalComplexityLabel: `${PREFIX}-totalComplexityLabel`,
+    totalComplexityValue: `${PREFIX}-totalComplexityValue`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
@@ -70,6 +73,31 @@ const Root = styled('div')((
         flexShrink: 0,
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
+    },
+
+    // Uses the GraphiQL theme variables so the card follows the GraphiQL light and dark themes.
+    [`& .${classes.totalComplexity}`]: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: theme.spacing(2),
+        padding: theme.spacing(1.5, 2),
+        marginBottom: theme.spacing(2),
+        border: '1px solid hsla(var(--color-neutral), var(--alpha-background-heavy))',
+        borderLeft: '4px solid hsl(var(--color-primary))',
+        borderRadius: 'var(--border-radius-8)',
+        backgroundColor: 'hsla(var(--color-primary), var(--alpha-background-light))',
+    },
+
+    [`& .${classes.totalComplexityLabel}`]: {
+        fontSize: theme.typography.pxToRem(14),
+        color: 'hsla(var(--color-neutral), var(--alpha-secondary))',
+    },
+
+    [`& .${classes.totalComplexityValue}`]: {
+        fontSize: theme.typography.pxToRem(24),
+        fontWeight: 'bold',
+        color: 'hsl(var(--color-primary))',
     },
 
 }));
@@ -183,13 +211,17 @@ export default function QueryComplexityView() {
                         />
                     </div>
                 </div>
-                <Typography className={classes.heading}>
-                    <FormattedMessage
-                        id='Apis.Details.GraphQLConsole.QueryComplexityView.totalComplexity'
-                        defaultMessage='Total complexity of selected query: {value}'
-                        values={{ value: totalComplexity ?? '-' }}
-                    />
-                </Typography>
+                <div className={classes.totalComplexity}>
+                    <Typography className={classes.totalComplexityLabel}>
+                        <FormattedMessage
+                            id='Apis.Details.GraphQLConsole.QueryComplexityView.totalComplexity'
+                            defaultMessage='Total complexity of selected query'
+                        />
+                    </Typography>
+                    <Typography className={classes.totalComplexityValue}>
+                        {totalComplexity ?? '-'}
+                    </Typography>
+                </div>
                 <Divider />
                 <div
                     className={classes.root}
