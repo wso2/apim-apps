@@ -16,9 +16,12 @@
  * under the License.
  */
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, {
+    useState, useEffect, useContext, useMemo,
+} from 'react';
 import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
+import { useGraphiQL } from '@graphiql/react';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -28,6 +31,7 @@ import Divider from '@mui/material/Divider';
 import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
 import Progress from '../../../Shared/Progress';
+import { buildComplexityMap, calculateQueryComplexity } from './QueryComplexityUtils';
 
 const PREFIX = 'QueryComplexityView';
 
@@ -96,6 +100,9 @@ export default function QueryComplexityView() {
     const { api } = useContext(ApiContext);
     const [typelist, setTypeList] = useState([]);
     const [state, setState] = useState(null);
+    const schema = useGraphiQL((graphiql) => graphiql.schema);
+    const documentAST = useGraphiQL((graphiql) => graphiql.documentAST);
+    const operationName = useGraphiQL((graphiql) => graphiql.operationName);
 
     const useThemeDetector = () => {
         const getCurrentTheme = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -156,6 +163,12 @@ export default function QueryComplexityView() {
             });
     }, []);
 
+    const complexityMap = useMemo(() => buildComplexityMap(state), [state]);
+    const totalComplexity = useMemo(
+        () => calculateQueryComplexity(schema, documentAST, operationName, complexityMap),
+        [schema, documentAST, operationName, complexityMap],
+    );
+
     if (state === null) {
         return <Progress />;
     }
@@ -170,6 +183,13 @@ export default function QueryComplexityView() {
                         />
                     </div>
                 </div>
+                <Typography className={classes.heading}>
+                    <FormattedMessage
+                        id='Apis.Details.GraphQLConsole.QueryComplexityView.totalComplexity'
+                        defaultMessage='Total complexity of selected query: {value}'
+                        values={{ value: totalComplexity ?? '-' }}
+                    />
+                </Typography>
                 <Divider />
                 <div
                     className={classes.root}
