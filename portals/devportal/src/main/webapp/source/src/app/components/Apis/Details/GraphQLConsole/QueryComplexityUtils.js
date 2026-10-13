@@ -29,7 +29,7 @@ const DEFAULT_FIELD_COMPLEXITY = 1;
 
 // Arguments that multiply the complexity of a field by their value. Must be kept in sync with
 // GraphQLConstants.QUERY_COMPLEXITY_SLICING_ARGS in the gateway (carbon-apimgt).
-const SLICING_ARGUMENTS = ['first', 'last', 'limit'];
+const SLICING_ARGUMENTS = new Set(['first', 'last', 'limit']);
 
 /**
  * Builds a lookup map of custom complexity values keyed by `${type}.${field}`.
@@ -77,9 +77,9 @@ function getArgumentsValue(argumentNodes) {
         return 1;
     }
     return argumentNodes.reduce((total, argument) => {
-        if (SLICING_ARGUMENTS.includes(argument.name.value.toLowerCase())) {
+        if (SLICING_ARGUMENTS.has(argument.name.value.toLowerCase())) {
             // Only literal integers are counted, values passed as variables count as 0 in the gateway.
-            return total + (argument.value.kind === Kind.INT ? parseInt(argument.value.value, 10) : 0);
+            return total + (argument.value.kind === Kind.INT ? Number.parseInt(argument.value.value, 10) : 0);
         }
         return total + 1;
     }, 0);
@@ -156,7 +156,7 @@ export function calculateQueryComplexity(schema, documentAST, operationName, com
         return null;
     }
     const operations = documentAST.definitions.filter((def) => def.kind === Kind.OPERATION_DEFINITION);
-    const operation = operations.find((op) => op.name && op.name.value === operationName) || operations[0];
+    const operation = operations.find((op) => op.name?.value === operationName) || operations[0];
     if (!operation) {
         return null;
     }
