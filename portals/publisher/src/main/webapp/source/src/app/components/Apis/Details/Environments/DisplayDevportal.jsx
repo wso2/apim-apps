@@ -34,6 +34,7 @@ export default function DisplayDevportal(props) {
         api,
         name,
         EnvDeployments,
+        onToggle,
     } = props;
     const restApi = new API();
     const restAPIProduct = new APIProduct();
@@ -54,14 +55,12 @@ export default function DisplayDevportal(props) {
     [EnvDeployments.disPlayDevportal]);
 
     const handleDisplayOnDevPortal = (event) => {
-        if (typeof EnvDeployments.revision === 'undefined') {
-            setCheck(event.target.checked);
-        } else {
+        setCheck(event.target.checked);
+        if (typeof EnvDeployments.revision !== 'undefined') {
             const body = {
                 revisionUuid: EnvDeployments.revision.id,
                 displayOnDevportal: event.target.checked,
             };
-            setCheck(event.target.checked);
             if (api.apiType === API.CONSTS.APIProduct) {
                 restAPIProduct.displayInDevportalProduct(api.id, base64url.encode(event.target.name), body);
             } else if (api.apiType === MCPServer.CONSTS.MCP) {
@@ -69,6 +68,12 @@ export default function DisplayDevportal(props) {
             } else {
                 restApi.displayInDevportalAPI(api.id, base64url.encode(event.target.name), body);
             }
+        }
+        // Notify the parent in both branches so a subsequent revision deploy from the
+        // same page reads the new value — including the undeployed-env case where
+        // there is no live deployment to persist against yet.
+        if (typeof onToggle === 'function') {
+            onToggle(event.target.name, event.target.checked);
         }
     };
 
