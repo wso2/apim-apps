@@ -171,7 +171,7 @@ class CommentOptions extends React.Component {
         const user = AuthManager.getUser();
         const username = Utils.getUserNameWithoutDomain(user.name);
         const canDelete = (comment.createdBy === username) || user.isAdmin();
-        const canReply = !user.isCreator() || user.isAdmin();
+        const canReply = user.scopes.includes("apim:comment_write") || user.scopes.includes("apim:comment_manage");
         // const canModify = comment.createdBy === username;
         return (
             <StyledGrid container spacing={1} className={classes.verticalSpace} key={comment.id}>
