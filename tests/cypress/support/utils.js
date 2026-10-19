@@ -332,14 +332,234 @@ export default class Utils {
             }
         });
     }
-    static deleteMCPServer(mcpServerId) {
-        if (!mcpServerId) return;
-        Cypress.on('uncaught:exception', () => false);
-        return Utils.getApiToken().then((token) => {
-            const curl = `curl -k -X DELETE \
-                        -H "Authorization: Bearer ${token}" \
-                        "${Cypress.config().baseUrl}/api/am/publisher/v4/mcp-servers/${mcpServerId}"`;
-            return cy.exec(curl, { failOnNonZeroExit: false });
+
+    static addMCPServerFromEndpointConfig(data) {
+        let { name, version, context, endpoint, payload } = data;
+        name = name || `TestMCP${Utils.getRandomString(4)}`;
+        context = context || `/${name.toLowerCase()}`;
+        version = version || '1.0.0';
+        endpoint = endpoint || 'https://localhost:9443';
+        const newPayload = payload || JSON.stringify({
+            name,
+            version,
+            context,
+            endpointConfig: {
+                endpoint_type: 'http',
+                sandbox_endpoints: { url: endpoint },
+                production_endpoints: { url: endpoint },
+            },
+            transport: ['http', 'https'],
+            visibility: 'PUBLIC',
+            policies: ['Unlimited'],
+        });
+        return new Cypress.Promise((resolve, reject) => {
+            Utils.getApiToken()
+                .then((token) => {
+                    const curl = `curl -k -s -X POST \
+                    -H "Content-Type: application/json" \
+                    -d '${newPayload}' \
+                    -H "Authorization: Bearer ${token}" "${Cypress.config().baseUrl}/api/am/publisher/v4/mcp-servers/generate-from-api"`;
+                    cy.exec(curl, { failOnNonZeroExit: false }).then((result) => {
+                        let mcp;
+                        try {
+                            const cleaned = result.stdout.replace(/[\x01-\x1F]/g, ' ');
+                            mcp = JSON.parse(cleaned);
+                        } catch (e) {
+                            reject(`Error while parsing MCP server creation response: ${result.stdout}`);
+                            return;
+                        }
+                        if (!mcp || typeof mcp.id !== 'string') {
+                            reject(`Error while creating MCP server: ${JSON.stringify(mcp)}`);
+                            return;
+                        }
+                        resolve(mcp.id);
+                    });
+                });
+        });
+    }
+
+    static addMCPRevision(mcpId) {
+        return new Cypress.Promise((resolve, reject) => {
+            try {
+                Utils.getApiToken()
+                    .then((token) => {
+                        const curl = `curl -k -s -X POST \
+                        -H "Content-Type: application/json" \
+                        -d '{"description":""}' \
+                        -H "Authorization: Bearer ${token}" "${Cypress.config().baseUrl}/api/am/publisher/v4/mcp-servers/${mcpId}/revisions"`;
+                        cy.exec(curl, { failOnNonZeroExit: false }).then((result) => {
+                            let revision;
+                            try {
+                                revision = JSON.parse(result.stdout);
+                            } catch (e) {
+                                reject(`addMCPRevision: non-JSON response. body=${result.stdout}`);
+                                return;
+                            }
+                            if (!revision || typeof revision.id !== 'string') {
+                                reject(`addMCPRevision: server returned no id. body=${result.stdout}`);
+                                return;
+                            }
+                            resolve(revision.id);
+                        });
+                    });
+            } catch (e) {
+                reject('Error while creating MCP revision');
+            }
+        });
+    }
+
+    static deployMCPRevision(mcpId, revisionId) {
+        const payload = `[{"name":"Default","vhost":"${new URL(Cypress.config().baseUrl).hostname}","displayOnDevportal":true}]`;
+        return new Cypress.Promise((resolve, reject) => {
+            try {
+                Utils.getApiToken()
+                    .then((token) => {
+                        const curl = `curl -k -s -X POST \
+                        -H "Content-Type: application/json" \
+                        -d '${payload}' \
+                        -H "Authorization: Bearer ${token}" "${Cypress.config().baseUrl}/api/am/publisher/v4/mcp-servers/${mcpId}/deploy-revision?revisionId=${revisionId}"`;
+                        cy.exec(curl, { failOnNonZeroExit: false }).then((result) => {
+                            resolve(result.stdout);
+                        });
+                    });
+            } catch (e) {
+                reject('Error while deploying MCP revision');
+            }
+        });
+    }
+
+    static publishMCPServer(mcpId) {
+        return new Cypress.Promise((resolve, reject) => {
+            try {
+                Utils.getApiToken()
+                    .then((token) => {
+                        const curl = `curl -k -s -X POST \
+                        -H "Content-Type: application/json" \
+                        -H "Authorization: Bearer ${token}" "${Cypress.config().baseUrl}/api/am/publisher/v4/mcp-servers/change-lifecycle?action=Publish&mcpServerId=${mcpId}"`;
+                        cy.exec(curl, { failOnNonZeroExit: false }).then((result) => {
+                            resolve(result.stdout);
+                        });
+                    });
+            } catch (e) {
+                reject('Error while publishing MCP server');
+            }
+        });
+    }
+
+    /**
+     * The tool name APIM auto-derives for the mocked `GET /status` operation with no
+     * operationId, used by Utils.createMockToolMcpServer().
+     */
+    static getMockToolName() {
+        return 'get_status';
+    }
+
+    /**
+     * Creates, deploys, and publishes a uniquely-named MCP server exposing a single tool
+     * (GET /status, no parameters, no auth) mapped from a small source API. The endpoint
+     * URL is a placeholder that is never actually contacted - see the note below.
+     *
+     * Playground-invocation tests using this helper MUST intercept the tool invocation
+     * (cy.intercept('POST', '**\/mcp', ...) filtering on `body.method === 'tools/call'`)
+     * and reply with a canned result, rather than letting it hit a real backend. This is
+     * safe to do because `initialize`, `notifications/initialized`, and `tools/list` are
+     * all answered directly by the gateway from the MCP server's own stored metadata -
+     * only `tools/call` ever attempts to reach the configured endpoint, and since that
+     * call originates from the browser, intercepting it there means the placeholder URL
+     * is never actually dialed. This avoids any dependency on a real backend (bundled
+     * sample or external) purely for exercising the Playground's connect/list/run UI flow.
+     *
+     * Every test run gets its own uniquely-named resources via the same generate-from-api
+     * + apiOperationMapping flow used elsewhere in this suite (see setupMcpWithTools in
+     * 03-mcp-server-tools-management.spec.js), so there's no name collision with a
+     * previous run's leftover server.
+     * @returns {Cypress.Chainable<{mcpId: string, sourceApiId: string}>}
+     */
+    static createMockToolMcpServer() {
+        const suffix = Utils.getRandomString(5);
+        const srcName = `TestPlaygroundSrc${suffix}`;
+        const srcContext = `/testplaygroundsrc${suffix}`;
+        const mcpName = `TestPlaygroundMCP${suffix}`;
+        const mcpContext = `/testplaygroundmcp${suffix}`;
+        const baseUrl = Cypress.config().baseUrl;
+        // Never actually contacted - tools/call is always intercepted by the caller before
+        // this URL would be dialed. Points at the running pack itself purely so the value
+        // is a well-formed, resolvable-looking URL.
+        const endpointConfig = {
+            endpoint_type: 'http',
+            sandbox_endpoints: { url: `${baseUrl}/placeholder-unused-endpoint` },
+            production_endpoints: { url: `${baseUrl}/placeholder-unused-endpoint` },
+        };
+
+        const srcPayload = JSON.stringify({
+            name: srcName,
+            version: '1.0.0',
+            context: srcContext,
+            policies: ['Unlimited'],
+            endpointConfig,
+            operations: [
+                {
+                    target: '/status', verb: 'GET', authType: 'Application & Application User', throttlingPolicy: 'Unlimited',
+                },
+            ],
+        });
+
+        return Utils.addAPI({ payload: srcPayload }).then((sourceApiId) => {
+            expect(sourceApiId, 'Source API created').to.be.a('string');
+
+            const mcpPayload = JSON.stringify({
+                name: mcpName,
+                version: '1.0.0',
+                context: mcpContext,
+                transport: ['http', 'https'],
+                visibility: 'PUBLIC',
+                policies: ['Unlimited'],
+                endpointConfig,
+                operations: [
+                    {
+                        feature: 'TOOL',
+                        apiOperationMapping: {
+                            apiId: sourceApiId,
+                            apiName: srcName,
+                            apiVersion: '1.0.0',
+                            apiContext: srcContext,
+                            backendOperation: { target: '/status', verb: 'GET' },
+                        },
+                    },
+                ],
+            });
+
+            return Utils.addMCPServerFromEndpointConfig({ payload: mcpPayload }).then((mcpId) => {
+                expect(mcpId, 'MCP server created').to.be.a('string');
+                return Utils.addMCPRevision(mcpId).then((revisionId) => {
+                    return Utils.deployMCPRevision(mcpId, revisionId).then(() => {
+                        return Utils.publishMCPServer(mcpId).then(() => ({ mcpId, sourceApiId }));
+                    });
+                });
+            });
+        });
+    }
+
+    static deleteMCPServer(mcpId) {
+        if (!mcpId) return;
+        Cypress.on('uncaught:exception', (err, runnable) => {
+            return false;
+        });
+        return new Cypress.Promise((resolve, reject) => {
+            try {
+                Utils.getApiToken()
+                    .then((token) => {
+                        const curl = `curl -k -s -X DELETE \
+                        -H "Content-Type: application/json" \
+                        -H "Authorization: Bearer ${token}" "${Cypress.config().baseUrl}/api/am/publisher/v4/mcp-servers/${mcpId}"`;
+                        cy.exec(curl, { failOnNonZeroExit: false }).then((result) => {
+                            resolve(result.stdout);
+                        });
+                        cy.wait(5000);
+                    });
+            } catch (e) {
+                reject('Error while deleting MCP server');
+            }
         });
     }
 

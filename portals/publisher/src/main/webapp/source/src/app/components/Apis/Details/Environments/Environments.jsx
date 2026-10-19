@@ -532,6 +532,10 @@ export default function Environments() {
     const restApi = new API();
     const restProductApi = new APIProduct();
     const [selectedRevision, setRevision] = useState([]);
+    // Tracks the latest user toggle for each env's "Display on Dev Portal" switch so
+    // a subsequent revision deploy from the same page reads the new value instead of
+    // the stale allEnvRevision cache. Updated by DisplayDevportal via the onToggle prop.
+    const [envDisplayOverrides, setEnvDisplayOverrides] = useState({});
     const [internalGateways, setInternalGateways] = useState([]);
     const [externalGateways, setExternalGateways] = useState([]);
     const [selectedVhosts, setVhosts] = useState(null);
@@ -857,15 +861,51 @@ export default function Environments() {
         setExtraRevisionToDelete([event.target.value, event.target.name]);
     };
 
-    const handleSelect = (event) => {
-        const revisions = selectedRevision.filter((r) => r.env !== event.target.name);
-        const oldRevision = selectedRevision.find((r) => r.env === event.target.name);
-        let displayOnDevPortal = true;
-        if (oldRevision) {
-            displayOnDevPortal = oldRevision.displayOnDevPortal;
+    /**
+     * Resolve the displayOnDevportal value to use for an env when building a deploy
+     * request. Prefers a toggle the user just flipped on the same page, then the
+     * current live (APPROVED) deployment's visibility, then true as the default.
+     * Shared by handleSelect (dropdown pick) and createDeployRevision (Deploy New
+     * Revision button) so both paths honour the user's intent instead of
+     * hard-coding true.
+     * @param {string} envName the environment name
+     */
+    const resolveDisplayOnDevportalForEnv = (envName) => {
+        if (Object.prototype.hasOwnProperty.call(envDisplayOverrides, envName)) {
+            return envDisplayOverrides[envName];
         }
-        revisions.push({ env: event.target.name, revision: event.target.value, displayOnDevPortal });
+        const liveInfo = allEnvRevision
+            && allEnvRevision
+                .flatMap((r) => r.deploymentInfo || [])
+                .find((e) => e.name === envName
+                    && (e.status === null || e.status === 'APPROVED'));
+        return liveInfo && typeof liveInfo.displayOnDevportal !== 'undefined'
+            ? liveInfo.displayOnDevportal
+            : true;
+    };
+
+    const handleSelect = (event) => {
+        const envName = event.target.name;
+        const revisions = selectedRevision.filter((r) => r.env !== envName);
+        const oldRevision = selectedRevision.find((r) => r.env === envName);
+        const displayOnDevPortal = oldRevision
+            ? oldRevision.displayOnDevPortal
+            : resolveDisplayOnDevportalForEnv(envName);
+        revisions.push({ env: envName, revision: event.target.value, displayOnDevPortal });
         setRevision(revisions);
+    };
+
+    /**
+     * Handles toggling the display of a revision on the developer portal.
+     * @param {string} envName the environment name
+     * @param {boolean} value the new display-on-dev-portal value
+     */
+    const handleDisplayOnDevportalToggle = (envName, value) => {
+        setEnvDisplayOverrides((prev) => ({ ...prev, [envName]: value }));
+        // Patch any already-picked revision so an immediate deploy carries the new value
+        // instead of the live-env value captured by handleSelect at pick time.
+        setRevision((prev) => prev.map((r) =>
+            r.env === envName ? { ...r, displayOnDevPortal: value } : r));
     };
 
     const handleVhostSelect = (event) => {
@@ -1371,7 +1411,7 @@ export default function Environments() {
                         body1.push({
                             name: env,
                             vhost: vhostList.find((v) => v.env === env).vhost,
-                            displayOnDevportal: true,
+                            displayOnDevportal: resolveDisplayOnDevportalForEnv(env),
                         });
                     }
                     setIsDeploying(true);
@@ -1424,7 +1464,7 @@ export default function Environments() {
                         body1.push({
                             name: env,
                             vhost: vhostList.find((v) => v.env === env).vhost,
-                            displayOnDevportal: true,
+                            displayOnDevportal: resolveDisplayOnDevportalForEnv(env),
                         });
                     }
                     setIsDeploying(true);
@@ -1478,7 +1518,7 @@ export default function Environments() {
                             name: envList[i],
                             vhost: api.gatewayVendor === 'wso2' ? vhostList.find((v) => v.env === envList[i]).vhost
                                 : ' ',
-                            displayOnDevportal: true,
+                            displayOnDevportal: resolveDisplayOnDevportalForEnv(envList[i]),
                         });
                     }
                     restProductApi.deployProductRevision(api.id, response.body.id, body1)
@@ -2402,7 +2442,7 @@ export default function Environments() {
         });
         const gatewayRevisions = deployingGateway?.revisions;
 
-        if (!gatewayRevisions.length) {
+        if (!gatewayRevisions || gatewayRevisions.length === 0) {
             // Content to display when there is no revision
             return (
                 <FormattedMessage
@@ -2573,7 +2613,7 @@ export default function Environments() {
         return undefined;
     }, [allEnvRevision, settings]);
 
-    if (!noEnv && (isLoading || selectedVhosts === null)) {
+    if (!noEnv && (isLoading || selectedVhosts === null || !allEnvRevision)) {
         return <Progress per={80} message='Loading app settings ...' />;
     }
 
@@ -3590,6 +3630,7 @@ export default function Environments() {
                                                 name={row.name}
                                                 api={api}
                                                 EnvDeployments={allEnvDeployments[row.name]}
+                                                onToggle={handleDisplayOnDevportalToggle}
                                             />
                                         </TableCell>
                                         {settings.isGatewayNotificationEnabled
@@ -3818,6 +3859,7 @@ export default function Environments() {
                                                 name={row.name}
                                                 api={api}
                                                 EnvDeployments={allEnvDeployments[row.name]}
+                                                onToggle={handleDisplayOnDevportalToggle}
                                             />
                                         </TableCell>
                                         <TableCell>
