@@ -35,6 +35,7 @@ import TagCloudListingTags from './TagCloudListingTags';
 import CategoryListingCategories from './CategoryListingCategories';
 import ApiTagCloud from './ApiTagCloud';
 import Recommendations from './Recommendations';
+import { filterTagsForListing, getTagMatchCount, resolveTagListingType } from './listingTags';
 import AuthManager from '../../../data/AuthManager';
 
 const PREFIX = 'CommonListingLegacy';
@@ -262,10 +263,19 @@ class CommonListingLegacy extends React.Component {
     componentDidMount() {
         const restApiClient = new API();
         const tagsLimit = -1;
+        // GET /tags returns tags for APIs and MCP Servers together. Keep only tags that the
+        // type-scoped devportal search returns for this listing, which is the same query a tag click runs.
+        const listingType = resolveTagListingType(window.location.pathname);
         const promisedTags = restApiClient.getAllTags(tagsLimit);
         promisedTags
             .then((response) => {
-                this.setState({ allTags: response.body.list });
+                const tags = response.body.list;
+                return filterTagsForListing(tags, listingType, (query) => {
+                    return restApiClient.search({ query, limit: 1, offset: 0 }).then(getTagMatchCount);
+                });
+            })
+            .then((tags) => {
+                this.setState({ allTags: tags });
             })
             .catch(() => {
                 // Handle error silently
