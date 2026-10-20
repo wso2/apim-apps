@@ -64,6 +64,34 @@ const DataTable = ({ data, type, totalCount, onDelete, isAPIProduct, isMCPServer
 
     return (
         <>
+            {/* View All section - prominent button at the top when there are more items than displayed */}
+            {totalCount > data.length && (
+                <Box mb={3} display='flex' justifyContent='center'>
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        component={Link}
+                        to={getViewAllPath()}
+                        size='large'
+                        sx={{
+                            minWidth: '200px',
+                            fontWeight: '600',
+                            fontSize: '0.875rem',
+                            borderRadius: '8px',
+                            textTransform: 'none',
+                        }}
+                    >
+                        <FormattedMessage
+                            id='Publisher.Landing.view.all.button'
+                            defaultMessage='View All {entityType}'
+                            values={{
+                                entityType: getEntityLabel(),
+                            }}
+                        />
+                    </Button>
+                </Box>
+            )}
+
             <Grid container spacing={2}>
                 {data.map((artifact) => {
                     return (
@@ -79,21 +107,6 @@ const DataTable = ({ data, type, totalCount, onDelete, isAPIProduct, isMCPServer
                     );
                 })}
             </Grid>
-
-            {/* View All section - only show if there are more items than displayed */}
-            {totalCount > data.length && (
-                <Box mt={2}>
-                    <Button variant='text' color='primary' component={Link} to={getViewAllPath()}>
-                        <FormattedMessage
-                            id='Publisher.Landing.view.all.button'
-                            defaultMessage='View All {entityType}'
-                            values={{
-                                entityType: getEntityLabel(),
-                            }}
-                        />
-                    </Button>
-                </Box>
-            )}
         </>
     );
 };
