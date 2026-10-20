@@ -30,6 +30,7 @@ import GraphQLUI from './GraphQLUI';
 import TryOutController from '../../../Shared/ApiTryOut/TryOutController';
 import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
+import { getDefaultKeyType } from '../../../../data/defaultKeyType';
 import Progress from '../../../Shared/Progress';
 import AdditionalHeaders from './AdditionalHeaders';
 
@@ -89,7 +90,7 @@ export default function GraphQLConsole() {
     const [scopes, setScopes] = useState([]);
     const [productionAccessToken, setProductionAccessToken] = useState();
     const [sandboxAccessToken, setSandboxAccessToken] = useState();
-    const [selectedKeyType, setSelectedKey] = useState('PRODUCTION');
+    const [selectedKeyType, setSelectedKey] = useState(getDefaultKeyType());
     const [sandboxApiKey, setSandboxApiKey] = useState('');
     const [productionApiKey, setProductionApiKey] = useState('');
     const [advAuthHeader, setAdvAuthHeader] = useState('Authorization');

@@ -323,6 +323,11 @@ const DefaultConfigurations = {
             documentBackground: '#efefef',
             tokenTextBoxBackground: '#efefef',
         },
+        // Default key type selected in the Try Out / API console ('PRODUCTION' or 'SANDBOX').
+        // Overridable via site/public/theme/userTheme.json (custom.defaultKeyType).
+        // app.defaultKeyType in site/public/theme/settings.json takes precedence when it is valid.
+        // Unset or invalid values fall back to PRODUCTION.
+        defaultKeyType: 'PRODUCTION',
         banner: {
             active: false, // make it true to display a banner image
             style: 'text', // 'can take 'image' or 'text'. If text it will display the 'banner.text' value else it will display the 'banner.image' value.
