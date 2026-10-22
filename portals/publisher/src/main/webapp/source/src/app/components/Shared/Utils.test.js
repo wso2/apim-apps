@@ -26,59 +26,33 @@ jest.mock('AppData/api', () => ({
 }));
 
 describe('Shared Utils - getBasePath', () => {
-    it('returns /api-products/ for APIPRODUCT type', () => {
-        expect(getBasePath('APIPRODUCT')).toBe('/api-products/');
-    });
-
-    it('returns /api-products/ for lowercase apiproduct type', () => {
-        expect(getBasePath('apiproduct')).toBe('/api-products/');
-    });
-
-    it('returns /mcp-servers/ for MCP type', () => {
-        expect(getBasePath('MCP')).toBe('/mcp-servers/');
-    });
-
-    it('returns /mcp-servers/ for lowercase mcp type', () => {
-        expect(getBasePath('mcp')).toBe('/mcp-servers/');
-    });
-
-    it('returns /apis/ for default API type', () => {
-        expect(getBasePath('API')).toBe('/apis/');
-    });
-
-    it('returns /apis/ for undefined or empty input', () => {
-        expect(getBasePath()).toBe('/apis/');
-        expect(getBasePath('')).toBe('/apis/');
-        expect(getBasePath(null)).toBe('/apis/');
+    test.each([
+        ['APIPRODUCT', '/api-products/'],
+        ['apiproduct', '/api-products/'],
+        ['MCP', '/mcp-servers/'],
+        ['mcp', '/mcp-servers/'],
+        ['API', '/apis/'],
+        ['', '/apis/'],
+        [null, '/apis/'],
+        [undefined, '/apis/'],
+    ])('given type "%s", returns "%s"', (type, expected) => {
+        expect(getBasePath(type)).toBe(expected);
     });
 });
 
 describe('Shared Utils - getTypeToDisplay', () => {
-    it('returns "API Product" for APIPRODUCT type', () => {
-        expect(getTypeToDisplay('APIPRODUCT')).toBe('API Product');
-    });
-
-    it('returns "API Product" for case-insensitive apiproduct', () => {
-        expect(getTypeToDisplay('apiproduct')).toBe('API Product');
-    });
-
-    it('returns "MCP Server" for MCP type', () => {
-        expect(getTypeToDisplay('MCP')).toBe('MCP Server');
-    });
-
-    it('returns "MCP Server" for case-insensitive mcp', () => {
-        expect(getTypeToDisplay('mcp')).toBe('MCP Server');
-    });
-
-    it('returns "API" for standard API type', () => {
-        expect(getTypeToDisplay('API')).toBe('API');
-    });
-
-    it('returns "API" for undefined, null, or unknown types', () => {
-        expect(getTypeToDisplay()).toBe('API');
-        expect(getTypeToDisplay(null)).toBe('API');
-        expect(getTypeToDisplay('')).toBe('API');
-        expect(getTypeToDisplay('OTHER')).toBe('API');
+    test.each([
+        ['APIPRODUCT', 'API Product'],
+        ['apiproduct', 'API Product'],
+        ['MCP', 'MCP Server'],
+        ['mcp', 'MCP Server'],
+        ['API', 'API'],
+        ['', 'API'],
+        [null, 'API'],
+        [undefined, 'API'],
+        ['UNKNOWN', 'API'],
+    ])('given type "%s", returns "%s"', (type, expected) => {
+        expect(getTypeToDisplay(type)).toBe(expected);
     });
 });
 
@@ -87,64 +61,33 @@ describe('Shared Utils - getDefaultSubscriptionPolicy', () => {
         jest.clearAllMocks();
     });
 
-    it('returns default subscription policy if found in the list', async () => {
-        API.policies.mockResolvedValue({
-            body: {
-                list: [
-                    { name: 'Bronze' },
-                    { name: 'Silver' },
-                    { name: 'Gold' },
-                ],
-            },
-        });
+    const mockApiResponse = (list) => {
+        API.policies.mockResolvedValue({ body: { list } });
+    };
 
+    it('returns default subscription policy if present', async () => {
+        mockApiResponse([{ name: 'Bronze' }, { name: 'Silver' }, { name: 'Gold' }]);
         const policy = await getDefaultSubscriptionPolicy('subscription', false, 'Silver', 'Gold');
         expect(policy).toEqual(['Silver']);
     });
 
-    it('falls back to fallback policy if default subscription policy is not found', async () => {
-        API.policies.mockResolvedValue({
-            body: {
-                list: [
-                    { name: 'Bronze' },
-                    { name: 'Gold' },
-                ],
-            },
-        });
-
-        const policy = await getDefaultSubscriptionPolicy('subscription', false, 'NonExistent', 'Gold');
+    it('falls back to fallback policy when default policy is absent', async () => {
+        mockApiResponse([{ name: 'Bronze' }, { name: 'Gold' }]);
+        const policy = await getDefaultSubscriptionPolicy('subscription', false, 'Missing', 'Gold');
         expect(policy).toEqual(['Gold']);
     });
 
-    it('returns first available policy when neither default nor fallback match', async () => {
-        API.policies.mockResolvedValue({
-            body: {
-                list: [
-                    { name: 'Bronze' },
-                    { name: 'Silver' },
-                ],
-            },
-        });
-
-        const policy = await getDefaultSubscriptionPolicy('subscription', false, 'NonExistent', 'AlsoNonExistent');
+    it('selects first policy when neither default nor fallback match', async () => {
+        mockApiResponse([{ name: 'Bronze' }, { name: 'Silver' }]);
+        const policy = await getDefaultSubscriptionPolicy('subscription', false, 'None1', 'None2');
         expect(policy).toEqual(['Bronze']);
     });
 
-    it('returns empty array when policy list is empty', async () => {
-        API.policies.mockResolvedValue({
-            body: {
-                list: [],
-            },
-        });
+    it('returns empty array when policy list is empty or API call fails', async () => {
+        mockApiResponse([]);
+        expect(await getDefaultSubscriptionPolicy('subscription', false, 'Silver')).toEqual([]);
 
-        const policy = await getDefaultSubscriptionPolicy('subscription', false, 'Silver', 'Gold');
-        expect(policy).toEqual([]);
-    });
-
-    it('handles API errors gracefully and returns empty array', async () => {
         API.policies.mockRejectedValue(new Error('Network error'));
-
-        const policy = await getDefaultSubscriptionPolicy('subscription', false, 'Silver', 'Gold');
-        expect(policy).toEqual([]);
+        expect(await getDefaultSubscriptionPolicy('subscription', false, 'Silver')).toEqual([]);
     });
 });
