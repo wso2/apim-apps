@@ -126,7 +126,7 @@ export default function AddEditAiServiceProvider(props) {
         type: 'none',
         parameters: {},
     });
-    const authSources = ['none', 'apikey', 'aws', 'umi'];
+    const authSources = ['none', 'apikey', 'aws', 'gcp', 'umi'];
     const [validating, setValidating] = useState(false);
     const [file, setFile] = useState(null);
     const [loading, setLoading] = useState(!!vendorId); // Set to true if editing (vendorId exists)
@@ -1118,6 +1118,22 @@ export default function AddEditAiServiceProvider(props) {
                                                             + 'AZURE_TENANT_ID, AZURE_CLIENT_ID, and '
                                                             + 'AZURE_FEDERATED_TOKEN_FILE environment variables. '
                                                             + 'No credentials need to be stored.'
+                                                        }
+                                                    />
+                                                </Typography>
+                                            </Box>
+                                        )}
+                                        {(authConfig.type === 'gcp') && (
+                                            <Box mt={2}>
+                                                <Typography variant='body2' color='textSecondary'>
+                                                    <FormattedMessage
+                                                        id='Admin.AiVendor.form.llm.auth.gcp.info'
+                                                        defaultMessage={
+                                                            'Google Cloud service-account OAuth2 (JWT bearer) '
+                                                            + 'authentication will be used for Vertex AI backends. '
+                                                            + 'The service-account key is provided per-API as '
+                                                            + 'endpoint security when creating the API - no '
+                                                            + 'credentials are stored at the provider level.'
                                                         }
                                                     />
                                                 </Typography>

@@ -221,6 +221,7 @@ class TokenManager extends React.Component {
             keys: null,
             isKeyJWT: false,
             hasError: false,
+            showValidationErrors: false,
             initialToken: '',
             initialValidityTime: 0,
             initialScopes: [],
@@ -596,6 +597,14 @@ class TokenManager extends React.Component {
 
     handleGenerateKeysClick = () => {
         const { isMultipleSecretsAllowed } = this.state;
+        if (this.state.hasError) {
+            this.setState({ showValidationErrors: true });
+            Alert.error(this.props.intl.formatMessage({
+                id: 'Shared.AppsAndKeys.TokenManager.key.generate.validation.error',
+                defaultMessage: 'Please fix the highlighted errors before generating or updating keys.',
+            }));
+            return;
+        }
 
         if (isMultipleSecretsAllowed) {
             this.setState({
@@ -647,6 +656,14 @@ class TokenManager extends React.Component {
      * @memberof KeyConfiguration
      */
     updateKeys() {
+        if (this.state.hasError) {
+            this.setState({ showValidationErrors: true });
+            Alert.error(this.props.intl.formatMessage({
+                id: 'Shared.AppsAndKeys.TokenManager.key.generate.validation.error',
+                defaultMessage: 'Please fix the highlighted errors before generating or updating keys.',
+            }));
+            return;
+        }
         const { keys, keyRequest, selectedTab } = this.state;
         const { keyType, intl } = this.props;
         const applicationKey = (keys.get(selectedTab).keyType === keyType) && keys.get(selectedTab);
@@ -1078,6 +1095,7 @@ class TokenManager extends React.Component {
                                             validating={validating}
                                             updateHasError={this.updateHasError}
                                             callbackError={hasError}
+                                            showValidationErrors={this.state.showValidationErrors}
                                             setValidating={this.setValidating}
                                             defaultTokenEndpoint={defaultTokenEndpoint}
                                             mode={mode}
@@ -1130,7 +1148,7 @@ class TokenManager extends React.Component {
                                                             color='primary'
                                                             className={classes.button}
                                                             onClick={key ? this.updateKeys : this.handleGenerateKeysClick}
-                                                            disabled={hasError || (isLoading || !keymanager.enableOAuthAppCreation)
+                                                            disabled={(isLoading || !keymanager.enableOAuthAppCreation)
                                                                 || (mode && mode === 'MAPPED')
                                                                 || (isKeyManagerAllowed
                                                                     && !isKeyManagerAllowed(keymanager.name)
@@ -1323,6 +1341,7 @@ class TokenManager extends React.Component {
                                                         validating={validating}
                                                         updateHasError={this.updateHasError}
                                                         callbackError={hasError}
+                                                        showValidationErrors={this.state.showValidationErrors}
                                                         setValidating={this.setValidating}
                                                         defaultTokenEndpoint={defaultTokenEndpoint}
                                                     />
