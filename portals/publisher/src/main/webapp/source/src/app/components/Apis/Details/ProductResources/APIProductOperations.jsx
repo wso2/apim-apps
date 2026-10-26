@@ -47,10 +47,13 @@ export default function APIProductOperations() {
     useEffect(() => {
         // Fetch API level throttling policies only when the page get mounted for the first time `componentDidMount`
         const limit = Configurations.app.throttlingPolicyLimit;
-        API.policies('api', limit).then((response) => {
-            setOperationRateLimits(response.body.list);
-        });
-        // TODO: need to handle the error cases through catch ~tmkb
+        API.policies('api', limit)
+            .then((response) => {
+                setOperationRateLimits(response.body.list);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }, []);
 
     useEffect(() => {
