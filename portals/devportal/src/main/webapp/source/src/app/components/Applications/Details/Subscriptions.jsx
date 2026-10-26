@@ -43,9 +43,11 @@ import SubscriptionSection from './SubscriptionSection';
 
 const PREFIX = 'Subscriptions';
 
-const SUBSCRIPTIONS_PER_PAGE = 10;
-// Backend page size used while walking the subscriptions list in the background. Bigger than
-// SUBSCRIPTIONS_PER_PAGE to reduce round-trips, far smaller than a bulk "fetch everything" call.
+// Default page size matches the previous fixed size so existing lists still open at 10 rows.
+const DEFAULT_SUBSCRIPTIONS_PER_PAGE = 10;
+const SUBSCRIPTIONS_ROWS_PER_PAGE_OPTIONS = [10, 20, 50, 100];
+// Backend page size used while walking the subscriptions list in the background. Smaller than a
+// bulk "fetch everything" call; ensureLoaded repeats until the visible page is filled.
 const FETCH_CHUNK_SIZE = 25;
 
 /**
@@ -261,6 +263,8 @@ class SubscriptionsBase extends React.Component {
             mcpCount: -1,
             apiPage: 0,
             mcpPage: 0,
+            apiRowsPerPage: DEFAULT_SUBSCRIPTIONS_PER_PAGE,
+            mcpRowsPerPage: DEFAULT_SUBSCRIPTIONS_PER_PAGE,
             apisNotFound: false,
             subscriptionsNotFound: false,
             isAuthorize: true,
@@ -288,6 +292,8 @@ class SubscriptionsBase extends React.Component {
         this.handleEnterPress = this.handleEnterPress.bind(this);
         this.handleApiPageChange = this.handleApiPageChange.bind(this);
         this.handleMcpPageChange = this.handleMcpPageChange.bind(this);
+        this.handleApiRowsPerPageChange = this.handleApiRowsPerPageChange.bind(this);
+        this.handleMcpRowsPerPageChange = this.handleMcpRowsPerPageChange.bind(this);
         this.updateDialogSubscriptions = this.updateDialogSubscriptions.bind(this);
         this.getAPIById = this.getAPIById.bind(this);
         this.getMCPServerById = this.getMCPServerById.bind(this);
@@ -317,8 +323,8 @@ class SubscriptionsBase extends React.Component {
         this.mounted = true;
         const { apisAccessible, mcpServersAccessible } = this.props;
         this.ensureLoaded(
-            apisAccessible ? SUBSCRIPTIONS_PER_PAGE : 0,
-            mcpServersAccessible ? SUBSCRIPTIONS_PER_PAGE : 0,
+            apisAccessible ? DEFAULT_SUBSCRIPTIONS_PER_PAGE : 0,
+            mcpServersAccessible ? DEFAULT_SUBSCRIPTIONS_PER_PAGE : 0,
         ).then(() => this.refreshDerivedState());
     }
 
@@ -499,20 +505,21 @@ class SubscriptionsBase extends React.Component {
         const mcpAccum = this.combinedSubscriptions.filter(isMcpSubscription);
 
         this.setState((prevState) => {
+            const { apiRowsPerPage, mcpRowsPerPage } = prevState;
             let { apiPage, mcpPage } = prevState;
             if (this.fullyLoaded) {
-                const maxApiPage = Math.max(0, Math.ceil(apiAccum.length / SUBSCRIPTIONS_PER_PAGE) - 1);
-                const maxMcpPage = Math.max(0, Math.ceil(mcpAccum.length / SUBSCRIPTIONS_PER_PAGE) - 1);
+                const maxApiPage = Math.max(0, Math.ceil(apiAccum.length / apiRowsPerPage) - 1);
+                const maxMcpPage = Math.max(0, Math.ceil(mcpAccum.length / mcpRowsPerPage) - 1);
                 apiPage = Math.min(apiPage, maxApiPage);
                 mcpPage = Math.min(mcpPage, maxMcpPage);
             }
-            const apiStart = apiPage * SUBSCRIPTIONS_PER_PAGE;
-            const mcpStart = mcpPage * SUBSCRIPTIONS_PER_PAGE;
+            const apiStart = apiPage * apiRowsPerPage;
+            const mcpStart = mcpPage * mcpRowsPerPage;
             return {
                 apiPage,
                 mcpPage,
-                apiSubscriptions: apiAccum.slice(apiStart, apiStart + SUBSCRIPTIONS_PER_PAGE),
-                mcpSubscriptions: mcpAccum.slice(mcpStart, mcpStart + SUBSCRIPTIONS_PER_PAGE),
+                apiSubscriptions: apiAccum.slice(apiStart, apiStart + apiRowsPerPage),
+                mcpSubscriptions: mcpAccum.slice(mcpStart, mcpStart + mcpRowsPerPage),
                 apiCount: this.fullyLoaded ? apiAccum.length : -1,
                 mcpCount: this.fullyLoaded ? mcpAccum.length : -1,
                 subscriptionsLoaded: true,
@@ -582,10 +589,12 @@ class SubscriptionsBase extends React.Component {
     refetchAfterMutation() {
         this.subscriptionsRequestId += 1;
         this.resetAccumulation();
-        const { apiPage, mcpPage } = this.state;
+        const {
+            apiPage, mcpPage, apiRowsPerPage, mcpRowsPerPage,
+        } = this.state;
         const { apisAccessible, mcpServersAccessible } = this.props;
-        const requiredApi = apisAccessible ? (apiPage + 1) * SUBSCRIPTIONS_PER_PAGE : 0;
-        const requiredMcp = mcpServersAccessible ? (mcpPage + 1) * SUBSCRIPTIONS_PER_PAGE : 0;
+        const requiredApi = apisAccessible ? (apiPage + 1) * apiRowsPerPage : 0;
+        const requiredMcp = mcpServersAccessible ? (mcpPage + 1) * mcpRowsPerPage : 0;
         this.ensureLoaded(requiredApi, requiredMcp).then(() => this.refreshDerivedState());
     }
 
@@ -595,9 +604,20 @@ class SubscriptionsBase extends React.Component {
      * @param {number} page requested page
      */
     handleApiPageChange(event, page) {
-        const required = (page + 1) * SUBSCRIPTIONS_PER_PAGE;
-        this.setState({ apiPage: page });
-        this.ensureLoaded(required, 0).then(() => this.refreshDerivedState());
+        const { apiRowsPerPage } = this.state;
+        const required = (page + 1) * apiRowsPerPage;
+        const apiAccum = this.combinedSubscriptions.filter(isApiSubscription);
+        const apiStart = page * apiRowsPerPage;
+        const nextSlice = apiAccum.slice(apiStart, apiStart + apiRowsPerPage);
+        const nextState = { apiPage: page };
+        // Keep the current rows on screen when this page has not been walked yet, so the table
+        // does not flash the empty state. refreshDerivedState replaces them once the walk catches up.
+        if (nextSlice.length > 0 || this.fullyLoaded) {
+            nextState.apiSubscriptions = nextSlice;
+        }
+        this.setState(nextState, () => {
+            this.ensureLoaded(required, 0).then(() => this.refreshDerivedState());
+        });
     }
 
     /**
@@ -606,9 +626,90 @@ class SubscriptionsBase extends React.Component {
      * @param {number} page requested page
      */
     handleMcpPageChange(event, page) {
-        const required = (page + 1) * SUBSCRIPTIONS_PER_PAGE;
-        this.setState({ mcpPage: page });
-        this.ensureLoaded(0, required).then(() => this.refreshDerivedState());
+        const { mcpRowsPerPage } = this.state;
+        const required = (page + 1) * mcpRowsPerPage;
+        const mcpAccum = this.combinedSubscriptions.filter(isMcpSubscription);
+        const mcpStart = page * mcpRowsPerPage;
+        const nextSlice = mcpAccum.slice(mcpStart, mcpStart + mcpRowsPerPage);
+        const nextState = { mcpPage: page };
+        if (nextSlice.length > 0 || this.fullyLoaded) {
+            nextState.mcpSubscriptions = nextSlice;
+        }
+        this.setState(nextState, () => {
+            this.ensureLoaded(0, required).then(() => this.refreshDerivedState());
+        });
+    }
+
+    /**
+     * Change how many API subscriptions are shown and return to the first page.
+     * A larger page asks the background walk for enough rows to fill it.
+     * @param {object} event MUI select change event
+     */
+    handleApiRowsPerPageChange(event) {
+        const apiRowsPerPage = Number.parseInt(event.target.value, 10);
+        if (!SUBSCRIPTIONS_ROWS_PER_PAGE_OPTIONS.includes(apiRowsPerPage)) {
+            return;
+        }
+        const apiAccum = this.combinedSubscriptions.filter(isApiSubscription);
+        this.setState({
+            apiRowsPerPage,
+            apiPage: 0,
+            apiSubscriptions: apiAccum.slice(0, apiRowsPerPage),
+            apiCount: this.fullyLoaded ? apiAccum.length : -1,
+        }, () => {
+            this.ensureLoaded(apiRowsPerPage, 0)
+                .then(() => this.refreshDerivedState())
+                .catch((error) => {
+                    if (!this.mounted) {
+                        return;
+                    }
+                    const { status } = error;
+                    if (status === 401) {
+                        this.setState({ isAuthorize: false });
+                        return;
+                    }
+                    Alert.error(this.props.intl.formatMessage({
+                        id: 'Applications.Details.Subscriptions.error.loading.subscriptions',
+                        defaultMessage: 'Error occurred while loading subscriptions',
+                    }));
+                });
+        });
+    }
+
+    /**
+     * Change how many MCP Server subscriptions are shown and return to the first page.
+     * A larger page asks the background walk for enough rows to fill it.
+     * @param {object} event MUI select change event
+     */
+    handleMcpRowsPerPageChange(event) {
+        const mcpRowsPerPage = Number.parseInt(event.target.value, 10);
+        if (!SUBSCRIPTIONS_ROWS_PER_PAGE_OPTIONS.includes(mcpRowsPerPage)) {
+            return;
+        }
+        const mcpAccum = this.combinedSubscriptions.filter(isMcpSubscription);
+        this.setState({
+            mcpRowsPerPage,
+            mcpPage: 0,
+            mcpSubscriptions: mcpAccum.slice(0, mcpRowsPerPage),
+            mcpCount: this.fullyLoaded ? mcpAccum.length : -1,
+        }, () => {
+            this.ensureLoaded(0, mcpRowsPerPage)
+                .then(() => this.refreshDerivedState())
+                .catch((error) => {
+                    if (!this.mounted) {
+                        return;
+                    }
+                    const { status } = error;
+                    if (status === 401) {
+                        this.setState({ isAuthorize: false });
+                        return;
+                    }
+                    Alert.error(this.props.intl.formatMessage({
+                        id: 'Applications.Details.Subscriptions.error.loading.subscriptions',
+                        defaultMessage: 'Error occurred while loading subscriptions',
+                    }));
+                });
+        });
     }
 
     /**
@@ -831,6 +932,8 @@ class SubscriptionsBase extends React.Component {
             mcpCount,
             apiPage,
             mcpPage,
+            apiRowsPerPage,
+            mcpRowsPerPage,
             apisNotFound,
             subscriptionsNotFound,
             pseudoSubscriptions,
@@ -892,8 +995,16 @@ class SubscriptionsBase extends React.Component {
                                 getSubscriptionPolicyByName={this.getSubscriptionPolicyByName}
                                 paginationCount={apiCount}
                                 paginationPage={apiPage}
-                                rowsPerPage={SUBSCRIPTIONS_PER_PAGE}
+                                rowsPerPage={apiRowsPerPage}
+                                rowsPerPageOptions={SUBSCRIPTIONS_ROWS_PER_PAGE_OPTIONS}
                                 onPaginationPageChange={this.handleApiPageChange}
+                                onRowsPerPageChange={this.handleApiRowsPerPageChange}
+                                labelRowsPerPage={(
+                                    <FormattedMessage
+                                        id='Applications.Details.Subscriptions.rows.per.page'
+                                        defaultMessage='Rows per page:'
+                                    />
+                                )}
                                 noSubscriptionsMessage={(
                                     <FormattedMessage
                                         id='Applications.Details.Subscriptions.no.api.subscriptions'
@@ -941,8 +1052,16 @@ class SubscriptionsBase extends React.Component {
                                 getSubscriptionPolicyByName={this.getSubscriptionPolicyByName}
                                 paginationCount={mcpCount}
                                 paginationPage={mcpPage}
-                                rowsPerPage={SUBSCRIPTIONS_PER_PAGE}
+                                rowsPerPage={mcpRowsPerPage}
+                                rowsPerPageOptions={SUBSCRIPTIONS_ROWS_PER_PAGE_OPTIONS}
                                 onPaginationPageChange={this.handleMcpPageChange}
+                                onRowsPerPageChange={this.handleMcpRowsPerPageChange}
+                                labelRowsPerPage={(
+                                    <FormattedMessage
+                                        id='Applications.Details.Subscriptions.rows.per.page'
+                                        defaultMessage='Rows per page:'
+                                    />
+                                )}
                                 noSubscriptionsMessage={(
                                     <FormattedMessage
                                         id='Applications.Details.Subscriptions.no.mcp.subscriptions'

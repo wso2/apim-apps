@@ -598,6 +598,7 @@
   "Applications.Details.Subscriptions.no.mcp.subscriptions": "No MCP Server Subscriptions Available",
   "Applications.Details.Subscriptions.no.mcp.subscriptions.content": "No MCP server subscriptions are available for this Application",
   "Applications.Details.Subscriptions.request.created": "Subscription Deletion Request Created!",
+  "Applications.Details.Subscriptions.rows.per.page": "Rows per page:",
   "Applications.Details.Subscriptions.search": "Search APIs",
   "Applications.Details.Subscriptions.search.mcp": "Search MCP Servers",
   "Applications.Details.Subscriptions.select.a.subscription.policy": "Select a subscription policy",
