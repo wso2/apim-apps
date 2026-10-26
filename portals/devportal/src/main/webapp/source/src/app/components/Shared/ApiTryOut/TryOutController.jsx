@@ -988,8 +988,8 @@ function TryOutController(props) {
                                         variant='outlined'
                                         label={(
                                             <FormattedMessage
-                                                id='access.token'
-                                                defaultMessage='Access Token'
+                                                id={securitySchemeType === 'API-KEY' ? 'api.key' : 'access.token'}
+                                                defaultMessage={securitySchemeType === 'API-KEY' ? 'API Key' : 'Access Token'}
                                             />
                                         )}
                                         name='accessToken'
@@ -998,8 +998,8 @@ function TryOutController(props) {
                                         value={tokenValue || ''}
                                         helperText={(
                                             <FormattedMessage
-                                                id='enter.access.token'
-                                                defaultMessage='Enter access Token'
+                                                id={securitySchemeType === 'API-KEY' ? 'enter.api.key' : 'enter.access.token'}
+                                                defaultMessage={securitySchemeType === 'API-KEY' ? 'Enter API Key' : 'Enter access Token'}
                                             />
                                         )}
                                         id='accessTokenInput'
