@@ -383,6 +383,7 @@
   "Apis.Details.GoToTryOut.popup.subscribe.inprogress": "API subscribing to DefaultApplication ...",
   "Apis.Details.GraphQLConsole.GraphQLConsole.title": "Try Out",
   "Apis.Details.GraphQLConsole.QueryComplexityView.title": "Custom Complexity Values",
+  "Apis.Details.GraphQLConsole.QueryComplexityView.totalComplexity": "Total complexity of selected query",
   "Apis.Details.Graphql.Console.form.cancel.btn": "Cancel",
   "Apis.Details.Graphql.console.delete.btn": "Delete",
   "Apis.Details.Graphql.console.delete.title": "Delete Additional Header",
