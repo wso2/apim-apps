@@ -554,6 +554,8 @@
   "Applications.Details.Overview.reset.error": "Error while resetting application policy for {name}",
   "Applications.Details.Overview.reset.successful": "Application Policy Reset request for {name} has been triggered successfully",
   "Applications.Details.Overview.workflow.status": "Workflow Status",
+  "Applications.Details.SubscriptionTableData.api.not.visible": "Not accessible",
+  "Applications.Details.SubscriptionTableData.api.not.visible.tooltip": "You no longer have access to view this API. This can happen when the API's visibility settings or your roles change. The subscription still exists and can be removed from this application.",
   "Applications.Details.SubscriptionTableData.cancel": "Cancel",
   "Applications.Details.SubscriptionTableData.delete": "Delete",
   "Applications.Details.SubscriptionTableData.delete.subscription.confirmation": "Are you sure you want to delete the Subscription?",

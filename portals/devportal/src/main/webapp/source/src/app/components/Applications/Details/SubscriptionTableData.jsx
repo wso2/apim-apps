@@ -74,6 +74,7 @@ class SubscriptionTableData extends React.Component {
             isMonetizedAPI: false,
             isDynamicUsagePolicy: false,
             tiers: [],
+            isApiVisible: true,
             selectedTier: '',
             isWebhookAPI: false,
             callbackLinkAnchor: null,
@@ -187,6 +188,14 @@ class SubscriptionTableData extends React.Component {
      */
     populateAPIData(apiUUID) {
         const { subscription, getAPIById, getMCPServerById } = this.props;
+        if (!apiUUID) {
+            // The subscription listing omits the API id when the API is no longer visible to
+            // this user, i.e. its Developer Portal visibility no longer includes any of the
+            // user's roles. Requesting the API would send an unresolved path parameter, so
+            // skip the call and render the row in a limited state instead.
+            this.setState({ isApiVisible: false });
+            return;
+        }
         const isMCPServer = subscription.apiInfo.type === 'MCP';
         const promisedApi = isMCPServer ? getMCPServerById(apiUUID) : getAPIById(apiUUID);
         promisedApi.then((api) => {
@@ -259,7 +268,8 @@ class SubscriptionTableData extends React.Component {
             },
         } = this.props;
         const {
-            openMenu, isMonetizedAPI, isDynamicUsagePolicy, openMenuEdit, selectedTier, tiers, isWebhookAPI, callbackLinkAnchor,
+            openMenu, isMonetizedAPI, isDynamicUsagePolicy, openMenuEdit, selectedTier, tiers, isWebhookAPI,
+            callbackLinkAnchor, isApiVisible,
         } = this.state;
         const isSubValidationDisabled = tiers && tiers.length === 1
             && tiers[0].value.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
@@ -315,7 +325,32 @@ class SubscriptionTableData extends React.Component {
                             </>
                         )}
                     </TableCell>
-                    <TableCell>{apiInfo.lifeCycleStatus}</TableCell>
+                    <TableCell>
+                        {isApiVisible ? apiInfo.lifeCycleStatus : (
+                            <Tooltip
+                                placement='bottom'
+                                interactive
+                                aria-label='helper text for an API that is no longer accessible'
+                                title={(
+                                    <FormattedMessage
+                                        id='Applications.Details.SubscriptionTableData.api.not.visible.tooltip'
+                                        defaultMessage={'You no longer have access to view this API. This can '
+                                            + "happen when the API's visibility settings or your roles change. "
+                                            + 'The subscription still exists and can be removed from this '
+                                            + 'application.'}
+                                    />
+                                )}
+                            >
+                                <Box display='inline-flex' alignItems='center'>
+                                    <FormattedMessage
+                                        id='Applications.Details.SubscriptionTableData.api.not.visible'
+                                        defaultMessage='Not accessible'
+                                    />
+                                    <HelpOutline sx={{ fontSize: 'inherit', marginLeft: '4px' }} />
+                                </Box>
+                            </Tooltip>
+                        )}
+                    </TableCell>
                     {throttlingPolicy.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN) ? (
                         <TableCell>
                             {throttlingPolicy}
@@ -513,7 +548,8 @@ class SubscriptionTableData extends React.Component {
                                 color='grey'
                                 onClick={this.handleRequestOpen}
                                 startIcon={<Icon>delete</Icon>}
-                                disabled={tiers.length === 0 || status === SUBSCRIPTION_STATUS.DELETE_PENDING}
+                                disabled={(isApiVisible && tiers.length === 0)
+                                    || status === SUBSCRIPTION_STATUS.DELETE_PENDING}
                             >
                                 <FormattedMessage
                                     id='Applications.Details.SubscriptionTableData.delete.text'
