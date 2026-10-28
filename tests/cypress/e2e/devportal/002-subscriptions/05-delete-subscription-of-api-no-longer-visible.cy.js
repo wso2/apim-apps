@@ -17,14 +17,18 @@
  */
 
 import Utils from "@support/utils";
+import UsersAndRoles from "../../../support/functions/carbon/UsersAndRoles";
 
 describe("Delete subscription of an API that is no longer visible to the subscriber", () => {
-    const { publisher, developer, password } = Utils.getUserInfo();
+    const { publisher, password, carbonUsername, carbonPassword } = Utils.getUserInfo();
+    // A dedicated user with only Internal/subscriber, since the shared test users can hold more roles than
+    // requested, and any role in the allowed list or admin rights would keep the API visible to them
+    const subscriber = 'visibilityTestSubscriber';
     const apiVersion = '1.0.0';
     const appDescription = 'app description';
-    // The developer user has Internal/subscriber but not Internal/publisher. The API is first restricted
-    // to both roles, and removing Internal/subscriber afterwards hides the API from the developer.
-    const developerRole = 'Internal/subscriber';
+    // The API is first restricted to Internal/subscriber and Internal/publisher, and removing
+    // Internal/subscriber afterwards hides the API from the subscriber.
+    const subscriberRole = 'Internal/subscriber';
     const otherRole = 'Internal/publisher';
     let apiName;
     let apiContext;
@@ -40,11 +44,25 @@ describe("Delete subscription of an API that is no longer visible to the subscri
         testApiId = undefined;
     });
 
+    before(() => {
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        // Clean up a user left behind by an earlier failed run
+        cy.searchAndDeleteUserIfExist(subscriber);
+        UsersAndRoles.addNewUserAndUpdateRoles(subscriber, [subscriberRole], password);
+    });
+
+    after(() => {
+        cy.clearCookies();
+        cy.clearLocalStorage();
+        cy.carbonLogin(carbonUsername, carbonPassword);
+        cy.searchAndDeleteUserIfExist(subscriber);
+    });
+
     // Wait until the Developer Portal shows the signed in user. Leaving the page earlier makes the next page
     // sign in again and reload, which can wipe out what the test types into it. The user menu is only rendered
     // for a signed in user and can be clipped in a narrow window, so check that it exists rather than is visible.
-    const loginAsDeveloper = () => {
-        cy.loginToDevportal(developer, password);
+    const loginAsSubscriber = () => {
+        cy.loginToDevportal(subscriber, password);
         cy.get('#userToggleButton', { timeout: Cypress.env('largeTimeout') }).should('exist');
     };
 
@@ -80,18 +98,18 @@ describe("Delete subscription of an API that is no longer visible to the subscri
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
             testApiId = apiId;
             Utils.publishAPI(apiId).then(() => {
-                // Restrict the Developer Portal visibility to a role the developer has and one it does not have
+                // Restrict the Developer Portal visibility to a role the subscriber has and one it does not have
                 updateVisibleRoles(apiId, () => {
                     cy.get('#storeVisibility-selector').scrollIntoView().click();
                     cy.get('#visibility-restricted-by-roles').scrollIntoView().click();
                     // Add the roles one at a time, since each role is validated before it is added
-                    addVisibleRole(developerRole);
+                    addVisibleRole(subscriberRole);
                     addVisibleRole(otherRole);
                 });
                 cy.logoutFromPublisher();
 
-                // Subscribe to the API while it is still visible to the developer through Internal/subscriber
-                loginAsDeveloper();
+                // Subscribe to the API while it is still visible to the subscriber through Internal/subscriber
+                loginAsSubscriber();
                 cy.createApp(appName, appDescription);
                 cy.visit(`/devportal/applications?tenant=carbon.super`);
                 cy.get(`#itest-application-list-table td a`, { timeout: Cypress.env('largeTimeout') })
@@ -112,17 +130,17 @@ describe("Delete subscription of an API that is no longer visible to the subscri
                 });
                 cy.logoutFromDevportal();
 
-                // Remove the developer's role from the allowed roles, so the developer loses visibility of the API
+                // Remove the subscriber's role from the allowed roles, so the subscriber loses visibility of the API
                 cy.loginToPublisher(publisher, password);
                 updateVisibleRoles(apiId, () => {
-                    roleChip(developerRole).find('svg[class*=MuiChip-deleteIcon]').click();
-                    roleChip(developerRole).should('not.exist');
+                    roleChip(subscriberRole).find('svg[class*=MuiChip-deleteIcon]').click();
+                    roleChip(subscriberRole).should('not.exist');
                     roleChip(otherRole).should('exist');
                 });
                 cy.logoutFromPublisher();
 
                 // The subscription is still listed, but the API details are no longer available
-                loginAsDeveloper();
+                loginAsSubscriber();
                 // The subscription listing has no API id for this row, so the UI must not request
                 // the API with an unresolved path parameter.
                 cy.intercept('GET', /\/api\/am\/devportal\/v3\/apis\/(%7BapiId%7D|\{apiId\}|undefined|null)(\?|$)/)
@@ -161,7 +179,7 @@ describe("Delete subscription of an API that is no longer visible to the subscri
         cy.clearCookies();
         cy.clearLocalStorage();
         // Delete the application first, since the API cannot be deleted while it has subscriptions
-        loginAsDeveloper();
+        loginAsSubscriber();
         cy.visit(`/devportal/applications?tenant=carbon.super`);
         // The listing is paginated, so search for the application by name instead of checking only the
         // first page. This also covers an application whose creation was not confirmed before a failure.
