@@ -162,11 +162,17 @@ describe("Delete subscription of an API that is no longer visible to the subscri
         // Delete the application first, since the API cannot be deleted while it has subscriptions
         loginAsDeveloper();
         cy.visit(`/devportal/applications?tenant=carbon.super`);
-        // Wait for the listing to load, which shows either the applications or an empty state, before
-        // checking whether the application exists
+        // The listing is paginated, so search for the application by name instead of checking only the
+        // first page. This also covers an application whose creation was not confirmed before a failure.
+        cy.intercept('GET', new RegExp(`/applications\\?.*query=${appName}`)).as('appSearch');
+        cy.get('#search-label', { timeout: Cypress.env('largeTimeout') }).type(`${appName}{enter}`);
+        cy.wait('@appSearch', { timeout: Cypress.env('largeTimeout') });
+        // Wait for the search results to render, which show either only matching applications or a
+        // no results message, before checking whether the application exists
         cy.get('body', { timeout: Cypress.env('largeTimeout') }).should(($body) => {
-            expect($body.find('#itest-application-list-table td a').length > 0
-                || $body.text().includes('No Applications Available')).to.be.true;
+            const rows = $body.find('#itest-application-list-table td a').toArray();
+            expect((rows.length > 0 && rows.every((row) => row.textContent.includes(appName)))
+                || $body.text().includes('No Matching Applications')).to.be.true;
         });
         cy.get('body').then(($body) => {
             if ($body.find(`#delete-${appName}-btn`).length > 0) {
