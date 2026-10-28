@@ -41,6 +41,7 @@ describe("Add key manager", () => {
         const introspectionEp = 'https://my-tenant.auth0.com/oauth/token';
         const userInfoEp = 'https://my-tenant.auth0.com/oauth/userInfo';
         const scopeManagementEp = 'https://my-tenant.auth0.com/oauth/scope';
+        const clientRegistrationEp = 'https://my-tenant.auth0.com/oidc/register';
         const claimKey1 = 'claimKey1';
         const claimValueRegex1 = 'claimValueRegex1';
         const claimKey2 = 'claimKey2';
@@ -79,6 +80,8 @@ describe("Add key manager", () => {
             cy.get('input[name="introspectionEndpoint"]').clear().type(introspectionEp);
             cy.get('input[name="userInfoEndpoint"]').clear().type(userInfoEp);
             cy.get('input[name="scopeManagementEndpoint"]').clear().type(scopeManagementEp);
+            // Add client registration endpoint like the other endpoints
+            cy.get('input[name="clientRegistrationEndpoint"]').clear().type(clientRegistrationEp);
             cy.get('input[name="client_id"]').type(clientId);
             cy.get('input[name="client_secret"]').type(clientSecret);
             cy.get('input[name="audience"]').type(audience);
@@ -146,6 +149,9 @@ describe("Add key manager", () => {
                 cy.log("API published " + result)
                 cy.logoutFromPublisher();
                 cy.loginToDevportal(developer, password);
+                // Wait until the Developer Portal shows the signed in user. Leaving the page earlier makes the
+                // next page sign in again and reload, so createApp misses the requests it waits for.
+                cy.get('#userToggleButton', { timeout: Cypress.env('largeTimeout') }).should('be.visible');
                 cy.createApp(appName, appDescription);
                 cy.visit(`/devportal/apis?tenant=carbon.super`);
                 cy.url().should('contain', '/apis?tenant=carbon.super');

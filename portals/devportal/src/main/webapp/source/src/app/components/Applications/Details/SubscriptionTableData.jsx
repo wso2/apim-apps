@@ -106,6 +106,19 @@ class SubscriptionTableData extends React.Component {
         this.checkIfDynamicUsagePolicy(subscription.throttlingPolicy);
     }
 
+    /**
+     * The parent refetches the subscriptions after a change but keeps the rows mounted, so reload
+     * the API data when the API id of this subscription appears or disappears.
+     * @param {*} prevProps previous properties
+     * @memberof SubscriptionTableData
+     */
+    componentDidUpdate(prevProps) {
+        const { subscription } = this.props;
+        if (prevProps.subscription.apiId !== subscription.apiId) {
+            this.populateAPIData(subscription.apiId);
+        }
+    }
+
     componentWillUnmount() {
         this.mounted = false;
     }
@@ -193,13 +206,16 @@ class SubscriptionTableData extends React.Component {
             // this user, i.e. its Developer Portal visibility no longer includes any of the
             // user's roles. Requesting the API would send an unresolved path parameter, so
             // skip the call and render the row in a limited state instead.
-            this.setState({ isApiVisible: false });
+            this.setState({ isApiVisible: false, tiers: [], isMonetizedAPI: false });
             return;
         }
+        this.setState({ isApiVisible: true });
         const isMCPServer = subscription.apiInfo.type === 'MCP';
         const promisedApi = isMCPServer ? getMCPServerById(apiUUID) : getAPIById(apiUUID);
         promisedApi.then((api) => {
-            if (this.mounted && api) {
+            // Ignore a response for an API id that this row no longer has
+            const { subscription: currentSubscription } = this.props;
+            if (this.mounted && api && currentSubscription.apiId === apiUUID) {
                 const apiTiers = api.tiers || [];
                 const tiers = [];
                 for (let i = 0; i < apiTiers.length; i++) {
@@ -329,8 +345,7 @@ class SubscriptionTableData extends React.Component {
                         {isApiVisible ? apiInfo.lifeCycleStatus : (
                             <Tooltip
                                 placement='bottom'
-                                interactive
-                                aria-label='helper text for an API that is no longer accessible'
+                                describeChild
                                 title={(
                                     <FormattedMessage
                                         id='Applications.Details.SubscriptionTableData.api.not.visible.tooltip'
@@ -341,7 +356,8 @@ class SubscriptionTableData extends React.Component {
                                     />
                                 )}
                             >
-                                <Box display='inline-flex' alignItems='center'>
+                                {/* Focusable, so keyboard users can open the tooltip too */}
+                                <Box display='inline-flex' alignItems='center' tabIndex={0}>
                                     <FormattedMessage
                                         id='Applications.Details.SubscriptionTableData.api.not.visible'
                                         defaultMessage='Not accessible'
