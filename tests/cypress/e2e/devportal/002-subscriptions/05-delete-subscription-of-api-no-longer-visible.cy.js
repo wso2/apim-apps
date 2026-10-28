@@ -41,10 +41,11 @@ describe("Delete subscription of an API that is no longer visible to the subscri
     });
 
     // Wait until the Developer Portal shows the signed in user. Leaving the page earlier makes the next page
-    // sign in again and reload, which can wipe out what the test types into it.
+    // sign in again and reload, which can wipe out what the test types into it. The user menu is only rendered
+    // for a signed in user and can be clipped in a narrow window, so check that it exists rather than is visible.
     const loginAsDeveloper = () => {
         cy.loginToDevportal(developer, password);
-        cy.get('#userToggleButton', { timeout: Cypress.env('largeTimeout') }).should('be.visible');
+        cy.get('#userToggleButton', { timeout: Cypress.env('largeTimeout') }).should('exist');
     };
 
     // Match the whole label, so a role does not match an invalid chip that contains its name
@@ -170,8 +171,10 @@ describe("Delete subscription of an API that is no longer visible to the subscri
         // Wait for the search results to render, which show either only matching applications or a
         // no results message, before checking whether the application exists
         cy.get('body', { timeout: Cypress.env('largeTimeout') }).should(($body) => {
-            const rows = $body.find('#itest-application-list-table td a').toArray();
-            expect((rows.length > 0 && rows.every((row) => row.textContent.includes(appName)))
+            // Check only the name column, since other columns hold links such as the edit button, and the
+            // name is plain text instead of a link while an application is not approved yet
+            const names = $body.find('#itest-application-list-table tbody tr td:first-child').toArray();
+            expect((names.length > 0 && names.every((name) => name.textContent.includes(appName)))
                 || $body.text().includes('No Matching Applications')).to.be.true;
         });
         cy.get('body').then(($body) => {

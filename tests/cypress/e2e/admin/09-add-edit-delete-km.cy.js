@@ -150,8 +150,10 @@ describe("Add key manager", () => {
                 cy.logoutFromPublisher();
                 cy.loginToDevportal(developer, password);
                 // Wait until the Developer Portal shows the signed in user. Leaving the page earlier makes the
-                // next page sign in again and reload, so createApp misses the requests it waits for.
-                cy.get('#userToggleButton', { timeout: Cypress.env('largeTimeout') }).should('be.visible');
+                // next page sign in again and reload, so createApp misses the requests it waits for. The user menu
+                // is only rendered for a signed in user and can be clipped in a narrow window, so check that it
+                // exists rather than is visible.
+                cy.get('#userToggleButton', { timeout: Cypress.env('largeTimeout') }).should('exist');
                 cy.createApp(appName, appDescription);
                 cy.visit(`/devportal/apis?tenant=carbon.super`);
                 cy.url().should('contain', '/apis?tenant=carbon.super');
