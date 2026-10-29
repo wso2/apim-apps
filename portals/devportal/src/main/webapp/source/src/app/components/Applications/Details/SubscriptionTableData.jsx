@@ -31,8 +31,11 @@ import Slide from '@mui/material/Slide';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
+import Chip from '@mui/material/Chip';
 import Autocomplete from '@mui/material/Autocomplete';
+import { alpha, darken } from '@mui/material/styles';
 import HelpOutline from '@mui/icons-material/HelpOutline';
+import LockOutlined from '@mui/icons-material/LockOutlined';
 import { FormattedMessage } from 'react-intl';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
 import PropTypes from 'prop-types';
@@ -74,6 +77,7 @@ class SubscriptionTableData extends React.Component {
             isMonetizedAPI: false,
             isDynamicUsagePolicy: false,
             tiers: [],
+            isApiVisible: true,
             selectedTier: '',
             isWebhookAPI: false,
             callbackLinkAnchor: null,
@@ -103,6 +107,19 @@ class SubscriptionTableData extends React.Component {
         this.checkIfWebhookAPI();
         this.populateAPIData(subscription.apiId);
         this.checkIfDynamicUsagePolicy(subscription.throttlingPolicy);
+    }
+
+    /**
+     * The parent refetches the subscriptions after a change but keeps the rows mounted, so reload
+     * the API data when the API id of this subscription appears or disappears.
+     * @param {*} prevProps previous properties
+     * @memberof SubscriptionTableData
+     */
+    componentDidUpdate(prevProps) {
+        const { subscription } = this.props;
+        if (prevProps.subscription.apiId !== subscription.apiId) {
+            this.populateAPIData(subscription.apiId);
+        }
     }
 
     componentWillUnmount() {
@@ -187,10 +204,21 @@ class SubscriptionTableData extends React.Component {
      */
     populateAPIData(apiUUID) {
         const { subscription, getAPIById, getMCPServerById } = this.props;
+        if (!apiUUID) {
+            // The subscription listing omits the API id when the API is no longer visible to
+            // this user, i.e. its Developer Portal visibility no longer includes any of the
+            // user's roles. Requesting the API would send an unresolved path parameter, so
+            // skip the call and render the row in a limited state instead.
+            this.setState({ isApiVisible: false, tiers: [], isMonetizedAPI: false });
+            return;
+        }
+        this.setState({ isApiVisible: true });
         const isMCPServer = subscription.apiInfo.type === 'MCP';
         const promisedApi = isMCPServer ? getMCPServerById(apiUUID) : getAPIById(apiUUID);
         promisedApi.then((api) => {
-            if (this.mounted && api) {
+            // Ignore a response for an API id that this row no longer has
+            const { subscription: currentSubscription } = this.props;
+            if (this.mounted && api && currentSubscription.apiId === apiUUID) {
                 const apiTiers = api.tiers || [];
                 const tiers = [];
                 for (let i = 0; i < apiTiers.length; i++) {
@@ -259,7 +287,8 @@ class SubscriptionTableData extends React.Component {
             },
         } = this.props;
         const {
-            openMenu, isMonetizedAPI, isDynamicUsagePolicy, openMenuEdit, selectedTier, tiers, isWebhookAPI, callbackLinkAnchor,
+            openMenu, isMonetizedAPI, isDynamicUsagePolicy, openMenuEdit, selectedTier, tiers, isWebhookAPI,
+            callbackLinkAnchor, isApiVisible,
         } = this.state;
         const isSubValidationDisabled = tiers && tiers.length === 1
             && tiers[0].value.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
@@ -293,7 +322,48 @@ class SubscriptionTableData extends React.Component {
             !isSubValidationDisabled && (
                 <TableRow hover>
                     <TableCell>
-                        {link}
+                        {isApiVisible ? link : (
+                            // The API page cannot be opened, so show the name as plain text and explain why
+                            <Box display='inline-flex' alignItems='center' gap={1}>
+                                <Box component='span' sx={{ color: 'text.secondary' }}>
+                                    {(apiInfo.displayName || apiInfo.name) + ' - ' + apiInfo.version}
+                                </Box>
+                                <Tooltip
+                                    placement='bottom'
+                                    describeChild
+                                    title={(
+                                        <FormattedMessage
+                                            id='Applications.Details.SubscriptionTableData.api.not.visible.tooltip'
+                                            defaultMessage={'You no longer have access to view this API. This can '
+                                                + "happen when the API's visibility settings or your roles change. "
+                                                + 'The subscription still exists and can be removed from this '
+                                                + 'application.'}
+                                        />
+                                    )}
+                                >
+                                    {/* Focusable, so keyboard users can open the tooltip too */}
+                                    <Chip
+                                        size='small'
+                                        variant='outlined'
+                                        color='warning'
+                                        tabIndex={0}
+                                        icon={<LockOutlined />}
+                                        label={(
+                                            <FormattedMessage
+                                                id='Applications.Details.SubscriptionTableData.api.not.visible'
+                                                defaultMessage='Not accessible'
+                                            />
+                                        )}
+                                        sx={(theme) => ({
+                                            backgroundColor: alpha(theme.palette.warning.main, 0.12),
+                                            // Dark enough to keep the label readable on the tinted background
+                                            color: darken(theme.palette.warning.main, 0.4),
+                                            '& .MuiChip-icon': { color: 'inherit', fontSize: 16 },
+                                        })}
+                                    />
+                                </Tooltip>
+                            </Box>
+                        )}
                         {isWebhookAPI && (
                             <>
                                 {callBackUrlLink}
@@ -315,7 +385,18 @@ class SubscriptionTableData extends React.Component {
                             </>
                         )}
                     </TableCell>
-                    <TableCell>{apiInfo.lifeCycleStatus}</TableCell>
+                    <TableCell>
+                        {isApiVisible ? apiInfo.lifeCycleStatus : (
+                            // The lifecycle state of the API is not returned, so show that it is unavailable
+                            // instead of adding a value that is not a lifecycle state
+                            <Box component='span' sx={{ color: 'text.secondary' }}>
+                                <FormattedMessage
+                                    id='Applications.Details.SubscriptionTableData.lifecycle.unavailable'
+                                    defaultMessage='Unavailable'
+                                />
+                            </Box>
+                        )}
+                    </TableCell>
                     {throttlingPolicy.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN) ? (
                         <TableCell>
                             {throttlingPolicy}
@@ -513,7 +594,8 @@ class SubscriptionTableData extends React.Component {
                                 color='grey'
                                 onClick={this.handleRequestOpen}
                                 startIcon={<Icon>delete</Icon>}
-                                disabled={tiers.length === 0 || status === SUBSCRIPTION_STATUS.DELETE_PENDING}
+                                disabled={(isApiVisible && tiers.length === 0)
+                                    || status === SUBSCRIPTION_STATUS.DELETE_PENDING}
                             >
                                 <FormattedMessage
                                     id='Applications.Details.SubscriptionTableData.delete.text'
