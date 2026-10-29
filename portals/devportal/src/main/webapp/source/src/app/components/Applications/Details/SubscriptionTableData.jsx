@@ -33,7 +33,7 @@ import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import Chip from '@mui/material/Chip';
 import Autocomplete from '@mui/material/Autocomplete';
-import { alpha } from '@mui/material/styles';
+import { alpha, darken } from '@mui/material/styles';
 import HelpOutline from '@mui/icons-material/HelpOutline';
 import LockOutlined from '@mui/icons-material/LockOutlined';
 import { FormattedMessage } from 'react-intl';
@@ -325,7 +325,9 @@ class SubscriptionTableData extends React.Component {
                         {isApiVisible ? link : (
                             // The API page cannot be opened, so show the name as plain text and explain why
                             <Box display='inline-flex' alignItems='center' gap={1}>
-                                {(apiInfo.displayName || apiInfo.name) + ' - ' + apiInfo.version}
+                                <Box component='span' sx={{ color: 'text.secondary' }}>
+                                    {(apiInfo.displayName || apiInfo.name) + ' - ' + apiInfo.version}
+                                </Box>
                                 <Tooltip
                                     placement='bottom'
                                     describeChild
@@ -354,7 +356,8 @@ class SubscriptionTableData extends React.Component {
                                         )}
                                         sx={(theme) => ({
                                             backgroundColor: alpha(theme.palette.warning.main, 0.12),
-                                            color: theme.palette.warning.dark,
+                                            // Dark enough to keep the label readable on the tinted background
+                                            color: darken(theme.palette.warning.main, 0.4),
                                             '& .MuiChip-icon': { color: 'inherit', fontSize: 16 },
                                         })}
                                     />
@@ -386,7 +389,7 @@ class SubscriptionTableData extends React.Component {
                         {isApiVisible ? apiInfo.lifeCycleStatus : (
                             // The lifecycle state of the API is not returned, so show that it is unavailable
                             // instead of adding a value that is not a lifecycle state
-                            <Box component='span' sx={{ color: 'text.disabled' }}>
+                            <Box component='span' sx={{ color: 'text.secondary' }}>
                                 <FormattedMessage
                                     id='Applications.Details.SubscriptionTableData.lifecycle.unavailable'
                                     defaultMessage='Unavailable'
