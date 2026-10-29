@@ -66,6 +66,15 @@ describe("Delete subscription of an API that is no longer visible to the subscri
         cy.get('#userToggleButton', { timeout: Cypress.env('largeTimeout') }).should('exist');
     };
 
+    // Sign out by leaving the Developer Portal and clearing the session, instead of using its logout page. After
+    // a logout, the Developer Portal checks the session in the background and redirects, and those redirects can
+    // take over the next page the test visits, such as the publisher login page.
+    const signOutSubscriber = () => {
+        cy.visit('/carbon/admin/login.jsp');
+        cy.clearCookies();
+        cy.clearLocalStorage();
+    };
+
     // Match the whole label, so a role does not match an invalid chip that contains its name
     const roleChip = (role) => cy.contains('div[data-testid="visibility-select-role"] .MuiChip-root',
         new RegExp(`^${role}$`));
@@ -128,7 +137,7 @@ describe("Delete subscription of an API that is no longer visible to the subscri
                     cy.get('button[aria-label="close"]').click();
                     cy.contains('tr', `${apiName} - ${apiVersion}`).contains('PUBLISHED').should('exist');
                 });
-                cy.logoutFromDevportal();
+                signOutSubscriber();
 
                 // Remove the subscriber's role from the allowed roles, so the subscriber loses visibility of the API
                 cy.loginToPublisher(publisher, password);
@@ -169,7 +178,7 @@ describe("Delete subscription of an API that is no longer visible to the subscri
                 cy.contains('tr', `${apiName} - ${apiVersion}`).should('not.exist');
 
                 cy.get('@unresolvedApiGet.all').should('have.length', 0);
-                cy.logoutFromDevportal();
+                signOutSubscriber();
             });
         });
     });
@@ -202,12 +211,11 @@ describe("Delete subscription of an API that is no longer visible to the subscri
                 cy.get(`#delete-${appName}-btn`).should('not.exist');
             }
         });
-        cy.logoutFromDevportal();
+        // This also drops the Developer Portal token cookies, so the API is deleted with the publisher's token
+        signOutSubscriber();
         if (testApiId) {
             const id = testApiId;
             testApiId = undefined;
-            // Drop the Developer Portal token cookies, so the API is deleted with the publisher's token
-            cy.clearCookies();
             cy.loginToPublisher(publisher, password);
             Utils.deleteAPI(id);
             cy.logoutFromPublisher();
