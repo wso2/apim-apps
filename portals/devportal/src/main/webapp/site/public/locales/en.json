@@ -562,6 +562,7 @@
   "Applications.Details.SubscriptionTableData.delete.subscription.confirmation.dialog.title": "Confirm",
   "Applications.Details.SubscriptionTableData.delete.text": "Delete",
   "Applications.Details.SubscriptionTableData.edit.text": "Edit",
+  "Applications.Details.SubscriptionTableData.lifecycle.unavailable": "Unavailable",
   "Applications.Details.SubscriptionTableData.policy.default.tooltip": "This is the default subscription policy used when subscription validation was disabled.",
   "Applications.Details.SubscriptionTableData.update": "Update",
   "Applications.Details.SubscriptionTableData.update.business.plan": "Current Business Plan :",

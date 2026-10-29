@@ -161,15 +161,21 @@ describe("Delete subscription of an API that is no longer visible to the subscri
 
                 cy.contains('tr', `${apiName} - ${apiVersion}`, { timeout: Cypress.env('largeTimeout') })
                     .as('subscriptionRow');
-                cy.get('@subscriptionRow').contains('Not accessible').should('exist');
+                // The API name is plain text instead of a link, with a chip next to it
+                cy.get('@subscriptionRow').find('td').eq(0).as('apiCell');
+                cy.get('@apiCell').find('a').should('not.exist');
+                cy.get('@apiCell').contains('.MuiChip-root', 'Not accessible').as('notAccessibleChip');
+                // The lifecycle state is not returned for the API, so it is shown as unavailable
+                cy.get('@subscriptionRow').find('td').eq(1).should('have.text', 'Unavailable');
                 cy.get('@subscriptionRow').contains('button', 'Edit').should('be.disabled');
                 cy.get('@subscriptionRow').contains('button', 'Delete').should('not.be.disabled');
 
-                cy.get('@subscriptionRow').contains('Not accessible').trigger('mouseover');
+                // The reason is shown when hovering the chip
+                cy.get('@notAccessibleChip').trigger('mouseover');
                 cy.get('[role="tooltip"]', { timeout: 10000 })
                     .should('be.visible')
                     .and('contain', 'You no longer have access to view this API');
-                cy.get('@subscriptionRow').contains('Not accessible').trigger('mouseout');
+                cy.get('@notAccessibleChip').trigger('mouseout');
 
                 // Delete the subscription
                 cy.get('@subscriptionRow').contains('button', 'Delete').click();

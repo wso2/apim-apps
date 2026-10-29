@@ -31,8 +31,11 @@ import Slide from '@mui/material/Slide';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
+import Chip from '@mui/material/Chip';
 import Autocomplete from '@mui/material/Autocomplete';
+import { alpha } from '@mui/material/styles';
 import HelpOutline from '@mui/icons-material/HelpOutline';
+import LockOutlined from '@mui/icons-material/LockOutlined';
 import { FormattedMessage } from 'react-intl';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
 import PropTypes from 'prop-types';
@@ -319,7 +322,45 @@ class SubscriptionTableData extends React.Component {
             !isSubValidationDisabled && (
                 <TableRow hover>
                     <TableCell>
-                        {link}
+                        {isApiVisible ? link : (
+                            // The API page cannot be opened, so show the name as plain text and explain why
+                            <Box display='inline-flex' alignItems='center' gap={1}>
+                                {(apiInfo.displayName || apiInfo.name) + ' - ' + apiInfo.version}
+                                <Tooltip
+                                    placement='bottom'
+                                    describeChild
+                                    title={(
+                                        <FormattedMessage
+                                            id='Applications.Details.SubscriptionTableData.api.not.visible.tooltip'
+                                            defaultMessage={'You no longer have access to view this API. This can '
+                                                + "happen when the API's visibility settings or your roles change. "
+                                                + 'The subscription still exists and can be removed from this '
+                                                + 'application.'}
+                                        />
+                                    )}
+                                >
+                                    {/* Focusable, so keyboard users can open the tooltip too */}
+                                    <Chip
+                                        size='small'
+                                        variant='outlined'
+                                        color='warning'
+                                        tabIndex={0}
+                                        icon={<LockOutlined />}
+                                        label={(
+                                            <FormattedMessage
+                                                id='Applications.Details.SubscriptionTableData.api.not.visible'
+                                                defaultMessage='Not accessible'
+                                            />
+                                        )}
+                                        sx={(theme) => ({
+                                            backgroundColor: alpha(theme.palette.warning.main, 0.12),
+                                            color: theme.palette.warning.dark,
+                                            '& .MuiChip-icon': { color: 'inherit', fontSize: 16 },
+                                        })}
+                                    />
+                                </Tooltip>
+                            </Box>
+                        )}
                         {isWebhookAPI && (
                             <>
                                 {callBackUrlLink}
@@ -343,28 +384,14 @@ class SubscriptionTableData extends React.Component {
                     </TableCell>
                     <TableCell>
                         {isApiVisible ? apiInfo.lifeCycleStatus : (
-                            <Tooltip
-                                placement='bottom'
-                                describeChild
-                                title={(
-                                    <FormattedMessage
-                                        id='Applications.Details.SubscriptionTableData.api.not.visible.tooltip'
-                                        defaultMessage={'You no longer have access to view this API. This can '
-                                            + "happen when the API's visibility settings or your roles change. "
-                                            + 'The subscription still exists and can be removed from this '
-                                            + 'application.'}
-                                    />
-                                )}
-                            >
-                                {/* Focusable, so keyboard users can open the tooltip too */}
-                                <Box display='inline-flex' alignItems='center' tabIndex={0}>
-                                    <FormattedMessage
-                                        id='Applications.Details.SubscriptionTableData.api.not.visible'
-                                        defaultMessage='Not accessible'
-                                    />
-                                    <HelpOutline sx={{ fontSize: 'inherit', marginLeft: '4px' }} />
-                                </Box>
-                            </Tooltip>
+                            // The lifecycle state of the API is not returned, so show that it is unavailable
+                            // instead of adding a value that is not a lifecycle state
+                            <Box component='span' sx={{ color: 'text.disabled' }}>
+                                <FormattedMessage
+                                    id='Applications.Details.SubscriptionTableData.lifecycle.unavailable'
+                                    defaultMessage='Unavailable'
+                                />
+                            </Box>
                         )}
                     </TableCell>
                     {throttlingPolicy.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN) ? (
