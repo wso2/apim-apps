@@ -41,6 +41,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import Box from '@mui/material/Box';
 import OnboardingMenuCard from 'AppComponents/Shared/Onboarding/OnboardingMenuCard';
 import Onboarding from 'AppComponents/Shared/Onboarding/Onboarding';
+import Configurations from 'Config';
 import Delete from '../Delete/Delete';
 import Usage from '../Usage/Usage';
 
@@ -259,7 +260,8 @@ class Listing extends React.Component {
      */
     fetchScopeData() {
         const { page } = this.state;
-        const promisedScopes = API.getAllScopes(page * 2000, 2000);
+        const maxScopeLimit = Configurations?.apis?.maxScopeCount || 2000;
+        const promisedScopes = API.getAllScopes(page * maxScopeLimit, maxScopeLimit);
 
         promisedScopes
             .then((response) => {
