@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import {
@@ -37,6 +37,7 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import API from 'AppData/api';
+import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import Configurations from 'Config';
 import Banner from 'AppComponents/Shared/Banner';
 
@@ -108,6 +109,9 @@ export default function Credentials(props) {
     } = props;
 
     const [pageError, setPageError] = useState(null);
+    const apiContext = useContext(APIContext);
+    const currentApi = apiContext?.api;
+    const isAPIProduct = currentApi?.apiType === API.CONSTS.APIProduct;
     const handleChange = (event) => {
         const newEndpointConfig = { ...endpointConfig };
         newEndpointConfig.access_method = event.target.value;
@@ -126,12 +130,16 @@ export default function Credentials(props) {
         endpointsDispatcher({ action: 'set_awsCredentials', value: newEndpointConfig });
     };
     const { regions } = Configurations.apis.endpoint.aws;
-    useEffect(() => {
+        useEffect(() => {
+        if (isAPIProduct) {
+            return;
+        }
+
         API.getAmznResourceNames(apiId)
             .catch((error) => {
                 setPageError(error.response.body.error);
             });
-    }, []);
+    }, [apiId, isAPIProduct]);
     return (
         (<Root>
             <Grid item md={12} xs={12}>
