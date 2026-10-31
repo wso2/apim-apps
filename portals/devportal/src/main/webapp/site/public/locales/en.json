@@ -1077,7 +1077,7 @@
   "application.productionKeys.oAuth.tokenGeneration.step2": "Step 2:",
   "application.productionKeys.oAuth.tokenGeneration.step2.description": "Obtain test token",
   "application.update.pending": "A request to update the application has been sent.",
-  "enter.access.token": "Enter access Token",
+"enter.api.key": "Enter API Key",
   "j2RZ00": "Is Subscription Available",
   "kGGU2D": "Id",
   "notice": "Notice",

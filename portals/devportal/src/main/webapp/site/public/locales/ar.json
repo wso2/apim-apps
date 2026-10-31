@@ -312,7 +312,7 @@
   "api.console.security.type.heading": "نوع الأمن",
   "notice": "تنويه",
   "api.gateways": "بوابات API",
-  "enter.access.token": "أدخل رمز الدخول",
+"enter.api.key": "أدخل مفتاح API",
   "password": "كلمه السر",
   "subscription.pending": "تم إرسال طلب الاشتراك الخاص بك وهو الآن في انتظار الموافقة.",
   "username": "اسم المستخدم",
