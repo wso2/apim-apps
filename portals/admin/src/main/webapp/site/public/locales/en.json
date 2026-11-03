@@ -36,6 +36,7 @@
   "Admin.AiVendor.label.apiVersion": "API Version",
   "Admin.GatewayEnvironment.form.type": "Gateway Environment Type",
   "Admin.KeyManager.form.type": "Key Manager Type",
+  "Admin.KeyManager.form.type.menu.tokenExchange": "Token Exchange",
   "Admin.KeyManager.label.ConsumerKey.Claim": "Consumer Key Claim URI",
   "Admin.KeyManager.label.DisplayName": "Display Name",
   "Admin.KeyManager.label.Enable.EnableOAithAppCreation": "Oauth App Creation",
