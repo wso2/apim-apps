@@ -16,9 +16,12 @@
  * under the License.
  */
 
-import React, { useState, useEffect, useContext } from 'react';
+import React, {
+    useState, useEffect, useContext, useMemo,
+} from 'react';
 import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
+import { useGraphiQL } from '@graphiql/react';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -28,6 +31,7 @@ import Divider from '@mui/material/Divider';
 import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
 import Progress from '../../../Shared/Progress';
+import { buildComplexityMap, calculateQueryComplexity } from './QueryComplexityUtils';
 
 const PREFIX = 'QueryComplexityView';
 
@@ -37,6 +41,9 @@ const classes = {
     heading: `${PREFIX}-heading`,
     column: `${PREFIX}-column`,
     row: `${PREFIX}-row`,
+    totalComplexity: `${PREFIX}-totalComplexity`,
+    totalComplexityLabel: `${PREFIX}-totalComplexityLabel`,
+    totalComplexityValue: `${PREFIX}-totalComplexityValue`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
@@ -68,6 +75,31 @@ const Root = styled('div')((
         marginBottom: theme.spacing(1),
     },
 
+    // Uses the GraphiQL theme variables so the card follows the GraphiQL light and dark themes.
+    [`& .${classes.totalComplexity}`]: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: theme.spacing(2),
+        padding: theme.spacing(1.5, 2),
+        marginBottom: theme.spacing(2),
+        border: '1px solid hsla(var(--color-neutral), var(--alpha-background-heavy))',
+        borderLeft: '4px solid hsl(var(--color-primary))',
+        borderRadius: 'var(--border-radius-8)',
+        backgroundColor: 'hsla(var(--color-primary), var(--alpha-background-light))',
+    },
+
+    [`& .${classes.totalComplexityLabel}`]: {
+        fontSize: theme.typography.pxToRem(14),
+        color: 'hsla(var(--color-neutral), var(--alpha-secondary))',
+    },
+
+    [`& .${classes.totalComplexityValue}`]: {
+        fontSize: theme.typography.pxToRem(24),
+        fontWeight: 'bold',
+        color: 'hsl(var(--color-primary))',
+    },
+
 }));
 
 const StyledAccordionDetails = styled(AccordionDetails)((
@@ -96,6 +128,9 @@ export default function QueryComplexityView() {
     const { api } = useContext(ApiContext);
     const [typelist, setTypeList] = useState([]);
     const [state, setState] = useState(null);
+    const schema = useGraphiQL((graphiql) => graphiql.schema);
+    const documentAST = useGraphiQL((graphiql) => graphiql.documentAST);
+    const operationName = useGraphiQL((graphiql) => graphiql.operationName);
 
     const useThemeDetector = () => {
         const getCurrentTheme = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -156,6 +191,12 @@ export default function QueryComplexityView() {
             });
     }, []);
 
+    const complexityMap = useMemo(() => buildComplexityMap(state), [state]);
+    const totalComplexity = useMemo(
+        () => calculateQueryComplexity(schema, documentAST, operationName, complexityMap),
+        [schema, documentAST, operationName, complexityMap],
+    );
+
     if (state === null) {
         return <Progress />;
     }
@@ -169,6 +210,17 @@ export default function QueryComplexityView() {
                             defaultMessage='Custom Complexity Values'
                         />
                     </div>
+                </div>
+                <div className={classes.totalComplexity}>
+                    <Typography className={classes.totalComplexityLabel}>
+                        <FormattedMessage
+                            id='Apis.Details.GraphQLConsole.QueryComplexityView.totalComplexity'
+                            defaultMessage='Total complexity of selected query'
+                        />
+                    </Typography>
+                    <Typography className={classes.totalComplexityValue}>
+                        {totalComplexity ?? '-'}
+                    </Typography>
                 </div>
                 <Divider />
                 <div
