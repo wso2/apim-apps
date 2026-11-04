@@ -36,6 +36,7 @@ import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
 import queryString from 'query-string';
 import Settings from 'Settings';
 import Utils from 'AppData/Utils';
+import { getDefaultKeyType } from 'AppData/defaultKeyType';
 import { ApiContext } from '../ApiContext';
 import Progress from '../../../Shared/Progress';
 import Api from '../../../../data/api';
@@ -117,7 +118,7 @@ class ApiConsole extends React.Component {
             username: '',
             password: '',
             scopes: [],
-            selectedKeyType: 'PRODUCTION',
+            selectedKeyType: getDefaultKeyType(),
             keys: [],
             productionApiKey: '',
             sandboxApiKey: '',

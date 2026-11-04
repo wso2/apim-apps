@@ -12,6 +12,7 @@
         "documentCount": 100,
         "subscribeApplicationLimit": 5000,
         "isPassive": true,
+        "defaultKeyType": "PRODUCTION",
         "singleLogout": {
             "enabled": true,
             "timeout": 4000
