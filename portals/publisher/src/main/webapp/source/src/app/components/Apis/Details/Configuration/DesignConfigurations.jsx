@@ -922,8 +922,8 @@ export default function DesignConfigurations() {
                             <div>
                                 <Box px={8} py={5}>
                                     <Box py={1}>
-                                        <Grid container spacing={0}>
-                                            <Grid item xs={12} md={2.5} id='edit-api-thumbnail-btn'>
+                                        <Grid container spacing={0} alignItems='center'>
+                                            <Grid item xs={12} md={2} id='edit-api-thumbnail-btn'>
                                                 <ThumbnailView
                                                     api={api}
                                                     width={100}
@@ -932,7 +932,7 @@ export default function DesignConfigurations() {
                                                     isEditable={!isAccessRestricted()}
                                                 />
                                             </Grid>
-                                            <Grid item xs={12} md={9.5}>
+                                            <Grid item xs={12} md={10}>
                                                 <DescriptionEditor
                                                     api={apiConfig}
                                                     updateContent={updateContent}
