@@ -162,7 +162,7 @@ const Root = styled('div')((
             minHeight: 48,
             paddingRight: 0,
         },
-        '& .MuiTablePagination-displayedRows': {
+        '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
             margin: 0,
         },
     },
@@ -188,7 +188,10 @@ const SubscriptionSection = ({
     paginationCount,
     paginationPage,
     rowsPerPage,
+    rowsPerPageOptions,
     onPaginationPageChange,
+    onRowsPerPageChange,
+    labelRowsPerPage,
     noSubscriptionsMessage,
     noSubscriptionsContent,
     entityNameColumn,
@@ -298,8 +301,10 @@ const SubscriptionSection = ({
                                                 count={paginationCount}
                                                 page={paginationPage}
                                                 rowsPerPage={rowsPerPage}
-                                                rowsPerPageOptions={[]}
+                                                rowsPerPageOptions={rowsPerPageOptions}
+                                                labelRowsPerPage={labelRowsPerPage}
                                                 onPageChange={onPaginationPageChange}
+                                                onRowsPerPageChange={onRowsPerPageChange}
                                             />
                                         </>
                                     )}
@@ -327,7 +332,10 @@ SubscriptionSection.propTypes = {
     paginationCount: PropTypes.number.isRequired,
     paginationPage: PropTypes.number.isRequired,
     rowsPerPage: PropTypes.number.isRequired,
+    rowsPerPageOptions: PropTypes.arrayOf(PropTypes.number).isRequired,
     onPaginationPageChange: PropTypes.func.isRequired,
+    onRowsPerPageChange: PropTypes.func.isRequired,
+    labelRowsPerPage: PropTypes.node.isRequired,
     noSubscriptionsMessage: PropTypes.node.isRequired,
     noSubscriptionsContent: PropTypes.node.isRequired,
     entityNameColumn: PropTypes.node.isRequired,
