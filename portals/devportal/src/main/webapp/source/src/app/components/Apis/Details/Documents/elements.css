@@ -18,6 +18,13 @@
     margin: 0;
 }
 
+/* :where() keeps this reset at element specificity so the .sl-prose list and paragraph spacing can override it */
+:where(#apim_elements) ol,
+:where(#apim_elements) p,
+:where(#apim_elements) ul {
+    margin: 0
+}
+
 #apim_elements button {
     background-color: initial;
     background-image: none
@@ -28,12 +35,18 @@
 }
 
 #apim_elements fieldset{
+#apim_elements fieldset {
     margin: 0;
     padding: 0;
 }
 #apim_elements ol,
 #apim_elements ul {
     list-style: none;
+
+#apim_elements ol,
+#apim_elements ul {
+    list-style: none;
+    padding: 0
 }
 
 #apim_elements thtml {

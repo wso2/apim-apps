@@ -13,8 +13,14 @@
 #apim_elements h5,
 #apim_elements h6,
 #apim_elements hr,
-#apim_elements p,
 #apim_elements pre {
+    margin: 0
+}
+
+/* :where() keeps this reset at element specificity so the .sl-prose list and paragraph spacing can override it */
+:where(#apim_elements) ol,
+:where(#apim_elements) p,
+:where(#apim_elements) ul {
     margin: 0
 }
 
@@ -27,16 +33,15 @@
     outline: none
 }
 
-#apim_elements fieldset,
-#apim_elements l,
-#apim_elements ul {
+#apim_elements fieldset {
     margin: 0;
     padding: 0
 }
 
-#apim_elements tol,
-#apim_elements tul {
-    list-style: none
+#apim_elements ol,
+#apim_elements ul {
+    list-style: none;
+    padding: 0
 }
 
 #apim_elements thtml {
