@@ -691,12 +691,11 @@ function EndpointOverview(props) {
     const renderDynamicEndpointSecurityButton = (category) => endpointSecurityTypes.length > 0 && (
         <Button
             className={classes.button}
-            aria-label='Settings'
             onClick={() => toggleEndpointSecurityConfig('', category)}
             disabled={isRestricted(['apim:api_create'], api)}
             variant='outlined'
         >
-            <Icon className={classes.buttonIcon}>security</Icon>
+            <Icon className={classes.buttonIcon} aria-hidden='true'>security</Icon>
             <Typography>
                 <FormattedMessage
                     id='Apis.Details.Endpoints.EndpointOverview.endpoint.security.configuration'
@@ -1389,9 +1388,10 @@ function EndpointOverview(props) {
                                 />
                             ) : (
                                 <EndpointSecurity
-                                    securityInfo={endpointSecurityInfo
-                                        && (endpointSecurityInfo.sandbox
-                                            ? endpointSecurityInfo.sandbox : endpointSecurityInfo)}
+                                    securityInfo={
+                                        endpointSecurityInfo?.sandbox
+                                        ?? (endpointSecurityInfo?.type ? endpointSecurityInfo : CONSTS.DEFAULT_ENDPOINT_SECURITY)
+                                    }
                                     saveEndpointSecurityConfig={saveEndpointSecurityConfig}
                                     closeEndpointSecurityConfig={closeEndpointSecurityConfig}
                                     endpointSecurityTypes={endpointSecurityTypes}
