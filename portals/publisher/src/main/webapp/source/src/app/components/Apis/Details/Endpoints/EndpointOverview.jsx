@@ -688,6 +688,24 @@ function EndpointOverview(props) {
         });
     };
 
+    const renderDynamicEndpointSecurityButton = (category) => endpointSecurityTypes.length > 0 && (
+        <Button
+            className={classes.button}
+            aria-label='Settings'
+            onClick={() => toggleEndpointSecurityConfig('', category)}
+            disabled={isRestricted(['apim:api_create'], api)}
+            variant='outlined'
+        >
+            <Icon className={classes.buttonIcon}>security</Icon>
+            <Typography>
+                <FormattedMessage
+                    id='Apis.Details.Endpoints.EndpointOverview.endpoint.security.configuration'
+                    defaultMessage='Endpoint Security Configurations'
+                />
+            </Typography>
+        </Button>
+    )
+
     const saveEndpointSecurityConfig = (endpointSecurityObj, enType) => {
         const { type } = endpointSecurityObj;
         let newEndpointSecurityObj = endpointSecurityObj;
@@ -1058,37 +1076,7 @@ function EndpointOverview(props) {
                                                                                             />
                                                                                         </Typography>
                                                                                     </Button>
-                                                                                    {endpointSecurityTypes.length > 0 &&
-                                                                                        <Button
-                                                                                            className={classes.button}
-                                                                                            aria-label='Settings'
-                                                                                            onClick={() => toggleEndpointSecurityConfig(
-                                                                                                '', 'production',
-                                                                                            )}
-                                                                                            disabled={
-                                                                                                (isRestricted(
-                                                                                                    ['apim:api_create'], api,
-                                                                                                )
-                                                                                                )
-                                                                                            }
-                                                                                            variant='outlined'
-                                                                                        >
-                                                                                            <Icon
-                                                                                                className={classes.buttonIcon}
-                                                                                            >
-                                                                                                security
-                                                                                            </Icon>
-                                                                                            <Typography>
-                                                                                                <FormattedMessage
-                                                                                                    id={'Apis.Details.Endpoints'
-                                                                                                        + '.EndpointOverview.endpoint'
-                                                                                                        + '.security.configuration'}
-                                                                                                    defaultMessage={'Endpoint '
-                                                                                                        + 'Security Configurations'}
-                                                                                                />
-                                                                                            </Typography>
-                                                                                        </Button>
-                                                                                    }
+                                                                                    {renderDynamicEndpointSecurityButton('production')}
                                                                                 </>
                                                                             )}
                                                                         </InlineMessage>
@@ -1244,6 +1232,7 @@ function EndpointOverview(props) {
                                                                                                     </Typography>
                                                                                                 </Button>
                                                                                                 )}
+                                                                                                {api.type !== 'WS' && renderDynamicEndpointSecurityButton('sandbox')}
                                                                                         </InlineMessage>
                                                                                     )
                                                                                     : (
