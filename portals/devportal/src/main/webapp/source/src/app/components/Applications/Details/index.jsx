@@ -134,14 +134,14 @@ const Root = styled('div')((
         display: 'flex',
         flex: 1,
         flexDirection: 'column',
-        marginLeft: (theme.custom.leftMenu.position === 'vertical-left' ? (theme.custom.leftMenu.width - 4) : 0),
+        marginLeft: (theme.custom.leftMenu.position === 'vertical-left' ? (theme.custom.leftMenu.width) : 0),
         marginRight: (theme.custom.leftMenu.position === 'vertical-right' ? theme.custom.leftMenu.width : 0),
         paddingBottom: theme.spacing(3),
         overflowX: 'hidden',
         [theme.breakpoints.down('md')]: {
-            marginLeft: (theme.custom.leftMenu.position === 'vertical-left' ? (theme.custom.leftMenu.width - 4) : 0) !== 0 && 50,
-            marginRight: (theme.custom.leftMenu.position === 'vertical-right' ? theme.custom.leftMenu.width : 0) !== 0 && 50,
-        },
+    marginLeft: 0,
+    marginRight: 0,
+},
     },
 
     [`& .${classes.contentLoader}`]: {
