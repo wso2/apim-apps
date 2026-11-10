@@ -1377,9 +1377,9 @@ function EndpointOverview(props) {
                         <DialogContent>
                             {endpointSecurityConfig.category === 'production' ? (
                                 <EndpointSecurity
-                                    securityInfo={endpointSecurityInfo
-                                        && (endpointSecurityInfo.production
-                                            ? endpointSecurityInfo.production : endpointSecurityInfo)}
+                                    securityInfo={
+                                        endpointSecurityInfo?.production
+                                        ?? (endpointSecurityInfo?.type ? endpointSecurityInfo : CONSTS.DEFAULT_ENDPOINT_SECURITY)}
                                     saveEndpointSecurityConfig={saveEndpointSecurityConfig}
                                     closeEndpointSecurityConfig={closeEndpointSecurityConfig}
                                     isProduction
