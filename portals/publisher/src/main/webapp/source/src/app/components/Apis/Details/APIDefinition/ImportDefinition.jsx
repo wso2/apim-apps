@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useReducer, useState } from 'react';
+import React, { useReducer, useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
@@ -63,7 +63,7 @@ const Root = styled('div')(() => ({
  * @returns
  */
 export default function ImportDefinition(props) {
-    const { setSchemaDefinition, editAndImport } = props;
+    const { setSchemaDefinition, editAndImport, onImportDialogClose } = props;
     const { settings } = useAppContext();
     const [openAPIDefinitionImport, setOpenAPIDefinitionImport] = useState(false);
     const [isImporting, setIsImporting] = useState(false);
@@ -116,6 +116,15 @@ export default function ImportDefinition(props) {
         inputsDispatcher({ action: 'inputValue', value: null });
         // isWebSocket || isWebSub ? setAsyncAPIDefinitionImport(false) : setOpenAPIDefinitionImport(false);
     };
+
+    // Expose close dialog function to parent component
+    useEffect(() => {
+        if (onImportDialogClose) {
+            onImportDialogClose(() => {
+                handleAPIDefinitionImportCancel();
+            });
+        }
+    }, [onImportDialogClose]);
 
     const handleAPIDefinitionEditAndImport = () => {
         const {
