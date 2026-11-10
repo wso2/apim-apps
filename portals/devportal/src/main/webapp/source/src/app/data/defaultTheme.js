@@ -40,6 +40,13 @@ const DefaultConfigurations = {
             color: '#666',
         },
     },
+    overrides: {
+        MuiButton: {
+            root: {
+                textTransform: 'none',
+            },
+        },
+    },
     custom: {
         contentAreaWidth: 1240,
         backgroundImage: '', // Add a watermark background to the content area of the page. Example ( '/devportal/site/public/images/back-light.png')
