@@ -832,6 +832,7 @@ function Endpoints(props) {
                                 <Grid container>
                                     <Grid item xs={12} className={classes.endpointsContainer}>
                                         <EndpointOverview
+                                            key={apiObject.id}
                                             swaggerDef={swagger}
                                             updateSwagger={changeSwagger}
                                             api={apiObject}

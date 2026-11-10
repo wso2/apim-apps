@@ -688,6 +688,23 @@ function EndpointOverview(props) {
         });
     };
 
+    const renderDynamicEndpointSecurityButton = (category) => endpointSecurityTypes?.length > 0 && (
+        <Button
+            className={classes.button}
+            onClick={() => toggleEndpointSecurityConfig('', category)}
+            disabled={isRestricted(['apim:api_create'], api)}
+            variant='outlined'
+        >
+            <Icon className={classes.buttonIcon} aria-hidden='true'>security</Icon>
+            <Typography>
+                <FormattedMessage
+                    id='Apis.Details.Endpoints.EndpointOverview.endpoint.security.configuration'
+                    defaultMessage='Endpoint Security Configurations'
+                />
+            </Typography>
+        </Button>
+    )
+
     const saveEndpointSecurityConfig = (endpointSecurityObj, enType) => {
         const { type } = endpointSecurityObj;
         let newEndpointSecurityObj = endpointSecurityObj;
@@ -706,7 +723,6 @@ function EndpointOverview(props) {
         endpointsDispatcher({
             action: 'endpointSecurity',
             value: {
-                ...endpointSecurityInfo,
                 [enType]: newEndpointSecurityObj,
             },
         });
@@ -1058,37 +1074,7 @@ function EndpointOverview(props) {
                                                                                             />
                                                                                         </Typography>
                                                                                     </Button>
-                                                                                    {endpointSecurityTypes.length > 0 &&
-                                                                                        <Button
-                                                                                            className={classes.button}
-                                                                                            aria-label='Settings'
-                                                                                            onClick={() => toggleEndpointSecurityConfig(
-                                                                                                '', 'production',
-                                                                                            )}
-                                                                                            disabled={
-                                                                                                (isRestricted(
-                                                                                                    ['apim:api_create'], api,
-                                                                                                )
-                                                                                                )
-                                                                                            }
-                                                                                            variant='outlined'
-                                                                                        >
-                                                                                            <Icon
-                                                                                                className={classes.buttonIcon}
-                                                                                            >
-                                                                                                security
-                                                                                            </Icon>
-                                                                                            <Typography>
-                                                                                                <FormattedMessage
-                                                                                                    id={'Apis.Details.Endpoints'
-                                                                                                        + '.EndpointOverview.endpoint'
-                                                                                                        + '.security.configuration'}
-                                                                                                    defaultMessage={'Endpoint '
-                                                                                                        + 'Security Configurations'}
-                                                                                                />
-                                                                                            </Typography>
-                                                                                        </Button>
-                                                                                    }
+                                                                                    {renderDynamicEndpointSecurityButton('production')}
                                                                                 </>
                                                                             )}
                                                                         </InlineMessage>
@@ -1244,6 +1230,7 @@ function EndpointOverview(props) {
                                                                                                     </Typography>
                                                                                                 </Button>
                                                                                                 )}
+                                                                                                {api.type !== 'WS' && renderDynamicEndpointSecurityButton('sandbox')}
                                                                                         </InlineMessage>
                                                                                     )
                                                                                     : (
@@ -1390,9 +1377,9 @@ function EndpointOverview(props) {
                         <DialogContent>
                             {endpointSecurityConfig.category === 'production' ? (
                                 <EndpointSecurity
-                                    securityInfo={endpointSecurityInfo
-                                        && (endpointSecurityInfo.production
-                                            ? endpointSecurityInfo.production : endpointSecurityInfo)}
+                                    securityInfo={
+                                        endpointSecurityInfo?.production
+                                        ?? (endpointSecurityInfo?.type ? endpointSecurityInfo : CONSTS.DEFAULT_ENDPOINT_SECURITY)}
                                     saveEndpointSecurityConfig={saveEndpointSecurityConfig}
                                     closeEndpointSecurityConfig={closeEndpointSecurityConfig}
                                     isProduction
@@ -1400,9 +1387,10 @@ function EndpointOverview(props) {
                                 />
                             ) : (
                                 <EndpointSecurity
-                                    securityInfo={endpointSecurityInfo
-                                        && (endpointSecurityInfo.sandbox
-                                            ? endpointSecurityInfo.sandbox : endpointSecurityInfo)}
+                                    securityInfo={
+                                        endpointSecurityInfo?.sandbox
+                                        ?? (endpointSecurityInfo?.type ? endpointSecurityInfo : CONSTS.DEFAULT_ENDPOINT_SECURITY)
+                                    }
                                     saveEndpointSecurityConfig={saveEndpointSecurityConfig}
                                     closeEndpointSecurityConfig={closeEndpointSecurityConfig}
                                     endpointSecurityTypes={endpointSecurityTypes}
