@@ -688,7 +688,7 @@ function EndpointOverview(props) {
         });
     };
 
-    const renderDynamicEndpointSecurityButton = (category) => endpointSecurityTypes.length > 0 && (
+    const renderDynamicEndpointSecurityButton = (category) => endpointSecurityTypes?.length > 0 && (
         <Button
             className={classes.button}
             onClick={() => toggleEndpointSecurityConfig('', category)}
@@ -723,7 +723,6 @@ function EndpointOverview(props) {
         endpointsDispatcher({
             action: 'endpointSecurity',
             value: {
-                ...endpointSecurityInfo,
                 [enType]: newEndpointSecurityObj,
             },
         });
