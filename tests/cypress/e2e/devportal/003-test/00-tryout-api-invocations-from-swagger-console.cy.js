@@ -90,6 +90,7 @@ describe("Tryout API invocations", () => {
                         cy.get('#consumerSecretInput').should('be.visible').clear().then(($input) => {
                             const secretToType = Cypress.env('consumerSecret');
                             expect(secretToType, 'consumerSecret should be set before tryout').to.exist;
+                            cy.get('[role="dialog"]').contains('button', 'Generate').should('be.disabled');
                             cy.wrap($input).type(secretToType);
                         });
                         cy.get('[role="dialog"]').contains('button', 'Generate').should('not.be.disabled').click();
