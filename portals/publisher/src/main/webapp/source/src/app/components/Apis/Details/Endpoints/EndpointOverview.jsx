@@ -1244,6 +1244,46 @@ function EndpointOverview(props) {
                                                                                                     </Typography>
                                                                                                 </Button>
                                                                                                 )}
+                                                                                            {api.type !== 'WS'
+                                                                                                && endpointSecurityTypes.length > 0 && (
+                                                                                                <Button
+                                                                                                    className={classes.button}
+                                                                                                    aria-label='Settings'
+                                                                                                    onClick={() =>
+                                                                                                        toggleEndpointSecurityConfig(
+                                                                                                            '', 'sandbox',
+                                                                                                        )}
+                                                                                                    disabled={
+                                                                                                        (isRestricted(
+                                                                                                            ['apim:api_create'],
+                                                                                                            api,
+                                                                                                        )
+                                                                                                        )
+                                                                                                    }
+                                                                                                    variant='outlined'
+                                                                                                >
+                                                                                                    <Icon
+                                                                                                        className={
+                                                                                                            classes.buttonIcon}
+                                                                                                    >
+                                                                                                        security
+                                                                                                    </Icon>
+                                                                                                    <Typography>
+                                                                                                        <FormattedMessage
+                                                                                                            id={'Apis.Details.'
+                                                                                                            + 'Endpoints'
+                                                                                                            + '.EndpointOverview.'
+                                                                                                            + 'endpoint'
+                                                                                                            + '.security.'
+                                                                                                            + 'configuration'}
+                                                                                                            defaultMessage={
+                                                                                                                'Endpoint '
+                                                                                                                + 'Security '
+                                                                                                                + 'Configurations'}
+                                                                                                        />
+                                                                                                    </Typography>
+                                                                                                </Button>
+                                                                                                )}
                                                                                         </InlineMessage>
                                                                                     )
                                                                                     : (
