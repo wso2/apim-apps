@@ -232,6 +232,7 @@ class CommonListingLegacy extends React.Component {
     constructor(props) {
         super(props);
         let { defaultApiView } = props.theme.custom;
+        const { apiLeftMenu } = props.theme.custom;
         this.showToggle = true;
         if (typeof defaultApiView === 'object' && defaultApiView.length > 0) {
             if (defaultApiView.length === 1) { // We will disable the other
@@ -243,7 +244,7 @@ class CommonListingLegacy extends React.Component {
         }
         this.state = {
             listType: defaultApiView,
-            showLeftMenu: false,
+            showLeftMenu: apiLeftMenu?.showByDefault ?? false,
             isMonetizationEnabled: false,
             isRecommendationEnabled: false,
             allTags: [],

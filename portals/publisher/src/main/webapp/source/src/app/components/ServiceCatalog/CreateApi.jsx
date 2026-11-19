@@ -112,21 +112,6 @@ function actualContext({ context, version }) {
 }
 
 /**
- * This method used to  compare the context values
- * @param {*} value  input value
- * @param {*} result resulted value
- * @returns {Boolean} true or false
- */
-function checkContext(value, result) {
-    const contextVal = value.includes('/') ? value.toLowerCase() : '/' + value.toLowerCase();
-    if (contextVal === '/' + result.toLowerCase().slice(result.toLowerCase().lastIndexOf('/') + 1)
-     || contextVal === result.toLowerCase()) {
-        return true;
-    }
-    return false;
-}
-
-/**
  * Reducer
  * @param {JSON} state State.
  * @returns {Promise} Promised state.
@@ -263,8 +248,7 @@ function CreateApi(props) {
                 const nameValidity = APIValidation.apiName.required().validate(value, { abortEarly: false }).error;
                 if (nameValidity === null) {
                     APIValidation.apiParameter.validate(field + ':' + value).then((result) => {
-                        if (result.body.list.length > 0 && value.toLowerCase() === result.body.list[0]
-                            .name.toLowerCase()) {
+                        if (result === true) {
                             updateValidity({
                                 ...validity,
                                 name: { details: [{ message: 'Name ' + value + ' already exists' }] },
@@ -347,16 +331,11 @@ function CreateApi(props) {
 
                     if (contextValidity === null && charCount === 0) {
                         APIValidation.apiParameter.validate(field + ':' + apiContext).then((result) => {
-                            if (result !== false) {
-                                const count = result.body.list.length;
-                                if (count > 0 && checkContext(value, result.body.list)) {
-                                    updateValidity({
-                                        ...validity,
-                                        context: {details: [{message: apiContext + ' context already exists'}]},
-                                    });
-                                } else {
-                                    updateValidity({ ...validity, context: contextValidity, version: null });
-                                }
+                            if (result === true) {
+                                updateValidity({
+                                    ...validity,
+                                    context: { details: [{ message: apiContext + ' context already exists' }] },
+                                });
                             } else {
                                 updateValidity({ ...validity, context: contextValidity, version: null });
                             }
@@ -374,10 +353,7 @@ function CreateApi(props) {
                     + context + '/' + value;
                     APIValidation.apiParameter.validate('context:' + context
                     + '/' + value).then((result) => {
-                        if (result.body.list.length > 0 && (
-                            (result.body.list[0].version !== undefined
-                            && (result.body.list[0].version.toLowerCase()
-                                === value.toLowerCase())))) {
+                        if (result === true) {
                             updateValidity({
                                 ...validity,
                                 version: { message: apiVersion + ' context with version already exists' },

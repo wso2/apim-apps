@@ -41,13 +41,18 @@ import {
     RadioGroup,
     FormControlLabel,
     Radio,
+    Select,
+    MenuItem,
     List,
     ListItemButton,
     ListItemIcon,
     Link,
     ListItemText,
+    FormControl,
+    FormLabel,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { styled } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -128,6 +133,7 @@ function reducer(state, { field, value }) {
             return value;
         case 'name':
         case 'description':
+        case 'complianceAffectingSeverities':
             nextState[field] = value;
             return nextState;
         case 'labels':
@@ -169,6 +175,9 @@ function AddEditPolicy(props) {
     const [availableLabels, setAvailableLabels] = useState([]);
     const [labelMode, setLabelMode] = useState('all');
     const [originalLabels, setOriginalLabels] = useState([]);
+    // A deployment wide capability, read from the admin settings so it's available even on the create form.
+    const { settings } = useAppContext();
+    const severityFilteringEnabled = Boolean(settings && settings.perPolicySeverityFilteringEnabled);
     const intl = useIntl();
     const { match: { params: { id: policyId } }, history } = props;
 
@@ -194,6 +203,8 @@ function AddEditPolicy(props) {
             },
         ],
         rulesets: [], // Store only IDs
+        // Empty means every severity affects compliance, which is the default for a new policy
+        complianceAffectingSeverities: '',
     };
     const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -203,6 +214,7 @@ function AddEditPolicy(props) {
         labels,
         actions,
         rulesets,
+        complianceAffectingSeverities,
     } = state;
 
     const [dialogConfig, setDialogConfig] = useState({
@@ -423,6 +435,70 @@ function AddEditPolicy(props) {
         return false;
     };
 
+    const severityOrder = CONSTS.SEVERITY_LEVELS.map((level) => level.value);
+
+    const storedSeverities = (complianceAffectingSeverities || '')
+        .split(',')
+        .map((severity) => severity.trim().toUpperCase())
+        .filter(Boolean);
+
+    const configuredSeverities = severityOrder.filter((severity) => storedSeverities.includes(severity));
+
+    // An empty or unrecognised stored value resolves to every severity, matching the unconfigured default.
+    const selectedSeverities = configuredSeverities.length === 0 ? severityOrder : configuredSeverities;
+
+    // Every severity selected is the unconfigured state, so it's sent as an empty value, not a full list.
+    const severitiesForPayload = (severities) => (
+        severities.length === severityOrder.length ? '' : severities.join(',')
+    );
+
+    // Cumulative: Medium also fails on Error, Maximum (the default) fails on everything.
+    const severityLevels = [
+        {
+            severities: ['ERROR'],
+            labelId: 'Governance.Policies.AddEdit.form.compliance.affecting.severities.level.minimum',
+            defaultLabel: 'Minimum',
+            descriptionId: 'Governance.Policies.AddEdit.form.compliance.affecting.severities.level.minimum.'
+                + 'description',
+            defaultDescription: 'Only Error violations affect compliance',
+        },
+        {
+            severities: ['ERROR', 'WARN'],
+            labelId: 'Governance.Policies.AddEdit.form.compliance.affecting.severities.level.medium',
+            defaultLabel: 'Medium',
+            descriptionId: 'Governance.Policies.AddEdit.form.compliance.affecting.severities.level.medium.'
+                + 'description',
+            defaultDescription: 'Error and Warn violations affect compliance',
+        },
+        {
+            severities: ['ERROR', 'WARN', 'INFO'],
+            labelId: 'Governance.Policies.AddEdit.form.compliance.affecting.severities.level.maximum',
+            defaultLabel: 'Maximum',
+            descriptionId: 'Governance.Policies.AddEdit.form.compliance.affecting.severities.level.maximum.'
+                + 'description',
+            defaultDescription: 'Error, Warn and Info violations affect compliance',
+        },
+    ];
+
+    // Read back which of the three levels the stored severities exactly match. Both arrays are already in
+    // severityOrder, so this also covers the empty/unconfigured value, which resolves to the last (default)
+    // level. A set the three levels don't cover - only reachable by calling the API directly - is "custom",
+    // so it's shown honestly instead of being misrepresented as whichever level happens to contain its
+    // highest severity.
+    const matchedSeverityLevel = severityLevels.findIndex((level) => (
+        level.severities.length === selectedSeverities.length
+        && level.severities.every((severity, index) => severity === selectedSeverities[index])
+    ));
+    const currentSeverityLevel = matchedSeverityLevel === -1 ? 'custom' : matchedSeverityLevel;
+
+    const handleSeverityLevelChange = (e) => {
+        const level = Number(e.target.value);
+        dispatch({
+            field: 'complianceAffectingSeverities',
+            value: severitiesForPayload(severityLevels[level].severities),
+        });
+    };
+
     const formSave = () => {
         setValidating(true);
         if (formHasErrors(true)) {
@@ -438,6 +514,12 @@ function AddEditPolicy(props) {
             ...state,
             governableStates: [...new Set(actions.map((action) => action.state))],
         };
+        if (severityFilteringEnabled) {
+            body.complianceAffectingSeverities = severitiesForPayload(selectedSeverities);
+        } else {
+            // The backend rejects the field when the deployment has not opted in
+            delete body.complianceAffectingSeverities;
+        }
 
         // Do the API call
         const restApi = new GovernanceAPI();
@@ -683,6 +765,61 @@ function AddEditPolicy(props) {
                                     style: { padding: 0 },
                                 }}
                             />
+                            {severityFilteringEnabled && (
+                                <FormControl component='fieldset' size='small' sx={{ mt: 2, minWidth: 280 }}>
+                                    <FormLabel component='legend' id='compliance-severity-label'>
+                                        <FormattedMessage
+                                            id={'Governance.Policies.AddEdit.form.compliance.'
+                                                + 'affecting.severities'}
+                                            defaultMessage='Severity level that affect compliance'
+                                        />
+                                    </FormLabel>
+                                    <Select
+                                        labelId='compliance-severity-label'
+                                        value={String(currentSeverityLevel)}
+                                        onChange={handleSeverityLevelChange}
+                                        sx={{ mt: 1 }}
+                                    >
+                                        {currentSeverityLevel === 'custom' && (
+                                            <MenuItem value='custom' disabled>
+                                                <Box>
+                                                    <Typography variant='body2'>
+                                                        {intl.formatMessage({
+                                                            id: 'Governance.Policies.AddEdit.form.compliance.'
+                                                                + 'affecting.severities.level.custom',
+                                                            defaultMessage: 'Custom',
+                                                        })}
+                                                    </Typography>
+                                                    <Typography variant='caption' color='text.secondary'>
+                                                        {selectedSeverities
+                                                            .map((severity) => severity.charAt(0)
+                                                                + severity.slice(1).toLowerCase())
+                                                            .join(', ')}
+                                                    </Typography>
+                                                </Box>
+                                            </MenuItem>
+                                        )}
+                                        {severityLevels.map((level, index) => (
+                                            <MenuItem key={level.labelId} value={String(index)}>
+                                                <Box>
+                                                    <Typography variant='body2'>
+                                                        {intl.formatMessage({
+                                                            id: level.labelId,
+                                                            defaultMessage: level.defaultLabel,
+                                                        })}
+                                                    </Typography>
+                                                    <Typography variant='caption' color='text.secondary'>
+                                                        {intl.formatMessage({
+                                                            id: level.descriptionId,
+                                                            defaultMessage: level.defaultDescription,
+                                                        })}
+                                                    </Typography>
+                                                </Box>
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            )}
                         </Box>
                     </Grid>
 

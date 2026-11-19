@@ -96,6 +96,11 @@ const DefaultConfigurations = {
             tableBodyOddBackgrund: '#efefef',
             tableBodyEvenBackgrund: '#fff',
         },
+        apiLeftMenu: {
+            // Open the Tags / API Categories left pane by default on page load.
+            // Overridable via site/public/theme/userTheme.json.
+            showByDefault: false,
+        },
         overview: {
             titleIconColor: '#89b4ff',
             titleIconSize: 16,

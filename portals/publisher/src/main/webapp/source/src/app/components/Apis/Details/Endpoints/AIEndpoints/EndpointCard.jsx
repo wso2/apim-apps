@@ -35,6 +35,7 @@ import { styled } from '@mui/material/styles';
 import { isRestricted } from 'AppData/AuthManager';
 import { useHistory } from 'react-router-dom';
 import { getBasePath } from 'AppComponents/Shared/Utils';
+import { isMismatchedVertexRegionalUrl } from './GCPEndpointUrlBuilder';
 
 const PREFIX = 'EndpointCard';
 
@@ -73,11 +74,11 @@ const StyledCard = styled(Card)(({ theme }) => ({
     },
 
     [`& .${classes.warningChip}`]: {
-        borderColor: theme.palette.error.main,
-        color: theme.palette.error.main,
+        borderColor: theme.palette.warning.main,
+        color: theme.palette.warning.main,
         height: '24px',
         '& .MuiChip-icon': {
-            color: theme.palette.error.main,
+            color: theme.palette.warning.main,
             marginLeft: '8px',
             fontSize: '16px',
         },
@@ -114,6 +115,69 @@ const EndpointCard = ({
     const getEndpointName = () => {
         return endpoint.name || 'No Name Configured';
     }
+
+    // GCP (Vertex AI): the service-account key is optional (keyless endpoints use the gateway's attached GCP
+    // identity / Workload Identity), so there is no "credentials required" state. What needs attention is the
+    // endpoint URL: a freshly seeded endpoint carries {project_id}/{region} placeholders, and an imported /
+    // programmatically created endpoint may have no URL at all. Nudge the user while it is empty or has
+    // placeholders.
+    const renderGcpEndpointUrlWarning = () => {
+        const gcpEndpointUrl = endpoint.deploymentStage === 'PRODUCTION'
+            ? endpoint.endpointConfig?.production_endpoints?.url
+            : endpoint.endpointConfig?.sandbox_endpoints?.url;
+        // A resolved Vertex URL contains no '{'; a leftover {project_id}/{region} placeholder does.
+        if (gcpEndpointUrl?.trim() && !gcpEndpointUrl.includes('{')) {
+            return null;
+        }
+        return (
+            <Tooltip title='The endpoint URL is incomplete. Click to finish configuring it.'>
+                <Chip
+                    icon={<WarningIcon />}
+                    label='Configure Endpoint URL'
+                    size='small'
+                    variant='outlined'
+                    className={classes.warningChip}
+                    onClick={() => {
+                        history.push(
+                            urlPrefix + apiObject.id + '/endpoints/' + endpoint.id,
+                        );
+                    }}
+                    sx={{ my: '4px' }}
+                />
+            </Tooltip>
+        );
+    };
+
+    // GCP (Vertex AI): a saved, complete URL can still be unusable if its host-prefix region and locations-path
+    // region differ (only reachable by hand-editing the URL). renderGcpEndpointUrlWarning hides on such a URL
+    // (it is non-empty and has no '{'), so surface the mismatch here with the same shared check the builder uses.
+    const renderGcpRegionMismatchWarning = () => {
+        const gcpEndpointUrl = getEndpointUrl();
+        // If the URL is still incomplete ({...} placeholders), the "Configure Endpoint URL" chip already
+        // covers it; don't stack a second chip. Only flag a mismatch once the URL is otherwise complete.
+        if (gcpEndpointUrl?.includes('{') || !isMismatchedVertexRegionalUrl(gcpEndpointUrl)) {
+            return null;
+        }
+        return (
+            <Tooltip title={'The region differs between the host and the locations path of the URL. '
+                + 'Vertex may reject this endpoint.'}
+            >
+                <Chip
+                    icon={<WarningIcon />}
+                    label='Region mismatch'
+                    size='small'
+                    variant='outlined'
+                    className={classes.warningChip}
+                    onClick={() => {
+                        history.push(
+                            urlPrefix + apiObject.id + '/endpoints/' + endpoint.id,
+                        );
+                    }}
+                    sx={{ my: '4px' }}
+                />
+            </Tooltip>
+        );
+    };
 
     const renderEndpointSecurityWarning = () => {
         if (llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled) {
@@ -167,6 +231,18 @@ const EndpointCard = ({
                             sx={{ my: '4px' }}
                         />
                     </Tooltip>
+                );
+            }
+
+            // GCP (Vertex AI): warn while the endpoint URL is empty or still carries {project_id}/{region}
+            // placeholders (renderGcpEndpointUrlWarning), and separately when a complete URL has two different
+            // regions (renderGcpRegionMismatchWarning). Each returns null when it does not apply.
+            if (llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'gcp') {
+                return (
+                    <>
+                        {renderGcpEndpointUrlWarning()}
+                        {renderGcpRegionMismatchWarning()}
+                    </>
                 );
             }
         }

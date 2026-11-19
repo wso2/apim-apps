@@ -827,7 +827,7 @@ class APIDefinition extends React.Component {
                             size='small'
                             className={classes.button}
                             onClick={this.openEditor}
-                            disabled={isRestricted(['apim:api_create'], api) || api.initiatedFromGateway}
+                            disabled={isRestricted(['apim:api_create'], api)}
                         >
                             <EditRounded className={classes.buttonIcon} />
                             <FormattedMessage
@@ -842,8 +842,7 @@ class APIDefinition extends React.Component {
                                 className={classes.button}
                                 onClick={this.openEditor}
                                 disabled={isRestricted(['apim:api_create'], api) || api.isRevision
-                                || (settings && settings.portalConfigurationOnlyModeEnabled) 
-                                || api.initiatedFromGateway}
+                                || (settings && settings.portalConfigurationOnlyModeEnabled)}
                                 id='edit-definition-btn'
                             >
                                 <EditRounded className={classes.buttonIcon} />
@@ -1067,13 +1066,25 @@ class APIDefinition extends React.Component {
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id='alert-dialog-description'>
-                        <FormattedMessage
-                            id='Apis.Details.APIDefinition.APIDefinition.api.definition.save.confirmation'
-                            defaultMessage={
-                                'Are you sure you want to save the API Definition? This might affect the'
-                                + ' existing resources.'
-                            }
-                        />
+                        {api.initiatedFromGateway ? (
+                            <FormattedMessage
+                                id={'Apis.Details.APIDefinition.APIDefinition.api.definition.save'
+                                    + '.confirmation.gateway'}
+                                defaultMessage={
+                                    'Are you sure you want to save the API Definition? This will only'
+                                    + ' affect the developer portal content and will not change the'
+                                    + ' existing deployment.'
+                                }
+                            />
+                        ) : (
+                            <FormattedMessage
+                                id='Apis.Details.APIDefinition.APIDefinition.api.definition.save.confirmation'
+                                defaultMessage={
+                                    'Are you sure you want to save the API Definition? This might affect the'
+                                    + ' existing resources.'
+                                }
+                            />
+                        )}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -1098,6 +1109,7 @@ class APIDefinition extends React.Component {
                                 handleSave={this.handleSave}
                                 handleSaveAndDeploy={this.handleSaveAndDeploy}
                                 isUpdating={isUpdating}
+                                showOnlySaveButton={api.initiatedFromGateway}
                             />
                         </Grid>
                     </Grid>

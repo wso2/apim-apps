@@ -17,10 +17,11 @@
  */
 
 import React, { useState, useEffect, useReducer, useContext } from 'react';
-import { styled } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
+    Box,
     Grid,
     Paper,
     Typography,
@@ -35,26 +36,63 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
+    MenuItem,
+    Collapse,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    Avatar,
+    List,
+    ListItem,
+    ListItemAvatar,
+    ListItemText,
+    ListItemSecondaryAction,
 } from '@mui/material';
+import Dropzone from 'react-dropzone';
+import DeleteIcon from '@mui/icons-material/Delete';
 import CONSTS from 'AppData/Constants';
 import { Link, useHistory } from 'react-router-dom';
 import API from 'AppData/api';
+import Configurations from 'Config';
 import { green } from '@mui/material/colors';
 import Alert from 'AppComponents/Shared/Alert';
 import { isRestricted } from 'AppData/AuthManager';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import { getBasePath } from 'AppComponents/Shared/Utils';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import SettingsIcon from '@mui/icons-material/Settings';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import AdvanceEndpointConfig from '../AdvancedConfig/AdvanceEndpointConfig';
+import GCPEndpointUrlBuilder from './GCPEndpointUrlBuilder';
 
 const PREFIX = 'AddEditAIEndpoint';
+
+// Upper bound for an uploaded GCP service-account key file. A real key is ~2-3 KB; 64 KB is generous headroom
+// while rejecting an obviously-wrong (huge) file before it is read into memory.
+const MAX_GCP_KEY_FILE_BYTES = 64 * 1024;
+
+// Compact dashed dropzone, matching the certificate/policy upload dropzones.
+const gcpKeyDropzoneStyles = {
+    border: '1px dashed #c4c4c4',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    minHeight: 75,
+    padding: '16px 0px',
+    position: 'relative',
+    textAlign: 'center',
+    width: '100%',
+    margin: '10px 0',
+};
 
 const classes = {
     root: `${PREFIX}-root`,
@@ -73,6 +111,9 @@ const classes = {
     endpointErrorChip: `${PREFIX}-endpointErrorChip`,
     deploymentStageSelect: `${PREFIX}-deploymentStageSelect`,
     deploymentTypeText: `${PREFIX}-deploymentTypeText`,
+    credentialSourceSelect: `${PREFIX}-credentialSourceSelect`,
+    helpButton: `${PREFIX}-helpButton`,
+    helpIcon: `${PREFIX}-helpIcon`,
 }
 
 const StyledGrid = styled(Grid)((
@@ -106,7 +147,7 @@ const StyledGrid = styled(Grid)((
     },
 
     [`& .${classes.extraPadding}`]: {
-        paddingLeft: theme.spacing(2),
+        paddingLeft: theme.spacing(4),
     },
 
     [`& .${classes.actionButtonSection}`]: {
@@ -152,6 +193,19 @@ const StyledGrid = styled(Grid)((
     [`& .${classes.deploymentTypeText}`]: {
         marginBottom: theme.spacing(1),
         color: theme.palette.text.secondary,
+    },
+
+    [`& .${classes.credentialSourceSelect}`]: {
+        marginBottom: theme.spacing(1),
+    },
+
+    [`& .${classes.helpButton}`]: {
+        padding: 0,
+        minWidth: 20,
+    },
+
+    [`& .${classes.helpIcon}`]: {
+        fontSize: 20,
     },
 }));
 
@@ -254,6 +308,9 @@ const AddEditAIEndpoint = ({
     const [isEndpointSaving, setEndpointSaving] = useState(false);
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
     const intl = useIntl();
+    const theme = useTheme();
+    // GCP key dropzone with a primary-colored (blue) dashed border, matching the policy/cert upload dropzones.
+    const gcpDropzoneStyle = { ...gcpKeyDropzoneStyles, border: `1px dashed ${theme.palette.primary.main}` };
     const [validating, setValidating] = useState(false);
 
     const { updateAPI } = useContext(APIContext);
@@ -261,11 +318,31 @@ const AddEditAIEndpoint = ({
     const [apiKeyValue, setApiKeyValue] = useState(null);
     const [accessKey, setAccessKey] = useState(null);
     const [secretKey, setSecretKey] = useState(null);
+    const [serviceAccountKey, setServiceAccountKey] = useState(null);
+    const [gcpKeyFileName, setGcpKeyFileName] = useState('');
+    // The service-account key is optional (keyless/on-GCP endpoints need nothing), so the section starts
+    // collapsed. It auto-expands when a key is already configured or has just been uploaded, so the
+    // off-GCP / edit cases surface the current key without an extra click.
+    const [gcpKeyExpanded, setGcpKeyExpanded] = useState(false);
+    // Inline validation message for a rejected service-account key file (e.g. not valid JSON / unreadable).
+    const [gcpKeyError, setGcpKeyError] = useState(null);
     const [region, setRegion] = useState(null);
+    const [assumeRole, setAssumeRole] = useState(false);
+    const [roleArn, setRoleArn] = useState(null);
+    const [roleRegion, setRoleRegion] = useState(null);
+    const [roleExternalId, setRoleExternalId] = useState(null);
+    // AWS credential source: 'stored' (access/secret keys) or 'environment'
+    // (resolved from the runtime - EC2 instance profile / EKS IRSA).
+    const [authType, setAuthType] = useState('stored');
     const [showApiKey, setShowApiKey] = useState(false);
+    const [showSecretKey, setShowSecretKey] = useState(false);
     const [authKeyIdentifier, setAuthKeyIdentifier] = useState('');
     const [authKeyIdentifierType, setAuthKeyIdentifierType] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
+    // True once the endpoint's stored config has been loaded into state (or immediately for a new endpoint).
+    // The auth auto-configuration effects wait for this so they don't overwrite a stored security config
+    // (e.g. an existing GCP service-account key) while it is still being hydrated.
+    const [hydrated, setHydrated] = useState(false);
 
     const history = useHistory();
 
@@ -289,6 +366,59 @@ const AddEditAIEndpoint = ({
 
         return isDuplicate;
     };
+    // Populates form state from a stored endpoint-security config. Shared by both load paths
+    // (the dispatched apiObject config and the fetched endpoint) so the hydration isn't duplicated.
+    const hydrateEndpointSecurityState = (securityConfig) => {
+        // Reset to the initial defaults first. The security fields live in component state keyed only
+        // by the [endpointId] effect, so moving between two endpoints without a remount would otherwise
+        // leave any field the new config omits holding the previous endpoint's value - and the save
+        // handlers persist whatever is in state, which could write one endpoint's role config onto
+        // another.
+        setApiKeyValue(null);
+        setAuthKeyIdentifier('');
+        setAuthKeyIdentifierType(null);
+        setAccessKey(null);
+        setSecretKey(null);
+        setRegion(null);
+        setAssumeRole(false);
+        setRoleArn(null);
+        setRoleRegion(null);
+        setRoleExternalId(null);
+        setAuthType('stored');
+        setServiceAccountKey(null);
+        setGcpKeyFileName('');
+        setGcpKeyError(null);
+
+        if (securityConfig?.apiKeyValue === '') {
+            setApiKeyValue('********');
+        }
+        if (securityConfig?.apiKeyIdentifier) {
+            setAuthKeyIdentifier(securityConfig.apiKeyIdentifier);
+            setAuthKeyIdentifierType(securityConfig.apiKeyIdentifierType);
+        }
+        if (securityConfig?.accessKey) {
+            setAccessKey(securityConfig.accessKey);
+        }
+        if (securityConfig?.secretKey === '') {
+            setSecretKey('********');
+        }
+        if (securityConfig?.region) {
+            setRegion(securityConfig.region);
+        }
+        if (securityConfig?.roleArn) {
+            setAssumeRole(true);
+            setRoleArn(securityConfig.roleArn);
+            setRoleRegion(securityConfig.roleRegion);
+            setRoleExternalId(securityConfig.roleExternalId);
+        }
+        if (securityConfig?.authType) {
+            setAuthType(securityConfig.authType);
+        }
+        // GCP (Vertex AI): the stored key is redacted to '' on read, so surface it as the ******** sentinel.
+        if (securityConfig?.serviceAccountKey === '') {
+            setServiceAccountKey('********');
+        }
+    }
     useEffect(() => {
         if (endpointId) {
             setIsEditing(true);
@@ -322,26 +452,11 @@ const AddEditAIEndpoint = ({
                     setEndpointUrl(endpointConfig.sandbox_endpoints.url);
                 }
 
-                // Set API key value and identifier
+                // Set security-related state (API key + AWS values)
                 const envType = isProd ? 'production' : 'sandbox';
                 const securityConfig = endpointConfig.endpoint_security?.[envType];
-                if (securityConfig?.apiKeyValue === '') {
-                    setApiKeyValue('********');
-                }
-                if (securityConfig?.apiKeyIdentifier) {
-                    setAuthKeyIdentifier(securityConfig.apiKeyIdentifier);
-                    setAuthKeyIdentifierType(securityConfig.apiKeyIdentifierType);
-                }
-                // Set AWS related values
-                if (securityConfig?.accessKey) {
-                    setAccessKey(securityConfig?.accessKey);
-                }
-                if (securityConfig?.secretKey === '') {
-                    setSecretKey('********');
-                }
-                if (securityConfig?.region) {
-                    setRegion(securityConfig?.region);
-                }
+                hydrateEndpointSecurityState(securityConfig);
+                setHydrated(true);
             } else {
                 // Load custom endpoint data from API
                 API.getApiEndpoint(apiObject.id, endpointId)
@@ -356,26 +471,11 @@ const AddEditAIEndpoint = ({
                             setEndpointUrl(body.endpointConfig.sandbox_endpoints.url);
                         }
 
-                        // Set API key value and identifier
+                        // Set security-related state (API key + AWS values)
                         const envType = body.deploymentStage === "PRODUCTION" ? 'production' : 'sandbox';
                         const securityConfig = body.endpointConfig.endpoint_security?.[envType];
-                        if (securityConfig?.apiKeyValue === '') {
-                            setApiKeyValue('********');
-                        }
-                        if (securityConfig?.apiKeyIdentifier) {
-                            setAuthKeyIdentifier(securityConfig.apiKeyIdentifier);
-                            setAuthKeyIdentifierType(securityConfig.apiKeyIdentifierType);
-                        }
-                        // Set AWS related values
-                        if (securityConfig?.accessKey) {
-                            setAccessKey(securityConfig?.accessKey);
-                        }
-                        if (securityConfig?.secretKey === '') {
-                            setSecretKey('********');
-                        }
-                        if (securityConfig?.region) {
-                            setRegion(securityConfig?.region);
-                        }
+                        hydrateEndpointSecurityState(securityConfig);
+                        setHydrated(true);
                     })
                     .catch((error) => {
                         console.error('Error loading endpoint:', error);
@@ -383,8 +483,14 @@ const AddEditAIEndpoint = ({
                             id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.loading',
                             defaultMessage: 'Error loading endpoint',
                         }));
+                        // Let the auth auto-configuration effects proceed; the load failed, so there is no
+                        // stored security config left to preserve.
+                        setHydrated(true);
                     });
             }
+        } else {
+            // New endpoint: nothing to load, so it is "hydrated" immediately.
+            setHydrated(true);
         }
     }, [endpointId]);
 
@@ -402,8 +508,11 @@ const AddEditAIEndpoint = ({
         }
     }, [apiObject.id, isEditing]);
 
-    const saveEndpointSecurityConfig = (endpointSecurityObj, enType) => {
-        const newEndpointSecurityObj = endpointSecurityObj;
+    // Updates the endpoint-security block for a stage in local form state only (via the reducer). It does NOT
+    // persist to the backend - that happens on Save/Update in formSave - so cancelling the form discards it.
+    const updateEndpointSecurityState = (endpointSecurityObj, enType) => {
+        // Copy so the caller's object (and any state it references) is never mutated in place.
+        const newEndpointSecurityObj = { ...endpointSecurityObj };
         const secretPlaceholder = '******';
         newEndpointSecurityObj.clientSecret = newEndpointSecurityObj.clientSecret
             === secretPlaceholder ? '' : newEndpointSecurityObj.clientSecret;
@@ -445,7 +554,7 @@ const AddEditAIEndpoint = ({
         const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
         // Use the state values for apiKeyIdentifier and apiKeyIdentifierType
         // These are either loaded from backend (edit mode) or set from config (add mode)
-        saveEndpointSecurityConfig({
+        updateEndpointSecurityState({
             ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
             type: llmProviderEndpointConfiguration.authenticationConfiguration.type,
             apiKeyIdentifier: authKeyIdentifier,
@@ -461,7 +570,35 @@ const AddEditAIEndpoint = ({
         }
     };
 
+    // Nothing to reveal while the stored secret is showing as the masked placeholder - the real value
+    // is never sent to the browser, so only a newly typed secret can be shown.
+    const handleToggleSecretKeyVisibility = () => {
+        if (secretKey !== '********') {
+            setShowSecretKey((prev) => !prev);
+        }
+    };
+
     const url = getBasePath(apiObject.apiType) + apiObject.id + '/endpoints';
+
+    const IS_APIKEY_AUTH_ENABLED = (config) =>
+        config?.authenticationConfiguration?.enabled === true &&
+        config?.authenticationConfiguration?.type === 'apikey';
+    const IS_AWS_SIGV4_AUTH_ENABLED = (config) =>
+        config?.authenticationConfiguration?.enabled === true &&
+        config?.authenticationConfiguration?.type === 'aws';
+    const IS_UMI_AUTH_ENABLED = (config) =>
+        config?.authenticationConfiguration?.enabled === true &&
+        config?.authenticationConfiguration?.type === 'umi';
+    const IS_GCP_AUTH_ENABLED = (config) =>
+        config?.authenticationConfiguration?.enabled === true &&
+        config?.authenticationConfiguration?.type === 'gcp';
+
+    // Auto-expand the (otherwise collapsed) key section when a key is already stored or freshly uploaded.
+    useEffect(() => {
+        if (serviceAccountKey === '********' || gcpKeyFileName) {
+            setGcpKeyExpanded(true);
+        }
+    }, [serviceAccountKey, gcpKeyFileName]);
 
     useEffect(() => {
         try {
@@ -477,6 +614,66 @@ const AddEditAIEndpoint = ({
         }
     }, [state]);
 
+    // Auto-configure endpoint security for UMI — no credentials needed from the user.
+    // Runs on mount, when the deployment stage changes, or when the security config
+    // is externally reset, to ensure UMI is always applied for UMI-type providers.
+    const currentEnvType = state.deploymentStage.toLowerCase();
+    const currentSecurity = state.endpointConfig.endpoint_security?.[currentEnvType];
+    const currentSecurityType = currentSecurity?.type;
+    const isCurrentSecurityEnabled = currentSecurity?.enabled === true;
+
+    useEffect(() => {
+        if (
+            IS_UMI_AUTH_ENABLED(llmProviderEndpointConfiguration)
+            && (currentSecurityType !== 'umi' || !isCurrentSecurityEnabled)
+        ) {
+            updateEndpointSecurityState({
+                ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
+                type: 'umi',
+                enabled: true,
+            }, currentEnvType);
+        }
+    }, [
+        llmProviderEndpointConfiguration?.authenticationConfiguration?.type,
+        llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled,
+        currentEnvType,
+        currentSecurityType,
+        isCurrentSecurityEnabled,
+    ]);
+
+    // Auto-configure endpoint security for GCP. Establishes the GCP auth block so a GCP endpoint is valid
+    // even without an uploaded service-account key (keyless: the gateway uses its attached GCP identity /
+    // Workload Identity). Uploading a key sets type=gcp + enabled + serviceAccountKey via
+    // readGCPKeyFile, after which this effect no longer runs and the key is preserved.
+    useEffect(() => {
+        // Wait for hydration: on an existing endpoint the stored security config is dispatched by the
+        // [endpointId] effect, but this effect's derived currentSecurity* values are still the initial empty
+        // state on that first pass. Running now would dispatch a keyless GCP block that replaces the stored
+        // one - dropping an existing service-account key. Spread the existing security fields as well, so
+        // enabling GCP preserves the redacted serviceAccountKey (and any other stored fields).
+        if (!hydrated) {
+            return;
+        }
+        if (
+            IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)
+            && (currentSecurityType !== 'gcp' || !isCurrentSecurityEnabled)
+        ) {
+            updateEndpointSecurityState({
+                ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
+                ...currentSecurity,
+                type: 'gcp',
+                enabled: true,
+            }, currentEnvType);
+        }
+    }, [
+        hydrated,
+        llmProviderEndpointConfiguration?.authenticationConfiguration?.type,
+        llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled,
+        currentEnvType,
+        currentSecurityType,
+        isCurrentSecurityEnabled,
+    ]);
+
     /**
      * Method to test the endpoint.
      * @param {String} endpointURL Endpoint URL 
@@ -485,16 +682,28 @@ const AddEditAIEndpoint = ({
     function testEndpoint(endpointURL, apiID) {
         setUpdating(true);
         const restApi = new API();
+        // AWS Bedrock endpoints require SigV4-signed requests, so an unsigned reachability probe is
+        // rejected with 403 (Forbidden). For these endpoints a 403 still confirms the endpoint is
+        // reachable and must not be reported as invalid.
+        const isAwsSigV4 = IS_AWS_SIGV4_AUTH_ENABLED(llmProviderEndpointConfiguration);
         restApi.testEndpoint(endpointURL, apiID)
             .then((result) => {
-                if (result.body.error !== null) {
+                const responseStatus = result.body.statusCode;
+                const awsReachable = isAwsSigV4 && responseStatus === 403;
+                if (awsReachable) {
+                    setStatusCode(intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.test.endpoint.reachable',
+                        defaultMessage: 'Reachable',
+                    }));
+                    setIsErrorCode(false);
+                } else if (result.body.error !== null) {
                     setStatusCode(result.body.error);
                     setIsErrorCode(true);
                 } else {
-                    setStatusCode(result.body.statusCode + ' ' + result.body.statusMessage);
+                    setStatusCode(responseStatus + ' ' + result.body.statusMessage);
                     setIsErrorCode(false);
                 }
-                if (result.body.statusCode >= 200 && result.body.statusCode < 300) {
+                if ((responseStatus >= 200 && responseStatus < 300) || awsReachable) {
                     setIsEndpointValid(true);
                     setIsErrorCode(false);
                 } else {
@@ -505,14 +714,47 @@ const AddEditAIEndpoint = ({
             });
     }
 
-    const handleEndpointBlur = () => {
-        const trimmedUrl = endpointUrl?.trim() || '';
+    // Persist the endpoint URL into the endpoint config for the current stage. formSave reads the URL from
+    // there, so every change to the URL - including the structured GCP builder's region/project/type changes,
+    // which never fire a blur - must go through here, not just setEndpointUrl.
+    const persistEndpointUrl = (endpointUrlValue) => {
+        const trimmedUrl = endpointUrlValue?.trim() || '';
         if (state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production) {
             dispatch({ field: 'updateProductionEndpointUrl', value: trimmedUrl });
         } else {
             dispatch({ field: 'updateSandboxEndpointUrl', value: trimmedUrl });
         }
     };
+    const handleEndpointBlur = () => {
+        persistEndpointUrl(endpointUrl);
+    };
+    // Used by the GCP structured URL builder: update the field state and persist the emitted URL on every
+    // change (a region edit or Regional/Global toggle does not trigger a blur).
+    const handleEndpointUrlChange = (endpointUrlValue) => {
+        setEndpointUrl(endpointUrlValue);
+        persistEndpointUrl(endpointUrlValue);
+    };
+
+    // New GCP endpoint only: seed the URL from the API definition's server template - the canonical,
+    // placeholder template that carries the correct provider publisher (e.g. publishers/anthropic/models),
+    // taken from the definition (servers[0].url) rather than copied from a sibling endpoint. This lets the
+    // structured builder open on the right template instead of a blank field. Other providers, and endpoints
+    // being edited, keep the plain empty/stored URL field.
+    useEffect(() => {
+        if (!endpointId && IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)) {
+            new API().getSwagger(apiObject.id)
+                .then((response) => {
+                    const serverUrl = response?.obj?.servers?.[0]?.url;
+                    if (serverUrl) {
+                        setEndpointUrl(serverUrl);
+                        persistEndpointUrl(serverUrl);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error loading the API definition for the endpoint URL template:', error);
+                });
+        }
+    }, [endpointId]);
 
     /**
      * Method to check whether the endpoint has errors.
@@ -543,6 +785,16 @@ const AddEditAIEndpoint = ({
                         id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.url',
                         defaultMessage: 'Endpoint URL cannot be empty',
                     });
+                } else if (IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration)
+                    && fieldValue.includes('{')) {
+                    // Block saving a GCP endpoint whose URL still carries an unfilled template field: a
+                    // resolved Vertex URL contains no '{' (an empty Region / Project ID field renders as a
+                    // {region} / {project_id} token in the URL).
+                    return intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.url.placeholder',
+                        defaultMessage: 'Complete the endpoint URL by filling in the required fields '
+                            + '(e.g. Region, Project ID)',
+                    });
                 } else if (!isValidUrl(fieldValue)) {
                     return intl.formatMessage({
                         id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.invalid.url',
@@ -566,7 +818,8 @@ const AddEditAIEndpoint = ({
             case 'accessKey':
                 if (
                     llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled === true &&
-                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'aws'
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'aws' &&
+                    authType !== 'environment'
                 ) {
                     if (!fieldValue) {
                         return intl.formatMessage({
@@ -579,7 +832,8 @@ const AddEditAIEndpoint = ({
             case 'secretKey':
                 if (
                     llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled === true &&
-                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'aws'
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'aws' &&
+                    authType !== 'environment'
                 ) {
                     if (!fieldValue) {
                         return intl.formatMessage({
@@ -602,6 +856,39 @@ const AddEditAIEndpoint = ({
                     }
                 }
                 return false;
+            case 'roleArn':
+                if (
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled === true &&
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'aws' &&
+                    assumeRole
+                ) {
+                    if (!fieldValue) {
+                        return intl.formatMessage({
+                            id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.roleArn',
+                            defaultMessage: 'Role ARN cannot be empty',
+                        });
+                    }
+                }
+                return false;
+            case 'roleRegion':
+                if (
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.enabled === true &&
+                    llmProviderEndpointConfiguration?.authenticationConfiguration?.type === 'aws' &&
+                    assumeRole
+                ) {
+                    if (!fieldValue) {
+                        return intl.formatMessage({
+                            id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.roleRegion',
+                            defaultMessage: 'Role Region cannot be empty',
+                        });
+                    }
+                }
+                return false;
+            case 'serviceAccountKey':
+                // The service-account key is optional for GCP: when omitted, the gateway falls back to its
+                // attached GCP identity (Application Default Credentials / Workload Identity). Uploaded files
+                // are still validated for well-formedness in readGCPKeyFile.
+                return false;
             default:
                 return false;
         }
@@ -613,7 +900,9 @@ const AddEditAIEndpoint = ({
             hasErrors('apiKey', apiKeyValue, validateActive) ||
             hasErrors('secretKey', secretKey, validateActive) ||
             hasErrors('region', region, validateActive) ||
-            hasErrors('accessKey', accessKey, validateActive)) {
+            hasErrors('accessKey', accessKey, validateActive) ||
+            hasErrors('roleArn', roleArn, validateActive) ||
+            hasErrors('roleRegion', roleRegion, validateActive)) {
             return true;
         }
         return false;
@@ -721,25 +1010,131 @@ const AddEditAIEndpoint = ({
             setSecretKey(seretKeyValue)
         } else if (field === "region") {
             setRegion(e.target.value)
+        } else if (field === "roleArn") {
+            setRoleArn(e.target.value)
+        } else if (field === "roleRegion") {
+            setRoleRegion(e.target.value)
+        } else if (field === "roleExternalId") {
+            setRoleExternalId(e.target.value)
         }
     }
-    const handleOnBlurOnAWSCredentials = () => {
+    // Builds and persists the AWS SigV4 endpoint-security config. Extracted so the AWS
+    // handlers below don't duplicate the payload. `effectiveAuthType` is the auth type to
+    // persist ('stored' | 'environment'); `includeRole` controls whether the assume-role
+    // fields are carried. In environment mode no static keys are stored (resolved at runtime),
+    // and the '********' placeholder is never sent as a real secret.
+    const persistAWSEndpointSecurity = (effectiveAuthType, includeRole) => {
         const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
-
-        // Skip if apiKeyValue is null, empty, or ********
-        if (!secretKey || secretKey === '********') {
-            return;
-        }
-        saveEndpointSecurityConfig({
+        const isEnvironment = effectiveAuthType === 'environment';
+        const secretKeyToSave = secretKey === '********' ? '' : secretKey;
+        updateEndpointSecurityState({
             ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
             type: llmProviderEndpointConfiguration.authenticationConfiguration.type,
             service: llmProviderEndpointConfiguration.authenticationConfiguration.parameters.awsServiceName,
-            accessKey,
-            secretKey,
+            authType: effectiveAuthType,
+            accessKey: isEnvironment ? null : accessKey,
+            secretKey: isEnvironment ? null : secretKeyToSave,
             region,
+            roleArn: includeRole ? roleArn : null,
+            roleRegion: includeRole ? roleRegion : null,
+            roleExternalId: includeRole ? roleExternalId : null,
             enabled: true,
         }, isProduction ? 'production' : 'sandbox');
     }
+    const handleOnBlurOnAWSCredentials = () => {
+        persistAWSEndpointSecurity(authType, assumeRole);
+    }
+    const handleAssumeRoleToggle = (e) => {
+        const { checked } = e.target;
+        setAssumeRole(checked);
+        setRoleArn(null);
+        setRoleRegion(null);
+        setRoleExternalId(null);
+        if (checked) {
+            return;
+        }
+        // Assume role turned off: persist without the role fields.
+        persistAWSEndpointSecurity(authType, false);
+    }
+    const handleCredentialSourceChange = (e) => {
+        const newAuthType = e.target.value;
+        if (newAuthType === authType) {
+            return;
+        }
+        setAuthType(newAuthType);
+        persistAWSEndpointSecurity(newAuthType, assumeRole);
+    }
+    const readGCPKeyFile = (file) => {
+        if (!file) {
+            return;
+        }
+        // Reject an oversized file up front (using the synchronous File.size) so it is never read into memory.
+        if (file.size > MAX_GCP_KEY_FILE_BYTES) {
+            setGcpKeyError(intl.formatMessage({
+                id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp.serviceAccountKey.tooLarge',
+                defaultMessage: 'The selected file is too large to be a service account key (max {maxKb} KB).',
+            }, { maxKb: MAX_GCP_KEY_FILE_BYTES / 1024 }));
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const content = event.target.result;
+            // Ensure the uploaded file is valid JSON before accepting it.
+            let parsedKey;
+            try {
+                parsedKey = JSON.parse(content);
+            } catch (err) {
+                setGcpKeyError(intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp.serviceAccountKey.invalid',
+                    defaultMessage: 'The selected file is not a valid JSON service account key.',
+                }));
+                return;
+            }
+            // Accept only a non-empty JSON object. This rejects null, arrays, primitives and {} - the
+            // values JSON.parse would otherwise pass straight through - while deliberately NOT asserting
+            // specific key fields (project_id, client_email, private_key, ...): those names are owned by
+            // Google and may change, and the gateway/backend is the authority on credential validity.
+            if (parsedKey === null || typeof parsedKey !== 'object' || Array.isArray(parsedKey)
+                    || Object.keys(parsedKey).length === 0) {
+                setGcpKeyError(intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp.serviceAccountKey.invalid',
+                    defaultMessage: 'The selected file is not a valid JSON service account key.',
+                }));
+                return;
+            }
+            setGcpKeyError(null);
+            setServiceAccountKey(content);
+            setGcpKeyFileName(file.name);
+            const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
+            updateEndpointSecurityState({
+                ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
+                type: llmProviderEndpointConfiguration.authenticationConfiguration.type,
+                serviceAccountKey: content,
+                enabled: true,
+            }, isProduction ? 'production' : 'sandbox');
+        };
+        reader.onerror = () => {
+            setGcpKeyError(intl.formatMessage({
+                id: 'Apis.Details.Endpoints.AIEndpoints.Edit.gcp.serviceAccountKey.readError',
+                defaultMessage: 'Failed to read the selected file.',
+            }));
+        };
+        reader.readAsText(file);
+    }
+    // Explicitly clear a previously stored GCP service-account key so the endpoint switches to keyless
+    // (ADC / Workload Identity). Sends the transient clearServiceAccountKey flag for the current stage.
+    const handleClearGCPKey = () => {
+        const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
+        updateEndpointSecurityState({
+            ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
+            type: llmProviderEndpointConfiguration.authenticationConfiguration.type,
+            enabled: true,
+            clearServiceAccountKey: true,
+        }, isProduction ? 'production' : 'sandbox');
+        setServiceAccountKey('');
+        setGcpKeyFileName('');
+        setGcpKeyError(null);
+    };
     const formSave = () => {
         setValidating(true);
         if (formHasErrors(true)) {
@@ -868,19 +1263,84 @@ const AddEditAIEndpoint = ({
         const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
         const envType = isProduction ? 'production' : 'sandbox';
         const existingSecurity = state.endpointConfig?.endpoint_security?.[envType] || {};
-        saveEndpointSecurityConfig({
+        updateEndpointSecurityState({
             ...existingSecurity,
             apiKeyIdentifier: newValue,
             apiKeyIdentifierType: authKeyIdentifierType,
         }, envType);
     };
-
-    const IS_APIKEY_AUTH_ENABLED = (config) =>
-        config?.authenticationConfiguration?.enabled === true &&
-        config?.authenticationConfiguration?.type === 'apikey';
-    const IS_AWS_SIGV4_AUTH_ENABLED = (config) =>
-        config?.authenticationConfiguration?.enabled === true &&
-        config?.authenticationConfiguration?.type === 'aws';
+    const { regions } = Configurations.apis.endpoint.aws;
+    // Shared endpoint-URL adornment (status chip + test + advanced-config buttons), reused by the plain URL
+    // field and, in raw mode, by the GCP structured URL builder.
+    const urlEndAdornment = (
+        <InputAdornment position='end'>
+            {statusCode && (
+                <Chip
+                    id={state.id + '-endpoint-test-status'}
+                    label={statusCode}
+                    className={
+                        isEndpointValid ?
+                            classes.endpointValidChip : iff(
+                                isErrorCode,
+                                classes.endpointErrorChip,
+                                classes.endpointInvalidChip,
+                            )}
+                    variant='outlined'
+                />
+            )}
+            <IconButton
+                className={
+                    isEndpointValid ?
+                        classes.iconButtonValid : classes.iconButton
+                }
+                aria-label='TestEndpoint'
+                onClick={() => testEndpoint(endpointUrl, apiObject.id)}
+                disabled={
+                    (isRestricted(['apim:api_create'], apiObject)) || isUpdating
+                }
+                id='endpoint-test-icon-btn'
+                size='large'>
+                {isUpdating
+                    ? <CircularProgress size={20} />
+                    : (
+                        <Tooltip
+                            placement='top-start'
+                            interactive
+                            title={(
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.AIEndpoints.' +
+                                        'AddEditAIEndpoint.test.endpoint'}
+                                    defaultMessage='Check endpoint status'
+                                />
+                            )}
+                        >
+                            <CheckCircleIcon />
+                        </Tooltip>
+                    )}
+            </IconButton>
+            <IconButton
+                className={classes.iconButton}
+                aria-label='Settings'
+                onClick={handleAdvancedConfigOpen}
+                disabled={(isRestricted(['apim:api_create'], apiObject))}
+                id='endpoint-configuration-icon-btn'
+                size='large'>
+                <Tooltip
+                    placement='top-start'
+                    interactive
+                    title={(
+                        <FormattedMessage
+                            id={'Apis.Details.Endpoints.AIEndpoints.' +
+                                'AddEditAIEndpoint.endpoint.configuration'}
+                            defaultMessage='Endpoint configurations'
+                        />
+                    )}
+                >
+                    <SettingsIcon />
+                </Tooltip>
+            </IconButton>
+        </InputAdornment>
+    );
     return (
         <StyledGrid container justifyContent='center'>
             <Grid item sm={12} md={12} lg={8}>
@@ -953,7 +1413,7 @@ const AddEditAIEndpoint = ({
 
                         {/* Main Form Grid */}
                         <Grid container spacing={2}>
-                            <Grid item xs={6}>
+                            <Grid item xs={IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration) ? 12 : 6}>
                                 <FormControl fullWidth>
                                     <TextField
                                         disabled={isEditing || isRestricted(['apim:api_create'], apiObject)}
@@ -968,94 +1428,35 @@ const AddEditAIEndpoint = ({
                                     />
                                 </FormControl>
                             </Grid>
-                            <Grid item xs={6}>
-                                <FormControl fullWidth>
-                                    <TextField
-                                        disabled={isRestricted(['apim:api_create'], apiObject)}
-                                        label='Endpoint URL'
-                                        id='url'
-                                        fullWidth
-                                        className={classes.textField}
-                                        value={endpointUrl}
-                                        onChange={(e) => setEndpointUrl(e.target.value)}
+                            <Grid item xs={IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration) ? 12 : 6}>
+                                {IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration) ? (
+                                    <GCPEndpointUrlBuilder
+                                        url={endpointUrl}
+                                        onChange={handleEndpointUrlChange}
                                         onBlur={handleEndpointBlur}
-                                        error={hasErrors('url', endpointUrl, validating)}
+                                        disabled={isRestricted(['apim:api_create'], apiObject)}
+                                        error={Boolean(hasErrors('url', endpointUrl, validating))}
                                         helperText={hasErrors('url', endpointUrl, validating)}
-                                        required
-                                        InputProps={{
-                                            endAdornment: (
-                                                <InputAdornment position='end'>
-                                                    {statusCode && (
-                                                        <Chip
-                                                            id={state.id + '-endpoint-test-status'}
-                                                            label={statusCode}
-                                                            className={
-                                                                isEndpointValid ?
-                                                                    classes.endpointValidChip : iff(
-                                                                        isErrorCode,
-                                                                        classes.endpointErrorChip,
-                                                                        classes.endpointInvalidChip,
-                                                                    )}
-                                                            variant='outlined'
-                                                        />
-                                                    )}
-                                                    <IconButton
-                                                        className={
-                                                            isEndpointValid ?
-                                                                classes.iconButtonValid : classes.iconButton
-                                                        }
-                                                        aria-label='TestEndpoint'
-                                                        onClick={() => testEndpoint(endpointUrl, apiObject.id)}
-                                                        disabled={
-                                                            (isRestricted(['apim:api_create'], apiObject)) || isUpdating
-                                                        }
-                                                        id='endpoint-test-icon-btn'
-                                                        size='large'>
-                                                        {isUpdating
-                                                            ? <CircularProgress size={20} />
-                                                            : (
-                                                                <Tooltip
-                                                                    placement='top-start'
-                                                                    interactive
-                                                                    title={(
-                                                                        <FormattedMessage
-                                                                            id={'Apis.Details.Endpoints.AIEndpoints.' +
-                                                                                'AddEditAIEndpoint.test.endpoint'}
-                                                                            defaultMessage='Check endpoint status'
-                                                                        />
-                                                                    )}
-                                                                >
-                                                                    <CheckCircleIcon />
-                                                                </Tooltip>
-
-                                                            )}
-                                                    </IconButton>
-                                                    <IconButton
-                                                        className={classes.iconButton}
-                                                        aria-label='Settings'
-                                                        onClick={handleAdvancedConfigOpen}
-                                                        disabled={(isRestricted(['apim:api_create'], apiObject))}
-                                                        id='endpoint-configuration-icon-btn'
-                                                        size='large'>
-                                                        <Tooltip
-                                                            placement='top-start'
-                                                            interactive
-                                                            title={(
-                                                                <FormattedMessage
-                                                                    id={'Apis.Details.Endpoints.AIEndpoints.' +
-                                                                        'AddEditAIEndpoint.endpoint.configuration'}
-                                                                    defaultMessage='Endpoint configurations'
-                                                                />
-                                                            )}
-                                                        >
-                                                            <SettingsIcon />
-                                                        </Tooltip>
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            ),
-                                        }}
+                                        rawAdornment={urlEndAdornment}
                                     />
-                                </FormControl>
+                                ) : (
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            disabled={isRestricted(['apim:api_create'], apiObject)}
+                                            label='Endpoint URL'
+                                            id='url'
+                                            fullWidth
+                                            className={classes.textField}
+                                            value={endpointUrl}
+                                            onChange={(e) => setEndpointUrl(e.target.value)}
+                                            onBlur={handleEndpointBlur}
+                                            error={hasErrors('url', endpointUrl, validating)}
+                                            helperText={hasErrors('url', endpointUrl, validating)}
+                                            required
+                                            InputProps={{ endAdornment: urlEndAdornment }}
+                                        />
+                                    </FormControl>
+                                )}
                             </Grid>
                             {/* AI Endpoint Auth Fields */}
                             {IS_APIKEY_AUTH_ENABLED(llmProviderEndpointConfiguration) && (
@@ -1132,62 +1533,133 @@ const AddEditAIEndpoint = ({
                             {/* AWS SigV4 Auth Fields */}
                             {IS_AWS_SIGV4_AUTH_ENABLED(llmProviderEndpointConfiguration) && (
                                 <>
-                                    <Grid item xs={4}>
-                                        <TextField
-                                            disabled={isRestricted(
-                                                ['apim:api_create'],
-                                                apiObject
-                                            )}
-                                            label={
+                                    <Grid item xs={12}>
+                                        <FormControl
+                                            component='fieldset'
+                                            className={classes.credentialSourceSelect}
+                                        >
+                                            <Typography className={classes.deploymentTypeText}>
                                                 <FormattedMessage
-                                                    id='Apis.Details.Endpoints.AIEndpoints.Edit.acessKey'
-                                                    defaultMessage='AWS Access Key'
+                                                    id={'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                        + '.select.credential.source'}
+                                                    defaultMessage='Select Credential Source'
                                                 />
-                                            }
-                                            id='aws-access-key'
-                                            value={accessKey}
-                                            placeholder={intl.formatMessage({
-                                                id: 'Apis.Details.Endpoints.AIEndpoints.Edit.acessKey.placeholder',
-                                                defaultMessage: 'Enter AWS Access Key',
-                                            })}
-                                            fullWidth
-                                            onChange={(e) => handleAWSCredentials(e, 'accessKey')}
-                                            onBlur={handleOnBlurOnAWSCredentials}
-                                            required
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={4}>
-                                        <TextField
-                                            disabled={isRestricted(
-                                                ['apim:api_create'],
-                                                apiObject
-                                            )}
-                                            label={
-                                                <FormattedMessage
-                                                    id='Apis.Details.Endpoints.AIEndpoints.Edit.secretKey'
-                                                    defaultMessage='AWS Secret Key'
+                                            </Typography>
+                                            <RadioGroup
+                                                row
+                                                aria-label='credential-source'
+                                                name='credential-source'
+                                                value={authType}
+                                                onChange={handleCredentialSourceChange}
+                                            >
+                                                <FormControlLabel
+                                                    value='stored'
+                                                    control={(
+                                                        <Radio
+                                                            disabled={isRestricted(
+                                                                ['apim:api_create'],
+                                                                apiObject
+                                                            )}
+                                                        />
+                                                    )}
+                                                    label={(
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                                + '.storedCredentials'}
+                                                            defaultMessage='Stored credentials'
+                                                        />
+                                                    )}
                                                 />
-                                            }
-                                            id='aws-secret-key'
-                                            type='password'
-                                            value={secretKey}
-                                            placeholder={intl.formatMessage({
-                                                id: 'Apis.Details.Endpoints.AIEndpoints.Edit.secretKey.placeholder',
-                                                defaultMessage: 'Enter AWS Secret Key',
-                                            })}
-                                            fullWidth
-                                            onChange={(e) => handleAWSCredentials(e, 'secretKey')}
-                                            onBlur={handleOnBlurOnAWSCredentials}
-                                            required
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
-                                        />
+                                                <FormControlLabel
+                                                    value='environment'
+                                                    control={(
+                                                        <Radio
+                                                            disabled={isRestricted(
+                                                                ['apim:api_create'],
+                                                                apiObject
+                                                            )}
+                                                        />
+                                                    )}
+                                                    label={(
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                                + '.environmentCredentials'}
+                                                            defaultMessage='Environment credentials'
+                                                        />
+                                                    )}
+                                                />
+                                            </RadioGroup>
+                                        </FormControl>
                                     </Grid>
-                                    <Grid item xs={4}>
+                                    {authType !== 'environment' && (
+                                        <>
+                                            <Grid item xs={4} className={classes.extraPadding}>
+                                                <TextField
+                                                    disabled={isRestricted(
+                                                        ['apim:api_create'],
+                                                        apiObject
+                                                    )}
+                                                    label={
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Endpoints.AIEndpoints.Edit.acessKey'
+                                                            defaultMessage='AWS Access Key'
+                                                        />
+                                                    }
+                                                    id='aws-access-key'
+                                                    fullWidth
+                                                    className={classes.textField}
+                                                    // Always a string: a null value makes the input
+                                                    // uncontrolled, and the later switch to a real value
+                                                    // leaves the floating label stuck down.
+                                                    value={accessKey || ''}
+                                                    onChange={(e) => handleAWSCredentials(e, 'accessKey')}
+                                                    onBlur={handleOnBlurOnAWSCredentials}
+                                                    required
+                                                />
+                                            </Grid>
+                                            <Grid item xs={4} className={classes.extraPadding}>
+                                                <TextField
+                                                    disabled={isRestricted(
+                                                        ['apim:api_create'],
+                                                        apiObject
+                                                    )}
+                                                    label={
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Endpoints.AIEndpoints.Edit.secretKey'
+                                                            defaultMessage='AWS Secret Key'
+                                                        />
+                                                    }
+                                                    id='aws-secret-key'
+                                                    type={showSecretKey ? 'text' : 'password'}
+                                                    fullWidth
+                                                    className={classes.textField}
+                                                    value={secretKey || ''}
+                                                    onChange={(e) => handleAWSCredentials(e, 'secretKey')}
+                                                    onBlur={handleOnBlurOnAWSCredentials}
+                                                    required
+                                                    InputProps={{
+                                                        // Hidden while the stored secret shows as the
+                                                        // masked placeholder: the real value never
+                                                        // reaches the browser, so there is nothing to
+                                                        // reveal until a new secret is typed.
+                                                        endAdornment: secretKey !== '********' ? (
+                                                            <InputAdornment position='end'>
+                                                                <IconButton
+                                                                    onClick={handleToggleSecretKeyVisibility}
+                                                                    edge='end'
+                                                                >
+                                                                    {showSecretKey
+                                                                        ? <VisibilityIcon />
+                                                                        : <VisibilityOffIcon />}
+                                                                </IconButton>
+                                                            </InputAdornment>
+                                                        ) : null,
+                                                    }}
+                                                />
+                                            </Grid>
+                                        </>
+                                    )}
+                                    <Grid item xs={4} className={classes.extraPadding}>
                                         <TextField
                                             disabled={isRestricted(
                                                 ['apim:api_create'],
@@ -1200,64 +1672,333 @@ const AddEditAIEndpoint = ({
                                                 />
                                             }
                                             id='aws-region'
-                                            value={region}
-                                            placeholder={intl.formatMessage({
-                                                id: 'Apis.Details.Endpoints.AIEndpoints.Edit.aws.region.placeholder',
-                                                defaultMessage: 'Enter AWS Region',
-                                            })}
                                             fullWidth
+                                            className={classes.textField}
+                                            value={region || ''}
                                             onChange={(e) => handleAWSCredentials(e, 'region')}
                                             onBlur={handleOnBlurOnAWSCredentials}
                                             required
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
                                         />
+                                    </Grid>
+                                    <Grid item xs={12} className={classes.extraPadding}>
+                                        <FormControlLabel
+                                            control={(
+                                                <Checkbox
+                                                    color='primary'
+                                                    checked={assumeRole}
+                                                    onChange={handleAssumeRoleToggle}
+                                                    disabled={isRestricted(
+                                                        ['apim:api_create'],
+                                                        apiObject
+                                                    )}
+                                                    name='enableSTSAssumeRole'
+                                                />
+                                            )}
+                                            label={(
+                                                <FormattedMessage
+                                                    id={'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                    + '.enableSTSAssumeRole'}
+                                                    defaultMessage='Enable STS AssumeRole'
+                                                />
+                                            )}
+                                        />
+                                        <Tooltip
+                                            placement='right'
+                                            title={(
+                                                <FormattedMessage
+                                                    id={'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                    + '.enableSTSAssumeRole.tooltip'}
+                                                    defaultMessage={'Sign requests with temporary credentials '
+                                                        + 'from this IAM role.'}
+                                                />
+                                            )}
+                                        >
+                                            <Button className={classes.helpButton}>
+                                                <HelpOutline className={classes.helpIcon} />
+                                            </Button>
+                                        </Tooltip>
+                                        {assumeRole && (
+                                            <Collapse in={assumeRole}>
+                                                <TextField
+                                                    required
+                                                    disabled={isRestricted(
+                                                        ['apim:api_create'],
+                                                        apiObject
+                                                    )}
+                                                    label={(
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Endpoints.AIEndpoints.Edit.roleArn'
+                                                            defaultMessage='Role ARN'
+                                                        />
+                                                    )}
+                                                    margin='normal'
+                                                    variant='outlined'
+                                                    className={classes.textField}
+                                                    value={roleArn}
+                                                    onChange={(e) => handleAWSCredentials(e, 'roleArn')}
+                                                    onBlur={handleOnBlurOnAWSCredentials}
+                                                    error={!!hasErrors('roleArn', roleArn, validating)}
+                                                    helperText={hasErrors('roleArn', roleArn, validating)}
+                                                />
+                                                <TextField
+                                                    select
+                                                    required
+                                                    disabled={isRestricted(
+                                                        ['apim:api_create'],
+                                                        apiObject
+                                                    )}
+                                                    label={(
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Endpoints.AIEndpoints.Edit.roleRegion'
+                                                            defaultMessage='Role Region'
+                                                        />
+                                                    )}
+                                                    margin='normal'
+                                                    variant='outlined'
+                                                    className={classes.textField}
+                                                    value={roleRegion || ''}
+                                                    onChange={(e) => handleAWSCredentials(e, 'roleRegion')}
+                                                    onBlur={handleOnBlurOnAWSCredentials}
+                                                    error={!!hasErrors('roleRegion', roleRegion, validating)}
+                                                    helperText={hasErrors('roleRegion', roleRegion, validating)}
+                                                >
+                                                    {Object.entries(regions).map(([key, value]) => (
+                                                        <MenuItem key={key} value={key}>
+                                                            {value}
+                                                        </MenuItem>
+                                                    ))}
+                                                </TextField>
+                                                <TextField
+                                                    disabled={isRestricted(
+                                                        ['apim:api_create'],
+                                                        apiObject
+                                                    )}
+                                                    label={(
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                                + '.roleExternalId'}
+                                                            defaultMessage='External ID'
+                                                        />
+                                                    )}
+                                                    margin='normal'
+                                                    variant='outlined'
+                                                    className={classes.textField}
+                                                    value={roleExternalId}
+                                                    onChange={(e) => handleAWSCredentials(e, 'roleExternalId')}
+                                                    onBlur={handleOnBlurOnAWSCredentials}
+                                                />
+                                            </Collapse>
+                                        )}
                                     </Grid>
                                 </>
                             )}
 
+                            {/* GCP service-account (Vertex AI) Auth: collapsed by default. On-GCP deployments
+                                need nothing; off-GCP users expand this to upload a service-account key. */}
+                            {IS_GCP_AUTH_ENABLED(llmProviderEndpointConfiguration) && (
+                                <Grid item xs={12}>
+                                    <Accordion
+                                        variant='outlined'
+                                        expanded={gcpKeyExpanded}
+                                        onChange={(e, isExpanded) => setGcpKeyExpanded(isExpanded)}
+                                    >
+                                        <AccordionSummary
+                                            expandIcon={<ExpandMoreIcon />}
+                                            aria-controls='gcp-service-account-key-content'
+                                            id='gcp-service-account-key-header'
+                                            sx={{
+                                                '& .MuiAccordionSummary-content': {
+                                                    alignItems: 'center',
+                                                },
+                                            }}
+                                        >
+                                            <Box>
+                                                <Typography variant='body2'>
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Endpoints.AIEndpoints.Edit.gcp'
+                                                            + '.serviceAccountKey'}
+                                                        defaultMessage='GCP Service Account Key'
+                                                    />
+                                                </Typography>
+                                                <Typography variant='caption' color='textSecondary'>
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Endpoints.AIEndpoints.Edit.gcp'
+                                                            + '.serviceAccountKey.accordion.subtitle'}
+                                                        defaultMessage={'Only required if the gateway runs '
+                                                            + 'outside GCP. On GCP, leave this empty to use the '
+                                                            + 'attached identity (Workload Identity / ADC).'}
+                                                    />
+                                                </Typography>
+                                            </Box>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            {(gcpKeyFileName || serviceAccountKey === '********') ? (
+                                                <List disablePadding>
+                                                    <ListItem disableGutters>
+                                                        <ListItemAvatar>
+                                                            <Avatar>
+                                                                <InsertDriveFileIcon />
+                                                            </Avatar>
+                                                        </ListItemAvatar>
+                                                        <ListItemText
+                                                            primary={intl.formatMessage({
+                                                                id: 'Apis.Details.Endpoints.AIEndpoints.Edit'
+                                                                    + '.gcp.serviceAccountKey.configured',
+                                                                defaultMessage: 'Service account key',
+                                                            })}
+                                                        />
+                                                        <ListItemSecondaryAction>
+                                                            <IconButton
+                                                                edge='end'
+                                                                aria-label='delete-gcp-service-account-key'
+                                                                onClick={handleClearGCPKey}
+                                                                disabled={isRestricted(['apim:api_create'],
+                                                                    apiObject)}
+                                                                size='large'
+                                                            >
+                                                                <DeleteIcon />
+                                                            </IconButton>
+                                                        </ListItemSecondaryAction>
+                                                    </ListItem>
+                                                </List>
+                                            ) : (
+                                                <Dropzone
+                                                    multiple={false}
+                                                    accept='application/json,.json'
+                                                    onDrop={(acceptedFiles) => readGCPKeyFile(acceptedFiles[0])}
+                                                    disabled={isRestricted(['apim:api_create'], apiObject)}
+                                                >
+                                                    {({ getRootProps, getInputProps, isDragActive }) => (
+                                                        <div
+                                                            {...getRootProps({
+                                                                id: 'gcp-service-account-key-upload',
+                                                                style: {
+                                                                    ...gcpDropzoneStyle,
+                                                                    ...(gcpKeyError && {
+                                                                        borderColor: theme.palette.error.main,
+                                                                    }),
+                                                                    ...(isDragActive && {
+                                                                        borderColor: theme.palette.primary.dark,
+                                                                        backgroundColor:
+                                                                            theme.palette.action.hover,
+                                                                    }),
+                                                                },
+                                                            })}
+                                                        >
+                                                            <input
+                                                                {...getInputProps()}
+                                                                data-testid='gcp-key-upload-input'
+                                                                aria-label='Upload GCP service account key JSON file'
+                                                            />
+                                                            <Box sx={{
+                                                                display: 'flex',
+                                                                flexDirection: 'column',
+                                                                alignItems: 'center',
+                                                                gap: 0.5,
+                                                            }}
+                                                            >
+                                                                <CloudUploadIcon
+                                                                    color='primary'
+                                                                    fontSize='large'
+                                                                />
+                                                                <Typography variant='body2'>
+                                                                    <FormattedMessage
+                                                                        id={'Apis.Details.Endpoints'
+                                                                            + '.AIEndpoints.Edit.gcp'
+                                                                            + '.serviceAccountKey.upload'}
+                                                                        defaultMessage={'Click or drag the '
+                                                                            + 'service account key JSON file '
+                                                                            + 'to upload.'}
+                                                                    />
+                                                                </Typography>
+                                                                {gcpKeyError && (
+                                                                    <Typography variant='caption' color='error'>
+                                                                        {gcpKeyError}
+                                                                    </Typography>
+                                                                )}
+                                                            </Box>
+                                                        </div>
+                                                    )}
+                                                </Dropzone>
+                                            )}
+                                        </AccordionDetails>
+                                    </Accordion>
+                                </Grid>
+                            )}
+
+                            {/* User Managed Identity (UMI) Auth Info */}
+                            {IS_UMI_AUTH_ENABLED(llmProviderEndpointConfiguration) && (
+                                <Grid item xs={12}>
+                                    <Typography variant='body2' color='textSecondary'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.AIEndpoints.Edit.umi.info'
+                                            defaultMessage={
+                                                'Azure User Managed Identity (UMI) authentication is configured. '
+                                                + 'The gateway will automatically acquire and inject a Bearer token '
+                                                + 'using the configured Azure Workload Identity.'
+                                            }
+                                        />
+                                    </Typography>
+                                </Grid>
+                            )}
+                            
                         </Grid>
 
                         {/* Action Buttons */}
                         <div className={classes.actionButtonSection}>
-                            <Button
-                                id='endpoint-save-btn'
-                                variant='contained'
-                                color='primary'
-                                type='submit'
-                                onClick={formSave}
-                                disabled={
-                                    isRestricted(['apim:api_create'], apiObject)
-                                    || formHasErrors(validating || isEditing)
-                                    || apiObject.isRevision
-                                }
-                                className={classes.saveButton}
+                            <Tooltip
+                                title={formHasErrors(validating || isEditing)
+                                    && !isRestricted(['apim:api_create'], apiObject)
+                                    && !apiObject.isRevision
+                                    ? intl.formatMessage({
+                                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.save.disabled.hint',
+                                        defaultMessage: 'Complete the required endpoint fields '
+                                            + '(e.g. a valid endpoint URL) to enable.',
+                                    })
+                                    : ''}
                             >
-                                {isEndpointSaving ? (
-                                    <>
-                                        <FormattedMessage
-                                            id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.saving'
-                                            defaultMessage='Saving'
-                                        />
-                                        <CircularProgress size={16} classes={{ root: classes.progress }} />
-                                    </>
-                                ) : (
-                                    <>
-                                        {isEditing ? (
-                                            <FormattedMessage
-                                                id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.update.btn'
-                                                defaultMessage='Update'
-                                            />
+                                <span>
+                                    <Button
+                                        id='endpoint-save-btn'
+                                        variant='contained'
+                                        color='primary'
+                                        type='submit'
+                                        onClick={formSave}
+                                        disabled={
+                                            isRestricted(['apim:api_create'], apiObject)
+                                            || formHasErrors(validating || isEditing)
+                                            || apiObject.isRevision
+                                        }
+                                        className={classes.saveButton}
+                                    >
+                                        {isEndpointSaving ? (
+                                            <>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.saving'
+                                                    defaultMessage='Saving'
+                                                />
+                                                <CircularProgress size={16} classes={{ root: classes.progress }} />
+                                            </>
                                         ) : (
-                                            <FormattedMessage
-                                                id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.create.btn'
-                                                defaultMessage='Create'
-                                            />
+                                            <>
+                                                {isEditing ? (
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Endpoints.AIEndpoints.'
+                                                            + 'AddEditAIEndpoint.update.btn'}
+                                                        defaultMessage='Update'
+                                                    />
+                                                ) : (
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Endpoints.AIEndpoints.'
+                                                            + 'AddEditAIEndpoint.create.btn'}
+                                                        defaultMessage='Create'
+                                                    />
+                                                )}
+                                            </>
                                         )}
-                                    </>
-                                )}
-                            </Button>
+                                    </Button>
+                                </span>
+                            </Tooltip>
                             <Button
                                 component={Link}
                                 to={url}

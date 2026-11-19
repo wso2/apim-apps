@@ -27,9 +27,13 @@ import InfoIcon from '@mui/icons-material/Info';
 import { useIntl } from 'react-intl';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import Utils from 'AppData/Utils';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 
 export default function RulesetAdherenceSummaryTable({ complianceData }) {
     const intl = useIntl();
+    const { settings } = useAppContext();
+    // A ruleset's raw status no longer determines the policy verdict once severity filtering is on.
+    const severityFilteringEnabled = Boolean(settings && settings.perPolicySeverityFilteringEnabled);
 
     const renderComplianceIcons = (violations) => {
         const { error, warn, info } = violations;
@@ -99,7 +103,7 @@ export default function RulesetAdherenceSummaryTable({ complianceData }) {
                 }),
             },
         },
-        {
+        ...(severityFilteringEnabled ? [] : [{
             name: 'status',
             label: intl.formatMessage({
                 id: 'Governance.ComplianceDashboard.APICompliance.RulesetAdherence.column.status',
@@ -136,7 +140,7 @@ export default function RulesetAdherenceSummaryTable({ complianceData }) {
                     },
                 }),
             },
-        },
+        }]),
         {
             name: 'violatedRules',
             options: { display: false },
@@ -153,8 +157,9 @@ export default function RulesetAdherenceSummaryTable({ complianceData }) {
             }),
             options: {
                 customBodyRender: (value, tableMeta) => {
-                    // Count the number of errors, warnings, and info messages in the violations
-                    const violations = tableMeta.rowData[3];
+                    // Looked up rather than hardcoded, since the status column ahead of it isn't always present.
+                    const violatedRulesIndex = RulesetColumProps.findIndex((col) => col.name === 'violatedRules');
+                    const violations = tableMeta.rowData[violatedRulesIndex];
                     const counts = violations.reduce((acc, { severity }) => {
                         acc[severity.toLowerCase()] += 1;
                         return acc;

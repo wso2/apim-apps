@@ -44,6 +44,15 @@ jest.mock('AppData/AuthManager', () => ({
     isRestricted: jest.fn(() => false),
 }));
 
+jest.mock('Config', () => ({
+    __esModule: true,
+    default: {
+        app: {
+            subscriptionPolicyLimit: 25,
+        },
+    },
+}));
+
 const API = require('AppData/api').default;
 
 const baseProps = {

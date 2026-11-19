@@ -27,6 +27,7 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import Box from '@mui/material/Box';
 import API from 'AppData/api';
 import { isRestricted } from 'AppData/AuthManager';
+import Configurations from 'Config';
 
 import Resources from 'AppComponents/Apis/Details/Resources/Resources';
 import APIRateLimiting from '../Resources/components/APIRateLimiting';
@@ -45,10 +46,14 @@ export default function APIProductOperations() {
     const [isSaving, setIsSaving] = useState(false);
     useEffect(() => {
         // Fetch API level throttling policies only when the page get mounted for the first time `componentDidMount`
-        API.policies('api').then((response) => {
-            setOperationRateLimits(response.body.list);
-        });
-        // TODO: need to handle the error cases through catch ~tmkb
+        const limit = Configurations.app.throttlingPolicyLimit;
+        API.policies('api', limit)
+            .then((response) => {
+                setOperationRateLimits(response.body.list);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }, []);
 
     useEffect(() => {

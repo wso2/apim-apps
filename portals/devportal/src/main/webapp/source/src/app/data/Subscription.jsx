@@ -36,12 +36,13 @@ export default class Subscription extends Resource {
      * @param applicationId id of the application
      * @param limit subscription count to return
      * @param offset subscription list offset
+     * @param match ALL to require both apiId and applicationId to match, ANY (default) otherwise
      * @returns {promise} With all subscription for given applicationId or apiId.
      */
-    getSubscriptions(apiId, applicationId, limit = 25, offset = 0) {
+    getSubscriptions(apiId, applicationId, limit = 25, offset = 0, match = undefined) {
         var promise_get = this.client.then((client) => {
             return client.apis["Subscriptions"].get_subscriptions(
-                { apiId: apiId, applicationId: applicationId, limit, offset });
+                { apiId: apiId, applicationId: applicationId, limit, offset, ...(match && { match }) });
         }
         );
         return promise_get;

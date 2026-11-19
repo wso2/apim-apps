@@ -1031,7 +1031,7 @@ function EndpointOverview(props) {
                                                                                 <>
                                                                                     <Button
                                                                                         className={classes.button}
-                                                                                        aria-label='Settings'
+                                                                                        aria-label='Production advanced settings'
                                                                                         onClick={() => toggleAdvanceConfig(
                                                                                             0, '', 'production_endpoints',
                                                                                         )}
@@ -1061,7 +1061,7 @@ function EndpointOverview(props) {
                                                                                     {endpointSecurityTypes.length > 0 &&
                                                                                         <Button
                                                                                             className={classes.button}
-                                                                                            aria-label='Settings'
+                                                                                            aria-label='Production security settings'
                                                                                             onClick={() => toggleEndpointSecurityConfig(
                                                                                                 '', 'production',
                                                                                             )}
@@ -1208,7 +1208,7 @@ function EndpointOverview(props) {
                                                                                             {api.type !== 'WS' && (
                                                                                                 <Button
                                                                                                     className={classes.button}
-                                                                                                    aria-label='Settings'
+                                                                                                    aria-label='Sandbox advanced settings'
                                                                                                     onClick={() =>
                                                                                                         toggleAdvanceConfig(
                                                                                                             0, '',
@@ -1239,6 +1239,46 @@ function EndpointOverview(props) {
                                                                                                             + 'configuration'}
                                                                                                             defaultMessage={
                                                                                                                 'Advanced '
+                                                                                                                + 'Configurations'}
+                                                                                                        />
+                                                                                                    </Typography>
+                                                                                                </Button>
+                                                                                                )}
+                                                                                            {api.type !== 'WS'
+                                                                                                && endpointSecurityTypes.length > 0 && (
+                                                                                                <Button
+                                                                                                    className={classes.button}
+                                                                                                    aria-label='Sandbox security settings'
+                                                                                                    onClick={() =>
+                                                                                                        toggleEndpointSecurityConfig(
+                                                                                                            '', 'sandbox',
+                                                                                                        )}
+                                                                                                    disabled={
+                                                                                                        (isRestricted(
+                                                                                                            ['apim:api_create'],
+                                                                                                            api,
+                                                                                                        )
+                                                                                                        )
+                                                                                                    }
+                                                                                                    variant='outlined'
+                                                                                                >
+                                                                                                    <Icon
+                                                                                                        className={
+                                                                                                            classes.buttonIcon}
+                                                                                                    >
+                                                                                                        security
+                                                                                                    </Icon>
+                                                                                                    <Typography>
+                                                                                                        <FormattedMessage
+                                                                                                            id={'Apis.Details.'
+                                                                                                            + 'Endpoints'
+                                                                                                            + '.EndpointOverview.'
+                                                                                                            + 'endpoint'
+                                                                                                            + '.security.'
+                                                                                                            + 'configuration'}
+                                                                                                            defaultMessage={
+                                                                                                                'Endpoint '
+                                                                                                                + 'Security '
                                                                                                                 + 'Configurations'}
                                                                                                         />
                                                                                                     </Typography>
