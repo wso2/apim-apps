@@ -42,7 +42,7 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
 
 const LandingMenu = (props) => {
     const {
-        title, icon, children, id,
+        title, icon, children, id, onOpen,
     } = props;
     const [isHover, setIsHover] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -83,7 +83,13 @@ const LandingMenu = (props) => {
                 fontSize='h4.fontSize'
                 fontFamily='fontFamily'
                 flexDirection='row'
-                onClick={(e) => { setIsCollapsed(true); setIsFadeOut(false); e.preventDefault(); e.stopPropagation(); }}
+                onClick={(e) => {
+                    // Clicks inside the open overlay bubble up here, so only notify on closed -> open.
+                    if (onOpen && !isCollapsed) {
+                        onOpen();
+                    }
+                    setIsCollapsed(true); setIsFadeOut(false); e.preventDefault(); e.stopPropagation();
+                }}
                 position='relative'
             >
                 <Grid

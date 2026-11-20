@@ -21,15 +21,21 @@ import { FormattedMessage } from 'react-intl';
 import LandingMenuItem from 'AppComponents/Apis/Listing/Landing/components/LandingMenuItem';
 import LandingMenu from 'AppComponents/Apis/Listing/Landing/components/LandingMenu';
 import APICreateMenuSection from 'AppComponents/Apis/Listing/components/APICreateMenuSection';
+import {
+    useAIGatewayRecommendationToast,
+    TOAST_TYPES,
+} from 'AppComponents/Shared/AIGatewayRecommendationToast';
 
 const AIAPIMenu = (props) => {
     const { icon, isCreateMenu } = props;
     const Component = isCreateMenu ? APICreateMenuSection : LandingMenu;
     const dense = isCreateMenu;
+    const showAIGatewayToast = useAIGatewayRecommendationToast(TOAST_TYPES.AI_API);
 
     return (
         <Component
             id='itest-ai-api-create-title'
+            onOpen={isCreateMenu ? undefined : showAIGatewayToast}
             title={(
                 <FormattedMessage
                     id='Apis.Listing.AIAPI.ai.api'
