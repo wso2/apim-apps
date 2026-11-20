@@ -26,6 +26,10 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useLocation } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useBackNavigation } from 'AppComponents/Shared';
+import {
+    useAIGatewayRecommendationToast,
+    TOAST_TYPES,
+} from 'AppComponents/Shared/AIGatewayRecommendationToast';
 import MCPFromOpenAPIDefinition from './MCPFromOpenAPIDefinition';
 import MCPFromExistingAPI from './MCPFromExistingAPI';
 import MCPFromMCPServerURL from './MCPFromMCPServerURL';
@@ -53,6 +57,16 @@ const MCPServerLanding = () => {
     const [pageMode, setPageMode] = useState('default');
     const location = useLocation();
     const handleBackClick = useBackNavigation('/mcp-servers');
+    const showAIGatewayToast = useAIGatewayRecommendationToast(TOAST_TYPES.MCP_SERVER);
+
+    // Recommend the API Platform AI Gateway when the user starts creating an MCP Server:
+    // the MCP Server tab on the landing page ('/') or the create page ('/mcp-servers/create').
+    useEffect(() => {
+        const path = location.pathname;
+        if (path === '/' || path.includes('/mcp-servers/create')) {
+            showAIGatewayToast();
+        }
+    }, [location.pathname, showAIGatewayToast]);
 
     const {
         mcpServerFromScratchIcon,
