@@ -41,10 +41,11 @@ export const getBasePath = (type = '') => {
  * @param {string} type - The type of the API
  * @returns {string} The type of the API to display
  */
-export const getTypeToDisplay = (type) => {
-    if (type === 'APIPRODUCT') {
+export const getTypeToDisplay = (type = '') => {
+    const upperCaseType = (type ?? '').toUpperCase();
+    if (upperCaseType === 'APIPRODUCT') {
         return 'API Product';
-    } else if (type === 'MCP') {
+    } else if (upperCaseType === 'MCP') {
         return 'MCP Server';
     } else {
         return 'API';
