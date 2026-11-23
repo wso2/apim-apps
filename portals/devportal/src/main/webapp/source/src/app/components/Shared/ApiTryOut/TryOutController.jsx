@@ -46,6 +46,7 @@ import AdvertiseDetailsPanel from 'AppComponents/Shared/ApiTryOut/AdvertiseDetai
 import Progress from '../Progress';
 import Api from '../../../data/api';
 import Application from '../../../data/Application';
+import { getDefaultKeyType, resolveConsoleKeyType } from '../../../data/defaultKeyType';
 import CONSTANTS from '../../../data/Constants';
 import SelectAppPanel from './SelectAppPanel';
 import { isMultipleClientSecretsEnabled } from 'AppComponents/Shared/AppsAndKeys/Secrets/util';
@@ -160,6 +161,22 @@ const Root = styled('div')((
 }));
 
 /**
+ * Resolve the initial Try Out key type from keys already loaded on the application.
+ * getKeys() populates both production and sandbox maps; the returned map is only one of them.
+ * @param {object} application application instance after getKeys()
+ * @param {string} keyManager selected key manager
+ * @returns {{keyType: string, keys: Map, accessToken: string|undefined}} resolved selection
+ */
+function resolveInitialConsoleKeys(application, keyManager) {
+    return resolveConsoleKeyType(
+        application.productionKeys,
+        application.sandboxKeys,
+        keyManager,
+        getDefaultKeyType(),
+    );
+}
+
+/**
  * TryOut component
  *
  * @class TryOutController
@@ -216,7 +233,7 @@ function TryOutController(props) {
         let appList;
         let newSelectedApplication;
         let keys;
-        let selectedKeyTypes = 'PRODUCTION';
+        let selectedKeyTypes = getDefaultKeyType();
         let accessToken;
         if (api.lifeCycleStatus) {
             if (isSubValidationDisabled) {
@@ -227,25 +244,17 @@ function TryOutController(props) {
                         if (appList && appList.length > 0) {
                             newSelectedApplication = appList[0].applicationId;
                             Application.get(newSelectedApplication)
+                                .then((application) => application.getKeys().then(() => application))
                                 .then((application) => {
-                                    return application.getKeys();
-                                })
-                                .then((appKeys) => {
-                                    if (appKeys.get(selectedKeyManager)
-                                        && appKeys.get(selectedKeyManager).keyType === 'SANDBOX') {
-                                        selectedKeyTypes = 'SANDBOX';
-                                        ({ accessToken } = appKeys.get(selectedKeyManager).token);
-                                    } else if (appKeys.get(selectedKeyManager)
-                                        && appKeys.get(selectedKeyManager).keyType === 'PRODUCTION') {
-                                        selectedKeyTypes = 'PRODUCTION';
-                                        ({ accessToken } = appKeys.get(selectedKeyManager).token);
-                                    }
+                                    const resolved = resolveInitialConsoleKeys(application, selectedKeyManager);
+                                    selectedKeyTypes = resolved.keyType;
+                                    accessToken = resolved.accessToken;
                                     setSelectedApplication(newSelectedApplication);
                                     setAllApplications(appList);
-                                    setKeys(appKeys);
+                                    setKeys(resolved.keys);
                                     setSelectedEnvironment(selectedEnvironment, false);
                                     setSelectedKeyType(selectedKeyTypes, false);
-                                    if (selectedKeyType === 'PRODUCTION') {
+                                    if (selectedKeyTypes === 'PRODUCTION') {
                                         setProductionAccessToken(accessToken);
                                     } else {
                                         setSandboxAccessToken(accessToken);
@@ -272,25 +281,17 @@ function TryOutController(props) {
                     if (subscriptionsList && subscriptionsList.length > 0) {
                         newSelectedApplication = subscriptionsList[0].applicationId;
                         Application.get(newSelectedApplication)
+                            .then((application) => application.getKeys().then(() => application))
                             .then((application) => {
-                                return application.getKeys();
-                            })
-                            .then((appKeys) => {
-                                if (appKeys.get(selectedKeyManager)
-                                    && appKeys.get(selectedKeyManager).keyType === 'SANDBOX') {
-                                    selectedKeyTypes = 'SANDBOX';
-                                    ({ accessToken } = appKeys.get(selectedKeyManager).token);
-                                } else if (appKeys.get(selectedKeyManager)
-                                    && appKeys.get(selectedKeyManager).keyType === 'PRODUCTION') {
-                                    selectedKeyTypes = 'PRODUCTION';
-                                    ({ accessToken } = appKeys.get(selectedKeyManager).token);
-                                }
+                                const resolved = resolveInitialConsoleKeys(application, selectedKeyManager);
+                                selectedKeyTypes = resolved.keyType;
+                                accessToken = resolved.accessToken;
                                 setSelectedApplication(newSelectedApplication);
                                 setSubscriptions(subscriptionsList);
-                                setKeys(appKeys);
+                                setKeys(resolved.keys);
                                 setSelectedEnvironment(selectedEnvironment, false);
                                 setSelectedKeyType(selectedKeyTypes, false);
-                                if (selectedKeyType === 'PRODUCTION') {
+                                if (selectedKeyTypes === 'PRODUCTION') {
                                     setProductionAccessToken(accessToken);
                                 } else {
                                     setSandboxAccessToken(accessToken);
@@ -469,7 +470,7 @@ function TryOutController(props) {
             }
             Application.get(selectedApplication)
                 .then((application) => {
-                    return application.getKeys(keyType || 'PRODUCTION');
+                    return application.getKeys(keyType || getDefaultKeyType());
                 })
                 .then((appKeys) => {
                     const selectedKeys = appKeys.get(selectedKeyManager);

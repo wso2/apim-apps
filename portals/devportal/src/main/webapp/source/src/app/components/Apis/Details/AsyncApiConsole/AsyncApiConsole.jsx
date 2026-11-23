@@ -29,6 +29,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import TryOutController from '../../../Shared/ApiTryOut/TryOutController';
 import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
+import { getDefaultKeyType } from '../../../../data/defaultKeyType';
 import Progress from '../../../Shared/Progress';
 import AsyncApiUI from './AsyncApiUI';
 
@@ -83,7 +84,7 @@ export default function AsyncApiConsole() {
     const [labels, setLabels] = useState(null);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [selectedKeyType, setSelectedKey] = useState('PRODUCTION');
+    const [selectedKeyType, setSelectedKey] = useState(getDefaultKeyType());
     const [keys, setKeys] = useState([]);
     const [sandboxApiKey, setSandboxApiKey] = useState('');
     const [productionApiKey, setProductionApiKey] = useState('');

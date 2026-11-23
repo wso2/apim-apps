@@ -29,6 +29,7 @@ import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import Progress from 'AppComponents/Shared/Progress';
 import TryOutController from 'AppComponents/Shared/ApiTryOut/TryOutController';
 import Application from 'AppData/Application';
+import { getDefaultKeyType } from 'AppData/defaultKeyType';
 import IconButton from '@mui/material/IconButton';
 import { Close } from '@mui/icons-material';
 
@@ -43,7 +44,7 @@ const SecurityDetailsPanel = ({
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [scopes, setScopes] = useState([]);
-    const [selectedKeyType, setSelectedKeyType] = useState('PRODUCTION');
+    const [selectedKeyType, setSelectedKeyType] = useState(getDefaultKeyType());
     const [keys, setKeys] = useState([]);
     const [selectedEnvironment, setSelectedEnvironment] = useState('');
     const [productionAccessToken, setProductionAccessToken] = useState('');
