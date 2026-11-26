@@ -33,6 +33,7 @@
         "@emotion/react": "11.14.0",
         "@emotion/styled": "11.14.1",
         "@graphiql/plugin-explorer": "5.1.1",
+        "@graphiql/react": "0.37.3",
         "@hapi/joi": "17.1.1",
         "@iconify/icons-simple-icons": "1.2.74",
         "@iconify/react": "1.1.4",
