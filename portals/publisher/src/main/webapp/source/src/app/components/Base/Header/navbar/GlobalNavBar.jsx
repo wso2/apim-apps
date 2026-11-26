@@ -38,23 +38,22 @@ const classes = {
 
 const Root = styled('div')(({ theme }) => ({
     [`& .${classes.list}`]: {
-        width: theme.custom.globalNavBar.opened.drawerWidth,
+        width: theme.custom.drawerWidth,
     },
 
     [`& .${classes.drawer}`]: {
-        width: theme.custom.globalNavBar.opened.drawerWidth,
+        width: theme.custom.drawerWidth,
         flexShrink: 0,
         whiteSpace: 'nowrap',
         backgroundColor: theme.palette.background.drawer,
     },
 
     [`& .${classes.drawerOpen}`]: {
-        width: theme.custom.globalNavBar.opened.drawerWidth,
+        width: theme.custom.drawerWidth,
         transition: theme.transitions.create('width', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        backgroundColor: 'green',
     },
 
     [`& .${classes.drawerClose}`]: {
