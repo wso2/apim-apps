@@ -644,6 +644,7 @@
   "Applications.Listing.DeleteConfirmation.dialog,delete": "Delete",
   "Applications.Listing.DeleteConfirmation.dialog.cancel": "Cancel",
   "Applications.Listing.DeleteConfirmation.dialog.text.description": "The application will be removed",
+  "Applications.Listing.DeleteConfirmation.dialog.text.subscription.warning": "This application has {subscriptionCount} active subscription(s). Deleting it will remove all subscriptions.",
   "Applications.Listing.DeleteConfirmation.dialog.title": "Delete Application",
   "Applications.Listing.DeleteConfirmation.remove.keys.dialog.Cancel": "Cancel",
   "Applications.Listing.DeleteConfirmation.remove.keys.dialog.Delete": "Delete",
