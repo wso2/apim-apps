@@ -20,6 +20,7 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Button,
+    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
@@ -225,8 +226,16 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
                         onClick={handleAssociateKey}
                         variant='contained'
                         disabled={!selectedAppForAssociation || isAssociating}
+                        startIcon={isAssociating ? <CircularProgress size={16} color='inherit' /> : null}
                     >
-                        <FormattedMessage id='Apis.Details.APIKeys.ApiKeyAssociation.button.associate' defaultMessage='Associate' />
+                        {isAssociating ? (
+                            <FormattedMessage
+                                id='Apis.Details.APIKeys.ApiKeyAssociation.button.associating'
+                                defaultMessage='Associating...'
+                            />
+                        ) : (
+                            <FormattedMessage id='Apis.Details.APIKeys.ApiKeyAssociation.button.associate' defaultMessage='Associate' />
+                        )}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -391,6 +400,9 @@ export default function ApiKeyAssociation(apiUUID, refreshApiKeys, subscribedApp
     );
 
     return {
+        isAssociating,
+        isDissociating,
+        selectedKeyForDissociate,
         // Handlers
         handleOpenAssociationModal,
         handleRemoveAssociation,
