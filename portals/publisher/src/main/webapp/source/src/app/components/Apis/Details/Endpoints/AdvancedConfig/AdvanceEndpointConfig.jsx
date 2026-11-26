@@ -20,6 +20,7 @@ import {
     FormControl,
     Grid,
     Input,
+    OutlinedInput,
     InputLabel,
     MenuItem,
     Select,
@@ -374,7 +375,7 @@ function AdvanceEndpointConfig(props) {
                     <Typography className={classes.subTitle}>
                         <FormattedMessage id='Endpoint.Suspension.State' defaultMessage='Endpoint Suspension State' />
                     </Typography>
-                    <FormControl className={classes.formControl}>
+                    <FormControl variant='outlined' className={classes.formControl}>
                         <InputLabel htmlFor='err-code-select'>
                             <FormattedMessage
                                 id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.error.code'
@@ -386,7 +387,7 @@ function AdvanceEndpointConfig(props) {
                             autoWidth={false}
                             value={advanceConfigObj.suspendErrorCode}
                             onChange={(event) => handleConfigFieldChange(event, 'suspendErrorCode')}
-                            input={<Input id='err-code-select' />}
+                            input={<OutlinedInput label='Error Code' id='err-code-select' />}
                             MenuProps={MenuProps}
                             variant='outlined'
                             renderValue={(allSelected) => 
@@ -460,7 +461,7 @@ function AdvanceEndpointConfig(props) {
                                     defaultMessage='Endpoint Timeout State'
                                 />
                             </Typography>
-                            <FormControl className={classes.formControl}>
+                            <FormControl variant='outlined' className={classes.formControl}>
                                 <InputLabel htmlFor='err-code-select'>
                                     <FormattedMessage
                                         id={'Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig'
@@ -473,7 +474,7 @@ function AdvanceEndpointConfig(props) {
                                     autoWidth={false}
                                     value={advanceConfigObj.retryErroCode}
                                     onChange={(event) => handleConfigFieldChange(event, 'retryErroCode')}
-                                    input={<Input id='err-code-select' />}
+                                    input={<OutlinedInput label='Error Code' id='err-code-select' />}
                                     MenuProps={MenuProps}
                                     renderValue={(allSelected) => 
                                         allSelected.map(selected =>
@@ -527,7 +528,7 @@ function AdvanceEndpointConfig(props) {
                             <Typography className={classes.subTitle}>
                                 <FormattedMessage id='Connection.Timeout' defaultMessage='Connection Timeout' />
                             </Typography>
-                            <FormControl className={classes.formControl}>
+                            <FormControl variant='outlined' className={classes.formControl}>
                                 <InputLabel htmlFor='err-code-select'>
                                     <FormattedMessage
                                         id='Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.action'
@@ -538,7 +539,7 @@ function AdvanceEndpointConfig(props) {
                                     autoWidth={false}
                                     value={advanceConfigObj.actionSelect}
                                     onChange={(event) => handleConfigFieldChange(event, 'actionSelect')}
-                                    input={<Input id='err-code-select' />}
+                                    input={<OutlinedInput label='Action' id='err-code-select' />}
                                     MenuProps={MenuProps}
                                 >
                                     {actionItems.map((item) => (
