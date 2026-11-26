@@ -416,17 +416,28 @@ export default function KeyManagerConfiguration(props) {
                         onChange={onChange}
                     >
                         {keymanagerConnectorConfiguration.values.map((selection) => {
-                            // Handle both string values and object values
+                            // Handle both string values and object values.
+                            // Object options (for example Server-Wide / Tenant-Wide certificates)
+                            // carry their own tooltip, which the field-level helper text does not show.
                             const optionValue = typeof selection === 'string' ? selection : selection.name;
                             const optionLabel = typeof selection === 'string' ? selection : selection.label;
+                            const optionTooltip = (selection && typeof selection === 'object')
+                                ? (selection.tooltip || selection.toolTip)
+                                : '';
 
                             return (
-                                <FormControlLabel
-                                    key={optionValue}
-                                    value={optionValue}
-                                    control={<Radio />}
-                                    label={optionLabel}
-                                />
+                                <Box key={optionValue}>
+                                    <FormControlLabel
+                                        value={optionValue}
+                                        control={<Radio />}
+                                        label={optionLabel}
+                                    />
+                                    {optionTooltip && (
+                                        <FormHelperText>
+                                            {optionTooltip}
+                                        </FormHelperText>
+                                    )}
+                                </Box>
                             );
                         })}
                     </RadioGroup>
@@ -488,6 +499,11 @@ export default function KeyManagerConfiguration(props) {
                         }}
                         showJwks={false}
                     />
+                    <FormHelperText>
+                        {(keymanagerConnectorConfiguration.required
+                            && hasErrors('keyconfig', value, validating))
+                            || keymanagerConnectorConfiguration.tooltip}
+                    </FormHelperText>
                 </Box>
             );
         } else {
