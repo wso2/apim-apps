@@ -26,6 +26,7 @@ import { useHistory } from 'react-router-dom';
 import { Chip, Stack } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import SellIcon from '@mui/icons-material/Sell';
+import { buildTagListingQuery } from './listingTags';
 
 const PREFIX = 'ApiTagCloud';
 
@@ -175,10 +176,8 @@ function ApiTagCloud(props) {
         // Detect if we're on MCP servers route to generate appropriate URL
         const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
         const baseURL = isMCPServersRoute ? '/mcp-servers?offset=0&query=' : '/apis?offset=0&query=';
-        const tagQuery = `tag:${tag.value} `;
-        const type = isMCPServersRoute ? 'type:MCP' : 'type:HTTP type:WS type:SOAPTOREST type:GRAPHQL type:SOAP '
-            + 'type:SSE type:WEBSUB type:WEBHOOK type:ASYNC type:APIProduct';
-        history.push(baseURL + tagQuery + type);
+        const listingType = isMCPServersRoute ? 'mcp' : 'api';
+        history.push(baseURL + buildTagListingQuery(tag.value, listingType));
     };
 
     return (
