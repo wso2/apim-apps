@@ -25,7 +25,9 @@ import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 
 const DeleteConfirmation = (props) => {
-    const { handleAppDelete, isDeleteOpen, toggleDeleteConfirmation } = props;
+    const {
+        handleAppDelete, isDeleteOpen, toggleDeleteConfirmation, subscriptionCount,
+    } = props;
     return (
         <Dialog open={isDeleteOpen} transition={Slide} role='alertdialog'>
             <DialogTitle>
@@ -36,10 +38,19 @@ const DeleteConfirmation = (props) => {
             </DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    <FormattedMessage
-                        id='Applications.Listing.DeleteConfirmation.dialog.text.description'
-                        defaultMessage='The application will be removed'
-                    />
+                    {subscriptionCount > 0 ? (
+                        <FormattedMessage
+                            id='Applications.Listing.DeleteConfirmation.dialog.text.subscription.warning'
+                            defaultMessage={'This application has {subscriptionCount} active'
+                                + ' subscription(s). Deleting it will remove all subscriptions.'}
+                            values={{ subscriptionCount }}
+                        />
+                    ) : (
+                        <FormattedMessage
+                            id='Applications.Listing.DeleteConfirmation.dialog.text.description'
+                            defaultMessage='The application will be removed'
+                        />
+                    )}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -69,5 +80,9 @@ DeleteConfirmation.propTypes = {
     handleAppDelete: PropTypes.func.isRequired,
     isDeleteOpen: PropTypes.bool.isRequired,
     toggleDeleteConfirmation: PropTypes.func.isRequired,
+    subscriptionCount: PropTypes.number,
+};
+DeleteConfirmation.defaultProps = {
+    subscriptionCount: 0,
 };
 export default DeleteConfirmation;
