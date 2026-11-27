@@ -312,6 +312,7 @@ class InfoBar extends React.Component {
                                     handleAppDelete={this.handleAppDelete}
                                     isDeleteOpen={isDeleteOpen}
                                     toggleDeleteConfirmation={this.toggleDeleteConfirmation}
+                                    subscriptionCount={this.props.application.subscriptionCount || 0}
                                 />
                             </Grid>
                         </Grid>

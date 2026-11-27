@@ -209,11 +209,11 @@ class Listing extends Component {
      }
 
     toggleDeleteConfirmation = (event) => {
-        let id = '';
-        if (event) {
-            id = event.currentTarget.getAttribute('data-appid');
-        }
-        this.setState(({ isDeleteOpen }) => ({ isDeleteOpen: !isDeleteOpen, deletingId: id }));
+        const id = event ? event.currentTarget.getAttribute('data-appid') : null;
+        this.setState(({ isDeleteOpen }) => ({
+            isDeleteOpen: !isDeleteOpen,
+            ...(id ? { deletingId: id } : {}),
+        }));
     }
 
     /**
@@ -287,8 +287,9 @@ class Listing extends Component {
     render() {
         const {
             data, order, orderBy, rowsPerPage, page, isApplicationSharingEnabled,
-            isDeleteOpen, totalApps, query,
+            isDeleteOpen, totalApps, query, deletingId,
         } = this.state;
+        const deletingApp = data && deletingId ? data.get(deletingId) : null;
         const { intl } = this.props;
         const paginationEnabled = totalApps > Listing.rowsPerPage;
         return (
@@ -599,6 +600,7 @@ class Listing extends Component {
                                 handleAppDelete={this.handleAppDelete}
                                 isDeleteOpen={isDeleteOpen}
                                 toggleDeleteConfirmation={this.toggleDeleteConfirmation}
+                                subscriptionCount={deletingApp ? (deletingApp.subscriptionCount || 0) : 0}
                             />
                         </Box>
                     )}
