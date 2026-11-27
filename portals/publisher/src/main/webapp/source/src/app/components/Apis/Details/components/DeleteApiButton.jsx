@@ -169,6 +169,7 @@ class DeleteApiButton extends React.Component {
                         updateData(id);
                         setLoading(false);
                     } else {
+                        sessionStorage.setItem('apiDeletedFromOverview', 'true');
                         history.push('/api-products');
                     }
                 })
@@ -205,6 +206,7 @@ class DeleteApiButton extends React.Component {
                         updateData(id);
                         setLoading(false);
                     } else {
+                        sessionStorage.setItem('apiDeletedFromOverview', 'true');
                         history.push('/mcp-servers');
                     }
                 })
@@ -241,6 +243,7 @@ class DeleteApiButton extends React.Component {
                         updateData(id);
                         setLoading(false);
                     } else {
+                        sessionStorage.setItem('apiDeletedFromOverview', 'true');
                         history.push('/apis');
                     }
                 })
